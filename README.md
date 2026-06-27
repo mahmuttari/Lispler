@@ -44,7 +44,12 @@ kot    = başlangıç_kotu + eğim × mesafe
 3. **Yol alymanı** (polyline) seçin.
 4. **Başlangıç kotunu** girin.
 5. **Eğimi (%)** girin — veya ENTER ile geçip **bitiş kotunu** girin.
-6. Yön, ondalık basamak ve yazı yüksekliği sorularını yanıtlayın.
+6. Yön, ondalık basamak, yazı yüksekliği ve **maksimum örnekleme aralığını** girin.
+
+**Maksimum örnekleme aralığı:** Boş bırakılırsa (ENTER) yalnızca vertex + segment
+orta noktası kullanılır. Bir değer (ör. `2`) verilirse, her segment bu aralığı
+**aşmayacak** şekilde eşit alt bölümlere ayrılır; böylece en fazla 2 m'de bir
+enkesit çizilir. Vertexler her durumda korunur.
 
 ### Çıktı
 

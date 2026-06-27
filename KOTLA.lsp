@@ -32,7 +32,10 @@
 ;;;    3) Yol alymani (polyline) secin.
 ;;;    4) Baslangic kotunu girin.
 ;;;    5) Egimi (%) girin  -veya-  ENTER ile gecip bitis kotunu girin.
-;;;    6) Yon, ondalik ve yazi yuksekligi sorularini yanitlayin.
+;;;    6) Yon, ondalik, yazi yuksekligi ve MAKSIMUM ORNEKLEME ARALIGI'ni girin.
+;;;       (Aralik bos birakilirsa sadece vertex + segment orta noktasi kullanilir;
+;;;        bir deger -orn 2- verilirse her segment, aralik bu degeri asmayacak
+;;;        sekilde alt bolunur; vertexler her zaman korunur.)
 ;;;
 ;;;  KATMANLAR (yoksa otomatik acilir):
 ;;;    ENKESIT    -> enkesit cizgileri (Z=kot)   (yesil)
@@ -87,7 +90,8 @@
                    A B Ltot leftLen rightLen
                    plObj tmObj il C Cp Tc wa wb sa sb
                    plLen ep i vdists prev dists d pt sta kot
-                   startKot egimPct slope endKot revFlag
+                   startKot egimPct slope endKot revFlag maxInt
+                   d0 d1 seg ndiv step k
                    decim txtH gap Tg Nl e1 e2 tAng tpos n mids prevm m)
 
   (defun *error* (msg)
@@ -179,6 +183,10 @@
   (if (null txtH) (setq txtH 2.5))
   (setq gap (* txtH 0.8))
 
+  ;; Maksimum ornekleme araligi (ENTER = sadece vertex + segment orta noktasi)
+  (initget 6)
+  (setq maxInt (getdist "\nMaksimum ornekleme araligi (ENTER = vertex+orta nokta): "))
+
   ;; --- Katmanlar -----------------------------------------------------------
   (kotla:ensure-layer "ENKESIT"   3)
   (kotla:ensure-layer "KOT_YAZI"  2)
@@ -192,12 +200,33 @@
   (setq vdists (reverse vdists))
   (if (> (- plLen (car (reverse vdists))) 1e-6)
     (setq vdists (append vdists (list plLen))))
-  (setq dists '() prev nil)
-  (foreach d vdists
-    (if prev (setq dists (cons (/ (+ prev d) 2.0) dists)))
-    (setq dists (cons d dists)
-          prev  d))
-  (setq dists (reverse dists))
+  (setq dists '())
+  (if maxInt
+    (progn
+      ;; Her segmenti, aralik maxInt'i asmayacak sekilde alt bol (vertexler dahil)
+      (setq i 0)
+      (while (< i (1- (length vdists)))
+        (setq d0   (nth i vdists)
+              d1   (nth (1+ i) vdists)
+              seg  (- d1 d0)
+              ndiv (fix (/ seg maxInt)))
+        (if (> seg (* ndiv maxInt)) (setq ndiv (1+ ndiv)))
+        (if (< ndiv 1) (setq ndiv 1))
+        (setq step (/ seg ndiv) k 0)
+        (while (< k ndiv)
+          (setq dists (cons (+ d0 (* k step)) dists)
+                k     (1+ k)))
+        (setq i (1+ i)))
+      (setq dists (cons (last vdists) dists))      ; son vertex
+      (setq dists (reverse dists)))
+    (progn
+      ;; Varsayilan: vertex + her segmentin orta noktasi
+      (setq prev nil)
+      (foreach d vdists
+        (if prev (setq dists (cons (/ (+ prev d) 2.0) dists)))
+        (setq dists (cons d dists)
+              prev  d))
+      (setq dists (reverse dists))))
 
   ;; --- Her ornek nokta: enkesit cizgisi + kot yazisi ----------------------
   (setq n 0 mids '())
@@ -258,6 +287,9 @@
                  "\n Egim           : %" (rtos (* slope 100.0) 2 4)
                  "\n Baslangic kotu : " (rtos startKot 2 decim)
                  "\n Bitis kotu     : " (rtos (+ startKot (* slope plLen)) 2 decim)
+                 "\n Ornekleme      : " (if maxInt
+                                            (strcat "<= " (rtos maxInt 2 2))
+                                            "vertex + orta nokta")
                  "\n Enkesit sayisi : " (itoa n)
                  "\n Eksen parcasi  : " (itoa (max 0 (1- (length mids))))
                  (if revFlag "\n Yon            : TERS" "")

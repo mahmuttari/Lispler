@@ -2,13 +2,21 @@
 
 AutoCAD için AutoLISP araçları.
 
-## KOTLA.lsp — Polyline Otomatik Kot Etiketleme
+## KOTLA.lsp — Yol Alymanı Enkesit Çizgileri + Kot Etiketleme
 
-Dönüşler ve **yay (arc) parçaları** içeren uzun bir polyline güzergahı üzerinde,
-belli bir başlangıç kotundan belli bir eğimle ilerleyerek; her **vertex**, her
-segmentin **orta noktası** ve **uç noktalar** için olması gereken kotu hesaplar.
-Her noktadan, ilk seçilen **eksen/referans** çizgiye **dik** bir çizgi indirir ve
-ucuna hesaplanan kot değerini yazar.
+Dönüşler ve **yay (arc) parçaları** içeren uzun bir polyline (yol alymanı)
+üzerinde; her **vertex**, her segmentin **orta noktası** ve **uç noktalar** için
+polyline'ın **o noktadaki yerel teğetine dik** birer **enkesit çizgisi** çizer.
+Çizgiler, ilk seçilen **örnek (şablon) enkesit** çizgisi ile **aynı boyda** olur.
+Her enkesit çizgisinin ucuna, o noktanın olması gereken **kotu** yazılır.
+
+### Enkesit çizgisi
+
+- **Yön:** polyline'ın o noktadaki teğetine dik (yaylarda da yerel teğet).
+- **Boy:** ilk seçilen örnek çizginin boyu.
+- **Sol/sağ dağılım:** Örnek çizgi alymanı **kesiyorsa**, kesişim noktasının
+  soluna/sağına düşen uzunluklar korunur (asimetrik enkesit). Kesmiyorsa çizgi
+  noktada **simetrik** (her iki yana eşit) çizilir.
 
 ### Kot hesabı
 
@@ -27,8 +35,9 @@ kot    = başlangıç_kotu + eğim × mesafe
 ### Kullanım
 
 1. `KOTLA` komutunu çalıştırın.
-2. **Eksen / referans** çizgiyi seçin (dik çizgiler bu hatta inecek).
-3. Kotlanacak **polyline**'ı seçin.
+2. **Örnek (şablon) enkesit** çizgisini seçin (LINE) → boy ve sol/sağ dağılım.
+   Sol/sağ farklı olsun isterseniz bu çizgiyi **alymanı keser** şekilde çizin.
+3. **Yol alymanı** (polyline) seçin.
 4. **Başlangıç kotunu** girin.
 5. **Eğimi (%)** girin — veya ENTER ile geçip **bitiş kotunu** girin.
 6. Yön, ondalık basamak ve yazı yüksekliği sorularını yanıtlayın.
@@ -37,16 +46,17 @@ kot    = başlangıç_kotu + eğim × mesafe
 
 | Katman     | İçerik                           | Renk  |
 |------------|----------------------------------|-------|
-| `KOT_DIK`  | Dik (ordinat) çizgileri          | Yeşil |
+| `ENKESIT`  | Enkesit çizgileri (alymana dik)  | Yeşil |
 | `KOT_YAZI` | Kot yazıları (TEXT, orta hizalı) | Sarı  |
 
-Katmanlar yoksa otomatik oluşturulur. İşlem sonunda toplam uzunluk, eğim,
-başlangıç/bitiş kotu ve etiket sayısı özeti komut satırına yazdırılır.
+Katmanlar yoksa otomatik oluşturulur. İşlem sonunda toplam uzunluk, enkesit boyu
+(sol/sağ), eğim, başlangıç/bitiş kotu ve enkesit sayısı özeti yazdırılır.
 
 ### Notlar
 
 - Yaylar dahil tüm geometri hesapları `vlax-curve-*` ActiveX fonksiyonları ile
-  yapıldığından, LWPOLYLINE bulge (yay) segmentleri doğru şekilde işlenir.
-- Eksen çizgisi sonsuz doğru kabul edilerek dik ayağı (izdüşüm) hesaplanır;
-  bu nedenle eksen, polyline'ın tamamından kısa olsa bile çalışır.
-- Yazı açısı eksene paralel ve okunabilir (ters dönmeyecek) şekilde ayarlanır.
+  yapıldığından, LWPOLYLINE bulge (yay) segmentleri doğru şekilde işlenir; her
+  enkesitin yönü, noktanın **yerel teğetine** (`getFirstDeriv`) dik alınır.
+- Örnek çizginin alymanı kesip kesmediği `IntersectWith` ile kontrol edilir;
+  kesişim varsa sol/sağ uzunluklar ondan, yoksa simetrik alınır.
+- Yazı açısı enkesit çizgisi yönünde ve okunabilir (ters dönmeyecek) ayarlanır.

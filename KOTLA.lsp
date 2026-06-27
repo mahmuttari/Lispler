@@ -7,6 +7,9 @@
 ;;;    polyline'in O NOKTADAKI yerel TEGETINE DIK birer ENKESIT cizgisi cizer.
 ;;;    Cizgiler, ilk secilen ornek (sablon) enkesit cizgisi ile AYNI BOYDA olur.
 ;;;    Her enkesit cizgisinin ucuna, o noktanin olmasi gereken KOTU yazilir.
+;;;    Enkesit cizgilerinin Z koordinati = hesaplanan kot (kotlu / 3B, yatay).
+;;;    Tum enkesitlerin TAM ORTA noktalarindan gecen, Z=kot olan bir "kotlu
+;;;    eksen" cizgisi (ardisik LINE parcalari) olusturulur.
 ;;;
 ;;;  ENKESIT CIZGISI:
 ;;;    - Yon : polyline'in o noktadaki tegetine DIK (yaylarda da yerel teget).
@@ -32,8 +35,9 @@
 ;;;    6) Yon, ondalik ve yazi yuksekligi sorularini yanitlayin.
 ;;;
 ;;;  KATMANLAR (yoksa otomatik acilir):
-;;;    ENKESIT   -> enkesit cizgileri   (yesil)
-;;;    KOT_YAZI  -> kot yazilari (TEXT)  (sari)
+;;;    ENKESIT    -> enkesit cizgileri (Z=kot)   (yesil)
+;;;    KOT_YAZI   -> kot yazilari (TEXT)          (sari)
+;;;    KOT_EKSEN  -> orta noktalardan gecen kotlu eksen (kirmizi)
 ;;; ============================================================================
 
 (vl-load-com)
@@ -84,7 +88,7 @@
                    plObj tmObj il C Cp Tc wa wb sa sb
                    plLen ep i vdists prev dists d pt sta kot
                    startKot egimPct slope endKot revFlag
-                   decim txtH gap Tg Nl e1 e2 tAng tpos n)
+                   decim txtH gap Tg Nl e1 e2 tAng tpos n mids prevm m)
 
   (defun *error* (msg)
     (if (and msg
@@ -176,8 +180,9 @@
   (setq gap (* txtH 0.8))
 
   ;; --- Katmanlar -----------------------------------------------------------
-  (kotla:ensure-layer "ENKESIT"  3)
-  (kotla:ensure-layer "KOT_YAZI" 2)
+  (kotla:ensure-layer "ENKESIT"   3)
+  (kotla:ensure-layer "KOT_YAZI"  2)
+  (kotla:ensure-layer "KOT_EKSEN" 1)
 
   ;; --- Ornek nokta mesafelerini topla (vertex + segment orta noktasi) -----
   (setq i 0 vdists '())
@@ -195,7 +200,7 @@
   (setq dists (reverse dists))
 
   ;; --- Her ornek nokta: enkesit cizgisi + kot yazisi ----------------------
-  (setq n 0)
+  (setq n 0 mids '())
   (foreach d dists
     (setq pt  (kotla:3p (vlax-curve-getPointAtDist plEnt d))
           sta (if revFlag (- plLen d) d)
@@ -205,7 +210,15 @@
           e1  (mapcar '+ pt (mapcar '(lambda (x) (* x leftLen))  Nl))  ; sol uc
           e2  (mapcar '- pt (mapcar '(lambda (x) (* x rightLen)) Nl))) ; sag uc
 
-    ;; Enkesit cizgisi (alymana dik)
+    ;; Z koordinati = hesaplanan kot (enkesit kotlu / 3B, yatay)
+    (setq e1   (list (car e1) (cadr e1) kot)
+          e2   (list (car e2) (cadr e2) kot)
+          m    (list (/ (+ (car e1)  (car e2))  2.0)   ; cizginin tam ortasi
+                     (/ (+ (cadr e1) (cadr e2)) 2.0)
+                     kot)
+          mids (cons m mids))
+
+    ;; Enkesit cizgisi (alymana dik, Z = kot)
     (entmake (list '(0 . "LINE")
                    (cons 8 "ENKESIT")
                    (cons 10 e1)
@@ -227,6 +240,16 @@
                    (cons 73 2)))
     (setq n (1+ n)))
 
+  ;; --- Enkesitlerin tam orta noktalarindan gecen kotlu eksen (LINE) -------
+  (setq mids (reverse mids) prevm nil)
+  (foreach m mids
+    (if prevm
+      (entmake (list '(0 . "LINE")
+                     (cons 8 "KOT_EKSEN")
+                     (cons 10 prevm)
+                     (cons 11 m))))
+    (setq prevm m))
+
   ;; --- Ozet ----------------------------------------------------------------
   (princ (strcat "\n----------------------------------------"
                  "\n Toplam uzunluk : " (rtos plLen 2 3)
@@ -236,6 +259,7 @@
                  "\n Baslangic kotu : " (rtos startKot 2 decim)
                  "\n Bitis kotu     : " (rtos (+ startKot (* slope plLen)) 2 decim)
                  "\n Enkesit sayisi : " (itoa n)
+                 "\n Eksen parcasi  : " (itoa (max 0 (1- (length mids))))
                  (if revFlag "\n Yon            : TERS" "")
                  "\n----------------------------------------"))
   (princ "\nKOTLA tamamlandi.")

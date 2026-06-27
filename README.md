@@ -10,6 +10,10 @@ polyline'ın **o noktadaki yerel teğetine dik** birer **enkesit çizgisi** çiz
 Çizgiler, ilk seçilen **örnek (şablon) enkesit** çizgisi ile **aynı boyda** olur.
 Her enkesit çizgisinin ucuna, o noktanın olması gereken **kotu** yazılır.
 
+Enkesit çizgilerinin **Z koordinatı = hesaplanan kot**'tur (kotlu/3B, yatay). Tüm
+enkesitlerin **tam orta noktalarından** geçen, `Z=kot` olan bir **kotlu eksen**
+çizgisi (ardışık **LINE** parçaları) oluşturulur — yani alymanın 3B profili.
+
 ### Enkesit çizgisi
 
 - **Yön:** polyline'ın o noktadaki teğetine dik (yaylarda da yerel teğet).
@@ -44,13 +48,15 @@ kot    = başlangıç_kotu + eğim × mesafe
 
 ### Çıktı
 
-| Katman     | İçerik                           | Renk  |
-|------------|----------------------------------|-------|
-| `ENKESIT`  | Enkesit çizgileri (alymana dik)  | Yeşil |
-| `KOT_YAZI` | Kot yazıları (TEXT, orta hizalı) | Sarı  |
+| Katman      | İçerik                                   | Renk    |
+|-------------|------------------------------------------|---------|
+| `ENKESIT`   | Enkesit çizgileri (alymana dik, Z=kot)   | Yeşil   |
+| `KOT_YAZI`  | Kot yazıları (TEXT, orta hizalı)         | Sarı    |
+| `KOT_EKSEN` | Orta noktalardan geçen kotlu eksen (LINE)| Kırmızı |
 
 Katmanlar yoksa otomatik oluşturulur. İşlem sonunda toplam uzunluk, enkesit boyu
-(sol/sağ), eğim, başlangıç/bitiş kotu ve enkesit sayısı özeti yazdırılır.
+(sol/sağ), eğim, başlangıç/bitiş kotu, enkesit sayısı ve eksen parça sayısı
+özeti yazdırılır.
 
 ### Notlar
 

@@ -71,3 +71,25 @@ Katmanlar yoksa otomatik oluşturulur. İşlem sonunda toplam uzunluk, enkesit b
 - Örnek çizginin alymanı kesip kesmediği `IntersectWith` ile kontrol edilir;
   kesişim varsa sol/sağ uzunluklar ondan, yoksa simetrik alınır.
 - Yazı açısı enkesit çizgisi yönünde ve okunabilir (ters dönmeyecek) ayarlanır.
+
+## TEXT_TO_EXCEL_v19.lsp — Seçilen Yazıları Excel'e (CSV) Aktar
+
+Seçilen **TEXT / MTEXT** nesnelerini satır–sütun düzeninde bir `.csv` dosyasına
+yazıp Excel'de açan araç. Komut: **`TEXT2XL`**.
+
+### Kullanım
+
+1. `TEXT2XL` komutunu çalıştırın.
+2. Başlangıç **sütun sayısını** (1–12) girin.
+3. Yazıları sırayla seçin (tek tık veya pencere/çapraz seçim). Seçilen nesneler
+   geçici olarak **kırmızı** renk alır; komut bitince eski renklerine döner.
+4. Sütun sayısı dolunca satır otomatik tamamlanır. Ara aşamada **`E`** ile sütun
+   sayısını değiştirebilir, **ENTER** ile komutu bitirip Excel'i açabilirsiniz.
+
+### Notlar
+
+- MTEXT biçim kodları temizlenir; `;` ve `"` karakterleri boşluğa çevrilerek CSV
+  bozulması engellenir. Ayraç olarak **noktalı virgül (`;`)** kullanılır.
+- Dosya, çizimin bulunduğu klasöre `ACAD_LISTE_<tarih>_<saat>.csv` adıyla yazılır
+  ve bir VBScript aracılığıyla varsayılan uygulamada (Excel) açılır.
+- Windows'a özgüdür (`wscript` / `TEMP` ortam değişkeni kullanır).

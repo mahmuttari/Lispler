@@ -108,6 +108,13 @@
     (if (> (length row) mx) (setq mx (length row))))
   mx)
 
+;;; --- Grup sayisi icin Turkce ek (unlu uyumu): 9'lu, 3'lu, 6'li, 12'li ---
+(defun TTE:grpSuffix (n / tbl s)
+  (setq tbl '((1 . "li") (2 . "li") (3 . "lu") (4 . "lu")  (5 . "li")  (6 . "li")
+              (7 . "li") (8 . "li") (9 . "lu") (10 . "lu") (11 . "li") (12 . "li")))
+  (setq s (cdr (assoc n tbl)))
+  (if s s "li"))
+
 (defun TTE:openFile (filePath / vbsPath vbsFile)
   (setq vbsPath (strcat (getenv "TEMP") "\\acad_open.vbs"))
   (setq vbsFile (open vbsPath "w"))
@@ -231,8 +238,9 @@
                 (progn
                   (setq rows (append rows (list currentRow)))
                   (setq currentRow '())
-                  (princ (strcat "\n>>> Satir " (itoa (length rows))
-                                 " tamamlandi. [" (itoa colTarget) " sutun]")))))))))
+                  (princ (strcat "\n>>> " (itoa (length rows)) ". "
+                                 (itoa colTarget) "'" (TTE:grpSuffix colTarget)
+                                 " grup secildi.")))))))))
   )
 
   (if (> (length currentRow) 0)

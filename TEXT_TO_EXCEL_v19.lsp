@@ -257,5 +257,123 @@
   (setq *TTE:alreadySel* '())
   (TTE:writeAndOpen rows))
 
-(princ "\n>> TEXT2XL v19 yuklendi. Komut: TEXT2XL")
+
+;;; ============================================================
+;;; PARSEL2XL : Parsel imalat textlerini SABIT sutun duzenine yerlestirir
+;;; ------------------------------------------------------------
+;;; Bir parselin textlerini HANGI SIRAYLA secerseniz secin, her text
+;;; icerigindeki on eke gore hep AYNI sutuna gider. Bos sutunlar bos
+;;; kalir. Eslesmeyen textler satir sonuna eklenir.
+;;;
+;;; SUTUN SEMASI (duzenlemek icin P2X:matchCol icindeki cond'u degistirin):
+;;;    1 -> parsel/imalat no : SPB / BPB / EV ile baslar
+;;;    2 -> Z degeri         : "Z:" ile baslar   (ZK ile karismaz)
+;;;    3 -> A degeri         : "A:" ile baslar   (AK ile karismaz)
+;;;    4 -> EL...            : "EL" ile baslar
+;;;    5 -> YL...            : "YL" ile baslar
+;;;    6 -> AK...            : "AK" ile baslar
+;;;    7 -> ZK...            : "ZK" ile baslar
+;;;    8 -> boru capi        : "%%C" / Ø / "...BB"
+;;;    9 -> C-tipi no        : "C" ile baslar
+;;; ============================================================
+
+(setq *P2X:NCOL* 9)   ; toplam sabit sutun sayisi
+
+;;; --- s metni pre on eki ile mi basliyor? ---
+(defun P2X:starts (s pre)
+  (and (>= (strlen s) (strlen pre))
+       (= (substr s 1 (strlen pre)) pre)))
+
+;;; --- boru capi text'i mi? (Ø / %%C / ...BB) ---
+(defun P2X:isDia (s)
+  (or (vl-string-search "%%C" s)
+      (vl-string-search (chr 216) s)     ; Ø
+      (vl-string-search "BB" s)))
+
+;;; --- Bir text hangi sutuna gider? (yoksa nil) ---
+(defun P2X:matchCol (txt / s)
+  (setq s (strcase (vl-string-left-trim " " txt)))
+  (cond
+    ((P2X:starts s "ZK") 7)
+    ((P2X:starts s "AK") 6)
+    ((P2X:starts s "YL") 5)
+    ((P2X:starts s "EL") 4)
+    ((P2X:starts s "Z:") 2)
+    ((P2X:starts s "A:") 3)
+    ((or (P2X:starts s "SPB") (P2X:starts s "BPB") (P2X:starts s "EV")) 1)
+    ((P2X:isDia s) 8)
+    ((P2X:starts s "C") 9)
+    (t nil)))
+
+;;; --- n elemanli bos (nil) satir ---
+(defun P2X:emptyRow (n / r)
+  (setq r '())
+  (repeat n (setq r (cons nil r)))
+  r)
+
+;;; --- lst listesinde idx konumuna val yaz (yeni liste dondur) ---
+(defun P2X:setnth (lst idx val / i r)
+  (setq i 0 r '())
+  (foreach x lst
+    (setq r (cons (if (= i idx) val x) r))
+    (setq i (1+ i)))
+  (reverse r))
+
+;;; --- Secilen text listesinden sabit-duzenli satir kur ---
+(defun P2X:buildRow (items / row extra col idx)
+  (setq row (P2X:emptyRow *P2X:NCOL*) extra '())
+  (foreach txt items
+    (setq col (P2X:matchCol txt))
+    (if (and col (<= col *P2X:NCOL*))
+      (progn
+        (setq idx (1- col))
+        (if (nth idx row)
+          (setq extra (append extra (list txt)))    ; sutun dolu -> fazladan
+          (setq row (P2X:setnth row idx txt))))
+      (setq extra (append extra (list txt)))))       ; eslesmeyen -> sona
+  (append row extra))
+
+;;; ============================================================
+;;; ANA KOMUT: PARSEL2XL
+;;; ============================================================
+(defun c:PARSEL2XL (/ rows ss items row done label)
+  (vl-load-com)
+  (setq *TTE:alreadySel* '())
+  (setq *TTE:colorBackup* '())
+
+  (princ "\n============================================")
+  (princ "\n   PARSEL -> EXCEL (sabit sutun duzeni)")
+  (princ "\n--------------------------------------------")
+  (princ "\n  Her parselin textlerini topluca secin.")
+  (princ "\n  Sec sirasi onemsiz; text on ekine gore")
+  (princ "\n  1..9 sutunlara otomatik yerlesir.")
+  (princ "\n  ENTER (bos) : bitir, Excel'i ac")
+  (princ "\n============================================\n")
+
+  (setq rows '() done nil)
+  (while (not done)
+    (princ (strcat "\n[Parsel " (itoa (1+ (length rows)))
+                   "] textleri secin (ENTER=Bitir): "))
+    (setq ss (ssget '((0 . "TEXT,MTEXT"))))
+    (if (null ss)
+      (setq done t)
+      (progn
+        (setq items (TTE:ssToItems ss))
+        (if items
+          (progn
+            (setq row   (P2X:buildRow items)
+                  rows  (append rows (list row))
+                  label (if (car row) (car row) "?"))
+            (princ (strcat "\n>>> Parsel " (itoa (length rows))
+                           " (" label ") : " (itoa (length items))
+                           " text yerlestirildi.")))
+          (princ "\n  !! Uygun text yok, atlandi.")))))
+
+  (setq *TTE:alreadySel* '())
+  (if rows
+    (TTE:writeAndOpen rows)
+    (progn (TTE:restoreColors) (princ "\nSecim yapilmadi.") (princ))))
+
+
+(princ "\n>> Yuklendi. Komutlar: TEXT2XL  |  PARSEL2XL")
 (princ)

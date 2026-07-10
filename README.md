@@ -93,3 +93,28 @@ yazıp Excel'de açan araç. Komut: **`TEXT2XL`**.
 - Dosya, çizimin bulunduğu klasöre `ACAD_LISTE_<tarih>_<saat>.csv` adıyla yazılır
   ve bir VBScript aracılığıyla varsayılan uygulamada (Excel) açılır.
 - Windows'a özgüdür (`wscript` / `TEMP` ortam değişkeni kullanır).
+
+### PARSEL2XL — Parsel imalat textlerini sabit sütun düzenine yerleştir
+
+`TEXT2XL` ile aynı dosyadaki ikinci komut. Bir parselin (imalat) textlerini
+**hangi sırayla seçerseniz seçin**, her text **içeriğindeki ön eke göre** hep
+**aynı sütuna** gider; boş sütunlar boş kalır, eşleşmeyen textler satır sonuna
+eklenir. Her parsel bir satır olur.
+
+| Sütun | İçerik            | Anahtar (metnin başında)     |
+|------:|-------------------|------------------------------|
+| 1     | Parsel/imalat no  | `SPB` / `BPB` / `EV`         |
+| 2     | Z değeri          | `Z:`                         |
+| 3     | A değeri          | `A:`                         |
+| 4     | EL                | `EL`                         |
+| 5     | YL                | `YL`                         |
+| 6     | AK                | `AK`                         |
+| 7     | ZK                | `ZK`                         |
+| 8     | Boru çapı         | `%%C` / `Ø` / `…BB`          |
+| 9     | C-tipi no         | `C`                          |
+
+- `ZK`↔`Z:` ve `AK`↔`A:` iki nokta üst üste (`:`) ile ayrışır, karışmaz.
+- Sütun şeması `PARSEL2XL` içindeki `P2X:matchCol` fonksiyonundaki `cond` bloğundan
+  düzenlenebilir; toplam sütun sayısı `*P2X:NCOL*` değişkeninden ayarlanır.
+- Kullanım: `PARSEL2XL` → her parselin textlerini topluca seç → aralarda ENTER →
+  son ENTER'da CSV yazılır ve Excel'de açılır. Seçilenler geçici kırmızı olur.

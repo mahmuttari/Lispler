@@ -234,13 +234,18 @@
               (setq currentRow (append currentRow (list txt)))
               (princ (strcat "\n  + [" (itoa (length currentRow))
                              "/" (itoa colTarget) "] " txt))
-              (if (= (length currentRow) colTarget)
+              (if (>= (length currentRow) colTarget)
                 (progn
                   (setq rows (append rows (list currentRow)))
                   (setq currentRow '())
                   (princ (strcat "\n>>> " (itoa (length rows)) ". "
                                  (itoa colTarget) "'" (TTE:grpSuffix colTarget)
-                                 " grup secildi.")))))))))
+                                 " grup secildi.")))))
+            ;; Her secimden sonra: grup tamamlanmadiysa ilerleme bildir
+            (if (> (length currentRow) 0)
+              (princ (strcat "\n    (secili: " (itoa (length currentRow))
+                             "/" (itoa colTarget)
+                             " sutun; grup henuz tamamlanmadi)")))))))
   )
 
   (if (> (length currentRow) 0)

@@ -267,8 +267,8 @@
 ;;;
 ;;; SUTUN SEMASI (duzenlemek icin P2X:matchCol icindeki cond'u degistirin):
 ;;;    1 -> parsel/imalat no : SPB / BPB / EV ile baslar
-;;;    2 -> Z degeri         : "Z:" ile baslar   (ZK ile karismaz)
-;;;    3 -> A degeri         : "A:" ile baslar   (AK ile karismaz)
+;;;    2 -> A degeri         : "A:" ile baslar   (AK ile karismaz)
+;;;    3 -> Z degeri         : "Z:" ile baslar   (ZK ile karismaz)
 ;;;    4 -> EL...            : "EL" ile baslar
 ;;;    5 -> YL...            : "YL" ile baslar
 ;;;    6 -> AK...            : "AK" ile baslar
@@ -298,8 +298,8 @@
     ((P2X:starts s "AK") 6)
     ((P2X:starts s "YL") 5)
     ((P2X:starts s "EL") 4)
-    ((P2X:starts s "Z:") 2)
-    ((P2X:starts s "A:") 3)
+    ((P2X:starts s "A:") 2)
+    ((P2X:starts s "Z:") 3)
     ((or (P2X:starts s "SPB") (P2X:starts s "BPB") (P2X:starts s "EV")) 1)
     ((P2X:isDia s) 8)
     ((P2X:starts s "C") 9)

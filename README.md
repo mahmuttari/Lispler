@@ -104,8 +104,8 @@ eklenir. Her parsel bir satır olur.
 | Sütun | İçerik            | Anahtar (metnin başında)     |
 |------:|-------------------|------------------------------|
 | 1     | Parsel/imalat no  | `SPB` / `BPB` / `EV`         |
-| 2     | Z değeri          | `Z:`                         |
-| 3     | A değeri          | `A:`                         |
+| 2     | A değeri          | `A:`                         |
+| 3     | Z değeri          | `Z:`                         |
 | 4     | EL                | `EL`                         |
 | 5     | YL                | `YL`                         |
 | 6     | AK                | `AK`                         |

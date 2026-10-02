@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#f3f3f3">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Not Defteri</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root {
+  --bg: #f3f3f3;
+  --surface: #ffffff;
+  --text: #1b1b1b;
+  --muted: #5f5f5f;
+  --border: #d6d6d6;
+  --hover: #e5e5e5;
+  --accent: #0067c0;
+  --accent-text: #ffffff;
+  --run: #107c10;
+  --sel: #cce4f7;
+  --shadow: 0 8px 24px rgba(0,0,0,.18);
+  --ui-font: "Segoe UI", system-ui, -apple-system, Roboto, "Noto Sans", sans-serif;
+}
+:root[data-theme="dark"] {
+  --bg: #202020;
+  --surface: #272727;
+  --text: #f0f0f0;
+  --muted: #a8a8a8;
+  --border: #3d3d3d;
+  --hover: #383838;
+  --accent: #4cc2ff;
+  --accent-text: #000000;
+  --run: #6ccb5f;
+  --sel: #264f78;
+  --shadow: 0 8px 24px rgba(0,0,0,.5);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ui-font);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  padding-top: env(safe-area-inset-top);
+}
+button { font: inherit; color: inherit; }
+
+/* Başlık çubuğu */
+#titlebar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px 4px 12px; min-height: 42px;
+  font-size: 13px; color: var(--text);
+  white-space: nowrap; overflow: hidden;
+}
+#titlebar img { width: 18px; height: 18px; flex: none; }
+#title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* Menü çubuğu */
+#menubar {
+  display: flex; align-items: center; gap: 2px;
+  padding: 0 6px 4px; position: relative;
+  overflow-x: auto; scrollbar-width: none;
+}
+#menubar::-webkit-scrollbar { display: none; }
+.menu-btn {
+  background: none; border: 0; border-radius: 5px;
+  padding: 6px 9px; cursor: pointer; white-space: nowrap;
+}
+.menu-btn:hover, .menu-btn.open { background: var(--hover); }
+#runBtn {
+  flex: none; display: flex; align-items: center; gap: 6px;
+  background: var(--run); color: #fff; border: 0; border-radius: 5px;
+  padding: 6px 12px; cursor: pointer; font-weight: 600; white-space: nowrap;
+}
+:root[data-theme="dark"] #runBtn { color: #000; }
+#runBtn svg { width: 12px; height: 12px; fill: currentColor; }
+
+.dropdown {
+  position: fixed; z-index: 50; min-width: 250px; max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 100px); overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: var(--shadow); padding: 4px; display: none;
+}
+.dropdown.show { display: block; }
+.dropdown button {
+  display: flex; width: 100%; align-items: center; gap: 10px;
+  background: none; border: 0; border-radius: 4px; text-align: left;
+  padding: 9px 10px; cursor: pointer;
+}
+.dropdown button:hover { background: var(--hover); }
+.dropdown button:disabled { opacity: .45; cursor: default; background: none; }
+.dropdown .chk { width: 14px; flex: none; text-align: center; }
+.dropdown .lbl { flex: 1; }
+.dropdown .key { color: var(--muted); font-size: 12px; }
+.dropdown hr { border: 0; border-top: 1px solid var(--border); margin: 4px 6px; }
+
+/* Bul / Değiştir */
+#findbar {
+  display: none; flex-wrap: wrap; gap: 6px; align-items: center;
+  padding: 6px 10px; background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+#findbar.show { display: flex; }
+#findbar .row { display: flex; gap: 6px; align-items: center; width: 100%; }
+#findbar input[type=text] {
+  flex: 1; min-width: 0; padding: 6px 8px; border: 1px solid var(--border);
+  border-radius: 4px; background: var(--bg); color: var(--text); font: inherit;
+}
+#findbar input[type=text]:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.btn {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+  padding: 6px 10px; cursor: pointer; white-space: nowrap;
+}
+.btn:hover { background: var(--hover); }
+.btn.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.btn.danger { color: #c42b1c; }
+.btn.small { padding: 4px 8px; font-size: 13px; }
+#findbar label { display: flex; gap: 4px; align-items: center; font-size: 13px; white-space: nowrap; }
+#replaceRow { display: none; }
+#findbar.replace #replaceRow { display: flex; }
+
+/* Editör */
+#editorWrap { flex: 1; min-height: 0; display: flex; background: var(--surface); border-top: 1px solid var(--border); }
+#editor {
+  flex: 1; width: 100%; height: 100%; resize: none; border: 0; outline: 0;
+  padding: 8px 10px; background: var(--surface); color: var(--text);
+  font-family: Consolas, "Cascadia Mono", "Roboto Mono", "DejaVu Sans Mono", monospace;
+  font-size: 15px; line-height: 1.4; tab-size: 4; -moz-tab-size: 4;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+#editor[wrap=off] { white-space: pre; overflow-wrap: normal; overflow-x: auto; }
+#editor::selection { background: var(--sel); }
+
+/* Sembol çubuğu */
+#symbar {
+  display: none; gap: 4px; padding: 4px 6px; overflow-x: auto;
+  background: var(--bg); border-top: 1px solid var(--border); scrollbar-width: none;
+}
+#symbar.show { display: flex; }
+#symbar::-webkit-scrollbar { display: none; }
+#symbar button {
+  flex: none; min-width: 38px; height: 36px; padding: 0 8px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 5px;
+  font-family: Consolas, "Roboto Mono", monospace; font-size: 16px; cursor: pointer;
+}
+#symbar button.wide { font-family: var(--ui-font); font-size: 13px; }
+#symbar button:active { background: var(--hover); }
+
+/* Durum çubuğu */
+#statusbar {
+  display: flex; font-size: 12px; color: var(--muted);
+  border-top: 1px solid var(--border); background: var(--bg);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+#statusbar.hide { display: none; }
+#statusbar span { padding: 4px 12px; white-space: nowrap; }
+#statusbar span + span { border-left: 1px solid var(--border); }
+#statusbar .grow { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+
+/* Pencereler */
+#modalLayer {
+  position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,.35);
+  display: none; align-items: center; justify-content: center; padding: 16px;
+}
+#modalLayer.show { display: flex; }
+.modal {
+  background: var(--surface); color: var(--text); border-radius: 8px;
+  box-shadow: var(--shadow); width: 100%; max-width: 440px;
+  max-height: calc(100dvh - 32px); display: flex; flex-direction: column;
+  border: 1px solid var(--border);
+}
+.modal h2 { font-size: 15px; font-weight: 600; margin: 0; padding: 14px 16px 6px; }
+.modal .body { padding: 6px 16px 12px; overflow-y: auto; }
+.modal .body p { margin: 6px 0; line-height: 1.45; }
+.modal .foot {
+  display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap;
+  padding: 12px 16px; background: var(--bg); border-top: 1px solid var(--border);
+  border-radius: 0 0 8px 8px;
+}
+.field { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
+.field label { font-size: 13px; color: var(--muted); }
+.field input, .field select {
+  padding: 8px; border: 1px solid var(--border); border-radius: 4px;
+  background: var(--bg); color: var(--text); font: inherit; width: 100%;
+}
+.field input:focus, .field select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.grid3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; }
+.preview {
+  border: 1px solid var(--border); border-radius: 4px; padding: 12px;
+  min-height: 60px; display: flex; align-items: center; justify-content: center;
+  overflow: hidden; white-space: nowrap;
+}
+.filelist { list-style: none; margin: 0; padding: 0; }
+.filelist li {
+  display: flex; align-items: center; gap: 6px; padding: 6px 4px;
+  border-bottom: 1px solid var(--border);
+}
+.filelist .open {
+  flex: 1; min-width: 0; text-align: left; background: none; border: 0;
+  padding: 6px 4px; cursor: pointer; border-radius: 4px;
+}
+.filelist .open:hover { background: var(--hover); }
+.filelist .name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.filelist .meta { display: block; font-size: 12px; color: var(--muted); }
+.filelist .run { color: var(--run); font-weight: 600; }
+.empty { color: var(--muted); text-align: center; padding: 20px 0; }
+.help h3 { font-size: 14px; margin: 14px 0 4px; }
+.help ul { margin: 4px 0; padding-left: 20px; line-height: 1.5; }
+.help code { background: var(--bg); padding: 1px 4px; border-radius: 3px; }
+
+/* Çalıştırma ekranı */
+#runView {
+  position: fixed; inset: 0; z-index: 90; background: var(--bg);
+  display: none; flex-direction: column;
+  padding-top: env(safe-area-inset-top);
+}
+#runView.show { display: flex; }
+#runHead {
+  display: flex; align-items: center; gap: 6px; padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}
+#runTitle { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; padding: 0 4px; }
+#runFrame { flex: 1; min-height: 0; width: 100%; border: 0; background: #fff; }
+#consolePane {
+  display: none; height: 35%; min-height: 100px; overflow-y: auto;
+  background: var(--surface); border-top: 1px solid var(--border);
+  font-family: Consolas, "Roboto Mono", monospace; font-size: 12.5px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+#consolePane.show { display: block; }
+#consolePane div { padding: 4px 10px; border-bottom: 1px solid var(--border); white-space: pre-wrap; word-break: break-word; }
+#consolePane .warn { background: rgba(255,200,0,.12); }
+#consolePane .error { background: rgba(232,17,35,.10); color: #e81123; }
+:root[data-theme="dark"] #consolePane .error { color: #ff99a4; }
+#consoleBtn .badge {
+  display: none; background: #e81123; color: #fff; border-radius: 9px;
+  padding: 0 6px; font-size: 11px; margin-left: 4px;
+}
+#consoleBtn .badge.show { display: inline-block; }
+
+/* Bildirim */
+#toast {
+  position: fixed; left: 50%; bottom: 70px; transform: translateX(-50%);
+  z-index: 100; background: #323232; color: #fff; border-radius: 6px;
+  padding: 10px 14px; display: none; align-items: center; gap: 14px;
+  box-shadow: var(--shadow); max-width: calc(100vw - 32px);
+}
+#toast.show { display: flex; }
+#toast button { background: none; border: 0; color: #8fd3ff; font-weight: 600; cursor: pointer; padding: 2px 4px; }
+
+#printArea { display: none; }
+@media print {
+  body > *:not(#printArea) { display: none !important; }
+  #printArea { display: block; white-space: pre-wrap; font-family: Consolas, monospace; font-size: 11pt; color: #000; }
+}
+</style>
+</head>
+<body>
+
+<div id="titlebar">
+  <img src="icon.svg" alt="">
+  <span id="title">Adsız - Not Defteri</span>
+  <button id="runBtn" title="HTML olarak çalıştır (Ctrl+R)">
+    <svg viewBox="0 0 10 10"><path d="M1 0 L10 5 L1 10 Z"/></svg>Çalıştır
+  </button>
+</div>
+
+<nav id="menubar">
+  <button class="menu-btn" data-menu="dosya">Dosya</button>
+  <button class="menu-btn" data-menu="duzen">Düzen</button>
+  <button class="menu-btn" data-menu="bicim">Biçim</button>
+  <button class="menu-btn" data-menu="gorunum">Görünüm</button>
+  <button class="menu-btn" data-menu="yardim">Yardım</button>
+</nav>
+<div id="dropdown" class="dropdown"></div>
+
+<div id="findbar">
+  <div class="row">
+    <input type="text" id="findInput" placeholder="Bul" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <button class="btn small" id="findPrev" title="Öncekini bul (Shift+F3)">↑</button>
+    <button class="btn small" id="findNext" title="Sonrakini bul (F3)">↓</button>
+    <button class="btn small" id="toggleReplace" title="Değiştir (Ctrl+H)">⇄</button>
+    <button class="btn small" id="findClose" title="Kapat">✕</button>
+  </div>
+  <div class="row" id="replaceRow">
+    <input type="text" id="replaceInput" placeholder="Değiştir" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <button class="btn small" id="replaceOne">Değiştir</button>
+    <button class="btn small" id="replaceAll">Tümü</button>
+  </div>
+  <div class="row">
+    <label><input type="checkbox" id="matchCase"> Büyük/küçük harf eşleştir</label>
+    <label><input type="checkbox" id="wrapAround" checked> Başa sar</label>
+  </div>
+</div>
+
+<div id="editorWrap">
+  <textarea id="editor" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-label="Metin"></textarea>
+</div>
+
+<div id="symbar"></div>
+
+<div id="statusbar">
+  <span class="grow" id="stPos">Satır 1, Sütun 1</span>
+  <span id="stZoom">%100</span>
+  <span id="stEol">LF</span>
+  <span id="stEnc">UTF-8</span>
+</div>
+
+<div id="modalLayer"></div>
+
+<div id="runView">
+  <div id="runHead">
+    <button class="btn small" id="runClose" title="Kapat">✕ Kapat</button>
+    <span id="runTitle"></span>
+    <button class="btn small" id="runReload" title="Yeniden çalıştır">⟳</button>
+    <button class="btn small" id="runExternal" title="Yeni sekmede aç">↗</button>
+    <button class="btn small" id="consoleBtn">Konsol<span class="badge" id="consoleBadge">0</span></button>
+  </div>
+  <iframe id="runFrame" title="Önizleme"></iframe>
+  <div id="consolePane"></div>
+</div>
+
+<div id="toast"><span id="toastMsg"></span><button id="toastAct"></button></div>
+<pre id="printArea"></pre>
+
+<script>
+(function () {
+'use strict';
+
+/* ---------- Yardımcılar ---------- */
+const $ = (id) => document.getElementById(id);
+const ed = $('editor');
+const native = window.NativeApp || null;   // Android köprüsü (varsa)
+const isWeb = !native;
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+};
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const ext = (name) => { const m = /\.([^.\/]+)$/.exec(name || ''); return m ? m[1].toLowerCase() : ''; };
+const isHtmlName = (n) => ['html', 'htm', 'xhtml', 'svg'].includes(ext(n));
+const looksHtml = (t) => /<!doctype html|<html[\s>]|<body[\s>]|<head[\s>]|<div[\s>]|<script[\s>]/i.test(t);
+const fmtSize = (n) => n < 1024 ? n + ' B' : (n / 1024).toFixed(1) + ' KB';
+const fmtDate = (ts) => new Date(ts).toLocaleString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+/* ---------- Ayarlar ---------- */
+const settings = Object.assign({
+  wordWrap: true, fontFamily: 'Consolas, "Cascadia Mono", "Roboto Mono", "DejaVu Sans Mono", monospace',
+  fontSize: 15, fontWeight: 'normal', fontStyle: 'normal', zoom: 100,
+  statusBar: true, symbolBar: !!('ontouchstart' in window), theme: null
+}, LS.get('nd.settings', {}));
+function saveSettings() { LS.set('nd.settings', settings); }
+
+function applySettings() {
+  ed.setAttribute('wrap', settings.wordWrap ? 'soft' : 'off');
+  ed.style.fontFamily = settings.fontFamily;
+  ed.style.fontWeight = settings.fontWeight;
+  ed.style.fontStyle = settings.fontStyle;
+  ed.style.fontSize = (settings.fontSize * settings.zoom / 100) + 'px';
+  $('stZoom').textContent = '%' + settings.zoom;
+  $('statusbar').classList.toggle('hide', !settings.statusBar);
+  $('symbar').classList.toggle('show', settings.symbolBar);
+  const dark = settings.theme ? settings.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  const bg = dark ? '#202020' : '#f3f3f3';
+  document.querySelector('meta[name=theme-color]').content = bg;
+  if (native && native.setBarColor) try { native.setBarColor(bg, dark); } catch (e) {}
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applySettings);
+
+/* ---------- Uygulama içi dosyalar ---------- */
+const Files = {
+  all() { return LS.get('nd.files', {}); },
+  get(name) { return this.all()[name] || null; },
+  put(name, content) {
+    const all = this.all();
+    all[name] = { content, modified: Date.now() };
+    return LS.set('nd.files', all);
+  },
+  remove(name) { const all = this.all(); delete all[name]; LS.set('nd.files', all); }
+};
+
+/* ---------- Belge durumu ---------- */
+// source: null (kaydedilmemiş) | 'app' (uygulama içi) | 'device' (Android dosyası) | 'download' (tarayıcı indirmesi)
+let doc = { name: null, source: null, uri: null };
+let savedText = '';
+let dirty = false;
+
+function setDirty(d) { dirty = d; updateTitle(); }
+function updateTitle() {
+  const t = (dirty ? '*' : '') + (doc.name || 'Adsız') + ' - Not Defteri';
+  $('title').textContent = t;
+  document.title = t;
+}
+function setText(text, keepHistory) {
+  ed.value = text;
+  ed.setSelectionRange(0, 0);
+  ed.scrollTop = 0;
+  if (!keepHistory) resetHistory();
+  updateStatus();
+}
+function loadDocument(name, text, source, uri) {
+  doc = { name, source, uri: uri || null };
+  savedText = text;
+  setText(text);
+  setDirty(false);
+  saveDraft();
+}
+
+/* Taslak: uygulama kapanınca kaldığın yerden devam */
+let draftTimer = 0;
+function saveDraft() {
+  LS.set('nd.draft', { text: ed.value, doc, savedText: dirty ? savedText : null, dirty, sel: ed.selectionStart });
+}
+function scheduleDraft() { clearTimeout(draftTimer); draftTimer = setTimeout(saveDraft, 400); }
+function restoreDraft() {
+  const d = LS.get('nd.draft', null);
+  if (!d) return;
+  doc = d.doc || doc;
+  savedText = d.dirty ? (d.savedText || '') : d.text;
+  setText(d.text || '');
+  try { ed.setSelectionRange(d.sel || 0, d.sel || 0); } catch (e) {}
+  setDirty(!!d.dirty);
+}
+
+/* ---------- Geri al / Yinele ---------- */
+let hist = [], hIdx = -1, lastTyping = 0;
+function snap() { return { v: ed.value, s: ed.selectionStart, e: ed.selectionEnd }; }
+function resetHistory() { hist = [snap()]; hIdx = 0; lastTyping = 0; }
+function pushHistory(grouped) {
+  const now = Date.now();
+  if (grouped && now - lastTyping < 800 && hIdx > 0) {
+    hist[hIdx] = snap();
+  } else {
+    hist = hist.slice(0, hIdx + 1);
+    hist.push(snap());
+    if (hist.length > 300) hist.shift();
+    hIdx = hist.length - 1;
+  }
+  lastTyping = grouped ? now : 0;
+}
+function restore(st) {
+  ed.value = st.v;
+  ed.setSelectionRange(st.s, st.e);
+  afterChange(false);
+}
+function undo() { if (hIdx > 0) { hIdx--; restore(hist[hIdx]); lastTyping = 0; } }
+function redo() { if (hIdx < hist.length - 1) { hIdx++; restore(hist[hIdx]); lastTyping = 0; } }
+
+function afterChange(record) {
+  if (record) pushHistory(false);
+  setDirty(ed.value !== savedText);
+  updateStatus();
+  scheduleDraft();
+}
+ed.addEventListener('input', () => {
+  pushHistory(true);
+  setDirty(ed.value !== savedText);
+  updateStatus();
+  scheduleDraft();
+});
+
+/* Metin ekleme (seçimi değiştirir) */
+function insertText(str, selectInserted) {
+  const s = ed.selectionStart, e = ed.selectionEnd;
+  ed.value = ed.value.slice(0, s) + str + ed.value.slice(e);
+  if (selectInserted) ed.setSelectionRange(s, s + str.length);
+  else ed.setSelectionRange(s + str.length, s + str.length);
+  afterChange(true);
+}
+
+/* ---------- Durum çubuğu ---------- */
+function updateStatus() {
+  const pos = ed.selectionStart, v = ed.value;
+  let line = 1;
+  for (let i = 0; i < pos; i++) if (v.charCodeAt(i) === 10) line++;
+  const col = pos - v.lastIndexOf('\n', pos - 1);
+  const selLen = ed.selectionEnd - ed.selectionStart;
+  $('stPos').textContent = 'Satır ' + line + ', Sütun ' + col + (selLen ? '  (' + selLen + ' karakter seçili)' : '');
+  $('stEol').textContent = v.includes('\r\n') ? 'Windows (CRLF)' : 'Unix (LF)';
+}
+document.addEventListener('selectionchange', () => { if (document.activeElement === ed) updateStatus(); });
+ed.addEventListener('keyup', updateStatus);
+ed.addEventListener('click', updateStatus);
+
+/* İmleci görünür alana kaydır */
+const mirror = document.createElement('div');
+mirror.style.cssText = 'position:absolute;visibility:hidden;top:0;left:-9999px;overflow:hidden;';
+document.body.appendChild(mirror);
+function scrollToPos(pos) {
+  const cs = getComputedStyle(ed);
+  ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'letterSpacing', 'paddingTop', 'paddingLeft',
+   'paddingRight', 'whiteSpace', 'overflowWrap', 'tabSize'].forEach((p) => { mirror.style[p] = cs[p]; });
+  mirror.style.boxSizing = 'border-box';
+  mirror.style.width = ed.clientWidth + 'px';
+  mirror.textContent = ed.value.slice(0, pos);
+  const mark = document.createElement('span');
+  mark.textContent = '​';
+  mirror.appendChild(mark);
+  const top = mark.offsetTop, left = mark.offsetLeft;
+  const lh = parseFloat(cs.lineHeight) || 20;
+  if (top < ed.scrollTop || top + lh > ed.scrollTop + ed.clientHeight) ed.scrollTop = Math.max(0, top - ed.clientHeight / 3);
+  if (!settings.wordWrap) {
+    if (left < ed.scrollLeft || left > ed.scrollLeft + ed.clientWidth - 20) ed.scrollLeft = Math.max(0, left - ed.clientWidth / 2);
+  }
+}
+let findFocus = false;   // Bul ile editöre geçildiyse Enter "sonrakini bul" gibi davranır
+function selectRange(s, e) {
+  ed.focus({ preventScroll: true });
+  ed.setSelectionRange(s, e);
+  scrollToPos(s);
+  updateStatus();
+}
+
+/* ---------- Pano ---------- */
+async function clipWrite(t) {
+  if (native) { native.setClipboard(t); return; }
+  try { await navigator.clipboard.writeText(t); }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); ta.remove(); ed.focus();
+  }
+}
+async function clipRead() {
+  if (native) return native.getClipboard() || '';
+  try { return await navigator.clipboard.readText(); }
+  catch (e) { toast('Pano okunamadı. Uzun basıp "Yapıştır" kullanın.'); return null; }
+}
+
+/* ---------- Bildirim ---------- */
+let toastTimer = 0;
+function toast(msg, actLabel, act) {
+  $('toastMsg').textContent = msg;
+  const b = $('toastAct');
+  b.style.display = actLabel ? '' : 'none';
+  b.textContent = actLabel || '';
+  b.onclick = () => { hideToast(); act && act(); };
+  $('toast').classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, actLabel ? 5000 : 2500);
+}
+function hideToast() { $('toast').classList.remove('show'); }
+
+/* ---------- Pencere (modal) sistemi ---------- */
+let modalResolve = null;
+function modal({ title, body, buttons, onOpen, wide }) {
+  closeMenu();
+  return new Promise((resolve) => {
+    const layer = $('modalLayer');
+    layer.innerHTML = '';
+    const box = document.createElement('div');
+    box.className = 'modal';
+    if (wide) box.style.maxWidth = '560px';
+    box.innerHTML = '<h2>' + esc(title) + '</h2><div class="body"></div><div class="foot"></div>';
+    const bodyEl = box.querySelector('.body');
+    if (typeof body === 'string') bodyEl.innerHTML = body; else if (body) bodyEl.appendChild(body);
+    const foot = box.querySelector('.foot');
+    (buttons || [{ label: 'Tamam', value: true, primary: true }]).forEach((b) => {
+      const el = document.createElement('button');
+      el.className = 'btn' + (b.primary ? ' primary' : '');
+      el.textContent = b.label;
+      el.onclick = () => {
+        const v = typeof b.value === 'function' ? b.value(box) : b.value;
+        if (v === undefined) return;   // doğrulama başarısız: açık kalsın
+        closeModal(v);
+      };
+      foot.appendChild(el);
+    });
+    layer.appendChild(box);
+    layer.classList.add('show');
+    modalResolve = resolve;
+    box.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+        e.preventDefault();
+        const p = foot.querySelector('.primary'); if (p) p.click();
+      }
+    });
+    if (onOpen) onOpen(box);
+  });
+}
+function closeModal(v) {
+  const layer = $('modalLayer');
+  if (!layer.classList.contains('show')) return;
+  layer.classList.remove('show');
+  layer.innerHTML = '';
+  const r = modalResolve; modalResolve = null;
+  if (r) r(v === undefined ? null : v);
+}
+$('modalLayer').addEventListener('mousedown', (e) => { if (e.target === $('modalLayer')) closeModal(null); });
+const isModalOpen = () => $('modalLayer').classList.contains('show');
+
+/* ---------- Android köprüsü (asenkron çağrılar) ---------- */
+const pending = {};
+let cbSeq = 0;
+window.__nativeCb = function (id, result) {
+  const p = pending[id]; delete pending[id];
+  if (p) p(result);
+};
+function nativeCall(method, ...args) {
+  return new Promise((resolve) => {
+    const id = 'c' + (++cbSeq);
+    pending[id] = resolve;
+    native[method](id, ...args);
+  });
+}
+
+/* ---------- Dosya komutları ---------- */
+async function confirmDiscard() {
+  if (!dirty) return true;
+  const r = await modal({
+    title: 'Not Defteri',
+    body: '<p>' + esc(doc.name || 'Adsız') + ' dosyasındaki değişiklikleri kaydetmek istiyor musunuz?</p>',
+    buttons: [{ label: 'Kaydet', value: 'save', primary: true }, { label: 'Kaydetme', value: 'no' }, { label: 'İptal', value: null }]
+  });
+  if (r === 'save') return await cmdSave();
+  return r === 'no';
+}
+
+async function cmdNew() {
+  if (!(await confirmDiscard())) return;
+  loadDocument(null, '', null);
+  ed.focus();
+}
+
+const HTML_TEMPLATE = `<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sayfam</title>
+  <style>
+    body { font-family: sans-serif; margin: 24px; }
+    h1 { color: #0067c0; }
+  </style>
+</head>
+<body>
+  <h1>Merhaba Dünya!</h1>
+  <p>Bu sayfayı düzenle ve <b>Çalıştır</b>'a bas.</p>
+  <button onclick="alert('Selam!')">Tıkla</button>
+
+  <script>
+    console.log('Sayfa yüklendi');
+  </scr` + `ipt>
+</body>
+</html>
+`;
+async function cmdNewHtml() {
+  if (!(await confirmDiscard())) return;
+  loadDocument(null, '', null);
+  ed.value = HTML_TEMPLATE;
+  ed.setSelectionRange(0, 0);
+  afterChange(true);
+  savedText = '';
+  setDirty(true);
+}
+
+async function cmdOpen() {
+  if (!(await confirmDiscard())) return;
+  const files = Files.all();
+  const names = Object.keys(files).sort((a, b) => files[b].modified - files[a].modified);
+  const wrap = document.createElement('div');
+  const top = document.createElement('div');
+  top.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;';
+  top.innerHTML = '<button class="btn" id="mDevice">📱 Cihazdan aç...</button>';
+  wrap.appendChild(top);
+  if (!names.length) {
+    wrap.insertAdjacentHTML('beforeend', '<div class="empty">Uygulamada kayıtlı dosya yok.<br>Kaydettiğiniz dosyalar burada listelenir.</div>');
+  } else {
+    const ul = document.createElement('ul');
+    ul.className = 'filelist';
+    names.forEach((n) => {
+      const f = files[n];
+      const li = document.createElement('li');
+      li.innerHTML = '<button class="open"><span class="name"></span><span class="meta"></span></button>' +
+        (isHtmlName(n) ? '<button class="btn small run" title="Çalıştır">▶</button>' : '') +
+        '<button class="btn small danger del" title="Sil">🗑</button>';
+      li.querySelector('.name').textContent = n;
+      li.querySelector('.meta').textContent = fmtDate(f.modified) + ' · ' + fmtSize(new Blob([f.content]).size);
+      li.querySelector('.open').onclick = () => closeModal({ open: n });
+      const rb = li.querySelector('.run');
+      if (rb) rb.onclick = () => closeModal({ run: n });
+      li.querySelector('.del').onclick = async () => {
+        const ok = confirm('"' + n + '" silinsin mi?');
+        if (!ok) return;
+        Files.remove(n);
+        li.remove();
+        if (doc.source === 'app' && doc.name === n) { doc.source = null; savedText = ''; setDirty(true); }
+      };
+      ul.appendChild(li);
+    });
+    wrap.appendChild(ul);
+  }
+  const r = await modal({
+    title: 'Aç', body: wrap, wide: true,
+    buttons: [{ label: 'İptal', value: null }],
+    onOpen: (box) => { box.querySelector('#mDevice').onclick = () => closeModal({ device: true }); }
+  });
+  if (!r) return;
+  if (r.device) return openFromDevice(true);
+  const name = r.open || r.run;
+  const f = Files.get(name);
+  if (!f) return;
+  loadDocument(name, f.content, 'app');
+  if (r.run) cmdRun();
+}
+
+async function openFromDevice(skipConfirm) {
+  if (!skipConfirm && !(await confirmDiscard())) return;
+  if (native) {
+    const res = await nativeCall('openFile');
+    if (!res) return;
+    if (res.error) { toast('Açılamadı: ' + res.error); return; }
+    loadDocument(res.name, res.content, 'device', res.uri);
+    toast('"' + res.name + '" açıldı');
+    return;
+  }
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = '.txt,.html,.htm,.css,.js,.json,.md,.xml,.svg,.csv,text/*';
+  inp.onchange = async () => {
+    const file = inp.files[0];
+    if (!file) return;
+    const text = await file.text();
+    loadDocument(file.name, text, 'download');
+  };
+  inp.click();
+}
+
+async function cmdSave() {
+  if (doc.source === 'app' && doc.name) return saveToApp(doc.name);
+  if (doc.source === 'device' && doc.uri && native) {
+    const res = await nativeCall('writeFile', doc.uri, ed.value);
+    if (res && res.ok) { markSaved(); return true; }
+    toast('Kaydedilemedi: ' + ((res && res.error) || 'bilinmeyen hata'));
+    return cmdSaveAs();
+  }
+  if (doc.source === 'download' && doc.name) { download(doc.name, ed.value); markSaved(); return true; }
+  return cmdSaveAs();
+}
+
+function defaultName() {
+  if (doc.name) return doc.name;
+  return looksHtml(ed.value) ? 'sayfa.html' : 'Adsız.txt';
+}
+
+async function cmdSaveAs() {
+  const body = document.createElement('div');
+  body.innerHTML =
+    '<div class="field"><label for="fName">Dosya adı</label><input id="fName" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"></div>' +
+    '<p style="font-size:13px;color:var(--muted)">HTML olarak çalıştırmak için adı <b>.html</b> ile bitirin (ör. <code>sayfam.html</code>).</p>';
+  const getName = (box) => {
+    let n = box.querySelector('#fName').value.trim().replace(/[\\/:*?"<>|]/g, '_');
+    if (!n) { box.querySelector('#fName').focus(); return undefined; }
+    if (!/\.[^.]+$/.test(n)) n += '.txt';
+    return n;
+  };
+  const r = await modal({
+    title: 'Farklı Kaydet', body,
+    buttons: [
+      { label: 'İptal', value: null },
+      { label: native ? '📱 Cihaza kaydet' : '⬇ İndir', value: (box) => { const n = getName(box); return n && { device: n }; } },
+      { label: 'Kaydet', primary: true, value: (box) => { const n = getName(box); return n && { app: n }; } }
+    ],
+    onOpen: (box) => {
+      const inp = box.querySelector('#fName');
+      inp.value = defaultName();
+      setTimeout(() => {
+        inp.focus();
+        const dot = inp.value.lastIndexOf('.');
+        inp.setSelectionRange(0, dot > 0 ? dot : inp.value.length);
+      }, 50);
+    }
+  });
+  if (!r) return false;
+  if (r.app) {
+    if (Files.get(r.app) && !(doc.source === 'app' && doc.name === r.app)) {
+      const ok = await modal({
+        title: 'Farklı Kaydet Onayı',
+        body: '<p>' + esc(r.app) + ' zaten var.<br>Değiştirmek istiyor musunuz?</p>',
+        buttons: [{ label: 'Evet', value: true, primary: true }, { label: 'Hayır', value: null }]
+      });
+      if (!ok) return cmdSaveAs();
+    }
+    return saveToApp(r.app);
+  }
+  return saveToDevice(r.device);
+}
+
+function saveToApp(name) {
+  if (!Files.put(name, ed.value)) { toast('Kaydedilemedi: depolama alanı dolu olabilir.'); return false; }
+  doc = { name, source: 'app', uri: null };
+  markSaved();
+  afterSaveToast();
+  return true;
+}
+
+async function saveToDevice(name) {
+  if (native) {
+    const res = await nativeCall('saveFileAs', name, ed.value);
+    if (!res) return false;
+    if (res.error) { toast('Kaydedilemedi: ' + res.error); return false; }
+    doc = { name: res.name || name, source: 'device', uri: res.uri };
+    markSaved();
+    afterSaveToast();
+    return true;
+  }
+  download(name, ed.value);
+  doc = { name, source: 'download', uri: null };
+  markSaved();
+  afterSaveToast();
+  return true;
+}
+
+function afterSaveToast() {
+  if (isHtmlName(doc.name)) toast('"' + doc.name + '" kaydedildi', '▶ Çalıştır', cmdRun);
+  else toast('"' + doc.name + '" kaydedildi');
+}
+
+function markSaved() { savedText = ed.value; setDirty(false); saveDraft(); }
+
+function download(name, text) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+}
+
+async function cmdShare() {
+  const name = doc.name || 'Adsız.txt';
+  if (native) { native.share(name, ed.value); return; }
+  if (navigator.share) {
+    try { await navigator.share({ title: name, text: ed.value }); } catch (e) {}
+  } else toast('Paylaşım bu tarayıcıda desteklenmiyor');
+}
+
+function cmdPrint() {
+  $('printArea').textContent = ed.value;
+  window.print();
+}
+
+/* ---------- Çalıştır ---------- */
+const CONSOLE_HOOK = '<script>(function(){var P=parent;function f(x){try{if(x instanceof Error)return x.stack||String(x);if(x&&typeof x==="object")return JSON.stringify(x);return String(x)}catch(e){return String(x)}}function s(t,a){try{P.postMessage({__nd:1,t:t,m:Array.prototype.map.call(a,f).join(" ")},"*")}catch(e){}}["log","info","warn","error","debug"].forEach(function(k){var o=console[k];console[k]=function(){s(k,arguments);if(o)o.apply(console,arguments)}});addEventListener("error",function(e){s("error",[(e.message||"Hata")+(e.lineno?" (satır "+e.lineno+")":"")])});addEventListener("unhandledrejection",function(e){s("error",["Promise: "+f(e.reason)])})})();<\/script>';
+
+function buildRunnable(text, name) {
+  let html = text;
+  if (ext(name) === 'js') {
+    html = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body><script>\n' +
+      text.replace(/<\/script/gi, '<\\/script') + '\n<\/script></body></html>';
+  } else if (ext(name) === 'css') {
+    html = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>' + text + '</style></head><body><h1>Başlık</h1><p>Paragraf metni.</p><button>Düğme</button></body></html>';
+  }
+  // Uygulama içindeki .css / .js dosyalarına verilen bağlantıları satır içine al
+  const files = Files.all();
+  const lookup = (h) => {
+    const key = h.replace(/^\.\//, '').split(/[?#]/)[0];
+    if (doc.name === key) return ed.value;
+    return files[key] ? files[key].content : null;
+  };
+  html = html.replace(/<link\b[^>]*>/gi, (m) => {
+    if (!/rel\s*=\s*["']?stylesheet/i.test(m)) return m;
+    const h = /href\s*=\s*["']([^"']+)["']/i.exec(m);
+    const c = h && !/^(https?:)?\/\//i.test(h[1]) ? lookup(h[1]) : null;
+    return c != null ? '<style>' + c + '</style>' : m;
+  });
+  html = html.replace(/<script\b([^>]*?)\bsrc\s*=\s*["']([^"']+)["']([^>]*)>\s*<\/script>/gi, (m, a, h, b) => {
+    const c = !/^(https?:)?\/\//i.test(h) ? lookup(h) : null;
+    return c != null ? '<script' + a + b + '>' + c.replace(/<\/script/gi, '<\\/script') + '<\/script>' : m;
+  });
+  // Konsol kancasını satır numaraları kaymasın diye aynı satıra ekle
+  const dt = /^\s*<!doctype[^>]*>/i.exec(html);
+  if (dt) return dt[0] + CONSOLE_HOOK + html.slice(dt[0].length);
+  return CONSOLE_HOOK + html;
+}
+
+let consoleCount = 0;
+function runNow() {
+  const name = doc.name || 'Adsız';
+  $('consolePane').innerHTML = '';
+  consoleCount = 0;
+  $('consoleBadge').classList.remove('show');
+  const frame = $('runFrame');
+  const fresh = frame.cloneNode(false);
+  frame.replaceWith(fresh);
+  fresh.setAttribute('sandbox', 'allow-scripts allow-forms allow-modals allow-popups allow-same-origin allow-pointer-lock allow-downloads');
+  fresh.srcdoc = buildRunnable(ed.value, name);
+}
+function cmdRun() {
+  closeMenu();
+  if (!ed.value.trim()) { toast('Çalıştırılacak bir şey yok'); return; }
+  $('runTitle').textContent = '▶ ' + (doc.name || 'Adsız');
+  $('runView').classList.add('show');
+  $('consolePane').classList.remove('show');
+  ed.blur();
+  runNow();
+}
+function closeRun() {
+  $('runView').classList.remove('show');
+  const f = $('runFrame');
+  f.removeAttribute('srcdoc');
+  f.src = 'about:blank';
+}
+window.addEventListener('message', (e) => {
+  const d = e.data;
+  if (!d || d.__nd !== 1 || e.source !== $('runFrame').contentWindow) return;
+  const row = document.createElement('div');
+  row.className = d.t;
+  row.textContent = (d.t === 'error' ? '✖ ' : d.t === 'warn' ? '⚠ ' : '› ') + d.m;
+  $('consolePane').appendChild(row);
+  $('consolePane').scrollTop = 1e9;
+  consoleCount++;
+  const badge = $('consoleBadge');
+  badge.textContent = consoleCount;
+  badge.classList.add('show');
+  if (d.t === 'error') $('consolePane').classList.add('show');
+});
+$('runBtn').onclick = cmdRun;
+$('runClose').onclick = closeRun;
+$('runReload').onclick = runNow;
+$('consoleBtn').onclick = () => $('consolePane').classList.toggle('show');
+if (native) $('runExternal').style.display = 'none';
+$('runExternal').onclick = () => {
+  const url = URL.createObjectURL(new Blob([buildRunnable(ed.value, doc.name)], { type: 'text/html;charset=utf-8' }));
+  window.open(url, '_blank');
+};
+
+/* ---------- Düzen komutları ---------- */
+function selected() { return ed.value.slice(ed.selectionStart, ed.selectionEnd); }
+async function cmdCut() { const t = selected(); if (!t) return; await clipWrite(t); insertText(''); ed.focus(); }
+async function cmdCopy() { const t = selected(); if (!t) return; await clipWrite(t); toast('Kopyalandı'); }
+async function cmdPaste() { const t = await clipRead(); if (t) { insertText(t); ed.focus(); } }
+function cmdDelete() {
+  if (ed.selectionStart === ed.selectionEnd) ed.setSelectionRange(ed.selectionStart, ed.selectionStart + 1);
+  insertText('');
+}
+function cmdSelectAll() { ed.focus(); ed.setSelectionRange(0, ed.value.length); updateStatus(); }
+function cmdDateTime() {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, '0');
+  insertText(p(d.getHours()) + ':' + p(d.getMinutes()) + ' ' + p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear());
+  ed.focus();
+}
+
+async function cmdGoTo() {
+  const total = ed.value.split('\n').length;
+  const r = await modal({
+    title: 'Satıra Git',
+    body: '<div class="field"><label for="gLine">Satır numarası (1 - ' + total + ')</label><input id="gLine" type="number" inputmode="numeric" min="1" max="' + total + '"></div>',
+    buttons: [{ label: 'İptal', value: null }, {
+      label: 'Git', primary: true, value: (box) => {
+        const n = parseInt(box.querySelector('#gLine').value, 10);
+        if (!(n >= 1 && n <= total)) { alert('Satır numarası toplam satır sayısının ötesinde'); return undefined; }
+        return n;
+      }
+    }],
+    onOpen: (box) => { const i = box.querySelector('#gLine'); i.value = currentLine(); setTimeout(() => { i.focus(); i.select(); }, 50); }
+  });
+  if (!r) return;
+  let pos = 0;
+  for (let i = 1; i < r; i++) pos = ed.value.indexOf('\n', pos) + 1;
+  selectRange(pos, pos);
+}
+function currentLine() { return ed.value.slice(0, ed.selectionStart).split('\n').length; }
+
+/* ---------- Bul / Değiştir ---------- */
+function openFind(replace) {
+  closeMenu();
+  const fb = $('findbar');
+  fb.classList.add('show');
+  fb.classList.toggle('replace', !!replace);
+  const sel = selected();
+  if (sel && !sel.includes('\n')) $('findInput').value = sel;
+  $('findInput').focus();
+  $('findInput').select();
+}
+function closeFind() { $('findbar').classList.remove('show'); ed.focus(); }
+function norm(s) { return $('matchCase').checked ? s : s.toLocaleLowerCase('tr'); }
+function findNext(dir) {
+  const q = $('findInput').value;
+  if (!q) { openFind($('findbar').classList.contains('replace')); return false; }
+  const T = norm(ed.value), Q = norm(q), wrap = $('wrapAround').checked;
+  let i;
+  if (dir < 0) {
+    i = T.slice(0, ed.selectionStart).lastIndexOf(Q);
+    if (i < 0 && wrap) i = T.lastIndexOf(Q);
+  } else {
+    i = T.indexOf(Q, ed.selectionEnd);
+    if (i < 0 && wrap) i = T.indexOf(Q);
+  }
+  if (i < 0) { toast('"' + q + '" bulunamadı'); return false; }
+  selectRange(i, i + q.length);
+  findFocus = true;
+  return true;
+}
+function replaceOne() {
+  const q = $('findInput').value;
+  if (!q) return;
+  if (norm(selected()) === norm(q)) insertText($('replaceInput').value);
+  findNext(1);
+}
+function replaceAll() {
+  const q = $('findInput').value;
+  if (!q) return;
+  const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g' + ($('matchCase').checked ? '' : 'i'));
+  const rep = $('replaceInput').value;
+  let n = 0;
+  const v = ed.value.replace(re, () => { n++; return rep; });
+  if (!n) { toast('"' + q + '" bulunamadı'); return; }
+  ed.value = v;
+  ed.setSelectionRange(0, 0);
+  afterChange(true);
+  toast(n + ' yerde değiştirildi');
+}
+// Butonlar odağı editörden çalmasın (seçim görünür kalsın)
+['findPrev', 'findNext', 'replaceOne', 'replaceAll', 'findClose', 'toggleReplace'].forEach((id) => {
+  $(id).addEventListener('mousedown', (e) => e.preventDefault());
+});
+$('findNext').onclick = () => findNext(1);
+$('findPrev').onclick = () => findNext(-1);
+$('replaceOne').onclick = replaceOne;
+$('replaceAll').onclick = replaceAll;
+$('findClose').onclick = closeFind;
+$('toggleReplace').onclick = () => $('findbar').classList.toggle('replace');
+$('findInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); findNext(e.shiftKey ? -1 : 1); }
+  if (e.key === 'Escape') closeFind();
+});
+$('replaceInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); replaceOne(); }
+  if (e.key === 'Escape') closeFind();
+});
+
+/* ---------- Biçim / Görünüm ---------- */
+function toggleSetting(k) { settings[k] = !settings[k]; saveSettings(); applySettings(); }
+function setZoom(z) { settings.zoom = Math.max(10, Math.min(500, z)); saveSettings(); applySettings(); }
+function toggleTheme() {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  settings.theme = dark ? 'light' : 'dark';
+  saveSettings(); applySettings();
+}
+
+async function cmdFont() {
+  const families = [
+    ['Consolas (eş aralıklı)', 'Consolas, "Cascadia Mono", "Roboto Mono", "DejaVu Sans Mono", monospace'],
+    ['Courier New', '"Courier New", Courier, monospace'],
+    ['Segoe UI / Sistem', '"Segoe UI", system-ui, Roboto, sans-serif'],
+    ['Arial', 'Arial, Helvetica, sans-serif'],
+    ['Times New Roman', '"Times New Roman", Times, serif'],
+    ['Georgia', 'Georgia, serif']
+  ];
+  const styles = [['Normal', 'normal', 'normal'], ['Kalın', 'bold', 'normal'], ['İtalik', 'normal', 'italic'], ['Kalın İtalik', 'bold', 'italic']];
+  const sizes = [8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72];
+  const body = document.createElement('div');
+  body.innerHTML =
+    '<div class="grid3">' +
+    '<div class="field"><label>Yazı tipi</label><select id="fFam">' + families.map((f, i) => '<option value="' + i + '">' + esc(f[0]) + '</option>').join('') + '</select></div>' +
+    '<div class="field"><label>Stil</label><select id="fSty">' + styles.map((s, i) => '<option value="' + i + '">' + s[0] + '</option>').join('') + '</select></div>' +
+    '<div class="field"><label>Boyut</label><select id="fSize">' + sizes.map((s) => '<option>' + s + '</option>').join('') + '</select></div>' +
+    '</div><div class="field"><label>Örnek</label><div class="preview" id="fPrev">AaBbYyZz ĞğŞşİıÖöÇç</div></div>';
+  const r = await modal({
+    title: 'Yazı Tipi', body,
+    buttons: [{ label: 'İptal', value: null }, {
+      label: 'Tamam', primary: true, value: (box) => ({
+        fam: families[box.querySelector('#fFam').value][1],
+        sty: styles[box.querySelector('#fSty').value],
+        size: +box.querySelector('#fSize').value
+      })
+    }],
+    onOpen: (box) => {
+      const fam = box.querySelector('#fFam'), sty = box.querySelector('#fSty'), size = box.querySelector('#fSize'), prev = box.querySelector('#fPrev');
+      fam.value = Math.max(0, families.findIndex((f) => f[1] === settings.fontFamily));
+      sty.value = Math.max(0, styles.findIndex((s) => s[1] === settings.fontWeight && s[2] === settings.fontStyle));
+      if (!sizes.includes(settings.fontSize)) size.insertAdjacentHTML('afterbegin', '<option>' + settings.fontSize + '</option>');
+      size.value = settings.fontSize;
+      const upd = () => {
+        prev.style.fontFamily = families[fam.value][1];
+        prev.style.fontWeight = styles[sty.value][1];
+        prev.style.fontStyle = styles[sty.value][2];
+        prev.style.fontSize = Math.min(+size.value, 40) + 'px';
+      };
+      [fam, sty, size].forEach((el) => el.addEventListener('change', upd));
+      upd();
+    }
+  });
+  if (!r) return;
+  settings.fontFamily = r.fam;
+  settings.fontWeight = r.sty[1];
+  settings.fontStyle = r.sty[2];
+  settings.fontSize = r.size;
+  saveSettings(); applySettings();
+}
+
+function cmdAbout() {
+  modal({
+    title: 'Not Defteri Hakkında',
+    body: '<div style="display:flex;gap:14px;align-items:center"><img src="icon.svg" width="56" height="56" alt="">' +
+      '<div><p><b>Not Defteri</b> — Sürüm 1.0</p><p style="color:var(--muted);font-size:13px">Windows Not Defteri tarzında, HTML çalıştırabilen metin düzenleyici.</p></div></div>'
+  });
+}
+
+function cmdHelp() {
+  modal({
+    title: 'Nasıl Kullanılır', wide: true,
+    body: '<div class="help">' +
+      '<h3>HTML çalıştırma</h3><ul>' +
+      '<li>HTML kodunu yazın (veya <b>Dosya › Yeni HTML Sayfası</b> ile hazır şablon açın).</li>' +
+      '<li><b>Dosya › Kaydet</b> ile adı <code>.html</code> ile biten bir dosya olarak kaydedin.</li>' +
+      '<li>Yeşil <b>▶ Çalıştır</b> düğmesine basın. Sayfa tam ekran açılır, <b>Kapat</b> ile editöre dönersiniz.</li>' +
+      '<li><code>console.log</code> çıktıları ve hatalar <b>Konsol</b> düğmesinde görünür.</li>' +
+      '<li>Aynı uygulamada kayıtlı <code>stil.css</code> veya <code>kod.js</code> dosyalarına verdiğiniz bağlantılar otomatik çalışır.</li></ul>' +
+      '<h3>Dosyalar</h3><ul>' +
+      '<li><b>Kaydet</b>: dosyayı uygulamanın içine kaydeder. <b>Aç</b> ile listeden açarsınız.</li>' +
+      '<li><b>Cihaza kaydet / Cihazdan aç</b>: telefonun Dosyalar klasörüyle çalışır.</li>' +
+      '<li>Kaydetmeden çıksanız bile yazdıklarınız bir sonraki açılışta geri gelir.</li></ul>' +
+      '<h3>Kısayollar (klavye bağlıysa)</h3><ul>' +
+      '<li>Ctrl+N Yeni · Ctrl+O Aç · Ctrl+S Kaydet · Ctrl+Shift+S Farklı Kaydet</li>' +
+      '<li>Ctrl+R Çalıştır · Ctrl+F Bul · F3 Sonrakini Bul · Ctrl+H Değiştir · Ctrl+G Git</li>' +
+      '<li>Ctrl+Z Geri Al · Ctrl+Y Yinele · F5 Saat/Tarih · Ctrl + / Ctrl - Yakınlaştır</li></ul>' +
+      '<h3>Sembol çubuğu</h3><ul><li>Telefonda <code>&lt; &gt; / = " { }</code> gibi işaretleri hızlı yazmak için. ' +
+      '<b>&lt;/&gt;</b> düğmesi en son açılan etiketi kapatır. Görünüm menüsünden açıp kapatabilirsiniz.</li></ul></div>'
+  });
+}
+
+/* ---------- Sembol çubuğu ---------- */
+const VOID_TAGS = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr', '!doctype']);
+function closeLastTag() {
+  const before = ed.value.slice(0, ed.selectionStart)
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, '');
+  const stack = [];
+  const re = /<(\/?)([a-zA-Z][\w-]*)\b[^>]*?(\/?)>/g;
+  let m;
+  while ((m = re.exec(before))) {
+    const tag = m[2].toLowerCase();
+    if (m[1]) { const i = stack.lastIndexOf(tag); if (i >= 0) stack.length = i; }
+    else if (!m[3] && !VOID_TAGS.has(tag)) stack.push(tag);
+  }
+  // Açık kalmış <script>/<style> içindeyken de kapatabilsin
+  const open = /<(script|style)\b[^>]*>(?![\s\S]*<\/\1>)[\s\S]*$/i.exec(before);
+  const tag = open ? open[1].toLowerCase() : stack.pop();
+  if (tag) insertText('</' + tag + '>'); else toast('Kapatılacak etiket yok');
+}
+const SYMBOLS = [
+  ['Tab', '\t', 'wide'], ['</>', closeLastTag, 'wide'], '<', '>', '/', '=', '"', "'", '{', '}', '(', ')', '[', ']',
+  ';', ':', '!', '#', '&', '-', '_', '+', '*', '.', ',', '$', '`', '\\', '|', '%', '?', '@',
+  ['↶', undo, 'wide'], ['↷', redo, 'wide']
+];
+SYMBOLS.forEach((s) => {
+  const [label, act, cls] = Array.isArray(s) ? s : [s, s];
+  const b = document.createElement('button');
+  b.textContent = label;
+  if (cls) b.className = cls;
+  b.addEventListener('mousedown', (e) => e.preventDefault());
+  b.addEventListener('touchstart', (e) => { e.preventDefault(); b.click(); }, { passive: false });
+  b.addEventListener('click', () => { if (typeof act === 'function') act(); else insertText(act); });
+  $('symbar').appendChild(b);
+});
+
+/* ---------- Menüler ---------- */
+const MENUS = {
+  dosya: () => [
+    ['Yeni', 'Ctrl+N', cmdNew],
+    ['Yeni HTML Sayfası', '', cmdNewHtml],
+    ['Aç...', 'Ctrl+O', cmdOpen],
+    ['Kaydet', 'Ctrl+S', cmdSave],
+    ['Farklı Kaydet...', 'Ctrl+Shift+S', cmdSaveAs],
+    '-',
+    [native ? 'Cihazdan aç...' : 'Bilgisayardan aç...', '', () => openFromDevice(false)],
+    [native ? 'Cihaza kaydet...' : 'İndir...', '', () => saveToDevice(defaultName())],
+    ['Paylaş...', '', cmdShare, !native && !navigator.share],
+    '-',
+    ['▶ Çalıştır (HTML)', 'Ctrl+R', cmdRun],
+    ...(native ? [] : [['Yazdır...', 'Ctrl+P', cmdPrint]]),
+  ],
+  duzen: () => [
+    ['Geri Al', 'Ctrl+Z', undo, hIdx <= 0],
+    ['Yinele', 'Ctrl+Y', redo, hIdx >= hist.length - 1],
+    '-',
+    ['Kes', 'Ctrl+X', cmdCut, !selected()],
+    ['Kopyala', 'Ctrl+C', cmdCopy, !selected()],
+    ['Yapıştır', 'Ctrl+V', cmdPaste],
+    ['Sil', 'Del', cmdDelete],
+    '-',
+    ['Bul...', 'Ctrl+F', () => openFind(false)],
+    ['Sonrakini Bul', 'F3', () => findNext(1)],
+    ['Öncekini Bul', 'Shift+F3', () => findNext(-1)],
+    ['Değiştir...', 'Ctrl+H', () => openFind(true)],
+    ['Git...', 'Ctrl+G', cmdGoTo],
+    '-',
+    ['Tümünü Seç', 'Ctrl+A', cmdSelectAll],
+    ['Saat/Tarih', 'F5', cmdDateTime],
+  ],
+  bicim: () => [
+    ['Sözcük Kaydırma', '', () => toggleSetting('wordWrap'), false, settings.wordWrap],
+    ['Yazı Tipi...', '', cmdFont],
+  ],
+  gorunum: () => [
+    ['Yakınlaştır', 'Ctrl++', () => setZoom(settings.zoom + 10)],
+    ['Uzaklaştır', 'Ctrl+-', () => setZoom(settings.zoom - 10)],
+    ['Varsayılan Yakınlaştırma', 'Ctrl+0', () => setZoom(100)],
+    '-',
+    ['Durum Çubuğu', '', () => toggleSetting('statusBar'), false, settings.statusBar],
+    ['Sembol Çubuğu', '', () => toggleSetting('symbolBar'), false, settings.symbolBar],
+    ['Koyu Tema', '', toggleTheme, false, document.documentElement.dataset.theme === 'dark'],
+  ],
+  yardim: () => [
+    ['Nasıl Kullanılır', '', cmdHelp],
+    ['Not Defteri Hakkında', '', cmdAbout],
+  ]
+};
+let openMenuName = null;
+function showMenu(name, btn) {
+  const dd = $('dropdown');
+  dd.innerHTML = '';
+  MENUS[name]().forEach((it) => {
+    if (it === '-') { dd.appendChild(document.createElement('hr')); return; }
+    const [label, key, fn, disabled, checked] = it;
+    const b = document.createElement('button');
+    b.disabled = !!disabled;
+    b.innerHTML = '<span class="chk">' + (checked ? '✓' : '') + '</span><span class="lbl"></span><span class="key"></span>';
+    b.querySelector('.lbl').textContent = label;
+    b.querySelector('.key').textContent = key;
+    b.addEventListener('mousedown', (e) => e.preventDefault());
+    b.onclick = () => { closeMenu(); fn(); };
+    dd.appendChild(b);
+  });
+  document.querySelectorAll('.menu-btn').forEach((m) => m.classList.toggle('open', m === btn));
+  const r = btn.getBoundingClientRect();
+  dd.classList.add('show');
+  dd.style.top = (r.bottom + 2) + 'px';
+  dd.style.left = Math.max(8, Math.min(r.left, innerWidth - dd.offsetWidth - 8)) + 'px';
+  openMenuName = name;
+}
+function closeMenu() {
+  $('dropdown').classList.remove('show');
+  document.querySelectorAll('.menu-btn.open').forEach((m) => m.classList.remove('open'));
+  openMenuName = null;
+}
+document.querySelectorAll('.menu-btn').forEach((btn) => {
+  btn.addEventListener('mousedown', (e) => e.preventDefault());
+  btn.addEventListener('click', () => {
+    if (openMenuName === btn.dataset.menu) closeMenu(); else showMenu(btn.dataset.menu, btn);
+  });
+  btn.addEventListener('mouseenter', () => { if (openMenuName && openMenuName !== btn.dataset.menu) showMenu(btn.dataset.menu, btn); });
+});
+document.addEventListener('mousedown', (e) => {
+  if (openMenuName && !e.target.closest('#dropdown') && !e.target.closest('.menu-btn')) closeMenu();
+});
+window.addEventListener('resize', closeMenu);
+
+/* ---------- Klavye kısayolları ---------- */
+document.addEventListener('keydown', (e) => {
+  const k = e.key.toLowerCase();
+  const ctrl = e.ctrlKey || e.metaKey;
+  if (e.key === 'Escape') { if (handleBack()) e.preventDefault(); return; }
+  if (isModalOpen() || $('runView').classList.contains('show')) {
+    if (ctrl && k === 'r') { e.preventDefault(); if ($('runView').classList.contains('show')) runNow(); }
+    return;
+  }
+  let fn = null;
+  if (ctrl && e.shiftKey && k === 's') fn = cmdSaveAs;
+  else if (ctrl && !e.shiftKey) {
+    fn = { n: cmdNew, o: cmdOpen, s: cmdSave, r: cmdRun, f: () => openFind(false), h: () => openFind(true), g: cmdGoTo, p: native ? null : cmdPrint,
+           z: undo, y: redo, '+': () => setZoom(settings.zoom + 10), '=': () => setZoom(settings.zoom + 10), '-': () => setZoom(settings.zoom - 10), '0': () => setZoom(100) }[k] || null;
+  } else if (ctrl && e.shiftKey && k === 'z') fn = redo;
+  else if (e.key === 'F3') fn = () => findNext(e.shiftKey ? -1 : 1);
+  else if (e.key === 'F5') fn = cmdDateTime;
+  if (fn) { e.preventDefault(); fn(); }
+}, true);
+ed.addEventListener('mousedown', () => { findFocus = false; });
+ed.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && findFocus && $('findbar').classList.contains('show') && selected()) {
+    e.preventDefault(); findNext(e.shiftKey ? -1 : 1); return;
+  }
+  if (e.key !== 'Shift' && e.key !== 'F3') findFocus = false;
+  if (e.key === 'Tab' && !e.ctrlKey && !e.altKey && !e.metaKey) { e.preventDefault(); insertText('\t'); }
+});
+ed.addEventListener('wheel', (e) => {
+  if (e.ctrlKey) { e.preventDefault(); setZoom(settings.zoom + (e.deltaY < 0 ? 10 : -10)); }
+}, { passive: false });
+
+/* Geri tuşu (Android) / Esc */
+function handleBack() {
+  if (isModalOpen()) { closeModal(null); return true; }
+  if (openMenuName) { closeMenu(); return true; }
+  if ($('runView').classList.contains('show')) { closeRun(); return true; }
+  if ($('findbar').classList.contains('show')) { closeFind(); return true; }
+  return false;
+}
+window.handleBack = handleBack;
+
+/* Uygulamaya dışarıdan dosya ile açılınca (Android "Birlikte aç") */
+window.openExternalFile = async function (name, content, uri) {
+  if (!(await confirmDiscard())) return;
+  loadDocument(name, content, uri ? 'device' : null, uri);
+};
+
+window.addEventListener('beforeunload', (e) => { saveDraft(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) saveDraft(); });
+
+/* ---------- Başlat ---------- */
+applySettings();
+restoreDraft();
+resetHistory();
+updateTitle();
+updateStatus();
+if (native && native.ready) native.ready();
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+})();
+</script>
+</body>
+</html>

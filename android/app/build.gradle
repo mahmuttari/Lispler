@@ -1,0 +1,48 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.lispler.notdefteri'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.lispler.notdefteri'
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+
+    // Uygulama sabit bir anahtarla imzalanır; böylece yeni sürümler eskisinin üzerine kurulabilir.
+    signingConfigs {
+        release {
+            storeFile file('notdefteri.keystore')
+            storePassword 'notdefteri'
+            keyAlias 'notdefteri'
+            keyPassword 'notdefteri'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.release
+        }
+    }
+
+    // Web arayüzü tek kaynaktan gelir: depo kökündeki app/ klasörü
+    sourceSets {
+        main {
+            assets.srcDirs = ['../../app']
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

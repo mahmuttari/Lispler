@@ -19,6 +19,9 @@ final class ViewController: UIViewController, WKScriptMessageHandlerWithReply, W
     private var expectingReturn = false
     private var backgroundedAt: Date?
     private var darkUI = false
+    // PDF oluşturmak için kullanılan görünmez WebView ve bekleyen istek
+    private var pdfWebView: WKWebView?
+    private var pdfJob: (callbackId: String, name: String)?
 
     private enum PickerRequest {
         case open(callbackId: String)
@@ -31,7 +34,8 @@ final class ViewController: UIViewController, WKScriptMessageHandlerWithReply, W
       var h = window.webkit.messageHandlers.native;
       function call(m, args) { return h.postMessage({ m: m, a: Array.prototype.slice.call(args) }); }
       var names = ['ready', 'openFile', 'saveFileAs', 'writeFile', 'setClipboard', 'getClipboard', 'share',
-                   'setBarColor', 'getProInfo', 'buyPro', 'restorePro', 'manageSubscription', 'openUrl', 'adBreak'];
+                   'setBarColor', 'getProInfo', 'buyPro', 'restorePro', 'manageSubscription', 'openUrl', 'adBreak',
+                   'printToPdf'];
       var api = { platform: function () { return 'ios'; } };
       names.forEach(function (n) { api[n] = function () { return call(n, arguments); }; });
       window.NativeApp = api;
@@ -171,6 +175,8 @@ final class ViewController: UIViewController, WKScriptMessageHandlerWithReply, W
             store.showManageSubscriptions(in: view.window?.windowScene)
         case "openUrl":
             if let url = URL(string: str(0)) { openExternal(url) }
+        case "printToPdf":
+            makePdf(callbackId: str(0), name: str(1), html: str(2))
         case "adBreak":
             if !store.isPro { ads.naturalBreak() }
         default:
@@ -347,11 +353,93 @@ final class ViewController: UIViewController, WKScriptMessageHandlerWithReply, W
         present(vc, animated: true)
     }
 
+    // MARK: PDF olarak kaydet
+
+    private static let a4 = CGRect(x: 0, y: 0, width: 595.2, height: 841.8)  // A4, punto
+
+    private func makePdf(callbackId: String, name: String, html: String) {
+        guard pdfJob == nil else {
+            callback(callbackId, ["error": "Önceki PDF hâlâ hazırlanıyor"])
+            return
+        }
+        // Görünmez (ekran dışında) bir WebView'da HTML'i A4 genişliğinde oluştur
+        let pw = WKWebView(frame: CGRect(x: -10_000, y: 0, width: Self.a4.width, height: Self.a4.height),
+                           configuration: WKWebViewConfiguration())
+        pw.navigationDelegate = self
+        view.addSubview(pw)
+        pdfWebView = pw
+        pdfJob = (callbackId, name.isEmpty ? "Adsız.pdf" : name)
+        pw.loadHTMLString(html, baseURL: nil)
+    }
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        guard webView === pdfWebView else { return }
+        // Sayfadaki betikler içeriği oluştursun diye kısa bekleme
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in self?.finishPdf() }
+    }
+
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        guard webView === pdfWebView else { return }
+        failPdf(error.localizedDescription)
+    }
+
+    private func finishPdf() {
+        guard let pw = pdfWebView, let job = pdfJob else { return }
+        let renderer = UIPrintPageRenderer()
+        renderer.addPrintFormatter(pw.viewPrintFormatter(), startingAtPageAt: 0)
+        let page = Self.a4
+        renderer.setValue(NSValue(cgRect: page), forKey: "paperRect")
+        renderer.setValue(NSValue(cgRect: page.insetBy(dx: 45, dy: 57)), forKey: "printableRect")  // ~16 mm / 20 mm kenar
+
+        let data = NSMutableData()
+        UIGraphicsBeginPDFContextToData(data, page, [kCGPDFContextTitle as String: job.name])
+        renderer.prepare(forDrawingPages: NSRange(location: 0, length: renderer.numberOfPages))
+        for i in 0..<renderer.numberOfPages {
+            UIGraphicsBeginPDFPage()
+            renderer.drawPage(at: i, in: UIGraphicsGetPDFContextBounds())
+        }
+        UIGraphicsEndPDFContext()
+        cleanupPdf()
+
+        guard data.length > 0 else {
+            callback(job.callbackId, ["error": "PDF boş oluştu"])
+            return
+        }
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        let file = dir.appendingPathComponent(job.name.replacingOccurrences(of: "/", with: "_"))
+        do {
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            try data.write(to: file, options: .atomic)
+        } catch {
+            callback(job.callbackId, ["error": error.localizedDescription])
+            return
+        }
+        // "Dosyalar'a kaydet" ekranı (sonuç documentPicker'da işlenir)
+        let picker = UIDocumentPickerViewController(forExporting: [file], asCopy: false)
+        picker.delegate = self
+        pickerRequest = .save(callbackId: job.callbackId, tempURL: file)
+        expectingReturn = true
+        present(picker, animated: true)
+    }
+
+    private func failPdf(_ message: String) {
+        let id = pdfJob?.callbackId
+        cleanupPdf()
+        if let id { callback(id, ["error": message]) }
+    }
+
+    private func cleanupPdf() {
+        pdfWebView?.navigationDelegate = nil
+        pdfWebView?.removeFromSuperview()
+        pdfWebView = nil
+        pdfJob = nil
+    }
+
     // MARK: Gezinme: dış bağlantılar Safari'de açılsın
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        guard let url = navigationAction.request.url, let scheme = url.scheme?.lowercased() else {
+        guard webView !== pdfWebView, let url = navigationAction.request.url, let scheme = url.scheme?.lowercased() else {
             decisionHandler(.allow)
             return
         }

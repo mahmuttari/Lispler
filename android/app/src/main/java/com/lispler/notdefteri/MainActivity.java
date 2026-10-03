@@ -13,6 +13,9 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.graphics.Rect;
 import android.os.SystemClock;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -53,6 +56,8 @@ public class MainActivity extends Activity {
     // Kendi açtığımız ekranlardan (dosya seçici, ödeme, paylaş) dönüşte açılış reklamı gösterilmesin
     private boolean expectingReturn = false;
     private long pausedAt = 0;
+    // Yazdırma bitene kadar PDF'i hazırlayan WebView'a güçlü referans (yoksa çöp toplayıcı siler)
+    private WebView printWebView;
     private Intent pendingViewIntent;
 
     // Sistem dosya seçicisinden dönüşü beklenen istek
@@ -457,6 +462,52 @@ public class MainActivity extends Activity {
                 i.putExtra(Intent.EXTRA_TEXT, content);
                 expectingReturn = true;
                 startActivity(Intent.createChooser(i, "Paylaş: " + name));
+            });
+        }
+
+        /* ---- PDF olarak kaydet ---- */
+
+        /**
+         * HTML'i görünmez bir WebView'da oluşturup Android yazdırma ekranını açar;
+         * kullanıcı yazıcı olarak "PDF olarak kaydet"i seçer.
+         */
+        @JavascriptInterface
+        public void printToPdf(String callbackId, String name, String html) {
+            runOnUiThread(() -> {
+                PrintManager pm = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+                if (pm == null) {
+                    callback(callbackId, "{\"error\":" + q("Bu cihazda yazdırma desteklenmiyor") + "}");
+                    return;
+                }
+                String jobName = name.endsWith(".pdf") ? name.substring(0, name.length() - 4) : name;
+                WebView pw = new WebView(MainActivity.this);
+                pw.getSettings().setJavaScriptEnabled(true);
+                pw.setWebViewClient(new WebViewClient() {
+                    private boolean started = false;
+
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        if (started) return;
+                        started = true;
+                        // Sayfadaki betikler içeriği oluştursun diye kısa bekleme
+                        view.postDelayed(() -> {
+                            try {
+                                PrintDocumentAdapter adapter = view.createPrintDocumentAdapter(jobName);
+                                PrintAttributes attrs = new PrintAttributes.Builder()
+                                        .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                                        .build();
+                                expectingReturn = true;
+                                pm.print(jobName, adapter, attrs);
+                                callback(callbackId, "{\"printDialog\":true}");
+                            } catch (Exception e) {
+                                printWebView = null;
+                                callback(callbackId, "{\"error\":" + q(String.valueOf(e.getMessage())) + "}");
+                            }
+                        }, 400);
+                    }
+                });
+                printWebView = pw;
+                pw.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
             });
         }
 

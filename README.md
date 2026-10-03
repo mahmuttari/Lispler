@@ -13,7 +13,7 @@ Windows Not Defteri tarzında, **HTML kodunu çalıştırabilen** bir metin düz
 
 ## Özellikler
 
-- **Dosya**: Yeni, Yeni HTML Sayfası, Aç, Kaydet, Farklı Kaydet, Cihazdan aç / Cihaza kaydet, Paylaş
+- **Dosya**: Yeni, Yeni HTML Sayfası, Aç, Kaydet, Farklı Kaydet, Cihazdan aç / Cihaza kaydet, Paylaş, **PDF olarak kaydet**
 - **Düzen**: Geri Al / Yinele, Kes / Kopyala / Yapıştır / Sil, Bul, Değiştir, Git, Tümünü Seç, Saat/Tarih
 - **Biçim**: Sözcük Kaydırma, Yazı Tipi · **Görünüm**: Yakınlaştır, Durum Çubuğu, Sembol Çubuğu, Koyu Tema
 - **▶ Çalıştır**: HTML/CSS/JS'yi tam ekran çalıştırır; `console.log` ve hatalar **Konsol**'da satır numarasıyla görünür

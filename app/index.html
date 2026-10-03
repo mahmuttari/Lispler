@@ -273,11 +273,6 @@ button { font: inherit; color: inherit; }
 #toast.show { display: flex; }
 #toast button { background: none; border: 0; color: #8fd3ff; font-weight: 600; cursor: pointer; padding: 2px 4px; }
 
-#printArea { display: none; }
-@media print {
-  body > *:not(#printArea) { display: none !important; }
-  #printArea { display: block; white-space: pre-wrap; font-family: Consolas, monospace; font-size: 11pt; color: #000; }
-}
 </style>
 </head>
 <body>
@@ -340,6 +335,7 @@ button { font: inherit; color: inherit; }
     <span id="runTitle"></span>
     <button class="btn small" id="runReload" title="Yeniden çalıştır">⟳</button>
     <button class="btn small" id="runExternal" title="Yeni sekmede aç">↗</button>
+    <button class="btn small" id="runPdf" title="Sayfayı PDF olarak kaydet">PDF</button>
     <button class="btn small" id="consoleBtn">Konsol<span class="badge" id="consoleBadge">0</span></button>
   </div>
   <iframe id="runFrame" title="Önizleme"></iframe>
@@ -347,7 +343,6 @@ button { font: inherit; color: inherit; }
 </div>
 
 <div id="toast"><span id="toastMsg"></span><button id="toastAct"></button></div>
-<pre id="printArea"></pre>
 
 <script>
 (function () {
@@ -867,15 +862,75 @@ async function cmdShare() {
   } else toast('Paylaşım bu tarayıcıda desteklenmiyor');
 }
 
-function cmdPrint() {
-  $('printArea').textContent = ed.value;
-  window.print();
+/* ---------- PDF olarak kaydet / Yazdır ---------- */
+function pdfName() {
+  return (doc.name ? doc.name.replace(/\.[^.]+$/, '') : 'Adsız') + '.pdf';
 }
+// Metni Windows Not Defteri çıktısı gibi sayfalara dizen HTML (üstte dosya adı, altta sayfa no)
+function buildPrintText(title) {
+  const cssStr = (t) => '"' + t.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+  const pt = Math.max(8, Math.min(24, Math.round(settings.fontSize * 0.75)));
+  return '<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><title>' + esc(title) + '</title><style>' +
+    '@page { size: A4; margin: 20mm 16mm;' +
+    ' @top-center { content: ' + cssStr(title) + '; font: 9pt sans-serif; color: #555; }' +
+    ' @bottom-center { content: "Sayfa " counter(page); font: 9pt sans-serif; color: #555; } }' +
+    'html, body { margin: 0; background: #fff; color: #000; }' +
+    'pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; -moz-tab-size: 4;' +
+    ' font-family: ' + settings.fontFamily + '; font-size: ' + pt + 'pt; font-weight: ' + settings.fontWeight +
+    '; font-style: ' + settings.fontStyle + '; line-height: 1.35; }' +
+    '</style></head><body><pre>' + esc(ed.value) + '</pre></body></html>';
+}
+
+async function cmdPdf(mode) {
+  closeMenu();
+  if (!ed.value.trim()) { toast('Kaydedilecek bir şey yok'); return; }
+  if (!mode) {
+    if (isHtmlName(doc.name) || looksHtml(ed.value)) {
+      mode = await modal({
+        title: 'PDF olarak kaydet',
+        body: '<p>Bu bir HTML belgesi. PDF\'e ne kaydedilsin?</p>' +
+          '<p style="font-size:13px;color:var(--muted)"><b>Sayfa görünümü</b>: sayfanın çalışmış hâli (Çalıştır\'da gördüğünüz).<br>' +
+          '<b>Kod</b>: yazdığınız HTML kodu, metin olarak.</p>',
+        buttons: [{ label: 'İptal', value: null }, { label: 'Kod', value: 'text' }, { label: 'Sayfa görünümü', value: 'page', primary: true }]
+      });
+      if (!mode) return;
+    } else mode = 'text';
+  }
+  const name = pdfName();
+  const html = mode === 'page' ? buildRunnable(ed.value, doc.name, false) : buildPrintText(name.replace(/\.pdf$/, ''));
+  if (native && native.printToPdf) {
+    const r = await nativeCall('printToPdf', name, html);
+    if (!r) return;   // vazgeçildi
+    if (r.error) { toast('PDF oluşturulamadı: ' + r.error); return; }
+    if (r.printDialog) toast("Açılan ekranda yazıcı olarak \"PDF olarak kaydet\"i seçin");
+    else toast('"' + (r.name || name) + '" kaydedildi');
+    return;
+  }
+  printInFrame(html, name);
+}
+
+// Tarayıcı: gizli çerçevede yazdırma penceresi (hedef: "PDF olarak kaydet")
+function printInFrame(html, name) {
+  const f = document.createElement('iframe');
+  f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;';
+  f.srcdoc = html;
+  f.onload = () => setTimeout(() => {
+    const old = document.title;
+    document.title = name.replace(/\.pdf$/, '');
+    try { f.contentWindow.focus(); f.contentWindow.print(); }
+    catch (e) { toast('Yazdırma açılamadı'); }
+    document.title = old;
+    setTimeout(() => f.remove(), 2000);
+  }, 300);
+  document.body.appendChild(f);
+  toast("Yazdırma penceresinde hedef olarak \"PDF olarak kaydet\"i seçin");
+}
+function cmdPrint() { cmdPdf('text'); }
 
 /* ---------- Çalıştır ---------- */
 const CONSOLE_HOOK = '<script>(function(){var P=parent;function f(x){try{if(x instanceof Error)return x.stack||String(x);if(x&&typeof x==="object")return JSON.stringify(x);return String(x)}catch(e){return String(x)}}function s(t,a){try{P.postMessage({__nd:1,t:t,m:Array.prototype.map.call(a,f).join(" ")},"*")}catch(e){}}["log","info","warn","error","debug"].forEach(function(k){var o=console[k];console[k]=function(){s(k,arguments);if(o)o.apply(console,arguments)}});addEventListener("error",function(e){s("error",[(e.message||"Hata")+(e.lineno?" (satır "+e.lineno+")":"")])});addEventListener("unhandledrejection",function(e){s("error",["Promise: "+f(e.reason)])})})();<\/script>';
 
-function buildRunnable(text, name) {
+function buildRunnable(text, name, withHook = true) {
   let html = text;
   if (ext(name) === 'js') {
     html = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body><script>\n' +
@@ -900,6 +955,7 @@ function buildRunnable(text, name) {
     const c = !/^(https?:)?\/\//i.test(h) ? lookup(h) : null;
     return c != null ? '<script' + a + b + '>' + c.replace(/<\/script/gi, '<\\/script') + '<\/script>' : m;
   });
+  if (!withHook) return html;
   // Konsol kancasını satır numaraları kaymasın diye aynı satıra ekle
   const dt = /^\s*<!doctype[^>]*>/i.exec(html);
   if (dt) return dt[0] + CONSOLE_HOOK + html.slice(dt[0].length);
@@ -951,6 +1007,7 @@ window.addEventListener('message', (e) => {
 $('runBtn').onclick = cmdRun;
 $('runClose').onclick = closeRun;
 $('runReload').onclick = runNow;
+$('runPdf').onclick = () => cmdPdf('page');
 $('consoleBtn').onclick = () => $('consolePane').classList.toggle('show');
 if (native) $('runExternal').style.display = 'none';
 $('runExternal').onclick = () => {
@@ -1128,7 +1185,7 @@ function cmdAbout() {
   modal({
     title: 'Not Defteri Hakkında',
     body: '<div style="display:flex;gap:14px;align-items:center"><img src="icon.svg" width="56" height="56" alt="">' +
-      '<div><p><b>Not Defteri</b> — Sürüm 1.1' + (isPro ? ' ⭐ Pro' : '') + '</p><p style="color:var(--muted);font-size:13px">Windows Not Defteri tarzında, HTML çalıştırabilen metin düzenleyici.</p></div></div>'
+      '<div><p><b>Not Defteri</b> — Sürüm 1.2' + (isPro ? ' ⭐ Pro' : '') + '</p><p style="color:var(--muted);font-size:13px">Windows Not Defteri tarzında, HTML çalıştırabilen metin düzenleyici.</p></div></div>'
   });
 }
 
@@ -1145,7 +1202,8 @@ function cmdHelp() {
       '<h3>Dosyalar</h3><ul>' +
       '<li><b>Kaydet</b>: dosyayı uygulamanın içine kaydeder. <b>Aç</b> ile listeden açarsınız.</li>' +
       '<li><b>Cihaza kaydet / Cihazdan aç</b>: telefonun Dosyalar klasörüyle çalışır.</li>' +
-      '<li>Kaydetmeden çıksanız bile yazdıklarınız bir sonraki açılışta geri gelir.</li></ul>' +
+      '<li>Kaydetmeden çıksanız bile yazdıklarınız bir sonraki açılışta geri gelir.</li>' +
+      '<li><b>PDF olarak kaydet</b>: metni ya da HTML sayfasının çalışmış hâlini PDF yapar. Çalıştır ekranındaki <b>PDF</b> düğmesi de sayfayı PDF\'e kaydeder.</li></ul>' +
       '<h3>Kısayollar (klavye bağlıysa)</h3><ul>' +
       '<li>Ctrl+N Yeni · Ctrl+O Aç · Ctrl+S Kaydet · Ctrl+Shift+S Farklı Kaydet</li>' +
       '<li>Ctrl+R Çalıştır · Ctrl+F Bul · F3 Sonrakini Bul · Ctrl+H Değiştir · Ctrl+G Git</li>' +
@@ -1276,6 +1334,7 @@ const MENUS = {
     ['Paylaş...', '', cmdShare, !native && !navigator.share],
     '-',
     ['▶ Çalıştır (HTML)', 'Ctrl+R', cmdRun],
+    ['PDF olarak kaydet...', native ? 'Ctrl+P' : '', () => cmdPdf()],
     ...(native ? [] : [['Yazdır...', 'Ctrl+P', cmdPrint]]),
   ],
   duzen: () => [
@@ -1368,7 +1427,7 @@ document.addEventListener('keydown', (e) => {
   let fn = null;
   if (ctrl && e.shiftKey && k === 's') fn = cmdSaveAs;
   else if (ctrl && !e.shiftKey) {
-    fn = { n: cmdNew, o: cmdOpen, s: cmdSave, r: cmdRun, f: () => openFind(false), h: () => openFind(true), g: cmdGoTo, p: native ? null : cmdPrint,
+    fn = { n: cmdNew, o: cmdOpen, s: cmdSave, r: cmdRun, f: () => openFind(false), h: () => openFind(true), g: cmdGoTo, p: native ? () => cmdPdf() : cmdPrint,
            z: undo, y: redo, '+': () => setZoom(settings.zoom + 10), '=': () => setZoom(settings.zoom + 10), '-': () => setZoom(settings.zoom - 10), '0': () => setZoom(100) }[k] || null;
   } else if (ctrl && e.shiftKey && k === 'z') fn = redo;
   else if (e.key === 'F3') fn = () => findNext(e.shiftKey ? -1 : 1);

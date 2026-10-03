@@ -11,8 +11,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.graphics.Rect;
+import android.os.SystemClock;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.window.OnBackInvokedDispatcher;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -38,7 +46,13 @@ public class MainActivity extends Activity {
     private static final long MAX_FILE_SIZE = 20L * 1024 * 1024;
 
     private WebView webView;
+    private LinearLayout root;
+    private AdsManager ads;
+    private BillingManager billing;
     private boolean pageReady = false;
+    // Kendi açtığımız ekranlardan (dosya seçici, ödeme, paylaş) dönüşte açılış reklamı gösterilmesin
+    private boolean expectingReturn = false;
+    private long pausedAt = 0;
     private Intent pendingViewIntent;
 
     // Sistem dosya seçicisinden dönüşü beklenen istek
@@ -49,9 +63,29 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Düzen: üstte WebView (editör), altta reklam bandı
+        root = new LinearLayout(this);
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setBackgroundColor(Color.parseColor("#f3f3f3"));
         webView = new WebView(this);
         webView.setBackgroundColor(Color.parseColor("#f3f3f3"));
-        setContentView(webView);
+        root.addView(webView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        FrameLayout bannerContainer = new FrameLayout(this);
+        bannerContainer.setVisibility(View.GONE);
+        root.addView(bannerContainer, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        setContentView(root);
+        setupInsets();
+        setupBack();
+
+        ads = new AdsManager(this, bannerContainer);
+        billing = new BillingManager(this, isPro -> runOnUiThread(() -> {
+            ads.setEnabled(!isPro);
+            js("window.onProChanged && window.onProChanged(" + isPro + ")");
+        }));
+        billing.start();
+        if (!billing.isPro()) ads.start();
+        else ads.setEnabled(false);
 
         WebSettings s = webView.getSettings();
         s.setJavaScriptEnabled(true);
@@ -74,6 +108,7 @@ public class MainActivity extends Activity {
                 }
                 // Çalıştırılan sayfadaki dış bağlantılar tarayıcıda açılsın, uygulama kaybolmasın
                 if (request.isForMainFrame()) {
+                    expectingReturn = true;
                     try {
                         startActivity(new Intent(Intent.ACTION_VIEW, uri));
                     } catch (Exception ignored) {
@@ -109,18 +144,75 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        pausedAt = SystemClock.elapsedRealtime();
+        ads.onPause();
         // Taslağı hemen kaydet (uygulama arka plana atılınca)
         webView.evaluateJavascript("window.dispatchEvent(new Event('beforeunload'))", null);
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public void onBackPressed() {
+    protected void onResume() {
+        super.onResume();
+        ads.onResume();
+        if (pausedAt > 0 && !expectingReturn && !ads.isShowingFullscreen()) {
+            ads.onReturnFromBackground(SystemClock.elapsedRealtime() - pausedAt);
+        }
+        expectingReturn = false;
+        // Abonelik başka cihazda iptal/yenilenmiş olabilir
+        if (pausedAt > 0) billing.refresh(null);
+    }
+
+    @Override
+    protected void onDestroy() {
+        ads.onDestroy();
+        super.onDestroy();
+    }
+
+    /* ---------- Geri tuşu ---------- */
+
+    private void setupBack() {
+        if (Build.VERSION.SDK_INT >= 33) {
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    OnBackInvokedDispatcher.PRIORITY_DEFAULT, this::handleBack);
+        }
+    }
+
+    private void handleBack() {
         webView.evaluateJavascript("window.handleBack ? window.handleBack() : false", value -> {
             if (!"true".equals(value)) {
                 moveTaskToBack(true);
             }
         });
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onBackPressed() {
+        handleBack();
+    }
+
+    /* ---------- Kenardan kenara ekran ve klavye ---------- */
+
+    private void setupInsets() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            // Android 15+ kenardan kenara zorunlu: sistem çubukları ve klavye kadar boşluğu kendimiz bırakırız
+            getWindow().setDecorFitsSystemWindows(false);
+            root.setOnApplyWindowInsetsListener((v, insets) -> {
+                android.graphics.Insets bars = insets.getInsets(
+                        WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+                android.graphics.Insets ime = insets.getInsets(WindowInsets.Type.ime());
+                v.setPadding(bars.left, bars.top, bars.right, Math.max(bars.bottom, ime.bottom));
+                if (ads != null) ads.setKeyboardVisible(ime.bottom > 0);
+                return WindowInsets.CONSUMED;
+            });
+        } else {
+            root.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+                Rect r = new Rect();
+                root.getWindowVisibleDisplayFrame(r);
+                int full = root.getRootView().getHeight();
+                if (ads != null) ads.setKeyboardVisible(full - r.bottom > full * 0.2);
+            });
+        }
     }
 
     /* ---------- "Birlikte aç" ile gelen dosya ---------- */
@@ -297,6 +389,7 @@ public class MainActivity extends Activity {
                         | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                         | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
                 pendingCallbackId = callbackId;
+                expectingReturn = true;
                 try {
                     startActivityForResult(i, REQ_OPEN);
                 } catch (Exception e) {
@@ -316,6 +409,7 @@ public class MainActivity extends Activity {
                 i.putExtra(Intent.EXTRA_TITLE, name);
                 pendingCallbackId = callbackId;
                 pendingSaveContent = content;
+                expectingReturn = true;
                 try {
                     startActivityForResult(i, REQ_SAVE);
                 } catch (Exception e) {
@@ -361,8 +455,58 @@ public class MainActivity extends Activity {
                 i.setType("text/plain");
                 i.putExtra(Intent.EXTRA_SUBJECT, name);
                 i.putExtra(Intent.EXTRA_TEXT, content);
+                expectingReturn = true;
                 startActivity(Intent.createChooser(i, "Paylaş: " + name));
             });
+        }
+
+        /* ---- Pro abonelik ---- */
+
+        @JavascriptInterface
+        public void getProInfo(String callbackId) {
+            billing.getInfo(r -> callback(callbackId, r.toString()));
+        }
+
+        @JavascriptInterface
+        public void buyPro(String callbackId) {
+            expectingReturn = true;
+            billing.buy(MainActivity.this, r -> callback(callbackId, r.toString()));
+        }
+
+        @JavascriptInterface
+        public void restorePro(String callbackId) {
+            billing.refresh(r -> callback(callbackId, r.toString()));
+        }
+
+        @JavascriptInterface
+        public void manageSubscription() {
+            openUrl(billing.manageUrl());
+        }
+
+        @JavascriptInterface
+        public void openUrl(String url) {
+            runOnUiThread(() -> {
+                expectingReturn = true;
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                } catch (Exception ignored) {
+                }
+            });
+        }
+
+        /* ---- Reklam ---- */
+
+        /** JS doğal geçiş anlarını bildirir (önizlemeden çıkış, kaydet, aç, yeni). */
+        @JavascriptInterface
+        public void adBreak(String reason) {
+            runOnUiThread(() -> {
+                if (!billing.isPro()) ads.onNaturalBreak();
+            });
+        }
+
+        @JavascriptInterface
+        public String platform() {
+            return "android";
         }
 
         @JavascriptInterface
@@ -371,9 +515,23 @@ public class MainActivity extends Activity {
                 try {
                     int c = Color.parseColor(color);
                     Window w = getWindow();
+                    root.setBackgroundColor(c);
+                    webView.setBackgroundColor(c);
+                    if (Build.VERSION.SDK_INT >= 30) {
+                        WindowInsetsController ic = w.getInsetsController();
+                        if (ic != null) {
+                            int light = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                                    | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
+                            ic.setSystemBarsAppearance(dark ? 0 : light, light);
+                        }
+                        if (Build.VERSION.SDK_INT < 35) {
+                            w.setStatusBarColor(c);
+                            w.setNavigationBarColor(c);
+                        }
+                        return;
+                    }
                     w.setStatusBarColor(c);
                     w.setNavigationBarColor(c);
-                    webView.setBackgroundColor(c);
                     View d = w.getDecorView();
                     int flags = d.getSystemUiVisibility();
                     if (dark) {

@@ -2,36 +2,71 @@ plugins {
     id 'com.android.application'
 }
 
+// Play Store'a yüklenecek sürüm için imza bilgisi: android/keystore.properties (depoya EKLENMEZ)
+def keystorePropsFile = rootProject.file('keystore.properties')
+def keystoreProps = new Properties()
+if (keystorePropsFile.exists()) keystoreProps.load(new FileInputStream(keystorePropsFile))
+
+// Google'ın test reklam kimlikleri (debug sürümünde her zaman bunlar kullanılır)
+def TEST_APP_ID = 'ca-app-pub-3940256099942544~3347511713'
+def TEST_BANNER = 'ca-app-pub-3940256099942544/9214589741'
+def TEST_INTERSTITIAL = 'ca-app-pub-3940256099942544/1033173712'
+def TEST_APP_OPEN = 'ca-app-pub-3940256099942544/9257395921'
+
 android {
     namespace 'com.lispler.notdefteri'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId 'com.lispler.notdefteri'
         minSdk 24
-        targetSdk 34
-        versionCode 1
-        versionName '1.0'
+        targetSdk 36
+        versionCode 2
+        versionName '1.1'
+        // Pro abonelik ürün kimliği (Play Console ve App Store Connect'te aynı ad)
+        buildConfigField 'String', 'PRO_PRODUCT_ID', '"notdefteri.pro.aylik"'
     }
 
-    // Uygulama sabit bir anahtarla imzalanır; böylece yeni sürümler eskisinin üzerine kurulabilir.
     signingConfigs {
-        release {
+        // Telefona elle kurulan APK için (depodaki herkese açık anahtar)
+        sideload {
             storeFile file('notdefteri.keystore')
             storePassword 'notdefteri'
             keyAlias 'notdefteri'
             keyPassword 'notdefteri'
         }
+        if (keystorePropsFile.exists()) {
+            upload {
+                storeFile rootProject.file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
     }
 
     buildTypes {
         release {
-            minifyEnabled false
-            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig keystorePropsFile.exists() ? signingConfigs.upload : signingConfigs.sideload
+            manifestPlaceholders = [admobAppId: project.property('ADMOB_APP_ID')]
+            buildConfigField 'String', 'BANNER_ID', "\"${project.property('ADMOB_BANNER_ID')}\""
+            buildConfigField 'String', 'INTERSTITIAL_ID', "\"${project.property('ADMOB_INTERSTITIAL_ID')}\""
+            buildConfigField 'String', 'APP_OPEN_ID', "\"${project.property('ADMOB_APP_OPEN_ID')}\""
         }
         debug {
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.sideload
+            manifestPlaceholders = [admobAppId: TEST_APP_ID]
+            buildConfigField 'String', 'BANNER_ID', "\"${TEST_BANNER}\""
+            buildConfigField 'String', 'INTERSTITIAL_ID', "\"${TEST_INTERSTITIAL}\""
+            buildConfigField 'String', 'APP_OPEN_ID', "\"${TEST_APP_OPEN}\""
         }
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 
     // Web arayüzü tek kaynaktan gelir: depo kökündeki app/ klasörü
@@ -45,4 +80,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+}
+
+dependencies {
+    implementation 'com.google.android.gms:play-services-ads:25.5.0'
+    implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
+    implementation 'com.android.billingclient:billing:9.1.0'
 }

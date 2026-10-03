@@ -1,0 +1,38 @@
+{
+  "identifier" : "4C1D2B3A-0000-4000-8000-000000000001",
+  "nonRenewingSubscriptions" : [ ],
+  "products" : [ ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "tr_TR",
+    "_storefront" : "TUR",
+    "_storeKitErrors" : [ ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21500001",
+      "localizations" : [ ],
+      "name" : "Not Defteri Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [ ],
+          "codeOffers" : [ ],
+          "displayPrice" : "19.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6500000001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            { "description" : "Tüm reklamları kaldırır", "displayName" : "Not Defteri Pro", "locale" : "tr" }
+          ],
+          "productID" : "notdefteri.pro.aylik",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Pro Aylık",
+          "subscriptionGroupID" : "21500001",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : { "major" : 4, "minor" : 0 }
+}

@@ -1,0 +1,69 @@
+# iOS projesi XcodeGen ile üretilir:  brew install xcodegen && xcodegen generate
+name: NotDefteri
+options:
+  bundleIdPrefix: com.lispler
+  deploymentTarget:
+    iOS: "15.0"
+  createIntermediateGroups: true
+
+packages:
+  GoogleMobileAds:
+    url: https://github.com/googleads/swift-package-manager-google-mobile-ads
+    majorVersion: 12.0.0
+  GoogleUserMessagingPlatform:
+    url: https://github.com/googleads/swift-package-manager-google-user-messaging-platform
+    majorVersion: 3.0.0
+
+settings:
+  base:
+    MARKETING_VERSION: "1.1"
+    CURRENT_PROJECT_VERSION: "2"
+    SWIFT_VERSION: "5.0"
+
+targets:
+  NotDefteri:
+    type: application
+    platform: iOS
+    sources:
+      - path: NotDefteri
+      # Web arayüzü: depo kökündeki app/ klasörü uygulamaya "app" klasörü olarak kopyalanır
+      - path: ../app
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - package: GoogleMobileAds
+      - package: GoogleUserMessagingPlatform
+      - sdk: StoreKit.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lispler.notdefteri
+        PRODUCT_NAME: NotDefteri
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+        INFOPLIST_FILE: NotDefteri/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        # ---- AdMob kimlikleri ----
+        # Varsayılanlar Google'ın TEST kimlikleridir. AdMob'da iOS uygulamanızı oluşturunca
+        # aşağıdaki Release değerlerini kendi kimliklerinizle değiştirin.
+        ADMOB_APP_ID: ca-app-pub-3940256099942544~1458002511
+        ADMOB_BANNER_ID: ca-app-pub-3940256099942544/2435281174
+        ADMOB_INTERSTITIAL_ID: ca-app-pub-3940256099942544/4411468910
+        ADMOB_APP_OPEN_ID: ca-app-pub-3940256099942544/5575463023
+      configs:
+        Release:
+          ADMOB_APP_ID: ca-app-pub-3940256099942544~1458002511
+          ADMOB_BANNER_ID: ca-app-pub-3940256099942544/2435281174
+          ADMOB_INTERSTITIAL_ID: ca-app-pub-3940256099942544/4411468910
+          ADMOB_APP_OPEN_ID: ca-app-pub-3940256099942544/5575463023
+
+schemes:
+  NotDefteri:
+    build:
+      targets:
+        NotDefteri: all
+    run:
+      config: Debug
+      storeKitConfiguration: NotDefteri/NotDefteri.storekit
+    archive:
+      config: Release

@@ -83,6 +83,22 @@ button { font: inherit; color: inherit; }
 }
 :root[data-theme="dark"] #runBtn { color: #000; }
 #runBtn svg { width: 12px; height: 12px; fill: currentColor; }
+#proBtn {
+  flex: none; display: none; background: none; border: 1px solid #d4a017; color: #b8860b;
+  border-radius: 5px; padding: 5px 9px; cursor: pointer; font-weight: 600; white-space: nowrap;
+}
+:root[data-theme="dark"] #proBtn { color: #f2c94c; border-color: #f2c94c; }
+.pro-hero { text-align: center; padding: 6px 0 2px; }
+.pro-hero .star { font-size: 40px; line-height: 1; }
+.pro-list { list-style: none; padding: 0; margin: 12px 0; }
+.pro-list li { padding: 6px 0; display: flex; gap: 8px; }
+.pro-list li::before { content: "✓"; color: var(--run); font-weight: 700; }
+.pro-price { text-align: center; font-size: 20px; font-weight: 700; margin: 10px 0 4px; }
+.pro-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.pro-actions .btn { padding: 10px; }
+.pro-links { display: flex; justify-content: center; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+.linkbtn { background: none; border: 0; color: var(--accent); cursor: pointer; padding: 4px; font-size: 13px; }
+.legal { font-size: 11.5px; color: var(--muted); line-height: 1.45; margin-top: 12px; }
 
 .dropdown {
   position: fixed; z-index: 50; min-width: 250px; max-width: calc(100vw - 16px);
@@ -269,6 +285,7 @@ button { font: inherit; color: inherit; }
 <div id="titlebar">
   <img src="icon.svg" alt="">
   <span id="title">Adsız - Not Defteri</span>
+  <button id="proBtn" title="Reklamları kaldır">⭐ Pro</button>
   <button id="runBtn" title="HTML olarak çalıştır (Ctrl+R)">
     <svg viewBox="0 0 10 10"><path d="M1 0 L10 5 L1 10 Z"/></svg>Çalıştır
   </button>
@@ -341,6 +358,11 @@ const $ = (id) => document.getElementById(id);
 const ed = $('editor');
 const native = window.NativeApp || null;   // Android köprüsü (varsa)
 const isWeb = !native;
+const platform = native && native.platform ? native.platform() : 'web';
+const isIOS = platform === 'ios';
+const storeName = isIOS ? 'App Store' : 'Google Play';
+const PRIVACY_URL = 'https://mahmuttari.github.io/Lispler/gizlilik.html';
+const TERMS_URL = 'https://mahmuttari.github.io/Lispler/kosullar.html';
 const LS = {
   get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
@@ -531,7 +553,7 @@ async function clipWrite(t) {
   }
 }
 async function clipRead() {
-  if (native) return native.getClipboard() || '';
+  if (native) return (await native.getClipboard()) || '';
   try { return await navigator.clipboard.readText(); }
   catch (e) { toast('Pano okunamadı. Uzun basıp "Yapıştır" kullanın.'); return null; }
 }
@@ -629,6 +651,7 @@ async function cmdNew() {
   if (!(await confirmDiscard())) return;
   loadDocument(null, '', null);
   ed.focus();
+  adBreak('new');
 }
 
 const HTML_TEMPLATE = `<!DOCTYPE html>
@@ -710,7 +733,7 @@ async function cmdOpen() {
   const f = Files.get(name);
   if (!f) return;
   loadDocument(name, f.content, 'app');
-  if (r.run) cmdRun();
+  if (r.run) cmdRun(); else adBreak('opened');
 }
 
 async function openFromDevice(skipConfirm) {
@@ -767,7 +790,7 @@ async function cmdSaveAs() {
     title: 'Farklı Kaydet', body,
     buttons: [
       { label: 'İptal', value: null },
-      { label: native ? '📱 Cihaza kaydet' : '⬇ İndir', value: (box) => { const n = getName(box); return n && { device: n }; } },
+      { label: native ? (isIOS ? "📁 Dosyalar'a kaydet" : '📱 Cihaza kaydet') : '⬇ İndir', value: (box) => { const n = getName(box); return n && { device: n }; } },
       { label: 'Kaydet', primary: true, value: (box) => { const n = getName(box); return n && { app: n }; } }
     ],
     onOpen: (box) => {
@@ -821,6 +844,7 @@ async function saveToDevice(name) {
 }
 
 function afterSaveToast() {
+  adBreak('saved');
   if (isHtmlName(doc.name)) toast('"' + doc.name + '" kaydedildi', '▶ Çalıştır', cmdRun);
   else toast('"' + doc.name + '" kaydedildi');
 }
@@ -905,6 +929,7 @@ function cmdRun() {
 }
 function closeRun() {
   $('runView').classList.remove('show');
+  adBreak('run_closed');
   const f = $('runFrame');
   f.removeAttribute('srcdoc');
   f.src = 'about:blank';
@@ -1103,7 +1128,7 @@ function cmdAbout() {
   modal({
     title: 'Not Defteri Hakkında',
     body: '<div style="display:flex;gap:14px;align-items:center"><img src="icon.svg" width="56" height="56" alt="">' +
-      '<div><p><b>Not Defteri</b> — Sürüm 1.0</p><p style="color:var(--muted);font-size:13px">Windows Not Defteri tarzında, HTML çalıştırabilen metin düzenleyici.</p></div></div>'
+      '<div><p><b>Not Defteri</b> — Sürüm 1.1' + (isPro ? ' ⭐ Pro' : '') + '</p><p style="color:var(--muted);font-size:13px">Windows Not Defteri tarzında, HTML çalıştırabilen metin düzenleyici.</p></div></div>'
   });
 }
 
@@ -1129,6 +1154,78 @@ function cmdHelp() {
       '<b>&lt;/&gt;</b> düğmesi en son açılan etiketi kapatır. Görünüm menüsünden açıp kapatabilirsiniz.</li></ul></div>'
   });
 }
+
+/* ---------- Pro abonelik ve reklam ---------- */
+const hasPro = !!(native && native.getProInfo);
+let isPro = false;
+function adBreak(reason) { if (native && native.adBreak && !isPro) native.adBreak(reason); }
+function openUrl(url) { if (native && native.openUrl) native.openUrl(url); else window.open(url, '_blank'); }
+function updateProUi() { $('proBtn').style.display = hasPro && !isPro ? 'block' : 'none'; }
+window.onProChanged = function (v) {
+  const was = isPro;
+  isPro = !!v;
+  updateProUi();
+  if (isPro && !was) toast('⭐ Pro etkin — reklamlar kaldırıldı. Teşekkürler!');
+};
+
+async function cmdPro() {
+  const body = document.createElement('div');
+  body.innerHTML = '<p class="empty">Yükleniyor…</p>';
+  const done = modal({ title: 'Not Defteri Pro', body, buttons: [{ label: 'Kapat', value: null }] });
+  let info = await nativeCall('getProInfo');
+  info = info || {};
+  isPro = !!info.isPro;
+  updateProUi();
+  render();
+
+  function render() {
+    const price = info.price ? esc(info.price) : null;
+    if (isPro) {
+      body.innerHTML =
+        '<div class="pro-hero"><div class="star">⭐</div><p><b>Pro aboneliğiniz etkin.</b></p>' +
+        '<p style="color:var(--muted)">Reklamsız kullanım için teşekkürler!</p></div>' +
+        '<div class="pro-actions"><button class="btn" data-a="manage">Aboneliği yönet / iptal et</button></div>' +
+        legalLinks();
+    } else {
+      body.innerHTML =
+        '<div class="pro-hero"><div class="star">⭐</div><p><b>Reklamları tamamen kaldırın</b></p></div>' +
+        '<ul class="pro-list"><li>Alt reklam bandı yok</li><li>Tam ekran reklam yok</li>' +
+        '<li>Açılış reklamı yok</li><li>Geliştiriciye destek olursunuz</li></ul>' +
+        (price ? '<div class="pro-price">' + price + ' / ay</div>' : '') +
+        '<div class="pro-actions">' +
+        (info.available
+          ? '<button class="btn primary" data-a="buy">Abone ol' + (price ? ' — ' + price + '/ay' : '') + '</button>'
+          : '<p class="empty" style="padding:6px 0">Abonelik şu anda yüklenemedi. İnternet bağlantınızı ve ' + storeName + ' hesabınızı kontrol edin.</p>') +
+        '<button class="btn" data-a="restore">Satın alımları geri yükle</button></div>' +
+        '<p class="legal">Abonelik aylıktır ve iptal edilmedikçe her ay otomatik olarak yenilenir. Ödeme, satın alma onaylandığında ' +
+        storeName + ' hesabınızdan alınır. Mevcut dönemin bitiminden en az 24 saat önce iptal edilmezse abonelik yenilenir ve ' +
+        'yenileme ücreti dönem bitiminden önceki 24 saat içinde tahsil edilir. Aboneliğinizi ' + storeName +
+        ' hesap ayarlarından istediğiniz zaman yönetebilir veya iptal edebilirsiniz.</p>' + legalLinks();
+    }
+    body.querySelectorAll('[data-a]').forEach((b) => { b.onclick = () => act(b.dataset.a, b); });
+    body.querySelectorAll('[data-url]').forEach((b) => { b.onclick = () => openUrl(b.dataset.url); });
+  }
+  function legalLinks() {
+    return '<div class="pro-links"><button class="linkbtn" data-url="' + PRIVACY_URL + '">Gizlilik Politikası</button>' +
+      '<button class="linkbtn" data-url="' + TERMS_URL + '">Kullanım Koşulları</button></div>';
+  }
+  async function act(a, btn) {
+    if (a === 'manage') { native.manageSubscription(); return; }
+    btn.disabled = true;
+    const old = btn.textContent;
+    btn.textContent = 'Lütfen bekleyin…';
+    const r = (await nativeCall(a === 'buy' ? 'buyPro' : 'restorePro')) || {};
+    btn.disabled = false;
+    btn.textContent = old;
+    if (r.error) { toast(r.error); return; }
+    if (r.cancelled) return;
+    if (r.pending) { toast('Ödemeniz onay bekliyor. Onaylanınca Pro otomatik açılır.'); return; }
+    if (r.isPro) { window.onProChanged(true); closeModal(null); return; }
+    if (a === 'restore') toast('Bu hesapta etkin bir Pro abonelik bulunamadı');
+  }
+  return done;
+}
+$('proBtn').onclick = cmdPro;
 
 /* ---------- Sembol çubuğu ---------- */
 const VOID_TAGS = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr', '!doctype']);
@@ -1174,8 +1271,8 @@ const MENUS = {
     ['Kaydet', 'Ctrl+S', cmdSave],
     ['Farklı Kaydet...', 'Ctrl+Shift+S', cmdSaveAs],
     '-',
-    [native ? 'Cihazdan aç...' : 'Bilgisayardan aç...', '', () => openFromDevice(false)],
-    [native ? 'Cihaza kaydet...' : 'İndir...', '', () => saveToDevice(defaultName())],
+    [native ? (isIOS ? "Dosyalar'dan aç..." : 'Cihazdan aç...') : 'Bilgisayardan aç...', '', () => openFromDevice(false)],
+    [native ? (isIOS ? "Dosyalar'a kaydet..." : 'Cihaza kaydet...') : 'İndir...', '', () => saveToDevice(defaultName())],
     ['Paylaş...', '', cmdShare, !native && !navigator.share],
     '-',
     ['▶ Çalıştır (HTML)', 'Ctrl+R', cmdRun],
@@ -1213,8 +1310,10 @@ const MENUS = {
     ['Koyu Tema', '', toggleTheme, false, document.documentElement.dataset.theme === 'dark'],
   ],
   yardim: () => [
+    ...(hasPro ? [[isPro ? '⭐ Pro aboneliğim' : "⭐ Pro'ya geç (reklamsız)", '', cmdPro]] : []),
     ['Nasıl Kullanılır', '', cmdHelp],
     ['Not Defteri Hakkında', '', cmdAbout],
+    ...(native ? [['Gizlilik Politikası', '', () => openUrl(PRIVACY_URL)]] : []),
   ]
 };
 let openMenuName = null;
@@ -1314,6 +1413,8 @@ resetHistory();
 updateTitle();
 updateStatus();
 if (native && native.ready) native.ready();
+updateProUi();
+if (hasPro) nativeCall('getProInfo').then((i) => { isPro = !!(i && i.isPro); updateProUi(); });
 
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
   navigator.serviceWorker.register('sw.js').catch(() => {});

@@ -7,7 +7,7 @@
 - **Yaş sınırı:** Herkes / 4+ (kullanıcı içeriği yalnızca cihazda, sohbet/paylaşım yok)
 - **Gizlilik politikası:** https://mahmuttari.github.io/Lispler/gizlilik.html
 - **Kullanım koşulları:** https://mahmuttari.github.io/Lispler/kosullar.html
-- **Destek adresi:** https://github.com/mahmuttari/Lispler (veya e-posta adresiniz)
+- **Destek e-postası:** mahmuttari@gmail.com
 
 ## Kısa açıklama (Google Play, en fazla 80 karakter)
 

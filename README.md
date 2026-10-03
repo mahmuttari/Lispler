@@ -38,8 +38,8 @@ veri güvenliği formu cevapları: [`magaza/aciklamalar.md`](magaza/aciklamalar.
 ## Mağazalarda yayınlama: yapılacaklar listesi
 
 ### 0. Ortak hazırlık
-- [ ] `app/gizlilik.html` ve `app/kosullar.html` içindeki **[E-POSTA ADRESİNİZ]** yerine iletişim adresinizi yazın.
-- [ ] GitHub › Settings › Pages › Source: **GitHub Actions** seçin, bu dalı `main`'e birleştirin.
+- [x] Gizlilik ve koşullar sayfalarına iletişim e-postası eklendi.
+- [x] GitHub Pages açıldı (Source: GitHub Actions).
       Gizlilik politikası şu adreste yayınlanır: `https://mahmuttari.github.io/Lispler/gizlilik.html`
 - [ ] [AdMob](https://admob.google.com) hesabı açın; **Android** ve **iOS** için birer uygulama, her birinde
       **Banner**, **Geçiş (Interstitial)** ve **Uygulama açılışı (App open)** reklam birimi oluşturun.

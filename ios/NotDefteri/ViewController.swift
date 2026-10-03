@@ -355,8 +355,8 @@ final class ViewController: UIViewController, WKScriptMessageHandlerWithReply, W
             decisionHandler(.allow)
             return
         }
-        let internal = [AppSchemeHandler.scheme, "about", "data", "blob"].contains(scheme)
-        if !internal && navigationAction.targetFrame?.isMainFrame != false {
+        let isInternal = [AppSchemeHandler.scheme, "about", "data", "blob"].contains(scheme)
+        if !isInternal && navigationAction.targetFrame?.isMainFrame != false {
             openExternal(url)
             decisionHandler(.cancel)
             return

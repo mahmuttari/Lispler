@@ -22,7 +22,7 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Xcode sürümünü seç
         run: |
@@ -40,7 +40,8 @@ jobs:
           set -o pipefail
           cd ios
           xcodebuild -project NotDefteri.xcodeproj -scheme NotDefteri -configuration Debug \
-            -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build | tail -60
+            -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build 2>&1 \
+            | grep -E "error:|warning: .*/ios/NotDefteri/|BUILD (SUCCEEDED|FAILED)" | head -80
 
       - name: Arşivle ve App Store Connect'e yükle
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload }}

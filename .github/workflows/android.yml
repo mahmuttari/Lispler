@@ -24,7 +24,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: android-actions/setup-android@v3
+      # GitHub'ın Ubuntu sunucularında Android SDK hazır kurulu gelir (ANDROID_HOME)
 
       - name: APK derle
         working-directory: android

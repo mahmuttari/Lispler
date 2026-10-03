@@ -1,5 +1,5 @@
 # app/ klasörünü (web sürümü + gizlilik politikası + kullanım koşulları) GitHub Pages'te yayınlar.
-# Bir kez: GitHub > Settings > Pages > Source: "GitHub Actions" seçin.
+# Gerekli ayar (yapıldı): GitHub > Settings > Pages > Source: "GitHub Actions".
 # Adresler: https://mahmuttari.github.io/Lispler/  ve  .../gizlilik.html  .../kosullar.html
 name: Pages
 

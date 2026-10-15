@@ -46,6 +46,9 @@ veri güvenliği formu cevapları: [`magaza/aciklamalar.md`](magaza/aciklamalar.
 - [ ] AdMob › Gizlilik ve mesajlaşma › **GDPR izin mesajı** (ve iOS için **IDFA açıklama mesajı**) oluşturup yayınlayın.
 
 ### 1. Google Play
+> **Güncel yol:** [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) — tarayıcı işleri bilgisayardaki Claude Code'a,
+> mağaza metni/görseller/AAB yüklemesi GitHub Actions ile Play API'ye (`android/play-istek.txt`).
+
 - [ ] [Play Console](https://play.google.com/console) geliştirici hesabı (tek seferlik 25 $, kimlik doğrulama).
 - [ ] `android/gradle.properties` içindeki `ADMOB_*` kimliklerini kendi Android kimliklerinizle değiştirin.
 - [ ] Uygulama oluşturun: paket adı `com.poyrazworkshop.notdefteri` (sonradan değiştirilemez).

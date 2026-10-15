@@ -1,0 +1,1 @@
+İlk sürüm: Windows Not Defteri tarzında metin düzenleyici. HTML yaz, kaydet ve tek dokunuşla çalıştır. Konsol, koyu tema, bul/değiştir, PDF olarak kaydet.

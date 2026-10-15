@@ -1,0 +1,57 @@
+# Not Defteri — Google Play Developer API işleri (android/play.mjs). GENEL-KONULAR/Takasla'daki düzen:
+# komutlar android/play-istek.txt'ye yazılır (her satır bir komut, sırayla; biri hata verirse sonrakiler çalışmaz).
+# Kimlik anahtarsız: GitHub → Workload Identity → android/play-kimlik.env'deki hizmet hesabının kısa ömürlü belirteci.
+# Hizmet hesabı Play Console → Kullanıcılar ve izinler'de uygulamaya davet edilmiş olmalı (magaza/PLAY-YAYIN.md).
+# "yukle" komutu depodaki dist/NotDefteri-play.aab'yi kullanır (versionCode android/app/build.gradle'dan).
+name: Google Play (Not Defteri)
+
+on:
+  push:
+    paths: ['android/play-istek.txt']
+  workflow_dispatch:
+
+concurrency:
+  group: play-notdefteri
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  play:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Komutlar ve kimlik
+        id: hazir
+        run: |
+          grep -v '^[[:space:]]*#' android/play-istek.txt | tr -d '\r' | sed '/^[[:space:]]*$/d' > "$RUNNER_TEMP/komutlar"
+          while IFS= read -r K; do case "$K" in *[!a-z\ ]*) echo "::error::geçersiz komut: $K"; exit 1;; esac; done < "$RUNNER_TEMP/komutlar"
+          echo "Komutlar:"; cat "$RUNNER_TEMP/komutlar"
+          grep -E '^(PLAY_WIF_PROVIDER|PLAY_SERVICE_ACCOUNT)=' android/play-kimlik.env >> "$GITHUB_ENV"
+          . android/play-kimlik.env
+          if [ -z "$PLAY_WIF_PROVIDER" ] || [ -z "$PLAY_SERVICE_ACCOUNT" ]; then
+            echo "::warning::android/play-kimlik.env boş: önce Cloud Shell'de android/play-kurulum.sh çalıştırılmalı (magaza/PLAY-YAYIN.md). Play'e bağlanılmadı."
+            echo "tamam=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "tamam=true" >> "$GITHUB_OUTPUT"
+          fi
+      - id: auth
+        if: steps.hazir.outputs.tamam == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.PLAY_WIF_PROVIDER }}
+          service_account: ${{ env.PLAY_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+      - name: play.mjs
+        if: steps.hazir.outputs.tamam == 'true'
+        env:
+          PLAY_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          while IFS= read -r K; do echo; echo "════ $K ════"; node android/play.mjs $K < /dev/null; done < "$RUNNER_TEMP/komutlar"

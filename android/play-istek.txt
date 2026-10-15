@@ -7,3 +7,5 @@
 #   yukle yayinla uygula        sürümü yayına gönderir — yalnız kullanıcının açık onayıyla
 #   imza                        Play uygulama imzalama anahtarının SHA-256'sı
 durum
+magaza uygula
+gorsel uygula

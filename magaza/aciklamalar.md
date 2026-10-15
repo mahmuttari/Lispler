@@ -13,7 +13,7 @@
 
 ## Kısa açıklama (Google Play, en fazla 80 karakter)
 
-Windows Not Defteri gibi sade metin düzenleyici. HTML yaz, kaydet, tek dokunuşla çalıştır!
+Windows Not Defteri gibi sade. HTML yaz, kaydet, tek dokunuşla çalıştır!
 
 ## Alt başlık (App Store, en fazla 30 karakter)
 
@@ -45,6 +45,10 @@ Not Defteri, Windows'taki klasik Not Defteri'nin telefondaki hali: sade, hızlı
 • </> düğmesi son açtığınız HTML etiketini otomatik kapatır.
 • Telefonunuzdaki dosyaları açın, düzenleyin, aynı dosyaya geri kaydedin.
 • Kaydetmeyi unutsanız bile yazdıklarınız kaybolmaz.
+
+📄 PDF OLARAK KAYDET
+• Notlarınızı sayfa numaralı PDF yapın.
+• HTML sayfanızın çalışmış hâlini PDF olarak kaydedin.
 
 ⭐ NOT DEFTERİ PRO
 Tüm reklamları kaldıran aylık abonelik. Fiyat uygulama içinde ülkenizin para birimiyle gösterilir.

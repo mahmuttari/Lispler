@@ -3,6 +3,8 @@
 ## Ortak
 
 - **Uygulama adı:** Not Defteri – HTML Çalıştır
+- **Geliştirici adı:** Poyraz Workshop
+- **Paket adı / Bundle ID:** `com.poyrazworkshop.notdefteri`
 - **Kategori:** Verimlilik (Productivity) · İkincil: Geliştirici Araçları (iOS)
 - **Yaş sınırı:** Herkes / 4+ (kullanıcı içeriği yalnızca cihazda, sohbet/paylaşım yok)
 - **Gizlilik politikası:** https://mahmuttari.github.io/Lispler/gizlilik.html

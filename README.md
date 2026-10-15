@@ -48,7 +48,7 @@ veri güvenliği formu cevapları: [`magaza/aciklamalar.md`](magaza/aciklamalar.
 ### 1. Google Play
 - [ ] [Play Console](https://play.google.com/console) geliştirici hesabı (tek seferlik 25 $, kimlik doğrulama).
 - [ ] `android/gradle.properties` içindeki `ADMOB_*` kimliklerini kendi Android kimliklerinizle değiştirin.
-- [ ] Uygulama oluşturun: paket adı `com.lispler.notdefteri` (sonradan değiştirilemez).
+- [ ] Uygulama oluşturun: paket adı `com.poyrazworkshop.notdefteri` (sonradan değiştirilemez).
 - [ ] **Play App Signing**'i açık bırakın; ilk AAB'yi yükleyin (yükleme anahtarı bu dosyayla tanımlanır).
 - [ ] Abonelik: [`magaza/fiyatlandirma.md`](magaza/fiyatlandirma.md) adımları (ürün kimliği `notdefteri.pro.aylik`).
 - [ ] Mağaza girişi, ekran görüntüleri, içerik derecelendirmesi, **Veri güvenliği**, **Reklam içeriyor: Evet**,
@@ -63,7 +63,7 @@ Sonra her push'ta **Actions › Android** çalışır, imzalı AAB'yi **Artifact
 
 ### 2. App Store (Mac gerekmez)
 - [ ] [Apple Developer Program](https://developer.apple.com/programs/) üyeliği (yıllık 99 $).
-- [ ] App Store Connect'te uygulama oluşturun: Bundle ID `com.lispler.notdefteri`.
+- [ ] App Store Connect'te uygulama oluşturun: Bundle ID `com.poyrazworkshop.notdefteri`.
 - [ ] **Agreements, Tax, and Banking** › Paid Apps sözleşmesi (abonelik satmak için şart).
 - [ ] `ios/project.yml` içindeki `Release` bölümündeki `ADMOB_*` kimliklerini iOS kimliklerinizle değiştirin.
 - [ ] App Store Connect › Users and Access › Integrations › **App Store Connect API** › anahtar oluşturun

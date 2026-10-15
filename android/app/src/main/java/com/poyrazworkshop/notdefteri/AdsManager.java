@@ -1,4 +1,4 @@
-package com.lispler.notdefteri;
+package com.poyrazworkshop.notdefteri;
 
 import android.app.Activity;
 import android.os.SystemClock;

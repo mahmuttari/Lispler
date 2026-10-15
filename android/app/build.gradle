@@ -14,11 +14,11 @@ def TEST_INTERSTITIAL = 'ca-app-pub-3940256099942544/1033173712'
 def TEST_APP_OPEN = 'ca-app-pub-3940256099942544/9257395921'
 
 android {
-    namespace 'com.lispler.notdefteri'
+    namespace 'com.poyrazworkshop.notdefteri'
     compileSdk 36
 
     defaultConfig {
-        applicationId 'com.lispler.notdefteri'
+        applicationId 'com.poyrazworkshop.notdefteri'
         minSdk 24
         targetSdk 36
         versionCode 3

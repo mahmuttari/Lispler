@@ -1,7 +1,7 @@
 # iOS projesi XcodeGen ile üretilir:  brew install xcodegen && xcodegen generate
 name: NotDefteri
 options:
-  bundleIdPrefix: com.lispler
+  bundleIdPrefix: com.poyrazworkshop
   deploymentTarget:
     iOS: "15.0"
   createIntermediateGroups: true
@@ -36,7 +36,7 @@ targets:
       - sdk: StoreKit.framework
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.lispler.notdefteri
+        PRODUCT_BUNDLE_IDENTIFIER: com.poyrazworkshop.notdefteri
         PRODUCT_NAME: NotDefteri
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon

@@ -1,0 +1,5449 @@
+/* ============================================================
+   HAYALET AVCILARI
+   Kızımız için yapılmış basit ve eğlenceli bir oyun.
+   ============================================================ */
+
+// ====== SES SİSTEMİ ======
+const audio = {
+  ctx: null,
+  enabled: true,
+  samples: {},
+  // Kategori ses seviyeleri (0..1). save.volumes ile değiştirilebilir
+  volumes: { ghost: 1, fire: 1, sfx: 1 },
+  _preloaded: false,
+  _lastSmallGhost: 0,
+  _v(cat) { const v = this.volumes && this.volumes[cat]; return v == null ? 1 : v; },
+  init() {
+    if (this.ctx) {
+      if (this.ctx.state === "suspended") this.ctx.resume();
+      this.preloadSamples();
+      return;
+    }
+    try {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this.preloadSamples();
+    } catch (e) {}
+  },
+  preloadSamples() {
+    if (this._preloaded || !this.ctx) return;
+    this._preloaded = true;
+    this.loadSample("smallGhost", "sfx/kucuk-hayalet.m4a");
+    this.loadSample("bigGhost", "sfx/buyuk-hayalet.m4a");
+  },
+  async loadSample(key, url) {
+    if (this.samples[key] || !this.ctx) return;
+    try {
+      const res = await fetch(url);
+      const arr = await res.arrayBuffer();
+      const buf = await this.ctx.decodeAudioData(arr);
+      this.samples[key] = buf;
+    } catch (e) {}
+  },
+  playSample(key, vol) {
+    if (!this.enabled || !this.ctx) return false;
+    const buf = this.samples[key];
+    if (!buf) return false;
+    vol = vol == null ? 0.7 : vol;
+    const src = this.ctx.createBufferSource();
+    const gain = this.ctx.createGain();
+    src.buffer = buf;
+    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+    src.connect(gain).connect(this.ctx.destination);
+    src.start();
+    return true;
+  },
+  smallGhost() {
+    // Aynı anda 20+ hayalet patlamamak için 250 ms global throttle
+    const now = performance.now();
+    if (now - this._lastSmallGhost < 250) return;
+    this._lastSmallGhost = now;
+    this.playSample("smallGhost", 0.45 * this._v("ghost"));
+  },
+  bigGhost() {
+    if (!this.playSample("bigGhost", 0.8 * this._v("ghost"))) this.boss();
+  },
+  beep(freq, dur, type, vol) {
+    if (!this.enabled || !this.ctx) return;
+    type = type || "sine";
+    vol = vol == null ? 0.18 : vol;
+    const t0 = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    gain.gain.setValueAtTime(vol, t0);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+    osc.connect(gain).connect(this.ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.02);
+  },
+  slide(f1, f2, dur, type, vol) {
+    if (!this.enabled || !this.ctx) return;
+    type = type || "triangle";
+    vol = vol == null ? 0.18 : vol;
+    const t0 = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(f1, t0);
+    osc.frequency.exponentialRampToValueAtTime(Math.max(40, f2), t0 + dur);
+    gain.gain.setValueAtTime(vol, t0);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+    osc.connect(gain).connect(this.ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.02);
+  },
+  noise(dur, vol) {
+    if (!this.enabled || !this.ctx) return;
+    vol = vol == null ? 0.15 : vol;
+    const len = Math.floor(this.ctx.sampleRate * dur);
+    const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+    const ch = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) ch[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    const src = this.ctx.createBufferSource();
+    const gain = this.ctx.createGain();
+    src.buffer = buf;
+    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+    src.connect(gain).connect(this.ctx.destination);
+    src.start();
+  },
+  click()  { const v = this._v("sfx"); this.beep(900, 0.05, "square", 0.10 * v); },
+  toast()  { const v = this._v("sfx"); this.beep(660, 0.07, "sine", 0.10 * v); },
+  fire()   { const v = this._v("fire"); this.beep(820, 0.05, "triangle", 0.07 * v); },
+  hit()    { const v = this._v("sfx"); this.beep(220, 0.06, "square", 0.10 * v); },
+  kill()   { const v = this._v("sfx"); this.slide(700, 1100, 0.18, "triangle", 0.16 * v); },
+  boss()   { const v = this._v("ghost"); this.slide(220, 90, 0.5, "sawtooth", 0.20 * v); },
+  bossDie(){ const v = this._v("sfx"); this.slide(150, 800, 0.4, "sawtooth", 0.22 * v); setTimeout(() => this.beep(1000, 0.18, "triangle", 0.18 * v), 350); },
+  damage() { const v = this._v("sfx"); this.slide(300, 90, 0.25, "sawtooth", 0.22 * v); },
+  pickup() { const v = this._v("sfx"); this.beep(1100, 0.06, "sine", 0.12 * v); },
+  gem()    { const v = this._v("sfx"); this.beep(1500, 0.10, "sine", 0.15 * v); setTimeout(() => this.beep(2000, 0.10, "sine", 0.13 * v), 60); },
+  emerald(){ const v = this._v("sfx"); this.slide(800, 1600, 0.25, "sine", 0.16 * v); },
+  win()    {
+    const v = this._v("sfx");
+    this.beep(523, 0.10, "triangle", 0.18 * v);
+    setTimeout(() => this.beep(659, 0.10, "triangle", 0.18 * v), 110);
+    setTimeout(() => this.beep(784, 0.18, "triangle", 0.18 * v), 220);
+    setTimeout(() => this.beep(1047, 0.25, "triangle", 0.18 * v), 380);
+  },
+  lose()   {
+    const v = this._v("sfx");
+    this.slide(440, 220, 0.3, "sawtooth", 0.20 * v);
+    setTimeout(() => this.slide(330, 110, 0.5, "sawtooth", 0.22 * v), 280);
+  },
+  buy()    { const v = this._v("sfx"); this.beep(700, 0.06, "square", 0.12 * v); setTimeout(() => this.beep(1100, 0.10, "triangle", 0.14 * v), 60); },
+  unlock() {
+    const v = this._v("sfx");
+    this.beep(660, 0.08, "triangle", 0.16 * v);
+    setTimeout(() => this.beep(880, 0.08, "triangle", 0.16 * v), 90);
+    setTimeout(() => this.beep(1175, 0.16, "triangle", 0.18 * v), 180);
+  },
+  heart() {
+    const v = this._v("sfx");
+    this.beep(523, 0.08, "triangle", 0.20 * v);
+    setTimeout(() => this.beep(659, 0.08, "triangle", 0.20 * v), 80);
+    setTimeout(() => this.beep(880, 0.10, "triangle", 0.22 * v), 160);
+    setTimeout(() => this.beep(1175, 0.18, "triangle", 0.24 * v), 260);
+  },
+  levelUp(){
+    const v = this._v("sfx");
+    this.beep(523, 0.08, "triangle", 0.16 * v);
+    setTimeout(() => this.beep(784, 0.08, "triangle", 0.16 * v), 90);
+    setTimeout(() => this.beep(1047, 0.18, "triangle", 0.18 * v), 180);
+  },
+};
+
+// ====== ONLINE / MULTIPLAYER (Firebase JS SDK) ======
+const RTDB_URL = "https://hayalet-avcilari-default-rtdb.europe-west1.firebasedatabase.app";
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCEEVvj49yaZBxAJe78EjeUZBlpJaFyouU",
+  databaseURL: RTDB_URL,
+  projectId: "hayalet-avcilari",
+};
+const ONLINE_UID_KEY = "hayaletAvcilariOnlineUid_v1";
+const ROOM_LIST_TTL_MS = 60000; // listener'lar real-time, sadece zombie temizlik için
+
+// Firebase init
+let _fbDb = null;
+function fbDb() {
+  if (_fbDb) return _fbDb;
+  if (typeof firebase === "undefined") {
+    console.error("Firebase SDK yüklenmedi");
+    return null;
+  }
+  if (!firebase.apps || firebase.apps.length === 0) {
+    firebase.initializeApp(FIREBASE_CONFIG);
+  }
+  _fbDb = firebase.database();
+  return _fbDb;
+}
+
+function getOnlineUid() {
+  let uid = localStorage.getItem(ONLINE_UID_KEY);
+  if (!uid) {
+    uid = "u_" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+    localStorage.setItem(ONLINE_UID_KEY, uid);
+  }
+  return uid;
+}
+
+// SDK helper — mevcut rtdb.X çağrıları için geri uyumlu wrapper
+const rtdb = {
+  get: async (path) => {
+    try {
+      const db = fbDb(); if (!db) return null;
+      const snap = await db.ref(path).get();
+      return snap.exists() ? snap.val() : null;
+    } catch (e) { online.lastError = e.message; console.error("rtdb.get", path, e); return null; }
+  },
+  put: async (path, body) => {
+    try {
+      const db = fbDb(); if (!db) return null;
+      await db.ref(path).set(body);
+      return body;
+    } catch (e) { online.lastError = e.message; console.error("rtdb.put", path, e); return null; }
+  },
+  patch: async (path, body) => {
+    try {
+      const db = fbDb(); if (!db) return null;
+      await db.ref(path).update(body);
+      return body;
+    } catch (e) { online.lastError = e.message; console.error("rtdb.patch", path, e); return null; }
+  },
+  post: async (path, body) => {
+    try {
+      const db = fbDb(); if (!db) return null;
+      const ref = await db.ref(path).push(body);
+      return { name: ref.key };
+    } catch (e) { online.lastError = e.message; console.error("rtdb.post", path, e); return null; }
+  },
+  remove: async (path) => {
+    try {
+      const db = fbDb(); if (!db) return null;
+      await db.ref(path).remove();
+      return null;
+    } catch (e) { online.lastError = e.message; console.error("rtdb.remove", path, e); return null; }
+  },
+};
+
+// Oturum durumu
+const online = {
+  uid: null,
+  roomId: null,
+  isHost: false,
+  selectedMax: 5,
+  cachedRoom: null,
+  // Oyun içi senkronizasyon
+  mode: null,            // null | "host" | "client"
+  pushTimer: null,       // 200 ms → kendi state'imi yaz (mpPush)
+  remotePlayers: {},     // { uid: { name, charKey, costumeIdx, x, y, hp, facing, ... } }
+  pendingEvents: [],     // client → host event kuyruğu (hits, pickup claims)
+  // Firebase listener referansları
+  _roomRef: null,
+  _roomListener: null,
+  _roomListRef: null,
+  _roomListListener: null,
+  _eventsRef: null,
+  _eventsListener: null,
+};
+
+// Senk hız ayarları
+const MP_PUSH_MS = 100;     // host/client kendi pos+state yazar (10 Hz)
+const INTERP_RATE = 14;     // lerp hız faktörü (yüksek = daha hızlı yakalar)
+const INTERP_SNAP_DIST = 200; // bu mesafeden uzak snapshot → ışınla (lerp yerine)
+let _mpPushInflight = false;
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+function smoothToward(current, target, dt) {
+  if (Math.abs(target - current) > INTERP_SNAP_DIST) return target; // çok uzak → snap
+  return lerp(current, target, Math.min(1, dt * INTERP_RATE));
+}
+
+// ====== KAYIT SİSTEMİ ======
+const SAVE_KEY = "hayaletAvcilariSave_v1";
+const LEADERBOARD_KEY = "hayaletAvcilariLeaderboard_v1";
+const LEADERBOARD_MAX = 10;
+const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
+
+// ====== SÜRÜM NOTLARI ======
+const APP_VERSION = "3.9.0";
+const UPDATE_NOTES = {
+  "3.9.0": [
+    "🔐 Google ile Giriş eklendi — hesap kurtarma ve cihazlar arası senkron için.",
+    "☁️ Bulut yedekleme: Google hesabınla otomatik yedek/geri yükleme.",
+    "🔑 Manuel hesap kodu sistemi: internetsiz ortamlar için yedek olarak duruyor.",
+    "✏️ İsim değiştirme: 50 💚 zümrüt karşılığında — şampiyonlar listesindeki ismi de güncellenir.",
+    "🎚 Kategori bazlı ses seviyesi: 👻 Hayalet, 🔫 Atış, ✨ Diğer efektler için ayrı kaydırıcılar.",
+  ],
+  "3.8.4": [
+    "📱 Daha fazla tablet artık Play Store'da uyumlu görünüyor (Lenovo TB350FU ve benzeri cihazlar dahil).",
+  ],
+  "3.8.3": [
+    "🔊 Ses açma/kapama ayarı: Menü ve duraklat ekranında 🔊/🔇 butonu (kalıcı kayıt).",
+    "👻 Hayalet sayısı 2 katına çıktı, daha hızlı spawn — daha yoğun aksiyon.",
+    "👑 Boss artık 5 minik hayalet spawn ediyor; hepsi öldükten 5 sn sonra yenilerini gönderir.",
+    "⏱ Boss geliş süreleri 10 sn daha kısaldı (Bölüm 1-10 için 20→10 sn).",
+    "🔫 Karakter silahı artık nişan alınca yukarı kalkar, hedef yokken aşağıda durur.",
+    "💥 Atış geri tepme animasyonu: silah kısa süreliğine geri yaslanır.",
+    "🚶 Yürürken vücut hafifçe sağa-sola eğilir — daha canlı animasyon.",
+  ],
+  "3.8.2": [
+    "👻 Küçük hayaletler artık hayatta oldukları sürece her 10 sn'de bir seslenir (önceden sadece spawn'da).",
+    "👑 Boss her 3 sn'de bir kükrer.",
+    "🔊 Aynı anda kalabalık seste karışma olmasın diye 250 ms global throttle.",
+  ],
+  "3.8.1": [
+    "👻 Küçük hayalet sesi: hayaletler spawn olduğunda korkutucu sesleri duyulur (3.5 sn cooldown).",
+    "👑 Boss sesi: bölüm bossu çıkınca büyük hayalet sesi çalar.",
+  ],
+  "3.7": [
+    "📱 Tablet desteği eklendi — joystick, cephane butonları ve HUD tablet ekranında büyüdü.",
+    "🔍 Tablette gameplay kamerası yakınlaştı; karakter ve hayaletler daha büyük görünüyor (telefon hissi korunuyor).",
+    "🔄 Tablette hem yatay hem dik kullanım sorunsuz.",
+    "🅰️ Menü, butonlar ve karakter önizlemesi tabletlerde okunaklı boyuta geldi.",
+  ],
+  "3.6": [
+    "💰 Online'da kazandığın para/elmas/zümrüt menüye dönerken save'e yazılıyor (eskiden kayboluyordu).",
+    "💣 Cephane silahları (bomba/şimşek/dondurma/roket) artık client modunda da hayalete etki ediyor — host'a event ile bildirilir.",
+    "👻 Client'ta hayalet ölüm anında fade efekti + parçacıklar görünür (eskiden ışınlanarak yok oluyordu).",
+  ],
+  "3.5": [
+    "👑 Host transferi: host ayrılırsa kalan en eski oyuncu otomatik host olur, oyun durmaz.",
+    "👻 Spectator modu: ölen oyuncu mavi hayalet karakter olarak izleyici kalır, etrafta uçabilir, hasar almaz.",
+  ],
+  "3.4": [
+    "🌊 Interpolation/Entity Smoothing eklendi — diğer oyuncular ve hayaletler akıcı hareket ediyor.",
+    "⚡ Senk hızı 10 Hz'e çıktı, düşman mermileri hız vektörüyle akıcı uçuyor.",
+    "🎯 Mesafesi 200 px üzerinde olan snapshot ışınlanır (lerp yerine), bölüm geçişi smooth.",
+  ],
+  "3.3": [
+    "⚡ Online mod Firebase JS SDK'ya geçti — WebSocket üzerinden gerçek zamanlı senkronizasyon.",
+    "🚀 Polling kaldırıldı, listener push: daha düşük gecikme + daha akıcı oyun.",
+    "🔌 onDisconnect: bir cihaz çıkınca otomatik odadan kaldırılır, zombie odalar yok.",
+  ],
+  "3.2": [
+    "🐛 Düzeltme: Boş ekran sorunu çözüldü (pickup scope hatası).",
+    "🛡 Hata yakalayıcı eklendi — beklenmedik bir hatada üstte kırmızı bant görünür.",
+  ],
+  "3.1": [
+    "🐛 Düzeltme: Oyuna girince boş ekran kalıyordu (kritik scope hatası).",
+    "🎮 Lobi butonu netleştirildi: 'HAZIR OL' / '✓ HAZIRIM'.",
+  ],
+  "3.0": [
+    "🌐 ONLINE ÇOKLU OYUNCU eklendi! Ana menüden 'Online Oyna' ile 5 kişilik odalara katıl.",
+    "🎮 Oda kur, oda listesinden katıl, lobi'de hazır ol → birlikte oyna.",
+    "👥 Aynı bölümde aynı hayaletlere karşı savaşın; diğer oyuncuların ismi + can çubuğu görünür.",
+    "💰 Pickup yarışı: para/elmas kim önce alırsa onun olur.",
+    "📡 Firebase Realtime Database üzerinden 10 Hz senkronizasyon.",
+  ],
+  "2.9": [
+    "🎯 Her karakterin kendi mermi modeli: enerji topu, taş yumru, büyü yıldızı, ok, dönen bıçak, kurşun, sapan taşı, şeker top, enerji yumruğu...",
+  ],
+  "2.8": [
+    "🗡 Her karakterin eline kendine özel silah tasarımı eklendi (tabanca, çekiç, asa, yay, sapan, nunchaku...).",
+    "👑 Boss artık ateş ediyor; bölüm 8+ olunca 3'lü koni atışa geçiyor.",
+    "👻 Bölüm 5+ : ara sıra ateş edebilen mor 'shooter' hayaletler çıkıyor.",
+    "🛡 Düşman mermilerini oyuncu mermisiyle havada vurarak yok edebilirsin.",
+  ],
+  "2.7": [
+    "🚶 Karakterlere yürüme animasyonu eklendi: adım atma + hafif zıplama.",
+    "💥 Bomba ve roket ile vurulan hayaletler patlama merkezinden dışa savruluyor.",
+  ],
+  "2.6": [
+    "🔥 Lav görseli yenilendi: parlak glow, magma kabuğu, çatlaklar ve çift kenar — su ile karışmıyor.",
+    "💧 Su artık tüm bölümlerde sabit mavi; tema rengine göre değişmiyor.",
+  ],
+  "2.5": [
+    "🦔 Yeni tehlike: Dikenlik alanlar — dokununca 1 saniye donarsın.",
+    "🔥 Yeni tehlike: Lav — temas edince 1 can kaybedersin (3. bölümden itibaren çıkar).",
+    "🚀 Roket artık çarptığı yerde 110 px alan hasarı veriyor.",
+    "⚡ Şimşek silahı vurduğu hayaletlerin üzerinde elektrik spark efekti bırakıyor.",
+    "👻 Ölen hayalet izi 1 sn'ye indi, daha canlı yukarı süzülüyor.",
+  ],
+  "2.4": [
+    "💣 Bomba artık büyüyen patlama halkasıyla görsel olarak patlıyor.",
+    "🚀 Roket ateş kuyruğuyla hedefe uçuyor, çarpınca patlama efekti veriyor.",
+    "👻 Ölen hayaletler 3 saniye boyunca solarak arkasında iz bırakıyor.",
+    "⚔️ İlk bölümlerdeki hayalet sayısı ve spawn hızı arttı.",
+  ],
+  "2.3": [
+    "🎯 Yeni: Cephane sistemi! Mağaza → Cephane sekmesinden tek kullanımlık silahlar al.",
+    "💣 7 silah eklendi: Bomba, Dondurma, Şimşek, Kasırga, İlk Yardım, Roket, Görünmezlik.",
+    "👥 Karakter başına bağımsız yükseltme — her karakteri ayrı seviyele.",
+    "❤️ Boss kalpleri artık max canı arttırmıyor; sadece eksik canı dolduruyor.",
+  ],
+};
+
+// ====== FIRESTORE (online şampiyon listesi) ======
+const FIREBASE = {
+  projectId: "hayalet-avcilari",
+  apiKey: "AIzaSyCEEVvj49yaZBxAJe78EjeUZBlpJaFyouU",
+  collection: "scores",
+};
+const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${FIREBASE.projectId}/databases/(default)/documents`;
+
+async function submitOnlineScore(entry) {
+  const doc = {
+    fields: {
+      name:   { stringValue:  entry.name },
+      level:  { integerValue: String(entry.level) },
+      ghosts: { integerValue: String(entry.ghosts) },
+      para:   { integerValue: String(entry.para) },
+      score:  { integerValue: String(scoreFor(entry)) },
+      date:   { integerValue: String(entry.date) },
+    }
+  };
+  try {
+    const res = await fetch(`${FIRESTORE_BASE}/${FIREBASE.collection}?key=${FIREBASE.apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(doc),
+    });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function fetchOnlineLeaderboard(limit) {
+  limit = limit || LEADERBOARD_MAX;
+  // Önce tarihe göre azalan sırayla çek, JS tarafında isme göre tekilleştirip skora göre sırala
+  const query = {
+    structuredQuery: {
+      from: [{ collectionId: FIREBASE.collection }],
+      orderBy: [{ field: { fieldPath: "date" }, direction: "DESCENDING" }],
+      limit: 200,
+    }
+  };
+  try {
+    const res = await fetch(`${FIRESTORE_BASE}:runQuery?key=${FIREBASE.apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(query),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const all = data
+      .filter((d) => d.document)
+      .map((d) => {
+        const f = d.document.fields || {};
+        return {
+          name:   f.name   ? f.name.stringValue                : "Avcı",
+          level:  f.level  ? parseInt(f.level.integerValue)    : 1,
+          ghosts: f.ghosts ? parseInt(f.ghosts.integerValue)   : 0,
+          para:   f.para   ? parseInt(f.para.integerValue)     : 0,
+          score:  f.score  ? parseInt(f.score.integerValue)    : 0,
+          date:   f.date   ? parseInt(f.date.integerValue)     : 0,
+        };
+      });
+    // Aynı isimden tek (en son) kayıt kalsın — tarih sıralı geldiği için ilk görüleni tut
+    const seen = new Set();
+    const unique = [];
+    for (const e of all) {
+      if (!e.name || seen.has(e.name)) continue;
+      seen.add(e.name);
+      unique.push(e);
+    }
+    // Skora göre sırala, ilk N'i döndür
+    unique.sort((a, b) => b.score - a.score);
+    return unique.slice(0, limit);
+  } catch (e) {
+    return null;
+  }
+}
+
+const defaultSave = {
+  playerName: "",
+  para: 0,
+  elmas: 0,
+  zumrut: 0,
+  selectedChar: "kinkin",
+  selectedCostume: { kinkin: 0, veryi: 0, kornet: 0, mark: 0, kent: 0, ponko: 0, gul: 0, rani: 0, beti: 0, fanatik: 0 },
+  unlockedChars: { kinkin: true, veryi: false, kornet: false, mark: false, kent: false, ponko: false, gul: false, rani: false, beti: false, fanatik: false },
+  unlockedCostumes: { kinkin: [0], veryi: [0], kornet: [0], mark: [0], kent: [0], ponko: [0], gul: [0], rani: [0], beti: [0], fanatik: [0] },
+  upgradesByChar: {
+    kinkin:  { speed: 0, damage: 0, fireRate: 0, range: 0 },
+    veryi:   { speed: 0, damage: 0, fireRate: 0, range: 0 },
+    kornet:  { speed: 0, damage: 0, fireRate: 0, range: 0 },
+    mark:    { speed: 0, damage: 0, fireRate: 0, range: 0 },
+    kent:    { speed: 0, damage: 0, fireRate: 0, range: 0 },
+    ponko:   { speed: 0, damage: 0, fireRate: 0, range: 0 },
+    gul:     { speed: 0, damage: 0, fireRate: 0, range: 0 },
+    rani:    { speed: 0, damage: 0, fireRate: 0, range: 0 },
+    beti:    { speed: 0, damage: 0, fireRate: 0, range: 0 },
+    fanatik: { speed: 0, damage: 0, fireRate: 0, range: 0 },
+  },
+  _charUpgradesIsolated: true,
+  ammoByChar: {
+    kinkin:  { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
+    veryi:   { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
+    kornet:  { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
+    mark:    { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
+    kent:    { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
+    ponko:   { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
+    gul:     { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
+    rani:    { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
+    beti:    { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
+    fanatik: { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
+  },
+  highestLevel: 1,
+  soundEnabled: true,
+  volumes: { ghost: 1, fire: 1, sfx: 1 },
+  accountCode: "",
+};
+
+let save = loadSave();
+
+function loadSave() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    const fresh = JSON.parse(JSON.stringify(defaultSave));
+    if (!raw) return fresh;
+    const data = JSON.parse(raw);
+    const merged = Object.assign(fresh, data);
+    // Sığ alt nesneler için derin birleştir
+    ["selectedCostume", "unlockedChars", "unlockedCostumes", "volumes"].forEach((key) => {
+      merged[key] = Object.assign(JSON.parse(JSON.stringify(defaultSave[key])), data[key] || {});
+    });
+    // upgradesByChar: her karakter bağımsız
+    merged.upgradesByChar = JSON.parse(JSON.stringify(defaultSave.upgradesByChar));
+    if (data.upgradesByChar) {
+      Object.keys(data.upgradesByChar).forEach((ck) => {
+        if (merged.upgradesByChar[ck]) {
+          Object.assign(merged.upgradesByChar[ck], data.upgradesByChar[ck]);
+        }
+      });
+    }
+    // Eski tek-üst yapıdan ilk göç: sadece Kinkin'e ata.
+    if (!data.upgradesByChar && data.upgrades) {
+      Object.assign(merged.upgradesByChar.kinkin, data.upgrades);
+    }
+    // Bir kerelik izolasyon: önceki sürümde tüm karakterlere kopyalanmış olabilir → Kinkin hariç sıfırla.
+    if (!data._charUpgradesIsolated) {
+      Object.keys(merged.upgradesByChar).forEach((ck) => {
+        if (ck !== "kinkin") {
+          merged.upgradesByChar[ck] = { speed: 0, damage: 0, fireRate: 0, range: 0 };
+        }
+      });
+      merged._charUpgradesIsolated = true;
+    }
+    delete merged.upgrades;
+    // ammoByChar göçü
+    merged.ammoByChar = JSON.parse(JSON.stringify(defaultSave.ammoByChar));
+    if (data.ammoByChar) {
+      Object.keys(data.ammoByChar).forEach((ck) => {
+        if (merged.ammoByChar[ck]) {
+          Object.assign(merged.ammoByChar[ck], data.ammoByChar[ck]);
+        }
+      });
+    }
+    return merged;
+  } catch (e) {
+    return JSON.parse(JSON.stringify(defaultSave));
+  }
+}
+
+function persistSave() {
+  localStorage.setItem(SAVE_KEY, JSON.stringify(save));
+}
+
+function resetData() {
+  if (confirm("Tüm ilerleme silinsin mi?")) {
+    save = JSON.parse(JSON.stringify(defaultSave));
+    persistSave();
+    refreshMenu();
+    showToast("Sıfırlandı!");
+  }
+}
+
+// ====== KARAKTER TANIMLARI ======
+const CHARACTERS = {
+  kinkin: {
+    name: "Kinkin",
+    desc: "Hızlı ve dengeli avcı.",
+    cost: 0,
+    baseSpeed: 3.2,
+    baseDamage: 1,
+    baseFireDelay: 600,
+    baseRange: 220,
+    color: { hair: "#7a3e1d", skin: "#f4d6b5", body: "#1d4ed8", legs: "#f4d6b5", weapon: "#e0e0e0" },
+  },
+  veryi: {
+    name: "Veryi",
+    desc: "Güçlü vurucu.",
+    cost: 5,
+    baseSpeed: 2.6,
+    baseDamage: 2,
+    baseFireDelay: 700,
+    baseRange: 180,
+    color: { hair: "#3a1d0a", skin: "#f4d6b5", body: "#6b3410", legs: "#4a8c2a", weapon: "#7a7a7a" },
+  },
+  kornet: {
+    name: "Kornet",
+    desc: "Uzun menzilli sihirbaz.",
+    cost: 10,
+    baseSpeed: 2.8,
+    baseDamage: 1,
+    baseFireDelay: 500,
+    baseRange: 280,
+    color: { hair: "#ffffff", skin: "#fafafa", body: "#9d4edd", legs: "#9d4edd", weapon: "#c026d3" },
+  },
+  mark: {
+    name: "Marli",
+    desc: "Sırt çantalı maceracı.",
+    cost: 25,
+    baseSpeed: 3.0,
+    baseDamage: 1,
+    baseFireDelay: 580,
+    baseRange: 230,
+    color: { hair: "#5a3825", skin: "#f4d6b5", body: "#10b981", legs: "#374151", weapon: "#e0e0e0" },
+  },
+  kent: {
+    name: "Kenit",
+    desc: "Karanlık hayalet pelerin, bıçaklı.",
+    cost: 50,
+    baseSpeed: 3.4,
+    baseDamage: 2,
+    baseFireDelay: 480,
+    baseRange: 200,
+    color: { hair: "#1f1f1f", skin: "#e8e8f0", body: "#1a1a2e", legs: "#0f0f1a", weapon: "#9ca3af" },
+  },
+  ponko: {
+    name: "Ponko",
+    desc: "Büyük şapkalı küçük kahraman.",
+    cost: 30,
+    baseSpeed: 3.0,
+    baseDamage: 1,
+    baseFireDelay: 450,
+    baseRange: 220,
+    color: { hair: "#3a1d0a", skin: "#f4d6b5", body: "#ef4444", legs: "#1f2937", weapon: "#e0e0e0" },
+  },
+  gul: {
+    name: "Güllu",
+    desc: "Şapkalı dengeli avcı.",
+    cost: 15,
+    baseSpeed: 3.2,
+    baseDamage: 1,
+    baseFireDelay: 580,
+    baseRange: 240,
+    color: { hair: "#3a1d0a", skin: "#f4d6b5", body: "#ec4899", legs: "#831843", weapon: "#e0e0e0" },
+  },
+  rani: {
+    name: "Rani",
+    desc: "Sevimli minik avcı.",
+    cost: 35,
+    baseSpeed: 3.3,
+    baseDamage: 1,
+    baseFireDelay: 520,
+    baseRange: 220,
+    color: { hair: "#1f1f1f", skin: "#fce7d8", body: "#06b6d4", legs: "#0e7490", weapon: "#fde68a" },
+  },
+  beti: {
+    name: "Beri",
+    desc: "Lolipop canavarı! Suyun içinden geçer.",
+    cost: 20,
+    baseSpeed: 3.0,
+    baseDamage: 2,
+    baseFireDelay: 550,
+    baseRange: 250,
+    color: { hair: "#9d4edd", skin: "#fef3c7", body: "#f43f5e", legs: "#7c3aed", weapon: "#ec4899" },
+    waterImmune: true,
+  },
+  fanatik: {
+    name: "Fanatik",
+    desc: "Yakışıklı efsanevi kunfucu, siyah kuşak.",
+    cost: 200,
+    baseSpeed: 3.6,
+    baseDamage: 3,
+    baseFireDelay: 350,
+    baseRange: 280,
+    color: { hair: "#0a0a0a", skin: "#f4d6b5", body: "#fafafa", legs: "#fafafa", weapon: "#dc2626" },
+  },
+};
+
+// Kostümler: her karakter için (0 = orijinal, 1 = alternatif)
+const COSTUMES = {
+  kinkin: [
+    { name: "Mavi", cost: 0, body: "#1d4ed8", hair: "#7a3e1d" },
+    { name: "Pembe Prenses", cost: 5, body: "#ec4899", hair: "#fbbf24" },
+    { name: "✨ Altın Efsane", cost: 80, body: "#f59e0b", hair: "#fef3c7" },
+  ],
+  veryi: [
+    { name: "Klasik", cost: 0, body: "#6b3410", hair: "#3a1d0a" },
+    { name: "Asker", cost: 5, body: "#1f5e1a", hair: "#1f1f1f" },
+    { name: "✨ Bronz Şampiyon", cost: 80, body: "#92400e", hair: "#fbbf24" },
+  ],
+  kornet: [
+    { name: "Mor", cost: 0, body: "#9d4edd", hair: "#ffffff" },
+    { name: "Şeker", cost: 5, body: "#06d6a0", hair: "#fff7d6" },
+    { name: "✨ Galaksi Sihirbazı", cost: 100, body: "#0ea5e9", hair: "#a78bfa" },
+  ],
+  mark: [
+    { name: "Yeşil", cost: 0, body: "#10b981", hair: "#5a3825" },
+    { name: "Mavi", cost: 5, body: "#3b82f6", hair: "#1f2937" },
+    { name: "✨ Altın Maceracı", cost: 80, body: "#fbbf24", hair: "#7c2d12" },
+  ],
+  kent: [
+    { name: "Karanlık", cost: 0, body: "#1a1a2e", hair: "#1f1f1f" },
+    { name: "Kanlı", cost: 6, body: "#7f1d1d", hair: "#1f1f1f" },
+    { name: "✨ Hayalet Lordu", cost: 120, body: "#3b0764", hair: "#0f172a" },
+  ],
+  ponko: [
+    { name: "Kırmızı", cost: 0, body: "#ef4444", hair: "#3a1d0a" },
+    { name: "Sarı", cost: 5, body: "#f59e0b", hair: "#3a1d0a" },
+    { name: "✨ Altın Şapka", cost: 80, body: "#fbbf24", hair: "#451a03" },
+  ],
+  gul: [
+    { name: "Pembe", cost: 0, body: "#ec4899", hair: "#3a1d0a" },
+    { name: "Mor", cost: 5, body: "#8b5cf6", hair: "#3a1d0a" },
+    { name: "✨ Kraliçe", cost: 100, body: "#f0abfc", hair: "#fbbf24" },
+  ],
+  rani: [
+    { name: "Turkuaz", cost: 0, body: "#06b6d4", hair: "#1f1f1f" },
+    { name: "Limon", cost: 5, body: "#84cc16", hair: "#1f1f1f" },
+    { name: "✨ Pırıltı", cost: 80, body: "#fde047", hair: "#7c3aed" },
+  ],
+  beti: [
+    { name: "Şeker", cost: 0, body: "#f43f5e", hair: "#9d4edd" },
+    { name: "Çikolata", cost: 6, body: "#78350f", hair: "#fbbf24" },
+    { name: "✨ Gökkuşağı Lolipop", cost: 100, body: "#22d3ee", hair: "#f472b6" },
+  ],
+  fanatik: [
+    { name: "Beyaz Gi", cost: 0, body: "#fafafa", hair: "#0a0a0a" },
+    { name: "Kırmızı Gi", cost: 8, body: "#dc2626", hair: "#0a0a0a" },
+    { name: "✨ Ejder Ustası", cost: 150, body: "#1e293b", hair: "#fbbf24" },
+  ],
+};
+
+// Bölüm temaları (sırayla döner)
+const LEVEL_THEMES = [
+  { name: "Mor Şato",     floor: "#1f1538", grid: "rgba(157, 78, 221, 0.10)", wall: "#5a3825", wallDark: "#3d2618", waterTop: "#1e7fd6", waterBot: "#0a3a8a" },
+  { name: "Yeşil Orman",  floor: "#0f3d24", grid: "rgba(132, 204, 22, 0.12)", wall: "#365314", wallDark: "#1a2e0d", waterTop: "#22c55e", waterBot: "#15803d" },
+  { name: "Çöl",          floor: "#3f2e0a", grid: "rgba(251, 191, 36, 0.12)", wall: "#92400e", wallDark: "#451a03", waterTop: "#06b6d4", waterBot: "#0c4a6e" },
+  { name: "Buz Mağarası", floor: "#0c4a6e", grid: "rgba(186, 230, 253, 0.18)", wall: "#7dd3fc", wallDark: "#0369a1", waterTop: "#bae6fd", waterBot: "#0ea5e9" },
+  { name: "Volkan",       floor: "#451a03", grid: "rgba(239, 68, 68, 0.12)",  wall: "#7f1d1d", wallDark: "#450a0a", waterTop: "#f97316", waterBot: "#dc2626" },
+  { name: "Uzay",         floor: "#0c0a1e", grid: "rgba(192, 132, 252, 0.18)", wall: "#1e1b4b", wallDark: "#0f0a2e", waterTop: "#a855f7", waterBot: "#3b0764" },
+];
+function getTheme() {
+  return LEVEL_THEMES[(game.level - 1) % LEVEL_THEMES.length];
+}
+
+// Boss bekleme süresi: 1-10 → 10sn, 11-20 → 15sn, 21-30 → 20sn ... her 10 bölümde +5sn
+function getBossTimerForLevel(level) {
+  return 10 + Math.floor((level - 1) / 10) * 5;
+}
+
+// Karakter başına özel güçler — süreler güç dengesine göre değişir
+const CHAR_POWERS = {
+  kinkin:  { name: "Yıldırım Hızı",     icon: "⚡", duration: 15000 }, // hız x2
+  veryi:   { name: "Süper Hasar",       icon: "💥", duration: 12000 }, // hasar x3
+  kornet:  { name: "Üçlü Atış",         icon: "🔱", duration: 15000 }, // 3 mermi koni
+  mark:    { name: "Dev Mıknatıs",      icon: "🧲", duration: 20000 }, // tüm pickup çek (QoL)
+  kent:    { name: "Hayalet Modu",      icon: "🌙", duration: 8000  }, // yenilmezlik (kısa, OP)
+  ponko:   { name: "Çabuk Ateş",        icon: "🔥", duration: 12000 }, // fireDelay /3
+  gul:     { name: "Patlama Vuruşu",    icon: "💣", duration: 15000 }, // öldürünce çevreye hasar
+  rani:    { name: "Şifa Kalbi",        icon: "💖", duration: 18000 }, // 5 sn'de bir +1 can
+  beti:    { name: "Lolipop Yağmuru",   icon: "🍭", duration: 15000 }, // 5 yöne mermi
+  fanatik: { name: "Tornado Tekme",     icon: "🥋", duration: 12000 }, // 0.5 sn'de bir çevreye hasar
+};
+
+function activatePower(charKey) {
+  const def = CHAR_POWERS[charKey] || CHAR_POWERS.kinkin;
+  const dur = def.duration || 15000;
+  game.player.power = {
+    type: charKey,
+    expires: performance.now() + dur,
+    duration: dur,
+    name: def.name,
+    icon: def.icon,
+  };
+  game.healTimer = 0;
+  game.pulseTimer = 0;
+  showToast(`${def.icon} ${def.name}!`);
+  audio.unlock();
+}
+
+function getActivePower() {
+  if (!game.player || !game.player.power) return null;
+  if (performance.now() > game.player.power.expires) {
+    game.player.power = null;
+    return null;
+  }
+  return game.player.power;
+}
+
+// Tek kullanımlık silahlar — karakter başına ayrı stok
+const WEAPONS = {
+  bomba:    { name: "Bomba",       icon: "💣", cost: 80,  desc: "200 px alandaki tüm hayaletlere 10 hasar.", max: 9 },
+  dondurma: { name: "Dondurma",    icon: "❄️", cost: 100, desc: "Tüm hayaletleri 5 sn dondurur.",          max: 9 },
+  simsek:   { name: "Şimşek",      icon: "⚡", cost: 60,  desc: "Ekrandaki tüm hayaletlere 3 hasar.",       max: 9 },
+  kasirga:  { name: "Kasırga",     icon: "🌪️", cost: 120, desc: "8 sn etrafında dönen kalkan, dokunan ölür.", max: 9 },
+  ilkyrd:   { name: "İlk Yardım",  icon: "❤️", cost: 50,  desc: "Anında 2 can yeniler (max'ı geçemez).",   max: 9 },
+  roket:    { name: "Roket",       icon: "🚀", cost: 90,  desc: "En yakın hayalete 25 hasar.",              max: 9 },
+  gorunmez: { name: "Görünmezlik", icon: "🕵", cost: 70,  desc: "5 sn hayaletler seni göremez.",            max: 9 },
+};
+
+function ensureAmmoStock(charKey) {
+  if (!save.ammoByChar) save.ammoByChar = {};
+  if (!save.ammoByChar[charKey]) save.ammoByChar[charKey] = {};
+  Object.keys(WEAPONS).forEach((k) => {
+    if (typeof save.ammoByChar[charKey][k] !== "number") save.ammoByChar[charKey][k] = 0;
+  });
+  return save.ammoByChar[charKey];
+}
+
+function refreshWeaponBar() {
+  const bar = document.getElementById("weapon-bar");
+  if (!bar) return;
+  if (!game || !game.player || !game.running) { bar.innerHTML = ""; return; }
+  const stock = ensureAmmoStock(game.player.charKey);
+  bar.innerHTML = "";
+  Object.keys(WEAPONS).forEach((key) => {
+    const count = stock[key] || 0;
+    if (count <= 0) return;
+    const w = WEAPONS[key];
+    const btn = document.createElement("button");
+    btn.className = "weapon-slot";
+    btn.title = `${w.name}: ${w.desc}`;
+    btn.innerHTML = `<span>${w.icon}</span><span class="badge">${count}</span>`;
+    const trigger = (e) => { e.preventDefault(); e.stopPropagation(); useWeapon(key); };
+    btn.addEventListener("touchstart", trigger, { passive: false });
+    btn.addEventListener("click", trigger);
+    bar.appendChild(btn);
+  });
+}
+
+function useWeapon(key) {
+  if (!game || !game.player || !game.running || game.paused) return;
+  const w = WEAPONS[key];
+  if (!w) return;
+  const stock = ensureAmmoStock(game.player.charKey);
+  if ((stock[key] || 0) <= 0) return;
+
+  let consumed = true;
+  const now = performance.now();
+  const px = game.player.x, py = game.player.y;
+
+  switch (key) {
+    case "bomba": {
+      const r = 200, r2 = r * r;
+      let hit = 0;
+      if (online.mode === "client") {
+        // Hasarı host'a bildir
+        online.pendingEvents.push({ type: "areaDmg", x: px, y: py, r, dmg: 10, by: online.uid });
+        // Lokal görsel için hayaletlerin sayısını saymak yeter
+        for (const g of game.ghosts) {
+          const dx = g.x - px, dy = g.y - py;
+          if (dx * dx + dy * dy < r2) { hit++; spawnHitParticles(g.x, g.y); }
+        }
+      } else {
+        for (const g of game.ghosts) {
+          const dx = g.x - px, dy = g.y - py;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < r2) {
+            g.hp -= 10;
+            hit++;
+            spawnHitParticles(g.x, g.y);
+            const d = Math.sqrt(d2) || 1;
+            const force = 320 * (1 - d / r);
+            g.detourVx = (dx / d) * force;
+            g.detourVy = (dy / d) * force;
+            g.detourTime = 0.4;
+          }
+        }
+      }
+      // Patlama halkası (büyüyen)
+      game.effects.push({ type: "boom", x: px, y: py, r: 0, rMax: r, life: 0.55, maxLife: 0.55 });
+      for (let i = 0; i < 24; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const sp = 120 + Math.random() * 160;
+        game.particles.push({ x: px, y: py, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.6, color: "#fb923c" });
+      }
+      showFloat(`💣 ${hit}`, px, py - 36);
+      audio.bossDie();
+      navigator.vibrate?.(80);
+      break;
+    }
+    case "dondurma": {
+      if (online.mode === "client") {
+        online.pendingEvents.push({ type: "freezeAll", duration: 5000, by: online.uid });
+      } else {
+        const until = now + 5000;
+        for (const g of game.ghosts) g.frozenUntil = until;
+      }
+      for (let i = 0; i < 18; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const sp = 60 + Math.random() * 100;
+        game.particles.push({ x: px, y: py, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.8, color: "#bae6fd" });
+      }
+      showFloat("❄️ Donduruldu!", px, py - 36);
+      audio.unlock();
+      break;
+    }
+    case "simsek": {
+      const camX = game.camera.x, camY = game.camera.y;
+      let hit = 0;
+      const visible = (g) => g.x > camX - 40 && g.x < camX + game.W + 40 && g.y > camY - 40 && g.y < camY + game.H + 40;
+      if (online.mode === "client") {
+        // Ekrandaki her hayalete ayrı hit event (host gerçekten hp düşürür)
+        for (let i = 0; i < game.ghosts.length; i++) {
+          const g = game.ghosts[i];
+          if (!visible(g)) continue;
+          online.pendingEvents.push({ type: "hit", gi: g._idx, dmg: 3, by: online.uid });
+          spawnHitParticles(g.x, g.y);
+          game.effects.push({ type: "spark", x: g.x, y: g.y, ghost: g, life: 0.5, maxLife: 0.5 });
+          hit++;
+        }
+      } else {
+        for (const g of game.ghosts) {
+          if (!visible(g)) continue;
+          g.hp -= 3;
+          spawnHitParticles(g.x, g.y);
+          game.effects.push({ type: "spark", x: g.x, y: g.y, ghost: g, life: 0.5, maxLife: 0.5 });
+          hit++;
+        }
+      }
+      showFloat(`⚡ ${hit}`, px, py - 36);
+      audio.gem();
+      navigator.vibrate?.(30);
+      break;
+    }
+    case "kasirga": {
+      game.player.kasirgaUntil = now + 8000;
+      showFloat("🌪️ Kasırga!", px, py - 36);
+      audio.unlock();
+      break;
+    }
+    case "ilkyrd": {
+      const before = game.player.hp;
+      game.player.hp = Math.min(game.player.maxHp, game.player.hp + 2);
+      const heal = game.player.hp - before;
+      if (heal <= 0) {
+        showFloat("Can dolu", px, py - 36);
+        consumed = false; // can doluysa silahı yakma
+      } else {
+        showFloat(`+${heal} ❤️`, px, py - 36);
+        audio.heart();
+      }
+      break;
+    }
+    case "roket": {
+      const t = nearestGhost(99999);
+      if (t) {
+        const dxr = t.x - px, dyr = t.y - py;
+        const dist = Math.hypot(dxr, dyr) || 1;
+        const speed = 720;
+        if (online.mode === "client") {
+          // Hasarı host hesaplasın (kendi roket effect'ini host kendi tarafında oynatır)
+          online.pendingEvents.push({ type: "rocketShot", x: px, y: py, gi: t._idx, by: online.uid });
+          // Lokal görsel için kendi roket efektini de spawn et (sadece görsel, hasar yok)
+          game.effects.push({
+            type: "rocket",
+            x: px, y: py,
+            vx: (dxr / dist) * speed,
+            vy: (dyr / dist) * speed,
+            target: null, // hedef yok → hasar uygulanmaz, sadece görsel
+            damage: 0,
+            life: dist / speed + 0.5,
+          });
+        } else {
+          game.effects.push({
+            type: "rocket",
+            x: px, y: py,
+            vx: (dxr / dist) * speed,
+            vy: (dyr / dist) * speed,
+            target: t,
+            damage: 25,
+            life: dist / speed + 0.5,
+          });
+        }
+        audio.unlock();
+      } else {
+        showToast("Hedef yok");
+        consumed = false;
+      }
+      break;
+    }
+    case "gorunmez": {
+      game.player.invisibleUntil = now + 5000;
+      showFloat("🕵 Görünmez!", px, py - 36);
+      audio.unlock();
+      break;
+    }
+    default:
+      consumed = false;
+  }
+
+  if (consumed) {
+    stock[key] = Math.max(0, (stock[key] || 0) - 1);
+    persistSave();
+  }
+  refreshWeaponBar();
+}
+
+function updateEffects(dt) {
+  if (!game.effects) return;
+  for (let i = game.effects.length - 1; i >= 0; i--) {
+    const e = game.effects[i];
+    e.life -= dt;
+    if (e.type === "ghostFade") {
+      // Ruh çıkıyor gibi yukarı süzül
+      e.y -= 45 * dt;
+      if (e.life <= 0) game.effects.splice(i, 1);
+    } else if (e.type === "spark") {
+      // Hayalet hala canlıysa konumu takip et
+      if (e.ghost && e.ghost.hp > 0 && game.ghosts.indexOf(e.ghost) !== -1) {
+        e.x = e.ghost.x; e.y = e.ghost.y;
+      }
+      if (e.life <= 0) game.effects.splice(i, 1);
+    } else if (e.type === "boom") {
+      const t = 1 - Math.max(0, e.life / e.maxLife);
+      e.r = e.rMax * (1 - Math.pow(1 - t, 2));
+      if (e.life <= 0) game.effects.splice(i, 1);
+    } else if (e.type === "rocket") {
+      e.x += e.vx * dt;
+      e.y += e.vy * dt;
+      let exploded = false;
+      const t = e.target;
+      if (t && t.hp > 0 && game.ghosts.indexOf(t) !== -1) {
+        if (Math.hypot(t.x - e.x, t.y - e.y) < (t.r || 22) + 14) {
+          t.hp -= e.damage;
+          showFloat("🚀 -" + e.damage, t.x, t.y - 30);
+          exploded = true;
+        }
+      }
+      // Duvara çarptı veya zaman doldu
+      if (!exploded && (e.life <= 0 || collidesWalls(e.x, e.y, 4))) {
+        exploded = true;
+      }
+      // Ateş kuyruğu parçacığı
+      if (!exploded && Math.random() < 0.7) {
+        game.particles.push({
+          x: e.x - e.vx * 0.01, y: e.y - e.vy * 0.01,
+          vx: -e.vx * 0.2 + (Math.random() - 0.5) * 40,
+          vy: -e.vy * 0.2 + (Math.random() - 0.5) * 40,
+          life: 0.35, color: Math.random() < 0.5 ? "#fbbf24" : "#fb923c",
+        });
+      }
+      if (exploded) {
+        const splashR = 110, splashR2 = splashR * splashR, splashDmg = 12;
+        // Ana hedef knockback (yakın çarptığı için tam güç)
+        if (t && game.ghosts.indexOf(t) !== -1) {
+          const dxt = t.x - e.x, dyt = t.y - e.y;
+          const distt = Math.hypot(dxt, dyt) || 1;
+          t.detourVx = (dxt / distt) * 360;
+          t.detourVy = (dyt / distt) * 360;
+          t.detourTime = 0.45;
+        }
+        for (const og of game.ghosts) {
+          if (og === t) continue; // ana hedef direct hit yedi
+          const ddx = og.x - e.x, ddy = og.y - e.y;
+          const dd2 = ddx * ddx + ddy * ddy;
+          if (dd2 < splashR2) {
+            og.hp -= splashDmg;
+            spawnHitParticles(og.x, og.y);
+            const dd = Math.sqrt(dd2) || 1;
+            const force = 300 * (1 - dd / splashR);
+            og.detourVx = (ddx / dd) * force;
+            og.detourVy = (ddy / dd) * force;
+            og.detourTime = 0.4;
+          }
+        }
+        game.effects.push({ type: "boom", x: e.x, y: e.y, r: 0, rMax: splashR, life: 0.45, maxLife: 0.45 });
+        spawnDeathParticles(e.x, e.y);
+        audio.bossDie();
+        navigator.vibrate?.(60);
+        game.effects.splice(i, 1);
+      }
+    }
+  }
+}
+
+function drawGhostFades(ctx) {
+  if (!game.effects) return;
+  for (const e of game.effects) {
+    if (e.type !== "ghostFade") continue;
+    const alpha = Math.max(0, e.life / e.maxLife);
+    ctx.save();
+    ctx.globalAlpha = alpha * 0.7;
+    drawGhost(ctx, e);
+    ctx.restore();
+  }
+}
+
+function drawEnemyProjectile(ctx, p) {
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  const r = p.isBoss ? 9 : 6;
+  const color = p.isBoss ? "#dc2626" : "#a855f7";
+  // Glow halo
+  const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, r * 2.5);
+  glow.addColorStop(0, color);
+  glow.addColorStop(0.4, color);
+  glow.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.globalAlpha = 0.7;
+  ctx.fillStyle = glow;
+  ctx.beginPath(); ctx.arc(0, 0, r * 2.5, 0, Math.PI * 2); ctx.fill();
+  ctx.globalAlpha = 1;
+  // Çekirdek
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+  // Beyaz parıltı
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath(); ctx.arc(-r * 0.3, -r * 0.3, r * 0.4, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+function drawSparkBolt(ctx, x1, y1, x2, y2, segs) {
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  for (let s = 1; s < segs; s++) {
+    const t = s / segs;
+    const mx = x1 + (x2 - x1) * t + (Math.random() - 0.5) * 12;
+    const my = y1 + (y2 - y1) * t + (Math.random() - 0.5) * 12;
+    ctx.lineTo(mx, my);
+  }
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
+
+function drawEffects(ctx) {
+  if (!game.effects) return;
+  for (const e of game.effects) {
+    if (e.type === "spark") {
+      const alpha = Math.max(0, e.life / e.maxLife);
+      ctx.save();
+      // Mavi-beyaz parlama (haleyle çevre)
+      const flashGrad = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, 36);
+      flashGrad.addColorStop(0,    `rgba(220, 240, 255, ${alpha * 0.7})`);
+      flashGrad.addColorStop(0.5,  `rgba(125, 211, 252, ${alpha * 0.4})`);
+      flashGrad.addColorStop(1,    "rgba(125, 211, 252, 0)");
+      ctx.fillStyle = flashGrad;
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, 36, 0, Math.PI * 2);
+      ctx.fill();
+      // Zigzag yıldırımlar (hayalet üzerinden 3 yöne)
+      ctx.globalAlpha = alpha;
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = "#ffffff";
+      ctx.shadowColor = "#7dd3fc";
+      ctx.shadowBlur = 8;
+      const boltCount = 4;
+      for (let b = 0; b < boltCount; b++) {
+        const a = Math.random() * Math.PI * 2;
+        const len = 18 + Math.random() * 14;
+        drawSparkBolt(ctx, e.x, e.y - 6, e.x + Math.cos(a) * len, e.y - 6 + Math.sin(a) * len, 4);
+      }
+      // Parlak spark noktaları
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#fde047";
+      for (let s = 0; s < 5; s++) {
+        const a = Math.random() * Math.PI * 2;
+        const r = 10 + Math.random() * 18;
+        ctx.beginPath();
+        ctx.arc(e.x + Math.cos(a) * r, e.y + Math.sin(a) * r, 1.5 + Math.random() * 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    } else if (e.type === "boom") {
+      const alpha = Math.max(0, e.life / e.maxLife);
+      ctx.save();
+      // İç dolgu (radyal gradient)
+      const grad = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, Math.max(e.r, 1));
+      grad.addColorStop(0,    `rgba(254, 240, 138, ${alpha * 0.85})`);
+      grad.addColorStop(0.55, `rgba(251, 146, 60, ${alpha * 0.55})`);
+      grad.addColorStop(1,    "rgba(220, 38, 38, 0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, Math.max(e.r, 1), 0, Math.PI * 2);
+      ctx.fill();
+      // Şok dalgası halkası
+      ctx.globalAlpha = alpha * 0.9;
+      ctx.strokeStyle = "#fde047";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    } else if (e.type === "rocket") {
+      ctx.save();
+      ctx.translate(e.x, e.y);
+      ctx.rotate(Math.atan2(e.vy, e.vx));
+      // Ateş kuyruğu
+      const flameLen = 22 + Math.random() * 6;
+      const flameGrad = ctx.createLinearGradient(-flameLen, 0, -2, 0);
+      flameGrad.addColorStop(0,   "rgba(254, 240, 138, 0)");
+      flameGrad.addColorStop(0.5, "rgba(251, 146, 60, 0.85)");
+      flameGrad.addColorStop(1,   "rgba(220, 38, 38, 1)");
+      ctx.fillStyle = flameGrad;
+      ctx.beginPath();
+      ctx.moveTo(-flameLen, -4);
+      ctx.lineTo(-2, -3);
+      ctx.lineTo(-2,  3);
+      ctx.lineTo(-flameLen,  4);
+      ctx.closePath();
+      ctx.fill();
+      // Gövde
+      ctx.fillStyle = "#e5e7eb";
+      ctx.fillRect(-9, -5, 17, 10);
+      ctx.strokeStyle = "#475569";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(-9, -5, 17, 10);
+      // Burun konisi
+      ctx.fillStyle = "#dc2626";
+      ctx.beginPath();
+      ctx.moveTo(8, -5);
+      ctx.lineTo(15, 0);
+      ctx.lineTo(8, 5);
+      ctx.closePath();
+      ctx.fill();
+      // Üst kanat
+      ctx.fillStyle = "#64748b";
+      ctx.beginPath();
+      ctx.moveTo(-6, -5);
+      ctx.lineTo(-12, -10);
+      ctx.lineTo(-2, -5);
+      ctx.closePath();
+      ctx.fill();
+      // Alt kanat
+      ctx.beginPath();
+      ctx.moveTo(-6, 5);
+      ctx.lineTo(-12, 10);
+      ctx.lineTo(-2, 5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+}
+
+// Yükseltmeler: 10 seviye (geç seviyeler çok pahalı — para deposu)
+const UPGRADES = {
+  speed:    { name: "Hız",      icon: "👟", desc: "Daha hızlı koş.",   max: 10, costs: [50,  100, 200, 400,  800,  1600, 3200, 6400,  12000, 24000] },
+  damage:   { name: "Hasar",    icon: "💥", desc: "Daha güçlü vur.",   max: 10, costs: [75,  150, 300, 600,  1200, 2400, 4800, 9600,  18000, 36000] },
+  fireRate: { name: "Atış Hızı",icon: "⚡", desc: "Hızlı ateş et.",    max: 10, costs: [60,  120, 240, 480,  960,  1920, 3840, 7680,  15000, 30000] },
+  range:    { name: "Menzil",   icon: "🎯", desc: "Uzaktan vur.",       max: 10, costs: [50,  100, 200, 400,  800,  1600, 3200, 6400,  12000, 24000] },
+};
+
+// ====== ÇİZİM YARDIMCILARI ======
+function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPhase = 0, aimRaise = 0, shootRecoil = 0) {
+  const c = CHARACTERS[charKey];
+  const cos = COSTUMES[charKey][costumeIdx] || COSTUMES[charKey][0];
+  const hair = cos.hair;
+  const body = cos.body;
+  const skin = c.color.skin;
+  const legs = c.color.legs;
+
+  const s = size / 100;
+  const isWalking = walkPhase > 0;
+  const swing = isWalking ? Math.sin(walkPhase * 12) : 0;
+  const bob = isWalking ? Math.abs(Math.sin(walkPhase * 12)) * 1.5 * s : 0;
+  // Yürürken hafif vücut salınımı
+  const torsoLean = swing * 0.04;
+
+  ctx.save();
+  ctx.translate(x, y - bob);
+  ctx.rotate(torsoLean);
+
+  // Gölge
+  ctx.fillStyle = "rgba(0,0,0,0.3)";
+  ctx.beginPath();
+  ctx.ellipse(0, 45 * s, 22 * s, 7 * s, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Mark için sırt çantası askıları (vücudun arkasında)
+  if (charKey === "mark") {
+    ctx.fillStyle = "#7c2d12";
+    ctx.fillRect(-22 * s, -4 * s, 6 * s, 26 * s);
+    ctx.fillRect(16 * s, -4 * s, 6 * s, 26 * s);
+    // Çanta gövdesi (sağ arkaya doğru)
+    ctx.fillStyle = "#92400e";
+    ctx.fillRect(18 * s, 2 * s, 18 * s, 26 * s);
+    ctx.strokeStyle = "#451a03";
+    ctx.lineWidth = 1.5 * s;
+    ctx.strokeRect(18 * s, 2 * s, 18 * s, 26 * s);
+    ctx.fillStyle = "#fde68a";
+    ctx.fillRect(22 * s, 8 * s, 10 * s, 4 * s);
+  }
+
+  // Kent için pelerin (her şeyin altında, geniş)
+  if (charKey === "kent") {
+    // Hayalet aurası
+    const t = performance.now() / 400;
+    const aura = ctx.createRadialGradient(0, 0, 0, 0, 0, 50 * s);
+    aura.addColorStop(0, "rgba(120, 80, 200, 0.25)");
+    aura.addColorStop(1, "rgba(120, 80, 200, 0)");
+    ctx.fillStyle = aura;
+    ctx.beginPath();
+    ctx.arc(0, 0, 50 * s, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pelerinin alt kısmı dalgalı
+    ctx.fillStyle = body;
+    ctx.beginPath();
+    ctx.moveTo(-26 * s, -10 * s);
+    ctx.lineTo(28 * s, -10 * s);
+    ctx.lineTo(34 * s, 30 * s);
+    // dalgalı alt kenar
+    for (let i = 6; i >= 0; i--) {
+      const wx = 34 * s - (i / 6) * 68 * s;
+      const wy = 30 * s + (i % 2 === 0 ? 8 : 16) * s + Math.sin(t + i) * 2 * s;
+      ctx.lineTo(wx, wy);
+    }
+    ctx.lineTo(-34 * s, 30 * s);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Bacaklar (Kent ve Beti hariç) — yürürken adım animasyonu
+  if (charKey !== "kent" && charKey !== "beti") {
+    ctx.fillStyle = legs;
+    const liftL = Math.max(0,  swing) * 4 * s;
+    const liftR = Math.max(0, -swing) * 4 * s;
+    ctx.fillRect(-12 * s, 18 * s - liftL, 10 * s, 24 * s - liftL * 0.6);
+    ctx.fillRect(2 * s,   18 * s - liftR, 10 * s, 24 * s - liftR * 0.6);
+  }
+
+  if (charKey === "kornet") {
+    // Kornet: Mor kabarık vücut (üzüm/dikenli top)
+    ctx.fillStyle = body;
+    const bumps = 8;
+    for (let i = 0; i < bumps; i++) {
+      const ang = (i / bumps) * Math.PI * 2;
+      const bx = Math.cos(ang) * 16 * s;
+      const by = Math.sin(ang) * 14 * s + 5 * s;
+      ctx.beginPath();
+      ctx.arc(bx, by, 9 * s, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.beginPath();
+    ctx.arc(0, 5 * s, 18 * s, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Beyaz dikişli kafa
+    ctx.fillStyle = "#fafafa";
+    ctx.beginPath();
+    ctx.arc(0, -22 * s, 18 * s, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Dikişler (ağız)
+    ctx.strokeStyle = "#222";
+    ctx.lineWidth = 2 * s;
+    ctx.beginPath();
+    ctx.moveTo(-10 * s, -15 * s);
+    ctx.lineTo(10 * s, -15 * s);
+    ctx.stroke();
+    for (let i = -8; i <= 8; i += 4) {
+      ctx.beginPath();
+      ctx.moveTo(i * s, -18 * s);
+      ctx.lineTo(i * s, -12 * s);
+      ctx.stroke();
+    }
+
+    // Gözler
+    ctx.fillStyle = "#222";
+    ctx.beginPath();
+    ctx.arc(-7 * s, -25 * s, 2.5 * s, 0, Math.PI * 2);
+    ctx.arc(7 * s, -25 * s, 2.5 * s, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Kornet'in büyücü asası
+    drawCharWeapon(ctx, "kornet", s, swing, aimRaise, shootRecoil);
+  } else if (charKey === "kent") {
+    // Kapüşonun iç boşluğu (yüz)
+    ctx.fillStyle = "#0a0a18";
+    ctx.beginPath();
+    ctx.arc(0, -20 * s, 20 * s, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Solgun yüz (kapüşonun içinde küçük)
+    ctx.fillStyle = skin;
+    ctx.beginPath();
+    ctx.arc(0, -20 * s, 14 * s, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Kapüşon (üstten yarım daire, geniş)
+    ctx.fillStyle = body;
+    ctx.beginPath();
+    ctx.arc(0, -22 * s, 24 * s, Math.PI + 0.2, -0.2);
+    ctx.lineTo(20 * s, -8 * s);
+    ctx.lineTo(-20 * s, -8 * s);
+    ctx.closePath();
+    ctx.fill();
+
+    // Parlayan kırmızı gözler
+    const glow = ctx.createRadialGradient(-6 * s, -20 * s, 0, -6 * s, -20 * s, 6 * s);
+    glow.addColorStop(0, "rgba(239,68,68,0.9)");
+    glow.addColorStop(1, "rgba(239,68,68,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(-14 * s, -28 * s, 16 * s, 16 * s);
+    const glow2 = ctx.createRadialGradient(6 * s, -20 * s, 0, 6 * s, -20 * s, 6 * s);
+    glow2.addColorStop(0, "rgba(239,68,68,0.9)");
+    glow2.addColorStop(1, "rgba(239,68,68,0)");
+    ctx.fillStyle = glow2;
+    ctx.fillRect(-2 * s, -28 * s, 16 * s, 16 * s);
+    ctx.fillStyle = "#dc2626";
+    ctx.beginPath();
+    ctx.arc(-6 * s, -20 * s, 2.5 * s, 0, Math.PI * 2);
+    ctx.arc(6 * s, -20 * s, 2.5 * s, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Bıçak (sağda)
+    ctx.fillStyle = c.color.weapon;
+    ctx.fillRect(28 * s, -6 * s, 4 * s, 22 * s);
+    ctx.fillStyle = "#451a03";
+    ctx.fillRect(26 * s, 14 * s, 8 * s, 6 * s);
+  } else if (charKey === "beti") {
+    // Beti: lolipop kafalı, sevimli vücut
+    // Vücut (kalpli elbise)
+    ctx.fillStyle = body;
+    ctx.beginPath();
+    ctx.moveTo(-20 * s, -4 * s);
+    ctx.lineTo(20 * s, -4 * s);
+    ctx.lineTo(24 * s, 28 * s);
+    ctx.lineTo(-24 * s, 28 * s);
+    ctx.closePath();
+    ctx.fill();
+    // Kollar
+    ctx.fillRect(-30 * s, -2 * s, 8 * s, 18 * s);
+    ctx.fillRect(22 * s, -2 * s, 8 * s, 18 * s);
+    // Bacaklar (mor çizgili)
+    ctx.fillStyle = legs;
+    ctx.fillRect(-10 * s, 28 * s, 8 * s, 14 * s);
+    ctx.fillRect(2 * s, 28 * s, 8 * s, 14 * s);
+    // Elbisedeki kalpler
+    ctx.fillStyle = "#fff";
+    drawHeart(ctx, -10 * s, 8 * s, 4 * s);
+    drawHeart(ctx, 10 * s, 8 * s, 4 * s);
+    drawHeart(ctx, 0, 18 * s, 4 * s);
+
+    // Lolipop sopası
+    ctx.fillStyle = "#fafafa";
+    ctx.fillRect(-2 * s, -22 * s, 4 * s, 18 * s);
+
+    // Lolipop kafa (renkli sarmal)
+    const lx = 0, ly = -34 * s, lr = 18 * s;
+    ctx.save();
+    ctx.translate(lx, ly);
+    ctx.beginPath();
+    ctx.arc(0, 0, lr, 0, Math.PI * 2);
+    ctx.fillStyle = hair;
+    ctx.fill();
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 3 * s;
+    ctx.beginPath();
+    for (let a = 0; a < Math.PI * 2; a += 0.4) {
+      const r1 = lr * 0.2;
+      const r2 = lr * 0.95;
+      const x1 = Math.cos(a) * r1, y1 = Math.sin(a) * r1;
+      const x2 = Math.cos(a + 0.6) * r2, y2 = Math.sin(a + 0.6) * r2;
+      ctx.moveTo(x1, y1);
+      ctx.quadraticCurveTo(0, 0, x2, y2);
+    }
+    ctx.stroke();
+    ctx.strokeStyle = "#222";
+    ctx.lineWidth = 2 * s;
+    ctx.beginPath();
+    ctx.arc(0, 0, lr, 0, Math.PI * 2);
+    ctx.stroke();
+    // Sevimli yüz lolipopta
+    ctx.fillStyle = "#222";
+    ctx.beginPath();
+    ctx.arc(-5 * s, -2 * s, 2 * s, 0, Math.PI * 2);
+    ctx.arc(5 * s, -2 * s, 2 * s, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#222";
+    ctx.lineWidth = 2 * s;
+    ctx.beginPath();
+    ctx.arc(0, 3 * s, 4 * s, 0.2, Math.PI - 0.2);
+    ctx.stroke();
+    ctx.restore();
+  } else {
+    // Genel insan kahraman: Kinkin/Veryi/Mark/Ponko/Gül/Rani/Fanatik
+    // Vücut (tişört / gi)
+    ctx.fillStyle = body;
+    ctx.beginPath();
+    ctx.moveTo(-22 * s, -8 * s);
+    ctx.lineTo(22 * s, -8 * s);
+    ctx.lineTo(18 * s, 22 * s);
+    ctx.lineTo(-18 * s, 22 * s);
+    ctx.closePath();
+    ctx.fill();
+
+    // Kollar
+    ctx.fillStyle = body;
+    ctx.fillRect(-30 * s, -6 * s, 10 * s, 22 * s);
+    ctx.fillRect(20 * s, -6 * s, 10 * s, 22 * s);
+
+    // Fanatik için siyah kuşak
+    if (charKey === "fanatik") {
+      ctx.fillStyle = "#0a0a0a";
+      ctx.fillRect(-22 * s, 12 * s, 44 * s, 7 * s);
+      // Kuşak ucu sarkık
+      ctx.fillRect(-2 * s, 18 * s, 4 * s, 10 * s);
+      // V yakası
+      ctx.fillStyle = "#0a0a0a";
+      ctx.beginPath();
+      ctx.moveTo(-10 * s, -8 * s);
+      ctx.lineTo(0, 4 * s);
+      ctx.lineTo(10 * s, -8 * s);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Yüz
+    ctx.fillStyle = skin;
+    ctx.beginPath();
+    ctx.arc(0, -22 * s, 18 * s, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Saç
+    ctx.fillStyle = hair;
+    if (charKey === "kinkin") {
+      for (let i = 0; i < 5; i++) {
+        const angle = -Math.PI / 2 + (i - 2) * 0.4;
+        const sx = Math.cos(angle) * 18 * s;
+        const sy = Math.sin(angle) * 18 * s - 22 * s;
+        ctx.save();
+        ctx.translate(sx, sy);
+        ctx.rotate(angle + Math.PI / 2);
+        ctx.fillRect(-3 * s, -2 * s, 14 * s, 5 * s);
+        ctx.restore();
+      }
+      ctx.beginPath();
+      ctx.arc(0, -32 * s, 14 * s, Math.PI, 0);
+      ctx.fill();
+    } else if (charKey === "mark") {
+      // Mark: uzun saç (omuza kadar inen)
+      ctx.beginPath();
+      ctx.arc(0, -28 * s, 19 * s, Math.PI, 0);
+      ctx.fill();
+      ctx.fillRect(-19 * s, -28 * s, 38 * s, 14 * s);
+      ctx.fillRect(-22 * s, -22 * s, 8 * s, 22 * s);
+      ctx.fillRect(14 * s, -22 * s, 8 * s, 22 * s);
+    } else if (charKey === "gul") {
+      // Gül: saç + üstte düz şapka (kepi)
+      ctx.beginPath();
+      ctx.arc(0, -28 * s, 18 * s, Math.PI, 0);
+      ctx.fill();
+      ctx.fillRect(-18 * s, -28 * s, 36 * s, 14 * s);
+      // Düz tepeli şapka
+      ctx.fillStyle = "#1f2937";
+      ctx.fillRect(-16 * s, -42 * s, 32 * s, 8 * s);
+      ctx.fillRect(-12 * s, -52 * s, 24 * s, 12 * s);
+      ctx.strokeStyle = "#fbbf24";
+      ctx.lineWidth = 2 * s;
+      ctx.strokeRect(-12 * s, -52 * s, 24 * s, 12 * s);
+    } else if (charKey === "ponko") {
+      // Ponko: küçük saç + DEV güneş şapkası
+      ctx.beginPath();
+      ctx.arc(0, -28 * s, 17 * s, Math.PI, 0);
+      ctx.fill();
+      // Şapka kenarı (geniş)
+      ctx.fillStyle = "#7c2d12";
+      ctx.beginPath();
+      ctx.ellipse(0, -36 * s, 38 * s, 7 * s, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Şapka tepesi
+      ctx.fillStyle = "#92400e";
+      ctx.beginPath();
+      ctx.arc(0, -42 * s, 14 * s, Math.PI, 0);
+      ctx.fill();
+      ctx.fillRect(-14 * s, -42 * s, 28 * s, 6 * s);
+      // Şapka bandı
+      ctx.fillStyle = "#fbbf24";
+      ctx.fillRect(-14 * s, -38 * s, 28 * s, 3 * s);
+    } else if (charKey === "rani") {
+      // Rani: yuvarlak yüzlü, küçük tepe saç
+      ctx.beginPath();
+      ctx.arc(0, -32 * s, 14 * s, Math.PI, 0);
+      ctx.fill();
+      // İki küçük "kulak gibi" topuz
+      ctx.beginPath();
+      ctx.arc(-14 * s, -32 * s, 5 * s, 0, Math.PI * 2);
+      ctx.arc(14 * s, -32 * s, 5 * s, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (charKey === "fanatik") {
+      // Fanatik: sade siyah saç + kırmızı kafa bandı
+      ctx.beginPath();
+      ctx.arc(0, -28 * s, 18 * s, Math.PI, 0);
+      ctx.fill();
+      ctx.fillRect(-18 * s, -28 * s, 36 * s, 8 * s);
+      // Kafa bandı (kırmızı)
+      ctx.fillStyle = "#dc2626";
+      ctx.fillRect(-18 * s, -26 * s, 36 * s, 5 * s);
+      // Bandın yanlardan sarkan ucu
+      ctx.fillRect(-20 * s, -26 * s, 4 * s, 14 * s);
+    } else {
+      // Veryi: kısa düz saç
+      ctx.beginPath();
+      ctx.arc(0, -28 * s, 17 * s, Math.PI, 0);
+      ctx.fill();
+      ctx.fillRect(-17 * s, -28 * s, 34 * s, 8 * s);
+    }
+
+    // Gözler (Rani için büyük)
+    ctx.fillStyle = "#222";
+    const eyeR = charKey === "rani" ? 3.5 * s : 2.5 * s;
+    const eyeY = charKey === "rani" ? -22 * s : -22 * s;
+    ctx.beginPath();
+    ctx.arc(-6 * s, eyeY, eyeR, 0, Math.PI * 2);
+    ctx.arc(6 * s, eyeY, eyeR, 0, Math.PI * 2);
+    ctx.fill();
+    if (charKey === "rani") {
+      // Göz parıltısı
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.arc(-5 * s, -23 * s, 1.2 * s, 0, Math.PI * 2);
+      ctx.arc(7 * s, -23 * s, 1.2 * s, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Gülümseme
+    ctx.strokeStyle = "#222";
+    ctx.lineWidth = 2 * s;
+    ctx.beginPath();
+    ctx.arc(0, -16 * s, 6 * s, 0.2, Math.PI - 0.2);
+    ctx.stroke();
+
+    // Karaktere özel silah (Kinkin/Veryi/Mark/Ponko/Gül/Rani/Fanatik)
+    drawCharWeapon(ctx, charKey, s, swing, aimRaise, shootRecoil);
+  }
+
+  ctx.restore();
+}
+
+// Karaktere özel silah çizimleri — her biri sağ elin hizasında, walkPhase ile hafif sallanır.
+// aimRaise (0..1): hedef yokken silah aşağıda, varken yukarıda. shootRecoil (0..1): atış geri tepmesi.
+function drawCharWeapon(ctx, charKey, s, swing, aimRaise = 0, shootRecoil = 0) {
+  const sway = swing * 0.06;
+  // Omuz pivotu etrafında silahı çevir: aimRaise=0 → aşağı bakar, aimRaise=1 → yatay, recoil → geri tekme
+  const lowerAngle = 0.85;
+  const recoilKick = -0.35;
+  const baseRot = lowerAngle * (1 - aimRaise) + recoilKick * shootRecoil;
+  ctx.save();
+  // Omuz noktası civarında dönüş (rough shoulder: 18, 2)
+  ctx.translate(18 * s, 2 * s);
+  ctx.rotate(baseRot);
+  ctx.translate(-18 * s, -2 * s);
+  switch (charKey) {
+    case "kinkin": {
+      // Enerji tabancası (gümüş gövde + camgöbeği çekirdek)
+      ctx.translate(28 * s, 8 * s);
+      ctx.rotate(sway);
+      ctx.fillStyle = "#475569";
+      ctx.fillRect(0, -3 * s, 14 * s, 7 * s);
+      ctx.strokeStyle = "#0f172a"; ctx.lineWidth = 1 * s;
+      ctx.strokeRect(0, -3 * s, 14 * s, 7 * s);
+      ctx.fillStyle = "#1e3a8a";
+      ctx.fillRect(12 * s, -2 * s, 7 * s, 5 * s);
+      ctx.fillStyle = "#0f172a";
+      ctx.fillRect(3 * s, 4 * s, 4 * s, 5 * s);
+      // Enerji çekirdeği (parlayan halo)
+      const glow = ctx.createRadialGradient(7 * s, 0, 0, 7 * s, 0, 4 * s);
+      glow.addColorStop(0, "rgba(34, 211, 238, 0.95)");
+      glow.addColorStop(1, "rgba(34, 211, 238, 0)");
+      ctx.fillStyle = glow;
+      ctx.beginPath(); ctx.arc(7 * s, 0, 4 * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#06b6d4";
+      ctx.beginPath(); ctx.arc(7 * s, 0, 1.5 * s, 0, Math.PI * 2); ctx.fill();
+      break;
+    }
+    case "veryi": {
+      // Devasa savaş çekici
+      ctx.translate(26 * s, 6 * s);
+      ctx.rotate(-0.35 + sway);
+      // Sap (ahşap)
+      ctx.fillStyle = "#7c2d12";
+      ctx.fillRect(-2 * s, 0, 4 * s, 28 * s);
+      ctx.strokeStyle = "#451a03"; ctx.lineWidth = 1 * s;
+      ctx.strokeRect(-2 * s, 0, 4 * s, 28 * s);
+      // Çekiç başlığı
+      ctx.fillStyle = "#525252";
+      ctx.fillRect(-13 * s, -10 * s, 26 * s, 14 * s);
+      ctx.strokeStyle = "#1f1f1f"; ctx.lineWidth = 1.5 * s;
+      ctx.strokeRect(-13 * s, -10 * s, 26 * s, 14 * s);
+      // Metalik parıltı şeridi
+      ctx.fillStyle = "#a3a3a3";
+      ctx.fillRect(-11 * s, -8 * s, 22 * s, 2 * s);
+      // Yan çiviler
+      ctx.fillStyle = "#262626";
+      ctx.beginPath(); ctx.arc(-9 * s, -3 * s, 1.5 * s, 0, Math.PI * 2);
+      ctx.arc(9 * s, -3 * s, 1.5 * s, 0, Math.PI * 2); ctx.fill();
+      break;
+    }
+    case "mark": {
+      // Tatar yayı (kompakt yay + yatay ok)
+      ctx.translate(30 * s, 6 * s);
+      ctx.rotate(sway);
+      // Yay gövdesi (ahşap)
+      ctx.strokeStyle = "#5a3825"; ctx.lineWidth = 3 * s;
+      ctx.beginPath();
+      ctx.moveTo(0, -10 * s);
+      ctx.quadraticCurveTo(10 * s, 0, 0, 10 * s);
+      ctx.stroke();
+      // Yay teli
+      ctx.strokeStyle = "#e5e7eb"; ctx.lineWidth = 1 * s;
+      ctx.beginPath();
+      ctx.moveTo(0, -10 * s);
+      ctx.lineTo(0, 10 * s);
+      ctx.stroke();
+      // Ok
+      ctx.fillStyle = "#92400e";
+      ctx.fillRect(0, -1 * s, 16 * s, 2 * s);
+      ctx.fillStyle = "#9ca3af";
+      ctx.beginPath();
+      ctx.moveTo(16 * s, -3 * s);
+      ctx.lineTo(20 * s, 0);
+      ctx.lineTo(16 * s, 3 * s);
+      ctx.closePath(); ctx.fill();
+      // Tüy
+      ctx.fillStyle = "#dc2626";
+      ctx.beginPath();
+      ctx.moveTo(-2 * s, -2 * s);
+      ctx.lineTo(2 * s, 0);
+      ctx.lineTo(-2 * s, 2 * s);
+      ctx.closePath(); ctx.fill();
+      break;
+    }
+    case "ponko": {
+      // Çift tabanca — biri sağda büyük, biri solda küçük
+      // Sağ
+      ctx.save();
+      ctx.translate(28 * s, 8 * s);
+      ctx.rotate(0.1 + sway);
+      ctx.fillStyle = "#1f2937";
+      ctx.fillRect(0, -3 * s, 14 * s, 6 * s);
+      ctx.fillStyle = "#7c2d12";
+      ctx.fillRect(2 * s, 3 * s, 5 * s, 7 * s); // kabza ahşap
+      ctx.fillStyle = "#0f172a";
+      ctx.fillRect(13 * s, -1.5 * s, 5 * s, 3 * s); // namlu ucu
+      ctx.fillStyle = "#fbbf24"; // tetik koruyucu
+      ctx.beginPath(); ctx.arc(5 * s, 4 * s, 2 * s, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      // Sol
+      ctx.save();
+      ctx.translate(-28 * s, 8 * s);
+      ctx.rotate(-0.15 - sway);
+      ctx.fillStyle = "#1f2937";
+      ctx.fillRect(-12 * s, -3 * s, 12 * s, 5 * s);
+      ctx.fillStyle = "#7c2d12";
+      ctx.fillRect(-7 * s, 2 * s, 4 * s, 6 * s);
+      ctx.fillStyle = "#0f172a";
+      ctx.fillRect(-16 * s, -1.5 * s, 4 * s, 3 * s);
+      ctx.restore();
+      break;
+    }
+    case "gul": {
+      // Klasik yay (uzun, dik)
+      ctx.translate(28 * s, 4 * s);
+      ctx.rotate(sway);
+      ctx.strokeStyle = "#7c2d12"; ctx.lineWidth = 3 * s;
+      ctx.beginPath();
+      ctx.moveTo(0, -22 * s);
+      ctx.quadraticCurveTo(14 * s, 0, 0, 22 * s);
+      ctx.stroke();
+      // Tel
+      ctx.strokeStyle = "#e5e7eb"; ctx.lineWidth = 1 * s;
+      ctx.beginPath(); ctx.moveTo(0, -22 * s); ctx.lineTo(0, 22 * s); ctx.stroke();
+      // Tutamak (orta sarı bant)
+      ctx.fillStyle = "#fbbf24";
+      ctx.fillRect(-2 * s, -3 * s, 4 * s, 8 * s);
+      break;
+    }
+    case "rani": {
+      // Y şeklinde sapan — taş yüklü
+      ctx.translate(28 * s, 8 * s);
+      ctx.rotate(sway);
+      // Sap (Y'nin alt kolu)
+      ctx.strokeStyle = "#7c2d12"; ctx.lineWidth = 3 * s;
+      ctx.beginPath();
+      ctx.moveTo(0, 10 * s);
+      ctx.lineTo(0, 0);
+      ctx.stroke();
+      // Y'nin iki kolu
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-7 * s, -10 * s);
+      ctx.moveTo(0, 0);
+      ctx.lineTo(7 * s, -10 * s);
+      ctx.stroke();
+      // Lastik
+      ctx.strokeStyle = "#451a03"; ctx.lineWidth = 1.5 * s;
+      ctx.beginPath();
+      ctx.moveTo(-7 * s, -10 * s);
+      ctx.lineTo(0, -3 * s);
+      ctx.lineTo(7 * s, -10 * s);
+      ctx.stroke();
+      // Taş
+      ctx.fillStyle = "#fde68a";
+      ctx.beginPath(); ctx.arc(0, -3 * s, 2 * s, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#a16207"; ctx.lineWidth = 0.5 * s;
+      ctx.stroke();
+      break;
+    }
+    case "fanatik": {
+      // Nunchaku — iki kırmızı sopa zincirle bağlı
+      ctx.translate(28 * s, 8 * s);
+      ctx.rotate(0.4 + sway * 2);
+      // Üst sopa (elinde)
+      ctx.fillStyle = "#dc2626";
+      ctx.fillRect(-2 * s, -2 * s, 4 * s, 16 * s);
+      ctx.strokeStyle = "#7f1d1d"; ctx.lineWidth = 1 * s;
+      ctx.strokeRect(-2 * s, -2 * s, 4 * s, 16 * s);
+      // Zincir (3 halka)
+      ctx.fillStyle = "#9ca3af";
+      ctx.beginPath();
+      ctx.arc(0, 16 * s, 1.5 * s, 0, Math.PI * 2);
+      ctx.arc(2 * s, 19 * s, 1.5 * s, 0, Math.PI * 2);
+      ctx.arc(4 * s, 22 * s, 1.5 * s, 0, Math.PI * 2);
+      ctx.fill();
+      // Alt sopa (sallanan)
+      ctx.save();
+      ctx.translate(4 * s, 22 * s);
+      ctx.rotate(0.6 + Math.sin(swing * 4) * 0.3);
+      ctx.fillStyle = "#dc2626";
+      ctx.fillRect(-2 * s, 0, 4 * s, 16 * s);
+      ctx.strokeStyle = "#7f1d1d"; ctx.lineWidth = 1 * s;
+      ctx.strokeRect(-2 * s, 0, 4 * s, 16 * s);
+      ctx.restore();
+      break;
+    }
+    case "kornet": {
+      // Büyücü asası — uzun ahşap, ucunda mor kristal
+      ctx.translate(28 * s, -2 * s);
+      ctx.rotate(-0.15 + sway);
+      // Sap
+      ctx.fillStyle = "#7c2d12";
+      ctx.fillRect(-2 * s, 0, 4 * s, 32 * s);
+      ctx.strokeStyle = "#451a03"; ctx.lineWidth = 1 * s;
+      ctx.strokeRect(-2 * s, 0, 4 * s, 32 * s);
+      // Sarmal sarı bant
+      ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 1.2 * s;
+      for (let i = 4; i < 30; i += 6) {
+        ctx.beginPath();
+        ctx.moveTo(-2 * s, i * s);
+        ctx.lineTo(2 * s, (i + 3) * s);
+        ctx.stroke();
+      }
+      // Çatal (3 uç)
+      ctx.fillStyle = "#7c2d12";
+      ctx.beginPath();
+      ctx.moveTo(-6 * s, 0);
+      ctx.lineTo(-3 * s, -8 * s);
+      ctx.lineTo(0, 0);
+      ctx.lineTo(3 * s, -8 * s);
+      ctx.lineTo(6 * s, 0);
+      ctx.closePath(); ctx.fill();
+      // Kristal (mor parlayan)
+      const cglow = ctx.createRadialGradient(0, -10 * s, 0, 0, -10 * s, 8 * s);
+      cglow.addColorStop(0, "rgba(192, 132, 252, 0.95)");
+      cglow.addColorStop(1, "rgba(192, 132, 252, 0)");
+      ctx.fillStyle = cglow;
+      ctx.beginPath(); ctx.arc(0, -10 * s, 8 * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#9d4edd";
+      ctx.beginPath();
+      ctx.moveTo(0, -16 * s);
+      ctx.lineTo(4 * s, -10 * s);
+      ctx.lineTo(0, -4 * s);
+      ctx.lineTo(-4 * s, -10 * s);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = "#581c87"; ctx.lineWidth = 1 * s; ctx.stroke();
+      break;
+    }
+  }
+  ctx.restore();
+}
+
+function drawHeart(ctx, x, y, r) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.beginPath();
+  ctx.moveTo(0, r * 0.4);
+  ctx.bezierCurveTo(r, -r * 0.5, r * 1.1, r * 0.3, 0, r);
+  ctx.bezierCurveTo(-r * 1.1, r * 0.3, -r, -r * 0.5, 0, r * 0.4);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawGhost(ctx, g) {
+  const size = g.size, hp = g.hp, maxHp = g.maxHp;
+  ctx.save();
+  ctx.translate(g.x, g.y);
+  const s = size / 40;
+
+  // Boss için kırmızı aura
+  if (g.isBoss) {
+    const t = performance.now() / 300;
+    const auraR = size * 0.95 + Math.sin(t) * 4;
+    const auraGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, auraR);
+    auraGrad.addColorStop(0, "rgba(255, 70, 70, 0.45)");
+    auraGrad.addColorStop(1, "rgba(255, 70, 70, 0)");
+    ctx.fillStyle = auraGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, auraR, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Gölge
+  ctx.fillStyle = "rgba(0,0,0,0.3)";
+  ctx.beginPath();
+  ctx.ellipse(0, 22 * s, 18 * s, 5 * s, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Tonlama (HP'ye göre renk)
+  let bodyColor;
+  if (g.isBoss) bodyColor = "#dc2626";
+  else if (maxHp >= 5) bodyColor = "#a78bfa";
+  else if (maxHp >= 3) bodyColor = "#fda4af";
+  else if (maxHp >= 2) bodyColor = "#fde68a";
+  else bodyColor = "#ffffff";
+  // Shooter (ateş eden) hayalet: kırmızımsı mor + parlayan kontur
+  if (g.isShooter) bodyColor = "#c084fc";
+  // Donmuş hayalet: buz mavisi tonu
+  const isFrozen = (g.frozenUntil || 0) > performance.now();
+  if (isFrozen) bodyColor = "#bae6fd";
+
+  // Vücut
+  ctx.fillStyle = bodyColor;
+  ctx.beginPath();
+  ctx.arc(0, -5 * s, 18 * s, Math.PI, 0);
+  ctx.lineTo(18 * s, 18 * s);
+  const wave = 4;
+  for (let i = wave; i >= 0; i--) {
+    const wx = -18 * s + (i / wave) * 36 * s;
+    const wy = (i % 2 === 0 ? 14 : 22) * s;
+    ctx.lineTo(wx, wy);
+  }
+  ctx.lineTo(-18 * s, 18 * s);
+  ctx.closePath();
+  ctx.fill();
+
+  // Boss tacı
+  if (g.isBoss) {
+    ctx.fillStyle = "#ffd166";
+    ctx.strokeStyle = "#a16207";
+    ctx.lineWidth = 1.8 * s;
+    ctx.beginPath();
+    const cw = 20 * s;
+    ctx.moveTo(-cw, -22 * s);
+    ctx.lineTo(-cw + 2 * s, -34 * s);
+    ctx.lineTo(-cw / 2, -28 * s);
+    ctx.lineTo(0, -38 * s);
+    ctx.lineTo(cw / 2, -28 * s);
+    ctx.lineTo(cw - 2 * s, -34 * s);
+    ctx.lineTo(cw, -22 * s);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    // Mücevher
+    ctx.fillStyle = "#ef4444";
+    ctx.beginPath();
+    ctx.arc(0, -29 * s, 2.5 * s, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Gözler
+  ctx.fillStyle = g.isBoss ? "#fde047" : "#222";
+  ctx.beginPath();
+  ctx.arc(-6 * s, -5 * s, 3 * s, 0, Math.PI * 2);
+  ctx.arc(6 * s, -5 * s, 3 * s, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Ağız
+  ctx.fillStyle = g.isBoss ? "#7f1d1d" : "#222";
+  ctx.beginPath();
+  ctx.ellipse(0, 3 * s, g.isBoss ? 5 * s : 3 * s, g.isBoss ? 5 * s : 4 * s, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // HP barı
+  if (hp < maxHp) {
+    const w = (g.isBoss ? 60 : 32) * s;
+    const hpY = g.isBoss ? -44 * s : -28 * s;
+    ctx.fillStyle = "rgba(0,0,0,0.7)";
+    ctx.fillRect(-w / 2, hpY, w, 5 * s);
+    ctx.fillStyle = g.isBoss ? "#ef4444" : "#06d6a0";
+    ctx.fillRect(-w / 2, hpY, w * (hp / maxHp), 5 * s);
+  }
+
+  ctx.restore();
+}
+
+function drawWall(ctx, x, y, w, h) {
+  const th = getTheme();
+  ctx.fillStyle = th.wall;
+  ctx.fillRect(x, y, w, h);
+  ctx.strokeStyle = th.wallDark;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x, y, w, h);
+  // Tuğla deseni
+  ctx.fillStyle = th.wallDark;
+  for (let row = 0; row * 16 < h; row++) {
+    const offsetX = row % 2 === 0 ? 0 : 16;
+    for (let col = 0; col * 32 < w; col++) {
+      const bx = x + col * 32 + offsetX;
+      const by = y + row * 16;
+      if (bx + 32 <= x + w && by + 16 <= y + h) {
+        ctx.fillRect(bx + 30, by, 2, 16);
+        ctx.fillRect(bx, by + 14, 32, 2);
+      }
+    }
+  }
+}
+
+function drawWater(ctx, x, y, w, h) {
+  // Sabit mavi gradient — bölüm temasından bağımsız
+  const grad = ctx.createLinearGradient(x, y, x, y + h);
+  grad.addColorStop(0, "#1e7fd6");
+  grad.addColorStop(1, "#0a3a8a");
+  ctx.fillStyle = grad;
+  ctx.fillRect(x, y, w, h);
+
+  // Dalgalar
+  ctx.strokeStyle = "rgba(255,255,255,0.45)";
+  ctx.lineWidth = 1.5;
+  const t = performance.now() / 400;
+  for (let row = 10; row < h - 4; row += 14) {
+    ctx.beginPath();
+    for (let col = 0; col <= w; col += 8) {
+      const wy = y + row + Math.sin((col + t * 30) / 22) * 2.5;
+      if (col === 0) ctx.moveTo(x + col, wy);
+      else ctx.lineTo(x + col, wy);
+    }
+    ctx.stroke();
+  }
+
+  // Köpük (üst)
+  ctx.fillStyle = "rgba(255,255,255,0.35)";
+  for (let col = 0; col < w; col += 24) {
+    const sparkle = Math.sin((col + t * 60) / 18);
+    if (sparkle > 0.6) {
+      ctx.fillRect(x + col, y + 4, 8, 2);
+    }
+  }
+
+  // Kenar
+  ctx.strokeStyle = "#062a66";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(x, y, w, h);
+}
+
+function drawSpike(ctx, x, y, w, h) {
+  // Koyu zemin
+  ctx.fillStyle = "#1a0b14";
+  ctx.fillRect(x, y, w, h);
+  // Çapraz tarama deseni
+  ctx.strokeStyle = "rgba(120, 80, 100, 0.25)";
+  ctx.lineWidth = 1;
+  for (let i = -h; i < w; i += 8) {
+    ctx.beginPath(); ctx.moveTo(x + i, y); ctx.lineTo(x + i + h, y + h); ctx.stroke();
+  }
+  // Sivri uçlar (dik üçgenler)
+  const spikeW = 12;
+  const cols = Math.floor(w / spikeW);
+  const rows = Math.floor(h / spikeW);
+  ctx.fillStyle = "#cbd5e1";
+  ctx.strokeStyle = "#475569";
+  ctx.lineWidth = 1;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const sx = x + c * spikeW + spikeW / 2;
+      const sy = y + r * spikeW + spikeW;
+      ctx.beginPath();
+      ctx.moveTo(sx - spikeW / 2 + 1, sy);
+      ctx.lineTo(sx, sy - spikeW + 1);
+      ctx.lineTo(sx + spikeW / 2 - 1, sy);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+  // Kenar
+  ctx.strokeStyle = "#7f1d1d";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(x, y, w, h);
+}
+
+function drawLava(ctx, x, y, w, h) {
+  const t = performance.now() / 300;
+  // Dış glow (parlak halo) — tehlike olduğunu net göster
+  const glowPulse = 0.6 + Math.sin(performance.now() / 220) * 0.25;
+  ctx.save();
+  ctx.shadowColor = "#fb923c";
+  ctx.shadowBlur = 28 * glowPulse;
+  ctx.fillStyle = "rgba(0,0,0,0)";
+  ctx.fillRect(x - 4, y - 4, w + 8, h + 8);
+  ctx.restore();
+  // Kontrastlı koyu zemin (lavın "magma kabuğu" hissi)
+  ctx.fillStyle = "#1a0202";
+  ctx.fillRect(x, y, w, h);
+  // İç kısımda parlak gradient (kabukta çatlak gibi)
+  const grad = ctx.createRadialGradient(x + w/2, y + h/2, 4, x + w/2, y + h/2, Math.max(w, h) * 0.7);
+  grad.addColorStop(0,    "#fef3c7");
+  grad.addColorStop(0.25, "#facc15");
+  grad.addColorStop(0.55, "#f97316");
+  grad.addColorStop(0.85, "#dc2626");
+  grad.addColorStop(1,    "#450a0a");
+  ctx.fillStyle = grad;
+  ctx.fillRect(x + 4, y + 4, w - 8, h - 8);
+  // Magma çatlakları (zigzag kırmızı çizgiler)
+  ctx.strokeStyle = "rgba(254, 240, 138, 0.85)";
+  ctx.lineWidth = 1.8;
+  for (let k = 0; k < 4; k++) {
+    const cy = y + 12 + k * (h - 24) / 4;
+    ctx.beginPath();
+    for (let col = 4; col < w - 4; col += 6) {
+      const wy = cy + Math.sin((col + t * 60 + k * 30) / 14) * 4;
+      if (col === 4) ctx.moveTo(x + col, wy);
+      else ctx.lineTo(x + col, wy);
+    }
+    ctx.stroke();
+  }
+  // Patlayan baloncuklar (parlak)
+  ctx.fillStyle = "rgba(255, 250, 200, 0.95)";
+  for (let i = 0; i < 9; i++) {
+    const bx = x + 6 + ((i * 47 + t * 22) % (w - 12));
+    const by = y + h - 10 - ((i * 31 + t * 18) % (h - 18));
+    const br = 2.2 + ((i + Math.floor(t)) % 4) * 0.7;
+    ctx.beginPath();
+    ctx.arc(bx, by, br, 0, Math.PI * 2);
+    ctx.fill();
+    // Parlama halkası
+    ctx.strokeStyle = "rgba(254, 215, 170, 0.7)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(bx, by, br + 2, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  // 🔥 Sembolleri (her köşede sıcaklık göstergesi)
+  const flameSize = Math.min(20, Math.min(w, h) / 4);
+  ctx.font = `${flameSize}px sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  const flicker = 1 + Math.sin(performance.now() / 120) * 0.08;
+  ctx.save();
+  ctx.translate(x + w / 2, y + h / 2);
+  ctx.scale(flicker, flicker);
+  ctx.fillText("🔥", 0, 0);
+  ctx.restore();
+  // Çift kenar (iç sarı + dış koyu kırmızı) — kontrast
+  ctx.strokeStyle = "#fde047";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x + 1.5, y + 1.5, w - 3, h - 3);
+  ctx.strokeStyle = "#7f1d1d";
+  ctx.lineWidth = 5;
+  ctx.strokeRect(x, y, w, h);
+}
+
+function drawProjectile(ctx, p) {
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  const ang = Math.atan2(p.vy, p.vx);
+  switch (p.charKey) {
+    case "kinkin": {
+      // Camgöbeği enerji topu
+      ctx.shadowColor = "#22d3ee"; ctx.shadowBlur = 14;
+      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 8);
+      grad.addColorStop(0, "#ffffff");
+      grad.addColorStop(0.45, "#22d3ee");
+      grad.addColorStop(1, "rgba(8, 145, 178, 0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2); ctx.fill();
+      break;
+    }
+    case "veryi": {
+      // Gri taş yumru — düzensiz şekil
+      ctx.rotate(ang);
+      ctx.fillStyle = "#525252";
+      ctx.beginPath();
+      ctx.moveTo(-7, -5); ctx.lineTo(6, -7); ctx.lineTo(8, 0);
+      ctx.lineTo(6, 7);  ctx.lineTo(-7, 5); ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "#1f1f1f"; ctx.lineWidth = 1; ctx.stroke();
+      // Üst parıltı
+      ctx.fillStyle = "#a3a3a3";
+      ctx.fillRect(-3, -3, 4, 1.5);
+      break;
+    }
+    case "kornet": {
+      // Mor büyü topu + dönen sarı yıldız
+      ctx.shadowColor = "#a855f7"; ctx.shadowBlur = 16;
+      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 9);
+      grad.addColorStop(0, "#ffffff");
+      grad.addColorStop(0.4, "#c084fc");
+      grad.addColorStop(1, "rgba(168, 85, 247, 0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.arc(0, 0, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#fde047";
+      ctx.rotate(performance.now() / 100);
+      ctx.beginPath();
+      for (let i = 0; i < 5; i++) {
+        const a1 = (i / 5) * Math.PI * 2;
+        const a2 = a1 + Math.PI / 5;
+        ctx.lineTo(Math.cos(a1) * 3.5, Math.sin(a1) * 3.5);
+        ctx.lineTo(Math.cos(a2) * 1.6, Math.sin(a2) * 1.6);
+      }
+      ctx.closePath(); ctx.fill();
+      break;
+    }
+    case "mark":
+    case "gul": {
+      // Tahta ok (Mark kırmızı tüy / Gül sarı tüy)
+      ctx.rotate(ang);
+      ctx.fillStyle = "#92400e";
+      ctx.fillRect(-9, -1, 16, 2);
+      ctx.fillStyle = "#9ca3af";
+      ctx.beginPath();
+      ctx.moveTo(7, -3.5); ctx.lineTo(12, 0); ctx.lineTo(7, 3.5); ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = p.charKey === "mark" ? "#dc2626" : "#fbbf24";
+      ctx.beginPath();
+      ctx.moveTo(-9, -2.5); ctx.lineTo(-13, 0); ctx.lineTo(-9, 2.5); ctx.closePath();
+      ctx.fill();
+      break;
+    }
+    case "kent": {
+      // Fırlatılan bıçak — hızla döner
+      ctx.rotate(performance.now() / 50);
+      ctx.fillStyle = "#cbd5e1";
+      ctx.beginPath();
+      ctx.moveTo(-1.5, -8); ctx.lineTo(1.5, -8); ctx.lineTo(2.5, 4); ctx.lineTo(-2.5, 4); ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "#475569"; ctx.lineWidth = 0.5; ctx.stroke();
+      // Sap (kahverengi)
+      ctx.fillStyle = "#451a03";
+      ctx.fillRect(-3, 4, 6, 5);
+      // Metalik parıltı
+      ctx.fillStyle = "#f1f5f9";
+      ctx.fillRect(-0.5, -7, 1, 9);
+      break;
+    }
+    case "ponko": {
+      // Altın tabanca kurşunu (kapsül şekli)
+      ctx.rotate(ang);
+      ctx.fillStyle = "#fbbf24";
+      ctx.beginPath();
+      ctx.moveTo(-5, -3); ctx.lineTo(3, -3);
+      ctx.quadraticCurveTo(8, 0, 3, 3);
+      ctx.lineTo(-5, 3);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "#92400e"; ctx.lineWidth = 0.8; ctx.stroke();
+      // Kovan kuyruk (kırmızı)
+      ctx.fillStyle = "#dc2626";
+      ctx.fillRect(-6, -2, 1.5, 4);
+      ctx.shadowColor = "#fef3c7"; ctx.shadowBlur = 8;
+      break;
+    }
+    case "rani": {
+      // Yuvarlak taş — sapan mermisi
+      ctx.fillStyle = "#a8a29e";
+      ctx.beginPath(); ctx.arc(0, 0, 5.5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#44403c"; ctx.lineWidth = 1; ctx.stroke();
+      // Çatlaklar
+      ctx.strokeStyle = "#57534e"; ctx.lineWidth = 0.6;
+      ctx.beginPath();
+      ctx.moveTo(-2, -1); ctx.lineTo(0, 1); ctx.lineTo(2, -2);
+      ctx.stroke();
+      // Üst parıltı
+      ctx.fillStyle = "#d6d3d1";
+      ctx.beginPath(); ctx.arc(-1.5, -1.8, 1.2, 0, Math.PI * 2); ctx.fill();
+      break;
+    }
+    case "beti": {
+      // Renkli şeker top (4 dilim, dönen)
+      ctx.rotate(performance.now() / 200);
+      const colors = ["#f43f5e", "#fbbf24", "#22d3ee", "#a855f7"];
+      for (let i = 0; i < colors.length; i++) {
+        ctx.fillStyle = colors[i];
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, 7, (i / colors.length) * Math.PI * 2, ((i + 1) / colors.length) * Math.PI * 2);
+        ctx.closePath(); ctx.fill();
+      }
+      ctx.strokeStyle = "#222"; ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.stroke();
+      // Beyaz parıltı
+      ctx.fillStyle = "#fff";
+      ctx.beginPath(); ctx.arc(-2, -2, 1.5, 0, Math.PI * 2); ctx.fill();
+      break;
+    }
+    case "fanatik": {
+      // Kırmızı-altın enerji yumruğu (yarım hilal)
+      ctx.rotate(ang);
+      ctx.shadowColor = "#dc2626"; ctx.shadowBlur = 12;
+      const grad = ctx.createLinearGradient(-7, 0, 8, 0);
+      grad.addColorStop(0, "rgba(220, 38, 38, 0)");
+      grad.addColorStop(0.6, "#dc2626");
+      grad.addColorStop(1, "#fde047");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(-7, -5);
+      ctx.quadraticCurveTo(0, 0, -7, 5);
+      ctx.lineTo(7, 3);
+      ctx.quadraticCurveTo(10, 0, 7, -3);
+      ctx.closePath(); ctx.fill();
+      // Sıcak çekirdek
+      ctx.fillStyle = "#fde047";
+      ctx.beginPath(); ctx.arc(4, 0, 2, 0, Math.PI * 2); ctx.fill();
+      break;
+    }
+    default: {
+      // Fallback — eski sarı top
+      ctx.fillStyle = "#ffd166";
+      ctx.shadowColor = "#ffd166"; ctx.shadowBlur = 12;
+      ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+function drawPickup(ctx, p) {
+  // Son 3 saniyede yanıp sön → bu kareyi atla
+  if (p.life !== undefined && p.life < 3) {
+    if (Math.floor(p.life * 8) % 2 === 0) return;
+  }
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  const bob = Math.sin(performance.now() / 200 + p.x) * 3;
+  ctx.translate(0, bob);
+
+  if (p.kind === "kalp") {
+    // Pulsing kırmızı kalp — çok dikkat çekici
+    const t = performance.now() / 180;
+    const sc = 1 + Math.sin(t) * 0.18;
+    ctx.scale(sc, sc);
+    // Aura
+    const aura = ctx.createRadialGradient(0, 0, 0, 0, 0, 22);
+    aura.addColorStop(0, "rgba(252, 165, 165, 0.6)");
+    aura.addColorStop(1, "rgba(252, 165, 165, 0)");
+    ctx.fillStyle = aura;
+    ctx.beginPath();
+    ctx.arc(0, 0, 22, 0, Math.PI * 2);
+    ctx.fill();
+    // Kalp gövdesi
+    ctx.shadowColor = "#fca5a5";
+    ctx.shadowBlur = 14;
+    ctx.fillStyle = "#ef4444";
+    drawHeart(ctx, 0, -3, 11);
+    // Parlama
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "rgba(255,255,255,0.7)";
+    drawHeart(ctx, -3, -5, 3);
+  } else if (p.kind === "guc") {
+    // Dönen güç yıldızı + karakter ikonu
+    const t = performance.now() / 300;
+    ctx.save();
+    ctx.rotate(t);
+    ctx.fillStyle = "#fde047";
+    ctx.shadowColor = "#fde047";
+    ctx.shadowBlur = 18;
+    ctx.beginPath();
+    for (let i = 0; i < 5; i++) {
+      const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
+      const a2 = a + Math.PI / 5;
+      ctx.lineTo(Math.cos(a) * 14, Math.sin(a) * 14);
+      ctx.lineTo(Math.cos(a2) * 6, Math.sin(a2) * 6);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+    // İçinde aktif karakterin ikonu
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#7c2d12";
+    ctx.font = "bold 14px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const ikon = (CHAR_POWERS[game.player && game.player.charKey] || CHAR_POWERS.kinkin).icon;
+    ctx.fillText(ikon, 0, 1);
+  } else if (p.kind === "para") {
+    ctx.fillStyle = "#ffd166";
+    ctx.shadowColor = "#ffd166";
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.arc(0, 0, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#a16207";
+    ctx.font = "bold 11px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("$", 0, 1);
+  } else if (p.kind === "elmas") {
+    ctx.fillStyle = "#60a5fa";
+    ctx.shadowColor = "#60a5fa";
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    ctx.moveTo(0, -10);
+    ctx.lineTo(8, 0);
+    ctx.lineTo(0, 10);
+    ctx.lineTo(-8, 0);
+    ctx.closePath();
+    ctx.fill();
+  } else if (p.kind === "zumrut") {
+    ctx.fillStyle = "#10b981";
+    ctx.shadowColor = "#10b981";
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    ctx.moveTo(0, -10);
+    ctx.lineTo(8, -3);
+    ctx.lineTo(6, 10);
+    ctx.lineTo(-6, 10);
+    ctx.lineTo(-8, -3);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+// ====== EKRAN YÖNETİMİ ======
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function goToMenu() {
+  showScreen("screen-menu");
+  refreshMenu();
+  maybeShowUpdateNotes();
+}
+
+// ====== ONLINE / LOBİ ======
+function openOnline() {
+  online.uid = getOnlineUid();
+  showScreen("screen-online");
+  setOnlineStatus("");
+}
+function leaveOnlineToOnline() {
+  stopRoomListListener();
+  stopRoomListener();
+  showScreen("screen-online");
+  setOnlineStatus("");
+}
+function setOnlineStatus(msg) {
+  const el = document.getElementById("online-status");
+  if (el) el.textContent = msg || "";
+}
+
+function openCreateRoom() {
+  showScreen("screen-create-room");
+  const inp = document.getElementById("room-name-input");
+  if (inp && !inp.value) inp.value = (save.playerName || "Avcı") + "'in Odası";
+  selectMaxPlayers(online.selectedMax || 5);
+}
+function selectMaxPlayers(n) {
+  online.selectedMax = n;
+  document.querySelectorAll(".max-btn").forEach((b) => {
+    b.classList.toggle("active", parseInt(b.dataset.max, 10) === n);
+  });
+}
+
+async function submitCreateRoom() {
+  if (!save.playerName) { showToast("Önce avcı adını ayarla"); return; }
+  if (!online.uid) online.uid = getOnlineUid();
+  const name = (document.getElementById("room-name-input").value || "").trim() || "Oda";
+  showToast("⏳ Oda kuruluyor...");
+  setOnlineStatus("Firebase'e bağlanıyor...");
+  online.lastError = null;
+  const roomId = makeRoomId();
+  const now = Date.now();
+  const uid = online.uid;
+  const room = {
+    name,
+    hostUid: uid,
+    hostName: save.playerName,
+    level: 1,
+    status: "lobby",
+    maxPlayers: online.selectedMax || 5,
+    createdAt: now,
+    lastSeen: now,
+    players: {
+      [uid]: makePlayerEntry(true, now),
+    },
+  };
+  const ok = await rtdb.put(`rooms/${roomId}`, room);
+  if (!ok) {
+    const reason = online.lastError || "bilinmeyen hata";
+    setOnlineStatus(`⚠ Oda kurulamadı: ${reason}`);
+    showToast(`⚠ ${reason.slice(0, 60)}`);
+    return;
+  }
+  online.roomId = roomId;
+  online.isHost = true;
+  enterLobby();
+}
+
+function makeRoomId() {
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // okunması kolay (I/L/O/0/1 yok)
+  let id = "";
+  for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+
+function makePlayerEntry(ready, now) {
+  return {
+    name: save.playerName || "Avcı",
+    charKey: save.selectedChar || "kinkin",
+    costumeIdx: (save.selectedCostume && save.selectedCostume[save.selectedChar]) || 0,
+    ready: !!ready,
+    joinedAt: now,
+    lastSeen: now,
+  };
+}
+
+async function openRoomList() {
+  showScreen("screen-room-list");
+  // Real-time listener — odalar değiştikçe liste anında güncellenir
+  stopRoomListListener();
+  const db = fbDb(); if (!db) return;
+  online._roomListRef = db.ref("rooms");
+  online._roomListListener = online._roomListRef.on("value", (snap) => {
+    renderRoomList(snap.val());
+  }, (err) => {
+    console.error("rooms listener", err);
+    setOnlineStatus("⚠ Bağlantı hatası: " + err.message);
+  });
+}
+
+function stopRoomListListener() {
+  if (online._roomListRef && online._roomListListener) {
+    online._roomListRef.off("value", online._roomListListener);
+  }
+  online._roomListRef = null;
+  online._roomListListener = null;
+}
+
+function refreshRoomList() {
+  // Listener zaten gerçek zamanlı çalışır; manuel yenileme buton aksiyonu için
+  if (!online._roomListRef) openRoomList();
+}
+
+function renderRoomList(all) {
+  const list = document.getElementById("room-list");
+  if (!list) return;
+  const cutoff = Date.now() - ROOM_LIST_TTL_MS;
+  const items = [];
+  if (all) {
+    Object.keys(all).forEach((id) => {
+      const r = all[id];
+      if (!r || !r.lastSeen || r.lastSeen < cutoff) return;
+      if (r.status !== "lobby") return;
+      const playerCount = r.players ? Object.keys(r.players).length : 0;
+      items.push({ id, ...r, playerCount });
+    });
+  }
+  items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  list.innerHTML = "";
+  if (items.length === 0) {
+    list.innerHTML = `<div class="room-list-empty">Aktif oda yok. Sen kurar mısın?</div>`;
+    return;
+  }
+  items.forEach((r) => {
+    const card = document.createElement("div");
+    card.className = "room-card";
+    const full = r.playerCount >= r.maxPlayers;
+    card.innerHTML = `
+      <div class="room-info">
+        <div class="room-name">${escapeHtml(r.name || "Oda")}</div>
+        <div class="room-meta">👤 ${escapeHtml(r.hostName || "?")} · <b>${r.playerCount}/${r.maxPlayers}</b> oyuncu · Bölüm ${r.level || 1}</div>
+      </div>
+      <button ${full ? "disabled" : ""}>${full ? "DOLU" : "KATIL"}</button>
+    `;
+    if (!full) {
+      card.querySelector("button").onclick = () => joinRoom(r.id);
+    }
+    list.appendChild(card);
+  });
+}
+
+async function joinRoom(roomId) {
+  if (!save.playerName) { showToast("Önce avcı adını ayarla"); return; }
+  setOnlineStatus("");
+  const uid = online.uid;
+  const now = Date.now();
+  // Oda var mı / dolu mu kontrolü
+  const room = await rtdb.get(`rooms/${roomId}`);
+  if (!room) { showToast("Oda bulunamadı"); return; }
+  const count = room.players ? Object.keys(room.players).length : 0;
+  if (count >= (room.maxPlayers || 5)) { showToast("Oda dolu"); return; }
+  if (room.status !== "lobby") { showToast("Oyun zaten başladı"); return; }
+  await rtdb.put(`rooms/${roomId}/players/${uid}`, makePlayerEntry(false, now));
+  await rtdb.patch(`rooms/${roomId}`, { lastSeen: now });
+  online.roomId = roomId;
+  online.isHost = (room.hostUid === uid);
+  enterLobby();
+}
+
+function enterLobby() {
+  showScreen("screen-lobby");
+  startRoomListener();
+  setupOnDisconnect();
+}
+
+function startRoomListener() {
+  stopRoomListener();
+  const db = fbDb(); if (!db || !online.roomId) return;
+  online._roomRef = db.ref(`rooms/${online.roomId}`);
+  online._roomListener = online._roomRef.on("value", (snap) => {
+    const room = snap.val();
+    if (!room) {
+      // Oda silindi
+      stopRoomListener();
+      stopMpSync();
+      online.roomId = null;
+      online.mode = null;
+      showToast("Oda kapandı");
+      if (game.running) {
+        game.running = false;
+        const wb = document.getElementById("weapon-bar");
+        if (wb) wb.innerHTML = "";
+      }
+      showScreen("screen-online");
+      return;
+    }
+    online.cachedRoom = room;
+    // Host hâlâ odada mı? Değilse yeni host seç (host transferi)
+    if (room.hostUid && room.players && !room.players[room.hostUid]) {
+      maybeBecomeNewHost(room);
+      return; // Bu snapshot'ta hostUid eski; yeni snapshot'ı bekle
+    }
+    online.isHost = (room.hostUid === online.uid);
+    // Lobi açıksa render et
+    if (document.getElementById("screen-lobby").classList.contains("active")) {
+      renderLobby(room);
+    }
+    // Host oyunu başlattıysa client de geçsin
+    if (room.status === "playing" && !game.running) {
+      startMpGameClient();
+    }
+    // Oyun içinde state varsa client'a uygula
+    if (game.running) handleRoomSnapshot(room);
+  }, (err) => {
+    console.error("room listener", err);
+    setOnlineStatus("⚠ Bağlantı: " + err.message);
+  });
+}
+
+function stopRoomListener() {
+  if (online._roomRef && online._roomListener) {
+    online._roomRef.off("value", online._roomListener);
+  }
+  online._roomRef = null;
+  online._roomListener = null;
+}
+
+function setupOnDisconnect() {
+  const db = fbDb(); if (!db || !online.roomId || !online.uid) return;
+  // Host olsa bile sadece kendi player'ını sil — kalan oyunculardan biri host olur
+  // Önce eski onDisconnect'leri iptal et
+  db.ref(`rooms/${online.roomId}`).onDisconnect().cancel();
+  db.ref(`rooms/${online.roomId}/players/${online.uid}`).onDisconnect().cancel();
+  // Sadece kendi player'ını sil
+  db.ref(`rooms/${online.roomId}/players/${online.uid}`).onDisconnect().remove();
+}
+
+// Mevcut host kayıpsa, deterministik olarak yeni host seç
+function maybeBecomeNewHost(room) {
+  if (!room || !room.players) return;
+  const players = room.players;
+  // Mevcut host hâlâ odadaysa hiçbir şey yapma
+  if (room.hostUid && players[room.hostUid]) return;
+  // Yeni host: en eski katılan (joinedAt'e göre) — herkes aynı kararı verir
+  const uids = Object.keys(players).sort((a, b) => {
+    const ja = players[a].joinedAt || 0, jb = players[b].joinedAt || 0;
+    if (ja !== jb) return ja - jb;
+    return a < b ? -1 : 1;
+  });
+  const newHostUid = uids[0];
+  if (!newHostUid) return;
+  if (newHostUid === online.uid && !online.isHost) {
+    // Ben yeni host'um
+    online.isHost = true;
+    online.mode = "host";
+    rtdb.patch(`rooms/${online.roomId}`, {
+      hostUid: online.uid,
+      hostName: save.playerName,
+      lastSeen: Date.now(),
+    });
+    setupOnDisconnect();
+    if (game.running) startEventsListener();
+    showToast("👑 Artık sen Host'sun!");
+  }
+}
+
+function renderLobby(room) {
+  document.getElementById("lobby-title").textContent = "🎮 " + (room.name || "Lobi");
+  const players = room.players || {};
+  const uids = Object.keys(players);
+  const playerCount = uids.length;
+  const max = room.maxPlayers || 5;
+  document.getElementById("lobby-subtitle").textContent =
+    `${playerCount}/${max} oyuncu · ${online.isHost ? "Sen Host'sun" : "Host: " + (room.hostName || "?")}`;
+
+  const list = document.getElementById("lobby-players");
+  list.innerHTML = "";
+  // Host önce, sonra katılma sırasına göre
+  uids.sort((a, b) => {
+    if (a === room.hostUid) return -1;
+    if (b === room.hostUid) return 1;
+    return (players[a].joinedAt || 0) - (players[b].joinedAt || 0);
+  });
+  uids.forEach((uid) => {
+    const p = players[uid];
+    if (!p) return;
+    const row = document.createElement("div");
+    row.className = "lobby-player";
+    if (uid === room.hostUid) row.classList.add("is-host");
+    if (uid === online.uid)   row.classList.add("is-me");
+    const charName = (CHARACTERS[p.charKey] || { name: "?" }).name;
+    row.innerHTML = `
+      <span class="lp-tag">${escapeHtml(charName)}</span>
+      <span class="lp-name">${escapeHtml(p.name || "?")}${uid === online.uid ? " (Sen)" : ""}</span>
+      <span class="lp-ready">${p.ready ? "✓" : "⏳"}</span>
+    `;
+    list.appendChild(row);
+  });
+
+  // Hazır butonu durumu
+  const me = players[online.uid];
+  const readyBtn = document.getElementById("lobby-ready-btn");
+  if (me) {
+    readyBtn.classList.toggle("is-ready", !!me.ready);
+    readyBtn.textContent = me.ready ? "✓ HAZIRIM" : "HAZIR OL";
+  }
+
+  // BAŞLAT butonu sadece host'a ve tüm oyuncular hazırsa görünür
+  const startBtn = document.getElementById("lobby-start-btn");
+  const allReady = uids.length >= 2 && uids.every((u) => players[u] && players[u].ready);
+  if (online.isHost && allReady) {
+    startBtn.style.display = "";
+  } else {
+    startBtn.style.display = "none";
+  }
+}
+
+async function toggleReady() {
+  if (!online.roomId) return;
+  const room = online.cachedRoom;
+  const me = room && room.players && room.players[online.uid];
+  const newReady = !(me && me.ready);
+  await rtdb.patch(`rooms/${online.roomId}/players/${online.uid}`, { ready: newReady, lastSeen: Date.now() });
+  // Listener anında yeni state'i fark eder, manuel render'a gerek yok
+}
+
+async function leaveRoom() {
+  if (!online.roomId) { showScreen("screen-online"); return; }
+  const roomId = online.roomId;
+  const wasHost = online.isHost;
+  stopRoomListener();
+  online.roomId = null;
+  online.isHost = false;
+  if (wasHost) {
+    await rtdb.remove(`rooms/${roomId}`);
+  } else {
+    await rtdb.remove(`rooms/${roomId}/players/${online.uid}`);
+  }
+  showScreen("screen-online");
+  setOnlineStatus("Odadan ayrıldın");
+}
+
+async function startMpGame() {
+  if (!online.isHost) return;
+  // Host: oda durumunu "playing" yap, listener'lar fark eder
+  await rtdb.patch(`rooms/${online.roomId}`, { status: "playing", lastSeen: Date.now() });
+  startMpGameClient();
+}
+
+function startMpGameClient() {
+  online.mode = online.isHost ? "host" : "client";
+  online.remotePlayers = {};
+  online.pendingEvents = [];
+  // Host yeni başlangıçta state'i temizler
+  if (online.mode === "host") {
+    rtdb.put(`rooms/${online.roomId}/state`, null);
+    rtdb.put(`rooms/${online.roomId}/events`, null);
+  }
+  showToast(online.isHost ? "👑 Host olarak başlattın" : "🌐 Bağlanıldı");
+  startGame();
+  startMpSync();
+}
+
+function startMpSync() {
+  stopMpSync();
+  online.pushTimer = setInterval(mpPush, MP_PUSH_MS);
+  // Host: events koleksiyonunu listener ile dinle (client'lardan gelen hit/pickup)
+  if (online.mode === "host") startEventsListener();
+}
+function stopMpSync() {
+  if (online.pushTimer) { clearInterval(online.pushTimer); online.pushTimer = null; }
+  stopEventsListener();
+}
+function startEventsListener() {
+  stopEventsListener();
+  const db = fbDb(); if (!db || !online.roomId) return;
+  online._eventsRef = db.ref(`rooms/${online.roomId}/events`);
+  online._eventsListener = online._eventsRef.on("child_added", (snap) => {
+    const ev = snap.val();
+    if (ev) applyHostEvent(ev);
+    snap.ref.remove();
+  });
+}
+function stopEventsListener() {
+  if (online._eventsRef && online._eventsListener) {
+    online._eventsRef.off("child_added", online._eventsListener);
+  }
+  online._eventsRef = null;
+  online._eventsListener = null;
+}
+
+async function mpPush() {
+  if (_mpPushInflight) return;
+  if (!online.roomId || !game.player || !game.running) return;
+  _mpPushInflight = true;
+  try { await mpPushImpl(); } finally { _mpPushInflight = false; }
+}
+async function mpPushImpl() {
+  const uid = online.uid;
+  const now = performance.now();
+  const me = {
+    name: save.playerName || "Avcı",
+    charKey: game.player.charKey,
+    costumeIdx: game.player.costumeIdx,
+    x: Math.round(game.player.x),
+    y: Math.round(game.player.y),
+    facing: +(game.player.facing || 0).toFixed(2),
+    hp: game.player.hp,
+    maxHp: game.player.maxHp,
+    walk: +((game.player.walkTimer || 0)).toFixed(2),
+    invuln: game.player.invuln > 0,
+    invisible: ((game.player.invisibleUntil || 0) > now) ? 1 : 0,
+    dead: game.player.dead ? 1 : 0,
+    lastSeen: Date.now(),
+  };
+  // fire-and-forget; sıraya sokmaya gerek yok
+  rtdb.patch(`rooms/${online.roomId}/players/${uid}`, me);
+
+  if (online.mode === "host") {
+    // Hayaletler, pickup'lar, düşman mermileri, level meta
+    const ghosts = game.ghosts.map((g, i) => ({
+      i,
+      x: Math.round(g.x), y: Math.round(g.y),
+      hp: g.hp, maxHp: g.maxHp, size: g.size,
+      isBoss: g.isBoss ? 1 : 0,
+      isShooter: g.isShooter ? 1 : 0,
+      frozen: ((g.frozenUntil || 0) > now) ? 1 : 0,
+    }));
+    const pickups = game.pickups.map((p, i) => {
+      const o = { i, x: Math.round(p.x), y: Math.round(p.y), kind: p.kind };
+      if (p.value !== undefined) o.value = p.value;
+      if (p.life !== undefined)  o.life  = +p.life.toFixed(2);
+      return o;
+    });
+    const ep = game.enemyProjectiles.map((p, i) => ({
+      i,
+      x: Math.round(p.x), y: Math.round(p.y),
+      vx: Math.round(p.vx), vy: Math.round(p.vy),
+      isBoss: p.isBoss ? 1 : 0,
+    }));
+    rtdb.put(`rooms/${online.roomId}/state`, {
+      g: ghosts,
+      p: pickups,
+      e: ep,
+      lvl: game.level,
+      bd: game.bossDefeated ? 1 : 0,
+      bt: +(game.bossSpawnTimer || 0).toFixed(1),
+      lt: game.levelTransitioning ? 1 : 0,
+    });
+  } else if (online.mode === "client" && online.pendingEvents.length > 0) {
+    const evs = online.pendingEvents.splice(0);
+    for (const ev of evs) {
+      rtdb.post(`rooms/${online.roomId}/events`, ev);
+    }
+  }
+}
+
+// Real-time listener'dan gelen oda snapshot'ı — pull yok artık
+function handleRoomSnapshot(room) {
+  if (!room) return;
+  // Diğer oyuncuları güncelle (target pos koru, görsel pos lerp ile yetişir)
+  const newRemote = {};
+  if (room.players) {
+    Object.keys(room.players).forEach((uid) => {
+      if (uid === online.uid) return;
+      const np = room.players[uid];
+      const old = online.remotePlayers[uid];
+      newRemote[uid] = {
+        ...np,
+        targetX: np.x,
+        targetY: np.y,
+        x: old && typeof old.x === "number" ? old.x : np.x,
+        y: old && typeof old.y === "number" ? old.y : np.y,
+      };
+    });
+  }
+  online.remotePlayers = newRemote;
+
+  // Client modu: host state'i lokal game'e yansıt (hayaletler için de target/lerp)
+  if (online.mode === "client") {
+    const st = room.state;
+    if (st) {
+      // Mevcut hayaletleri _idx ile eşleştir (smooth tutmak için)
+      const oldByIdx = {};
+      for (const g of game.ghosts) {
+        if (g._idx !== undefined) oldByIdx[g._idx] = g;
+      }
+      const newIdxSet = new Set();
+      (st.g || []).forEach((g) => newIdxSet.add(g.i));
+      // Yeni snapshot'ta olmayan eski hayaletler için fade + ölüm efekti spawn et
+      Object.keys(oldByIdx).forEach((idxStr) => {
+        const idx = parseInt(idxStr, 10);
+        if (!newIdxSet.has(idx)) {
+          const old = oldByIdx[idxStr];
+          game.effects.push({
+            type: "ghostFade",
+            x: old.x, y: old.y,
+            size: old.size || 40,
+            hp: 0, maxHp: old.maxHp || 1,
+            isBoss: !!old.isBoss,
+            life: 1, maxLife: 1,
+          });
+          spawnDeathParticles(old.x, old.y);
+        }
+      });
+      game.ghosts = (st.g || []).map((g) => {
+        const old = oldByIdx[g.i];
+        return {
+          x: old && typeof old.x === "number" ? old.x : g.x,
+          y: old && typeof old.y === "number" ? old.y : g.y,
+          targetX: g.x, targetY: g.y,
+          r: g.isBoss ? 44 : 22,
+          hp: g.hp, maxHp: g.maxHp, size: g.size || 40,
+          isBoss: !!g.isBoss, isShooter: !!g.isShooter,
+          frozenUntil: g.frozen ? performance.now() + 300 : 0,
+          _idx: g.i,
+        };
+      });
+      game.pickups = (st.p || []).map((p) => ({
+        x: p.x, y: p.y, kind: p.kind,
+        value: p.value, life: p.life,
+        _idx: p.i,
+      }));
+      // Düşman mermileri: hız vektörüyle local hareket eder (her frame),
+      // snapshot sadece düzeltir
+      const oldEpByIdx = {};
+      for (const p of game.enemyProjectiles) {
+        if (p._idx !== undefined) oldEpByIdx[p._idx] = p;
+      }
+      game.enemyProjectiles = (st.e || []).map((p) => {
+        const old = oldEpByIdx[p.i];
+        return {
+          x: old && typeof old.x === "number" ? old.x : p.x,
+          y: old && typeof old.y === "number" ? old.y : p.y,
+          targetX: p.x, targetY: p.y,
+          vx: p.vx, vy: p.vy,
+          isBoss: !!p.isBoss, life: 1,
+          _idx: p.i,
+        };
+      });
+      if (typeof st.lvl === "number" && st.lvl !== game.level) {
+        clientApplyLevel(st.lvl);
+      }
+      game.bossDefeated = !!st.bd;
+      game.bossSpawnTimer = st.bt || 0;
+      game.levelTransitioning = !!st.lt;
+    }
+  }
+}
+
+// Host: client'tan gelen event'i uygula
+function applyHostEvent(ev) {
+  if (!ev || !ev.type) return;
+  if (ev.type === "hit") {
+    const g = game.ghosts[ev.gi];
+    if (g) {
+      g.hp -= (ev.dmg || 1);
+      spawnHitParticles(g.x, g.y);
+      if (g.hp <= 0) killGhost(g, ev.gi);
+      else audio.hit();
+    }
+  } else if (ev.type === "pickup") {
+    if (typeof ev.pi === "number" && game.pickups[ev.pi]) {
+      game.pickups.splice(ev.pi, 1);
+    }
+  } else if (ev.type === "areaDmg") {
+    // {x,y,r,dmg,onScreen?} — bomba/şimşek
+    const r2 = (ev.r || 100) * (ev.r || 100);
+    for (let i = game.ghosts.length - 1; i >= 0; i--) {
+      const g = game.ghosts[i];
+      const dx = g.x - (ev.x || 0), dy = g.y - (ev.y || 0);
+      if (dx * dx + dy * dy < r2) {
+        g.hp -= (ev.dmg || 1);
+        spawnHitParticles(g.x, g.y);
+        if (g.hp <= 0) killGhost(g, i);
+      }
+    }
+  } else if (ev.type === "freezeAll") {
+    const until = performance.now() + (ev.duration || 5000);
+    for (const g of game.ghosts) g.frozenUntil = until;
+  } else if (ev.type === "rocketShot") {
+    // Client roket attı — host hayata geçir
+    const t = (typeof ev.gi === "number") ? game.ghosts[ev.gi] : null;
+    if (t) {
+      const dxr = t.x - (ev.x || 0), dyr = t.y - (ev.y || 0);
+      const dist = Math.hypot(dxr, dyr) || 1;
+      const sp = 720;
+      game.effects.push({
+        type: "rocket",
+        x: ev.x, y: ev.y,
+        vx: (dxr / dist) * sp,
+        vy: (dyr / dist) * sp,
+        target: t,
+        damage: 25,
+        life: dist / sp + 0.5,
+      });
+    }
+  }
+}
+
+function clientApplyLevel(newLevel) {
+  game.level = newLevel;
+  game.levelTimer = 0;
+  game.ghostsCaught = 0;
+  // Walls/waters/hazards rebuild (deterministik seed level'a bağlı)
+  buildWalls();
+  buildWaters();
+  buildHazards();
+  ensurePlayerSafe();
+  showToast(`📚 Bölüm ${game.level} — ${getTheme().name}`);
+}
+
+function flushOnlineRewards() {
+  if (game.runPara)   save.para   += game.runPara;
+  if (game.runElmas)  save.elmas  += game.runElmas;
+  if (game.runZumrut) save.zumrut += game.runZumrut;
+  if (game.level > save.highestLevel) save.highestLevel = game.level;
+  game.runPara = 0; game.runElmas = 0; game.runZumrut = 0;
+  persistSave();
+}
+
+function quitOnlineGame() {
+  flushOnlineRewards();
+  stopMpSync();
+  stopRoomListener();
+  game.running = false;
+  if (online.isHost && online.roomId) {
+    rtdb.remove(`rooms/${online.roomId}`);
+  } else if (online.roomId) {
+    rtdb.remove(`rooms/${online.roomId}/players/${online.uid}`);
+  }
+  online.roomId = null;
+  online.isHost = false;
+  online.mode = null;
+  showScreen("screen-online");
+  setOnlineStatus("Oyundan çıktın");
+}
+
+function maybeShowUpdateNotes() {
+  let last;
+  try { last = localStorage.getItem(VERSION_KEY); } catch (e) { return; }
+  if (last === APP_VERSION) return;
+  // Hiç oynamamış yeni kullanıcıya patch notes gösterme
+  const hasSave = (() => { try { return !!localStorage.getItem(SAVE_KEY); } catch (e) { return false; } })();
+  if (last === null && !hasSave) {
+    try { localStorage.setItem(VERSION_KEY, APP_VERSION); } catch (e) {}
+    return;
+  }
+  showUpdateModal(APP_VERSION, UPDATE_NOTES[APP_VERSION] || []);
+}
+
+function showUpdateModal(version, notes) {
+  let modal = document.getElementById("screen-update");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "screen-update";
+    modal.className = "screen modal";
+    document.body.appendChild(modal);
+  }
+  const list = notes.length
+    ? `<ul class="update-notes">${notes.map((n) => `<li>${n}</li>`).join("")}</ul>`
+    : `<p>Yeni sürüm yüklendi.</p>`;
+  modal.innerHTML = `
+    <div class="modal-content">
+      <h2>🎉 Güncelleme v${version}</h2>
+      ${list}
+      <button class="btn btn-big" onclick="dismissUpdateModal()">Tamam ▶</button>
+    </div>
+  `;
+  modal.classList.add("active");
+}
+
+function dismissUpdateModal() {
+  try { localStorage.setItem(VERSION_KEY, APP_VERSION); } catch (e) {}
+  const modal = document.getElementById("screen-update");
+  if (modal) modal.classList.remove("active");
+}
+
+function openCharacters() {
+  showScreen("screen-characters");
+  refreshCharacters();
+}
+
+function openShop() {
+  showScreen("screen-shop");
+  showShopTab("upgrades");
+}
+
+// ====== HESAP / İSİM ======
+function welcomeContinue() {
+  if (!save.playerName) openName(false);
+  else goToMenu();
+}
+
+function openName(fromMenu) {
+  showScreen("screen-name");
+  const inp = document.getElementById("name-input");
+  inp.value = save.playerName || "";
+  inp.dataset.fromMenu = fromMenu ? "1" : "0";
+  // İsim değişikliği maliyet ipucu (sadece zaten ismi varken)
+  const hint = document.getElementById("name-cost-hint");
+  const promptEl = document.getElementById("name-prompt");
+  const zumLbl = document.getElementById("name-zumrut");
+  if (save.playerName) {
+    if (hint) hint.style.display = "";
+    if (zumLbl) zumLbl.textContent = String(save.zumrut || 0);
+    if (promptEl) promptEl.innerHTML = "Yeni avcı adın ne olsun?";
+  } else {
+    if (hint) hint.style.display = "none";
+    if (promptEl) promptEl.innerHTML = "Avcımızın adı ne olsun?";
+  }
+  setTimeout(() => inp.focus(), 100);
+}
+
+function submitName() {
+  const inp = document.getElementById("name-input");
+  let name = (inp.value || "").trim();
+  if (!name) { showToast("Bir isim yaz!"); return; }
+  if (name.length > 14) name = name.slice(0, 14);
+  const oldName = save.playerName || "";
+  const isChange = oldName && oldName !== name;
+  const NAME_CHANGE_COST = 50;
+  if (isChange) {
+    if ((save.zumrut || 0) < NAME_CHANGE_COST) {
+      showToast(`💚 ${NAME_CHANGE_COST} zümrüt gerekli (sende ${save.zumrut || 0})`);
+      return;
+    }
+    save.zumrut -= NAME_CHANGE_COST;
+  }
+  save.playerName = name;
+  persistSave();
+  if (isChange) {
+    showToast(`✏️ İsim değişti: ${name} (−${NAME_CHANGE_COST}💚)`);
+    renameInLeaderboard(oldName, name);
+  } else {
+    showToast(`Hoş geldin, ${name}!`);
+  }
+  goToMenu();
+}
+
+async function renameInLeaderboard(oldName, newName) {
+  // 1) Yerel şampiyon listesi
+  try {
+    const raw = localStorage.getItem(LEADERBOARD_KEY);
+    if (raw) {
+      const list = JSON.parse(raw);
+      let changed = false;
+      for (const e of list) {
+        if (e && e.name === oldName) { e.name = newName; changed = true; }
+      }
+      if (changed) localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(list));
+    }
+  } catch (_) {}
+  // 2) Online (Firestore): aynı isimli skorların name alanını güncelle
+  try {
+    const query = {
+      structuredQuery: {
+        from: [{ collectionId: FIREBASE.collection }],
+        where: {
+          fieldFilter: {
+            field: { fieldPath: "name" },
+            op: "EQUAL",
+            value: { stringValue: oldName },
+          },
+        },
+        limit: 200,
+      },
+    };
+    const res = await fetch(`${FIRESTORE_BASE}:runQuery?key=${FIREBASE.apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(query),
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const docs = (data || []).filter((d) => d.document);
+    for (const d of docs) {
+      const docUrl = `https://firestore.googleapis.com/v1/${d.document.name}?updateMask.fieldPaths=name&key=${FIREBASE.apiKey}`;
+      try {
+        await fetch(docUrl, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fields: { name: { stringValue: newName } } }),
+        });
+      } catch (_) { /* tek tek hata yutulur */ }
+    }
+  } catch (_) { /* sessizce geç */ }
+}
+
+// ====== ŞAMPİYON LİSTESİ ======
+function loadLeaderboard() {
+  try {
+    const raw = localStorage.getItem(LEADERBOARD_KEY);
+    if (!raw) return [];
+    const data = JSON.parse(raw);
+    return Array.isArray(data) ? data : [];
+  } catch (e) { return []; }
+}
+
+function saveLeaderboard(list) {
+  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(list));
+}
+
+function scoreFor(entry) {
+  return entry.level * 1000 + entry.ghosts * 10 + entry.para;
+}
+
+function addLeaderboardEntry(entry) {
+  const list = loadLeaderboard();
+  // Aynı isim varsa onu güncelle (en son kayıt kalsın)
+  const existingIdx = list.findIndex((e) => e.name === entry.name);
+  if (existingIdx >= 0) list[existingIdx] = entry;
+  else list.push(entry);
+  list.sort((a, b) => scoreFor(b) - scoreFor(a));
+  const trimmed = list.slice(0, LEADERBOARD_MAX);
+  saveLeaderboard(trimmed);
+  return trimmed.findIndex((e) => e === entry);
+}
+
+function openLeaderboard() {
+  document.getElementById("screen-pause").classList.remove("active");
+  document.getElementById("screen-gameover").classList.remove("active");
+  showScreen("screen-leaderboard");
+  refreshLeaderboard();
+}
+
+let leaderboardSource = "online"; // "online" | "local"
+
+function setLeaderboardSource(src) {
+  leaderboardSource = src;
+  document.querySelectorAll(".lb-tab").forEach((b) => b.classList.toggle("active", b.dataset.src === src));
+  refreshLeaderboard();
+}
+
+function renderLeaderboard(list, sourceLabel) {
+  const container = document.getElementById("leaderboard-list");
+  container.innerHTML = "";
+  if (!list || list.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "leaderboard-empty";
+    empty.textContent = sourceLabel === "online"
+      ? "Henüz online şampiyon yok. İlk sıraya geç! 🌟"
+      : "Bu cihazda kayıtlı şampiyon yok.";
+    container.appendChild(empty);
+    return;
+  }
+  list.forEach((entry, i) => {
+    const row = document.createElement("div");
+    row.className = "leaderboard-row";
+    if (i === 0) row.classList.add("rank-gold");
+    else if (i === 1) row.classList.add("rank-silver");
+    else if (i === 2) row.classList.add("rank-bronze");
+    if (entry.name === save.playerName) row.classList.add("is-me");
+
+    const rank = document.createElement("div");
+    rank.className = "lb-rank";
+    rank.textContent = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
+    row.appendChild(rank);
+
+    const name = document.createElement("div");
+    name.className = "lb-name";
+    name.textContent = entry.name;
+    row.appendChild(name);
+
+    const stats = document.createElement("div");
+    stats.className = "lb-stats";
+    stats.innerHTML = `<span>📚 Bölüm ${entry.level}</span><span>👻 ${entry.ghosts}</span><span>💰 ${entry.para}</span>`;
+    row.appendChild(stats);
+
+    container.appendChild(row);
+  });
+}
+
+async function refreshLeaderboard() {
+  const container = document.getElementById("leaderboard-list");
+  if (leaderboardSource === "online") {
+    container.innerHTML = '<div class="leaderboard-empty">🌐 Yükleniyor...</div>';
+    const online = await fetchOnlineLeaderboard(LEADERBOARD_MAX);
+    if (online === null) {
+      // İnternet yok ya da hata — yerele düş
+      container.innerHTML = '<div class="leaderboard-empty">⚠ İnternete bağlanılamadı, yerel liste gösteriliyor.</div>';
+      setTimeout(() => renderLeaderboard(loadLeaderboard(), "local"), 600);
+      return;
+    }
+    renderLeaderboard(online, "online");
+  } else {
+    renderLeaderboard(loadLeaderboard(), "local");
+  }
+}
+
+function clearLeaderboard() {
+  if (confirm("Şampiyon listesi temizlensin mi?")) {
+    saveLeaderboard([]);
+    refreshLeaderboard();
+    showToast("Liste temizlendi.");
+  }
+}
+
+// ====== AÇILIŞ EKRANI KARAKTER ÇİZİMİ ======
+function drawGreeter() {
+  const el = document.getElementById("kinkin-greeter");
+  const cv = document.createElement("canvas");
+  cv.width = 200; cv.height = 220;
+  const ctx = cv.getContext("2d");
+  drawCharacter(ctx, "kinkin", 0, 100, 130, 180);
+  el.style.backgroundImage = `url(${cv.toDataURL()})`;
+}
+
+// ====== MENÜ ======
+function refreshMenu() {
+  document.getElementById("menu-player").textContent = save.playerName || "Avcı";
+  document.getElementById("menu-para").textContent = save.para;
+  document.getElementById("menu-elmas").textContent = save.elmas;
+  document.getElementById("menu-zumrut").textContent = save.zumrut;
+
+  // Karakter önizleme
+  const charKey = save.selectedChar;
+  const c = CHARACTERS[charKey];
+  const costumeIdx = save.selectedCostume[charKey];
+  const cv = document.createElement("canvas");
+  cv.width = 160; cv.height = 180;
+  const ctx = cv.getContext("2d");
+  drawCharacter(ctx, charKey, costumeIdx, 80, 110, 160);
+  const preview = document.getElementById("character-preview");
+  preview.style.backgroundImage = `url(${cv.toDataURL()})`;
+  preview.style.backgroundSize = "contain";
+  preview.style.backgroundRepeat = "no-repeat";
+  preview.style.backgroundPosition = "center";
+
+  document.getElementById("character-name").textContent = c.name;
+  const stats = computeStats(charKey);
+  document.getElementById("character-stats").textContent =
+    `🏃 Hız ${stats.speed.toFixed(1)} · 💥 Hasar ${stats.damage} · 🎯 Menzil ${Math.round(stats.range)}`;
+}
+
+function refreshCharacters() {
+  document.getElementById("char-zumrut").textContent = save.zumrut;
+  const list = document.getElementById("character-list");
+  list.innerHTML = "";
+
+  Object.keys(CHARACTERS).forEach((key) => {
+    const c = CHARACTERS[key];
+    const unlocked = save.unlockedChars[key];
+    const selected = save.selectedChar === key;
+
+    const card = document.createElement("div");
+    card.className = "char-card" + (selected ? " selected" : "") + (!unlocked ? " locked" : "");
+
+    const cv = document.createElement("canvas");
+    cv.width = 80; cv.height = 90;
+    const ctx = cv.getContext("2d");
+    drawCharacter(ctx, key, save.selectedCostume[key] || 0, 40, 60, 80);
+    const img = document.createElement("div");
+    img.className = "char-img";
+    img.style.backgroundImage = `url(${cv.toDataURL()})`;
+    img.style.backgroundSize = "contain";
+    img.style.backgroundRepeat = "no-repeat";
+    img.style.backgroundPosition = "center";
+    card.appendChild(img);
+
+    const label = document.createElement("div");
+    label.className = "char-label";
+    label.textContent = c.name;
+    card.appendChild(label);
+
+    const info = document.createElement("div");
+    info.className = "char-cost";
+    if (!unlocked) info.textContent = `💚 ${c.cost}`;
+    else if (selected) info.textContent = "✓ Seçili";
+    else info.textContent = "Tıkla seç";
+    card.appendChild(info);
+
+    card.onclick = () => {
+      if (unlocked) {
+        save.selectedChar = key;
+        persistSave();
+        refreshCharacters();
+        showToast(`${c.name} seçildi!`);
+      } else {
+        if (save.zumrut >= c.cost) {
+          if (confirm(`${c.name} ${c.cost} 💚 zümrüt karşılığında alınsın mı?`)) {
+            save.zumrut -= c.cost;
+            save.unlockedChars[key] = true;
+            save.selectedChar = key;
+            persistSave();
+            refreshCharacters();
+            showToast(`🎉 ${c.name} açıldı!`);
+            audio.unlock();
+          }
+        } else {
+          showToast("Yeterli zümrüt yok 💚");
+        }
+      }
+    };
+
+    list.appendChild(card);
+  });
+}
+
+let currentShopTab = "upgrades";
+function showShopTab(tab) {
+  currentShopTab = tab;
+  const buttons = document.querySelectorAll(".tab-btn");
+  buttons.forEach((b) => b.classList.remove("active"));
+  const idx = ({ upgrades: 0, costumes: 1, ammo: 2 })[tab] ?? 0;
+  if (buttons[idx]) buttons[idx].classList.add("active");
+  refreshShop();
+}
+
+function refreshShop() {
+  document.getElementById("shop-para").textContent = save.para;
+  document.getElementById("shop-elmas").textContent = save.elmas;
+  const content = document.getElementById("shop-content");
+  content.innerHTML = "";
+
+  if (currentShopTab === "upgrades") {
+    const activeChar = save.selectedChar;
+    const charName = (CHARACTERS[activeChar] || { name: "Avcı" }).name;
+    const u4char = save.upgradesByChar[activeChar];
+
+    // Karakter başlığı (yükseltmeler bu karaktere özel)
+    const header = document.createElement("div");
+    header.className = "upgrade-header";
+    header.innerHTML = `🛠 <b>${charName}</b> için yükseltmeler<br><span class="hint">(Karakter değiştirmek için Karakterler menüsüne git)</span>`;
+    content.appendChild(header);
+
+    Object.keys(UPGRADES).forEach((key) => {
+      const u = UPGRADES[key];
+      const lv = u4char[key];
+      const item = document.createElement("div");
+      item.className = "shop-item";
+
+      const icon = document.createElement("div");
+      icon.className = "item-icon";
+      icon.textContent = u.icon;
+      item.appendChild(icon);
+
+      const info = document.createElement("div");
+      info.className = "item-info";
+      info.innerHTML = `<div class="item-name">${u.name} (Sv ${lv}/${u.max})</div>
+                        <div class="item-desc">${u.desc}</div>`;
+      item.appendChild(info);
+
+      const btn = document.createElement("button");
+      if (lv >= u.max) {
+        btn.textContent = "MAX";
+        btn.disabled = true;
+      } else {
+        const cost = u.costs[lv];
+        btn.textContent = `💰 ${cost}`;
+        btn.disabled = save.para < cost;
+        btn.onclick = () => {
+          if (save.para >= cost) {
+            save.para -= cost;
+            save.upgradesByChar[activeChar][key]++;
+            persistSave();
+            refreshShop();
+            showToast(`${charName} ${u.name} yükseltildi!`);
+            audio.buy();
+          }
+        };
+      }
+      item.appendChild(btn);
+
+      content.appendChild(item);
+    });
+  } else if (currentShopTab === "ammo") {
+    const activeChar = save.selectedChar;
+    const charName = (CHARACTERS[activeChar] || { name: "Avcı" }).name;
+    const stock = ensureAmmoStock(activeChar);
+
+    const header = document.createElement("div");
+    header.className = "upgrade-header";
+    header.innerHTML = `🎯 <b>${charName}</b> için cephane<br><span class="hint">(Tek kullanımlık · karakter başına ayrı stok · max 9)</span>`;
+    content.appendChild(header);
+
+    Object.keys(WEAPONS).forEach((key) => {
+      const w = WEAPONS[key];
+      const own = stock[key] || 0;
+      const item = document.createElement("div");
+      item.className = "shop-item";
+
+      const icon = document.createElement("div");
+      icon.className = "item-icon";
+      icon.textContent = w.icon;
+      item.appendChild(icon);
+
+      const info = document.createElement("div");
+      info.className = "item-info";
+      info.innerHTML = `<div class="item-name">${w.name} <span style="opacity:0.7">x${own}/${w.max}</span></div>
+                        <div class="item-desc">${w.desc}</div>`;
+      item.appendChild(info);
+
+      const btn = document.createElement("button");
+      if (own >= w.max) {
+        btn.textContent = "DOLU";
+        btn.disabled = true;
+      } else {
+        btn.textContent = `💰 ${w.cost}`;
+        btn.disabled = save.para < w.cost;
+        btn.onclick = () => {
+          if (save.para >= w.cost) {
+            save.para -= w.cost;
+            stock[key] = (stock[key] || 0) + 1;
+            persistSave();
+            refreshShop();
+            showToast(`${w.icon} ${w.name} +1`);
+            audio.buy();
+          }
+        };
+      }
+      item.appendChild(btn);
+      content.appendChild(item);
+    });
+  } else {
+    // Kostümler
+    Object.keys(COSTUMES).forEach((charKey) => {
+      COSTUMES[charKey].forEach((cos, idx) => {
+        if (idx === 0) return; // ilk kostüm zaten ücretsiz
+        const owned = save.unlockedCostumes[charKey].includes(idx);
+        const item = document.createElement("div");
+        item.className = "shop-item";
+
+        const cv = document.createElement("canvas");
+        cv.width = 50; cv.height = 60;
+        const ctx = cv.getContext("2d");
+        drawCharacter(ctx, charKey, idx, 25, 40, 56);
+        const icon = document.createElement("div");
+        icon.className = "item-icon";
+        icon.style.backgroundImage = `url(${cv.toDataURL()})`;
+        icon.style.backgroundSize = "contain";
+        icon.style.backgroundRepeat = "no-repeat";
+        icon.style.backgroundPosition = "center";
+        icon.style.height = "50px";
+        item.appendChild(icon);
+
+        const info = document.createElement("div");
+        info.className = "item-info";
+        info.innerHTML = `<div class="item-name">${CHARACTERS[charKey].name} - ${cos.name}</div>
+                          <div class="item-desc">Kostüm</div>`;
+        item.appendChild(info);
+
+        const btn = document.createElement("button");
+        if (owned) {
+          if (save.selectedCostume[charKey] === idx) {
+            btn.textContent = "✓ Aktif";
+            btn.disabled = true;
+          } else {
+            btn.textContent = "Giy";
+            btn.onclick = () => {
+              save.selectedCostume[charKey] = idx;
+              persistSave();
+              refreshShop();
+              showToast("Kostüm değişti!");
+            };
+          }
+        } else {
+          btn.textContent = `💎 ${cos.cost}`;
+          btn.disabled = save.elmas < cos.cost;
+          btn.onclick = () => {
+            if (save.elmas >= cos.cost) {
+              save.elmas -= cos.cost;
+              save.unlockedCostumes[charKey].push(idx);
+              save.selectedCostume[charKey] = idx;
+              persistSave();
+              refreshShop();
+              showToast("🎉 Yeni kostüm!");
+              audio.unlock();
+            }
+          };
+        }
+        item.appendChild(btn);
+
+        content.appendChild(item);
+      });
+    });
+  }
+}
+
+// ====== STAT HESAPLAMA ======
+function getCharUpgrades(charKey) {
+  if (save.upgradesByChar && save.upgradesByChar[charKey]) return save.upgradesByChar[charKey];
+  return { speed: 0, damage: 0, fireRate: 0, range: 0 };
+}
+
+function computeStats(charKey) {
+  const c = CHARACTERS[charKey];
+  const u = getCharUpgrades(charKey);
+  return {
+    speed: c.baseSpeed + u.speed * 0.4,
+    damage: c.baseDamage + u.damage,
+    fireDelay: Math.max(150, c.baseFireDelay - u.fireRate * 90),
+    range: c.baseRange + u.range * 35,
+  };
+}
+
+// ====== TOAST ======
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 1800);
+  audio.toast();
+}
+
+// ====== OYUN MOTORU ======
+const game = {
+  running: false,
+  paused: false,
+  canvas: null,
+  ctx: null,
+  W: 0, H: 0,
+  worldW: 1600,
+  worldH: 1200,
+  camera: { x: 0, y: 0 },
+  player: null,
+  ghosts: [],
+  projectiles: [],
+  pickups: [],
+  walls: [],
+  waters: [],
+  particles: [],
+  effects: [],
+  spikes: [],
+  lavas: [],
+  enemyProjectiles: [],
+  boss: null,
+  spawnTimer: 0,
+  level: 1,
+  levelTimer: 0,
+  levelDuration: 25, // saniye
+  ghostsRequired: 8,
+  ghostsCaught: 0,
+  totalCaught: 0,
+  runPara: 0,
+  runElmas: 0,
+  runZumrut: 0,
+  lastFire: 0,
+  inputDir: { x: 0, y: 0 },
+  lastFrame: 0,
+};
+
+function buildWalls() {
+  const W = game.worldW, H = game.worldH;
+  game.walls = [];
+  // Dış sınır
+  game.walls.push({ x: 0, y: 0, w: W, h: 30 });
+  game.walls.push({ x: 0, y: H - 30, w: W, h: 30 });
+  game.walls.push({ x: 0, y: 0, w: 30, h: H });
+  game.walls.push({ x: W - 30, y: 0, w: 30, h: H });
+
+  // İçerideki engeller — bölüme göre farklı seed
+  const seed = 7 + game.level * 13;
+  function rand(n) { return ((Math.sin((seed + n) * 99.123) + 1) / 2); }
+  const blockCount = Math.min(10, 6 + Math.floor((game.level - 1) / 2));
+  const cx = game.player ? game.player.x : W / 2;
+  const cy = game.player ? game.player.y : H / 2;
+  for (let i = 0; i < blockCount; i++) {
+    const w = 80 + rand(i) * 100;
+    const h = 80 + rand(i + 50) * 100;
+    const x = 100 + rand(i * 3) * (W - 200 - w);
+    const y = 100 + rand(i * 7) * (H - 200 - h);
+    // Oyuncunun bulunduğu yere çok yakın olmasın
+    if (Math.hypot(x + w/2 - cx, y + h/2 - cy) < 200) continue;
+    game.walls.push({ x, y, w, h });
+  }
+}
+
+function buildWaters() {
+  const W = game.worldW, H = game.worldH;
+  game.waters = [];
+  const seed = 23 + game.level * 17;
+  function rand(n) { return ((Math.sin((seed + n) * 77.456) + 1) / 2); }
+  const count = 4;
+  const cx = game.player ? game.player.x : W / 2;
+  const cy = game.player ? game.player.y : H / 2;
+  let placed = 0;
+  for (let i = 0; i < 25 && placed < count; i++) {
+    const w = 110 + rand(i) * 90;
+    const h = 80 + rand(i + 31) * 80;
+    const x = 80 + rand(i * 5) * (W - 160 - w);
+    const y = 80 + rand(i * 11) * (H - 160 - h);
+    // Oyuncu spawn alanına yakın olmasın
+    if (Math.hypot(x + w/2 - cx, y + h/2 - cy) < 200) continue;
+    // Duvarlarla çakışmasın
+    let overlap = false;
+    for (const wall of game.walls) {
+      if (x < wall.x + wall.w && x + w > wall.x && y < wall.y + wall.h && y + h > wall.y) {
+        overlap = true; break;
+      }
+    }
+    if (overlap) continue;
+    game.waters.push({ x, y, w, h });
+    placed++;
+  }
+}
+
+function collidesWaters(x, y, r) {
+  for (const w of game.waters) {
+    const cx = Math.max(w.x, Math.min(x, w.x + w.w));
+    const cy = Math.max(w.y, Math.min(y, w.y + w.h));
+    if (Math.hypot(x - cx, y - cy) < r) return true;
+  }
+  return false;
+}
+
+function buildHazards() {
+  const W = game.worldW, H = game.worldH;
+  game.spikes = [];
+  game.lavas  = [];
+  const lvl = game.level;
+  const spikeCount = Math.min(3, Math.floor((lvl - 1) / 2)); // L1-2:0, L3-4:1, L5-6:2, L7+:3
+  const lavaCount  = Math.min(2, Math.floor((lvl - 2) / 3)); // L1-4:0, L5-7:1, L8+:2
+  const seed = 41 + lvl * 29;
+  function rand(n) { return ((Math.sin((seed + n) * 53.317) + 1) / 2); }
+  const cx = game.player ? game.player.x : W / 2;
+  const cy = game.player ? game.player.y : H / 2;
+
+  function place(arr, w, h, gap) {
+    for (let i = 0; i < 30; i++) {
+      const rx = 100 + rand(arr.length * 9 + i * 3) * (W - 200 - w);
+      const ry = 100 + rand(arr.length * 11 + i * 7) * (H - 200 - h);
+      // Spawn alanına yakın olmasın
+      if (Math.hypot(rx + w / 2 - cx, ry + h / 2 - cy) < 240) continue;
+      // Duvar/su ile çakışmasın
+      let overlap = false;
+      const all = game.walls.concat(game.waters, game.spikes, game.lavas);
+      for (const o of all) {
+        if (rx < o.x + o.w + gap && rx + w + gap > o.x && ry < o.y + o.h + gap && ry + h + gap > o.y) {
+          overlap = true; break;
+        }
+      }
+      if (overlap) continue;
+      arr.push({ x: rx, y: ry, w, h });
+      return;
+    }
+  }
+
+  for (let i = 0; i < spikeCount; i++) place(game.spikes, 90, 90, 18);
+  for (let i = 0; i < lavaCount;  i++) place(game.lavas,  110, 90, 18);
+}
+
+function collidesSpikes(x, y, r) {
+  for (const s of game.spikes) {
+    const cx = Math.max(s.x, Math.min(x, s.x + s.w));
+    const cy = Math.max(s.y, Math.min(y, s.y + s.h));
+    if (Math.hypot(x - cx, y - cy) < r) return true;
+  }
+  return false;
+}
+
+function collidesLavas(x, y, r) {
+  for (const l of game.lavas) {
+    const cx = Math.max(l.x, Math.min(x, l.x + l.w));
+    const cy = Math.max(l.y, Math.min(y, l.y + l.h));
+    if (Math.hypot(x - cx, y - cy) < r) return true;
+  }
+  return false;
+}
+
+function startGame() {
+  showScreen("screen-game");
+  setupCanvas();
+
+  game.running = true;
+  game.paused = false;
+  game.ghosts = [];
+  game.projectiles = [];
+  game.enemyProjectiles = [];
+  game.pickups = [];
+  game.particles = [];
+  game.effects = [];
+  game.spawnTimer = 0;
+  game.level = 1;
+  game.levelTimer = 0;
+  game.ghostsCaught = 0;
+  game.totalCaught = 0;
+  game.runPara = 0;
+  game.runElmas = 0;
+  game.runZumrut = 0;
+  game.lastFire = 0;
+
+  buildWalls();
+  buildWaters();
+  buildHazards();
+
+  // Oyuncu - güvenli bir alana koy
+  const charKey = save.selectedChar;
+  const stats = computeStats(charKey);
+  game.player = {
+    x: game.worldW / 2,
+    y: game.worldH / 2,
+    r: 22,
+    hp: 3,
+    maxHp: 3,
+    invuln: 0,
+    speed: stats.speed * 60, // px / saniye yerine ölçek
+    damage: stats.damage,
+    fireDelay: stats.fireDelay,
+    range: stats.range,
+    charKey: charKey,
+    costumeIdx: save.selectedCostume[charKey],
+    facing: 0,
+    waterImmune: !!CHARACTERS[charKey].waterImmune,
+    power: null,
+    aimRaise: 0,
+    shootRecoil: 0,
+  };
+  game.healTimer = 0;
+  game.pulseTimer = 0;
+  // Oyuncu duvar/su içinde kalmasın
+  ensurePlayerSafe();
+
+  setupJoystick();
+  setupKeyboard();
+
+  // Boss bölüm seviyesine göre belli bir süre sonra gelir
+  game.bossSpawnTimer = getBossTimerForLevel(game.level);
+  game.bossDefeated = false;
+  game.levelTransitioning = false;
+
+  updateHUD();
+  refreshWeaponBar();
+  game.lastFrame = performance.now();
+  requestAnimationFrame(gameLoop);
+}
+
+function setupCanvas() {
+  game.canvas = document.getElementById("game-canvas");
+  game.ctx = game.canvas.getContext("2d");
+  applyTabletClass();
+  resizeCanvas();
+  window.addEventListener("resize", () => {
+    applyTabletClass();
+    resizeCanvas();
+  });
+  if (screen && screen.orientation && screen.orientation.addEventListener) {
+    screen.orientation.addEventListener("change", () => {
+      applyTabletClass();
+      resizeCanvas();
+    });
+  }
+}
+
+// Kısa kenar >= 600 CSS px ise tablet sayılır (Android tablet tanımı)
+function isTabletDevice() {
+  return Math.min(window.innerWidth, window.innerHeight) >= 600;
+}
+
+function applyTabletClass() {
+  if (!document.body) return;
+  document.body.classList.toggle("is-tablet", isTabletDevice());
+}
+
+function resizeCanvas() {
+  if (!game.canvas) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  // Tablette gameplay görüş alanını telefon hissine yakın tut: kamerayı yakınlaştır
+  const viewScale = isTabletDevice() ? 1.35 : 1.0;
+  game.viewScale = viewScale;
+  game.canvas.width = window.innerWidth * dpr;
+  game.canvas.height = window.innerHeight * dpr;
+  game.canvas.style.width = window.innerWidth + "px";
+  game.canvas.style.height = window.innerHeight + "px";
+  game.ctx.setTransform(dpr * viewScale, 0, 0, dpr * viewScale, 0, 0);
+  // game.W/H artık "dünya birimi cinsinden görüş alanı" — kamera ve görünürlük testleri bunu kullanır
+  game.W = window.innerWidth / viewScale;
+  game.H = window.innerHeight / viewScale;
+}
+
+// ====== JOYSTICK ======
+function setupJoystick() {
+  const stick = document.getElementById("joystick");
+  const knob = document.getElementById("joystick-knob");
+  let touchId = null;
+  let centerX = 0, centerY = 0;
+  // maxR: knob'un merkezden uzaklaşabileceği max yarıçap. Joystick'in gerçek boyutuna göre dinamik.
+  function getMaxR() {
+    const rect = stick.getBoundingClientRect();
+    // Joystick yarıçapının ~%38'i (knob yarıçapı kadar pay bırakır)
+    return Math.max(40, Math.min(rect.width, rect.height) * 0.38);
+  }
+
+  function start(e) {
+    e.preventDefault();
+    const t = e.changedTouches ? e.changedTouches[0] : e;
+    if (touchId !== null) return;
+    touchId = e.changedTouches ? t.identifier : "mouse";
+    const rect = stick.getBoundingClientRect();
+    centerX = rect.left + rect.width / 2;
+    centerY = rect.top + rect.height / 2;
+    move(e);
+  }
+
+  function move(e) {
+    if (touchId === null) return;
+    e.preventDefault();
+    let cx, cy;
+    if (e.changedTouches) {
+      let found = null;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === touchId) found = e.changedTouches[i];
+      }
+      if (!found) return;
+      cx = found.clientX; cy = found.clientY;
+    } else {
+      cx = e.clientX; cy = e.clientY;
+    }
+    let dx = cx - centerX;
+    let dy = cy - centerY;
+    const dist = Math.hypot(dx, dy);
+    const maxR = getMaxR();
+    if (dist > maxR) { dx = (dx / dist) * maxR; dy = (dy / dist) * maxR; }
+    knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+    game.inputDir.x = dx / maxR;
+    game.inputDir.y = dy / maxR;
+  }
+
+  function end(e) {
+    if (touchId === null) return;
+    if (e.changedTouches) {
+      let found = false;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === touchId) found = true;
+      }
+      if (!found) return;
+    }
+    touchId = null;
+    knob.style.transform = "translate(-50%, -50%)";
+    game.inputDir.x = 0;
+    game.inputDir.y = 0;
+  }
+
+  stick.addEventListener("touchstart", start, { passive: false });
+  stick.addEventListener("touchmove", move, { passive: false });
+  stick.addEventListener("touchend", end, { passive: false });
+  stick.addEventListener("touchcancel", end, { passive: false });
+  stick.addEventListener("mousedown", start);
+  document.addEventListener("mousemove", move);
+  document.addEventListener("mouseup", end);
+}
+
+// ====== KLAVYE (masaüstü test için) ======
+const keys = {};
+function setupKeyboard() {
+  if (window._kbInited) return;
+  window._kbInited = true;
+  window.addEventListener("keydown", (e) => { keys[e.key.toLowerCase()] = true; });
+  window.addEventListener("keyup", (e) => { keys[e.key.toLowerCase()] = false; });
+}
+
+function readKeyboardInput() {
+  let dx = 0, dy = 0;
+  if (keys["arrowleft"] || keys["a"]) dx -= 1;
+  if (keys["arrowright"] || keys["d"]) dx += 1;
+  if (keys["arrowup"] || keys["w"]) dy -= 1;
+  if (keys["arrowdown"] || keys["s"]) dy += 1;
+  if (dx === 0 && dy === 0) return null;
+  const len = Math.hypot(dx, dy);
+  return { x: dx / len, y: dy / len };
+}
+
+// ====== OYUN DÖNGÜSÜ ======
+function gameLoop(now) {
+  if (!game.running) return;
+  const dt = Math.min(0.05, (now - game.lastFrame) / 1000);
+  game.lastFrame = now;
+  if (!game.paused) {
+    try { update(dt, now); }
+    catch (e) {
+      if (window.showErrBanner) window.showErrBanner("update@" + (e.stack || e.message));
+      console.error("update", e);
+    }
+  }
+  try { render(); }
+  catch (e) {
+    if (window.showErrBanner) window.showErrBanner("render@" + (e.stack || e.message));
+    console.error("render", e);
+  }
+  requestAnimationFrame(gameLoop);
+}
+
+function update(dt, now) {
+  // Oyuncu hareketi
+  let dirX = game.inputDir.x;
+  let dirY = game.inputDir.y;
+  const kb = readKeyboardInput();
+  if (kb) { dirX = kb.x; dirY = kb.y; }
+  const mag = Math.hypot(dirX, dirY);
+  const playerFrozen = (game.player.frozenUntil || 0) > now;
+  const isSpectator = !!game.player.dead;
+  let movedThisFrame = false;
+  if (mag > 0.15 && (isSpectator || !playerFrozen)) {
+    let mx = dirX, my = dirY;
+    if (mag > 1) { mx /= mag; my /= mag; }
+    game.player.facing = Math.atan2(my, mx);
+    if (isSpectator) {
+      // Hayalet: duvar/su/hazard collide yok, biraz hızlı uçar
+      const sp = game.player.speed * 1.4;
+      game.player.x += mx * sp * dt;
+      game.player.y += my * sp * dt;
+      game.player.x = Math.max(20, Math.min(game.worldW - 20, game.player.x));
+      game.player.y = Math.max(20, Math.min(game.worldH - 20, game.player.y));
+      movedThisFrame = true;
+    } else {
+      const power = getActivePower();
+      const speedMul = (power && power.type === "kinkin") ? 2.0 : 1.0;
+      const nx = game.player.x + mx * game.player.speed * speedMul * dt;
+      const ny = game.player.y + my * game.player.speed * speedMul * dt;
+      const waterBlock = !game.player.waterImmune;
+      if (!collidesWalls(nx, game.player.y, game.player.r) && !(waterBlock && collidesWaters(nx, game.player.y, game.player.r))) { game.player.x = nx; movedThisFrame = true; }
+      if (!collidesWalls(game.player.x, ny, game.player.r) && !(waterBlock && collidesWaters(game.player.x, ny, game.player.r))) { game.player.y = ny; movedThisFrame = true; }
+    }
+  }
+  // Yürüme animasyonu fazı
+  if (movedThisFrame) {
+    game.player.walkTimer = (game.player.walkTimer || 0) + dt;
+  } else {
+    game.player.walkTimer = 0;
+  }
+
+  // Tehlike temasları (spectator iken atla)
+  if (!isSpectator && collidesSpikes(game.player.x, game.player.y, game.player.r)) {
+    if (!game.player.spikeContact) {
+      game.player.frozenUntil = now + 1000;
+      showFloat("❄️ Donduruldu!", game.player.x, game.player.y - 30);
+      audio.hit();
+      navigator.vibrate?.(40);
+      game.player.spikeContact = true;
+    }
+  } else {
+    game.player.spikeContact = false;
+  }
+  if (!isSpectator && game.player.invuln <= 0 && collidesLavas(game.player.x, game.player.y, game.player.r)) {
+    damagePlayer();
+    showFloat("🔥 Lav!", game.player.x, game.player.y - 30);
+  }
+
+  // ========== HOST-ONLY blok (spawn, AI, transition, AOE güç efektleri) ==========
+  // Client modunda bu blok atlanır — state host'tan snapshot olarak gelir
+  if (online.mode !== "client") {
+
+  // Bölüm zamanlayıcısı
+  game.levelTimer += dt;
+
+  // Boss zamanlayıcısı: 60 sn sonra boss gelir
+  if (game.bossSpawnTimer > 0 && !game.bossDefeated) {
+    game.bossSpawnTimer -= dt;
+    if (game.bossSpawnTimer <= 0) {
+      game.bossSpawnTimer = 0;
+      spawnBoss();
+    }
+  }
+
+  // Hayalet spawn — boss yenildikten sonra yeni hayalet gelmesin (2 katı: hem cap hem hız)
+  game.spawnTimer -= dt;
+  const spawnInterval = Math.max(0.25, 0.8 - game.level * 0.06);
+  const maxGhosts = Math.min(40, 12 + game.level * 4);
+  if (!game.bossDefeated && game.spawnTimer <= 0 && game.ghosts.length < maxGhosts) {
+    spawnGhost();
+    game.spawnTimer = spawnInterval;
+  }
+
+  // Bölüm tamamlandı mı? Boss öldü VE diğer tüm hayaletler bitti
+  if (game.bossDefeated && game.ghosts.length === 0 && !game.levelTransitioning) {
+    game.levelTransitioning = true;
+    showToast("🌟 Bölüm temiz! Sıradaki bölüm geliyor...");
+    setTimeout(() => { if (game.running) nextLevel(); }, 1800);
+  }
+
+  // Hayaletler hareket eder (duvardan dolaşma mantığı ile)
+  const power = getActivePower();
+  const ghostMode = power && power.type === "kent"; // Kenit: hayaletler hasar veremez
+  const playerInvisible = (game.player.invisibleUntil || 0) > now;
+  const playerKasirga   = (game.player.kasirgaUntil   || 0) > now;
+  const KASIRGA_R = 110;
+  const KASIRGA_DPS = 8;
+  // Boss minion durumu: kalan boss minion sayısı bir kere hesapla
+  const bossMinionsAlive = game.ghosts.some(o => o.fromBoss);
+
+  for (const g of game.ghosts) {
+    // Periyodik hayalet sesi (hayatta olduğu sürece)
+    if (g.nextSound && now >= g.nextSound) {
+      if (g.isBoss) {
+        audio.bigGhost();
+        g.nextSound = now + 3000;
+      } else {
+        audio.smallGhost();
+        g.nextSound = now + 10000;
+      }
+    }
+
+    // Boss minion state machine
+    if (g.isBoss && g.minionState) {
+      if (g.minionState === "minions_alive") {
+        if (!bossMinionsAlive) {
+          // Tüm minion'lar öldü → 5 sn beklemeye başla
+          g.minionState = "waiting";
+          g.minionTimer = 5;
+        }
+      } else if (g.minionState === "waiting") {
+        g.minionTimer -= dt;
+        if (g.minionTimer <= 0) {
+          // 5 minik hayaletçik spawn et
+          for (let i = 0; i < 5; i++) spawnBossMinion(g);
+          g.minionState = "minions_alive";
+        }
+      }
+    }
+    // Donmuş hayalet: hareket yok, hasar yok, kasırga + temas dışında her şey atlanır
+    if ((g.frozenUntil || 0) > now) {
+      // Kasırga donmuş hayaleti de ezsin
+      if (playerKasirga) {
+        const ddx = g.x - game.player.x, ddy = g.y - game.player.y;
+        if (ddx * ddx + ddy * ddy < KASIRGA_R * KASIRGA_R) g.hp -= KASIRGA_DPS * dt;
+      }
+      continue;
+    }
+
+    // Görünmezlik: hayaletler oyuncuyu göremez, rastgele dolaşır
+    let tx, ty;
+    if (playerInvisible) {
+      if (!g.wanderUntil || g.wanderUntil < now) {
+        g.wanderAngle = Math.random() * Math.PI * 2;
+        g.wanderUntil = now + 800 + Math.random() * 1400;
+      }
+      tx = g.x + Math.cos(g.wanderAngle) * 200;
+      ty = g.y + Math.sin(g.wanderAngle) * 200;
+    } else {
+      tx = game.player.x; ty = game.player.y;
+    }
+    const dx = tx - g.x;
+    const dy = ty - g.y;
+    const d = Math.hypot(dx, dy) || 1;
+    const seekVx = (dx / d) * g.speed;
+    const seekVy = (dy / d) * g.speed;
+
+    let vx = seekVx, vy = seekVy;
+    // Aktif detour varsa onu kullan
+    if (g.detourTime && g.detourTime > 0) {
+      vx = g.detourVx; vy = g.detourVy;
+      g.detourTime -= dt;
+    }
+
+    const nx = g.x + vx * dt;
+    const ny = g.y + vy * dt;
+    let movedX = false, movedY = false;
+    if (!collidesWalls(nx, g.y, g.r)) { g.x = nx; movedX = true; }
+    if (!collidesWalls(g.x, ny, g.r)) { g.y = ny; movedY = true; }
+
+    if (!movedX && !movedY) {
+      // İki eksen de tıkalı → 90° döndür ve detour ata
+      if (!g.detourTime || g.detourTime <= 0) {
+        const side = Math.random() < 0.5 ? 1 : -1;
+        // Oyuncu yönünün dik vektörü
+        g.detourVx = -(dy / d) * g.speed * side;
+        g.detourVy =  (dx / d) * g.speed * side;
+        g.detourTime = 0.5 + Math.random() * 0.6;
+      } else {
+        // Detour da tıkalı, ters yöne çevir
+        g.detourVx = -g.detourVx;
+        g.detourVy = -g.detourVy;
+        g.detourTime = 0.4;
+      }
+    } else if (movedX && movedY) {
+      // İki eksen de açık → detour bitir
+      if (g.detourTime > 0) g.detourTime = 0;
+    }
+
+    // Kasırga: oyuncuya yakın hayaletlere DPS
+    if (playerKasirga) {
+      const ddx = g.x - game.player.x, ddy = g.y - game.player.y;
+      if (ddx * ddx + ddy * ddy < KASIRGA_R * KASIRGA_R) g.hp -= KASIRGA_DPS * dt;
+    }
+
+    // Oyuncuya değme (görünmezken hasar yok, spectator iken yok)
+    if (!game.player.dead && !ghostMode && !playerInvisible && game.player.invuln <= 0) {
+      const d2 = Math.hypot(g.x - game.player.x, g.y - game.player.y);
+      if (d2 < g.r + game.player.r) {
+        damagePlayer();
+      }
+    }
+
+    // Ateş edebilen hayaletler / boss
+    if (g.canShoot && (g.nextShot || 0) <= now && !playerInvisible) {
+      const dxf = game.player.x - g.x;
+      const dyf = game.player.y - g.y;
+      const df = Math.hypot(dxf, dyf) || 1;
+      // Sadece ekran civarında ve yeterince yakınsa ateş et
+      const onScreen = g.x > game.camera.x - 80 && g.x < game.camera.x + game.W + 80 &&
+                       g.y > game.camera.y - 80 && g.y < game.camera.y + game.H + 80;
+      if (onScreen && df < 700) {
+        const projSpeed = g.isBoss ? 280 : 240;
+        // Boss çoklu mermi (geç bölümlerde 3'lü)
+        const offsets = (g.isBoss && game.level >= 8) ? [-0.18, 0, 0.18] : [0];
+        for (const off of offsets) {
+          const ang = Math.atan2(dyf, dxf) + off;
+          game.enemyProjectiles.push({
+            x: g.x, y: g.y,
+            vx: Math.cos(ang) * projSpeed,
+            vy: Math.sin(ang) * projSpeed,
+            life: 3,
+            isBoss: !!g.isBoss,
+          });
+        }
+        audio.fire();
+        g.nextShot = now + (g.fireRate || 2400);
+      } else {
+        // Görüş yoksa kısa beklet
+        g.nextShot = now + 500;
+      }
+    }
+  }
+  if (game.player.invuln > 0) game.player.invuln -= dt;
+
+  // Düşman mermileri
+  for (let i = game.enemyProjectiles.length - 1; i >= 0; i--) {
+    const p = game.enemyProjectiles[i];
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.life -= dt;
+    if (p.life <= 0 || collidesWalls(p.x, p.y, 4)) {
+      game.enemyProjectiles.splice(i, 1);
+      continue;
+    }
+    // Oyuncuya isabet
+    if (!ghostMode && !playerInvisible && game.player.invuln <= 0) {
+      const d = Math.hypot(p.x - game.player.x, p.y - game.player.y);
+      if (d < game.player.r + 7) {
+        damagePlayer();
+        spawnHitParticles(p.x, p.y);
+        game.enemyProjectiles.splice(i, 1);
+      }
+    }
+  }
+
+  // Aktif güç efektleri (timer'lar)
+  if (power && power.type === "rani") {
+    game.healTimer = (game.healTimer || 0) + dt;
+    if (game.healTimer >= 5) {
+      game.healTimer = 0;
+      if (game.player.hp < game.player.maxHp) {
+        game.player.hp++;
+        audio.pickup();
+        showFloat("+1 ❤️", game.player.x, game.player.y - 30);
+      }
+    }
+  }
+  if (power && power.type === "fanatik") {
+    game.pulseTimer = (game.pulseTimer || 0) + dt;
+    if (game.pulseTimer >= 0.5) {
+      game.pulseTimer = 0;
+      let any = false;
+      for (const g of game.ghosts) {
+        if (Math.hypot(g.x - game.player.x, g.y - game.player.y) < 110) {
+          g.hp -= game.player.damage;
+          any = true;
+          // Itme efekti
+          const ax = g.x - game.player.x, ay = g.y - game.player.y;
+          const al = Math.hypot(ax, ay) || 1;
+          g.x += (ax / al) * 25;
+          g.y += (ay / al) * 25;
+        }
+      }
+      // Tornado görseli
+      for (let p = 0; p < 12; p++) {
+        const a = Math.random() * Math.PI * 2;
+        const r = 60 + Math.random() * 50;
+        game.particles.push({
+          x: game.player.x + Math.cos(a) * r,
+          y: game.player.y + Math.sin(a) * r,
+          vx: Math.cos(a + Math.PI/2) * 80, vy: Math.sin(a + Math.PI/2) * 80,
+          life: 0.4, color: "#fde047",
+        });
+      }
+      if (any) audio.hit();
+      // Ölmüş hayaletleri temizle
+      for (let i = game.ghosts.length - 1; i >= 0; i--) {
+        if (game.ghosts[i].hp <= 0) killGhost(game.ghosts[i], i);
+      }
+    }
+  }
+
+  } // ========== HOST-ONLY blok bitiş ==========
+
+  // ========== CLIENT-ONLY: invuln + hayalet-temas + düşman mermisi temas + interpolation ==========
+  if (online.mode === "client") {
+    // Hayaletleri target'a doğru smooth interpolate et (her frame)
+    for (const g of game.ghosts) {
+      if (typeof g.targetX === "number") {
+        g.x = smoothToward(g.x, g.targetX, dt);
+        g.y = smoothToward(g.y, g.targetY, dt);
+      }
+    }
+    // Düşman mermileri: hız vektörüyle her frame ilerle (görsel akış için)
+    for (const p of game.enemyProjectiles) {
+      p.x += (p.vx || 0) * dt;
+      p.y += (p.vy || 0) * dt;
+    }
+    if (game.player.invuln > 0) game.player.invuln -= dt;
+    const cpower = getActivePower();
+    const cghostMode = cpower && cpower.type === "kent";
+    const cinvisible = (game.player.invisibleUntil || 0) > now;
+    if (!game.player.dead && !cghostMode && !cinvisible && game.player.invuln <= 0) {
+      for (const g of game.ghosts) {
+        if (Math.hypot(g.x - game.player.x, g.y - game.player.y) < g.r + game.player.r) {
+          damagePlayer();
+          break;
+        }
+      }
+    }
+    for (let i = game.enemyProjectiles.length - 1; i >= 0; i--) {
+      const p = game.enemyProjectiles[i];
+      if (!game.player.dead && !cghostMode && !cinvisible && game.player.invuln <= 0) {
+        const d = Math.hypot(p.x - game.player.x, p.y - game.player.y);
+        if (d < game.player.r + 7) {
+          damagePlayer();
+          spawnHitParticles(p.x, p.y);
+          game.enemyProjectiles.splice(i, 1);
+        }
+      }
+    }
+  }
+
+  // Remote oyuncular için interpolation (her modda — host da diğerlerini akıcı görsün)
+  if (online.mode) {
+    Object.keys(online.remotePlayers).forEach((uid) => {
+      const rp = online.remotePlayers[uid];
+      if (typeof rp.targetX === "number") {
+        rp.x = smoothToward(typeof rp.x === "number" ? rp.x : rp.targetX, rp.targetX, dt);
+        rp.y = smoothToward(typeof rp.y === "number" ? rp.y : rp.targetY, rp.targetY, dt);
+      }
+    });
+  }
+
+  // Otomatik atış (en yakın hayalete) — güçle hızlanır (spectator atış yapamaz)
+  const firePower = getActivePower();
+  let fireDelay = game.player.fireDelay;
+  if (firePower && firePower.type === "ponko") fireDelay = fireDelay / 3;
+  const fireTarget = (!game.player.dead) ? nearestGhost(game.player.range) : null;
+  if (fireTarget && now - game.lastFire >= fireDelay) {
+    fireProjectile(fireTarget);
+    game.lastFire = now;
+  }
+  // Silah yükseltme/indirme animasyonu: hedef varken yukarı çekilir, yoksa iner
+  if (fireTarget) {
+    game.player.aimRaise = Math.min(1, (game.player.aimRaise || 0) + dt * 6);
+  } else {
+    game.player.aimRaise = Math.max(0, (game.player.aimRaise || 0) - dt * 4);
+  }
+  // Geri tepme: atışta 1'e fırlar, hızlıca söner
+  game.player.shootRecoil = Math.max(0, (game.player.shootRecoil || 0) - dt * 6);
+
+  // Mermiler
+  for (let i = game.projectiles.length - 1; i >= 0; i--) {
+    const p = game.projectiles[i];
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.life -= dt;
+    if (p.life <= 0 || collidesWalls(p.x, p.y, 4)) {
+      game.projectiles.splice(i, 1);
+      continue;
+    }
+    // Düşman mermisini vurdu mu? (havada engelleme)
+    let blockedEnemy = false;
+    for (let k = game.enemyProjectiles.length - 1; k >= 0; k--) {
+      const ep = game.enemyProjectiles[k];
+      const hitR = (ep.isBoss ? 11 : 8) + 4;
+      if (Math.hypot(p.x - ep.x, p.y - ep.y) < hitR) {
+        spawnHitParticles(ep.x, ep.y);
+        // Küçük kıvılcım patlaması
+        for (let z = 0; z < 6; z++) {
+          const a = Math.random() * Math.PI * 2;
+          const sp = 60 + Math.random() * 80;
+          game.particles.push({ x: ep.x, y: ep.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.3, color: ep.isBoss ? "#fb923c" : "#c4b5fd" });
+        }
+        game.enemyProjectiles.splice(k, 1);
+        game.projectiles.splice(i, 1);
+        audio.hit();
+        blockedEnemy = true;
+        break;
+      }
+    }
+    if (blockedEnemy) continue;
+    // Hayalete vurdu mu?
+    for (let j = game.ghosts.length - 1; j >= 0; j--) {
+      const g = game.ghosts[j];
+      if (Math.hypot(p.x - g.x, p.y - g.y) < g.r + 6) {
+        spawnHitParticles(p.x, p.y);
+        game.projectiles.splice(i, 1);
+        if (online.mode === "client") {
+          // Client: host'a hit event gönder
+          online.pendingEvents.push({ type: "hit", gi: g._idx, dmg: p.dmg, by: online.uid });
+          audio.hit();
+        } else {
+          g.hp -= p.dmg;
+          if (g.hp <= 0) {
+            killGhost(g, j);
+          } else {
+            audio.hit();
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  // Toplanabilirler — ömür dolunca yokol, mıknatıs alanı değişir
+  const pickPower = getActivePower();
+  const magnetR = (pickPower && pickPower.type === "mark") ? 5000 : 80;
+  const magnetSpeed = (pickPower && pickPower.type === "mark") ? 420 : 200;
+  for (let i = game.pickups.length - 1; i >= 0; i--) {
+    const p = game.pickups[i];
+    if (p.life === undefined) p.life = (p.kind === "guc") ? 18 : 12;
+    p.life -= dt;
+    if (p.life <= 0) { game.pickups.splice(i, 1); continue; }
+    const d = Math.hypot(p.x - game.player.x, p.y - game.player.y);
+    if (d < magnetR) {
+      const dx = (game.player.x - p.x) / Math.max(d, 1);
+      const dy = (game.player.y - p.y) / Math.max(d, 1);
+      p.x += dx * magnetSpeed * dt;
+      p.y += dy * magnetSpeed * dt;
+    }
+    if (!game.player.dead && d < game.player.r + 8) {
+      collectPickup(p);
+      if (online.mode === "client") {
+        // Client: lokal sil + host'a sildirme event'i gönder
+        online.pendingEvents.push({ type: "pickup", pi: p._idx, by: online.uid });
+      }
+      game.pickups.splice(i, 1);
+    }
+  }
+
+  // Parçacıklar
+  for (let i = game.particles.length - 1; i >= 0; i--) {
+    const p = game.particles[i];
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.life -= dt;
+    p.vx *= 0.92;
+    p.vy *= 0.92;
+    if (p.life <= 0) game.particles.splice(i, 1);
+  }
+
+  // Efektler (bomba halkası, roket)
+  updateEffects(dt);
+
+  // Silah/kasırga ile düşen hp'leri toplu temizle
+  for (let i = game.ghosts.length - 1; i >= 0; i--) {
+    if (game.ghosts[i].hp <= 0) killGhost(game.ghosts[i], i);
+  }
+
+  // Kasırga görseli (8 sn boyunca dönen halka parçacıkları)
+  if ((game.player.kasirgaUntil || 0) > now) {
+    if (Math.random() < 0.6) {
+      const a = Math.random() * Math.PI * 2;
+      const r = 95 + Math.random() * 25;
+      game.particles.push({
+        x: game.player.x + Math.cos(a) * r,
+        y: game.player.y + Math.sin(a) * r,
+        vx: Math.cos(a + Math.PI / 2) * 140,
+        vy: Math.sin(a + Math.PI / 2) * 140,
+        life: 0.35, color: "#a78bfa",
+      });
+    }
+  }
+
+  // Kamera takibi
+  game.camera.x = game.player.x - game.W / 2;
+  game.camera.y = game.player.y - game.H / 2;
+  game.camera.x = Math.max(0, Math.min(game.worldW - game.W, game.camera.x));
+  game.camera.y = Math.max(0, Math.min(game.worldH - game.H, game.camera.y));
+
+  updateHUD();
+}
+
+function nextLevel() {
+  game.level++;
+  game.levelTimer = 0;
+  game.ghostsCaught = 0;
+  audio.levelUp();
+  // Sahneyi yeniden kur
+  game.ghosts = [];
+  game.projectiles = [];
+  game.enemyProjectiles = [];
+  game.effects = [];
+  buildWalls();
+  buildWaters();
+  buildHazards();
+  ensurePlayerSafe();
+  showToast(`📚 Bölüm ${game.level} — ${getTheme().name}`);
+  // Boss bölüm seviyesine göre belli bir süre sonra
+  game.bossSpawnTimer = getBossTimerForLevel(game.level);
+  game.bossDefeated = false;
+  game.levelTransitioning = false;
+}
+
+function ensurePlayerSafe() {
+  if (!game.player) return;
+  const r = game.player.r;
+  const safe = (x, y) => !collidesWalls(x, y, r) && (game.player.waterImmune || !collidesWaters(x, y, r)) && !collidesSpikes(x, y, r) && !collidesLavas(x, y, r);
+  if (safe(game.player.x, game.player.y)) return;
+  for (let i = 0; i < 60; i++) {
+    const x = 100 + Math.random() * (game.worldW - 200);
+    const y = 100 + Math.random() * (game.worldH - 200);
+    if (safe(x, y)) { game.player.x = x; game.player.y = y; return; }
+  }
+  game.player.x = game.worldW / 2;
+  game.player.y = game.worldH / 2;
+}
+
+function spawnBoss() {
+  let x = game.worldW / 2, y = 200;
+  let placed = false;
+  for (let attempts = 0; attempts < 30; attempts++) {
+    const tx = 120 + Math.random() * (game.worldW - 240);
+    const ty = 120 + Math.random() * (game.worldH - 240);
+    if (Math.hypot(tx - game.player.x, ty - game.player.y) < 380) continue;
+    if (collidesWalls(tx, ty, 60)) continue;
+    if (collidesWaters(tx, ty, 60)) continue;
+    x = tx; y = ty; placed = true; break;
+  }
+  const hp = 8 + game.level * 4;
+  const fireRate = Math.max(1500, 2600 - (game.level - 1) * 80);
+  game.ghosts.push({
+    x, y, r: 44,
+    speed: 38 + game.level * 5,
+    hp, maxHp: hp,
+    size: 95,
+    isBoss: true,
+    canShoot: true,
+    fireRate,
+    nextShot: performance.now() + 2000,
+    // İlk büyük hayalet sesi spawn anında, sonra her 3 sn'de bir
+    nextSound: performance.now() + 3000,
+    // Minion state machine: spawn'dan 1.5 sn sonra ilk parti gelir
+    minionState: "waiting",
+    minionTimer: 1.5,
+  });
+  showToast(`👑 BÖLÜM ${game.level} BOSS!`);
+  audio.bigGhost();
+}
+
+function spawnBossMinion(boss) {
+  const angle = Math.random() * Math.PI * 2;
+  const dist = 70 + Math.random() * 50;
+  let x = boss.x + Math.cos(angle) * dist;
+  let y = boss.y + Math.sin(angle) * dist;
+  x = Math.max(40, Math.min(game.worldW - 40, x));
+  y = Math.max(40, Math.min(game.worldH - 40, y));
+  // Duvar/su içinde kalmasın
+  for (let tries = 0; tries < 8 && (collidesWalls(x, y, 18) || collidesWaters(x, y, 18)); tries++) {
+    x += (Math.random() - 0.5) * 80;
+    y += (Math.random() - 0.5) * 80;
+    x = Math.max(40, Math.min(game.worldW - 40, x));
+    y = Math.max(40, Math.min(game.worldH - 40, y));
+  }
+  game.ghosts.push({
+    x, y, r: 14,
+    speed: 90 + game.level * 5,
+    hp: 1, maxHp: 1,
+    size: 26,
+    fromBoss: true,
+    nextSound: performance.now() + Math.random() * 5000,
+  });
+}
+
+function spawnGhost() {
+  const side = Math.floor(Math.random() * 4);
+  let x, y;
+  const margin = 60;
+  if (side === 0) { x = margin; y = margin + Math.random() * (game.worldH - margin * 2); }
+  else if (side === 1) { x = game.worldW - margin; y = margin + Math.random() * (game.worldH - margin * 2); }
+  else if (side === 2) { x = margin + Math.random() * (game.worldW - margin * 2); y = margin; }
+  else { x = margin + Math.random() * (game.worldW - margin * 2); y = game.worldH - margin; }
+
+  // Duvarlardan uzaklaştır
+  for (let tries = 0; tries < 10 && collidesWalls(x, y, 24); tries++) {
+    x += (Math.random() - 0.5) * 100;
+    y += (Math.random() - 0.5) * 100;
+  }
+
+  const tier = 1 + Math.floor(game.level / 3);
+  const speed = 50 + game.level * 6 + Math.random() * 20;
+  const hp = tier;
+  // Bölüm 5+: %18 ihtimalle ateş edebilen yavaş hayalet
+  const isShooter = game.level >= 5 && Math.random() < 0.18;
+  const ghost = {
+    x, y, r: 22,
+    speed: isShooter ? speed * 0.7 : speed,
+    hp: isShooter ? Math.max(2, tier) : hp,
+    maxHp: isShooter ? Math.max(2, tier) : hp,
+    size: 40 + (tier - 1) * 4,
+  };
+  if (isShooter) {
+    ghost.isShooter = true;
+    ghost.canShoot = true;
+    ghost.fireRate = 2400;
+    ghost.nextShot = performance.now() + 1500 + Math.random() * 1500;
+  }
+  // İlk ses 0-5 sn arası rastgele zamanda, sonra her 10 sn'de bir
+  ghost.nextSound = performance.now() + Math.random() * 5000;
+  game.ghosts.push(ghost);
+}
+
+function killGhost(g, idx) {
+  // Solan iz: ölen hayaletin silüeti 1 sn boyunca yavaş kaybolur
+  game.effects.push({
+    type: "ghostFade",
+    x: g.x, y: g.y,
+    size: g.size,
+    hp: 0,
+    maxHp: g.maxHp,
+    isBoss: !!g.isBoss,
+    life: 1, maxLife: 1,
+  });
+  game.ghosts.splice(idx, 1);
+  spawnDeathParticles(g.x, g.y);
+
+  if (g.isBoss) {
+    game.totalCaught++;
+    game.bossDefeated = true;
+    showToast("👑 BOSS YENİLDİ! Kalan hayaletleri temizle!");
+    audio.bossDie();
+    navigator.vibrate?.([100, 50, 100, 50, 200]);
+
+    // Çoklu para patlaması
+    for (let i = 0; i < 6; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = 30 + Math.random() * 50;
+      game.pickups.push({
+        x: g.x + Math.cos(a) * r,
+        y: g.y + Math.sin(a) * r,
+        kind: "para",
+        value: 12 + game.level * 3,
+      });
+    }
+    // Garantili elmaslar
+    game.pickups.push({ x: g.x - 20, y: g.y - 30, kind: "elmas", value: 1 });
+    game.pickups.push({ x: g.x + 20, y: g.y - 30, kind: "elmas", value: 1 });
+    // Garantili zümrüt
+    game.pickups.push({ x: g.x, y: g.y - 40, kind: "zumrut", value: 1 });
+    // Boss her zaman güç yıldızı düşürür
+    game.pickups.push({ x: g.x, y: g.y, kind: "guc" });
+    // Her 5 bölümde bir KALP düşer (4 sn'lik kısa ömür)
+    if (game.level % 5 === 0) {
+      game.pickups.push({ x: g.x, y: g.y - 60, kind: "kalp", life: 4 });
+      showToast("💖 KALP! 4 saniyede topla!");
+    }
+
+    spawnDeathParticles(g.x + 30, g.y);
+    spawnDeathParticles(g.x - 30, g.y);
+    return;
+  }
+
+  game.ghostsCaught++;
+  game.totalCaught++;
+  audio.kill();
+
+  // Patlama gücü: çevreye AOE hasar
+  const power = getActivePower();
+  if (power && power.type === "gul" && !g._explodedFrom) {
+    for (const other of game.ghosts) {
+      if (other === g) continue;
+      if (Math.hypot(other.x - g.x, other.y - g.y) < 90) {
+        other.hp -= Math.max(1, game.player.damage);
+        other._explodedFrom = true; // zincir patlama olmasın
+      }
+    }
+    // Patlama görseli
+    for (let p = 0; p < 14; p++) {
+      const a = Math.random() * Math.PI * 2;
+      const sp = 100 + Math.random() * 120;
+      game.particles.push({ x: g.x, y: g.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.5, color: "#fde047" });
+    }
+    audio.bossDie();
+  }
+
+  // Para düşür
+  game.pickups.push({ x: g.x, y: g.y, kind: "para", value: 5 + g.maxHp * 2 });
+  // Bazen elmas
+  if (Math.random() < 0.12) {
+    game.pickups.push({ x: g.x + 10, y: g.y, kind: "elmas", value: 1 });
+  }
+  // Nadiren zümrüt
+  if (Math.random() < 0.04 + game.level * 0.005) {
+    game.pickups.push({ x: g.x - 10, y: g.y, kind: "zumrut", value: 1 });
+  }
+  // Bazen güç yıldızı (%4)
+  if (!getActivePower() && Math.random() < 0.04) {
+    game.pickups.push({ x: g.x, y: g.y - 10, kind: "guc" });
+  }
+}
+
+function collectPickup(p) {
+  if (p.kind === "para") {
+    game.runPara += p.value;
+    showFloat(`+${p.value} 💰`, p.x, p.y);
+    audio.pickup();
+  } else if (p.kind === "elmas") {
+    game.runElmas += p.value;
+    showFloat(`+${p.value} 💎`, p.x, p.y);
+    audio.gem();
+  } else if (p.kind === "zumrut") {
+    game.runZumrut += p.value;
+    showFloat(`+${p.value} 💚`, p.x, p.y);
+    audio.emerald();
+  } else if (p.kind === "guc") {
+    activatePower(game.player.charKey);
+  } else if (p.kind === "kalp") {
+    // Sadece eksik canı doldur; max can sayısını artırma
+    if (game.player.hp < game.player.maxHp) {
+      game.player.hp += 1;
+      showFloat("+1 ❤️", p.x, p.y);
+      showToast("💖 Can yenilendi!");
+      audio.heart();
+    } else {
+      showFloat("Can dolu", p.x, p.y);
+      audio.pickup();
+    }
+  }
+}
+
+function showFloat(text, x, y) {
+  game.particles.push({ x, y, vx: 0, vy: -40, life: 0.8, text, color: "#ffd166" });
+}
+
+function spawnHitParticles(x, y) {
+  for (let i = 0; i < 5; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const s = 50 + Math.random() * 80;
+    game.particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 0.3, color: "#ffd166" });
+  }
+}
+
+function spawnDeathParticles(x, y) {
+  for (let i = 0; i < 12; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const s = 80 + Math.random() * 100;
+    game.particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 0.6, color: "#ffffff" });
+  }
+}
+
+function fireProjectile(target) {
+  const dx = target.x - game.player.x;
+  const dy = target.y - game.player.y;
+  const d = Math.hypot(dx, dy) || 1;
+  const speed = 480;
+  const baseAng = Math.atan2(dy, dx);
+  const power = getActivePower();
+  let dmg = game.player.damage;
+  if (power && power.type === "veryi") dmg *= 3;
+
+  // Mermi deseni
+  let offsets = [0]; // tek mermi varsayılan
+  if (power && power.type === "kornet") offsets = [-0.22, 0, 0.22]; // 3'lü koni
+  else if (power && power.type === "beti") offsets = [-0.5, -0.25, 0, 0.25, 0.5]; // 5'li yayılım
+
+  for (const off of offsets) {
+    const a = baseAng + off;
+    game.projectiles.push({
+      x: game.player.x,
+      y: game.player.y,
+      vx: Math.cos(a) * speed,
+      vy: Math.sin(a) * speed,
+      life: 1.5,
+      dmg: dmg,
+      charKey: game.player.charKey,
+    });
+  }
+  game.player.shootRecoil = 1;
+  game.player.aimRaise = 1;
+  audio.fire();
+}
+
+function nearestGhost(maxR) {
+  let best = null;
+  let bestD = maxR;
+  const cam = game.camera;
+  const pad = 30;
+  for (const g of game.ghosts) {
+    // Sadece ekrana girmiş hayaletleri hedefle (kamera viewport)
+    if (g.x < cam.x - pad || g.x > cam.x + game.W + pad ||
+        g.y < cam.y - pad || g.y > cam.y + game.H + pad) continue;
+    const d = Math.hypot(g.x - game.player.x, g.y - game.player.y);
+    if (d < bestD) { best = g; bestD = d; }
+  }
+  return best;
+}
+
+function damagePlayer() {
+  if (game.player.dead) return;
+  game.player.hp--;
+  game.player.invuln = 1.2;
+  audio.damage();
+  navigator.vibrate?.(120);
+  if (game.player.hp <= 0) {
+    if (online.mode) {
+      becomeSpectator();
+    } else {
+      endGame(false);
+    }
+  }
+}
+
+function becomeSpectator() {
+  game.player.dead = true;
+  game.player.hp = 0;
+  game.player.invuln = 999999; // hasar almasın
+  showToast("👻 Hayalet oldun — diğer oyuncuları izle veya menüye dön");
+  audio.damage();
+}
+
+function collidesWalls(x, y, r) {
+  for (const w of game.walls) {
+    const cx = Math.max(w.x, Math.min(x, w.x + w.w));
+    const cy = Math.max(w.y, Math.min(y, w.y + w.h));
+    if (Math.hypot(x - cx, y - cy) < r) return true;
+  }
+  return false;
+}
+
+// ====== ÇİZİM ======
+function render() {
+  const ctx = game.ctx;
+  ctx.clearRect(0, 0, game.W, game.H);
+
+  // Arka plan grid
+  ctx.save();
+  ctx.translate(-game.camera.x, -game.camera.y);
+
+  // Zemin (bölüm temasından)
+  const th = getTheme();
+  ctx.fillStyle = th.floor;
+  ctx.fillRect(0, 0, game.worldW, game.worldH);
+
+  // Grid
+  ctx.strokeStyle = th.grid;
+  ctx.lineWidth = 1;
+  const gridSize = 80;
+  for (let x = 0; x < game.worldW; x += gridSize) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, game.worldH); ctx.stroke();
+  }
+  for (let y = 0; y < game.worldH; y += gridSize) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(game.worldW, y); ctx.stroke();
+  }
+
+  // Su alanları
+  for (const w of game.waters) drawWater(ctx, w.x, w.y, w.w, w.h);
+
+  // Tehlikeler
+  for (const l of (game.lavas || []))  drawLava(ctx,  l.x, l.y, l.w, l.h);
+  for (const s of (game.spikes || [])) drawSpike(ctx, s.x, s.y, s.w, s.h);
+
+  // Duvarlar
+  for (const w of game.walls) drawWall(ctx, w.x, w.y, w.w, w.h);
+
+  // Toplanabilirler
+  for (const p of game.pickups) drawPickup(ctx, p);
+
+  // Mermiler
+  for (const p of game.projectiles) drawProjectile(ctx, p);
+
+  // Düşman mermileri (boss + shooter ghost)
+  for (const p of (game.enemyProjectiles || [])) drawEnemyProjectile(ctx, p);
+
+  // Ölen hayaletlerin solan izleri (canlı hayaletlerin altında)
+  drawGhostFades(ctx);
+
+  // Hayaletler (boss en üstte)
+  for (const g of game.ghosts) if (!g.isBoss) drawGhost(ctx, g);
+  for (const g of game.ghosts) if (g.isBoss) drawGhost(ctx, g);
+
+  // Bomba/roket görselleri (hayaletlerin üstünde)
+  drawEffects(ctx);
+
+  // Diğer oyuncular (multiplayer)
+  if (online.mode) {
+    const rps = online.remotePlayers || {};
+    Object.keys(rps).forEach((uid) => {
+      const rp = rps[uid];
+      if (!rp || typeof rp.x !== "number") return;
+      ctx.save();
+      if (rp.dead) {
+        ctx.globalAlpha = 0.45;
+        ctx.filter = "hue-rotate(180deg) brightness(1.3)"; // mavi hayalet tonu
+      } else if (rp.invisible) {
+        ctx.globalAlpha = 0.4;
+      }
+      drawCharacter(ctx, rp.charKey || "kinkin", rp.costumeIdx || 0, rp.x, rp.y, 70, rp.facing || 0, rp.walk || 0);
+      ctx.restore();
+      // İsim etiketi
+      ctx.save();
+      ctx.fillStyle = "#fde047";
+      ctx.strokeStyle = "#000";
+      ctx.lineWidth = 3;
+      ctx.font = "bold 12px sans-serif";
+      ctx.textAlign = "center";
+      ctx.strokeText(rp.name || "?", rp.x, rp.y - 50);
+      ctx.fillText(rp.name || "?", rp.x, rp.y - 50);
+      // Mini can çubuğu
+      const w = 36, h = 4;
+      const ratio = Math.max(0, Math.min(1, (rp.hp || 0) / (rp.maxHp || 3)));
+      ctx.fillStyle = "rgba(0,0,0,0.6)";
+      ctx.fillRect(rp.x - w / 2 - 1, rp.y - 44, w + 2, h + 2);
+      ctx.fillStyle = "#dc2626";
+      ctx.fillRect(rp.x - w / 2, rp.y - 43, w, h);
+      ctx.fillStyle = "#10b981";
+      ctx.fillRect(rp.x - w / 2, rp.y - 43, w * ratio, h);
+      ctx.restore();
+    });
+  }
+
+  // Oyuncu (yanıp sönme efekti yaralandığında, görünmez iken yarı saydam, ölü iken hayalet)
+  const blink = !game.player.dead && game.player.invuln > 0 && Math.floor(game.player.invuln * 10) % 2 === 0;
+  if (!blink) {
+    const isInvisible = (game.player.invisibleUntil || 0) > performance.now();
+    const wp = game.player.walkTimer || 0;
+    // Spectator iken silah indirilmiş kalsın
+    const ar = game.player.dead ? 0 : (game.player.aimRaise || 0);
+    const rc = game.player.dead ? 0 : (game.player.shootRecoil || 0);
+    if (game.player.dead) {
+      ctx.save();
+      ctx.globalAlpha = 0.5;
+      ctx.filter = "hue-rotate(180deg) brightness(1.3)";
+      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc);
+      ctx.restore();
+    } else if (isInvisible) {
+      ctx.save();
+      ctx.globalAlpha = 0.4;
+      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc);
+      ctx.restore();
+    } else {
+      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc);
+    }
+  }
+
+  // Parçacıklar
+  for (const p of game.particles) {
+    ctx.save();
+    if (p.text) {
+      ctx.fillStyle = p.color;
+      ctx.font = "bold 14px sans-serif";
+      ctx.textAlign = "center";
+      ctx.globalAlpha = Math.max(0, p.life);
+      ctx.fillText(p.text, p.x, p.y);
+    } else {
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(0, p.life * 1.5);
+      ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+    }
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
+function updateHUD() {
+  let lives = "";
+  for (let i = 0; i < game.player.maxHp; i++) {
+    lives += i < game.player.hp ? "❤️" : "🖤";
+  }
+  document.getElementById("lives").textContent = lives;
+  document.getElementById("level-num").textContent = game.level;
+  document.getElementById("ghost-count").textContent = game.totalCaught;
+  document.getElementById("run-para").textContent = game.runPara;
+
+  // Boss durumu
+  const bossEl = document.getElementById("boss-status");
+  if (bossEl) {
+    if (game.bossDefeated) {
+      const remain = game.ghosts.length;
+      bossEl.textContent = remain > 0 ? `🧹 Kalan: ${remain}` : "✓ Bölüm temiz!";
+      bossEl.className = "boss-status boss-cleared";
+    } else if (game.bossSpawnTimer > 0) {
+      bossEl.textContent = `⏳ Boss: ${Math.ceil(game.bossSpawnTimer)}s`;
+      bossEl.className = "boss-status";
+    } else {
+      bossEl.textContent = "👑 BOSS!";
+      bossEl.className = "boss-status boss-active";
+    }
+  }
+
+  // Aktif güç barı
+  const power = getActivePower();
+  const pwrEl = document.getElementById("power-bar");
+  if (pwrEl) {
+    if (power) {
+      const remaining = Math.max(0, (power.expires - performance.now()) / 1000);
+      const pct = Math.min(1, remaining / ((power.duration || 15000) / 1000));
+      pwrEl.classList.add("active");
+      pwrEl.innerHTML = `
+        <span class="power-icon">${power.icon}</span>
+        <span class="power-name">${power.name}</span>
+        <span class="power-time">${remaining.toFixed(1)}s</span>
+        <div class="power-fill" style="width:${pct * 100}%"></div>
+      `;
+    } else {
+      pwrEl.classList.remove("active");
+      pwrEl.innerHTML = "";
+    }
+  }
+}
+
+// ====== DURAKLAT / ÇIK ======
+function pauseGame() {
+  if (!game.running) return;
+  game.paused = true;
+  document.getElementById("screen-pause").classList.add("active");
+}
+
+function resumeGame() {
+  document.getElementById("screen-pause").classList.remove("active");
+  game.paused = false;
+  game.lastFrame = performance.now();
+}
+
+function quitToMenu() {
+  game.running = false;
+  document.getElementById("screen-pause").classList.remove("active");
+  document.getElementById("screen-gameover").classList.remove("active");
+  const wb = document.getElementById("weapon-bar");
+  if (wb) wb.innerHTML = "";
+  // Online ise odadan da çık + run kazançlarını save'e yaz
+  if (online.mode) {
+    flushOnlineRewards();
+    stopMpSync();
+    stopRoomListener();
+    if (online.isHost) {
+      rtdb.remove(`rooms/${online.roomId}`);
+    } else if (online.roomId) {
+      rtdb.remove(`rooms/${online.roomId}/players/${online.uid}`);
+    }
+    online.roomId = null;
+    online.isHost = false;
+    online.mode = null;
+  }
+  goToMenu();
+}
+
+// ====== OYUN BİTTİ ======
+function endGame(won) {
+  game.running = false;
+
+  // Bonus para (bölüm başı)
+  const completionBonus = (game.level - 1) * 50;
+  const finalPara = game.runPara + completionBonus;
+
+  // Yüksek bölüm rekoru
+  if (game.level > save.highestLevel) save.highestLevel = game.level;
+
+  save.para += finalPara;
+  save.elmas += game.runElmas;
+  save.zumrut += game.runZumrut;
+  persistSave();
+
+  // Şampiyon listesine ekle (yerel + buluta)
+  const entry = {
+    name: save.playerName || "Avcı",
+    level: game.level,
+    ghosts: game.totalCaught,
+    para: finalPara,
+    date: Date.now(),
+  };
+  const rank = addLeaderboardEntry(entry);
+  submitOnlineScore(entry); // sessizce buluta yolla, sonucu beklemiyoruz
+  const rankEl = document.getElementById("gameover-rank");
+  if (rank >= 0) {
+    if (rank === 0) rankEl.textContent = "🥇 1. SIRA! Şampiyonsun!";
+    else if (rank === 1) rankEl.textContent = "🥈 2. sıraya girdin!";
+    else if (rank === 2) rankEl.textContent = "🥉 3. sıraya girdin!";
+    else rankEl.textContent = `🏆 Şampiyonlar listesinde ${rank + 1}. sıradasın!`;
+  } else {
+    rankEl.textContent = "";
+  }
+
+  document.getElementById("gameover-title").textContent = won ? "🌟 Harika!" : "👻 Yakalandın!";
+  document.getElementById("final-ghosts").textContent = game.totalCaught;
+  document.getElementById("final-para").textContent = finalPara;
+  document.getElementById("final-elmas").textContent = game.runElmas;
+  document.getElementById("final-zumrut").textContent = game.runZumrut;
+  document.getElementById("screen-gameover").classList.add("active");
+  if (won) audio.win(); else audio.lose();
+}
+
+// ====== BAŞLAT ======
+function init() {
+  // Ses ayarlarını save'den uygula
+  audio.enabled = save.soundEnabled !== false;
+  audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1 }, save.volumes || {});
+  refreshSoundButtons();
+  refreshSoundSliders();
+  // Firebase + auth state listener
+  try {
+    fbDb();
+    if (firebase && firebase.auth) {
+      firebase.auth().onAuthStateChanged(() => { refreshAccountScreen(); });
+    }
+    // Google Auth plugin'i arka planda hazırla (native)
+    initGoogleAuth().catch(() => {});
+  } catch (_) {}
+  drawGreeter();
+  // Hoşgeldin ekranında ismi varsa göster
+  if (save.playerName) {
+    document.getElementById("welcome-text").innerHTML =
+      `Merhaba <b>${escapeHtml(save.playerName)}</b>! Ben <b>Kinkin</b>, hadi hayalet avına!`;
+  }
+  // İsim ekranında Enter ile gönder
+  const nameInput = document.getElementById("name-input");
+  if (nameInput) {
+    nameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submitName();
+    });
+  }
+  // Tüm butonlarda tıklama sesi + ilk etkileşimde audio başlat
+  document.addEventListener("click", (e) => {
+    audio.init();
+    const btn = e.target.closest("button");
+    if (btn) audio.click();
+  }, true);
+  document.addEventListener("touchstart", () => { audio.init(); }, { once: true, passive: true });
+  // Çift dokunmayla zoom engelle
+  document.addEventListener("gesturestart", (e) => e.preventDefault());
+  document.addEventListener("touchmove", (e) => {
+    if (e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
+}
+
+// ====== GOOGLE SIGN-IN ======
+const GOOGLE_WEB_CLIENT_ID = "247289107945-6lbcnt8bvn0u1cqi4dgod63coo0g9218.apps.googleusercontent.com";
+
+function googleAuthPlugin() {
+  if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.GoogleAuth) {
+    return window.Capacitor.Plugins.GoogleAuth;
+  }
+  return null;
+}
+
+let _googleAuthInited = false;
+async function initGoogleAuth() {
+  if (_googleAuthInited) return true;
+  const ga = googleAuthPlugin();
+  if (!ga) return false;
+  try {
+    await ga.initialize({
+      clientId: GOOGLE_WEB_CLIENT_ID,
+      scopes: ["profile", "email"],
+      grantOfflineAccess: false,
+    });
+    _googleAuthInited = true;
+    return true;
+  } catch (e) {
+    console.error("GoogleAuth.initialize", e);
+    return false;
+  }
+}
+
+async function signInWithGoogle() {
+  try {
+    const ok = await initGoogleAuth();
+    if (!ok) { showToast("Google giriş bu cihazda kullanılamıyor"); return; }
+    const ga = googleAuthPlugin();
+    const guser = await ga.signIn();
+    if (!guser || !guser.authentication || !guser.authentication.idToken) {
+      showToast("Google girişi iptal");
+      return;
+    }
+    // Firebase Auth ile credential dönüştür
+    fbDb(); // initializeApp tetikle
+    if (!firebase.auth) { showToast("Firebase Auth SDK yok"); return; }
+    const credential = firebase.auth.GoogleAuthProvider.credential(guser.authentication.idToken);
+    const result = await firebase.auth().signInWithCredential(credential);
+    const u = result.user;
+    if (u) {
+      showToast(`✅ Hoş geldin, ${u.displayName || u.email}`);
+      refreshAccountScreen();
+    }
+  } catch (e) {
+    console.error("signInWithGoogle", e);
+    showToast(`Google girişi hatası: ${(e && e.message) || e}`);
+  }
+}
+
+async function signOutGoogle() {
+  try {
+    const ga = googleAuthPlugin();
+    if (ga) { try { await ga.signOut(); } catch (_) {} }
+    if (firebase && firebase.auth) { try { await firebase.auth().signOut(); } catch (_) {} }
+    showToast("✓ Çıkış yapıldı");
+    refreshAccountScreen();
+  } catch (e) { console.error("signOutGoogle", e); }
+}
+
+function currentFirebaseUser() {
+  try { return firebase.auth().currentUser; } catch (_) { return null; }
+}
+
+async function backupAccountGoogle() {
+  const u = currentFirebaseUser();
+  if (!u) { showToast("Önce Google ile giriş yap"); return; }
+  if (!save.playerName) { showToast("Önce avcı adını ayarla"); return; }
+  const payload = {
+    name: save.playerName,
+    googleName: u.displayName || "",
+    googleEmail: u.email || "",
+    save: JSON.stringify(save),
+    updatedAt: Date.now(),
+  };
+  const ok = await rtdb.put(`accounts_google/${u.uid}`, payload);
+  if (ok) showToast("✅ Bulut yedeği güncellendi");
+  else showToast("❌ Yedekleme başarısız");
+  refreshAccountScreen();
+}
+
+async function restoreAccountGoogle() {
+  const u = currentFirebaseUser();
+  if (!u) { showToast("Önce Google ile giriş yap"); return; }
+  showToast("📥 İndiriliyor...");
+  const data = await rtdb.get(`accounts_google/${u.uid}`);
+  if (!data || !data.save) { showToast("Bu Google hesabı için yedek yok"); return; }
+  const who = data.name || u.displayName || "?";
+  if (!confirm(`Bu cihazdaki ilerleme silinip "${who}" hesabıyla değiştirilecek.\nDevam edilsin mi?`)) return;
+  try {
+    const parsed = JSON.parse(data.save);
+    for (const k of Object.keys(save)) delete save[k];
+    Object.assign(save, parsed);
+    persistSave();
+    audio.enabled = save.soundEnabled !== false;
+    audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1 }, save.volumes || {});
+    refreshSoundButtons();
+    refreshSoundSliders();
+    showToast(`✅ Geri yüklendi: ${who}`);
+    goToMenu();
+  } catch (e) {
+    showToast("❌ Veri bozuk");
+  }
+}
+
+// ====== HESAP YEDEKLEME ======
+function genAccountCode() {
+  // Karıştırılabilir karakterler yok (0/O, 1/I/L)
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  let code = "";
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code.slice(0, 3) + "-" + code.slice(3); // "ABC-D23"
+}
+
+function getOrCreateAccountCode() {
+  if (!save.accountCode) {
+    save.accountCode = genAccountCode();
+    persistSave();
+  }
+  return save.accountCode;
+}
+
+function openAccount() {
+  refreshAccountScreen();
+  showScreen("screen-account");
+}
+
+function refreshAccountScreen() {
+  const codeEl = document.getElementById("account-code");
+  const code = save.accountCode || "—";
+  if (codeEl) codeEl.textContent = code;
+  const nameEl = document.getElementById("account-player");
+  if (nameEl) nameEl.textContent = save.playerName || "—";
+  const statsEl = document.getElementById("account-stats");
+  if (statsEl) {
+    statsEl.innerHTML =
+      `💰 ${save.para || 0} &nbsp; 💎 ${save.elmas || 0} &nbsp; 💚 ${save.zumrut || 0} &nbsp; ⭐ En yüksek bölüm: ${save.highestLevel || 1}`;
+  }
+  // Google sign-in durumu
+  const u = currentFirebaseUser();
+  const signedInPane  = document.getElementById("google-signed-in");
+  const signedOutPane = document.getElementById("google-signed-out");
+  const gNameEl  = document.getElementById("google-display-name");
+  const gEmailEl = document.getElementById("google-email");
+  if (u) {
+    if (signedInPane)  signedInPane.style.display  = "";
+    if (signedOutPane) signedOutPane.style.display = "none";
+    if (gNameEl)  gNameEl.textContent  = u.displayName || "";
+    if (gEmailEl) gEmailEl.textContent = u.email || "";
+  } else {
+    if (signedInPane)  signedInPane.style.display  = "none";
+    if (signedOutPane) signedOutPane.style.display = "";
+  }
+}
+
+async function backupAccount() {
+  if (!save.playerName) {
+    showToast("Önce avcı adını ayarla");
+    return;
+  }
+  const code = getOrCreateAccountCode();
+  const key = code.replace("-", "_");
+  const payload = {
+    name: save.playerName,
+    save: JSON.stringify(save),
+    updatedAt: Date.now(),
+  };
+  const ok = await rtdb.put(`accounts/${key}`, payload);
+  if (ok) {
+    showToast(`✅ Yedeklendi`);
+    refreshAccountScreen();
+  } else {
+    showToast("❌ Yedekleme başarısız (internet?)");
+  }
+}
+
+async function restoreAccount() {
+  const inp = document.getElementById("restore-code-input");
+  let raw = ((inp && inp.value) || "").trim().toUpperCase();
+  if (!raw) { showToast("Hesap kodunu yaz"); return; }
+  raw = raw.replace(/[^A-Z0-9]/g, "");
+  if (raw.length !== 6) { showToast("Kod 6 karakter olmalı"); return; }
+  const key = raw.slice(0, 3) + "_" + raw.slice(3);
+  const display = raw.slice(0, 3) + "-" + raw.slice(3);
+  showToast("📥 İndiriliyor...");
+  const data = await rtdb.get(`accounts/${key}`);
+  if (!data || !data.save) { showToast("❌ Hesap bulunamadı"); return; }
+  const who = data.name || "?";
+  if (!confirm(`Bu cihazdaki ilerleme silinip "${who}" hesabıyla değiştirilecek.\nDevam edilsin mi?`)) return;
+  try {
+    const parsed = JSON.parse(data.save);
+    // Sıfırdan yükle: parsed save'i mevcut save'in üzerine yaz, accountCode'u koru
+    for (const k of Object.keys(save)) delete save[k];
+    Object.assign(save, parsed);
+    save.accountCode = display;
+    persistSave();
+    // Ses ayarlarını yeniden uygula
+    audio.enabled = save.soundEnabled !== false;
+    audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1 }, save.volumes || {});
+    refreshSoundButtons();
+    refreshSoundSliders();
+    showToast(`✅ Geri yüklendi: ${who}`);
+    goToMenu();
+  } catch (e) {
+    showToast("❌ Veri bozuk");
+  }
+}
+
+function copyAccountCode() {
+  const code = save.accountCode || getOrCreateAccountCode();
+  // Modern API → fallback
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(
+      () => showToast(`📋 Kopyalandı: ${code}`),
+      () => fallbackCopy(code)
+    );
+  } else {
+    fallbackCopy(code);
+  }
+}
+
+function fallbackCopy(text) {
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    showToast(`📋 Kopyalandı: ${text}`);
+  } catch (_) {
+    showToast(`Kodun: ${text}`);
+  }
+}
+
+function toggleSound() {
+  save.soundEnabled = !audio.enabled;
+  audio.enabled = save.soundEnabled;
+  persistSave();
+  refreshSoundButtons();
+  // Açıldıysa kısa onay sesi
+  if (audio.enabled) {
+    audio.init();
+    audio.toast();
+  }
+}
+
+function refreshSoundButtons() {
+  const on = audio.enabled !== false;
+  const label = on ? "🔊 Ses Açık" : "🔇 Ses Kapalı";
+  document.querySelectorAll(".sound-toggle").forEach((el) => {
+    el.textContent = label;
+    el.classList.toggle("sound-off", !on);
+  });
+}
+
+let _soundReturnScreen = "screen-menu";
+function openSoundSettings() {
+  // Hangi ekrandan açıldığını hatırla; kapanınca oraya dönelim
+  const active = document.querySelector(".screen.active");
+  _soundReturnScreen = (active && active.id) || "screen-menu";
+  refreshSoundButtons();
+  refreshSoundSliders();
+  showScreen("screen-sound");
+}
+
+function closeSoundSettings() {
+  showScreen(_soundReturnScreen || "screen-menu");
+}
+
+function setVolume(cat, valStr) {
+  const v = Math.max(0, Math.min(1, parseFloat(valStr) / 100));
+  audio.volumes = Object.assign({}, audio.volumes, { [cat]: v });
+  save.volumes = Object.assign({}, save.volumes || {}, { [cat]: v });
+  persistSave();
+  // Slider yanındaki yüzde rakamını güncelle
+  const pct = Math.round(v * 100) + "%";
+  const lbl = document.getElementById("vol-label-" + cat);
+  if (lbl) lbl.textContent = pct;
+  // Kategoriye uygun anında önizleme sesi (throttled)
+  audio.init();
+  const now = performance.now();
+  if (!audio._lastPreview || now - audio._lastPreview > 200) {
+    audio._lastPreview = now;
+    if (cat === "fire") audio.fire();
+    else if (cat === "ghost") audio.bigGhost();
+    else audio.pickup();
+  }
+}
+
+function refreshSoundSliders() {
+  const cats = ["ghost", "fire", "sfx"];
+  for (const cat of cats) {
+    const v = audio.volumes && audio.volumes[cat] != null ? audio.volumes[cat] : 1;
+    const slider = document.getElementById("vol-slider-" + cat);
+    if (slider) slider.value = Math.round(v * 100);
+    const lbl = document.getElementById("vol-label-" + cat);
+    if (lbl) lbl.textContent = Math.round(v * 100) + "%";
+  }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+window.addEventListener("DOMContentLoaded", init);

@@ -1,0 +1,40 @@
+{
+  "name": "Hayalet Avcıları",
+  "short_name": "Hayalet Avcıları",
+  "description": "Hayaletleri yakala, boss'u yen, kostüm topla!",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#1a0b2e",
+  "theme_color": "#1a0b2e",
+  "lang": "tr",
+  "dir": "ltr",
+  "categories": ["games", "entertainment", "kids"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

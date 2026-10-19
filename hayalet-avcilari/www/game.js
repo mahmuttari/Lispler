@@ -265,8 +265,12 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.10.0";
+const APP_VERSION = "3.10.1";
 const UPDATE_NOTES = {
+  "3.10.1": [
+    t("🎬 Oyun bitti ekranında reklam izleyerek +10 💚 zümrüt kazanabilirsin."),
+    t("📺 Oyunu ücretsiz tutmak için oyun bitişlerinde arada bir reklam gösterilir; oyun sırasında reklam yok."),
+  ],
   "3.10.0": [
     t("🌍 Yeni diller: English, Español, 简体中文, हिन्दी, العربية — Menü › 🌐 Dil."),
     t("🐛 Hayaletler artık engellerin içinde doğmuyor; engele sıkışan hayalet kendiliğinden dışarı çıkıyor — bölüm takılmadan bitiyor."),
@@ -5130,6 +5134,7 @@ function endGame(won) {
   document.getElementById("final-zumrut").textContent = game.runZumrut;
   document.getElementById("screen-gameover").classList.add("active");
   if (won) audio.win(); else audio.lose();
+  reklamOyunBitti();
 }
 
 // ====== BAŞLAT ======
@@ -5148,6 +5153,8 @@ function init() {
     // Google Auth plugin'i arka planda hazırla (native)
     initGoogleAuth().catch(() => {});
   } catch (_) {}
+  // AdMob (yalnız Android uygulamasında; web'de eklenti yok)
+  reklamBaslat();
   drawGreeter();
   // Hoşgeldin ekranında ismi varsa göster
   if (save.playerName) {

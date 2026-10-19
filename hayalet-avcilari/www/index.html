@@ -73,6 +73,7 @@
       <button class="btn btn-small" onclick="openSoundSettings()">🎚 Ses</button>
       <button class="btn btn-small" onclick="openLanguage()">🌐 Dil</button>
       <button class="btn btn-small" onclick="resetData()">🔄 Sıfırla</button>
+      <button class="btn btn-small" id="btn-reklam-gizlilik" style="display:none" onclick="reklamGizlilikSecenekleri()">🔒 Gizlilik</button>
     </div>
   </div>
 </div>
@@ -261,6 +262,7 @@
       <p>💚 Kazanılan zümrüt: <b id="final-zumrut">0</b></p>
     </div>
     <button class="btn btn-big" onclick="startGame()">🔁 Tekrar Oyna</button>
+    <button class="btn btn-play" id="btn-reklam-odul" style="display:none" onclick="odulluIzle()">🎬 Reklam izle: +10 💚</button>
     <button class="btn" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
     <button class="btn" onclick="quitToMenu()">🏠 Menü</button>
   </div>
@@ -362,6 +364,7 @@
 <script src="i18n/hi.js"></script>
 <script src="i18n/ar.js"></script>
 <script>dilUygula();</script>
+<script src="reklam.js"></script>
 <script src="game.js"></script>
 <script>
   // Eski sürümlerde register edilmiş SW'leri temizle (Capacitor'da SW'ye gerek yok)

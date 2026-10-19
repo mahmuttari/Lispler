@@ -34,7 +34,7 @@
 🌍 6 IDIOMAS
 • Türkçe, English, Español, 简体中文, हिन्दी, العربية: el juego se abre en el idioma de tu teléfono y puedes cambiarlo desde el menú.
 
-Sin anuncios y sin compras con dinero real. Las monedas, los diamantes y las esmeraldas del juego solo se ganan jugando.
+Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeraldas del juego solo se ganan jugando. A veces se muestra un anuncio al terminar una partida; nunca mientras juegas.
 
 ## Sürüm notu
 

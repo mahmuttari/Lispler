@@ -34,7 +34,7 @@ In Ghost Hunters, ghosts are coming from everywhere! Pick your hunter, roam maze
 🌍 6 LANGUAGES
 • Türkçe, English, Español, 简体中文, हिन्दी, العربية — the game opens in your phone's language, and you can switch it from the menu.
 
-No ads, no real-money purchases. In-game coins, diamonds and emeralds are earned only by playing.
+Free to play, no real-money purchases. In-game coins, diamonds and emeralds are earned only by playing. An ad is shown now and then when a game ends; never during play.
 
 ## Sürüm notu
 

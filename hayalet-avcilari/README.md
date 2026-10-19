@@ -2,17 +2,33 @@
 
 Hayalet yakalama oyunu (Poyraz Workshop). Oyun HTML5 canvas'tır (`www/`), Android'e **Capacitor 8** ile paketlenir.
 Çevrimiçi oda, şampiyonlar listesi ve bulut yedeği Firebase (`hayalet-avcilari` projesi) üzerindedir; Google ile
-giriş `@codetrix-studio/capacitor-google-auth` eklentisiyle yapılır.
+giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community/admob` eklentisiyle yapılır.
 
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.10.0 (versionCode 36) |
+| Sürüm | 3.10.1 (versionCode 37) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
-| Play paketi | `dist/HayaletAvcilari-play.aab` (yükleme anahtarıyla imzalı) |
+| Reklam | AdMob, yalnız Android uygulaması — aşağıda "Reklamlar (AdMob)" |
+| Play paketi | 3.10.1'den itibaren CI (`hayalet-android.yml`) derler; `dist/HayaletAvcilari-play.aab` 3.10.0 (36) olarak kaldı |
 | Denemelik APK | `dist/HayaletAvcilari.apk` (aynı anahtarla imzalı; Play sürümü üstüne kurulmaz, önce kaldırılır) |
+
+## Reklamlar (AdMob)
+
+`www/reklam.js` (3.10.1). AdMob hesabı `pub-2417242373034448` (mahmuttari@gmail.com):
+
+| | |
+|---|---|
+| Uygulama kimliği | `ca-app-pub-2417242373034448~4177766696` (`AndroidManifest.xml` › `APPLICATION_ID`) |
+| Geçiş ("Oyun bitti gecis") | `ca-app-pub-2417242373034448/5331066264` — oyun bitti ekranında, her 2 oyunda bir, en az 3 dk arayla |
+| Ödüllü ("Zumrut odullu") | `ca-app-pub-2417242373034448/6612358344` — oyun bitti ekranında "🎬 Reklam izle: +10 💚", oyun başına bir kez |
+| AB onayı | AdMob › Gizlilik ve mesajlaşma › "Hayalet Avcıları AB tüzüğü mesajı" (en + tr + es); gerektiğinde menüde 🔒 Gizlilik |
+
+Oyun sırasında reklam yok. Web/PWA sürümünde eklenti olmadığı için reklam kodu hiçbir şey yapmaz. AdMob uygulaması
+Play'de yayınlanınca AdMob › Uygulamalar › "Mağaza ekle" ile Play girişine bağlanmalı; o zamana kadar "sınırlı reklam
+sunumu" geçerlidir.
 
 ## Kaynak
 

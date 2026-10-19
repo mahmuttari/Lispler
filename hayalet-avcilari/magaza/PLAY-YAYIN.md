@@ -19,7 +19,7 @@ Kullanıcı bilgisayardaki oturuma yalnız şunu yazar:
 | Uygulama adı | `Hayalet Avcıları` |
 | Paket adı | `com.poyrazworkshop.hayaletavcilari` |
 | Varsayılan dil | Türkçe – tr-TR |
-| Uygulama / oyun · fiyat | **Oyun** · **Ücretsiz** (reklam ve satın alma yok) |
+| Uygulama / oyun · fiyat | **Oyun** · **Ücretsiz** (AdMob reklamı var, satın alma yok; README › "Reklamlar (AdMob)") |
 | Kategori · etiketler | **Arcade** · Aksiyon, Gündelik (bulunanlar) |
 | İletişim e-postası | `mahmuttari@gmail.com` |
 | Web sitesi | `https://mahmuttari.github.io/Lispler/hayalet-avcilari/` |
@@ -28,7 +28,7 @@ Kullanıcı bilgisayardaki oturuma yalnız şunu yazar:
 | Metinler ve form cevapları | [`aciklamalar.md`](aciklamalar.md); çeviriler [`diller/`](diller/) (en-US, es-ES, es-419, zh-CN, hi-IN, ar) |
 | Görseller | [`play/`](play/): `simge-512.png`, `tanitim-gorseli-1024x500.png`, `telefon-1…5-*.png` (sırayla); her dil için `play/<dil>/` |
 | Sürüm notu | [`surum-notu.txt`](surum-notu.txt) |
-| İlk paket | `dist/HayaletAvcilari-play.aab` — sürüm **3.10.0 (36)** |
+| İlk paket | Console'a elle yüklenen taslak: `dist/HayaletAvcilari-play.aab` **3.10.0 (36)**. AdMob eklendiği için yayına giden paket CI'ın derlediği **3.10.1 (37)**: bulut oturumu `yukle` ile taslağı bununla değiştirir |
 | Yükleme anahtarı SHA-1 | `D0:88:A0:75:77:D1:89:B0:15:D4:A5:88:74:9A:1A:8C:C2:EE:56:99` |
 | Yükleme anahtarı SHA-256 | `13:8C:5B:39:EA:0B:63:AC:CA:04:81:68:A5:BF:D9:F7:06:12:5A:E9:32:B9:5F:F6:C4:E1:04:D3:49:E4:80:C7` |
 

@@ -11,16 +11,25 @@
 //                                                 TASLAK sürüm olarak koyar; "yayinla" sürümü incelemeye/yayına gönderir
 //   node play.mjs imza                          — Play uygulama imzalama anahtarının SHA-256 parmak izi
 //
+// PLAY_UYGULAMA ortam değişkeni hangi uygulamanın işleneceğini seçer: boş ya da "notdefteri" (varsayılan),
+// "hayalet" (Hayalet Avcıları: hayalet-avcilari/ klasörü, .github/workflows/play-hayalet.yml).
+//
 // "uygula" yoksa hiçbir şey yazılmaz: düzenleme (edit) açılır, plan yazılır, düzenleme silinir. Uygulamayı oluşturmak
 // ve ilk AAB'yi yüklemek Play Console'dan elle yapılır (taslak uygulamada API paketi bulamaz); API ondan sonra çalışır.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export const PAKET = 'com.poyrazworkshop.notdefteri';
 const KOK = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const MAGAZA = path.join(KOK, 'magaza');
-const AAB = path.join(KOK, 'dist', 'NotDefteri-play.aab');
+export const UYGULAMALAR = {
+  notdefteri: { paket: 'com.poyrazworkshop.notdefteri', magaza: 'magaza', aab: 'dist/NotDefteri-play.aab', gradle: 'android/app/build.gradle' },
+  hayalet: { paket: 'com.poyrazworkshop.hayaletavcilari', magaza: 'hayalet-avcilari/magaza', aab: 'dist/HayaletAvcilari-play.aab', gradle: 'hayalet-avcilari/android/app/build.gradle' },
+};
+const SECIM = UYGULAMALAR[process.env.PLAY_UYGULAMA || 'notdefteri'];
+if (!SECIM) throw new Error(`PLAY_UYGULAMA bilinmiyor: ${process.env.PLAY_UYGULAMA} (${Object.keys(UYGULAMALAR).join(', ')})`);
+export const PAKET = SECIM.paket;
+const MAGAZA = path.join(KOK, SECIM.magaza);
+const AAB = path.join(KOK, SECIM.aab);
 const API = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${PAKET}`;
 const UPAPI = `https://androidpublisher.googleapis.com/upload/androidpublisher/v3/applications/${PAKET}`;
 const ARG = process.argv.slice(3);
@@ -146,7 +155,7 @@ async function gorsel() {
 
 async function yukle() {
   if (!fs.existsSync(AAB)) throw new Error(`${AAB} yok`);
-  const { versionCode: vc, versionName } = surumBilgisi(fs.readFileSync(path.join(KOK, 'android', 'app', 'build.gradle'), 'utf8'));
+  const { versionCode: vc, versionName } = surumBilgisi(fs.readFileSync(path.join(KOK, SECIM.gradle), 'utf8'));
   const kanal = ARG.includes('dahili') ? 'internal' : 'production';
   const status = ARG.includes('yayinla') ? 'completed' : 'draft';
   const notlar = fs.readFileSync(path.join(MAGAZA, 'surum-notu.txt'), 'utf8').trim();

@@ -1,0 +1,9 @@
+# Hayalet Avcıları — Google Play komutları. Bu dosya değişip push edilince .github/workflows/play-hayalet.yml
+# çalışır (android/play.mjs, PLAY_UYGULAMA=hayalet). "uygula" olmayan komut yalnız plan yazar.
+# Önce magaza/PLAY-YAYIN.md'deki tarayıcı adımları (uygulamayı oluşturma, ilk AAB, hizmet hesabı izni) bitmeli.
+#   durum                       salt okuma
+#   magaza uygula               iletişim + tr-TR mağaza metni (magaza/aciklamalar.md)
+#   gorsel uygula               simge, öne çıkan görsel, ekran görüntüleri (magaza/play)
+#   yukle uygula                dist/HayaletAvcilari-play.aab → üretim kanalına TASLAK
+#   yukle yayinla uygula        sürümü incelemeye/yayına gönderir — yalnız kullanıcının açık onayıyla
+#   imza                        Play uygulama imzalama anahtarının SHA-256'sı

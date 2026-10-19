@@ -265,8 +265,13 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.9.0";
+const APP_VERSION = "3.9.1";
 const UPDATE_NOTES = {
+  "3.9.1": [
+    "🐛 Hayaletler artık engellerin içinde doğmuyor; engele sıkışan hayalet kendiliğinden dışarı çıkıyor — bölüm takılmadan bitiyor.",
+    "🌐 Çevrimiçi oyunda herkes aynı haritayı görüyor (engeller oyuncuya göre değişmiyor).",
+    "🗑 Hesap ekranına “Hesabı Sil” eklendi: Google bulut yedeğini ve hesabını siler.",
+  ],
   "3.9.0": [
     "🔐 Google ile Giriş eklendi — hesap kurtarma ve cihazlar arası senkron için.",
     "☁️ Bulut yedekleme: Google hesabınla otomatik yedek/geri yükleme.",
@@ -3649,6 +3654,44 @@ const game = {
   lastFrame: 0,
 };
 
+// Engellerin "oyuncuya yakın olmasın" merkezi. Çevrimiçi oyunda herkesin konumu farklı olduğundan dünya
+// merkezi kullanılır; yoksa host ile katılanın haritası ayrışır ve katılanın ekranında hayalet duvarın
+// içinde görünür, mermisi duvara çarpar. Oyun başında (startGame) önceki turun konumu da kullanılmaz.
+function layoutCenter() {
+  if (game.player && !online.mode) return { cx: game.player.x, cy: game.player.y };
+  return { cx: game.worldW / 2, cy: game.worldH / 2 };
+}
+
+// (x, y) engel içindeyse en yakın boş noktayı bulur: halka halka dışa doğru arar.
+// blocked(x, y, r) varsayılanı duvarlardır. Hiç yer yoksa dünya merkezine en yakın boş ızgara noktası.
+function freeSpot(x, y, r, blocked) {
+  blocked = blocked || collidesWalls;
+  const minX = 30 + r, maxX = game.worldW - 30 - r;
+  const minY = 30 + r, maxY = game.worldH - 30 - r;
+  const clampX = (v) => Math.max(minX, Math.min(maxX, v));
+  const clampY = (v) => Math.max(minY, Math.min(maxY, v));
+  x = clampX(x); y = clampY(y);
+  if (!blocked(x, y, r)) return { x, y };
+  for (let d = 16; d <= 480; d += 16) {
+    const steps = Math.max(8, Math.round((2 * Math.PI * d) / 24));
+    const a0 = Math.random() * Math.PI * 2;
+    for (let k = 0; k < steps; k++) {
+      const a = a0 + (k / steps) * Math.PI * 2;
+      const tx = clampX(x + Math.cos(a) * d), ty = clampY(y + Math.sin(a) * d);
+      if (!blocked(tx, ty, r)) return { x: tx, y: ty };
+    }
+  }
+  let best = { x: game.worldW / 2, y: game.worldH / 2 }, bestD = Infinity;
+  for (let gx = minX; gx <= maxX; gx += 20) {
+    for (let gy = minY; gy <= maxY; gy += 20) {
+      if (blocked(gx, gy, r)) continue;
+      const dd = Math.hypot(gx - x, gy - y);
+      if (dd < bestD) { bestD = dd; best = { x: gx, y: gy }; }
+    }
+  }
+  return best;
+}
+
 function buildWalls() {
   const W = game.worldW, H = game.worldH;
   game.walls = [];
@@ -3662,8 +3705,7 @@ function buildWalls() {
   const seed = 7 + game.level * 13;
   function rand(n) { return ((Math.sin((seed + n) * 99.123) + 1) / 2); }
   const blockCount = Math.min(10, 6 + Math.floor((game.level - 1) / 2));
-  const cx = game.player ? game.player.x : W / 2;
-  const cy = game.player ? game.player.y : H / 2;
+  const { cx, cy } = layoutCenter();
   for (let i = 0; i < blockCount; i++) {
     const w = 80 + rand(i) * 100;
     const h = 80 + rand(i + 50) * 100;
@@ -3681,8 +3723,7 @@ function buildWaters() {
   const seed = 23 + game.level * 17;
   function rand(n) { return ((Math.sin((seed + n) * 77.456) + 1) / 2); }
   const count = 4;
-  const cx = game.player ? game.player.x : W / 2;
-  const cy = game.player ? game.player.y : H / 2;
+  const { cx, cy } = layoutCenter();
   let placed = 0;
   for (let i = 0; i < 25 && placed < count; i++) {
     const w = 110 + rand(i) * 90;
@@ -3722,8 +3763,7 @@ function buildHazards() {
   const lavaCount  = Math.min(2, Math.floor((lvl - 2) / 3)); // L1-4:0, L5-7:1, L8+:2
   const seed = 41 + lvl * 29;
   function rand(n) { return ((Math.sin((seed + n) * 53.317) + 1) / 2); }
-  const cx = game.player ? game.player.x : W / 2;
-  const cy = game.player ? game.player.y : H / 2;
+  const { cx, cy } = layoutCenter();
 
   function place(arr, w, h, gap) {
     for (let i = 0; i < 30; i++) {
@@ -3789,6 +3829,7 @@ function startGame() {
   game.runZumrut = 0;
   game.lastFire = 0;
 
+  game.player = null; // önceki turun konumu yeni haritayı etkilemesin
   buildWalls();
   buildWaters();
   buildHazards();
@@ -4157,7 +4198,11 @@ function update(dt, now) {
     if (!collidesWalls(nx, g.y, g.r)) { g.x = nx; movedX = true; }
     if (!collidesWalls(g.x, ny, g.r)) { g.y = ny; movedY = true; }
 
-    if (!movedX && !movedY) {
+    if (!movedX && !movedY && collidesWalls(g.x, g.y, g.r)) {
+      // Duvarın içinde kalmış: hareket edemez, mermi duvara çarpar → en yakın boş yere çıkar
+      ({ x: g.x, y: g.y } = freeSpot(g.x, g.y, g.r));
+      g.detourTime = 0;
+    } else if (!movedX && !movedY) {
       // İki eksen de tıkalı → 90° döndür ve detour ata
       if (!g.detourTime || g.detourTime <= 0) {
         const side = Math.random() < 0.5 ? 1 : -1;
@@ -4267,8 +4312,9 @@ function update(dt, now) {
           // Itme efekti
           const ax = g.x - game.player.x, ay = g.y - game.player.y;
           const al = Math.hypot(ax, ay) || 1;
-          g.x += (ax / al) * 25;
-          g.y += (ay / al) * 25;
+          const pushX = g.x + (ax / al) * 25, pushY = g.y + (ay / al) * 25;
+          if (!collidesWalls(pushX, g.y, g.r)) g.x = pushX;
+          if (!collidesWalls(g.x, pushY, g.r)) g.y = pushY;
         }
       }
       // Tornado görseli
@@ -4529,6 +4575,7 @@ function spawnBoss() {
     if (collidesWaters(tx, ty, 60)) continue;
     x = tx; y = ty; placed = true; break;
   }
+  if (!placed) ({ x, y } = freeSpot(x, y, 60, (px, py, pr) => collidesWalls(px, py, pr) || collidesWaters(px, py, pr)));
   const hp = 8 + game.level * 4;
   const fireRate = Math.max(1500, 2600 - (game.level - 1) * 80);
   game.ghosts.push({
@@ -4558,12 +4605,7 @@ function spawnBossMinion(boss) {
   x = Math.max(40, Math.min(game.worldW - 40, x));
   y = Math.max(40, Math.min(game.worldH - 40, y));
   // Duvar/su içinde kalmasın
-  for (let tries = 0; tries < 8 && (collidesWalls(x, y, 18) || collidesWaters(x, y, 18)); tries++) {
-    x += (Math.random() - 0.5) * 80;
-    y += (Math.random() - 0.5) * 80;
-    x = Math.max(40, Math.min(game.worldW - 40, x));
-    y = Math.max(40, Math.min(game.worldH - 40, y));
-  }
+  ({ x, y } = freeSpot(x, y, 18, (px, py, pr) => collidesWalls(px, py, pr) || collidesWaters(px, py, pr)));
   game.ghosts.push({
     x, y, r: 14,
     speed: 90 + game.level * 5,
@@ -4583,11 +4625,8 @@ function spawnGhost() {
   else if (side === 2) { x = margin + Math.random() * (game.worldW - margin * 2); y = margin; }
   else { x = margin + Math.random() * (game.worldW - margin * 2); y = game.worldH - margin; }
 
-  // Duvarlardan uzaklaştır
-  for (let tries = 0; tries < 10 && collidesWalls(x, y, 24); tries++) {
-    x += (Math.random() - 0.5) * 100;
-    y += (Math.random() - 0.5) * 100;
-  }
+  // Duvarın içinde doğmasın: en yakın boş noktaya al
+  ({ x, y } = freeSpot(x, y, 24));
 
   const tier = 1 + Math.floor(game.level / 3);
   const speed = 50 + game.level * 6 + Math.random() * 20;
@@ -5198,6 +5237,26 @@ async function signOutGoogle() {
     showToast("✓ Çıkış yapıldı");
     refreshAccountScreen();
   } catch (e) { console.error("signOutGoogle", e); }
+}
+
+// Hesap silme (Google Play kuralı): Google bulut yedeği, kodlu yedek ve Firebase hesabı silinir.
+async function deleteAccountGoogle() {
+  const u = currentFirebaseUser();
+  if (!u) { showToast("Önce Google ile giriş yap"); return; }
+  if (!confirm("Google hesabına bağlı bulut yedeğin ve oyundaki hesabın kalıcı olarak silinecek.\nBu cihazdaki ilerleme kalır. Devam edilsin mi?")) return;
+  await rtdb.remove(`accounts_google/${u.uid}`);
+  if (save.accountCode) {
+    await rtdb.remove(`accounts/${save.accountCode.replace("-", "_")}`);
+    save.accountCode = "";
+    persistSave();
+  }
+  let tamam = true;
+  try { await u.delete(); } catch (e) { tamam = false; console.error("deleteAccountGoogle", e); }
+  const ga = googleAuthPlugin();
+  if (ga) { try { await ga.signOut(); } catch (_) {} }
+  try { await firebase.auth().signOut(); } catch (_) {}
+  showToast(tamam ? "🗑 Hesabın silindi" : "🗑 Yedeğin silindi; hesabı silmek için yeniden giriş yapıp tekrar dene");
+  refreshAccountScreen();
 }
 
 function currentFirebaseUser() {

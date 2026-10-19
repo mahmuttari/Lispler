@@ -75,7 +75,7 @@ Console'dan "yükleme anahtarını sıfırla" istenir (Play App Signing açık o
 ### GitHub üzerinden (NetcadDevelop/DWG Office Zip düzeni)
 
 `.github/workflows/hayalet-android.yml` her değişiklikte derler. GitHub › Settings › Secrets and variables › Actions'ta
-şu iki secret varsa yükleme anahtarıyla **imzalı AAB** derlenir ve `HayaletAvcilari-aab` artifact'ı (surum.txt ile) olur:
+şu iki secret varsa (19 Ekim 2026'da eklendi) yükleme anahtarıyla **imzalı AAB** derlenir ve `HayaletAvcilari-aab` artifact'ı (surum.txt ile) olur:
 
 | Secret | Değer |
 |---|---|

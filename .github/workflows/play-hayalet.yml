@@ -2,7 +2,9 @@
 # komutlar android/play-istek.txt'ye yazılır (her satır bir komut, sırayla; biri hata verirse sonrakiler çalışmaz).
 # Kimlik anahtarsız: GitHub → Workload Identity → android/play-kimlik.env'deki hizmet hesabının kısa ömürlü belirteci.
 # Hizmet hesabı Play Console → Kullanıcılar ve izinler'de uygulamaya davet edilmiş olmalı (magaza/PLAY-YAYIN.md).
-# "yukle" komutu depodaki dist/HayaletAvcilari-play.aab'yi kullanır (versionCode hayalet-avcilari/android/app/build.gradle'dan).
+# "yukle" komutu AAB'yi aynı daldaki son başarılı hayalet-android.yml koşusunun "HayaletAvcilari-aab" artifact'ından alır
+# (surum.txt'teki versionCode hayalet-avcilari/android/app/build.gradle ile eşleşmeli; NetcadDevelop/DWG düzeni). Böyle bir
+# artifact yoksa (yükleme anahtarı secret'ı henüz eklenmemişse) depodaki dist/HayaletAvcilari-play.aab kullanılır.
 name: Google Play (Hayalet Avcıları)
 
 on:
@@ -16,6 +18,7 @@ concurrency:
 
 permissions:
   contents: read
+  actions: read     # derleme artifact'ını indirmek için
   id-token: write
 
 jobs:
@@ -41,6 +44,22 @@ jobs:
           else
             echo "tamam=true" >> "$GITHUB_OUTPUT"
           fi
+      - name: AAB'yi derleme artifact'ından al (yalnız "yukle" komutunda)
+        if: steps.hazir.outputs.tamam == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          grep -qE '^[[:space:]]*yukle' "$RUNNER_TEMP/komutlar" || { echo "yükleme komutu yok"; exit 0; }
+          VC=$(sed -nE 's/^ *versionCode +([0-9]+).*/\1/p' hayalet-avcilari/android/app/build.gradle | head -1)
+          for RUN in $(gh run list -R "$GITHUB_REPOSITORY" -w hayalet-android.yml -b "$GITHUB_REF_NAME" -s success -L 15 --json databaseId -q '.[].databaseId'); do
+            rm -rf "$RUNNER_TEMP/aab"
+            if gh run download "$RUN" -R "$GITHUB_REPOSITORY" -n HayaletAvcilari-aab -D "$RUNNER_TEMP/aab" 2>/dev/null \
+               && grep -qx "versionCode=$VC" "$RUNNER_TEMP/aab/surum.txt" 2>/dev/null; then
+              cp "$RUNNER_TEMP/aab/HayaletAvcilari.aab" dist/HayaletAvcilari-play.aab
+              echo "AAB: derleme koşusu $RUN"; cat "$RUNNER_TEMP/aab/surum.txt"; exit 0
+            fi
+          done
+          echo "::notice::versionCode $VC için imzalı derleme artifact'ı yok; depodaki dist/HayaletAvcilari-play.aab kullanılır"
       - id: auth
         if: steps.hazir.outputs.tamam == 'true'
         uses: google-github-actions/auth@v2

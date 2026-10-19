@@ -1,5 +1,8 @@
-# Hayalet Avcıları: Android projesinin derlendiğini denetler (imzasız APK, Artifacts bölümünden indirilir).
-# Play'e yüklenecek imzalı AAB yerelde yükleme anahtarıyla derlenir (hayalet-avcilari/README.md).
+# Hayalet Avcıları: Android derlemesi (NetcadDevelop/DWG Office Zip düzeni).
+# - Her değişiklikte APK derlenir (Artifacts).
+# - HAYALET_KEYSTORE_BASE64 ve HAYALET_KEYSTORE_PASSWORD secret'ları varsa yükleme anahtarıyla İMZALI APK + AAB derlenir;
+#   AAB "HayaletAvcilari-aab" artifact'ı olarak surum.txt ile kalır. play-hayalet.yml'deki "yukle" komutu AAB'yi buradan
+#   alır (versionCode build.gradle ile eşleşen son başarılı koşu). Anahtar depoda durmaz, yalnız derleme sırasında diske yazılır.
 name: Android (Hayalet Avcıları)
 
 on:
@@ -30,10 +33,51 @@ jobs:
       # GitHub'ın Ubuntu sunucularında Android SDK hazır kurulu gelir (ANDROID_HOME)
       - run: npm ci
       - run: npx cap sync android
-      - name: APK derle
+      - name: Yükleme anahtarını secret'tan yaz
+        id: imza
+        env:
+          KS_B64: ${{ secrets.HAYALET_KEYSTORE_BASE64 }}
+          KS_PAROLA: ${{ secrets.HAYALET_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KS_B64" ] || [ -z "$KS_PAROLA" ]; then
+            echo "::warning::HAYALET_KEYSTORE_BASE64 / HAYALET_KEYSTORE_PASSWORD secret'ı yok — derleme İMZASIZ, Play'e yüklenemez"
+            echo "imzali=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          printf '%s' "$KS_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=upload\nkeyPassword=%s\n' "$RUNNER_TEMP/upload.jks" "$KS_PAROLA" "$KS_PAROLA" > android/keystore.properties
+          echo "imzali=true" >> "$GITHUB_OUTPUT"
+      - name: Derle
         working-directory: hayalet-avcilari/android
-        run: ./gradlew assembleRelease --no-daemon
+        run: |
+          if [ "${{ steps.imza.outputs.imzali }}" = "true" ]; then
+            ./gradlew assembleRelease bundleRelease --no-daemon --console=plain
+          else
+            ./gradlew assembleRelease --no-daemon --console=plain
+          fi
+          rm -f keystore.properties "$RUNNER_TEMP/upload.jks"
+      - name: Çıktılar ve surum.txt
+        working-directory: hayalet-avcilari/android
+        run: |
+          mkdir -p "$RUNNER_TEMP/cikti"
+          VC=$(sed -nE 's/^ *versionCode +([0-9]+).*/\1/p' app/build.gradle | head -1)
+          VN=$(sed -nE "s/^ *versionName +'([^']+)'.*/\1/p" app/build.gradle | head -1)
+          printf 'versionCode=%s\nversionName=%s\ncommit=%s\n' "$VC" "$VN" "$GITHUB_SHA" > "$RUNNER_TEMP/cikti/surum.txt"
+          cp app/build/outputs/apk/release/*.apk "$RUNNER_TEMP/cikti/"
+          if [ -f app/build/outputs/bundle/release/app-release.aab ]; then
+            cp app/build/outputs/bundle/release/app-release.aab "$RUNNER_TEMP/cikti/HayaletAvcilari.aab"
+            keytool -printcert -jarfile "$RUNNER_TEMP/cikti/HayaletAvcilari.aab" | grep -E "Owner|SHA256:" || true
+          fi
+          ls -la "$RUNNER_TEMP/cikti"; cat "$RUNNER_TEMP/cikti/surum.txt"
       - uses: actions/upload-artifact@v4
         with:
-          name: HayaletAvcilari-imzasiz-apk
-          path: hayalet-avcilari/android/app/build/outputs/apk/release/*.apk
+          name: HayaletAvcilari-apk
+          path: ${{ runner.temp }}/cikti/*.apk
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: steps.imza.outputs.imzali == 'true'
+        with:
+          name: HayaletAvcilari-aab
+          path: |
+            ${{ runner.temp }}/cikti/HayaletAvcilari.aab
+            ${{ runner.temp }}/cikti/surum.txt
+          retention-days: 30

@@ -8,5 +8,4 @@
 #   yukle yayinla uygula        sürümü incelemeye/yayına gönderir — yalnız kullanıcının açık onayıyla
 #   imza                        Play uygulama imzalama anahtarının SHA-256'sı
 
-# istek 2026-10-19T19:54:16Z: salt okuma durum denetimi (uygulama Play Console'da var mı, hizmet hesabının erişimi var mı)
-durum
+# 2026-10-19 durum: Google kimliği (WIF) çalışıyor; Play "Package not found" → uygulama Play Console'da henüz oluşturulmadı.

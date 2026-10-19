@@ -96,8 +96,15 @@ Kullanıcıya şunu yazdır: "Hayalet Avcıları Play kurulumu tamam." Bulut otu
 ile sırasıyla `durum` → `magaza uygula` → `gorsel uygula` çalıştırır (Türkçe + 6 çeviri dili: metin ve görseller); eksik kalan bir şey yoksa incelemeye gönderme
 kararını kullanıcıya sorar (`yukle yayinla uygula` ya da Console'da "İncelemeye gönder").
 
-## Sonraki sürümler
+## Neden ilk adımlar tarayıcıda?
+
+Google Play Developer API yeni uygulama **oluşturamaz** ve Console'da hiç paket yüklenmemiş uygulamayı **görmez**
+("Package not found"; 19 Ekim 2026'da GitHub'dan `durum` ile doğrulandı: Google kimliği çalışıyor, uygulama yok).
+Bu yüzden 1-5. adımlar bir kez Console'da yapılır; sonrası (mağaza metni, görseller, yeni sürümler, yayına gönderme)
+tamamen GitHub üzerinden yürür. Bu, NetcadDevelop/DWG Office Zip'te de aynıydı.
+
+## Sonraki sürümler (yalnız GitHub)
 
 `www/game.js`'te `APP_VERSION` ve `UPDATE_NOTES`, `android/app/build.gradle`'da `versionCode` (+1) ve `versionName` →
-`npx cap sync android` → `cd android && ./gradlew bundleRelease` (yükleme anahtarıyla, `README.md`) →
-`dist/HayaletAvcilari-play.aab` → `play-istek.txt`'ye `yukle uygula`, onayla `yukle yayinla uygula`.
+push → `hayalet-android.yml` imzalı AAB'yi derler (secret'lar: `README.md` › "GitHub üzerinden") →
+`play-istek.txt`'ye `yukle uygula`, onayla `yukle yayinla uygula`. AAB elle hiçbir yere taşınmaz.

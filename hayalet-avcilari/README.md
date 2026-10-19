@@ -72,5 +72,16 @@ cd android && echo "sdk.dir=$ANDROID_HOME" > local.properties
 `keyPassword`). Bu dosya ve `.jks` depoya **alınmaz**. Yükleme anahtarı kullanıcıya ayrıca verildi; kaybolursa Play
 Console'dan "yükleme anahtarını sıfırla" istenir (Play App Signing açık olduğu için uygulama kaybolmaz).
 
-GitHub Actions (`.github/workflows/hayalet-android.yml`) her değişiklikte imzasız APK derleyip projenin derlendiğini
-denetler.
+### GitHub üzerinden (NetcadDevelop/DWG Office Zip düzeni)
+
+`.github/workflows/hayalet-android.yml` her değişiklikte derler. GitHub › Settings › Secrets and variables › Actions'ta
+şu iki secret varsa yükleme anahtarıyla **imzalı AAB** derlenir ve `HayaletAvcilari-aab` artifact'ı (surum.txt ile) olur:
+
+| Secret | Değer |
+|---|---|
+| `HAYALET_KEYSTORE_BASE64` | `hayaletavcilari-upload.jks` dosyasının base64'ü (Mac: `base64 -i hayaletavcilari-upload.jks \| pbcopy`) |
+| `HAYALET_KEYSTORE_PASSWORD` | yükleme anahtarının parolası (anahtarla birlikte verilen OKU-BENI.txt'te) |
+
+`play-istek.txt`'ye `yukle uygula` yazılıp gönderilince `play-hayalet.yml` AAB'yi o artifact'tan alır (versionCode
+eşleşmeli) ve Play'e yükler; artifact yoksa depodaki `dist/HayaletAvcilari-play.aab` kullanılır. Yani yeni sürüm için:
+`versionCode` +1 → push → derleme biter → `play-istek.txt`'ye `yukle uygula` → onayla `yukle yayinla uygula`.

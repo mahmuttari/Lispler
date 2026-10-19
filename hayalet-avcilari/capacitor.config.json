@@ -1,0 +1,19 @@
+{
+	"appId": "com.poyrazworkshop.hayaletavcilari",
+	"appName": "Hayalet Avcıları",
+	"webDir": "www",
+	"android": {
+		"backgroundColor": "#1a0b2e",
+		"allowMixedContent": false
+	},
+	"plugins": {
+		"GoogleAuth": {
+			"scopes": [
+				"profile",
+				"email"
+			],
+			"serverClientId": "247289107945-6lbcnt8bvn0u1cqi4dgod63coo0g9218.apps.googleusercontent.com",
+			"forceCodeForRefreshToken": true
+		}
+	}
+}

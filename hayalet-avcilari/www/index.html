@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a0b2e">
+<title>Hayalet Avcıları</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ========== AÇILIŞ EKRANI ========== -->
+<div id="screen-welcome" class="screen active">
+  <div class="welcome-bg"></div>
+  <div class="welcome-content">
+    <h1 class="title" data-i18n-html>👻 HAYALET<br>AVCILARI 👻</h1>
+    <div id="kinkin-greeter" class="greeter"></div>
+    <div class="speech-bubble">
+      <p id="welcome-text" data-i18n-html>Merhaba! Ben <b>Kinkin</b>! Hadi birlikte hayalet avına çıkalım!</p>
+    </div>
+    <button class="btn btn-big" onclick="welcomeContinue()">BAŞLA ▶</button>
+    <button class="btn btn-small" onclick="openLanguage()">🌐 Dil</button>
+  </div>
+</div>
+
+<!-- ========== HESAP / İSİM EKRANI ========== -->
+<div id="screen-name" class="screen">
+  <div class="welcome-bg"></div>
+  <div class="welcome-content">
+    <h1 class="title-small">👤 HESAP</h1>
+    <div class="speech-bubble">
+      <p id="name-prompt">Avcımızın adı ne olsun?</p>
+    </div>
+    <input id="name-input" class="name-input" type="text" maxlength="14" placeholder="Adını yaz..." autocomplete="off">
+    <p id="name-cost-hint" class="name-cost-hint" style="display:none;" data-i18n-html>💚 İsim değişikliği <b>50 zümrüt</b> tutar (sende <b id="name-zumrut">0</b>).</p>
+    <button class="btn btn-big btn-play" onclick="submitName()">TAMAM ▶</button>
+    <button class="btn btn-small" onclick="goToMenu()">⬅ Geri</button>
+  </div>
+</div>
+
+<!-- ========== ANA MENÜ ========== -->
+<div id="screen-menu" class="screen">
+  <div class="menu-bg"></div>
+  <div class="menu-content">
+    <h1 class="title-small">👻 Hayalet Avcıları 👻</h1>
+    <div class="player-bar">
+      <span class="player-tag">👤 <span id="menu-player">Avcı</span></span>
+      <button class="btn-tiny" onclick="openName(true)">Değiştir</button>
+    </div>
+    <div class="resources">
+      <div class="resource">💰 <span id="menu-para">0</span></div>
+      <div class="resource">💎 <span id="menu-elmas">0</span></div>
+      <div class="resource">💚 <span id="menu-zumrut">0</span></div>
+    </div>
+    <div class="character-preview" id="character-preview"></div>
+    <p class="character-name" id="character-name">Kinkin</p>
+    <p class="character-stats" id="character-stats"></p>
+    <button class="btn btn-big btn-play" onclick="startGame()">▶ OYNA</button>
+    <div class="menu-buttons">
+      <button class="btn" onclick="openCharacters()">👥 Karakterler</button>
+      <button class="btn" onclick="openShop()">🛒 Mağaza</button>
+      <button class="btn" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
+      <button class="btn btn-online" onclick="openOnline()">🌐 Online Oyna</button>
+    </div>
+    <div class="menu-footer-row">
+      <button class="btn btn-small" onclick="openAccount()">👤 Hesap</button>
+      <button class="btn btn-small" onclick="openSoundSettings()">🎚 Ses</button>
+      <button class="btn btn-small" onclick="openLanguage()">🌐 Dil</button>
+      <button class="btn btn-small" onclick="resetData()">🔄 Sıfırla</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ŞAMPİYON LİSTESİ ========== -->
+<div id="screen-leaderboard" class="screen">
+  <div class="menu-bg"></div>
+  <div class="menu-content">
+    <h2>🏆 ŞAMPİYONLAR</h2>
+    <p class="leaderboard-sub">En iyi 10 hayalet avcısı</p>
+    <div class="lb-tabs">
+      <button class="lb-tab active" data-src="online" onclick="setLeaderboardSource('online')">🌐 Online</button>
+      <button class="lb-tab" data-src="local" onclick="setLeaderboardSource('local')">📱 Bu Cihaz</button>
+      <button class="btn-tiny" onclick="refreshLeaderboard()">↻</button>
+    </div>
+    <div id="leaderboard-list" class="leaderboard-list"></div>
+    <button class="btn btn-small" onclick="clearLeaderboard()">🗑 Yerel Listeyi Temizle</button>
+    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+  </div>
+</div>
+
+<!-- ========== KARAKTER SEÇİMİ ========== -->
+<div id="screen-characters" class="screen">
+  <div class="menu-bg"></div>
+  <div class="menu-content">
+    <h2>👥 KARAKTERLER</h2>
+    <div class="resources">
+      <div class="resource">💚 <span id="char-zumrut">0</span></div>
+    </div>
+    <div id="character-list" class="character-list"></div>
+    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+  </div>
+</div>
+
+<!-- ========== MAĞAZA ========== -->
+<div id="screen-shop" class="screen">
+  <div class="menu-bg"></div>
+  <div class="menu-content">
+    <h2>🛒 MAĞAZA</h2>
+    <div class="resources">
+      <div class="resource">💰 <span id="shop-para">0</span></div>
+      <div class="resource">💎 <span id="shop-elmas">0</span></div>
+    </div>
+    <div class="shop-tabs">
+      <button class="tab-btn active" onclick="showShopTab('upgrades')">⚡ Güçler</button>
+      <button class="tab-btn" onclick="showShopTab('costumes')">👗 Kostümler</button>
+      <button class="tab-btn" onclick="showShopTab('ammo')">🎯 Cephane</button>
+    </div>
+    <div id="shop-content" class="shop-content"></div>
+    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+  </div>
+</div>
+
+<!-- ========== OYUN EKRANI ========== -->
+<div id="screen-game" class="screen">
+  <canvas id="game-canvas"></canvas>
+
+  <div class="hud">
+    <div class="hud-left">
+      <div class="lives" id="lives">❤️❤️❤️</div>
+      <div class="level">Bölüm <span id="level-num">1</span></div>
+      <div class="boss-status" id="boss-status">⏳ Boss: 60s</div>
+    </div>
+    <div class="hud-right">
+      <div class="score">👻 <span id="ghost-count">0</span></div>
+      <div class="coin">💰 <span id="run-para">0</span></div>
+    </div>
+  </div>
+
+  <button class="pause-btn" onclick="pauseGame()">⏸</button>
+
+  <!-- Aktif güç barı -->
+  <div id="power-bar" class="power-bar"></div>
+
+  <!-- Cephane slotları -->
+  <div id="weapon-bar" class="weapon-bar"></div>
+
+  <!-- Sanal joystick -->
+  <div id="joystick" class="joystick">
+    <div id="joystick-knob" class="joystick-knob"></div>
+  </div>
+</div>
+
+<!-- ========== DURAKLAT ========== -->
+<div id="screen-pause" class="screen modal">
+  <div class="modal-content">
+    <h2>⏸ Duraklatıldı</h2>
+    <button class="btn btn-big" onclick="resumeGame()">▶ Devam</button>
+    <button class="btn" onclick="openSoundSettings()">🎚 Ses Ayarları</button>
+    <button class="btn" onclick="quitToMenu()">🏠 Menüye Dön</button>
+  </div>
+</div>
+
+<!-- ========== HESAP YEDEKLEME ========== -->
+<div id="screen-account" class="screen">
+  <div class="menu-bg"></div>
+  <div class="menu-content">
+    <h2>👤 HESAP</h2>
+    <p class="online-sub">Kariyer ilerlemeni başka cihaza taşı</p>
+
+    <div class="account-card">
+      <div class="account-row"><span class="account-label">Avcı:</span> <b id="account-player">—</b></div>
+      <div class="account-row" id="account-stats">—</div>
+    </div>
+
+    <!-- Google ile giriş bölümü -->
+    <div class="account-card google-card">
+      <div class="account-label" style="font-size:14px;margin-bottom:8px;color:#fff;">🔐 Google ile Giriş <span style="opacity:0.6">(önerilen)</span></div>
+      <div id="google-signed-out">
+        <p class="online-sub" style="font-size:13px;margin:6px 0 10px">Google hesabınla giriş yap, ilerlemeyi otomatik buluta yedekle.</p>
+        <button class="btn btn-google" onclick="signInWithGoogle()">🔐 Google ile Giriş Yap</button>
+      </div>
+      <div id="google-signed-in" style="display:none;">
+        <div class="account-row"><b id="google-display-name">—</b></div>
+        <div class="account-row" style="opacity:0.75;font-size:12px;"><span id="google-email">—</span></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+          <button class="btn btn-small btn-play" onclick="backupAccountGoogle()">⬆ Yedekle</button>
+          <button class="btn btn-small" onclick="restoreAccountGoogle()">⬇ Yedeği Yükle</button>
+          <button class="btn btn-small" onclick="signOutGoogle()">🚪 Çıkış</button>
+          <button class="btn btn-small" onclick="deleteAccountGoogle()">🗑 Hesabı Sil</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manuel kod yedek bölümü -->
+    <div class="account-card">
+      <div class="account-label" style="font-size:14px;margin-bottom:8px;color:#fff;">🔑 Manuel Kod (Google hesabın yoksa)</div>
+      <div class="account-row"><span class="account-label">Kodun:</span> <b id="account-code" class="account-code">—</b></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+        <button class="btn btn-small" onclick="copyAccountCode()">📋 Kopyala</button>
+        <button class="btn btn-small btn-play" onclick="backupAccount()">⬆ Yedekle</button>
+      </div>
+      <p class="online-sub" style="margin-top:12px;font-size:13px">Başka cihazda kod ile geri yükle:</p>
+      <input id="restore-code-input" class="name-input" type="text" maxlength="8" placeholder="ABC-D23" autocomplete="off"
+             style="font-size:20px;letter-spacing:2px;text-transform:uppercase;">
+      <button class="btn" onclick="restoreAccount()">⬇ Kodla Geri Yükle</button>
+    </div>
+
+    <p class="online-sub" style="font-size:11px;opacity:0.7">Manuel kodu kaybedersen ilerleme kurtarılamaz. Güvenli yere not al.</p>
+    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+  </div>
+</div>
+
+<!-- ========== SES AYARLARI ========== -->
+<div id="screen-sound" class="screen modal">
+  <div class="modal-content">
+    <h2>🎚 Ses Ayarları</h2>
+    <button class="btn sound-toggle" onclick="toggleSound()">🔊 Ses Açık</button>
+    <div class="vol-row">
+      <div class="vol-head">
+        <span class="vol-name">👻 Hayalet sesleri</span>
+        <span class="vol-pct" id="vol-label-ghost">100%</span>
+      </div>
+      <input type="range" id="vol-slider-ghost" min="0" max="100" value="100" class="vol-slider"
+             oninput="setVolume('ghost', this.value)">
+    </div>
+    <div class="vol-row">
+      <div class="vol-head">
+        <span class="vol-name">🔫 Atış sesi</span>
+        <span class="vol-pct" id="vol-label-fire">100%</span>
+      </div>
+      <input type="range" id="vol-slider-fire" min="0" max="100" value="100" class="vol-slider"
+             oninput="setVolume('fire', this.value)">
+    </div>
+    <div class="vol-row">
+      <div class="vol-head">
+        <span class="vol-name">✨ Diğer efektler</span>
+        <span class="vol-pct" id="vol-label-sfx">100%</span>
+      </div>
+      <input type="range" id="vol-slider-sfx" min="0" max="100" value="100" class="vol-slider"
+             oninput="setVolume('sfx', this.value)">
+    </div>
+    <button class="btn btn-big" onclick="closeSoundSettings()">✓ TAMAM</button>
+  </div>
+</div>
+
+<!-- ========== OYUN BİTTİ ========== -->
+<div id="screen-gameover" class="screen modal">
+  <div class="modal-content">
+    <h2 id="gameover-title">👻 Oyun Bitti</h2>
+    <p id="gameover-rank" class="gameover-rank"></p>
+    <div class="rewards">
+      <p>👻 Yakaladığın hayalet: <b id="final-ghosts">0</b></p>
+      <p>💰 Kazanılan para: <b id="final-para">0</b></p>
+      <p>💎 Kazanılan elmas: <b id="final-elmas">0</b></p>
+      <p>💚 Kazanılan zümrüt: <b id="final-zumrut">0</b></p>
+    </div>
+    <button class="btn btn-big" onclick="startGame()">🔁 Tekrar Oyna</button>
+    <button class="btn" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
+    <button class="btn" onclick="quitToMenu()">🏠 Menü</button>
+  </div>
+</div>
+
+<!-- ========== ONLINE ANA EKRAN ========== -->
+<div id="screen-online" class="screen">
+  <div class="menu-bg"></div>
+  <div class="menu-content">
+    <h2>🌐 ONLINE OYNA</h2>
+    <p class="online-sub">Diğer avcılarla birlikte oyna</p>
+    <button class="btn btn-big btn-play" onclick="openRoomList()">📋 Oda Listesi</button>
+    <button class="btn btn-big" onclick="openCreateRoom()">➕ Oda Kur</button>
+    <p class="online-status" id="online-status"></p>
+    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+  </div>
+</div>
+
+<!-- ========== ODA LİSTESİ ========== -->
+<div id="screen-room-list" class="screen">
+  <div class="menu-bg"></div>
+  <div class="menu-content">
+    <h2>📋 ODALAR</h2>
+    <div class="lb-tabs">
+      <button class="btn-tiny" onclick="refreshRoomList()">↻ Yenile</button>
+    </div>
+    <div id="room-list" class="room-list"></div>
+    <button class="btn" onclick="leaveOnlineToOnline()">⬅ Geri</button>
+  </div>
+</div>
+
+<!-- ========== ODA KUR ========== -->
+<div id="screen-create-room" class="screen">
+  <div class="menu-bg"></div>
+  <div class="menu-content">
+    <h2>➕ ODA KUR</h2>
+    <p class="online-sub">Oda adı (kısa, eğlenceli)</p>
+    <input id="room-name-input" class="name-input" type="text" maxlength="20" placeholder="Eğlenceli oda" autocomplete="off">
+    <p class="online-sub">Maksimum oyuncu</p>
+    <div class="max-player-select">
+      <button class="max-btn" data-max="2" onclick="selectMaxPlayers(2)">2</button>
+      <button class="max-btn" data-max="3" onclick="selectMaxPlayers(3)">3</button>
+      <button class="max-btn" data-max="4" onclick="selectMaxPlayers(4)">4</button>
+      <button class="max-btn active" data-max="5" onclick="selectMaxPlayers(5)">5</button>
+    </div>
+    <button class="btn btn-big btn-play" onclick="submitCreateRoom()">🚀 ODA KUR</button>
+    <button class="btn" onclick="leaveOnlineToOnline()">⬅ Geri</button>
+  </div>
+</div>
+
+<!-- ========== LOBİ ========== -->
+<div id="screen-lobby" class="screen">
+  <div class="menu-bg"></div>
+  <div class="menu-content">
+    <h2 id="lobby-title">🎮 Lobi</h2>
+    <p class="online-sub" id="lobby-subtitle">Oyuncuların gelmesini bekle</p>
+    <div id="lobby-players" class="lobby-players"></div>
+    <div class="lobby-actions">
+      <button id="lobby-ready-btn" class="btn btn-big" onclick="toggleReady()">✓ HAZIR</button>
+      <button id="lobby-start-btn" class="btn btn-big btn-play" onclick="startMpGame()" style="display:none;">▶ BAŞLAT</button>
+    </div>
+    <button class="btn" onclick="leaveRoom()">🚪 Odadan Ayrıl</button>
+  </div>
+</div>
+
+<!-- ========== BİLGİ MESAJI ========== -->
+<div id="toast" class="toast"></div>
+
+<!-- Firebase Compat SDK (v8-style global API) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+
+<script>
+  // Global hata yakalayıcı — JS hatalarını ekrana yansıt
+  window.__lastErrors = [];
+  function showErrBanner(msg) {
+    let div = document.getElementById("err-banner");
+    if (!div) {
+      div = document.createElement("div");
+      div.id = "err-banner";
+      div.style.cssText = "position:fixed;top:0;left:0;right:0;background:#dc2626;color:white;padding:8px;font:bold 11px monospace;z-index:9999;white-space:pre-wrap;max-height:40vh;overflow:auto;";
+      document.body.appendChild(div);
+    }
+    window.__lastErrors.push(msg);
+    div.textContent = "JS HATA:\n" + window.__lastErrors.slice(-3).join("\n---\n");
+  }
+  window.addEventListener("error", (e) => {
+    showErrBanner(`${e.message} @ ${e.filename}:${e.lineno}:${e.colno}`);
+  });
+  window.addEventListener("unhandledrejection", (e) => {
+    showErrBanner(`Promise: ${e.reason && e.reason.message || e.reason}`);
+  });
+</script>
+<script src="i18n.js"></script>
+<script src="i18n/en.js"></script>
+<script src="i18n/es.js"></script>
+<script src="i18n/zh.js"></script>
+<script src="i18n/hi.js"></script>
+<script src="i18n/ar.js"></script>
+<script>dilUygula();</script>
+<script src="game.js"></script>
+<script>
+  // Eski sürümlerde register edilmiş SW'leri temizle (Capacitor'da SW'ye gerek yok)
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", async () => {
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (const r of regs) await r.unregister();
+        const keys = await caches.keys();
+        for (const k of keys) await caches.delete(k);
+      } catch (e) { /* ignore */ }
+    });
+  }
+</script>
+</body>
+</html>

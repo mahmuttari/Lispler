@@ -1,4 +1,4 @@
-# Not Defteri — Google Play Developer API işleri (android/play.mjs). GENEL-KONULAR/Takasla'daki düzen:
+# Not Defteri — Google Play Developer API işleri (android/play.mjs). Hayalet Avcıları: play-hayalet.yml. GENEL-KONULAR/Takasla'daki düzen:
 # komutlar android/play-istek.txt'ye yazılır (her satır bir komut, sırayla; biri hata verirse sonrakiler çalışmaz).
 # Kimlik anahtarsız: GitHub → Workload Identity → android/play-kimlik.env'deki hizmet hesabının kısa ömürlü belirteci.
 # Hizmet hesabı Play Console → Kullanıcılar ve izinler'de uygulamaya davet edilmiş olmalı (magaza/PLAY-YAYIN.md).

@@ -77,6 +77,12 @@ Sonra her push'ta **Actions › Android** çalışır, imzalı AAB'yi **Artifact
       **App Privacy** formu ([cevaplar](magaza/aciklamalar.md)), sonra **Submit for Review**.
       İlk sürümde abonelik, uygulamayla birlikte incelemeye gönderilmelidir.
 
+## Hayalet Avcıları
+
+Poyraz Workshop'un ikinci uygulaması (oyun) [`hayalet-avcilari/`](hayalet-avcilari/) klasöründedir: kaynak, Android
+projesi, mağaza metinleri ve Play'e yayın talimatı ([`hayalet-avcilari/magaza/PLAY-YAYIN.md`](hayalet-avcilari/magaza/PLAY-YAYIN.md)).
+Gizlilik ve hesap silme sayfaları `app/hayalet-avcilari/` altında, Play paketi `dist/HayaletAvcilari-play.aab`.
+
 ## Proje yapısı
 
 ```

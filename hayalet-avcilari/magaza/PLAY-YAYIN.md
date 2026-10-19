@@ -25,10 +25,10 @@ Kullanıcı bilgisayardaki oturuma yalnız şunu yazar:
 | Web sitesi | `https://mahmuttari.github.io/Lispler/hayalet-avcilari/` |
 | Gizlilik politikası | `https://mahmuttari.github.io/Lispler/hayalet-avcilari/gizlilik.html` |
 | Hesap silme adresi | `https://mahmuttari.github.io/Lispler/hayalet-avcilari/hesap-silme.html` |
-| Metinler ve form cevapları | [`aciklamalar.md`](aciklamalar.md) |
-| Görseller | [`play/`](play/): `simge-512.png`, `tanitim-gorseli-1024x500.png`, `telefon-1…5-*.png` (sırayla) |
+| Metinler ve form cevapları | [`aciklamalar.md`](aciklamalar.md); çeviriler [`diller/`](diller/) (en-US, es-ES, es-419, zh-CN, hi-IN, ar) |
+| Görseller | [`play/`](play/): `simge-512.png`, `tanitim-gorseli-1024x500.png`, `telefon-1…5-*.png` (sırayla); her dil için `play/<dil>/` |
 | Sürüm notu | [`surum-notu.txt`](surum-notu.txt) |
-| İlk paket | `dist/HayaletAvcilari-play.aab` — sürüm **3.9.1 (35)** |
+| İlk paket | `dist/HayaletAvcilari-play.aab` — sürüm **3.10.0 (36)** |
 | Yükleme anahtarı SHA-1 | `D0:88:A0:75:77:D1:89:B0:15:D4:A5:88:74:9A:1A:8C:C2:EE:56:99` |
 | Yükleme anahtarı SHA-256 | `13:8C:5B:39:EA:0B:63:AC:CA:04:81:68:A5:BF:D9:F7:06:12:5A:E9:32:B9:5F:F6:C4:E1:04:D3:49:E4:80:C7` |
 
@@ -58,7 +58,8 @@ Beyan kutularını **kullanıcı** işaretler; onayından sonra "Uygulama oluşt
 Hayalet Avcıları → Test ve yayınla → **Üretim** → Ülkeler/bölgeler: **tümü** → "Yeni sürüm oluştur":
 - Uygulama imzalama sorulursa Google'ın oluşturduğu anahtar (varsayılan) → **kullanıcı onayıyla**.
 - App bundle: `dist/HayaletAvcilari-play.aab`. Dosya penceresini kullanamazsan kullanıcı seçer.
-- Paket adı `com.poyrazworkshop.hayaletavcilari`, sürüm `3.9.1 (35)` görünmeli. Sürüm notu: `surum-notu.txt`.
+- Paket adı `com.poyrazworkshop.hayaletavcilari`, sürüm `3.10.0 (36)` görünmeli. Sürüm notu: `surum-notu.txt`
+  (diğer dillerin notunu bulut oturumu API ile ekler).
 - "Sonraki" → yalnız **Kaydet**. İncelemeye GÖNDERME.
 
 ### 3. Hizmet hesabına bu uygulamayı da ver
@@ -92,7 +93,7 @@ tablosundaki cevaplar, **Veri güvenliği** ve **Hesap silme** dahil. Beyanları
 
 ### 6. Bulut oturumuna devret
 Kullanıcıya şunu yazdır: "Hayalet Avcıları Play kurulumu tamam." Bulut oturumu `hayalet-avcilari/play-istek.txt`
-ile sırasıyla `durum` → `magaza uygula` → `gorsel uygula` çalıştırır; eksik kalan bir şey yoksa incelemeye gönderme
+ile sırasıyla `durum` → `magaza uygula` → `gorsel uygula` çalıştırır (Türkçe + 6 çeviri dili: metin ve görseller); eksik kalan bir şey yoksa incelemeye gönderme
 kararını kullanıcıya sorar (`yukle yayinla uygula` ya da Console'da "İncelemeye gönder").
 
 ## Sonraki sürümler

@@ -265,12 +265,13 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.9.1";
+const APP_VERSION = "3.10.0";
 const UPDATE_NOTES = {
-  "3.9.1": [
-    "🐛 Hayaletler artık engellerin içinde doğmuyor; engele sıkışan hayalet kendiliğinden dışarı çıkıyor — bölüm takılmadan bitiyor.",
-    "🌐 Çevrimiçi oyunda herkes aynı haritayı görüyor (engeller oyuncuya göre değişmiyor).",
-    "🗑 Hesap ekranına “Hesabı Sil” eklendi: Google bulut yedeğini ve hesabını siler.",
+  "3.10.0": [
+    t("🌍 Yeni diller: English, Español, 简体中文, हिन्दी, العربية — Menü › 🌐 Dil."),
+    t("🐛 Hayaletler artık engellerin içinde doğmuyor; engele sıkışan hayalet kendiliğinden dışarı çıkıyor — bölüm takılmadan bitiyor."),
+    t("🌐 Çevrimiçi oyunda herkes aynı haritayı görüyor (engeller oyuncuya göre değişmiyor)."),
+    t("🗑 Hesap ekranına “Hesabı Sil” eklendi: Google bulut yedeğini ve hesabını siler."),
   ],
   "3.9.0": [
     "🔐 Google ile Giriş eklendi — hesap kurtarma ve cihazlar arası senkron için.",
@@ -432,7 +433,7 @@ async function fetchOnlineLeaderboard(limit) {
       .map((d) => {
         const f = d.document.fields || {};
         return {
-          name:   f.name   ? f.name.stringValue                : "Avcı",
+          name:   f.name   ? f.name.stringValue                : t("Avcı"),
           level:  f.level  ? parseInt(f.level.integerValue)    : 1,
           ghosts: f.ghosts ? parseInt(f.ghosts.integerValue)   : 0,
           para:   f.para   ? parseInt(f.para.integerValue)     : 0,
@@ -552,11 +553,11 @@ function persistSave() {
 }
 
 function resetData() {
-  if (confirm("Tüm ilerleme silinsin mi?")) {
+  if (confirm(t("Tüm ilerleme silinsin mi?"))) {
     save = JSON.parse(JSON.stringify(defaultSave));
     persistSave();
     refreshMenu();
-    showToast("Sıfırlandı!");
+    showToast(t("Sıfırlandı!"));
   }
 }
 
@@ -564,7 +565,7 @@ function resetData() {
 const CHARACTERS = {
   kinkin: {
     name: "Kinkin",
-    desc: "Hızlı ve dengeli avcı.",
+    desc: t("Hızlı ve dengeli avcı."),
     cost: 0,
     baseSpeed: 3.2,
     baseDamage: 1,
@@ -574,7 +575,7 @@ const CHARACTERS = {
   },
   veryi: {
     name: "Veryi",
-    desc: "Güçlü vurucu.",
+    desc: t("Güçlü vurucu."),
     cost: 5,
     baseSpeed: 2.6,
     baseDamage: 2,
@@ -584,7 +585,7 @@ const CHARACTERS = {
   },
   kornet: {
     name: "Kornet",
-    desc: "Uzun menzilli sihirbaz.",
+    desc: t("Uzun menzilli sihirbaz."),
     cost: 10,
     baseSpeed: 2.8,
     baseDamage: 1,
@@ -594,7 +595,7 @@ const CHARACTERS = {
   },
   mark: {
     name: "Marli",
-    desc: "Sırt çantalı maceracı.",
+    desc: t("Sırt çantalı maceracı."),
     cost: 25,
     baseSpeed: 3.0,
     baseDamage: 1,
@@ -604,7 +605,7 @@ const CHARACTERS = {
   },
   kent: {
     name: "Kenit",
-    desc: "Karanlık hayalet pelerin, bıçaklı.",
+    desc: t("Karanlık hayalet pelerin, bıçaklı."),
     cost: 50,
     baseSpeed: 3.4,
     baseDamage: 2,
@@ -614,7 +615,7 @@ const CHARACTERS = {
   },
   ponko: {
     name: "Ponko",
-    desc: "Büyük şapkalı küçük kahraman.",
+    desc: t("Büyük şapkalı küçük kahraman."),
     cost: 30,
     baseSpeed: 3.0,
     baseDamage: 1,
@@ -624,7 +625,7 @@ const CHARACTERS = {
   },
   gul: {
     name: "Güllu",
-    desc: "Şapkalı dengeli avcı.",
+    desc: t("Şapkalı dengeli avcı."),
     cost: 15,
     baseSpeed: 3.2,
     baseDamage: 1,
@@ -634,7 +635,7 @@ const CHARACTERS = {
   },
   rani: {
     name: "Rani",
-    desc: "Sevimli minik avcı.",
+    desc: t("Sevimli minik avcı."),
     cost: 35,
     baseSpeed: 3.3,
     baseDamage: 1,
@@ -644,7 +645,7 @@ const CHARACTERS = {
   },
   beti: {
     name: "Beri",
-    desc: "Lolipop canavarı! Suyun içinden geçer.",
+    desc: t("Lolipop canavarı! Suyun içinden geçer."),
     cost: 20,
     baseSpeed: 3.0,
     baseDamage: 2,
@@ -655,7 +656,7 @@ const CHARACTERS = {
   },
   fanatik: {
     name: "Fanatik",
-    desc: "Yakışıklı efsanevi kunfucu, siyah kuşak.",
+    desc: t("Yakışıklı efsanevi kunfucu, siyah kuşak."),
     cost: 200,
     baseSpeed: 3.6,
     baseDamage: 3,
@@ -668,65 +669,65 @@ const CHARACTERS = {
 // Kostümler: her karakter için (0 = orijinal, 1 = alternatif)
 const COSTUMES = {
   kinkin: [
-    { name: "Mavi", cost: 0, body: "#1d4ed8", hair: "#7a3e1d" },
-    { name: "Pembe Prenses", cost: 5, body: "#ec4899", hair: "#fbbf24" },
-    { name: "✨ Altın Efsane", cost: 80, body: "#f59e0b", hair: "#fef3c7" },
+    { name: t("Mavi"), cost: 0, body: "#1d4ed8", hair: "#7a3e1d" },
+    { name: t("Pembe Prenses"), cost: 5, body: "#ec4899", hair: "#fbbf24" },
+    { name: t("✨ Altın Efsane"), cost: 80, body: "#f59e0b", hair: "#fef3c7" },
   ],
   veryi: [
-    { name: "Klasik", cost: 0, body: "#6b3410", hair: "#3a1d0a" },
-    { name: "Asker", cost: 5, body: "#1f5e1a", hair: "#1f1f1f" },
-    { name: "✨ Bronz Şampiyon", cost: 80, body: "#92400e", hair: "#fbbf24" },
+    { name: t("Klasik"), cost: 0, body: "#6b3410", hair: "#3a1d0a" },
+    { name: t("Asker"), cost: 5, body: "#1f5e1a", hair: "#1f1f1f" },
+    { name: t("✨ Bronz Şampiyon"), cost: 80, body: "#92400e", hair: "#fbbf24" },
   ],
   kornet: [
-    { name: "Mor", cost: 0, body: "#9d4edd", hair: "#ffffff" },
-    { name: "Şeker", cost: 5, body: "#06d6a0", hair: "#fff7d6" },
-    { name: "✨ Galaksi Sihirbazı", cost: 100, body: "#0ea5e9", hair: "#a78bfa" },
+    { name: t("Mor"), cost: 0, body: "#9d4edd", hair: "#ffffff" },
+    { name: t("Şeker"), cost: 5, body: "#06d6a0", hair: "#fff7d6" },
+    { name: t("✨ Galaksi Sihirbazı"), cost: 100, body: "#0ea5e9", hair: "#a78bfa" },
   ],
   mark: [
-    { name: "Yeşil", cost: 0, body: "#10b981", hair: "#5a3825" },
-    { name: "Mavi", cost: 5, body: "#3b82f6", hair: "#1f2937" },
-    { name: "✨ Altın Maceracı", cost: 80, body: "#fbbf24", hair: "#7c2d12" },
+    { name: t("Yeşil"), cost: 0, body: "#10b981", hair: "#5a3825" },
+    { name: t("Mavi"), cost: 5, body: "#3b82f6", hair: "#1f2937" },
+    { name: t("✨ Altın Maceracı"), cost: 80, body: "#fbbf24", hair: "#7c2d12" },
   ],
   kent: [
-    { name: "Karanlık", cost: 0, body: "#1a1a2e", hair: "#1f1f1f" },
-    { name: "Kanlı", cost: 6, body: "#7f1d1d", hair: "#1f1f1f" },
-    { name: "✨ Hayalet Lordu", cost: 120, body: "#3b0764", hair: "#0f172a" },
+    { name: t("Karanlık"), cost: 0, body: "#1a1a2e", hair: "#1f1f1f" },
+    { name: t("Kanlı"), cost: 6, body: "#7f1d1d", hair: "#1f1f1f" },
+    { name: t("✨ Hayalet Lordu"), cost: 120, body: "#3b0764", hair: "#0f172a" },
   ],
   ponko: [
-    { name: "Kırmızı", cost: 0, body: "#ef4444", hair: "#3a1d0a" },
-    { name: "Sarı", cost: 5, body: "#f59e0b", hair: "#3a1d0a" },
-    { name: "✨ Altın Şapka", cost: 80, body: "#fbbf24", hair: "#451a03" },
+    { name: t("Kırmızı"), cost: 0, body: "#ef4444", hair: "#3a1d0a" },
+    { name: t("Sarı"), cost: 5, body: "#f59e0b", hair: "#3a1d0a" },
+    { name: t("✨ Altın Şapka"), cost: 80, body: "#fbbf24", hair: "#451a03" },
   ],
   gul: [
-    { name: "Pembe", cost: 0, body: "#ec4899", hair: "#3a1d0a" },
-    { name: "Mor", cost: 5, body: "#8b5cf6", hair: "#3a1d0a" },
-    { name: "✨ Kraliçe", cost: 100, body: "#f0abfc", hair: "#fbbf24" },
+    { name: t("Pembe"), cost: 0, body: "#ec4899", hair: "#3a1d0a" },
+    { name: t("Mor"), cost: 5, body: "#8b5cf6", hair: "#3a1d0a" },
+    { name: t("✨ Kraliçe"), cost: 100, body: "#f0abfc", hair: "#fbbf24" },
   ],
   rani: [
-    { name: "Turkuaz", cost: 0, body: "#06b6d4", hair: "#1f1f1f" },
-    { name: "Limon", cost: 5, body: "#84cc16", hair: "#1f1f1f" },
-    { name: "✨ Pırıltı", cost: 80, body: "#fde047", hair: "#7c3aed" },
+    { name: t("Turkuaz"), cost: 0, body: "#06b6d4", hair: "#1f1f1f" },
+    { name: t("Limon"), cost: 5, body: "#84cc16", hair: "#1f1f1f" },
+    { name: t("✨ Pırıltı"), cost: 80, body: "#fde047", hair: "#7c3aed" },
   ],
   beti: [
-    { name: "Şeker", cost: 0, body: "#f43f5e", hair: "#9d4edd" },
-    { name: "Çikolata", cost: 6, body: "#78350f", hair: "#fbbf24" },
-    { name: "✨ Gökkuşağı Lolipop", cost: 100, body: "#22d3ee", hair: "#f472b6" },
+    { name: t("Şeker"), cost: 0, body: "#f43f5e", hair: "#9d4edd" },
+    { name: t("Çikolata"), cost: 6, body: "#78350f", hair: "#fbbf24" },
+    { name: t("✨ Gökkuşağı Lolipop"), cost: 100, body: "#22d3ee", hair: "#f472b6" },
   ],
   fanatik: [
-    { name: "Beyaz Gi", cost: 0, body: "#fafafa", hair: "#0a0a0a" },
-    { name: "Kırmızı Gi", cost: 8, body: "#dc2626", hair: "#0a0a0a" },
-    { name: "✨ Ejder Ustası", cost: 150, body: "#1e293b", hair: "#fbbf24" },
+    { name: t("Beyaz Gi"), cost: 0, body: "#fafafa", hair: "#0a0a0a" },
+    { name: t("Kırmızı Gi"), cost: 8, body: "#dc2626", hair: "#0a0a0a" },
+    { name: t("✨ Ejder Ustası"), cost: 150, body: "#1e293b", hair: "#fbbf24" },
   ],
 };
 
 // Bölüm temaları (sırayla döner)
 const LEVEL_THEMES = [
-  { name: "Mor Şato",     floor: "#1f1538", grid: "rgba(157, 78, 221, 0.10)", wall: "#5a3825", wallDark: "#3d2618", waterTop: "#1e7fd6", waterBot: "#0a3a8a" },
-  { name: "Yeşil Orman",  floor: "#0f3d24", grid: "rgba(132, 204, 22, 0.12)", wall: "#365314", wallDark: "#1a2e0d", waterTop: "#22c55e", waterBot: "#15803d" },
-  { name: "Çöl",          floor: "#3f2e0a", grid: "rgba(251, 191, 36, 0.12)", wall: "#92400e", wallDark: "#451a03", waterTop: "#06b6d4", waterBot: "#0c4a6e" },
-  { name: "Buz Mağarası", floor: "#0c4a6e", grid: "rgba(186, 230, 253, 0.18)", wall: "#7dd3fc", wallDark: "#0369a1", waterTop: "#bae6fd", waterBot: "#0ea5e9" },
-  { name: "Volkan",       floor: "#451a03", grid: "rgba(239, 68, 68, 0.12)",  wall: "#7f1d1d", wallDark: "#450a0a", waterTop: "#f97316", waterBot: "#dc2626" },
-  { name: "Uzay",         floor: "#0c0a1e", grid: "rgba(192, 132, 252, 0.18)", wall: "#1e1b4b", wallDark: "#0f0a2e", waterTop: "#a855f7", waterBot: "#3b0764" },
+  { name: t("Mor Şato"),     floor: "#1f1538", grid: "rgba(157, 78, 221, 0.10)", wall: "#5a3825", wallDark: "#3d2618", waterTop: "#1e7fd6", waterBot: "#0a3a8a" },
+  { name: t("Yeşil Orman"),  floor: "#0f3d24", grid: "rgba(132, 204, 22, 0.12)", wall: "#365314", wallDark: "#1a2e0d", waterTop: "#22c55e", waterBot: "#15803d" },
+  { name: t("Çöl"),          floor: "#3f2e0a", grid: "rgba(251, 191, 36, 0.12)", wall: "#92400e", wallDark: "#451a03", waterTop: "#06b6d4", waterBot: "#0c4a6e" },
+  { name: t("Buz Mağarası"), floor: "#0c4a6e", grid: "rgba(186, 230, 253, 0.18)", wall: "#7dd3fc", wallDark: "#0369a1", waterTop: "#bae6fd", waterBot: "#0ea5e9" },
+  { name: t("Volkan"),       floor: "#451a03", grid: "rgba(239, 68, 68, 0.12)",  wall: "#7f1d1d", wallDark: "#450a0a", waterTop: "#f97316", waterBot: "#dc2626" },
+  { name: t("Uzay"),         floor: "#0c0a1e", grid: "rgba(192, 132, 252, 0.18)", wall: "#1e1b4b", wallDark: "#0f0a2e", waterTop: "#a855f7", waterBot: "#3b0764" },
 ];
 function getTheme() {
   return LEVEL_THEMES[(game.level - 1) % LEVEL_THEMES.length];
@@ -739,16 +740,16 @@ function getBossTimerForLevel(level) {
 
 // Karakter başına özel güçler — süreler güç dengesine göre değişir
 const CHAR_POWERS = {
-  kinkin:  { name: "Yıldırım Hızı",     icon: "⚡", duration: 15000 }, // hız x2
-  veryi:   { name: "Süper Hasar",       icon: "💥", duration: 12000 }, // hasar x3
-  kornet:  { name: "Üçlü Atış",         icon: "🔱", duration: 15000 }, // 3 mermi koni
-  mark:    { name: "Dev Mıknatıs",      icon: "🧲", duration: 20000 }, // tüm pickup çek (QoL)
-  kent:    { name: "Hayalet Modu",      icon: "🌙", duration: 8000  }, // yenilmezlik (kısa, OP)
-  ponko:   { name: "Çabuk Ateş",        icon: "🔥", duration: 12000 }, // fireDelay /3
-  gul:     { name: "Patlama Vuruşu",    icon: "💣", duration: 15000 }, // öldürünce çevreye hasar
-  rani:    { name: "Şifa Kalbi",        icon: "💖", duration: 18000 }, // 5 sn'de bir +1 can
-  beti:    { name: "Lolipop Yağmuru",   icon: "🍭", duration: 15000 }, // 5 yöne mermi
-  fanatik: { name: "Tornado Tekme",     icon: "🥋", duration: 12000 }, // 0.5 sn'de bir çevreye hasar
+  kinkin:  { name: t("Yıldırım Hızı"),     icon: "⚡", duration: 15000 }, // hız x2
+  veryi:   { name: t("Süper Hasar"),       icon: "💥", duration: 12000 }, // hasar x3
+  kornet:  { name: t("Üçlü Atış"),         icon: "🔱", duration: 15000 }, // 3 mermi koni
+  mark:    { name: t("Dev Mıknatıs"),      icon: "🧲", duration: 20000 }, // tüm pickup çek (QoL)
+  kent:    { name: t("Hayalet Modu"),      icon: "🌙", duration: 8000  }, // yenilmezlik (kısa, OP)
+  ponko:   { name: t("Çabuk Ateş"),        icon: "🔥", duration: 12000 }, // fireDelay /3
+  gul:     { name: t("Patlama Vuruşu"),    icon: "💣", duration: 15000 }, // öldürünce çevreye hasar
+  rani:    { name: t("Şifa Kalbi"),        icon: "💖", duration: 18000 }, // 5 sn'de bir +1 can
+  beti:    { name: t("Lolipop Yağmuru"),   icon: "🍭", duration: 15000 }, // 5 yöne mermi
+  fanatik: { name: t("Tornado Tekme"),     icon: "🥋", duration: 12000 }, // 0.5 sn'de bir çevreye hasar
 };
 
 function activatePower(charKey) {
@@ -778,13 +779,13 @@ function getActivePower() {
 
 // Tek kullanımlık silahlar — karakter başına ayrı stok
 const WEAPONS = {
-  bomba:    { name: "Bomba",       icon: "💣", cost: 80,  desc: "200 px alandaki tüm hayaletlere 10 hasar.", max: 9 },
-  dondurma: { name: "Dondurma",    icon: "❄️", cost: 100, desc: "Tüm hayaletleri 5 sn dondurur.",          max: 9 },
-  simsek:   { name: "Şimşek",      icon: "⚡", cost: 60,  desc: "Ekrandaki tüm hayaletlere 3 hasar.",       max: 9 },
-  kasirga:  { name: "Kasırga",     icon: "🌪️", cost: 120, desc: "8 sn etrafında dönen kalkan, dokunan ölür.", max: 9 },
-  ilkyrd:   { name: "İlk Yardım",  icon: "❤️", cost: 50,  desc: "Anında 2 can yeniler (max'ı geçemez).",   max: 9 },
-  roket:    { name: "Roket",       icon: "🚀", cost: 90,  desc: "En yakın hayalete 25 hasar.",              max: 9 },
-  gorunmez: { name: "Görünmezlik", icon: "🕵", cost: 70,  desc: "5 sn hayaletler seni göremez.",            max: 9 },
+  bomba:    { name: t("Bomba"),       icon: "💣", cost: 80,  desc: t("200 px alandaki tüm hayaletlere 10 hasar."), max: 9 },
+  dondurma: { name: t("Dondurma"),    icon: "❄️", cost: 100, desc: t("Tüm hayaletleri 5 sn dondurur."),          max: 9 },
+  simsek:   { name: t("Şimşek"),      icon: "⚡", cost: 60,  desc: t("Ekrandaki tüm hayaletlere 3 hasar."),       max: 9 },
+  kasirga:  { name: t("Kasırga"),     icon: "🌪️", cost: 120, desc: t("8 sn etrafında dönen kalkan, dokunan ölür."), max: 9 },
+  ilkyrd:   { name: t("İlk Yardım"),  icon: "❤️", cost: 50,  desc: t("Anında 2 can yeniler (max'ı geçemez)."),   max: 9 },
+  roket:    { name: t("Roket"),       icon: "🚀", cost: 90,  desc: t("En yakın hayalete 25 hasar."),              max: 9 },
+  gorunmez: { name: t("Görünmezlik"), icon: "🕵", cost: 70,  desc: t("5 sn hayaletler seni göremez."),            max: 9 },
 };
 
 function ensureAmmoStock(charKey) {
@@ -880,7 +881,7 @@ function useWeapon(key) {
         const sp = 60 + Math.random() * 100;
         game.particles.push({ x: px, y: py, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.8, color: "#bae6fd" });
       }
-      showFloat("❄️ Donduruldu!", px, py - 36);
+      showFloat(t("❄️ Donduruldu!"), px, py - 36);
       audio.unlock();
       break;
     }
@@ -914,7 +915,7 @@ function useWeapon(key) {
     }
     case "kasirga": {
       game.player.kasirgaUntil = now + 8000;
-      showFloat("🌪️ Kasırga!", px, py - 36);
+      showFloat(t("🌪️ Kasırga!"), px, py - 36);
       audio.unlock();
       break;
     }
@@ -923,7 +924,7 @@ function useWeapon(key) {
       game.player.hp = Math.min(game.player.maxHp, game.player.hp + 2);
       const heal = game.player.hp - before;
       if (heal <= 0) {
-        showFloat("Can dolu", px, py - 36);
+        showFloat(t("Can dolu"), px, py - 36);
         consumed = false; // can doluysa silahı yakma
       } else {
         showFloat(`+${heal} ❤️`, px, py - 36);
@@ -963,14 +964,14 @@ function useWeapon(key) {
         }
         audio.unlock();
       } else {
-        showToast("Hedef yok");
+        showToast(t("Hedef yok"));
         consumed = false;
       }
       break;
     }
     case "gorunmez": {
       game.player.invisibleUntil = now + 5000;
-      showFloat("🕵 Görünmez!", px, py - 36);
+      showFloat(t("🕵 Görünmez!"), px, py - 36);
       audio.unlock();
       break;
     }
@@ -1223,10 +1224,10 @@ function drawEffects(ctx) {
 
 // Yükseltmeler: 10 seviye (geç seviyeler çok pahalı — para deposu)
 const UPGRADES = {
-  speed:    { name: "Hız",      icon: "👟", desc: "Daha hızlı koş.",   max: 10, costs: [50,  100, 200, 400,  800,  1600, 3200, 6400,  12000, 24000] },
-  damage:   { name: "Hasar",    icon: "💥", desc: "Daha güçlü vur.",   max: 10, costs: [75,  150, 300, 600,  1200, 2400, 4800, 9600,  18000, 36000] },
-  fireRate: { name: "Atış Hızı",icon: "⚡", desc: "Hızlı ateş et.",    max: 10, costs: [60,  120, 240, 480,  960,  1920, 3840, 7680,  15000, 30000] },
-  range:    { name: "Menzil",   icon: "🎯", desc: "Uzaktan vur.",       max: 10, costs: [50,  100, 200, 400,  800,  1600, 3200, 6400,  12000, 24000] },
+  speed:    { name: t("Hız"),      icon: "👟", desc: t("Daha hızlı koş."),   max: 10, costs: [50,  100, 200, 400,  800,  1600, 3200, 6400,  12000, 24000] },
+  damage:   { name: t("Hasar"),    icon: "💥", desc: t("Daha güçlü vur."),   max: 10, costs: [75,  150, 300, 600,  1200, 2400, 4800, 9600,  18000, 36000] },
+  fireRate: { name: t("Atış Hızı"),icon: "⚡", desc: t("Hızlı ateş et."),    max: 10, costs: [60,  120, 240, 480,  960,  1920, 3840, 7680,  15000, 30000] },
+  range:    { name: t("Menzil"),   icon: "🎯", desc: t("Uzaktan vur."),       max: 10, costs: [50,  100, 200, 400,  800,  1600, 3200, 6400,  12000, 24000] },
 };
 
 // ====== ÇİZİM YARDIMCILARI ======
@@ -2433,7 +2434,7 @@ function setOnlineStatus(msg) {
 function openCreateRoom() {
   showScreen("screen-create-room");
   const inp = document.getElementById("room-name-input");
-  if (inp && !inp.value) inp.value = (save.playerName || "Avcı") + "'in Odası";
+  if (inp && !inp.value) inp.value = t("{ad}'in Odası", { ad: save.playerName || t("Avcı") });
   selectMaxPlayers(online.selectedMax || 5);
 }
 function selectMaxPlayers(n) {
@@ -2444,11 +2445,11 @@ function selectMaxPlayers(n) {
 }
 
 async function submitCreateRoom() {
-  if (!save.playerName) { showToast("Önce avcı adını ayarla"); return; }
+  if (!save.playerName) { showToast(t("Önce avcı adını ayarla")); return; }
   if (!online.uid) online.uid = getOnlineUid();
-  const name = (document.getElementById("room-name-input").value || "").trim() || "Oda";
-  showToast("⏳ Oda kuruluyor...");
-  setOnlineStatus("Firebase'e bağlanıyor...");
+  const name = (document.getElementById("room-name-input").value || "").trim() || t("Oda");
+  showToast(t("⏳ Oda kuruluyor..."));
+  setOnlineStatus(t("Firebase'e bağlanıyor..."));
   online.lastError = null;
   const roomId = makeRoomId();
   const now = Date.now();
@@ -2468,8 +2469,8 @@ async function submitCreateRoom() {
   };
   const ok = await rtdb.put(`rooms/${roomId}`, room);
   if (!ok) {
-    const reason = online.lastError || "bilinmeyen hata";
-    setOnlineStatus(`⚠ Oda kurulamadı: ${reason}`);
+    const reason = online.lastError || t("bilinmeyen hata");
+    setOnlineStatus(t("⚠ Oda kurulamadı: {neden}", { neden: reason }));
     showToast(`⚠ ${reason.slice(0, 60)}`);
     return;
   }
@@ -2487,7 +2488,7 @@ function makeRoomId() {
 
 function makePlayerEntry(ready, now) {
   return {
-    name: save.playerName || "Avcı",
+    name: save.playerName || t("Avcı"),
     charKey: save.selectedChar || "kinkin",
     costumeIdx: (save.selectedCostume && save.selectedCostume[save.selectedChar]) || 0,
     ready: !!ready,
@@ -2506,7 +2507,7 @@ async function openRoomList() {
     renderRoomList(snap.val());
   }, (err) => {
     console.error("rooms listener", err);
-    setOnlineStatus("⚠ Bağlantı hatası: " + err.message);
+    setOnlineStatus(t("⚠ Bağlantı hatası: {hata}", { hata: err.message }));
   });
 }
 
@@ -2540,7 +2541,7 @@ function renderRoomList(all) {
   items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
   list.innerHTML = "";
   if (items.length === 0) {
-    list.innerHTML = `<div class="room-list-empty">Aktif oda yok. Sen kurar mısın?</div>`;
+    list.innerHTML = `<div class="room-list-empty">${t("Aktif oda yok. Sen kurar mısın?")}</div>`;
     return;
   }
   items.forEach((r) => {
@@ -2549,10 +2550,10 @@ function renderRoomList(all) {
     const full = r.playerCount >= r.maxPlayers;
     card.innerHTML = `
       <div class="room-info">
-        <div class="room-name">${escapeHtml(r.name || "Oda")}</div>
-        <div class="room-meta">👤 ${escapeHtml(r.hostName || "?")} · <b>${r.playerCount}/${r.maxPlayers}</b> oyuncu · Bölüm ${r.level || 1}</div>
+        <div class="room-name">${escapeHtml(r.name || t("Oda"))}</div>
+        <div class="room-meta">👤 ${escapeHtml(r.hostName || "?")} · <b>${r.playerCount}/${r.maxPlayers}</b> ${t("oyuncu")} · ${t("Bölüm {n}", { n: r.level || 1 })}</div>
       </div>
-      <button ${full ? "disabled" : ""}>${full ? "DOLU" : "KATIL"}</button>
+      <button ${full ? "disabled" : ""}>${full ? t("DOLU") : t("KATIL")}</button>
     `;
     if (!full) {
       card.querySelector("button").onclick = () => joinRoom(r.id);
@@ -2562,16 +2563,16 @@ function renderRoomList(all) {
 }
 
 async function joinRoom(roomId) {
-  if (!save.playerName) { showToast("Önce avcı adını ayarla"); return; }
+  if (!save.playerName) { showToast(t("Önce avcı adını ayarla")); return; }
   setOnlineStatus("");
   const uid = online.uid;
   const now = Date.now();
   // Oda var mı / dolu mu kontrolü
   const room = await rtdb.get(`rooms/${roomId}`);
-  if (!room) { showToast("Oda bulunamadı"); return; }
+  if (!room) { showToast(t("Oda bulunamadı")); return; }
   const count = room.players ? Object.keys(room.players).length : 0;
-  if (count >= (room.maxPlayers || 5)) { showToast("Oda dolu"); return; }
-  if (room.status !== "lobby") { showToast("Oyun zaten başladı"); return; }
+  if (count >= (room.maxPlayers || 5)) { showToast(t("Oda dolu")); return; }
+  if (room.status !== "lobby") { showToast(t("Oyun zaten başladı")); return; }
   await rtdb.put(`rooms/${roomId}/players/${uid}`, makePlayerEntry(false, now));
   await rtdb.patch(`rooms/${roomId}`, { lastSeen: now });
   online.roomId = roomId;
@@ -2597,7 +2598,7 @@ function startRoomListener() {
       stopMpSync();
       online.roomId = null;
       online.mode = null;
-      showToast("Oda kapandı");
+      showToast(t("Oda kapandı"));
       if (game.running) {
         game.running = false;
         const wb = document.getElementById("weapon-bar");
@@ -2625,7 +2626,7 @@ function startRoomListener() {
     if (game.running) handleRoomSnapshot(room);
   }, (err) => {
     console.error("room listener", err);
-    setOnlineStatus("⚠ Bağlantı: " + err.message);
+    setOnlineStatus(t("⚠ Bağlantı: {hata}", { hata: err.message }));
   });
 }
 
@@ -2672,18 +2673,18 @@ function maybeBecomeNewHost(room) {
     });
     setupOnDisconnect();
     if (game.running) startEventsListener();
-    showToast("👑 Artık sen Host'sun!");
+    showToast(t("👑 Artık sen Host'sun!"));
   }
 }
 
 function renderLobby(room) {
-  document.getElementById("lobby-title").textContent = "🎮 " + (room.name || "Lobi");
+  document.getElementById("lobby-title").textContent = "🎮 " + (room.name || t("Lobi"));
   const players = room.players || {};
   const uids = Object.keys(players);
   const playerCount = uids.length;
   const max = room.maxPlayers || 5;
   document.getElementById("lobby-subtitle").textContent =
-    `${playerCount}/${max} oyuncu · ${online.isHost ? "Sen Host'sun" : "Host: " + (room.hostName || "?")}`;
+    `${t("{a}/{b} oyuncu", { a: playerCount, b: max })} · ${online.isHost ? t("Sen Host'sun") : t("Host: {ad}", { ad: room.hostName || "?" })}`;
 
   const list = document.getElementById("lobby-players");
   list.innerHTML = "";
@@ -2703,7 +2704,7 @@ function renderLobby(room) {
     const charName = (CHARACTERS[p.charKey] || { name: "?" }).name;
     row.innerHTML = `
       <span class="lp-tag">${escapeHtml(charName)}</span>
-      <span class="lp-name">${escapeHtml(p.name || "?")}${uid === online.uid ? " (Sen)" : ""}</span>
+      <span class="lp-name">${escapeHtml(p.name || "?")}${uid === online.uid ? ` (${t("Sen")})` : ""}</span>
       <span class="lp-ready">${p.ready ? "✓" : "⏳"}</span>
     `;
     list.appendChild(row);
@@ -2714,7 +2715,7 @@ function renderLobby(room) {
   const readyBtn = document.getElementById("lobby-ready-btn");
   if (me) {
     readyBtn.classList.toggle("is-ready", !!me.ready);
-    readyBtn.textContent = me.ready ? "✓ HAZIRIM" : "HAZIR OL";
+    readyBtn.textContent = me.ready ? t("✓ HAZIRIM") : t("HAZIR OL");
   }
 
   // BAŞLAT butonu sadece host'a ve tüm oyuncular hazırsa görünür
@@ -2749,7 +2750,7 @@ async function leaveRoom() {
     await rtdb.remove(`rooms/${roomId}/players/${online.uid}`);
   }
   showScreen("screen-online");
-  setOnlineStatus("Odadan ayrıldın");
+  setOnlineStatus(t("Odadan ayrıldın"));
 }
 
 async function startMpGame() {
@@ -2768,7 +2769,7 @@ function startMpGameClient() {
     rtdb.put(`rooms/${online.roomId}/state`, null);
     rtdb.put(`rooms/${online.roomId}/events`, null);
   }
-  showToast(online.isHost ? "👑 Host olarak başlattın" : "🌐 Bağlanıldı");
+  showToast(online.isHost ? t("👑 Host olarak başlattın") : t("🌐 Bağlanıldı"));
   startGame();
   startMpSync();
 }
@@ -2811,7 +2812,7 @@ async function mpPushImpl() {
   const uid = online.uid;
   const now = performance.now();
   const me = {
-    name: save.playerName || "Avcı",
+    name: save.playerName || t("Avcı"),
     charKey: game.player.charKey,
     costumeIdx: game.player.costumeIdx,
     x: Math.round(game.player.x),
@@ -3019,7 +3020,7 @@ function clientApplyLevel(newLevel) {
   buildWaters();
   buildHazards();
   ensurePlayerSafe();
-  showToast(`📚 Bölüm ${game.level} — ${getTheme().name}`);
+  showToast(t("📚 Bölüm {n} — {tema}", { n: game.level, tema: getTheme().name }));
 }
 
 function flushOnlineRewards() {
@@ -3045,7 +3046,7 @@ function quitOnlineGame() {
   online.isHost = false;
   online.mode = null;
   showScreen("screen-online");
-  setOnlineStatus("Oyundan çıktın");
+  setOnlineStatus(t("Oyundan çıktın"));
 }
 
 function maybeShowUpdateNotes() {
@@ -3071,12 +3072,12 @@ function showUpdateModal(version, notes) {
   }
   const list = notes.length
     ? `<ul class="update-notes">${notes.map((n) => `<li>${n}</li>`).join("")}</ul>`
-    : `<p>Yeni sürüm yüklendi.</p>`;
+    : `<p>${t("Yeni sürüm yüklendi.")}</p>`;
   modal.innerHTML = `
     <div class="modal-content">
-      <h2>🎉 Güncelleme v${version}</h2>
+      <h2>${t("🎉 Güncelleme v{surum}", { surum: version })}</h2>
       ${list}
-      <button class="btn btn-big" onclick="dismissUpdateModal()">Tamam ▶</button>
+      <button class="btn btn-big" onclick="dismissUpdateModal()">${t("Tamam ▶")}</button>
     </div>
   `;
   modal.classList.add("active");
@@ -3116,10 +3117,10 @@ function openName(fromMenu) {
   if (save.playerName) {
     if (hint) hint.style.display = "";
     if (zumLbl) zumLbl.textContent = String(save.zumrut || 0);
-    if (promptEl) promptEl.innerHTML = "Yeni avcı adın ne olsun?";
+    if (promptEl) promptEl.innerHTML = t("Yeni avcı adın ne olsun?");
   } else {
     if (hint) hint.style.display = "none";
-    if (promptEl) promptEl.innerHTML = "Avcımızın adı ne olsun?";
+    if (promptEl) promptEl.innerHTML = t("Avcımızın adı ne olsun?");
   }
   setTimeout(() => inp.focus(), 100);
 }
@@ -3127,14 +3128,14 @@ function openName(fromMenu) {
 function submitName() {
   const inp = document.getElementById("name-input");
   let name = (inp.value || "").trim();
-  if (!name) { showToast("Bir isim yaz!"); return; }
+  if (!name) { showToast(t("Bir isim yaz!")); return; }
   if (name.length > 14) name = name.slice(0, 14);
   const oldName = save.playerName || "";
   const isChange = oldName && oldName !== name;
   const NAME_CHANGE_COST = 50;
   if (isChange) {
     if ((save.zumrut || 0) < NAME_CHANGE_COST) {
-      showToast(`💚 ${NAME_CHANGE_COST} zümrüt gerekli (sende ${save.zumrut || 0})`);
+      showToast(t("💚 {n} zümrüt gerekli (sende {var})", { n: NAME_CHANGE_COST, var: save.zumrut || 0 }));
       return;
     }
     save.zumrut -= NAME_CHANGE_COST;
@@ -3142,10 +3143,10 @@ function submitName() {
   save.playerName = name;
   persistSave();
   if (isChange) {
-    showToast(`✏️ İsim değişti: ${name} (−${NAME_CHANGE_COST}💚)`);
+    showToast(t("✏️ İsim değişti: {ad} (−{n}💚)", { ad: name, n: NAME_CHANGE_COST }));
     renameInLeaderboard(oldName, name);
   } else {
-    showToast(`Hoş geldin, ${name}!`);
+    showToast(t("Hoş geldin, {ad}!", { ad: name }));
   }
   goToMenu();
 }
@@ -3251,8 +3252,8 @@ function renderLeaderboard(list, sourceLabel) {
     const empty = document.createElement("div");
     empty.className = "leaderboard-empty";
     empty.textContent = sourceLabel === "online"
-      ? "Henüz online şampiyon yok. İlk sıraya geç! 🌟"
-      : "Bu cihazda kayıtlı şampiyon yok.";
+      ? t("Henüz online şampiyon yok. İlk sıraya geç! 🌟")
+      : t("Bu cihazda kayıtlı şampiyon yok.");
     container.appendChild(empty);
     return;
   }
@@ -3276,7 +3277,7 @@ function renderLeaderboard(list, sourceLabel) {
 
     const stats = document.createElement("div");
     stats.className = "lb-stats";
-    stats.innerHTML = `<span>📚 Bölüm ${entry.level}</span><span>👻 ${entry.ghosts}</span><span>💰 ${entry.para}</span>`;
+    stats.innerHTML = `<span>📚 ${t("Bölüm {n}", { n: entry.level })}</span><span>👻 ${entry.ghosts}</span><span>💰 ${entry.para}</span>`;
     row.appendChild(stats);
 
     container.appendChild(row);
@@ -3286,11 +3287,11 @@ function renderLeaderboard(list, sourceLabel) {
 async function refreshLeaderboard() {
   const container = document.getElementById("leaderboard-list");
   if (leaderboardSource === "online") {
-    container.innerHTML = '<div class="leaderboard-empty">🌐 Yükleniyor...</div>';
+    container.innerHTML = `<div class="leaderboard-empty">${t("🌐 Yükleniyor...")}</div>`;
     const online = await fetchOnlineLeaderboard(LEADERBOARD_MAX);
     if (online === null) {
       // İnternet yok ya da hata — yerele düş
-      container.innerHTML = '<div class="leaderboard-empty">⚠ İnternete bağlanılamadı, yerel liste gösteriliyor.</div>';
+      container.innerHTML = `<div class="leaderboard-empty">${t("⚠ İnternete bağlanılamadı, yerel liste gösteriliyor.")}</div>`;
       setTimeout(() => renderLeaderboard(loadLeaderboard(), "local"), 600);
       return;
     }
@@ -3301,10 +3302,10 @@ async function refreshLeaderboard() {
 }
 
 function clearLeaderboard() {
-  if (confirm("Şampiyon listesi temizlensin mi?")) {
+  if (confirm(t("Şampiyon listesi temizlensin mi?"))) {
     saveLeaderboard([]);
     refreshLeaderboard();
-    showToast("Liste temizlendi.");
+    showToast(t("Liste temizlendi."));
   }
 }
 
@@ -3320,7 +3321,7 @@ function drawGreeter() {
 
 // ====== MENÜ ======
 function refreshMenu() {
-  document.getElementById("menu-player").textContent = save.playerName || "Avcı";
+  document.getElementById("menu-player").textContent = save.playerName || t("Avcı");
   document.getElementById("menu-para").textContent = save.para;
   document.getElementById("menu-elmas").textContent = save.elmas;
   document.getElementById("menu-zumrut").textContent = save.zumrut;
@@ -3342,7 +3343,7 @@ function refreshMenu() {
   document.getElementById("character-name").textContent = c.name;
   const stats = computeStats(charKey);
   document.getElementById("character-stats").textContent =
-    `🏃 Hız ${stats.speed.toFixed(1)} · 💥 Hasar ${stats.damage} · 🎯 Menzil ${Math.round(stats.range)}`;
+    t("🏃 Hız {hiz} · 💥 Hasar {hasar} · 🎯 Menzil {menzil}", { hiz: stats.speed.toFixed(1), hasar: stats.damage, menzil: Math.round(stats.range) });
 }
 
 function refreshCharacters() {
@@ -3378,8 +3379,8 @@ function refreshCharacters() {
     const info = document.createElement("div");
     info.className = "char-cost";
     if (!unlocked) info.textContent = `💚 ${c.cost}`;
-    else if (selected) info.textContent = "✓ Seçili";
-    else info.textContent = "Tıkla seç";
+    else if (selected) info.textContent = t("✓ Seçili");
+    else info.textContent = t("Tıkla seç");
     card.appendChild(info);
 
     card.onclick = () => {
@@ -3387,20 +3388,20 @@ function refreshCharacters() {
         save.selectedChar = key;
         persistSave();
         refreshCharacters();
-        showToast(`${c.name} seçildi!`);
+        showToast(t("{ad} seçildi!", { ad: c.name }));
       } else {
         if (save.zumrut >= c.cost) {
-          if (confirm(`${c.name} ${c.cost} 💚 zümrüt karşılığında alınsın mı?`)) {
+          if (confirm(t("{ad} {n} 💚 zümrüt karşılığında alınsın mı?", { ad: c.name, n: c.cost }))) {
             save.zumrut -= c.cost;
             save.unlockedChars[key] = true;
             save.selectedChar = key;
             persistSave();
             refreshCharacters();
-            showToast(`🎉 ${c.name} açıldı!`);
+            showToast(t("🎉 {ad} açıldı!", { ad: c.name }));
             audio.unlock();
           }
         } else {
-          showToast("Yeterli zümrüt yok 💚");
+          showToast(t("Yeterli zümrüt yok 💚"));
         }
       }
     };
@@ -3427,13 +3428,13 @@ function refreshShop() {
 
   if (currentShopTab === "upgrades") {
     const activeChar = save.selectedChar;
-    const charName = (CHARACTERS[activeChar] || { name: "Avcı" }).name;
+    const charName = (CHARACTERS[activeChar] || { name: t("Avcı") }).name;
     const u4char = save.upgradesByChar[activeChar];
 
     // Karakter başlığı (yükseltmeler bu karaktere özel)
     const header = document.createElement("div");
     header.className = "upgrade-header";
-    header.innerHTML = `🛠 <b>${charName}</b> için yükseltmeler<br><span class="hint">(Karakter değiştirmek için Karakterler menüsüne git)</span>`;
+    header.innerHTML = t("🛠 <b>{ad}</b> için yükseltmeler", { ad: charName }) + `<br><span class="hint">${t("(Karakter değiştirmek için Karakterler menüsüne git)")}</span>`;
     content.appendChild(header);
 
     Object.keys(UPGRADES).forEach((key) => {
@@ -3449,7 +3450,7 @@ function refreshShop() {
 
       const info = document.createElement("div");
       info.className = "item-info";
-      info.innerHTML = `<div class="item-name">${u.name} (Sv ${lv}/${u.max})</div>
+      info.innerHTML = `<div class="item-name">${u.name} (${t("Sv {a}/{b}", { a: lv, b: u.max })})</div>
                         <div class="item-desc">${u.desc}</div>`;
       item.appendChild(info);
 
@@ -3467,7 +3468,7 @@ function refreshShop() {
             save.upgradesByChar[activeChar][key]++;
             persistSave();
             refreshShop();
-            showToast(`${charName} ${u.name} yükseltildi!`);
+            showToast(t("{ad} {yukseltme} yükseltildi!", { ad: charName, yukseltme: u.name }));
             audio.buy();
           }
         };
@@ -3478,12 +3479,12 @@ function refreshShop() {
     });
   } else if (currentShopTab === "ammo") {
     const activeChar = save.selectedChar;
-    const charName = (CHARACTERS[activeChar] || { name: "Avcı" }).name;
+    const charName = (CHARACTERS[activeChar] || { name: t("Avcı") }).name;
     const stock = ensureAmmoStock(activeChar);
 
     const header = document.createElement("div");
     header.className = "upgrade-header";
-    header.innerHTML = `🎯 <b>${charName}</b> için cephane<br><span class="hint">(Tek kullanımlık · karakter başına ayrı stok · max 9)</span>`;
+    header.innerHTML = t("🎯 <b>{ad}</b> için cephane", { ad: charName }) + `<br><span class="hint">${t("(Tek kullanımlık · karakter başına ayrı stok · max 9)")}</span>`;
     content.appendChild(header);
 
     Object.keys(WEAPONS).forEach((key) => {
@@ -3505,7 +3506,7 @@ function refreshShop() {
 
       const btn = document.createElement("button");
       if (own >= w.max) {
-        btn.textContent = "DOLU";
+        btn.textContent = t("DOLU");
         btn.disabled = true;
       } else {
         btn.textContent = `💰 ${w.cost}`;
@@ -3549,21 +3550,21 @@ function refreshShop() {
         const info = document.createElement("div");
         info.className = "item-info";
         info.innerHTML = `<div class="item-name">${CHARACTERS[charKey].name} - ${cos.name}</div>
-                          <div class="item-desc">Kostüm</div>`;
+                          <div class="item-desc">${t("Kostüm")}</div>`;
         item.appendChild(info);
 
         const btn = document.createElement("button");
         if (owned) {
           if (save.selectedCostume[charKey] === idx) {
-            btn.textContent = "✓ Aktif";
+            btn.textContent = t("✓ Aktif");
             btn.disabled = true;
           } else {
-            btn.textContent = "Giy";
+            btn.textContent = t("Giy");
             btn.onclick = () => {
               save.selectedCostume[charKey] = idx;
               persistSave();
               refreshShop();
-              showToast("Kostüm değişti!");
+              showToast(t("Kostüm değişti!"));
             };
           }
         } else {
@@ -3576,7 +3577,7 @@ function refreshShop() {
               save.selectedCostume[charKey] = idx;
               persistSave();
               refreshShop();
-              showToast("🎉 Yeni kostüm!");
+              showToast(t("🎉 Yeni kostüm!"));
               audio.unlock();
             }
           };
@@ -4073,7 +4074,7 @@ function update(dt, now) {
   if (!isSpectator && collidesSpikes(game.player.x, game.player.y, game.player.r)) {
     if (!game.player.spikeContact) {
       game.player.frozenUntil = now + 1000;
-      showFloat("❄️ Donduruldu!", game.player.x, game.player.y - 30);
+      showFloat(t("❄️ Donduruldu!"), game.player.x, game.player.y - 30);
       audio.hit();
       navigator.vibrate?.(40);
       game.player.spikeContact = true;
@@ -4083,7 +4084,7 @@ function update(dt, now) {
   }
   if (!isSpectator && game.player.invuln <= 0 && collidesLavas(game.player.x, game.player.y, game.player.r)) {
     damagePlayer();
-    showFloat("🔥 Lav!", game.player.x, game.player.y - 30);
+    showFloat(t("🔥 Lav!"), game.player.x, game.player.y - 30);
   }
 
   // ========== HOST-ONLY blok (spawn, AI, transition, AOE güç efektleri) ==========
@@ -4114,7 +4115,7 @@ function update(dt, now) {
   // Bölüm tamamlandı mı? Boss öldü VE diğer tüm hayaletler bitti
   if (game.bossDefeated && game.ghosts.length === 0 && !game.levelTransitioning) {
     game.levelTransitioning = true;
-    showToast("🌟 Bölüm temiz! Sıradaki bölüm geliyor...");
+    showToast(t("🌟 Bölüm temiz! Sıradaki bölüm geliyor..."));
     setTimeout(() => { if (game.running) nextLevel(); }, 1800);
   }
 
@@ -4543,7 +4544,7 @@ function nextLevel() {
   buildWaters();
   buildHazards();
   ensurePlayerSafe();
-  showToast(`📚 Bölüm ${game.level} — ${getTheme().name}`);
+  showToast(t("📚 Bölüm {n} — {tema}", { n: game.level, tema: getTheme().name }));
   // Boss bölüm seviyesine göre belli bir süre sonra
   game.bossSpawnTimer = getBossTimerForLevel(game.level);
   game.bossDefeated = false;
@@ -4593,7 +4594,7 @@ function spawnBoss() {
     minionState: "waiting",
     minionTimer: 1.5,
   });
-  showToast(`👑 BÖLÜM ${game.level} BOSS!`);
+  showToast(t("👑 BÖLÜM {n} BOSS!", { n: game.level }));
   audio.bigGhost();
 }
 
@@ -4668,7 +4669,7 @@ function killGhost(g, idx) {
   if (g.isBoss) {
     game.totalCaught++;
     game.bossDefeated = true;
-    showToast("👑 BOSS YENİLDİ! Kalan hayaletleri temizle!");
+    showToast(t("👑 BOSS YENİLDİ! Kalan hayaletleri temizle!"));
     audio.bossDie();
     navigator.vibrate?.([100, 50, 100, 50, 200]);
 
@@ -4693,7 +4694,7 @@ function killGhost(g, idx) {
     // Her 5 bölümde bir KALP düşer (4 sn'lik kısa ömür)
     if (game.level % 5 === 0) {
       game.pickups.push({ x: g.x, y: g.y - 60, kind: "kalp", life: 4 });
-      showToast("💖 KALP! 4 saniyede topla!");
+      showToast(t("💖 KALP! 4 saniyede topla!"));
     }
 
     spawnDeathParticles(g.x + 30, g.y);
@@ -4760,10 +4761,10 @@ function collectPickup(p) {
     if (game.player.hp < game.player.maxHp) {
       game.player.hp += 1;
       showFloat("+1 ❤️", p.x, p.y);
-      showToast("💖 Can yenilendi!");
+      showToast(t("💖 Can yenilendi!"));
       audio.heart();
     } else {
-      showFloat("Can dolu", p.x, p.y);
+      showFloat(t("Can dolu"), p.x, p.y);
       audio.pickup();
     }
   }
@@ -4855,7 +4856,7 @@ function becomeSpectator() {
   game.player.dead = true;
   game.player.hp = 0;
   game.player.invuln = 999999; // hasar almasın
-  showToast("👻 Hayalet oldun — diğer oyuncuları izle veya menüye dön");
+  showToast(t("👻 Hayalet oldun — diğer oyuncuları izle veya menüye dön"));
   audio.damage();
 }
 
@@ -5018,13 +5019,13 @@ function updateHUD() {
   if (bossEl) {
     if (game.bossDefeated) {
       const remain = game.ghosts.length;
-      bossEl.textContent = remain > 0 ? `🧹 Kalan: ${remain}` : "✓ Bölüm temiz!";
+      bossEl.textContent = remain > 0 ? t("🧹 Kalan: {n}", { n: remain }) : t("✓ Bölüm temiz!");
       bossEl.className = "boss-status boss-cleared";
     } else if (game.bossSpawnTimer > 0) {
-      bossEl.textContent = `⏳ Boss: ${Math.ceil(game.bossSpawnTimer)}s`;
+      bossEl.textContent = t("⏳ Boss: {n}s", { n: Math.ceil(game.bossSpawnTimer) });
       bossEl.className = "boss-status";
     } else {
-      bossEl.textContent = "👑 BOSS!";
+      bossEl.textContent = t("👑 BOSS!");
       bossEl.className = "boss-status boss-active";
     }
   }
@@ -5104,7 +5105,7 @@ function endGame(won) {
 
   // Şampiyon listesine ekle (yerel + buluta)
   const entry = {
-    name: save.playerName || "Avcı",
+    name: save.playerName || t("Avcı"),
     level: game.level,
     ghosts: game.totalCaught,
     para: finalPara,
@@ -5114,15 +5115,15 @@ function endGame(won) {
   submitOnlineScore(entry); // sessizce buluta yolla, sonucu beklemiyoruz
   const rankEl = document.getElementById("gameover-rank");
   if (rank >= 0) {
-    if (rank === 0) rankEl.textContent = "🥇 1. SIRA! Şampiyonsun!";
-    else if (rank === 1) rankEl.textContent = "🥈 2. sıraya girdin!";
-    else if (rank === 2) rankEl.textContent = "🥉 3. sıraya girdin!";
-    else rankEl.textContent = `🏆 Şampiyonlar listesinde ${rank + 1}. sıradasın!`;
+    if (rank === 0) rankEl.textContent = t("🥇 1. SIRA! Şampiyonsun!");
+    else if (rank === 1) rankEl.textContent = t("🥈 2. sıraya girdin!");
+    else if (rank === 2) rankEl.textContent = t("🥉 3. sıraya girdin!");
+    else rankEl.textContent = t("🏆 Şampiyonlar listesinde {n}. sıradasın!", { n: rank + 1 });
   } else {
     rankEl.textContent = "";
   }
 
-  document.getElementById("gameover-title").textContent = won ? "🌟 Harika!" : "👻 Yakalandın!";
+  document.getElementById("gameover-title").textContent = won ? t("🌟 Harika!") : t("👻 Yakalandın!");
   document.getElementById("final-ghosts").textContent = game.totalCaught;
   document.getElementById("final-para").textContent = finalPara;
   document.getElementById("final-elmas").textContent = game.runElmas;
@@ -5151,7 +5152,7 @@ function init() {
   // Hoşgeldin ekranında ismi varsa göster
   if (save.playerName) {
     document.getElementById("welcome-text").innerHTML =
-      `Merhaba <b>${escapeHtml(save.playerName)}</b>! Ben <b>Kinkin</b>, hadi hayalet avına!`;
+      t("Merhaba <b>{ad}</b>! Ben <b>Kinkin</b>, hadi hayalet avına!", { ad: escapeHtml(save.playerName) });
   }
   // İsim ekranında Enter ile gönder
   const nameInput = document.getElementById("name-input");
@@ -5206,26 +5207,26 @@ async function initGoogleAuth() {
 async function signInWithGoogle() {
   try {
     const ok = await initGoogleAuth();
-    if (!ok) { showToast("Google giriş bu cihazda kullanılamıyor"); return; }
+    if (!ok) { showToast(t("Google giriş bu cihazda kullanılamıyor")); return; }
     const ga = googleAuthPlugin();
     const guser = await ga.signIn();
     if (!guser || !guser.authentication || !guser.authentication.idToken) {
-      showToast("Google girişi iptal");
+      showToast(t("Google girişi iptal"));
       return;
     }
     // Firebase Auth ile credential dönüştür
     fbDb(); // initializeApp tetikle
-    if (!firebase.auth) { showToast("Firebase Auth SDK yok"); return; }
+    if (!firebase.auth) { showToast(t("Firebase Auth SDK yok")); return; }
     const credential = firebase.auth.GoogleAuthProvider.credential(guser.authentication.idToken);
     const result = await firebase.auth().signInWithCredential(credential);
     const u = result.user;
     if (u) {
-      showToast(`✅ Hoş geldin, ${u.displayName || u.email}`);
+      showToast(t("✅ Hoş geldin, {ad}", { ad: u.displayName || u.email }));
       refreshAccountScreen();
     }
   } catch (e) {
     console.error("signInWithGoogle", e);
-    showToast(`Google girişi hatası: ${(e && e.message) || e}`);
+    showToast(t("Google girişi hatası: {hata}", { hata: (e && e.message) || e }));
   }
 }
 
@@ -5234,7 +5235,7 @@ async function signOutGoogle() {
     const ga = googleAuthPlugin();
     if (ga) { try { await ga.signOut(); } catch (_) {} }
     if (firebase && firebase.auth) { try { await firebase.auth().signOut(); } catch (_) {} }
-    showToast("✓ Çıkış yapıldı");
+    showToast(t("✓ Çıkış yapıldı"));
     refreshAccountScreen();
   } catch (e) { console.error("signOutGoogle", e); }
 }
@@ -5242,8 +5243,8 @@ async function signOutGoogle() {
 // Hesap silme (Google Play kuralı): Google bulut yedeği, kodlu yedek ve Firebase hesabı silinir.
 async function deleteAccountGoogle() {
   const u = currentFirebaseUser();
-  if (!u) { showToast("Önce Google ile giriş yap"); return; }
-  if (!confirm("Google hesabına bağlı bulut yedeğin ve oyundaki hesabın kalıcı olarak silinecek.\nBu cihazdaki ilerleme kalır. Devam edilsin mi?")) return;
+  if (!u) { showToast(t("Önce Google ile giriş yap")); return; }
+  if (!confirm(t("Google hesabına bağlı bulut yedeğin ve oyundaki hesabın kalıcı olarak silinecek.\nBu cihazdaki ilerleme kalır. Devam edilsin mi?"))) return;
   await rtdb.remove(`accounts_google/${u.uid}`);
   if (save.accountCode) {
     await rtdb.remove(`accounts/${save.accountCode.replace("-", "_")}`);
@@ -5255,7 +5256,7 @@ async function deleteAccountGoogle() {
   const ga = googleAuthPlugin();
   if (ga) { try { await ga.signOut(); } catch (_) {} }
   try { await firebase.auth().signOut(); } catch (_) {}
-  showToast(tamam ? "🗑 Hesabın silindi" : "🗑 Yedeğin silindi; hesabı silmek için yeniden giriş yapıp tekrar dene");
+  showToast(tamam ? t("🗑 Hesabın silindi") : t("🗑 Yedeğin silindi; hesabı silmek için yeniden giriş yapıp tekrar dene"));
   refreshAccountScreen();
 }
 
@@ -5265,8 +5266,8 @@ function currentFirebaseUser() {
 
 async function backupAccountGoogle() {
   const u = currentFirebaseUser();
-  if (!u) { showToast("Önce Google ile giriş yap"); return; }
-  if (!save.playerName) { showToast("Önce avcı adını ayarla"); return; }
+  if (!u) { showToast(t("Önce Google ile giriş yap")); return; }
+  if (!save.playerName) { showToast(t("Önce avcı adını ayarla")); return; }
   const payload = {
     name: save.playerName,
     googleName: u.displayName || "",
@@ -5275,19 +5276,19 @@ async function backupAccountGoogle() {
     updatedAt: Date.now(),
   };
   const ok = await rtdb.put(`accounts_google/${u.uid}`, payload);
-  if (ok) showToast("✅ Bulut yedeği güncellendi");
-  else showToast("❌ Yedekleme başarısız");
+  if (ok) showToast(t("✅ Bulut yedeği güncellendi"));
+  else showToast(t("❌ Yedekleme başarısız"));
   refreshAccountScreen();
 }
 
 async function restoreAccountGoogle() {
   const u = currentFirebaseUser();
-  if (!u) { showToast("Önce Google ile giriş yap"); return; }
-  showToast("📥 İndiriliyor...");
+  if (!u) { showToast(t("Önce Google ile giriş yap")); return; }
+  showToast(t("📥 İndiriliyor..."));
   const data = await rtdb.get(`accounts_google/${u.uid}`);
-  if (!data || !data.save) { showToast("Bu Google hesabı için yedek yok"); return; }
+  if (!data || !data.save) { showToast(t("Bu Google hesabı için yedek yok")); return; }
   const who = data.name || u.displayName || "?";
-  if (!confirm(`Bu cihazdaki ilerleme silinip "${who}" hesabıyla değiştirilecek.\nDevam edilsin mi?`)) return;
+  if (!confirm(t("Bu cihazdaki ilerleme silinip \"{ad}\" hesabıyla değiştirilecek.\nDevam edilsin mi?", { ad: who }))) return;
   try {
     const parsed = JSON.parse(data.save);
     for (const k of Object.keys(save)) delete save[k];
@@ -5297,10 +5298,10 @@ async function restoreAccountGoogle() {
     audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1 }, save.volumes || {});
     refreshSoundButtons();
     refreshSoundSliders();
-    showToast(`✅ Geri yüklendi: ${who}`);
+    showToast(t("✅ Geri yüklendi: {ad}", { ad: who }));
     goToMenu();
   } catch (e) {
-    showToast("❌ Veri bozuk");
+    showToast(t("❌ Veri bozuk"));
   }
 }
 
@@ -5335,7 +5336,7 @@ function refreshAccountScreen() {
   const statsEl = document.getElementById("account-stats");
   if (statsEl) {
     statsEl.innerHTML =
-      `💰 ${save.para || 0} &nbsp; 💎 ${save.elmas || 0} &nbsp; 💚 ${save.zumrut || 0} &nbsp; ⭐ En yüksek bölüm: ${save.highestLevel || 1}`;
+      `💰 ${save.para || 0} &nbsp; 💎 ${save.elmas || 0} &nbsp; 💚 ${save.zumrut || 0} &nbsp; ⭐ ${t("En yüksek bölüm: {n}", { n: save.highestLevel || 1 })}`;
   }
   // Google sign-in durumu
   const u = currentFirebaseUser();
@@ -5356,7 +5357,7 @@ function refreshAccountScreen() {
 
 async function backupAccount() {
   if (!save.playerName) {
-    showToast("Önce avcı adını ayarla");
+    showToast(t("Önce avcı adını ayarla"));
     return;
   }
   const code = getOrCreateAccountCode();
@@ -5368,26 +5369,26 @@ async function backupAccount() {
   };
   const ok = await rtdb.put(`accounts/${key}`, payload);
   if (ok) {
-    showToast(`✅ Yedeklendi`);
+    showToast(t("✅ Yedeklendi"));
     refreshAccountScreen();
   } else {
-    showToast("❌ Yedekleme başarısız (internet?)");
+    showToast(t("❌ Yedekleme başarısız (internet?)"));
   }
 }
 
 async function restoreAccount() {
   const inp = document.getElementById("restore-code-input");
   let raw = ((inp && inp.value) || "").trim().toUpperCase();
-  if (!raw) { showToast("Hesap kodunu yaz"); return; }
+  if (!raw) { showToast(t("Hesap kodunu yaz")); return; }
   raw = raw.replace(/[^A-Z0-9]/g, "");
-  if (raw.length !== 6) { showToast("Kod 6 karakter olmalı"); return; }
+  if (raw.length !== 6) { showToast(t("Kod 6 karakter olmalı")); return; }
   const key = raw.slice(0, 3) + "_" + raw.slice(3);
   const display = raw.slice(0, 3) + "-" + raw.slice(3);
-  showToast("📥 İndiriliyor...");
+  showToast(t("📥 İndiriliyor..."));
   const data = await rtdb.get(`accounts/${key}`);
-  if (!data || !data.save) { showToast("❌ Hesap bulunamadı"); return; }
+  if (!data || !data.save) { showToast(t("❌ Hesap bulunamadı")); return; }
   const who = data.name || "?";
-  if (!confirm(`Bu cihazdaki ilerleme silinip "${who}" hesabıyla değiştirilecek.\nDevam edilsin mi?`)) return;
+  if (!confirm(t("Bu cihazdaki ilerleme silinip \"{ad}\" hesabıyla değiştirilecek.\nDevam edilsin mi?", { ad: who }))) return;
   try {
     const parsed = JSON.parse(data.save);
     // Sıfırdan yükle: parsed save'i mevcut save'in üzerine yaz, accountCode'u koru
@@ -5400,10 +5401,10 @@ async function restoreAccount() {
     audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1 }, save.volumes || {});
     refreshSoundButtons();
     refreshSoundSliders();
-    showToast(`✅ Geri yüklendi: ${who}`);
+    showToast(t("✅ Geri yüklendi: {ad}", { ad: who }));
     goToMenu();
   } catch (e) {
-    showToast("❌ Veri bozuk");
+    showToast(t("❌ Veri bozuk"));
   }
 }
 
@@ -5412,7 +5413,7 @@ function copyAccountCode() {
   // Modern API → fallback
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(code).then(
-      () => showToast(`📋 Kopyalandı: ${code}`),
+      () => showToast(t("📋 Kopyalandı: {kod}", { kod: code })),
       () => fallbackCopy(code)
     );
   } else {
@@ -5427,9 +5428,9 @@ function fallbackCopy(text) {
     document.body.appendChild(ta); ta.select();
     document.execCommand("copy");
     document.body.removeChild(ta);
-    showToast(`📋 Kopyalandı: ${text}`);
+    showToast(t("📋 Kopyalandı: {kod}", { kod: text }));
   } catch (_) {
-    showToast(`Kodun: ${text}`);
+    showToast(t("Kodun: {kod}", { kod: text }));
   }
 }
 
@@ -5447,7 +5448,7 @@ function toggleSound() {
 
 function refreshSoundButtons() {
   const on = audio.enabled !== false;
-  const label = on ? "🔊 Ses Açık" : "🔇 Ses Kapalı";
+  const label = on ? t("🔊 Ses Açık") : t("🔇 Ses Kapalı");
   document.querySelectorAll(".sound-toggle").forEach((el) => {
     el.textContent = label;
     el.classList.toggle("sound-off", !on);

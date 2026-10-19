@@ -1,7 +1,8 @@
 # Hayalet Avcıları — mağaza metinleri
 
 `android/play.mjs magaza` bu dosyadan "Uygulama adı", "Destek e-postası", "Gizlilik politikası" satırlarını ve
-"Kısa açıklama" / "Uzun açıklama" bölümlerini okur (ad ≤30, kısa ≤80, uzun ≤4000 karakter).
+"Kısa açıklama" / "Uzun açıklama" bölümlerini okur (ad ≤30, kısa ≤80, uzun ≤4000 karakter). Diğer diller
+`diller/<dil>.md` dosyalarındadır (aynı biçim + "Sürüm notu" bölümü, ≤500 karakter).
 
 ## Ortak
 
@@ -13,6 +14,7 @@
 - **Gizlilik politikası:** https://mahmuttari.github.io/Lispler/hayalet-avcilari/gizlilik.html
 - **Hesap silme adresi:** https://mahmuttari.github.io/Lispler/hayalet-avcilari/hesap-silme.html
 - **Destek e-postası:** mahmuttari@gmail.com
+- **Mağaza dilleri:** tr-TR (varsayılan), en-US, es-ES, es-419, zh-CN, hi-IN, ar — çeviriler `diller/` klasöründe
 
 ## Kısa açıklama
 
@@ -42,6 +44,9 @@ Hayalet Avcıları'nda hayaletler her yerden geliyor! Avcını seç, labirent gi
 
 ☁️ İLERLEMEN KAYBOLMASIN
 • İstersen Google ile giriş yap, ilerlemeni buluta yedekle ve başka telefona taşı.
+
+🌍 6 DİL
+• Türkçe, English, Español, 简体中文, हिन्दी, العربية — oyun telefonunun dilinde açılır, menüden değiştirebilirsin.
 
 Reklam yok, gerçek parayla satın alma yok. Oyundaki para, elmas ve zümrüt yalnızca oynayarak kazanılır.
 

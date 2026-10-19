@@ -5,6 +5,7 @@
 //
 //   node play.mjs durum                         — salt okuma: ayrıntılar, kanallar, paketler, diller, görsel sayıları
 //   node play.mjs magaza [uygula]               — iletişim bilgileri + tr-TR mağaza metni (magaza/aciklamalar.md)
+//                                                 + varsa magaza/diller/<dil>.md (ör. en-US.md) çevirileri
 //   node play.mjs gorsel [uygula]               — simge, öne çıkan görsel, telefon ekran görüntüleri (magaza/play)
 //   node play.mjs yukle [dahili] [yayinla] [uygula]
 //                                               — dist/NotDefteri-play.aab'yi üretim (ya da dahili test) kanalına
@@ -35,25 +36,52 @@ const UPAPI = `https://androidpublisher.googleapis.com/upload/androidpublisher/v
 const ARG = process.argv.slice(3);
 const UYGULA = ARG.includes('uygula');
 
-/** aciklamalar.md → Play'e yazılacak ayrıntılar ve tr-TR mağaza metni; sınırlar aşılırsa hata. */
-export function magazaMetinleri(md) {
-  const alan = (ad) => new RegExp(`^- \\*\\*${ad}:\\*\\* (.+)$`, 'm').exec(md)?.[1].trim();
-  const bolum = (baslik) => (md.split(/^## /m).find((b) => b.startsWith(baslik)) || '').split('\n').slice(1).join('\n').trim();
+const mdAlan = (md, ad) => new RegExp(`^- \\*\\*${ad}:\\*\\* (.+)$`, 'm').exec(md)?.[1].trim();
+const mdBolum = (md, baslik) => (md.split(/^## /m).find((b) => b.startsWith(baslik)) || '').split('\n').slice(1).join('\n').trim();
+
+/** Bir dilin mağaza metni: "Uygulama adı" satırı, "Kısa açıklama" ve "Uzun açıklama" bölümleri; sınırlar aşılırsa hata. */
+function listingOku(md, dil) {
   const listing = {
-    title: alan('Uygulama adı'),
-    shortDescription: bolum('Kısa açıklama'),
-    fullDescription: bolum('Uzun açıklama'),
+    title: mdAlan(md, 'Uygulama adı'),
+    shortDescription: mdBolum(md, 'Kısa açıklama'),
+    fullDescription: mdBolum(md, 'Uzun açıklama'),
   };
   for (const [k, max] of [['title', 30], ['shortDescription', 80], ['fullDescription', 4000]]) {
-    if (!listing[k] || listing[k].length > max) throw new Error(`tr-TR ${k}: ${listing[k]?.length ?? 'yok'}/${max}`);
+    if (!listing[k] || listing[k].length > max) throw new Error(`${dil} ${k}: ${listing[k]?.length ?? 'yok'}/${max}`);
   }
+  return listing;
+}
+
+/** magaza/diller/<dil>.md → { dil: md } (yoksa boş) */
+export function dilDosyalari(magazaDizini = MAGAZA) {
+  const d = path.join(magazaDizini, 'diller');
+  if (!fs.existsSync(d)) return {};
+  return Object.fromEntries(fs.readdirSync(d).filter((f) => /^[a-z]{2,3}(-[A-Za-z0-9]+)?\.md$/.test(f)).sort()
+    .map((f) => [f.slice(0, -3), fs.readFileSync(path.join(d, f), 'utf8')]));
+}
+
+/** aciklamalar.md (+ çeviriler) → Play'e yazılacak ayrıntılar ve mağaza metinleri; sınırlar aşılırsa hata. */
+export function magazaMetinleri(md, ceviriler = {}) {
+  const listing = listingOku(md, 'tr-TR');
+  const alan = (ad) => mdAlan(md, ad);
   const email = alan('Destek e-postası');
   if (!/^[^@\s]+@[^@\s]+$/.test(email || '')) throw new Error('aciklamalar.md: "Destek e-postası" satırı yok');
   const site = /^- \*\*Gizlilik politikası:\*\* (https:\/\/\S+?)gizlilik\.html$/m.exec(md)?.[1];
   return {
     details: { defaultLanguage: 'tr-TR', contactEmail: email, ...(site ? { contactWebsite: site } : {}) },
-    listings: { 'tr-TR': listing },
+    listings: { 'tr-TR': listing, ...Object.fromEntries(Object.entries(ceviriler).map(([dil, cmd]) => [dil, listingOku(cmd, dil)])) },
   };
+}
+
+/** Sürüm notları: tr-TR surum-notu.txt, çeviriler diller/<dil>.md "Sürüm notu" bölümü (Play sınırı 500 karakter). */
+export function surumNotlari(trNot, ceviriler = {}) {
+  const notlar = [{ language: 'tr-TR', text: trNot.trim() }];
+  for (const [dil, cmd] of Object.entries(ceviriler)) {
+    const n = mdBolum(cmd, 'Sürüm notu');
+    if (n) notlar.push({ language: dil, text: n });
+  }
+  for (const n of notlar) if (n.text.length > 500) throw new Error(`${n.language} sürüm notu ${n.text.length}/500`);
+  return notlar;
 }
 
 /** Play'in verdiği sertifika özeti (onaltılık ya da base64) → "AB:CD:…". */
@@ -64,12 +92,16 @@ export function parmakIzi(ozet) {
   return hex.toUpperCase().match(/../g).join(':');
 }
 
-/** Görseller: Play türü → dosyalar (sıralı). */
-export function gorseller() {
-  const d = path.join(MAGAZA, 'play');
+/** Görseller: Play türü → dosyalar (sıralı). tr-TR magaza/play/, diğer diller magaza/play/<dil>/ (yoksa null:
+ *  Play o dilde varsayılan dilin görsellerini gösterir). Dil klasöründe simge yoksa tr-TR simgesi kullanılır. */
+export function gorseller(dil = 'tr-TR') {
+  const kok = path.join(MAGAZA, 'play');
+  const d = dil === 'tr-TR' ? kok : path.join(kok, dil);
+  if (!fs.existsSync(d)) return null;
   const tel = fs.readdirSync(d).filter((f) => /^telefon-.*\.png$/.test(f)).sort();
+  const yol = (f) => (fs.existsSync(path.join(d, f)) ? path.join(d, f) : path.join(kok, f));
   const g = { icon: ['simge-512.png'], featureGraphic: ['tanitim-gorseli-1024x500.png'], phoneScreenshots: tel };
-  return Object.fromEntries(Object.entries(g).map(([tur, dosyalar]) => [tur, dosyalar.map((f) => path.join(d, f))]));
+  return Object.fromEntries(Object.entries(g).map(([tur, dosyalar]) => [tur, dosyalar.map(yol)]));
 }
 
 /** android/app/build.gradle → { versionCode, versionName } */
@@ -129,7 +161,7 @@ async function durum() {
 }
 
 async function magaza() {
-  const m = magazaMetinleri(fs.readFileSync(path.join(MAGAZA, 'aciklamalar.md'), 'utf8'));
+  const m = magazaMetinleri(fs.readFileSync(path.join(MAGAZA, 'aciklamalar.md'), 'utf8'), dilDosyalari());
   await duzenle(async (id) => {
     if (UYGULA) await api('PUT', `${API}/edits/${id}/details`, m.details);
     console.log(`  ${UYGULA ? '[tamam]' : '[plan]'} ayrıntılar: ${m.details.defaultLanguage} · ${m.details.contactEmail} · ${m.details.contactWebsite || '—'}`);
@@ -141,15 +173,19 @@ async function magaza() {
 }
 
 async function gorsel() {
-  const g = gorseller();
+  const diller = ['tr-TR', ...Object.keys(dilDosyalari())];
   await duzenle(async (id) => {
-    for (const [tur, dosyalar] of Object.entries(g)) {
-      if (UYGULA) {
-        await api('DELETE', `${API}/edits/${id}/listings/tr-TR/${tur}`);
-        for (const f of dosyalar) await api('POST', `${UPAPI}/edits/${id}/listings/tr-TR/${tur}?uploadType=media`, fs.readFileSync(f), 'image/png');
+    for (const dil of diller) {
+      const g = gorseller(dil);
+      if (!g) { console.log(`  ${dil}: görsel klasörü yok, Play varsayılan dilinkileri gösterir`); continue; }
+      for (const [tur, dosyalar] of Object.entries(g)) {
+        if (UYGULA) {
+          await api('DELETE', `${API}/edits/${id}/listings/${dil}/${tur}`);
+          for (const f of dosyalar) await api('POST', `${UPAPI}/edits/${id}/listings/${dil}/${tur}?uploadType=media`, fs.readFileSync(f), 'image/png');
+        }
       }
+      console.log(`  ${UYGULA ? '[tamam]' : '[plan]'} ${dil}: ${Object.entries(g).map(([t, f]) => `${t}=${f.length}`).join(' ')}`);
     }
-    console.log(`  ${UYGULA ? '[tamam]' : '[plan]'} tr-TR: ${Object.entries(g).map(([t, f]) => `${t}=${f.length}`).join(' ')}`);
   });
 }
 
@@ -158,7 +194,7 @@ async function yukle() {
   const { versionCode: vc, versionName } = surumBilgisi(fs.readFileSync(path.join(KOK, SECIM.gradle), 'utf8'));
   const kanal = ARG.includes('dahili') ? 'internal' : 'production';
   const status = ARG.includes('yayinla') ? 'completed' : 'draft';
-  const notlar = fs.readFileSync(path.join(MAGAZA, 'surum-notu.txt'), 'utf8').trim();
+  const notlar = surumNotlari(fs.readFileSync(path.join(MAGAZA, 'surum-notu.txt'), 'utf8'), dilDosyalari());
   console.log(`paket ${PAKET} · versionCode ${vc} · ${(fs.statSync(AAB).size / 1048576).toFixed(1)} MB · kanal ${kanal} · durum ${status}`);
   await duzenle(async (id) => {
     const varolan = ((await api('GET', `${API}/edits/${id}/bundles`)).bundles || []).map((b) => b.versionCode);
@@ -170,7 +206,7 @@ async function yukle() {
     } else console.log('  [plan] AAB yüklenecek');
     console.log(`  kanal ${kanal} şimdi: ${surumler(await api('GET', `${API}/edits/${id}/tracks/${kanal}`))}`);
     const govde = { track: kanal, releases: [{ name: `${versionName} (${vc})`, versionCodes: [String(vc)], status,
-      releaseNotes: [{ language: 'tr-TR', text: notlar }] }] };
+      releaseNotes: notlar }] };
     if (UYGULA) await api('PUT', `${API}/edits/${id}/tracks/${kanal}`, govde);
     console.log(`  ${UYGULA ? '[tamam]' : '[plan]'} kanal ${kanal} → ${versionName} (${vc}) ${status}`);
   });

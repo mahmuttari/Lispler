@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Hayalet Avcıları</string>
-    <string name="title_activity_main">Hayalet Avcıları</string>
+    <string name="app_name">Ghost Hunters</string>
+    <string name="title_activity_main">Ghost Hunters</string>
     <string name="package_name">com.poyrazworkshop.hayaletavcilari</string>
     <string name="custom_url_scheme">com.poyrazworkshop.hayaletavcilari</string>
 </resources>

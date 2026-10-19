@@ -7,7 +7,8 @@ giriş `@codetrix-studio/capacitor-google-auth` eklentisiyle yapılır.
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.9.1 (versionCode 35) |
+| Sürüm | 3.10.0 (versionCode 36) |
+| Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
 | Play paketi | `dist/HayaletAvcilari-play.aab` (yükleme anahtarıyla imzalı) |
@@ -40,6 +41,24 @@ boş yere çıkarılır. Çevrimiçi oyunda ve yeni oyunun başında engel yerle
 
 Test: `node hayalet-avcilari/test/engel.test.mjs` (Playwright + Chromium). Eski kodda başarısız olur (uzun oyunda
 3.208 karede gömülü hayalet), yeni kodda geçer.
+
+## Diller
+
+Kaynak dil Türkçedir. Metinler kodda Türkçe yazılır ve `t("…")` ile çevrilir (`www/i18n.js`); `{ad}` gibi yer
+tutucular `t(metin, { ad: … })` ile doldurulur. Sözlükler `www/i18n/<dil>.js` dosyalarındadır, anahtar Türkçe metnin
+kendisidir. `index.html`'deki sabit metinler açılışta `dilUygula()` ile çevrilir; iç biçimli metinler `data-i18n-html`
+ile işaretlenir. Dil ilk açılışta telefonun dilinden seçilir (desteklenmeyen dilde İngilizce), menüdeki **🌐 Dil**
+düğmesiyle değiştirilir. Arapçada sayfa `dir="rtl"` olur. Android simge adı `res/values-<dil>/strings.xml`'de.
+
+Yeni ya da değişen bir metin için:
+```sh
+node hayalet-avcilari/araclar/anahtarlar.mjs            # çevrilecek bütün anahtarlar
+node hayalet-avcilari/araclar/sozluk.mjs denetle         # eksik anahtar, yer tutucu, HTML etiketi denetimi
+node hayalet-avcilari/test/dil.test.mjs                  # her dilde bütün ekranlar: çevrilmemiş metin, taşma, hata
+node hayalet-avcilari/araclar/magaza-gorsel.mjs          # Play ekran görüntüleri ve tanıtım görseli (her dil)
+```
+Mağaza metinleri: Türkçe `magaza/aciklamalar.md`, diğerleri `magaza/diller/<play-dili>.md` (en-US, es-ES, es-419,
+zh-CN, hi-IN, ar); görseller `magaza/play/` ve `magaza/play/<play-dili>/`.
 
 ## Derleme
 

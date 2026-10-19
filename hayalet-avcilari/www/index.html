@@ -19,12 +19,13 @@
 <div id="screen-welcome" class="screen active">
   <div class="welcome-bg"></div>
   <div class="welcome-content">
-    <h1 class="title">👻 HAYALET<br>AVCILARI 👻</h1>
+    <h1 class="title" data-i18n-html>👻 HAYALET<br>AVCILARI 👻</h1>
     <div id="kinkin-greeter" class="greeter"></div>
     <div class="speech-bubble">
-      <p id="welcome-text">Merhaba! Ben <b>Kinkin</b>! Hadi birlikte hayalet avına çıkalım!</p>
+      <p id="welcome-text" data-i18n-html>Merhaba! Ben <b>Kinkin</b>! Hadi birlikte hayalet avına çıkalım!</p>
     </div>
     <button class="btn btn-big" onclick="welcomeContinue()">BAŞLA ▶</button>
+    <button class="btn btn-small" onclick="openLanguage()">🌐 Dil</button>
   </div>
 </div>
 
@@ -37,7 +38,7 @@
       <p id="name-prompt">Avcımızın adı ne olsun?</p>
     </div>
     <input id="name-input" class="name-input" type="text" maxlength="14" placeholder="Adını yaz..." autocomplete="off">
-    <p id="name-cost-hint" class="name-cost-hint" style="display:none;">💚 İsim değişikliği <b>50 zümrüt</b> tutar (sende <b id="name-zumrut">0</b>).</p>
+    <p id="name-cost-hint" class="name-cost-hint" style="display:none;" data-i18n-html>💚 İsim değişikliği <b>50 zümrüt</b> tutar (sende <b id="name-zumrut">0</b>).</p>
     <button class="btn btn-big btn-play" onclick="submitName()">TAMAM ▶</button>
     <button class="btn btn-small" onclick="goToMenu()">⬅ Geri</button>
   </div>
@@ -70,6 +71,7 @@
     <div class="menu-footer-row">
       <button class="btn btn-small" onclick="openAccount()">👤 Hesap</button>
       <button class="btn btn-small" onclick="openSoundSettings()">🎚 Ses</button>
+      <button class="btn btn-small" onclick="openLanguage()">🌐 Dil</button>
       <button class="btn btn-small" onclick="resetData()">🔄 Sıfırla</button>
     </div>
   </div>
@@ -353,6 +355,13 @@
     showErrBanner(`Promise: ${e.reason && e.reason.message || e.reason}`);
   });
 </script>
+<script src="i18n.js"></script>
+<script src="i18n/en.js"></script>
+<script src="i18n/es.js"></script>
+<script src="i18n/zh.js"></script>
+<script src="i18n/hi.js"></script>
+<script src="i18n/ar.js"></script>
+<script>dilUygula();</script>
 <script src="game.js"></script>
 <script>
   // Eski sürümlerde register edilmiş SW'leri temizle (Capacitor'da SW'ye gerek yok)

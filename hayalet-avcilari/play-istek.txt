@@ -8,4 +8,9 @@
 #   yukle yayinla uygula        sürümü incelemeye/yayına gönderir — yalnız kullanıcının açık onayıyla
 #   imza                        Play uygulama imzalama anahtarının SHA-256'sı
 
-# 2026-10-19 durum: Google kimliği (WIF) çalışıyor; Play "Package not found" → uygulama Play Console'da henüz oluşturulmadı.
+# 2026-10-20 durum: uygulama Console'da oluşturuldu, 3.10.0 (36) taslağı elle yüklendi, hizmet hesabı izinli.
+# istek 2026-10-20T04:18:30Z: mağaza metni + görseller (7 dil), 3.10.2 (38) üretim kanalına TASLAK (kullanıcı onayıyla)
+durum
+magaza uygula
+gorsel uygula
+yukle uygula

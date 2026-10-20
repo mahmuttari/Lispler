@@ -4,8 +4,8 @@
   "description": "Hayalet Avcıları Firebase kurallarının emülatör testleri",
   "type": "module",
   "scripts": {
-    "test": "firebase emulators:exec --only database,firestore --project demo-hayalet-avcilari \"node --test test/\"",
-    "test:yalniz": "node --test test/"
+    "test": "firebase emulators:exec --only database,firestore --project demo-hayalet-avcilari \"node --test test/kurallar.test.mjs\"",
+    "test:yalniz": "node --test test/kurallar.test.mjs"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "5.0.2",

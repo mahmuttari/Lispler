@@ -8,13 +8,13 @@ service cloud.firestore {
     match /scores/{scoreId} {
       allow read: if true;
       allow create: if gecerliSkor(request.resource.data);
-      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name'])
-                    && gecerliIsim(request.resource.data.name);
-      allow delete: if false;
+      // İsim değişikliği (renameInLeaderboard) girişsiz PATCH atar; açılırsa herkes herkesin skorunun adını
+      // değiştirebilir. Önceki kuraldaki gibi kapalı kalır.
+      allow update, delete: if false;
     }
 
     function gecerliIsim(ad) {
-      return ad is string && ad.size() >= 1 && ad.size() <= 50;
+      return ad is string && ad.size() >= 1 && ad.size() < 20;
     }
 
     function gecerliSkor(d) {
@@ -25,6 +25,7 @@ service cloud.firestore {
         && d.ghosts is int && d.ghosts >= 0 && d.ghosts <= 1000000
         && d.para is int && d.para >= 0 && d.para <= 100000000
         && d.score is int && d.score == d.level * 1000 + d.ghosts * 10 + d.para
+        && d.score < 10000000
         && d.date is int && d.date > 1500000000000
         && d.date <= request.time.toMillis() + 86400000;
     }

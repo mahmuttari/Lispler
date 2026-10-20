@@ -71,15 +71,20 @@ başka alan yok. Kimse başkasının yedeğini, girişsiz kullanıcı hiçbir ye
 
 ## Cloud Firestore — `scores` (şampiyonlar listesi)
 
+Firestore zaten açık değildi. Önceki kural (7 Mayıs 2026): `scores`'a herkes okur; ekleme `name` 1–19 karakter ve
+`score` < 10 000 000 tam sayıysa serbest (başka alan denetimi yok); güncelleme ve silme kapalı. Yeni kural bu sınırları
+korur ve sıkılaştırır:
+
 | İşlem | game.js | Kural |
 |---|---|---|
 | Listele | `fetchOnlineLeaderboard` › `runQuery` (`date` azalan, 200) | `allow read: if true` |
-| Skor ekle | `submitOnlineScore` › `POST scores` | Yalnız `name level ghosts para score date` alanları, hepsi zorunlu; `name` 1–50; `level` 1–1000, `ghosts` 0–1 000 000, `para` 0–100 000 000 tam sayı; `score` = `level*1000 + ghosts*10 + para` (`scoreFor`); `date` en çok 1 gün ileride (liste tarihe göre çekildiği için ileri tarihli kayıt listenin başına çakılamaz). |
-| İsim değiştir | `renameInLeaderboard` › `runQuery name ==` + `PATCH updateMask=name` | `update` yalnız `name` alanını değiştirebilir; skor değiştirilemez. |
+| Skor ekle | `submitOnlineScore` › `POST scores` | Yalnız `name level ghosts para score date` alanları, hepsi zorunlu; `name` 1–19 karakter; `level` 1–1000, `ghosts` 0–1 000 000, `para` ≥ 0 tam sayı; `score` = `level*1000 + ghosts*10 + para` (`scoreFor`) ve < 10 000 000; `date` en çok 1 gün ileride (liste tarihe göre çekildiği için ileri tarihli kayıt listenin başına çakılamaz). |
+| İsim değiştir | `renameInLeaderboard` › `runQuery name ==` + `PATCH updateMask=name` | **Kapalı (önceki gibi).** Girişsiz olduğundan açılırsa herkes herkesin skorunun adını değiştirebilir. Oyunda isim değişikliği yerel listeyi günceller; bulut listesindeki eski kayıtlar eski adla kalır (bugünkü davranış). |
 | Sil | — | Kapalı. |
 
 `scores` dışındaki bütün koleksiyonlar kapalı. Girişsiz yazım olduğu için tutarlı ama uydurma bir skor yine
-eklenebilir; bunu önlemek ancak sunucu tarafı doğrulamayla (ör. Cloud Functions) mümkün.
+eklenebilir; bunu önlemek ancak sunucu tarafı doğrulamayla (ör. Cloud Functions) mümkün. Saati 1 günden fazla ileri
+olan bir cihazın skoru buluta yazılmaz.
 
 ## Test
 
@@ -92,7 +97,7 @@ npm test
 ```
 
 `test/kurallar.test.mjs` `www/game.js`'teki gövdelerin aynısını yazar: oda kur → listele → katıl → hazır ol → başlat →
-10 Hz senkron → beş olay türü → host devri → çıkış; kodlu yedek; Google yedeği; skor ekle/listele/isim değiştir. Her
+10 Hz senkron → beş olay türü → host devri → çıkış; kodlu yedek; Google yedeği; skor ekle/listele. Her
 bölümde izinsiz ya da bozuk yazımların reddedildiği de sınanır. GitHub Actions'ta `hayalet-firebase-kurallar.yml` bu
 klasördeki her değişiklikte aynı testi çalıştırır.
 

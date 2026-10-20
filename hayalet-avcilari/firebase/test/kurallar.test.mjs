@@ -209,12 +209,12 @@ describe("Firestore scores — şampiyonlar listesi", () => {
     return { score: e.level * 1000 + e.ghosts * 10 + e.para, ...e };
   }
 
-  test("ekle, listele, isimle ara, ismi değiştir", async () => {
+  test("ekle, listele, isimle ara", async () => {
     const db = fs();
-    const ref = await assertSucceeds(db.collection("scores").add(skor()));
+    await assertSucceeds(db.collection("scores").add(skor()));
+    await assertSucceeds(db.collection("scores").add(skor({ name: "x".repeat(19), level: 1, ghosts: 0, para: 0 })));
     await assertSucceeds(db.collection("scores").orderBy("date", "desc").limit(200).get());
     await assertSucceeds(db.collection("scores").where("name", "==", "Poyraz").limit(200).get());
-    await assertSucceeds(db.doc(`scores/${ref.id}`).update({ name: "Kinkin" }));
   });
 
   test("bozuk skorlar ve diğer işlemler reddedilir", async () => {
@@ -231,6 +231,9 @@ describe("Firestore scores — şampiyonlar listesi", () => {
     await assertFails(db.collection("scores").add(skor({ level: 5000 })));
     await assertFails(db.collection("scores").add(skor({ para: -5 })));
     await assertFails(db.collection("scores").add(skor({ date: Date.now() + 3 * 86400000 })));
+    await assertFails(db.collection("scores").add(skor({ name: "x".repeat(20) })));
+    await assertFails(db.collection("scores").add(skor({ level: 999, ghosts: 999999, para: 0 })));  // score ≥ 10 milyon
+    await assertFails(db.doc(`scores/${id}`).update({ name: "Kinkin" }));                         // önceki kural gibi kapalı
     await assertFails(db.doc(`scores/${id}`).update({ score: 1 }));
     await assertFails(db.doc(`scores/${id}`).update({ name: "Kinkin", level: 99 }));
     await assertFails(db.doc(`scores/${id}`).delete());

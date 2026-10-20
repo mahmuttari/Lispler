@@ -308,8 +308,14 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.10.4";
+const APP_VERSION = "3.11.0";
 const UPDATE_NOTES = {
+  "3.11.0": [
+    t("👧 Yeni karakterler: Silsen çiçek top atar, Serçin tüy fırlatır — Karakterler menüsünde."),
+    t("🐱 Serçin'e kulaklı, kanatlı kostüm: Kanatlı Kedi (Mağaza › Kostümler)."),
+    t("🎒 Envanter: Mağaza › 🔫 Silahlar'dan 5 yeni silah al, oyunda 🎒 düğmesiyle değiştir; karakterin kendi silahı envanterde kalır."),
+    t("🤖 Bot: tek kişilik oyunda yanında savaşır. Ona dokunursan ona ateş edersin; yenilince içinden 1 kalp çıkar."),
+  ],
   "3.10.4": [
     t("🎮 Google Play Games: puanın Play Games skor tablosuna gider, 5 başarımın kilidini açabilirsin (Şampiyonlar ekranı)."),
     t("🔒 Çevrimiçi oda, kodlu yedek ve şampiyonlar listesi artık hep oyuncu kimliğinle korunuyor; bağlanılamazsa yeniden dene."),
@@ -535,9 +541,9 @@ const defaultSave = {
   elmas: 0,
   zumrut: 0,
   selectedChar: "kinkin",
-  selectedCostume: { kinkin: 0, veryi: 0, kornet: 0, mark: 0, kent: 0, ponko: 0, gul: 0, rani: 0, beti: 0, fanatik: 0 },
-  unlockedChars: { kinkin: true, veryi: false, kornet: false, mark: false, kent: false, ponko: false, gul: false, rani: false, beti: false, fanatik: false },
-  unlockedCostumes: { kinkin: [0], veryi: [0], kornet: [0], mark: [0], kent: [0], ponko: [0], gul: [0], rani: [0], beti: [0], fanatik: [0] },
+  selectedCostume: { kinkin: 0, veryi: 0, kornet: 0, mark: 0, kent: 0, ponko: 0, gul: 0, rani: 0, beti: 0, fanatik: 0, silsen: 0, sercin: 0 },
+  unlockedChars: { kinkin: true, veryi: false, kornet: false, mark: false, kent: false, ponko: false, gul: false, rani: false, beti: false, fanatik: false, silsen: false, sercin: false },
+  unlockedCostumes: { kinkin: [0], veryi: [0], kornet: [0], mark: [0], kent: [0], ponko: [0], gul: [0], rani: [0], beti: [0], fanatik: [0], silsen: [0], sercin: [0] },
   upgradesByChar: {
     kinkin:  { speed: 0, damage: 0, fireRate: 0, range: 0 },
     veryi:   { speed: 0, damage: 0, fireRate: 0, range: 0 },
@@ -549,6 +555,8 @@ const defaultSave = {
     rani:    { speed: 0, damage: 0, fireRate: 0, range: 0 },
     beti:    { speed: 0, damage: 0, fireRate: 0, range: 0 },
     fanatik: { speed: 0, damage: 0, fireRate: 0, range: 0 },
+    silsen:  { speed: 0, damage: 0, fireRate: 0, range: 0 },
+    sercin:  { speed: 0, damage: 0, fireRate: 0, range: 0 },
   },
   _charUpgradesIsolated: true,
   ammoByChar: {
@@ -562,7 +570,12 @@ const defaultSave = {
     rani:    { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
     beti:    { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
     fanatik: { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
+    silsen:  { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
+    sercin:  { bomba: 0, dondurma: 0, simsek: 0, kasirga: 0, ilkyrd: 0, roket: 0, gorunmez: 0 },
   },
+  // Envanter silahları (bütün karakterler ortak): sahip olunanlar ve takılı olan ("" = karakterin kendi silahı)
+  ownedGuns: {},
+  equippedGun: "",
   highestLevel: 1,
   soundEnabled: true,
   volumes: { ghost: 1, fire: 1, sfx: 1 },
@@ -736,6 +749,26 @@ const CHARACTERS = {
     baseRange: 280,
     color: { hair: "#0a0a0a", skin: "#f4d6b5", body: "#fafafa", legs: "#fafafa", weapon: "#dc2626" },
   },
+  silsen: {
+    name: "Silsen",
+    desc: t("Çiçek bayraklı avcı, vurunca çiçek top atar."),
+    cost: 25,
+    baseSpeed: 3.1,
+    baseDamage: 1,
+    baseFireDelay: 520,
+    baseRange: 240,
+    color: { hair: "#4a2511", skin: "#f4d6b5", body: "#4ade80", legs: "#f4d6b5", weapon: "#fbbf24" },
+  },
+  sercin: {
+    name: "Serçin",
+    desc: t("Serçe gibi çevik, tüy fırlatır."),
+    cost: 30,
+    baseSpeed: 3.5,
+    baseDamage: 1,
+    baseFireDelay: 500,
+    baseRange: 230,
+    color: { hair: "#1f1f1f", skin: "#f4d6b5", body: "#a16207", legs: "#78350f", weapon: "#fef3c7" },
+  },
 };
 
 // Kostümler: her karakter için (0 = orijinal, 1 = alternatif)
@@ -790,6 +823,15 @@ const COSTUMES = {
     { name: t("Kırmızı Gi"), cost: 8, body: "#dc2626", hair: "#0a0a0a" },
     { name: t("✨ Ejder Ustası"), cost: 150, body: "#1e293b", hair: "#fbbf24" },
   ],
+  silsen: [
+    { name: t("Bahar"), cost: 0, body: "#4ade80", hair: "#4a2511" },
+    { name: t("Lale"), cost: 5, body: "#f43f5e", hair: "#1f1f1f" },
+  ],
+  sercin: [
+    { name: t("Serçe"), cost: 0, body: "#a16207", hair: "#1f1f1f" },
+    // Kulaklı ve kanatlı kostüm (çizim: Serçin'in kostümü)
+    { name: t("Kanatlı Kedi"), cost: 8, body: "#fb923c", hair: "#7c2d12", ears: true, wings: true },
+  ],
 };
 
 // Bölüm temaları (sırayla döner)
@@ -822,6 +864,8 @@ const CHAR_POWERS = {
   rani:    { name: t("Şifa Kalbi"),        icon: "💖", duration: 18000 }, // 5 sn'de bir +1 can
   beti:    { name: t("Lolipop Yağmuru"),   icon: "🍭", duration: 15000 }, // 5 yöne mermi
   fanatik: { name: t("Tornado Tekme"),     icon: "🥋", duration: 12000 }, // 0.5 sn'de bir çevreye hasar
+  silsen:  { name: t("Çiçek Halkası"),     icon: "🌸", duration: 12000 }, // 8 yöne çiçek
+  sercin:  { name: t("Güdümlü Tüyler"),    icon: "🐦", duration: 15000 }, // tüyler hayaleti kovalar
 };
 
 function activatePower(charKey) {
@@ -867,6 +911,89 @@ function ensureAmmoStock(charKey) {
     if (typeof save.ammoByChar[charKey][k] !== "number") save.ammoByChar[charKey][k] = 0;
   });
   return save.ammoByChar[charKey];
+}
+
+// Envanter silahları — kalıcı, bütün karakterler ortak. Takılan silah karakterin kendi mermisinin yerine geçer;
+// karakterin kendi silahı envanterde "Normal silah" olarak kalır (çizimler: 5 silah + envanter).
+const GUNS = {
+  baloncuk: { name: t("Baloncuk Tabancası"), cost: 200,  desc: t("Hızlı atar: mavi baloncuklar."),             delayMul: 0.65, dmgMul: 1, speed: 460 },
+  lazer:    { name: t("Kırmızı Lazer"),      cost: 350,  desc: t("Çok hızlı ışın, iki hayaleti birden deler."), delayMul: 1,    dmgMul: 1, speed: 820, pierce: 1 },
+  yesil:    { name: t("Yeşil Çiftli"),       cost: 500,  desc: t("Her atışta yan yana iki mermi."),             delayMul: 1,    dmgMul: 1, speed: 500, twin: true },
+  pompali:  { name: t("Saçmalı Top"),        cost: 800,  desc: t("Bir atışta üç saçma, kısa menzil."),          delayMul: 1.15, dmgMul: 1, speed: 520, spread: [-0.22, 0, 0.22], life: 0.8 },
+  bazuka:   { name: t("Dev Bazuka"),         cost: 1200, desc: t("Yavaş ama üç kat hasar."),                    delayMul: 1.7,  dmgMul: 3, speed: 400 },
+};
+
+// Takılı ve sahip olunan silahın anahtarı; yoksa "" (karakterin kendi silahı)
+function equippedGun() {
+  const k = save.equippedGun;
+  return (k && GUNS[k] && save.ownedGuns && save.ownedGuns[k]) ? k : "";
+}
+
+function equipGun(key) {
+  save.equippedGun = (key && GUNS[key] && save.ownedGuns[key]) ? key : "";
+  persistSave();
+  if (game.player) game.player.gun = save.equippedGun;
+}
+
+const _gunIconCache = {};
+function gunIconUrl(key) {
+  if (_gunIconCache[key]) return _gunIconCache[key];
+  const cv = document.createElement("canvas");
+  cv.width = 96; cv.height = 72;
+  const ctx = cv.getContext("2d");
+  ctx.translate(36, 40);
+  drawGunShape(ctx, key, 2.2);
+  return (_gunIconCache[key] = cv.toDataURL());
+}
+
+function charIconUrl(charKey) {
+  const cv = document.createElement("canvas");
+  cv.width = 80; cv.height = 90;
+  drawCharacter(cv.getContext("2d"), charKey, save.selectedCostume[charKey] || 0, 40, 60, 80);
+  return cv.toDataURL();
+}
+
+// Oyun ekranındaki 🎒 düğmesi: takılı silahı gösterir; dokununca envanter açılır
+function refreshInventoryButton() {
+  const btn = document.getElementById("inv-btn");
+  if (!btn || !game.player) return;
+  const gun = game.player.gun;
+  btn.style.backgroundImage = `url(${gun ? gunIconUrl(gun) : charIconUrl(game.player.charKey)})`;
+}
+
+function closeInventory() {
+  const panel = document.getElementById("inv-panel");
+  if (panel) panel.classList.remove("open");
+}
+
+function toggleInventory() {
+  const panel = document.getElementById("inv-panel");
+  if (!panel || !game.player) return;
+  if (panel.classList.contains("open")) { closeInventory(); return; }
+  panel.innerHTML = "";
+  const slot = (key, ad, resim) => {
+    const b = document.createElement("button");
+    b.className = "inv-slot" + ((game.player.gun || "") === key ? " on" : "");
+    b.innerHTML = `<span class="inv-img" style="background-image:url(${resim})"></span><span class="inv-name">${escapeHtml(ad)}</span>`;
+    b.onclick = (e) => {
+      e.stopPropagation();
+      equipGun(key);
+      closeInventory();
+      refreshInventoryButton();
+      showToast(`🎒 ${ad}`);
+    };
+    panel.appendChild(b);
+  };
+  slot("", t("Normal silah"), charIconUrl(game.player.charKey));
+  const sahip = Object.keys(GUNS).filter((k) => save.ownedGuns[k]);
+  sahip.forEach((k) => slot(k, GUNS[k].name, gunIconUrl(k)));
+  if (sahip.length === 0) {
+    const ipucu = document.createElement("div");
+    ipucu.className = "inv-empty";
+    ipucu.textContent = t("Mağaza › 🔫 Silahlar bölümünden silah alabilirsin.");
+    panel.appendChild(ipucu);
+  }
+  panel.classList.add("open");
 }
 
 function refreshWeaponBar() {
@@ -1303,7 +1430,7 @@ const UPGRADES = {
 };
 
 // ====== ÇİZİM YARDIMCILARI ======
-function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPhase = 0, aimRaise = 0, shootRecoil = 0) {
+function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPhase = 0, aimRaise = 0, shootRecoil = 0, gunKey = "") {
   const c = CHARACTERS[charKey];
   const cos = COSTUMES[charKey][costumeIdx] || COSTUMES[charKey][0];
   const hair = cos.hair;
@@ -1424,8 +1551,9 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
     ctx.arc(7 * s, -25 * s, 2.5 * s, 0, Math.PI * 2);
     ctx.fill();
 
-    // Kornet'in büyücü asası
-    drawCharWeapon(ctx, "kornet", s, swing, aimRaise, shootRecoil);
+    // Kornet'in büyücü asası (envanterden silah takılıysa o)
+    if (gunKey) drawGunInHand(ctx, gunKey, s, swing, aimRaise, shootRecoil);
+    else drawCharWeapon(ctx, "kornet", s, swing, aimRaise, shootRecoil);
   } else if (charKey === "kent") {
     // Kapüşonun iç boşluğu (yüz)
     ctx.fillStyle = "#0a0a18";
@@ -1465,11 +1593,15 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
     ctx.arc(6 * s, -20 * s, 2.5 * s, 0, Math.PI * 2);
     ctx.fill();
 
-    // Bıçak (sağda)
-    ctx.fillStyle = c.color.weapon;
-    ctx.fillRect(28 * s, -6 * s, 4 * s, 22 * s);
-    ctx.fillStyle = "#451a03";
-    ctx.fillRect(26 * s, 14 * s, 8 * s, 6 * s);
+    // Bıçak (sağda; envanterden silah takılıysa o)
+    if (gunKey) {
+      drawGunInHand(ctx, gunKey, s, swing, aimRaise, shootRecoil);
+    } else {
+      ctx.fillStyle = c.color.weapon;
+      ctx.fillRect(28 * s, -6 * s, 4 * s, 22 * s);
+      ctx.fillStyle = "#451a03";
+      ctx.fillRect(26 * s, 14 * s, 8 * s, 6 * s);
+    }
   } else if (charKey === "beti") {
     // Beti: lolipop kafalı, sevimli vücut
     // Vücut (kalpli elbise)
@@ -1535,8 +1667,39 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
     ctx.arc(0, 3 * s, 4 * s, 0.2, Math.PI - 0.2);
     ctx.stroke();
     ctx.restore();
+    if (gunKey) drawGunInHand(ctx, gunKey, s, swing, aimRaise, shootRecoil);
   } else {
-    // Genel insan kahraman: Kinkin/Veryi/Mark/Ponko/Gül/Rani/Fanatik
+    // Genel insan kahraman: Kinkin/Veryi/Mark/Ponko/Gül/Rani/Fanatik/Silsen/Serçin
+    if (charKey === "silsen" || charKey === "sercin") {
+      // Uzun saç: sırttan aşağı iner (Serçin'inki bele kadar)
+      const boy = charKey === "sercin" ? 24 : 14;
+      ctx.fillStyle = hair;
+      ctx.beginPath();
+      ctx.moveTo(-20 * s, -28 * s);
+      ctx.lineTo(20 * s, -28 * s);
+      ctx.lineTo(24 * s, boy * s);
+      ctx.lineTo(-24 * s, boy * s);
+      ctx.closePath();
+      ctx.fill();
+    }
+    if (cos.wings) {
+      // Tüylü kanatlar: kolların dışına açılan üçer tüy
+      ctx.fillStyle = "#fff7ed";
+      ctx.strokeStyle = "#9a3412";
+      ctx.lineWidth = 1.2 * s;
+      for (const yon of [-1, 1]) {
+        for (let i = 0; i < 3; i++) {
+          const yy = (4 + i * 7) * s;
+          ctx.beginPath();
+          ctx.moveTo(yon * 26 * s, yy - 4 * s);
+          ctx.quadraticCurveTo(yon * (44 + i * 3) * s, yy - 2 * s, yon * (50 - i * 4) * s, yy + 8 * s);
+          ctx.quadraticCurveTo(yon * 38 * s, yy + 4 * s, yon * 26 * s, yy + 3 * s);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+      }
+    }
     // Vücut (tişört / gi)
     ctx.fillStyle = body;
     ctx.beginPath();
@@ -1651,12 +1814,59 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
       ctx.fillRect(-18 * s, -26 * s, 36 * s, 5 * s);
       // Bandın yanlardan sarkan ucu
       ctx.fillRect(-20 * s, -26 * s, 4 * s, 14 * s);
+    } else if (charKey === "silsen") {
+      // Silsen: tepede saç, alnında tırtıklı kahkül, yanlarda omuza inen perçemler
+      ctx.beginPath();
+      ctx.arc(0, -28 * s, 19 * s, Math.PI, 0);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(-18 * s, -32 * s);
+      ctx.lineTo(18 * s, -32 * s);
+      for (let i = 0; i <= 8; i++) {
+        ctx.lineTo((18 - i * 4.5) * s, (i % 2 === 0 ? -28 : -25) * s);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillRect(-20 * s, -30 * s, 6 * s, 26 * s);
+      ctx.fillRect(14 * s, -30 * s, 6 * s, 26 * s);
+    } else if (charKey === "sercin") {
+      // Serçin: ortadan ayrılmış düz saç, yüzün iki yanından uzun iner
+      ctx.beginPath();
+      ctx.arc(0, -27 * s, 19 * s, Math.PI, 0);
+      ctx.fill();
+      ctx.fillRect(-20 * s, -28 * s, 7 * s, 34 * s);
+      ctx.fillRect(13 * s, -28 * s, 7 * s, 34 * s);
+      ctx.strokeStyle = "rgba(255,255,255,0.25)";
+      ctx.lineWidth = 1 * s;
+      ctx.beginPath();
+      ctx.moveTo(0, -46 * s);
+      ctx.lineTo(0, -36 * s);
+      ctx.stroke();
     } else {
       // Veryi: kısa düz saç
       ctx.beginPath();
       ctx.arc(0, -28 * s, 17 * s, Math.PI, 0);
       ctx.fill();
       ctx.fillRect(-17 * s, -28 * s, 34 * s, 8 * s);
+    }
+    if (cos.ears) {
+      // Sivri kedi kulakları (içi pembe)
+      for (const yon of [-1, 1]) {
+        ctx.fillStyle = body;
+        ctx.beginPath();
+        ctx.moveTo(yon * 6 * s, -42 * s);
+        ctx.lineTo(yon * 13 * s, -60 * s);
+        ctx.lineTo(yon * 19 * s, -38 * s);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "#fda4af";
+        ctx.beginPath();
+        ctx.moveTo(yon * 9 * s, -42 * s);
+        ctx.lineTo(yon * 13 * s, -54 * s);
+        ctx.lineTo(yon * 16 * s, -41 * s);
+        ctx.closePath();
+        ctx.fill();
+      }
     }
 
     // Gözler (Rani için büyük)
@@ -1676,15 +1886,41 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
       ctx.fill();
     }
 
-    // Gülümseme
-    ctx.strokeStyle = "#222";
-    ctx.lineWidth = 2 * s;
-    ctx.beginPath();
-    ctx.arc(0, -16 * s, 6 * s, 0.2, Math.PI - 0.2);
-    ctx.stroke();
+    if (charKey === "sercin") {
+      // Serçe gagası gibi üçgen burun
+      ctx.fillStyle = "#f59e0b";
+      ctx.beginPath();
+      ctx.moveTo(-3.5 * s, -19 * s);
+      ctx.lineTo(3.5 * s, -19 * s);
+      ctx.lineTo(0, -13 * s);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "#92400e";
+      ctx.lineWidth = 1 * s;
+      ctx.stroke();
+    } else if (charKey === "silsen") {
+      // Açık gülüş
+      ctx.fillStyle = "#7f1d1d";
+      ctx.beginPath();
+      ctx.moveTo(-6 * s, -17 * s);
+      ctx.lineTo(6 * s, -17 * s);
+      ctx.arc(0, -17 * s, 6 * s, 0, Math.PI);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(-4 * s, -17 * s, 8 * s, 1.6 * s);
+    } else {
+      // Gülümseme
+      ctx.strokeStyle = "#222";
+      ctx.lineWidth = 2 * s;
+      ctx.beginPath();
+      ctx.arc(0, -16 * s, 6 * s, 0.2, Math.PI - 0.2);
+      ctx.stroke();
+    }
 
-    // Karaktere özel silah (Kinkin/Veryi/Mark/Ponko/Gül/Rani/Fanatik)
-    drawCharWeapon(ctx, charKey, s, swing, aimRaise, shootRecoil);
+    // Karaktere özel silah (envanterden silah takılıysa o)
+    if (gunKey) drawGunInHand(ctx, gunKey, s, swing, aimRaise, shootRecoil);
+    else drawCharWeapon(ctx, charKey, s, swing, aimRaise, shootRecoil);
   }
 
   ctx.restore();
@@ -1928,7 +2164,136 @@ function drawCharWeapon(ctx, charKey, s, swing, aimRaise = 0, shootRecoil = 0) {
       ctx.strokeStyle = "#581c87"; ctx.lineWidth = 1 * s; ctx.stroke();
       break;
     }
+    case "silsen": {
+      // Çiçekli bayrak: sap, damalı bayrak, tepede papatya
+      ctx.translate(28 * s, 4 * s);
+      ctx.rotate(-0.2 + sway);
+      ctx.fillStyle = "#7c2d12";
+      ctx.fillRect(-1.5 * s, -18 * s, 3 * s, 30 * s);
+      const kare = 4 * s;
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 2; j++) {
+          ctx.fillStyle = (i + j) % 2 === 0 ? "#111827" : "#fafafa";
+          ctx.fillRect(1.5 * s + i * kare, -17 * s + j * kare, kare, kare);
+        }
+      }
+      ctx.strokeStyle = "#111827"; ctx.lineWidth = 0.8 * s;
+      ctx.strokeRect(1.5 * s, -17 * s, 3 * kare, 2 * kare);
+      drawFlower(ctx, 0, -21 * s, 5 * s, performance.now() / 600);
+      break;
+    }
+    case "sercin": {
+      // Kocaman tüy (fırlatılacak tüylerden biri elinde)
+      ctx.translate(28 * s, 6 * s);
+      ctx.rotate(-0.5 + sway);
+      drawFeather(ctx, 0, -6 * s, 22 * s);
+      break;
+    }
   }
+  ctx.restore();
+}
+
+// Papatya: beyaz yapraklar, sarı göbek (Silsen'in bayrağı ve mermisi)
+function drawFlower(ctx, x, y, r, rot = 0) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(rot);
+  ctx.fillStyle = "#fdf2f8";
+  ctx.strokeStyle = "#db2777";
+  ctx.lineWidth = Math.max(0.6, r * 0.12);
+  for (let i = 0; i < 7; i++) {
+    const a = (i / 7) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.ellipse(Math.cos(a) * r * 0.75, Math.sin(a) * r * 0.75, r * 0.55, r * 0.3, a, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
+  ctx.fillStyle = "#facc15";
+  ctx.beginPath(); ctx.arc(0, 0, r * 0.45, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "#a16207";
+  ctx.stroke();
+  ctx.restore();
+}
+
+// Tüy: ucu sağa bakan, ortası çizgili (Serçin'in silahı ve mermisi)
+function drawFeather(ctx, x, y, len) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = "#fef3c7";
+  ctx.strokeStyle = "#92400e";
+  ctx.lineWidth = Math.max(0.6, len * 0.05);
+  ctx.beginPath();
+  ctx.moveTo(-len / 2, 0);
+  ctx.quadraticCurveTo(0, -len * 0.32, len / 2, 0);
+  ctx.quadraticCurveTo(0, len * 0.32, -len / 2, 0);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = "#b45309";
+  ctx.beginPath();
+  ctx.moveTo(len * 0.1, -len * 0.1);
+  ctx.quadraticCurveTo(len * 0.3, -len * 0.08, len / 2, 0);
+  ctx.quadraticCurveTo(len * 0.3, len * 0.08, len * 0.1, len * 0.1);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-len * 0.6, 0);
+  ctx.lineTo(len / 2, 0);
+  ctx.stroke();
+  ctx.restore();
+}
+
+// Envanter silahları: sapı aşağıda, namlusu sağa bakan "L" biçimi (çizimlerdeki gibi). Birim: s.
+function drawGunShape(ctx, gunKey, s) {
+  const kutu = (renk, x, y, w, h, kenar = "#0f172a") => {
+    ctx.fillStyle = renk;
+    ctx.fillRect(x * s, y * s, w * s, h * s);
+    ctx.strokeStyle = kenar; ctx.lineWidth = 1 * s;
+    ctx.strokeRect(x * s, y * s, w * s, h * s);
+  };
+  switch (gunKey) {
+    case "baloncuk": // mavi, tıknaz
+      kutu("#1e3a8a", 0, 0, 6, 9);
+      kutu("#2563eb", -2, -6, 18, 8);
+      kutu("#93c5fd", 16, -5, 3, 6);
+      ctx.fillStyle = "#bfdbfe"; ctx.fillRect(1 * s, -4 * s, 10 * s, 1.5 * s);
+      break;
+    case "lazer": // kırmızı, ince uzun
+      kutu("#7f1d1d", 0, 0, 5, 9);
+      kutu("#dc2626", -2, -5, 22, 5);
+      ctx.fillStyle = "#fecaca"; ctx.fillRect(20 * s, -4 * s, 3 * s, 3 * s);
+      break;
+    case "yesil": // küçük yeşil, siyah kabza
+      kutu("#111827", 0, 0, 6, 8);
+      kutu("#16a34a", -1, -5, 13, 6);
+      kutu("#4ade80", 12, -4, 3, 4);
+      break;
+    case "pompali": // açık mavi gövde, uzun turuncu namlu
+      kutu("#0c4a6e", 0, 1, 6, 8);
+      kutu("#7dd3fc", -4, -6, 14, 9);
+      kutu("#ea580c", 8, -5, 16, 5);
+      break;
+    case "bazuka": // siyah-beyaz çizgili kalın boru
+      kutu("#111827", 2, 2, 6, 8);
+      kutu("#111827", -6, -8, 30, 10);
+      ctx.fillStyle = "#fafafa";
+      for (let i = 0; i < 4; i++) ctx.fillRect((-3 + i * 7) * s, -8 * s, 3 * s, 10 * s);
+      ctx.strokeStyle = "#0f172a"; ctx.lineWidth = 1 * s;
+      ctx.strokeRect(-6 * s, -8 * s, 30 * s, 10 * s);
+      break;
+  }
+}
+
+// Takılı envanter silahı — drawCharWeapon ile aynı omuz pivotu ve nişan/geri tepme hareketi
+function drawGunInHand(ctx, gunKey, s, swing, aimRaise = 0, shootRecoil = 0) {
+  const baseRot = 0.85 * (1 - aimRaise) - 0.35 * shootRecoil;
+  ctx.save();
+  ctx.translate(18 * s, 2 * s);
+  ctx.rotate(baseRot);
+  ctx.translate(-18 * s, -2 * s);
+  ctx.translate(26 * s, 8 * s);
+  ctx.rotate(swing * 0.06);
+  drawGunShape(ctx, gunKey, s * 0.9);
   ctx.restore();
 }
 
@@ -2216,6 +2581,7 @@ function drawProjectile(ctx, p) {
   ctx.save();
   ctx.translate(p.x, p.y);
   const ang = Math.atan2(p.vy, p.vx);
+  if (p.gun) { drawGunProjectile(ctx, p.gun, ang); ctx.restore(); return; }
   switch (p.charKey) {
     case "kinkin": {
       // Camgöbeği enerji topu
@@ -2366,6 +2732,25 @@ function drawProjectile(ctx, p) {
       ctx.beginPath(); ctx.arc(4, 0, 2, 0, Math.PI * 2); ctx.fill();
       break;
     }
+    case "silsen": {
+      // Dönen papatya top
+      drawFlower(ctx, 0, 0, 7, performance.now() / 150);
+      break;
+    }
+    case "sercin": {
+      // Uçan tüy (gittiği yöne bakar)
+      ctx.rotate(ang);
+      drawFeather(ctx, 0, 0, 18);
+      break;
+    }
+    case "bot": {
+      // Bot'un camgöbeği kısa ışını
+      ctx.rotate(ang);
+      ctx.shadowColor = "#67e8f9"; ctx.shadowBlur = 10;
+      ctx.fillStyle = "#a5f3fc";
+      ctx.fillRect(-6, -2, 12, 4);
+      break;
+    }
     default: {
       // Fallback — eski sarı top
       ctx.fillStyle = "#ffd166";
@@ -2374,6 +2759,52 @@ function drawProjectile(ctx, p) {
     }
   }
   ctx.restore();
+}
+
+// Envanter silahlarının mermileri (çizimlerdeki gibi: baloncuk, lazer çizgisi, yeşil nokta, saçma, çizgili kapsül)
+function drawGunProjectile(ctx, gunKey, ang) {
+  switch (gunKey) {
+    case "baloncuk": {
+      const g = ctx.createRadialGradient(-2, -2, 0, 0, 0, 7);
+      g.addColorStop(0, "#eff6ff");
+      g.addColorStop(0.5, "#60a5fa");
+      g.addColorStop(1, "rgba(37, 99, 235, 0.35)");
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#1d4ed8"; ctx.lineWidth = 1; ctx.stroke();
+      break;
+    }
+    case "lazer":
+      ctx.rotate(ang);
+      ctx.shadowColor = "#f87171"; ctx.shadowBlur = 12;
+      ctx.fillStyle = "#ef4444";
+      ctx.fillRect(-10, -1.8, 20, 3.6);
+      ctx.fillStyle = "#fee2e2";
+      ctx.fillRect(-8, -0.6, 16, 1.2);
+      break;
+    case "yesil":
+      ctx.fillStyle = "#22c55e";
+      ctx.beginPath(); ctx.arc(0, 0, 4.5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#14532d"; ctx.lineWidth = 1; ctx.stroke();
+      break;
+    case "pompali":
+      ctx.fillStyle = "#1f2937";
+      ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#9ca3af";
+      ctx.beginPath(); ctx.arc(-1.2, -1.2, 1.2, 0, Math.PI * 2); ctx.fill();
+      break;
+    case "bazuka":
+      ctx.rotate(ang);
+      ctx.fillStyle = "#111827";
+      ctx.beginPath();
+      ctx.moveTo(-9, -5); ctx.lineTo(5, -5); ctx.quadraticCurveTo(12, 0, 5, 5); ctx.lineTo(-9, 5);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#fafafa";
+      ctx.fillRect(-6, -5, 2.5, 10);
+      ctx.fillRect(-1, -5, 2.5, 10);
+      ctx.fillRect(4, -4.5, 2, 9);
+      break;
+  }
 }
 
 function drawPickup(ctx, p) {
@@ -3495,7 +3926,7 @@ function showShopTab(tab) {
   currentShopTab = tab;
   const buttons = document.querySelectorAll(".tab-btn");
   buttons.forEach((b) => b.classList.remove("active"));
-  const idx = ({ upgrades: 0, costumes: 1, ammo: 2 })[tab] ?? 0;
+  const idx = ({ upgrades: 0, costumes: 1, ammo: 2, guns: 3 })[tab] ?? 0;
   if (buttons[idx]) buttons[idx].classList.add("active");
   refreshShop();
 }
@@ -3605,6 +4036,54 @@ function refreshShop() {
       item.appendChild(btn);
       content.appendChild(item);
     });
+  } else if (currentShopTab === "guns") {
+    const header = document.createElement("div");
+    header.className = "upgrade-header";
+    header.innerHTML = t("🔫 <b>Silahlar</b> — bütün karakterler kullanır") + `<br><span class="hint">${t("(Oyunda 🎒 Envanter'e dokunup silah değiştir)")}</span>`;
+    content.appendChild(header);
+
+    const takili = equippedGun();
+    const satir = (key, ad, aciklama, resim) => {
+      const item = document.createElement("div");
+      item.className = "shop-item";
+      const icon = document.createElement("div");
+      icon.className = "item-icon";
+      icon.style.backgroundImage = `url(${resim})`;
+      icon.style.backgroundSize = "contain";
+      icon.style.backgroundRepeat = "no-repeat";
+      icon.style.backgroundPosition = "center";
+      icon.style.height = "44px";
+      item.appendChild(icon);
+      const info = document.createElement("div");
+      info.className = "item-info";
+      info.innerHTML = `<div class="item-name">${ad}</div><div class="item-desc">${aciklama}</div>`;
+      item.appendChild(info);
+      const btn = document.createElement("button");
+      const g = GUNS[key];
+      if (key && !save.ownedGuns[key]) {
+        btn.textContent = `💰 ${g.cost}`;
+        btn.disabled = save.para < g.cost;
+        btn.onclick = () => {
+          if (save.para < g.cost) return;
+          save.para -= g.cost;
+          save.ownedGuns[key] = true;
+          equipGun(key);
+          refreshShop();
+          showToast(t("🔫 {ad} alındı ve takıldı!", { ad: g.name }));
+          audio.buy();
+        };
+      } else if (takili === key) {
+        btn.textContent = t("✓ Takılı");
+        btn.disabled = true;
+      } else {
+        btn.textContent = t("Tak");
+        btn.onclick = () => { equipGun(key); refreshShop(); showToast(`🎒 ${ad}`); };
+      }
+      item.appendChild(btn);
+      content.appendChild(item);
+    };
+    satir("", t("Normal silah"), t("Karakterin kendi silahı ve mermisi."), charIconUrl(save.selectedChar));
+    Object.keys(GUNS).forEach((key) => satir(key, GUNS[key].name, GUNS[key].desc, gunIconUrl(key)));
   } else {
     // Kostümler
     Object.keys(COSTUMES).forEach((charKey) => {
@@ -3936,11 +4415,17 @@ function startGame() {
     power: null,
     aimRaise: 0,
     shootRecoil: 0,
+    gun: equippedGun(),
+    botTargetUntil: 0,
   };
   game.healTimer = 0;
   game.pulseTimer = 0;
   // Oyuncu duvar/su içinde kalmasın
   ensurePlayerSafe();
+  spawnBot();
+  closeInventory();
+  refreshInventoryButton();
+  if (game.bot) setTimeout(() => { if (game.running && game.bot) showToast(t("🤖 Bot seninle savaşıyor! Ona dokunursan ona ateş edersin.")); }, 600);
 
   setupJoystick();
   setupKeyboard();
@@ -3959,6 +4444,10 @@ function startGame() {
 function setupCanvas() {
   game.canvas = document.getElementById("game-canvas");
   game.ctx = game.canvas.getContext("2d");
+  if (!game.canvas._botaDokun) {
+    game.canvas._botaDokun = true;
+    game.canvas.addEventListener("pointerdown", (e) => { closeInventory(); botaDokun(e.clientX, e.clientY); });
+  }
   applyTabletClass();
   resizeCanvas();
   window.addEventListener("resize", () => {
@@ -4473,7 +4962,15 @@ function update(dt, now) {
   const firePower = getActivePower();
   let fireDelay = game.player.fireDelay;
   if (firePower && firePower.type === "ponko") fireDelay = fireDelay / 3;
-  const fireTarget = (!game.player.dead) ? nearestGhost(game.player.range) : null;
+  if (GUNS[game.player.gun]) fireDelay *= GUNS[game.player.gun].delayMul;
+  updateBot(dt, now);
+  if (keys["b"] && game.bot) game.player.botTargetUntil = now + 300; // klavye: B'ye basılıyken Bot'a ateş
+  let fireTarget = (!game.player.dead) ? nearestGhost(game.player.range) : null;
+  const bot = game.bot;
+  if (bot && !game.player.dead && game.player.botTargetUntil > now &&
+      Math.hypot(bot.x - game.player.x, bot.y - game.player.y) < game.player.range * 1.5) {
+    fireTarget = bot;
+  }
   if (fireTarget && now - game.lastFire >= fireDelay) {
     fireProjectile(fireTarget);
     game.lastFire = now;
@@ -4490,11 +4987,18 @@ function update(dt, now) {
   // Mermiler
   for (let i = game.projectiles.length - 1; i >= 0; i--) {
     const p = game.projectiles[i];
+    if (p.homing) steerHoming(p, dt);
     p.x += p.vx * dt;
     p.y += p.vy * dt;
     p.life -= dt;
     if (p.life <= 0 || collidesWalls(p.x, p.y, 4)) {
       game.projectiles.splice(i, 1);
+      continue;
+    }
+    // Bot'a nişanlı mermi Bot'a değdi mi?
+    if (p.atBot && game.bot && Math.hypot(p.x - game.bot.x, p.y - game.bot.y) < game.bot.r + 8) {
+      game.projectiles.splice(i, 1);
+      damageBot(p.dmg);
       continue;
     }
     // Düşman mermisini vurdu mu? (havada engelleme)
@@ -4521,9 +5025,11 @@ function update(dt, now) {
     // Hayalete vurdu mu?
     for (let j = game.ghosts.length - 1; j >= 0; j--) {
       const g = game.ghosts[j];
+      if (p.hits && p.hits.includes(g)) continue; // delen mermi aynı hayalete iki kez vurmaz
       if (Math.hypot(p.x - g.x, p.y - g.y) < g.r + 6) {
         spawnHitParticles(p.x, p.y);
-        game.projectiles.splice(i, 1);
+        if (p.pierce > 0) { p.pierce--; (p.hits || (p.hits = [])).push(g); }
+        else game.projectiles.splice(i, 1);
         if (online.mode === "client") {
           // Client: host'a hit event gönder
           online.pendingEvents.push({ type: "hit", gi: g._idx, dmg: p.dmg, by: online.uid });
@@ -4625,6 +5131,7 @@ function nextLevel() {
   buildWaters();
   buildHazards();
   ensurePlayerSafe();
+  spawnBot();
   showToast(t("📚 Bölüm {n} — {tema}", { n: game.level, tema: getTheme().name }));
   // Boss bölüm seviyesine göre belli bir süre sonra
   game.bossSpawnTimer = getBossTimerForLevel(game.level);
@@ -4877,28 +5384,43 @@ function fireProjectile(target) {
   const dx = target.x - game.player.x;
   const dy = target.y - game.player.y;
   const d = Math.hypot(dx, dy) || 1;
-  const speed = 480;
+  const gun = GUNS[game.player.gun];
+  const speed = gun ? gun.speed : 480;
   const baseAng = Math.atan2(dy, dx);
   const power = getActivePower();
   let dmg = game.player.damage;
   if (power && power.type === "veryi") dmg *= 3;
+  if (gun) dmg *= gun.dmgMul;
 
   // Mermi deseni
   let offsets = [0]; // tek mermi varsayılan
   if (power && power.type === "kornet") offsets = [-0.22, 0, 0.22]; // 3'lü koni
   else if (power && power.type === "beti") offsets = [-0.5, -0.25, 0, 0.25, 0.5]; // 5'li yayılım
+  else if (power && power.type === "silsen") offsets = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => (i * Math.PI) / 4); // 8 yöne çiçek
+  const gunOffsets = (gun && gun.spread) || [0];
+  const homing = !!(power && power.type === "sercin");
 
   for (const off of offsets) {
-    const a = baseAng + off;
-    game.projectiles.push({
-      x: game.player.x,
-      y: game.player.y,
-      vx: Math.cos(a) * speed,
-      vy: Math.sin(a) * speed,
-      life: 1.5,
-      dmg: dmg,
-      charKey: game.player.charKey,
-    });
+    for (const goff of gunOffsets) {
+      const a = baseAng + off + goff;
+      // Yeşil Çiftli: namlunun iki yanından paralel iki mermi
+      const yanlar = (gun && gun.twin) ? [-6, 6] : [0];
+      for (const yan of yanlar) {
+        game.projectiles.push({
+          x: game.player.x - Math.sin(a) * yan,
+          y: game.player.y + Math.cos(a) * yan,
+          vx: Math.cos(a) * speed,
+          vy: Math.sin(a) * speed,
+          life: homing ? 2.2 : ((gun && gun.life) || 1.5),
+          dmg: dmg,
+          charKey: game.player.charKey,
+          gun: game.player.gun || undefined,
+          pierce: (gun && gun.pierce) || 0,
+          homing,
+          atBot: target === game.bot,
+        });
+      }
+    }
   }
   game.player.shootRecoil = 1;
   game.player.aimRaise = 1;
@@ -4918,6 +5440,197 @@ function nearestGhost(maxR) {
     if (d < bestD) { best = g; bestD = d; }
   }
   return best;
+}
+
+// Serçin gücü: tüy en yakın hayalete doğru döner
+function steerHoming(p, dt) {
+  let best = null, bestD = 320;
+  for (const g of game.ghosts) {
+    const d = Math.hypot(g.x - p.x, g.y - p.y);
+    if (d < bestD) { best = g; bestD = d; }
+  }
+  if (!best) return;
+  const sp = Math.hypot(p.vx, p.vy);
+  const cur = Math.atan2(p.vy, p.vx);
+  let fark = Math.atan2(best.y - p.y, best.x - p.x) - cur;
+  while (fark > Math.PI) fark -= Math.PI * 2;
+  while (fark < -Math.PI) fark += Math.PI * 2;
+  const a = cur + Math.max(-7 * dt, Math.min(7 * dt, fark));
+  p.vx = Math.cos(a) * sp;
+  p.vy = Math.sin(a) * sp;
+}
+
+// ====== BOT ======
+// Tek kişilik oyunda oyuncunun yanında savaşan yardımcı (çizim: "Adı: Bot"). Hayaletler ona zarar vermez;
+// oyuncu ona dokunursa (klavyede B) ona ateş eder, yenilince içinden 1 kalp çıkar. Her bölüm başında yeniden gelir.
+// Çevrimiçi oyunda yok: konumu ve canı odaya senkronlanmaz.
+const BOT_MAX_HP = 6;
+const botEngel = (x, y, r) => collidesWalls(x, y, r) || collidesWaters(x, y, r);
+
+function spawnBot() {
+  game.bot = null;
+  if (online.mode || !game.player) return;
+  const yer = freeSpot(game.player.x + 60, game.player.y + 10, 18, botEngel);
+  game.bot = {
+    x: yer.x, y: yer.y, r: 18, hp: BOT_MAX_HP, maxHp: BOT_MAX_HP,
+    walkTimer: 0, lastFire: 0, aimRaise: 0, shootRecoil: 0, hitFlash: 0, stuck: 0,
+  };
+}
+
+function updateBot(dt, now) {
+  const b = game.bot;
+  if (!b || online.mode) return;
+  if (b.hitFlash > 0) b.hitFlash -= dt;
+  b.shootRecoil = Math.max(0, b.shootRecoil - dt * 6);
+  // Oyuncuyu ~80 px geriden izle; takılır ya da çok geride kalırsa yanına ışınlan
+  const dx = game.player.x - b.x, dy = game.player.y - b.y;
+  const d = Math.hypot(dx, dy) || 1;
+  let yurudu = false;
+  if (d > 80) {
+    const adim = game.player.speed * 0.95 * dt;
+    const nx = b.x + (dx / d) * adim, ny = b.y + (dy / d) * adim;
+    if (!botEngel(nx, b.y, b.r)) { b.x = nx; yurudu = true; }
+    if (!botEngel(b.x, ny, b.r)) { b.y = ny; yurudu = true; }
+    b.stuck = yurudu ? 0 : b.stuck + dt;
+    if (d > 650 || b.stuck > 2) {
+      const yer = freeSpot(game.player.x - 50, game.player.y + 30, b.r, botEngel);
+      b.x = yer.x; b.y = yer.y; b.stuck = 0;
+    }
+  }
+  b.walkTimer = yurudu ? b.walkTimer + dt : 0;
+  // En yakın hayalete ateş
+  let hedef = null, en = 240;
+  for (const g of game.ghosts) {
+    const gd = Math.hypot(g.x - b.x, g.y - b.y);
+    if (gd < en) { en = gd; hedef = g; }
+  }
+  b.aimRaise = hedef ? Math.min(1, b.aimRaise + dt * 6) : Math.max(0, b.aimRaise - dt * 4);
+  if (hedef && now - b.lastFire >= 750) {
+    const a = Math.atan2(hedef.y - b.y, hedef.x - b.x);
+    game.projectiles.push({
+      x: b.x, y: b.y, vx: Math.cos(a) * 460, vy: Math.sin(a) * 460, life: 1.2,
+      dmg: 1 + Math.floor(game.level / 5), charKey: "bot",
+    });
+    b.lastFire = now;
+    b.shootRecoil = 1;
+  }
+}
+
+function damageBot(dmg) {
+  const b = game.bot;
+  if (!b) return;
+  b.hp -= dmg;
+  b.hitFlash = 0.25;
+  spawnHitParticles(b.x, b.y);
+  audio.hit();
+  if (b.hp > 0) {
+    showFloat(t("Ay!"), b.x, b.y - 40);
+    return;
+  }
+  spawnDeathParticles(b.x, b.y);
+  game.pickups.push({ x: b.x, y: b.y, kind: "kalp" });
+  showToast(t("💔 Bot yenildi! İçinden kalp çıktı."));
+  game.bot = null;
+  game.player.botTargetUntil = 0;
+}
+
+// Ekrana dokunuş Bot'un üstündeyse 2,5 sn boyunca ona ateş et
+function botaDokun(clientX, clientY) {
+  const b = game.bot;
+  if (!game.running || game.paused || !b || !game.player || game.player.dead) return;
+  const vs = game.viewScale || 1;
+  const wx = clientX / vs + game.camera.x;
+  const wy = clientY / vs + game.camera.y;
+  if (Math.hypot(wx - b.x, wy - (b.y - 8)) > 46) return;
+  game.player.botTargetUntil = performance.now() + 2500;
+}
+
+// Bot'un görünüşü (çizimdeki gibi): uzun saç, kocaman gözler, tırtıklı ağız, köşeli gövde ve eller
+function drawBot(ctx, b) {
+  const size = 62, s = size / 100;
+  const walk = b.walkTimer > 0 ? Math.sin(b.walkTimer * 12) : 0;
+  ctx.save();
+  ctx.translate(b.x, b.y - Math.abs(walk) * 1.5 * s);
+  if (b.hitFlash > 0) ctx.filter = "brightness(2.2)";
+  ctx.fillStyle = "rgba(0,0,0,0.3)";
+  ctx.beginPath(); ctx.ellipse(0, 45 * s, 20 * s, 6 * s, 0, 0, Math.PI * 2); ctx.fill();
+  // Sırttaki uzun saç
+  ctx.fillStyle = "#27272a";
+  ctx.fillRect(-21 * s, -30 * s, 42 * s, 38 * s);
+  // Bacaklar
+  ctx.fillStyle = "#475569";
+  ctx.fillRect(-12 * s, 18 * s - Math.max(0, walk) * 4 * s, 10 * s, 24 * s);
+  ctx.fillRect(2 * s, 18 * s - Math.max(0, -walk) * 4 * s, 10 * s, 24 * s);
+  // Gövde + göğüs paneli
+  ctx.fillStyle = "#64748b";
+  ctx.fillRect(-18 * s, -8 * s, 36 * s, 30 * s);
+  ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 1.5 * s;
+  ctx.strokeRect(-18 * s, -8 * s, 36 * s, 30 * s);
+  ctx.fillStyle = "#94a3b8";
+  ctx.fillRect(-9 * s, -2 * s, 18 * s, 12 * s);
+  ctx.fillStyle = "#22d3ee";
+  ctx.beginPath(); ctx.arc(-4 * s, 4 * s, 2 * s, 0, Math.PI * 2); ctx.arc(4 * s, 4 * s, 2 * s, 0, Math.PI * 2); ctx.fill();
+  // Köşeli kollar ve kare eller
+  ctx.fillStyle = "#64748b";
+  ctx.fillRect(-28 * s, -6 * s, 10 * s, 18 * s);
+  ctx.fillRect(18 * s, -6 * s, 10 * s, 18 * s);
+  ctx.fillStyle = "#cbd5e1";
+  ctx.fillRect(-30 * s, 12 * s, 13 * s, 11 * s);
+  ctx.fillRect(17 * s, 12 * s, 13 * s, 11 * s);
+  // Kafa
+  ctx.fillStyle = "#e2e8f0";
+  ctx.beginPath(); ctx.arc(0, -22 * s, 18 * s, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "#475569"; ctx.lineWidth = 1.2 * s; ctx.stroke();
+  // Saç: tepe + yüzün iki yanından inen perçemler
+  ctx.fillStyle = "#27272a";
+  ctx.beginPath(); ctx.arc(0, -28 * s, 19 * s, Math.PI, 0); ctx.fill();
+  ctx.fillRect(-20 * s, -30 * s, 6 * s, 26 * s);
+  ctx.fillRect(14 * s, -30 * s, 6 * s, 26 * s);
+  // Kocaman gözler
+  ctx.fillStyle = "#111827";
+  ctx.beginPath(); ctx.arc(-6 * s, -24 * s, 3.6 * s, 0, Math.PI * 2); ctx.arc(6 * s, -24 * s, 3.6 * s, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#fff";
+  ctx.beginPath(); ctx.arc(-5 * s, -25 * s, 1.2 * s, 0, Math.PI * 2); ctx.arc(7 * s, -25 * s, 1.2 * s, 0, Math.PI * 2); ctx.fill();
+  // Tırtıklı (dişli) ağız
+  ctx.fillStyle = "#fafafa";
+  ctx.strokeStyle = "#111827"; ctx.lineWidth = 1.4 * s;
+  ctx.beginPath();
+  ctx.moveTo(-9 * s, -16 * s);
+  for (let i = 0; i <= 6; i++) ctx.lineTo((-9 + i * 3) * s, (i % 2 === 0 ? -16 : -12) * s);
+  for (let i = 6; i >= 0; i--) ctx.lineTo((-9 + i * 3) * s, (i % 2 === 0 ? -10 : -13) * s);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  // Sağ elde küçük blaster (nişan/geri tepme ile)
+  ctx.save();
+  ctx.translate(24 * s, 16 * s);
+  ctx.rotate(0.85 * (1 - b.aimRaise) - 0.35 * b.shootRecoil);
+  ctx.fillStyle = "#334155";
+  ctx.fillRect(0, -3 * s, 16 * s, 6 * s);
+  ctx.fillStyle = "#67e8f9";
+  ctx.fillRect(15 * s, -2 * s, 3 * s, 4 * s);
+  ctx.restore();
+  ctx.restore();
+  // İsim, can çubuğu ve hedef işareti
+  ctx.save();
+  ctx.font = "bold 12px sans-serif";
+  ctx.textAlign = "center";
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#000";
+  ctx.fillStyle = "#67e8f9";
+  ctx.strokeText("🤖 Bot", b.x, b.y - 46);
+  ctx.fillText("🤖 Bot", b.x, b.y - 46);
+  if (b.hp < b.maxHp) {
+    const w = 34, oran = Math.max(0, b.hp / b.maxHp);
+    ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(b.x - w / 2 - 1, b.y - 41, w + 2, 6);
+    ctx.fillStyle = "#dc2626"; ctx.fillRect(b.x - w / 2, b.y - 40, w, 4);
+    ctx.fillStyle = "#10b981"; ctx.fillRect(b.x - w / 2, b.y - 40, w * oran, 4);
+  }
+  if (game.player && game.player.botTargetUntil > performance.now()) {
+    ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(b.x, b.y - 8, 34, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.restore();
 }
 
 function damagePlayer() {
@@ -5043,6 +5756,8 @@ function render() {
     });
   }
 
+  if (game.bot) drawBot(ctx, game.bot);
+
   // Oyuncu (yanıp sönme efekti yaralandığında, görünmez iken yarı saydam, ölü iken hayalet)
   const blink = !game.player.dead && game.player.invuln > 0 && Math.floor(game.player.invuln * 10) % 2 === 0;
   if (!blink) {
@@ -5055,15 +5770,15 @@ function render() {
       ctx.save();
       ctx.globalAlpha = 0.5;
       ctx.filter = "hue-rotate(180deg) brightness(1.3)";
-      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc);
+      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun);
       ctx.restore();
     } else if (isInvisible) {
       ctx.save();
       ctx.globalAlpha = 0.4;
-      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc);
+      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun);
       ctx.restore();
     } else {
-      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc);
+      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun);
     }
   }
 
@@ -5413,6 +6128,7 @@ async function restoreAccountGoogle() {
     for (const k of Object.keys(save)) delete save[k];
     Object.assign(save, parsed);
     persistSave();
+    Object.assign(save, loadSave()); // eski yedekte olmayan karakter/silah alanlarını tamamla
     audio.enabled = save.soundEnabled !== false;
     audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1 }, save.volumes || {});
     refreshSoundButtons();
@@ -5536,6 +6252,7 @@ async function restoreAccount() {
     Object.assign(save, parsed);
     save.accountCode = display;
     persistSave();
+    Object.assign(save, loadSave()); // eski yedekte olmayan karakter/silah alanlarını tamamla
     // Ses ayarlarını yeniden uygula
     audio.enabled = save.soundEnabled !== false;
     audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1 }, save.volumes || {});

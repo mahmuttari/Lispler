@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.10.4 (versionCode 40) — Play'de 3.10.2 (38) |
+| Sürüm | 3.11.0 (versionCode 41) — Play'de 3.10.2 (38) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
@@ -79,6 +79,24 @@ boş yere çıkarılır. Çevrimiçi oyunda ve yeni oyunun başında engel yerle
 
 Test: `node hayalet-avcilari/test/engel.test.mjs` (Playwright + Chromium). Eski kodda başarısız olur (uzun oyunda
 3.208 karede gömülü hayalet), yeni kodda geçer.
+
+## 3.11.0: Silsen, Serçin, envanter ve Bot
+
+Fikirler ve çizimler bir çocuk oyuncudan geldi (defter sayfaları). `www/game.js`:
+
+- **Silsen** (💚 25): çiçekli damalı bayrak, papatya mermisi; gücü "Çiçek Halkası" 8 yöne atar. **Serçin** (💚 30): gaga
+  burun, uzun saç, tüy mermisi; gücü "Güdümlü Tüyler" (`steerHoming`). Serçin'in **Kanatlı Kedi** kostümü (💎 8)
+  kostüm nesnesindeki `ears`/`wings` bayraklarıyla çizilir — kostümler artık yalnız renk değil, biçim de taşıyabilir.
+- **Envanter** (`GUNS`, `save.ownedGuns`, `save.equippedGun`): Mağaza › 🔫 Silahlar'dan alınan 5 kalıcı silah bütün
+  karakterlerde ortak; oyunda 🎒 düğmesi (`toggleInventory`) karakterin kendi silahı ile alınanlar arasında değiştirir.
+  Silah mermi biçimini, hızını, atış aralığını (`delayMul`), hasarı (`dmgMul`) ve desenini (`spread`, `twin`, `pierce`)
+  belirler; karakter yükseltmeleri ve güçler üstüne eklenir.
+- **Bot** (`spawnBot`, `updateBot`, `damageBot`, `drawBot`): yalnız tek kişilik oyunda; oyuncuyu izler, en yakın
+  hayalete ateş eder, hayaletler ona zarar vermez. Oyuncu ona dokununca (`botaDokun`, klavyede B) 2,5 sn ona ateş eder;
+  yenilince içinden 1 kalp çıkar, her bölüm başında yeniden gelir.
+- Çevrimiçi oyunda Bot yoktur ve takılı silah odaya senkronlanmaz (diğer oyuncular karakterin kendi silahını görür);
+  bu yüzden Firebase kuralları değişmedi. Senkrona alan eklenirse önce `firebase/database.rules.json` güncellenmeli.
+- Eski kayıtlar (kodlu/Google yedeği dahil) yeni karakter ve silah alanlarını `loadSave()` varsayılanlarıyla alır.
 
 ## Diller
 

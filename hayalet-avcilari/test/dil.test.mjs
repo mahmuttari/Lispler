@@ -43,6 +43,7 @@ try {
         magaza_guc: () => { openShop(); showShopTab('upgrades'); },
         magaza_kostum: () => showShopTab('costumes'),
         magaza_cephane: () => showShopTab('ammo'),
+        magaza_silah: () => showShopTab('guns'),
         sampiyonlar: () => { openLeaderboard(); setLeaderboardSource('local'); },
         hesap: () => openAccount(),
         ses: () => { showScreen('screen-menu'); openSoundSettings(); },

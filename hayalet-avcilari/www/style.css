@@ -415,6 +415,7 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
 /* ====== MAĞAZA ====== */
 .shop-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   margin: 12px 0;
   justify-content: center;
@@ -665,7 +666,74 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
   text-align: center;
   line-height: 1.2;
 }
+/* ====== SİLAH ENVANTERİ ====== */
+.inv-btn {
+  position: absolute;
+  bottom: 40px;
+  left: 84px;
+  width: 56px;
+  height: 56px;
+  background-color: rgba(0,0,0,0.7);
+  background-size: 80%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border: 2px solid #fde047;
+  border-radius: 14px;
+  padding: 0;
+  cursor: pointer;
+  z-index: 11;
+  touch-action: manipulation;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+.inv-btn:active { transform: scale(0.92); }
+.inv-btn .inv-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 18px;
+}
+.inv-panel {
+  position: absolute;
+  bottom: 106px;
+  left: 16px;
+  max-width: calc(100vw - 32px);
+  display: none;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  background: rgba(15, 10, 30, 0.92);
+  border: 2px solid #fde047;
+  border-radius: 14px;
+  z-index: 12;
+}
+.inv-panel.open { display: flex; }
+.inv-slot {
+  width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 2px;
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+}
+.inv-slot.on { border-color: #fde047; background: rgba(253, 224, 71, 0.25); }
+.inv-slot .inv-img {
+  width: 56px;
+  height: 42px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.inv-slot .inv-name { font-size: 10px; font-weight: 700; line-height: 1.15; text-align: center; overflow-wrap: anywhere; }
+.inv-empty { max-width: 170px; align-self: center; color: #fde68a; font-size: 12px; font-weight: 700; }
+
 @media (orientation: landscape) and (min-width: 700px) {
+  .inv-btn { bottom: 60px; left: 100px; width: 64px; height: 64px; }
+  .inv-panel { bottom: 134px; left: 24px; }
   .weapon-bar { bottom: 60px; left: 24px; }
   .weapon-slot { width: 64px; height: 64px; font-size: 32px; }
 }

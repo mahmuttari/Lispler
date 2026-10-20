@@ -177,6 +177,7 @@ function fbDb() {
   return _fbDb;
 }
 
+// Eski (3.10.1 ve öncesi) cihaz kimliği. 3.10.2'den beri yalnız anonim giriş olmazsa kullanılır.
 function getOnlineUid() {
   let uid = localStorage.getItem(ONLINE_UID_KEY);
   if (!uid) {
@@ -184,6 +185,54 @@ function getOnlineUid() {
     localStorage.setItem(ONLINE_UID_KEY, uid);
   }
   return uid;
+}
+
+// ====== FIREBASE AUTH (anonim giriş) ======
+// Çevrimiçi oda, kodlu yedek ve şampiyonlar listesi kayıtları auth.uid'e bağlıdır (firebase/README.md).
+// Oturum yoksa anonim giriş yapılır; Google ile girişte bu anonim hesap Google'a yükseltilir (uid aynı kalır).
+function fbAuth() {
+  try {
+    if (!fbDb() || !firebase.auth) return null;
+    return firebase.auth();
+  } catch (_) { return null; }
+}
+
+// Kayıtlı oturum (anonim ya da Google) yüklenince çözülür; ondan önce anonim giriş Google oturumunu ezebilir
+let _authIlkDurum = null;
+function authIlkDurum(auth) {
+  if (!_authIlkDurum) {
+    _authIlkDurum = new Promise((resolve) => {
+      let kapat = null, geldi = false;
+      kapat = auth.onAuthStateChanged(() => { geldi = true; resolve(); if (kapat) kapat(); });
+      if (geldi) kapat();
+    });
+  }
+  return _authIlkDurum;
+}
+
+let _anonimGiris = null;
+async function fbKullanici() {
+  const auth = fbAuth(); if (!auth) return null;
+  await authIlkDurum(auth);
+  if (auth.currentUser) return auth.currentUser;
+  if (!_anonimGiris) {
+    _anonimGiris = auth.signInAnonymously()
+      .then((r) => r.user, (e) => { console.error("signInAnonymously", e); return null; })
+      .finally(() => { _anonimGiris = null; }); // başarısızsa sonraki çağrı yeniden dener
+  }
+  return _anonimGiris;
+}
+
+// Giriş en çok ms kadar beklenir (yavaş ağda ekran takılmasın); süre dolarsa null
+function fbKullaniciBekle(ms) {
+  return Promise.race([fbKullanici(), new Promise((r) => setTimeout(() => r(null), ms))]);
+}
+
+// Çevrimiçi oyuncu kimliği: auth.uid; anonim giriş olmazsa (internet yok, sağlayıcı kapalı) eski "u_" kimliği.
+// Kurallar geçiş döneminde "u_" kimliğini de kabul eder.
+async function onlineKimlik() {
+  const u = await fbKullaniciBekle(10000);
+  return (u && u.uid) || getOnlineUid();
 }
 
 // SDK helper — mevcut rtdb.X çağrıları için geri uyumlu wrapper
@@ -265,8 +314,12 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.10.1";
+const APP_VERSION = "3.10.2";
 const UPDATE_NOTES = {
+  "3.10.2": [
+    t("🔒 Çevrimiçi odan ve kodlu yedeğin artık sana bağlı: odanı yalnız sen kapatabilir, yedeğinin üzerine yalnız sen yazabilirsin."),
+    t("✏️ İsmini değiştirince bu sürümden sonraki skorların şampiyonlar listesinde de yeni adınla görünür."),
+  ],
   "3.10.1": [
     t("🎬 Oyun bitti ekranında reklam izleyerek +10 💚 zümrüt kazanabilirsin."),
     t("📺 Oyunu ücretsiz tutmak için oyun bitişlerinde arada bir reklam gösterilir; oyun sırasında reklam yok."),
@@ -391,6 +444,16 @@ const FIREBASE = {
 };
 const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${FIREBASE.projectId}/databases/(default)/documents`;
 
+// Firestore REST oturumu: kimlik jetonu alınabilirse { uid, headers: Authorization }, yoksa girişsiz (eski biçim)
+async function firestoreOturum() {
+  const headers = { "Content-Type": "application/json" };
+  const u = await fbKullaniciBekle(5000);
+  if (u) {
+    try { headers.Authorization = "Bearer " + await u.getIdToken(); return { uid: u.uid, headers }; } catch (_) {}
+  }
+  return { uid: null, headers };
+}
+
 async function submitOnlineScore(entry) {
   const doc = {
     fields: {
@@ -403,9 +466,11 @@ async function submitOnlineScore(entry) {
     }
   };
   try {
+    const oturum = await firestoreOturum();
+    if (oturum.uid) doc.fields.uid = { stringValue: oturum.uid }; // isim değişikliğinde yalnız kendi skorların
     const res = await fetch(`${FIRESTORE_BASE}/${FIREBASE.collection}?key=${FIREBASE.apiKey}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: oturum.headers,
       body: JSON.stringify(doc),
     });
     return res.ok;
@@ -2419,9 +2484,10 @@ function goToMenu() {
 }
 
 // ====== ONLINE / LOBİ ======
-function openOnline() {
-  online.uid = getOnlineUid();
+async function openOnline() {
   showScreen("screen-online");
+  setOnlineStatus(t("Firebase'e bağlanıyor..."));
+  online.uid = await onlineKimlik();
   setOnlineStatus("");
 }
 function leaveOnlineToOnline() {
@@ -2450,10 +2516,10 @@ function selectMaxPlayers(n) {
 
 async function submitCreateRoom() {
   if (!save.playerName) { showToast(t("Önce avcı adını ayarla")); return; }
-  if (!online.uid) online.uid = getOnlineUid();
   const name = (document.getElementById("room-name-input").value || "").trim() || t("Oda");
   showToast(t("⏳ Oda kuruluyor..."));
   setOnlineStatus(t("Firebase'e bağlanıyor..."));
+  online.uid = await onlineKimlik(); // giriş bu arada tamamlanmış olabilir
   online.lastError = null;
   const roomId = makeRoomId();
   const now = Date.now();
@@ -2569,7 +2635,7 @@ function renderRoomList(all) {
 async function joinRoom(roomId) {
   if (!save.playerName) { showToast(t("Önce avcı adını ayarla")); return; }
   setOnlineStatus("");
-  const uid = online.uid;
+  const uid = online.uid = await onlineKimlik();
   const now = Date.now();
   // Oda var mı / dolu mu kontrolü
   const room = await rtdb.get(`rooms/${roomId}`);
@@ -2645,11 +2711,12 @@ function stopRoomListener() {
 function setupOnDisconnect() {
   const db = fbDb(); if (!db || !online.roomId || !online.uid) return;
   // Host olsa bile sadece kendi player'ını sil — kalan oyunculardan biri host olur
-  // Önce eski onDisconnect'leri iptal et
-  db.ref(`rooms/${online.roomId}`).onDisconnect().cancel();
-  db.ref(`rooms/${online.roomId}/players/${online.uid}`).onDisconnect().cancel();
+  // Önce eski onDisconnect'leri iptal et (oda düğümüne yazma izni yalnız host'ta; konukta reddedilebilir)
+  db.ref(`rooms/${online.roomId}`).onDisconnect().cancel().catch(() => {});
+  db.ref(`rooms/${online.roomId}/players/${online.uid}`).onDisconnect().cancel().catch(() => {});
   // Sadece kendi player'ını sil
-  db.ref(`rooms/${online.roomId}/players/${online.uid}`).onDisconnect().remove();
+  db.ref(`rooms/${online.roomId}/players/${online.uid}`).onDisconnect().remove()
+    .catch((e) => console.error("onDisconnect", e));
 }
 
 // Mevcut host kayıpsa, deterministik olarak yeni host seç
@@ -3168,16 +3235,19 @@ async function renameInLeaderboard(oldName, newName) {
       if (changed) localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(list));
     }
   } catch (_) {}
-  // 2) Online (Firestore): aynı isimli skorların name alanını güncelle
+  // 2) Online (Firestore): bu oyuncunun (uid) eski adlı skorlarının name alanını güncelle. Kural yalnız kendi
+  //    uid'li skorun adını değiştirmeye izin verir; 3.10.2'den önceki uid'siz skorlar eski adla kalır.
   try {
+    const oturum = await firestoreOturum();
+    if (!oturum.uid) return;
     const query = {
       structuredQuery: {
         from: [{ collectionId: FIREBASE.collection }],
         where: {
           fieldFilter: {
-            field: { fieldPath: "name" },
+            field: { fieldPath: "uid" },
             op: "EQUAL",
-            value: { stringValue: oldName },
+            value: { stringValue: oturum.uid },
           },
         },
         limit: 200,
@@ -3185,18 +3255,19 @@ async function renameInLeaderboard(oldName, newName) {
     };
     const res = await fetch(`${FIRESTORE_BASE}:runQuery?key=${FIREBASE.apiKey}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: oturum.headers,
       body: JSON.stringify(query),
     });
     if (!res.ok) return;
     const data = await res.json();
-    const docs = (data || []).filter((d) => d.document);
+    const docs = (data || []).filter((d) => d.document && d.document.fields && d.document.fields.name
+      && d.document.fields.name.stringValue === oldName);
     for (const d of docs) {
       const docUrl = `https://firestore.googleapis.com/v1/${d.document.name}?updateMask.fieldPaths=name&key=${FIREBASE.apiKey}`;
       try {
         await fetch(docUrl, {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: oturum.headers,
           body: JSON.stringify({ fields: { name: { stringValue: newName } } }),
         });
       } catch (_) { /* tek tek hata yutulur */ }
@@ -5144,11 +5215,14 @@ function init() {
   audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1 }, save.volumes || {});
   refreshSoundButtons();
   refreshSoundSliders();
-  // Firebase + auth state listener
+  // Firebase + auth state listener; oturum yoksa (ilk açılış, Google'dan çıkış, hesap silme) anonim giriş
   try {
-    fbDb();
-    if (firebase && firebase.auth) {
-      firebase.auth().onAuthStateChanged(() => { refreshAccountScreen(); });
+    const auth = fbAuth();
+    if (auth) {
+      auth.onAuthStateChanged((u) => {
+        refreshAccountScreen();
+        if (!u) fbKullanici();
+      });
     }
     // Google Auth plugin'i arka planda hazırla (native)
     initGoogleAuth().catch(() => {});
@@ -5222,11 +5296,25 @@ async function signInWithGoogle() {
       return;
     }
     // Firebase Auth ile credential dönüştür
-    fbDb(); // initializeApp tetikle
-    if (!firebase.auth) { showToast(t("Firebase Auth SDK yok")); return; }
+    const auth = fbAuth();
+    if (!auth) { showToast(t("Firebase Auth SDK yok")); return; }
     const credential = firebase.auth.GoogleAuthProvider.credential(guser.authentication.idToken);
-    const result = await firebase.auth().signInWithCredential(credential);
-    const u = result.user;
+    await authIlkDurum(auth);
+    const simdiki = auth.currentUser;
+    let u;
+    if (simdiki && simdiki.isAnonymous) {
+      // Anonim hesabı Google'a yükselt: uid aynı kalır, oda/kodlu yedek/skor sahipliği korunur
+      try {
+        u = (await simdiki.linkWithCredential(credential)).user;
+      } catch (e) {
+        if (!e || e.code !== "auth/credential-already-in-use") throw e;
+        // Bu Google hesabı daha önce kullanılmış (eski sürüm ya da başka cihaz): o hesaba geç,
+        // accounts_google/{uid} yedeği oradadır
+        u = (await auth.signInWithCredential(e.credential || credential)).user;
+      }
+    } else {
+      u = (await auth.signInWithCredential(credential)).user;
+    }
     if (u) {
       showToast(t("✅ Hoş geldin, {ad}", { ad: u.displayName || u.email }));
       refreshAccountScreen();
@@ -5262,13 +5350,18 @@ async function deleteAccountGoogle() {
   try { await u.delete(); } catch (e) { tamam = false; console.error("deleteAccountGoogle", e); }
   const ga = googleAuthPlugin();
   if (ga) { try { await ga.signOut(); } catch (_) {} }
-  try { await firebase.auth().signOut(); } catch (_) {}
+  // Silinen kullanıcı zaten çıkmış olur; ardından yeni anonim oturum açılır (init › onAuthStateChanged)
+  if (!tamam) { try { await firebase.auth().signOut(); } catch (_) {} }
   showToast(tamam ? t("🗑 Hesabın silindi") : t("🗑 Yedeğin silindi; hesabı silmek için yeniden giriş yapıp tekrar dene"));
   refreshAccountScreen();
 }
 
+// Google ile girmiş Firebase kullanıcısı; anonim oturum sayılmaz
 function currentFirebaseUser() {
-  try { return firebase.auth().currentUser; } catch (_) { return null; }
+  try {
+    const u = firebase.auth().currentUser;
+    return u && !u.isAnonymous ? u : null;
+  } catch (_) { return null; }
 }
 
 async function backupAccountGoogle() {
@@ -5367,20 +5460,41 @@ async function backupAccount() {
     showToast(t("Önce avcı adını ayarla"));
     return;
   }
-  const code = getOrCreateAccountCode();
-  const key = code.replace("-", "_");
-  const payload = {
-    name: save.playerName,
-    save: JSON.stringify(save),
-    updatedAt: Date.now(),
-  };
-  const ok = await rtdb.put(`accounts/${key}`, payload);
+  const u = await fbKullaniciBekle(10000);
+  const uid = u ? u.uid : null;
+  let ok = await kodluYedekYaz(uid);
+  if (!ok && uid) {
+    // Kodun sahibi başka bir kullanıcı (kod başka cihazdan geri yüklendi ya da Google hesabı değişti):
+    // o yedeğin üzerine yalnız sahibi yazabilir, bu cihaz yeni bir kod alır
+    const mevcut = await rtdb.get(`accounts/${save.accountCode.replace("-", "_")}`);
+    if (mevcut && mevcut.ownerUid && mevcut.ownerUid !== uid) {
+      save.accountCode = genAccountCode();
+      persistSave();
+      if (await kodluYedekYaz(uid)) {
+        showToast(t("✅ Yedeklendi — bu cihazın yeni kodu: {kod}", { kod: save.accountCode }));
+        refreshAccountScreen();
+        return;
+      }
+    }
+  }
   if (ok) {
     showToast(t("✅ Yedeklendi"));
     refreshAccountScreen();
   } else {
     showToast(t("❌ Yedekleme başarısız (internet?)"));
   }
+}
+
+// accounts/{kod}: ownerUid = auth.uid; giriş yoksa sahipsiz (eski biçim, geçiş döneminde kabul edilir)
+function kodluYedekYaz(uid) {
+  const key = getOrCreateAccountCode().replace("-", "_");
+  const payload = {
+    name: save.playerName,
+    save: JSON.stringify(save),
+    updatedAt: Date.now(),
+  };
+  if (uid) payload.ownerUid = uid;
+  return rtdb.put(`accounts/${key}`, payload);
 }
 
 async function restoreAccount() {

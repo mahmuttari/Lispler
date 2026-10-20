@@ -4,13 +4,22 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Şampiyonlar listesi (game.js › submitOnlineScore, fetchOnlineLeaderboard, isim değişikliği)
+    // Şampiyonlar listesi (game.js › submitOnlineScore, fetchOnlineLeaderboard, renameInLeaderboard)
     match /scores/{scoreId} {
       allow read: if true;
-      allow create: if gecerliSkor(request.resource.data);
-      // İsim değişikliği (renameInLeaderboard) girişsiz PATCH atar; açılırsa herkes herkesin skorunun adını
-      // değiştirebilir. Önceki kuraldaki gibi kapalı kalır.
-      allow update, delete: if false;
+      allow create: if gecerliSkor(request.resource.data) && skorSahibi(request.resource.data);
+      // İsim değişikliği: yalnız kendi uid'li skorunun yalnız adı. uid'siz (3.10.2 öncesi) skorlar değişmez.
+      allow update: if request.auth != null
+        && resource.data.get('uid', '') == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name'])
+        && gecerliIsim(request.resource.data.name);
+      allow delete: if false;
+    }
+
+    // Girişli istemci (3.10.2+) skoru kendi uid'iyle yazar. Geçiş dönemi: eski sürümler girişsiz ve uid'siz yazar.
+    function skorSahibi(d) {
+      return (request.auth != null && d.get('uid', '') == request.auth.uid)
+        || (request.auth == null && !('uid' in d));
     }
 
     function gecerliIsim(ad) {
@@ -18,7 +27,7 @@ service cloud.firestore {
     }
 
     function gecerliSkor(d) {
-      return d.keys().hasOnly(['name', 'level', 'ghosts', 'para', 'score', 'date'])
+      return d.keys().hasOnly(['name', 'level', 'ghosts', 'para', 'score', 'date', 'uid'])
         && d.keys().hasAll(['name', 'level', 'ghosts', 'para', 'score', 'date'])
         && gecerliIsim(d.name)
         && d.level is int && d.level >= 1 && d.level <= 1000

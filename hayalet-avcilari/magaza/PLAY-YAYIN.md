@@ -28,7 +28,7 @@ Kullanıcı bilgisayardaki oturuma yalnız şunu yazar:
 | Metinler ve form cevapları | [`aciklamalar.md`](aciklamalar.md); çeviriler [`diller/`](diller/) (en-US, es-ES, es-419, zh-CN, hi-IN, ar) |
 | Görseller | [`play/`](play/): `simge-512.png`, `tanitim-gorseli-1024x500.png`, `telefon-1…5-*.png` (sırayla); her dil için `play/<dil>/` |
 | Sürüm notu | [`surum-notu.txt`](surum-notu.txt) |
-| İlk paket | Console'a elle yüklenen taslak: `dist/HayaletAvcilari-play.aab` **3.10.0 (36)**. AdMob eklendiği için yayına giden paket CI'ın derlediği **3.10.1 (37)**: bulut oturumu `yukle` ile taslağı bununla değiştirir |
+| İlk paket | Console'a elle yüklenen taslak: `dist/HayaletAvcilari-play.aab` **3.10.0 (36)**. Yayına giden paket CI'ın derlediği **3.10.2 (38)** (AdMob + Firebase anonim giriş): bulut oturumu `yukle` ile taslağı bununla değiştirir. Önce [`firebase/README.md` › Yayınlama](../firebase/README.md#yayınlama) 1–3 (anonim sağlayıcı, kurallar) ve Veri güvenliği formundaki "Kullanıcı kimlikleri" satırı (aşağıda, `aciklamalar.md`) |
 | Yükleme anahtarı SHA-1 | `D0:88:A0:75:77:D1:89:B0:15:D4:A5:88:74:9A:1A:8C:C2:EE:56:99` |
 | Yükleme anahtarı SHA-256 | `13:8C:5B:39:EA:0B:63:AC:CA:04:81:68:A5:BF:D9:F7:06:12:5A:E9:32:B9:5F:F6:C4:E1:04:D3:49:E4:80:C7` |
 
@@ -105,6 +105,6 @@ tamamen GitHub üzerinden yürür. Bu, NetcadDevelop/DWG Office Zip'te de aynıy
 
 ## Sonraki sürümler (yalnız GitHub)
 
-`www/game.js`'te `APP_VERSION` ve `UPDATE_NOTES`, `android/app/build.gradle`'da `versionCode` (+1) ve `versionName` →
+`www/game.js`'te `APP_VERSION` ve `UPDATE_NOTES` (yeni metinler 5 dile: `araclar/sozluk.mjs`), `android/app/build.gradle`'da `versionCode` (+1) ve `versionName` →
 push → `hayalet-android.yml` imzalı AAB'yi derler (secret'lar: `README.md` › "GitHub üzerinden") →
 `play-istek.txt`'ye `yukle uygula`, onayla `yukle yayinla uygula`. AAB elle hiçbir yere taşınmaz.

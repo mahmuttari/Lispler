@@ -38,4 +38,4 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 ## Sürüm notu
 
-Las salas en línea, la copia con código y la lista de campeones ahora siempre están protegidas por tu ID de jugador. Si el juego no puede conectarse, te avisa; revisa tu internet e inténtalo de nuevo.
+Llega Google Play Games: tu puntuación va a la clasificación de Play Games y puedes desbloquear 5 logros (pantalla Campeones). Las salas en línea, la copia con código y la lista de campeones ahora siempre están protegidas por tu ID de jugador; si el juego no puede conectarse, te avisa.

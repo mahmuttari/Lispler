@@ -1,1 +1,1 @@
-Çevrimiçi oda, kodlu yedek ve şampiyonlar listesi artık hep oyuncu kimliğinle korunuyor. Bağlantı kurulamazsa oyun bunu söylüyor; internetini kontrol edip yeniden deneyebilirsin.
+Google Play Games geldi: puanın Play Games skor tablosuna gider, 5 başarımın kilidini açabilirsin (Şampiyonlar ekranı). Çevrimiçi oda, kodlu yedek ve şampiyonlar listesi artık hep oyuncu kimliğinle korunuyor; bağlantı kurulamazsa oyun bunu söylüyor.

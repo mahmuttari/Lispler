@@ -38,4 +38,4 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 
 ## Sürüm notu
 
-Online rooms, code backups and the champions list are now always protected by your player ID. If the game can't connect, it tells you so; check your internet and try again.
+Google Play Games is here: your score goes to the Play Games leaderboard and you can unlock 5 achievements (Champions screen). Online rooms, code backups and the champions list are now always protected by your player ID; if the game can't connect, it tells you so.

@@ -82,3 +82,7 @@ Hayalet Avcıları'nda hayaletler her yerden geliyor! Avcını seç, labirent gi
 
 Hassas konum, rehber, fotoğraf, mesaj, finans, sağlık, tarama geçmişi: **toplanmıyor**.
 AdMob satırları Google'ın AdMob için yayımladığı veri güvenliği rehberine göredir; AB/İngiltere/İsviçre'de UMP onay formu gösterilir.
+Play Oyun Hizmetleri (3.10.4): skor ve başarımlar "Uygulama etkinliği › Diğer kullanıcı içeriği (oyun ilerlemesi, puan)",
+SDK'nın analiz/teşhis verisi "Uygulama bilgileri ve performans › Teşhis" satırına girer; ikisi zaten beyan edildiği için form
+değişmedi. Play Games profili (oyuncu etiketi, avatar) Google'ın kendi hesabıdır, oyun okumaz
+([Google: PGS veri beyanı](https://developer.android.com/games/pgs/data-collection)).

@@ -308,8 +308,12 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.10.3";
+const APP_VERSION = "3.10.4";
 const UPDATE_NOTES = {
+  "3.10.4": [
+    t("🎮 Google Play Games: puanın Play Games skor tablosuna gider, 5 başarımın kilidini açabilirsin (Şampiyonlar ekranı)."),
+    t("🔒 Çevrimiçi oda, kodlu yedek ve şampiyonlar listesi artık hep oyuncu kimliğinle korunuyor; bağlanılamazsa yeniden dene."),
+  ],
   "3.10.3": [
     t("🔒 Çevrimiçi oda, kodlu yedek ve şampiyonlar listesi artık hep oyuncu kimliğinle korunuyor; bağlanılamazsa yeniden dene."),
   ],
@@ -4608,6 +4612,7 @@ function update(dt, now) {
 
 function nextLevel() {
   game.level++;
+  pgsBolum(game.level);
   game.levelTimer = 0;
   game.ghostsCaught = 0;
   audio.levelUp();
@@ -4744,6 +4749,7 @@ function killGhost(g, idx) {
 
   if (g.isBoss) {
     game.totalCaught++;
+    pgsHayalet(game.totalCaught);
     game.bossDefeated = true;
     showToast(t("👑 BOSS YENİLDİ! Kalan hayaletleri temizle!"));
     audio.bossDie();
@@ -4780,6 +4786,7 @@ function killGhost(g, idx) {
 
   game.ghostsCaught++;
   game.totalCaught++;
+  pgsHayalet(game.totalCaught);
   audio.kill();
 
   // Patlama gücü: çevreye AOE hasar
@@ -5189,6 +5196,7 @@ function endGame(won) {
   };
   const rank = addLeaderboardEntry(entry);
   submitOnlineScore(entry); // sessizce buluta yolla, sonucu beklemiyoruz
+  pgsOyunBitti(scoreFor(entry), save.highestLevel, game.totalCaught); // Android: Play Games skor + başarımlar
   const rankEl = document.getElementById("gameover-rank");
   if (rank >= 0) {
     if (rank === 0) rankEl.textContent = t("🥇 1. SIRA! Şampiyonsun!");

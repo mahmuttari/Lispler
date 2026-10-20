@@ -29,6 +29,11 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-2417242373034448~4177766696"/>
 
+        <!-- Google Play Oyun Hizmetleri (oyun projesi "Ghost Hunters", bulut projesi hayalet-avcilari) -->
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/game_services_project_id"/>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

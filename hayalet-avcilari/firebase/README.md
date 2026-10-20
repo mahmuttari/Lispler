@@ -138,7 +138,7 @@ değişiklikte kurala ve teste de ekleyin: bilinmeyen alan içeren yazım bütü
 Kurallar konsoldan elle yayınlanır (bu depo Firebase CLI ile dağıtım yapmaz). Konsol eski kuralların geçmişini tutar;
 sorun çıkarsa aynı ekrandan önceki sürüme dönülebilir.
 
-### 3.10.3: geçişi kapatmak
+### 3.10.3: geçişi kapatmak (kurallar 20 Ekim 2026'da yayınlandı, canlı deneme 21/21)
 
 1. **Ön koşul:** 3.10.2 Play'de yayında (Play'deki ilk sürüm 3.10.2; girişsiz istemci yalnız elle kurulmuş
    3.10.1 ve öncesi APK'lar). Kurallar yayınlanınca bu APK'lar çevrimiçi oda kuramaz/katılamaz, yedekleyemez, skor
@@ -150,7 +150,7 @@ sorun çıkarsa aynı ekrandan önceki sürüme dönülebilir.
    `curl -X PUT -d '{"name":"x","hostUid":"u_deneme0001","status":"lobby","maxPlayers":2,"createdAt":1,"lastSeen":1}' https://hayalet-avcilari-default-rtdb.europe-west1.firebasedatabase.app/rooms/ZZZZZZ.json`
    → `Permission denied`.
 5. İsteğe bağlı: Realtime Database › Veriler'de `hostUid`'i `u_` ile başlayan eski odaları sil.
-6. 3.10.3 (39): merge sonrası `hayalet-android.yml` imzalı AAB'yi derler → `play-istek.txt`'ye `yukle uygula`
+6. 3.10.4 (40, Play Games ile birlikte): merge sonrası `hayalet-android.yml` imzalı AAB'yi derler → `play-istek.txt`'ye `yukle uygula`
    → onayla `yukle yayinla uygula` ([`magaza/PLAY-YAYIN.md`](../magaza/PLAY-YAYIN.md)).
 
 Sıra serbesttir: 3.10.3 geçiş kurallarıyla da çalışır, kapalı kurallar da 3.10.2'yi bozmaz (yalnız 3.10.2'de anonim

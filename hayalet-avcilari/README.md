@@ -7,13 +7,14 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.10.3 (versionCode 39) — Play'de 3.10.2 (38) |
+| Sürüm | 3.10.4 (versionCode 40) — Play'de 3.10.2 (38) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
 | Firebase kuralları | [`firebase/`](firebase/README.md) — RTDB + Firestore kuralları, yol yol gerekçe, emülatör testi. 3.10.2'den beri Firebase anonim giriş: oda, kodlu yedek ve skor `auth.uid`'e bağlı. 3.10.3 geçişi kapatır (girişsiz ve `u_` kimlikli yazım reddedilir) |
 | Reklam | AdMob, yalnız Android uygulaması — aşağıda "Reklamlar (AdMob)" |
-| Play paketi | 3.10.1'den itibaren CI (`hayalet-android.yml`) derler; `dist/HayaletAvcilari-play.aab` 3.10.0 (36) olarak kaldı. 3.10.3 için [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) (geçişi kapatan kurallar) |
+| Play Games | Play Oyun Hizmetleri v2 (3.10.4), yalnız Android — aşağıda "Google Play Oyun Hizmetleri" |
+| Play paketi | 3.10.1'den itibaren CI (`hayalet-android.yml`) derler; `dist/HayaletAvcilari-play.aab` 3.10.0 (36) olarak kaldı. Geçişi kapatan kurallar 20 Ekim 2026'da yayınlandı ([`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama)); sıradaki paket 3.10.4 (40) |
 | Denemelik APK | `dist/HayaletAvcilari.apk` (aynı anahtarla imzalı; Play sürümü üstüne kurulmaz, önce kaldırılır) |
 
 ## Reklamlar (AdMob)
@@ -30,6 +31,26 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 Oyun sırasında reklam yok. Web/PWA sürümünde eklenti olmadığı için reklam kodu hiçbir şey yapmaz. AdMob uygulaması
 Play'de yayınlanınca AdMob › Uygulamalar › "Mağaza ekle" ile Play girişine bağlanmalı; o zamana kadar "sınırlı reklam
 sunumu" geçerlidir.
+
+## Google Play Oyun Hizmetleri
+
+`www/playgames.js` + yerel eklenti `android/app/src/main/java/.../PlayGamesPlugin.java` (3.10.4,
+`play-services-games-v2`). Açılışta otomatik giriş (`MainActivity` › `PlayGamesSdk.initialize`); oturum yoksa skor ve
+başarım gönderilmez, Şampiyonlar ekranındaki "🎮 Play Games skor tablosu" / "🎖 Başarımlar" düğmeleri girişi ister.
+Düğmeler web/PWA'da görünmez.
+
+| | |
+|---|---|
+| Oyun projesi | Play Console › Play Oyun Hizmetleri › "Ghost Hunters", proje kimliği `247289107945` (= Firebase'in Cloud projesi `hayalet-avcilari`; `strings.xml` › `game_services_project_id`). 20 Ekim 2026'da yayınlandı |
+| Kimlik bilgileri | Android ×2: Play uygulama imzası (`C4:23:85:…:A9:1A`, yeni yüklemeler) ve yükleme anahtarı (`D0:88:A0:…:56:99`, CI APK'ları). OAuth istemcileri Firebase'in Google ile Giriş için açtıklarıdır; aynı paket+SHA-1 başka bulut projesine kaydedilemez |
+| Skor tablosu | "Şampiyonlar" `CgkI6avRnJkHEAIQAg` — `scoreFor()` (bölüm×1000 + hayalet×10 + para), büyük olan önde, üst sınır 9 999 999 (Firestore kuralıyla aynı) |
+| Başarımlar | Çırak Avcı (bölüm 5, 10 XP) `…BQ`, Usta Avcı (10, 20) `…Bg`, Hayalet Uzmanı (25, 40) `…Aw`, Efsane Avcı (50, 80) `…Bw`, Hayalet Fırtınası (tek oyunda 500 hayalet, 50) `…BA` — önek `CgkI6avRnJkHEAIQ` |
+| Diller | en-US (varsayılan), tr-TR, es-ES, es-419, zh-CN, hi-IN, ar |
+
+Başarımlar Console › Hedefler › "Başarıları içe aktar" ile ZIP'ten (AchievementsMetadata/Localizations/IconsMappings
+CSV + 512 px simgeler) yüklendi. Yeni başarım ya da skor tablosu: Console'da ekle → "Kaynakları al"daki kimliği
+`playgames.js` › `PLAY_GAMES`'e yaz → Play Games › Yayınlama. Not: eski `com.hayaletavcilari.oyun` kaydının (MARFEN
+hesabı) yayınlanmamış PGS projesi bu bulut projesini tuttuğu için 20 Ekim 2026'da silindi.
 
 ## Kaynak
 

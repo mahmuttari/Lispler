@@ -4,4 +4,6 @@
     <string name="title_activity_main">Ghost Hunters</string>
     <string name="package_name">com.poyrazworkshop.hayaletavcilari</string>
     <string name="custom_url_scheme">com.poyrazworkshop.hayaletavcilari</string>
+    <!-- Play Oyun Hizmetleri proje kimliği (Play Console › Play Oyun Hizmetleri › Kaynakları al › app_id) -->
+    <string name="game_services_project_id" translatable="false">247289107945</string>
 </resources>

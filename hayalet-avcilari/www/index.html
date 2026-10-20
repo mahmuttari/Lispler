@@ -90,6 +90,10 @@
       <button class="btn-tiny" onclick="refreshLeaderboard()">↻</button>
     </div>
     <div id="leaderboard-list" class="leaderboard-list"></div>
+    <div class="pgs-yalniz" style="display:none">
+      <button class="btn btn-small" onclick="pgsSkorTablosu()">🎮 Play Games skor tablosu</button>
+      <button class="btn btn-small" onclick="pgsBasarimlar()">🎖 Başarımlar</button>
+    </div>
     <button class="btn btn-small" onclick="clearLeaderboard()">🗑 Yerel Listeyi Temizle</button>
     <button class="btn" onclick="goToMenu()">⬅ Geri</button>
   </div>
@@ -365,6 +369,7 @@
 <script src="i18n/ar.js"></script>
 <script>dilUygula();</script>
 <script src="reklam.js"></script>
+<script src="playgames.js"></script>
 <script src="game.js"></script>
 <script>
   // Eski sürümlerde register edilmiş SW'leri temizle (Capacitor'da SW'ye gerek yok)

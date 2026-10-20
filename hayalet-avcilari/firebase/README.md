@@ -150,7 +150,7 @@ sorun çıkarsa aynı ekrandan önceki sürüme dönülebilir.
    `curl -X PUT -d '{"name":"x","hostUid":"u_deneme0001","status":"lobby","maxPlayers":2,"createdAt":1,"lastSeen":1}' https://hayalet-avcilari-default-rtdb.europe-west1.firebasedatabase.app/rooms/ZZZZZZ.json`
    → `Permission denied`.
 5. İsteğe bağlı: Realtime Database › Veriler'de `hostUid`'i `u_` ile başlayan eski odaları sil.
-6. 3.10.4 (40, Play Games ile birlikte): merge sonrası `hayalet-android.yml` imzalı AAB'yi derler → `play-istek.txt`'ye `yukle uygula`
+6. Sıradaki paket 3.11.0 (41: 3.10.4'ün Play Games'i + yeni karakterler, envanter, Bot): merge sonrası `hayalet-android.yml` imzalı AAB'yi derler → `play-istek.txt`'ye `yukle uygula`
    → onayla `yukle yayinla uygula` ([`magaza/PLAY-YAYIN.md`](../magaza/PLAY-YAYIN.md)).
 
 Sıra serbesttir: 3.10.3 geçiş kurallarıyla da çalışır, kapalı kurallar da 3.10.2'yi bozmaz (yalnız 3.10.2'de anonim

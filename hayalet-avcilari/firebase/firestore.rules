@@ -1,0 +1,37 @@
+rules_version = '2';
+
+// Hayalet Avcıları — Cloud Firestore kuralları. Gerekçeler: README.md
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Şampiyonlar listesi (game.js › submitOnlineScore, fetchOnlineLeaderboard, isim değişikliği)
+    match /scores/{scoreId} {
+      allow read: if true;
+      allow create: if gecerliSkor(request.resource.data);
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name'])
+                    && gecerliIsim(request.resource.data.name);
+      allow delete: if false;
+    }
+
+    function gecerliIsim(ad) {
+      return ad is string && ad.size() >= 1 && ad.size() <= 50;
+    }
+
+    function gecerliSkor(d) {
+      return d.keys().hasOnly(['name', 'level', 'ghosts', 'para', 'score', 'date'])
+        && d.keys().hasAll(['name', 'level', 'ghosts', 'para', 'score', 'date'])
+        && gecerliIsim(d.name)
+        && d.level is int && d.level >= 1 && d.level <= 1000
+        && d.ghosts is int && d.ghosts >= 0 && d.ghosts <= 1000000
+        && d.para is int && d.para >= 0 && d.para <= 100000000
+        && d.score is int && d.score == d.level * 1000 + d.ghosts * 10 + d.para
+        && d.date is int && d.date > 1500000000000
+        && d.date <= request.time.toMillis() + 86400000;
+    }
+
+    // Oyunun kullanmadığı her şey kapalı
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

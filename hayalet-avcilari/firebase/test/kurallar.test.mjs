@@ -30,7 +30,8 @@ beforeEach(async () => {
 const HOST = "Hq3ZpL8vT2nW5xY7aB9cD1eF4gH6";
 const KONUK = "Kz8mN3bV6cX1zL4kJ7hG2fD5sA9q";
 const YABANCI = "Yb5tR2eW8qA1sD4fG7hJ0kL3zX6c";  // odada olmayan girişli kullanıcı
-// 3.10.1 ve öncesi (girişsiz): getOnlineUid() "u_" + 8 base36 + 4 base36 — geçiş döneminde kabul edilir
+// 3.10.1 ve öncesi (girişsiz) ve 3.10.2'nin giriş olmayınca kullandığı yedek: getOnlineUid() "u_" + 12 base36.
+// Geçiş 3.10.3'te kapandı: bu kimliklerle yazım reddedilir.
 const ESKI_HOST = "u_k3j9x0abm1z9";
 const ESKI_KONUK = "u_7hq2c9wwm1za";
 const ODA = "K7PQ2X";               // makeRoomId(): ABCDEFGHJKMNPQRSTUVWXYZ23456789 alfabesinden 6 harf
@@ -175,109 +176,107 @@ describe("rooms — girişli oda (3.10.2, anonim giriş)", () => {
   });
 });
 
-describe("rooms — geçiş dönemi (3.10.1 ve öncesi girişsiz)", () => {
-  test("eski sürümler arasında oda akışı eskisi gibi", async () => {
-    await odaAkisi(misafir(), misafir(), ESKI_HOST, ESKI_KONUK);
+describe("rooms — eski kimlik (u_) ve girişsiz yazım reddedilir (geçiş kapandı)", () => {
+  test("eski sürümler arasında oda kurulamaz, eski odaya yazılamaz", async () => {
+    const m = misafir();
+    await assertSucceeds(m.ref("rooms").get());                                     // oda listesi herkese açık
+    await assertFails(m.ref(`rooms/${ODA}`).set(yeniOda(Date.now(), ESKI_HOST)));   // submitCreateRoom (3.10.1)
+    await odaKur(ESKI_HOST);                                                        // geçiş döneminden kalan oda
+    await assertSucceeds(m.ref(`rooms/${ODA}`).get());
+    await assertFails(m.ref(`rooms/${ODA}/players/${ESKI_KONUK}`).set(oyuncuGirisi(false, Date.now())));
+    await assertFails(m.ref(`rooms/${ODA}`).update({ lastSeen: Date.now() }));
+    await assertFails(m.ref(`rooms/${ODA}/players/${ESKI_HOST}`).update(oyuncuAni()));
+    await assertFails(m.ref(`rooms/${ODA}/state`).set(hostDurumu()));
+    await assertFails(m.ref(`rooms/${ODA}`).update({ status: "playing", lastSeen: Date.now() }));
+    await assertFails(m.ref(`rooms/${ODA}/events`).push().set({ type: "pickup", pi: 1, by: ESKI_HOST }));
+    await assertFails(m.ref(`rooms/${ODA}/players/${ESKI_HOST}`).remove());
+    await assertFails(m.ref(`rooms/${ODA}`).remove());
   });
 
-  test("eski sürümde host ayrılınca yeni host kendini atar", async () => {
-    await odaKur(ESKI_HOST);
-    const k = misafir();
-    await assertSucceeds(k.ref(`rooms/${ODA}/players/${ESKI_KONUK}`).set(oyuncuGirisi(true, Date.now())));
-    await assertSucceeds(k.ref(`rooms/${ODA}/players/${ESKI_HOST}`).remove());       // onDisconnect().remove()
-    await assertSucceeds(k.ref(`rooms/${ODA}`).update({ hostUid: ESKI_KONUK, hostName: "Ayşe", lastSeen: Date.now() }));
-  });
-
-  test("eski sürüm girişli odaya konuk olarak katılır, host işlerine karışamaz", async () => {
+  test("eski sürüm girişli odaya katılamaz, odadaki eski konuk host olamaz", async () => {
     await odaKur(HOST);
     const m = misafir();
-    const now = Date.now();
-    await assertSucceeds(m.ref(`rooms/${ODA}`).get());
-    await assertSucceeds(m.ref(`rooms/${ODA}/players/${ESKI_KONUK}`).set(oyuncuGirisi(false, now)));
-    await assertSucceeds(m.ref(`rooms/${ODA}`).update({ lastSeen: now }));
-    await assertSucceeds(m.ref(`rooms/${ODA}/players/${ESKI_KONUK}`).update({ ready: true, lastSeen: now }));
-    await assertSucceeds(m.ref(`rooms/${ODA}/players/${ESKI_KONUK}`).update(oyuncuAni()));
-    const ref = m.ref(`rooms/${ODA}/events`).push();
-    await assertSucceeds(ref.set({ type: "pickup", pi: 1, by: ESKI_KONUK }));
-    await assertSucceeds(anonim(HOST).ref(`rooms/${ODA}/events/${ref.key}`).remove());
-    await assertFails(m.ref(`rooms/${ODA}`).remove());
-    await assertFails(m.ref(`rooms/${ODA}/state`).set(hostDurumu()));
-    await assertFails(m.ref(`rooms/${ODA}/status`).set("playing"));
-    await assertFails(m.ref(`rooms/${ODA}/players/${HOST}`).remove());
-    await assertFails(m.ref(`rooms/${ODA}/events`).push().set({ type: "pickup", pi: 1, by: "u_odadadegil1" }));
-    await assertSucceeds(m.ref(`rooms/${ODA}/players/${ESKI_KONUK}`).remove());      // leaveRoom
-  });
-
-  test("girişli host ayrılınca eski sürüm konuk host olur (oda eski biçime döner)", async () => {
-    await odaKur(HOST, [ESKI_KONUK]);
+    await assertFails(m.ref(`rooms/${ODA}/players/${ESKI_KONUK}`).set(oyuncuGirisi(false, Date.now())));
+    await assertFails(m.ref(`rooms/${ODA}`).update({ lastSeen: Date.now() }));
+    await odaKur(HOST, [ESKI_KONUK]);                                               // geçiş döneminde katılmış
+    await assertFails(m.ref(`rooms/${ODA}/players/${ESKI_KONUK}`).update({ ready: true, lastSeen: Date.now() }));
+    await assertFails(m.ref(`rooms/${ODA}/events`).push().set({ type: "pickup", pi: 1, by: ESKI_KONUK }));
     await assertSucceeds(anonim(HOST).ref(`rooms/${ODA}/players/${HOST}`).remove());
-    const m = misafir();
-    await assertSucceeds(m.ref(`rooms/${ODA}`).update({ hostUid: ESKI_KONUK, hostName: "Ayşe", lastSeen: Date.now() }));
-    await assertSucceeds(m.ref(`rooms/${ODA}/state`).set(hostDurumu()));
-    await assertSucceeds(m.ref(`rooms/${ODA}`).remove());
+    await assertFails(m.ref(`rooms/${ODA}`).update({ hostUid: ESKI_KONUK, hostName: "Ayşe", lastSeen: Date.now() }));
+    await assertFails(m.ref(`rooms/${ODA}/players/${ESKI_KONUK}`).remove());
   });
 
-  test("yeni sürüm eski sürümün odasına katılır", async () => {
+  test("girişli bağlantı da u_ kimliğiyle yazamaz (getOnlineUid yedeği kalktı)", async () => {
+    const g = anonim(KONUK);
+    await assertFails(g.ref(`rooms/${ODA}`).set(yeniOda(Date.now(), ESKI_HOST)));
+    await odaKur(ESKI_HOST);
+    await assertFails(g.ref(`rooms/${ODA}/players/${ESKI_HOST}`).update(oyuncuAni()));
+    await assertFails(g.ref(`rooms/${ODA}/players/${ESKI_KONUK}`).set(oyuncuGirisi(false, Date.now())));
+    await assertFails(g.ref(`rooms/${ODA}/state`).set(hostDurumu()));
+    await assertFails(g.ref(`rooms/${ODA}/events`).push().set({ type: "hit", gi: 0, dmg: 3, by: ESKI_HOST }));
+    await assertFails(g.ref(`rooms/${ODA}`).remove());
+  });
+
+  test("girişli oyuncu eski odada yalnız kendi kaydını yazar; host yokken odayı devralır", async () => {
     await odaKur(ESKI_HOST);
     const k = anonim(KONUK);
     await assertSucceeds(k.ref(`rooms/${ODA}/players/${KONUK}`).set(oyuncuGirisi(false, Date.now())));
     await assertSucceeds(k.ref(`rooms/${ODA}`).update({ lastSeen: Date.now() }));
-    const ref = k.ref(`rooms/${ODA}/events`).push();
-    await assertSucceeds(ref.set({ type: "hit", gi: 0, dmg: 3, by: KONUK }));
-    await assertSucceeds(misafir().ref(`rooms/${ODA}/events/${ref.key}`).remove());
+    await assertSucceeds(k.ref(`rooms/${ODA}/events`).push().set({ type: "hit", gi: 0, dmg: 3, by: KONUK }));
+    await assertFails(k.ref(`rooms/${ODA}`).update({ hostUid: KONUK, lastSeen: Date.now() }));  // eski host odada
+    await assertFails(k.ref(`rooms/${ODA}/state`).set(hostDurumu()));
+    await assertFails(k.ref(`rooms/${ODA}/players/${ESKI_HOST}`).remove());
+    await assertFails(k.ref(`rooms/${ODA}`).remove());
+    await env.withSecurityRulesDisabled(async (c) => { await c.database().ref(`rooms/${ODA}/players/${ESKI_HOST}`).remove(); });
+    await assertSucceeds(k.ref(`rooms/${ODA}`).update({ hostUid: KONUK, hostName: "Ayşe", lastSeen: Date.now() }));
+    await assertSucceeds(k.ref(`rooms/${ODA}`).remove());
   });
+});
 
-  test("anonim giriş geç tamamlanırsa oyun u_ kimliğiyle sürer", async () => {
-    // onlineKimlik() 10 sn'de girişi alamazsa getOnlineUid() kullanır; giriş sonra tamamlanınca bağlantı girişli olur
-    const g = anonim(KONUK);
-    await assertSucceeds(g.ref(`rooms/${ODA}`).set(yeniOda(Date.now(), ESKI_HOST)));
-    await assertSucceeds(g.ref(`rooms/${ODA}/players/${ESKI_HOST}`).update(oyuncuAni()));
-    await assertSucceeds(g.ref(`rooms/${ODA}/state`).set(hostDurumu()));
-    await assertSucceeds(g.ref(`rooms/${ODA}`).remove());
-  });
-
+describe("rooms — şema", () => {
   test("izinsiz ya da bozuk yazımlar reddedilir", async () => {
-    await odaKur(ESKI_HOST);
-    const m = misafir();
-    const oda = (p) => m.ref(`rooms/${ODA}/${p}`);
-    await assertFails(m.ref("/").get());
-    await assertFails(m.ref("/").set({ hepsi: "gitti" }));
-    await assertFails(m.ref("rooms").remove());
-    await assertFails(m.ref("rooms").set({}));
-    await assertFails(m.ref("baska/yol").set(1));
-    await assertFails(m.ref("rooms/abcdef").set(yeniOda(Date.now(), ESKI_HOST)));   // küçük harf
-    await assertFails(m.ref("rooms/K7PQ21").set(yeniOda(Date.now(), ESKI_HOST)));   // 1 alfabede yok
-    await assertFails(m.ref("rooms/K7PQ2XY").set(yeniOda(Date.now(), ESKI_HOST)));  // 7 harf
-    await assertFails(m.ref("rooms/ZZZZZZ").set(yeniOda(Date.now(), HOST)));        // girişsiz, girişli host adına
-    await assertFails(m.ref("rooms/ZZZZZZ/players/" + ESKI_KONUK).update(oyuncuAni())); // silinmiş odaya yazım (zombi oda)
-    await assertFails(anonim(KONUK).ref("rooms/ZZZZZZ/players/" + KONUK).update(oyuncuAni()));
-    await assertFails(m.ref("rooms/ZZZZZZ").update({ lastSeen: Date.now() }));
-    await assertFails(oda("status").set("hacked"));
-    await assertFails(oda("maxPlayers").set(50));
-    await assertFails(oda("name").set("x".repeat(61)));
-    await assertFails(oda("name").set(""));
-    await assertFails(oda("hostUid").set("../../accounts"));
-    await assertFails(oda("cop").set("ıvır zıvır"));
-    await assertFails(oda(`players/${ESKI_KONUK}`).update({ ...oyuncuAni(), coins: 999 }));
-    await assertFails(oda(`players/${ESKI_KONUK}`).update({ ready: "evet" }));
-    await assertFails(oda(`players/${ESKI_KONUK}`).update({ name: "x".repeat(51) }));
-    await assertFails(oda("players/kötü-uid!").set(oyuncuGirisi(false, Date.now())));
-    await assertFails(oda("state").set({ ...hostDurumu(), hile: 1 }));
-    await assertFails(oda("state/g/0").set({ i: 0, x: "yüz", y: 1 }));
-    await assertFails(oda("events").push().set({ type: "hit", gi: 0, dmg: 3, by: ESKI_HOST, payload: "x" }));
-    await assertFails(oda("events").push().set({ gi: 0, dmg: 3, by: ESKI_HOST }));
-    await assertFails(oda("events").push().set({ type: "hit", gi: 0, dmg: 3 }));     // by zorunlu
-  });
-
-  test("girişli odada da şema denetlenir", async () => {
-    await odaKur(HOST);
+    await odaKur(HOST, [KONUK]);
     const h = anonim(HOST);
-    const oda = (p) => h.ref(`rooms/${ODA}/${p}`);
-    await assertFails(oda("status").set("hacked"));
-    await assertFails(oda("cop").set(1));
-    await assertFails(oda(`players/${HOST}`).update({ ...oyuncuAni(), coins: 999 }));
-    await assertFails(oda("state").set({ ...hostDurumu(), hile: 1 }));
-    await assertFails(oda("events").push().set({ type: "hit", gi: 0, dmg: 3, by: HOST, payload: "x" }));
+    const k = anonim(KONUK);
+    const oda = (db, p) => db.ref(`rooms/${ODA}/${p}`);
+    const now = Date.now();
+    for (const db of [misafir(), h]) {
+      await assertFails(db.ref("/").get());
+      await assertFails(db.ref("/").set({ hepsi: "gitti" }));
+      await assertFails(db.ref("rooms").remove());
+      await assertFails(db.ref("rooms").set({}));
+      await assertFails(db.ref("baska/yol").set(1));
+    }
+    await assertSucceeds(h.ref("rooms/ZZZZZZ").set(yeniOda(now, HOST)));            // geçerli oda kurulur
+    await assertSucceeds(h.ref("rooms/ZZZZZZ").remove());
+    await assertFails(h.ref("rooms/abcdef").set(yeniOda(now, HOST)));               // küçük harf
+    await assertFails(h.ref("rooms/K7PQ21").set(yeniOda(now, HOST)));               // 1 alfabede yok
+    await assertFails(h.ref("rooms/K7PQ2XY").set(yeniOda(now, HOST)));              // 7 harf
+    await assertFails(h.ref("rooms/ZZZZZZ").set({ ...yeniOda(now, HOST), maxPlayers: 50 }));
+    await assertFails(h.ref("rooms/ZZZZZZ").set({ ...yeniOda(now, HOST), name: "x".repeat(61) }));
+    await assertFails(h.ref("rooms/ZZZZZZ").set({ ...yeniOda(now, HOST), name: "" }));
+    await assertFails(h.ref("rooms/ZZZZZZ").set({ ...yeniOda(now, HOST), status: "hacked" }));
+    await assertFails(h.ref("rooms/ZZZZZZ").set({ ...yeniOda(now, HOST), cop: "ıvır zıvır" }));
+    const { createdAt, ...eksik } = yeniOda(now, HOST);
+    await assertFails(h.ref("rooms/ZZZZZZ").set(eksik));
+    await assertFails(h.ref("rooms/ZZZZZZ/players/" + HOST).update(oyuncuAni()));  // silinmiş odaya yazım (zombi oda)
+    await assertFails(k.ref("rooms/ZZZZZZ/players/" + KONUK).update(oyuncuAni()));
+    await assertFails(h.ref("rooms/ZZZZZZ").update({ lastSeen: now }));
+    await assertFails(oda(h, "status").set("hacked"));
+    await assertFails(oda(h, "maxPlayers").set(2));                                 // kurulduktan sonra değişmez
+    await assertFails(oda(h, "name").set("Yeni ad"));
+    await assertFails(oda(h, "hostUid").set("../../accounts"));
+    await assertFails(oda(h, "cop").set(1));
+    await assertFails(oda(k, `players/${KONUK}`).update({ ...oyuncuAni(), coins: 999 }));
+    await assertFails(oda(k, `players/${KONUK}`).update({ ready: "evet" }));
+    await assertFails(oda(k, `players/${KONUK}`).update({ name: "x".repeat(51) }));
+    await assertFails(oda(h, "players/kötü-uid!").set(oyuncuGirisi(false, now)));
+    await assertFails(oda(h, "state").set({ ...hostDurumu(), hile: 1 }));
+    await assertFails(oda(h, "state/g/0").set({ i: 0, x: "yüz", y: 1 }));
+    await assertFails(oda(k, "events").push().set({ type: "hit", gi: 0, dmg: 3, by: KONUK, payload: "x" }));
+    await assertFails(oda(k, "events").push().set({ gi: 0, dmg: 3, by: KONUK }));   // type zorunlu
+    await assertFails(oda(k, "events").push().set({ type: "hit", gi: 0, dmg: 3 }));  // by zorunlu
+    await assertSucceeds(oda(k, "events").push().set({ type: "hit", gi: 0, dmg: 3, by: KONUK }));
   });
 });
 
@@ -292,7 +291,7 @@ describe("accounts — kodlu yedek", () => {
     await assertSucceeds(a.ref(`accounts/${KOD}`).set(yedek(HOST)));               // backupAccount
     await assertSucceeds(a.ref(`accounts/${KOD}`).set(yedek(HOST)));               // aynı kodla güncelleme
     await assertSucceeds(anonim(KONUK).ref(`accounts/${KOD}`).get());              // restoreAccount (başka cihaz)
-    await assertSucceeds(misafir().ref(`accounts/${KOD}`).get());                  // eski sürüm geri yükler
+    await assertSucceeds(misafir().ref(`accounts/${KOD}`).get());                  // giriş tamamlanmadan geri yükleme
     await assertFails(anonim(KONUK).ref(`accounts/${KOD}`).set(yedek(KONUK)));     // başkası üzerine yazamaz
     await assertFails(anonim(KONUK).ref(`accounts/${KOD}`).set(yedek(HOST)));      // sahip taklidi
     await assertFails(anonim(KONUK).ref(`accounts/${KOD}`).set(yedek()));          // sahipsize çevirme
@@ -304,28 +303,35 @@ describe("accounts — kodlu yedek", () => {
     await assertSucceeds(google(HOST).ref(`accounts/${KOD}`).remove());           // deleteAccountGoogle (anonimden yükseltilmiş, aynı uid)
   });
 
-  test("geçiş: eski sürümün sahipsiz yedeği eskisi gibi; girişli kullanıcı sahiplenir", async () => {
-    const m = misafir();
-    await assertSucceeds(m.ref(`accounts/${KOD}`).set(yedek()));                   // 3.10.1 backupAccount
-    await assertSucceeds(m.ref(`accounts/${KOD}`).set(yedek()));
-    await assertSucceeds(misafir().ref(`accounts/${KOD}`).get());
-    await assertSucceeds(anonim(HOST).ref(`accounts/${KOD}`).set(yedek(HOST)));    // 3.10.2 yedekleyince sahiplenir
-    await assertFails(m.ref(`accounts/${KOD}`).set(yedek()));                      // artık eski sürüm yazamaz
-    await assertSucceeds(anonim(HOST).ref(`accounts/${KOD}`).set(yedek()));        // giriş zaman aşımı: sahibi sahipsiz yazar
-    await assertSucceeds(google("g-uid-1").ref(`accounts/${KOD}`).remove());       // sahipsiz kaydı kodu bilen siler (eskisi gibi)
+  test("sahipsiz yazım reddedilir; geçiş döneminden kalan sahipsiz yedeği girişli kullanıcı sahiplenir", async () => {
+    await assertFails(misafir().ref(`accounts/${KOD}`).set(yedek()));              // 3.10.1 backupAccount
+    await assertFails(anonim(HOST).ref(`accounts/${KOD}`).set(yedek()));           // giriş varken de sahipsiz yazılamaz
+    await env.withSecurityRulesDisabled(async (c) => { await c.database().ref(`accounts/${KOD}`).set(yedek()); });
+    await assertSucceeds(misafir().ref(`accounts/${KOD}`).get());                  // kodu bilen okur
+    await assertFails(misafir().ref(`accounts/${KOD}`).set(yedek()));
+    await assertFails(misafir().ref(`accounts/${KOD}`).remove());
+    await assertSucceeds(anonim(HOST).ref(`accounts/${KOD}`).set(yedek(HOST)));    // ilk yedeklemede sahiplenir
+    await assertFails(anonim(HOST).ref(`accounts/${KOD}`).set(yedek()));           // artık sahipsize çevrilemez
+    await assertFails(anonim(KONUK).ref(`accounts/${KOD}`).set(yedek(KONUK)));
+    await env.withSecurityRulesDisabled(async (c) => { await c.database().ref("accounts/XYZ_789").set(yedek()); });
+    await assertSucceeds(google("g-uid-1").ref("accounts/XYZ_789").remove());     // sahipsiz kaydı girişli kodu bilen siler (hesap silme)
   });
 
   test("liste, bozuk kod ve bozuk gövde reddedilir", async () => {
     const m = misafir();
+    const a = anonim(HOST);
     await assertFails(m.ref("accounts").get());
-    await assertFails(anonim(HOST).ref("accounts").get());
+    await assertFails(a.ref("accounts").get());
     await assertFails(m.ref("accounts").remove());
+    await assertFails(a.ref("accounts").remove());
     await assertFails(m.ref("accounts/abc_d23").get());
-    await assertFails(m.ref("accounts/ABCD23").set(yedek()));
-    await assertFails(m.ref(`accounts/${KOD}`).set({ ...yedek(), admin: true }));
-    await assertFails(m.ref(`accounts/${KOD}`).set({ name: "Poyraz", save: { para: 1 }, updatedAt: 1 }));
-    await assertFails(m.ref(`accounts/${KOD}`).set({ name: "Poyraz", save: "{}" }));
-    await assertFails(m.ref(`accounts/${KOD}`).set({ ...yedek(), save: "x".repeat(200001) }));
+    await assertFails(a.ref("accounts/ABCD23").set(yedek(HOST)));
+    await assertFails(a.ref("accounts/abc_d23").set(yedek(HOST)));
+    await assertFails(a.ref(`accounts/${KOD}`).set({ ...yedek(HOST), admin: true }));
+    await assertFails(a.ref(`accounts/${KOD}`).set({ name: "Poyraz", save: { para: 1 }, updatedAt: 1, ownerUid: HOST }));
+    await assertFails(a.ref(`accounts/${KOD}`).set({ name: "Poyraz", save: "{}", ownerUid: HOST }));
+    await assertFails(a.ref(`accounts/${KOD}`).set({ ...yedek(HOST), save: "x".repeat(200001) }));
+    await assertFails(a.ref(`accounts/${KOD}`).set({ ...yedek(HOST), name: "x".repeat(51) }));
     await assertFails(m.ref(`accounts/${KOD}`).set(yedek(HOST)));                  // girişsiz sahip yazamaz
     await assertFails(anonim(HOST).ref(`accounts/${KOD}`).set(yedek(KONUK)));      // başkasını sahip yapamaz
     await assertFails(anonim("ab").ref(`accounts/${KOD}`).set(yedek("ab")));       // bozuk sahip kimliği (< 3)
@@ -377,12 +383,12 @@ describe("Firestore scores — şampiyonlar listesi", () => {
     return id;
   }
 
-  test("eski sürüm: girişsiz ekle, listele, isimle ara", async () => {
+  test("girişsiz: listeler ama skor ekleyemez (geçiş kapandı)", async () => {
     const db = fs();
-    await assertSucceeds(db.collection("scores").add(skor()));
-    await assertSucceeds(db.collection("scores").add(skor({ name: "x".repeat(19), level: 1, ghosts: 0, para: 0 })));
     await assertSucceeds(db.collection("scores").orderBy("date", "desc").limit(200).get());
     await assertSucceeds(db.collection("scores").where("name", "==", "Poyraz").limit(200).get());
+    await assertFails(db.collection("scores").add(skor()));                                        // 3.10.1 submitOnlineScore
+    await assertFails(db.collection("scores").add(skor({ uid: HOST })));
   });
 
   test("3.10.2: kendi uid'iyle ekler, yalnız kendi skorunun yalnız adını değiştirir", async () => {
@@ -409,24 +415,26 @@ describe("Firestore scores — şampiyonlar listesi", () => {
   });
 
   test("bozuk skorlar ve diğer işlemler reddedilir", async () => {
-    const db = fs();
+    const db = fsAnonim(HOST);
+    const benim = (over = {}) => skor({ uid: HOST, ...over });
     const id = await kuralsizEkle(skor());
-    await assertFails(db.collection("scores").add({ ...skor(), score: 99999999 }));
-    await assertFails(db.collection("scores").add({ ...skor(), hile: true }));
-    const { date, ...tarihsiz } = skor();
+    await assertSucceeds(db.collection("scores").add(benim()));
+    await assertFails(db.collection("scores").add({ ...benim(), score: 99999999 }));
+    await assertFails(db.collection("scores").add({ ...benim(), hile: true }));
+    const { date, ...tarihsiz } = benim();
     await assertFails(db.collection("scores").add(tarihsiz));
-    await assertFails(db.collection("scores").add(skor({ name: "" })));
-    await assertFails(db.collection("scores").add(skor({ level: 5000 })));
-    await assertFails(db.collection("scores").add(skor({ para: -5 })));
-    await assertFails(db.collection("scores").add(skor({ date: Date.now() + 3 * 86400000 })));
-    await assertFails(db.collection("scores").add(skor({ name: "x".repeat(20) })));
-    await assertFails(db.collection("scores").add(skor({ level: 999, ghosts: 999999, para: 0 })));  // score ≥ 10 milyon
-    await assertFails(db.collection("scores").add(skor({ uid: HOST })));                            // girişsiz uid yazamaz
-    await assertFails(db.doc(`scores/${id}`).update({ name: "Kinkin" }));                           // girişsiz isim değiştiremez
+    await assertFails(db.collection("scores").add(benim({ name: "" })));
+    await assertFails(db.collection("scores").add(benim({ level: 5000 })));
+    await assertFails(db.collection("scores").add(benim({ para: -5 })));
+    await assertFails(db.collection("scores").add(benim({ date: Date.now() + 3 * 86400000 })));
+    await assertFails(db.collection("scores").add(benim({ name: "x".repeat(20) })));
+    await assertFails(db.collection("scores").add(benim({ level: 999, ghosts: 999999, para: 0 })));  // score ≥ 10 milyon
+    await assertFails(fs().doc(`scores/${id}`).update({ name: "Kinkin" }));                         // girişsiz isim değiştiremez
     await assertFails(db.doc(`scores/${id}`).update({ score: 1 }));
     await assertFails(db.doc(`scores/${id}`).update({ name: "Kinkin", level: 99 }));
     await assertFails(db.doc(`scores/${id}`).delete());
+    await assertFails(fs().doc(`scores/${id}`).delete());
     await assertFails(db.collection("baska").add({ a: 1 }));
-    await assertFails(db.collection("baska").get());
+    await assertFails(fs().collection("baska").get());
   });
 });

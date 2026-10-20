@@ -1,1 +1,1 @@
-Hayalet Avcıları Google Play'de! Oyun artık 6 dilde: Türkçe, English, Español, 简体中文, हिन्दी, العربية. Hayaletler engellerin içinde doğmuyor; engele sıkışan hayalet kendiliğinden dışarı çıkıyor, bölümler takılmadan bitiyor. Çevrimiçi oyunda herkes aynı haritayı görüyor. Hesap ekranına "Hesabı Sil" eklendi.
+Çevrimiçi oda, kodlu yedek ve şampiyonlar listesi artık hep oyuncu kimliğinle korunuyor. Bağlantı kurulamazsa oyun bunu söylüyor; internetini kontrol edip yeniden deneyebilirsin.

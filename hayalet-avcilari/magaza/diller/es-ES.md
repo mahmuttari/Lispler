@@ -38,4 +38,4 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 ## Sürüm notu
 
-¡Cazadores de Fantasmas llega a Google Play! El juego ya está en 6 idiomas: Türkçe, English, Español, 简体中文, हिन्दी, العربية. Los fantasmas ya no aparecen dentro de los obstáculos; si uno se atasca, sale solo y los niveles ya no se bloquean. En el juego en línea, todos ven el mismo mapa. Nuevo botón "Borrar cuenta" en la pantalla Cuenta.
+Las salas en línea, la copia con código y la lista de campeones ahora siempre están protegidas por tu ID de jugador. Si el juego no puede conectarse, te avisa; revisa tu internet e inténtalo de nuevo.

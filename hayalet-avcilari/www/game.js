@@ -159,7 +159,6 @@ const FIREBASE_CONFIG = {
   databaseURL: RTDB_URL,
   projectId: "hayalet-avcilari",
 };
-const ONLINE_UID_KEY = "hayaletAvcilariOnlineUid_v1";
 const ROOM_LIST_TTL_MS = 60000; // listener'lar real-time, sadece zombie temizlik için
 
 // Firebase init
@@ -175,16 +174,6 @@ function fbDb() {
   }
   _fbDb = firebase.database();
   return _fbDb;
-}
-
-// Eski (3.10.1 ve öncesi) cihaz kimliği. 3.10.2'den beri yalnız anonim giriş olmazsa kullanılır.
-function getOnlineUid() {
-  let uid = localStorage.getItem(ONLINE_UID_KEY);
-  if (!uid) {
-    uid = "u_" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
-    localStorage.setItem(ONLINE_UID_KEY, uid);
-  }
-  return uid;
 }
 
 // ====== FIREBASE AUTH (anonim giriş) ======
@@ -228,11 +217,16 @@ function fbKullaniciBekle(ms) {
   return Promise.race([fbKullanici(), new Promise((r) => setTimeout(() => r(null), ms))]);
 }
 
-// Çevrimiçi oyuncu kimliği: auth.uid; anonim giriş olmazsa (internet yok, sağlayıcı kapalı) eski "u_" kimliği.
-// Kurallar geçiş döneminde "u_" kimliğini de kabul eder.
+// Çevrimiçi oyuncu kimliği: auth.uid. Giriş olmazsa (internet yok, sağlayıcı kapalı) null: kurallar girişsiz
+// yazımı reddeder, oda kurma/katılma "bağlanılamadı" der (3.10.2'deki eski "u_" kimliği yedeği 3.10.3'te kalktı).
 async function onlineKimlik() {
   const u = await fbKullaniciBekle(10000);
-  return (u && u.uid) || getOnlineUid();
+  return (u && u.uid) || null;
+}
+function baglantiYok() {
+  const msg = t("⚠ Firebase'e bağlanılamadı — internetini kontrol edip yeniden dene.");
+  setOnlineStatus(msg);
+  return msg;
 }
 
 // SDK helper — mevcut rtdb.X çağrıları için geri uyumlu wrapper
@@ -314,8 +308,11 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.10.2";
+const APP_VERSION = "3.10.3";
 const UPDATE_NOTES = {
+  "3.10.3": [
+    t("🔒 Çevrimiçi oda, kodlu yedek ve şampiyonlar listesi artık hep oyuncu kimliğinle korunuyor; bağlanılamazsa yeniden dene."),
+  ],
   "3.10.2": [
     t("🔒 Çevrimiçi odan ve kodlu yedeğin artık sana bağlı: odanı yalnız sen kapatabilir, yedeğinin üzerine yalnız sen yazabilirsin."),
     t("✏️ İsmini değiştirince bu sürümden sonraki skorların şampiyonlar listesinde de yeni adınla görünür."),
@@ -444,7 +441,8 @@ const FIREBASE = {
 };
 const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${FIREBASE.projectId}/databases/(default)/documents`;
 
-// Firestore REST oturumu: kimlik jetonu alınabilirse { uid, headers: Authorization }, yoksa girişsiz (eski biçim)
+// Firestore REST oturumu: kimlik jetonu alınabilirse { uid, headers: Authorization }, yoksa { uid: null }
+// (girişsiz skor yazımı kurallarca reddedilir; liste okumak için oturum gerekmez)
 async function firestoreOturum() {
   const headers = { "Content-Type": "application/json" };
   const u = await fbKullaniciBekle(5000);
@@ -467,7 +465,8 @@ async function submitOnlineScore(entry) {
   };
   try {
     const oturum = await firestoreOturum();
-    if (oturum.uid) doc.fields.uid = { stringValue: oturum.uid }; // isim değişikliğinde yalnız kendi skorların
+    if (!oturum.uid) return false;
+    doc.fields.uid = { stringValue: oturum.uid }; // skorun sahibi; isim değişikliğinde yalnız kendi skorların
     const res = await fetch(`${FIRESTORE_BASE}/${FIREBASE.collection}?key=${FIREBASE.apiKey}`, {
       method: "POST",
       headers: oturum.headers,
@@ -2488,7 +2487,7 @@ async function openOnline() {
   showScreen("screen-online");
   setOnlineStatus(t("Firebase'e bağlanıyor..."));
   online.uid = await onlineKimlik();
-  setOnlineStatus("");
+  if (online.uid) setOnlineStatus(""); else baglantiYok();
 }
 function leaveOnlineToOnline() {
   stopRoomListListener();
@@ -2520,6 +2519,7 @@ async function submitCreateRoom() {
   showToast(t("⏳ Oda kuruluyor..."));
   setOnlineStatus(t("Firebase'e bağlanıyor..."));
   online.uid = await onlineKimlik(); // giriş bu arada tamamlanmış olabilir
+  if (!online.uid) { showToast(baglantiYok()); return; }
   online.lastError = null;
   const roomId = makeRoomId();
   const now = Date.now();
@@ -2636,6 +2636,7 @@ async function joinRoom(roomId) {
   if (!save.playerName) { showToast(t("Önce avcı adını ayarla")); return; }
   setOnlineStatus("");
   const uid = online.uid = await onlineKimlik();
+  if (!uid) { showToast(baglantiYok()); return; }
   const now = Date.now();
   // Oda var mı / dolu mu kontrolü
   const room = await rtdb.get(`rooms/${roomId}`);
@@ -5471,9 +5472,10 @@ async function backupAccount() {
     return;
   }
   const u = await fbKullaniciBekle(10000);
-  const uid = u ? u.uid : null;
+  if (!u) { showToast(t("❌ Yedekleme başarısız (internet?)")); return; }
+  const uid = u.uid;
   let ok = await kodluYedekYaz(uid);
-  if (!ok && uid) {
+  if (!ok) {
     // Kodun sahibi başka bir kullanıcı (kod başka cihazdan geri yüklendi ya da Google hesabı değişti):
     // o yedeğin üzerine yalnız sahibi yazabilir, bu cihaz yeni bir kod alır
     const mevcut = await rtdb.get(`accounts/${save.accountCode.replace("-", "_")}`);
@@ -5495,16 +5497,15 @@ async function backupAccount() {
   }
 }
 
-// accounts/{kod}: ownerUid = auth.uid; giriş yoksa sahipsiz (eski biçim, geçiş döneminde kabul edilir)
+// accounts/{kod}: ownerUid = auth.uid (zorunlu; sahipsiz kaydı ilk yedekleyen sahiplenir)
 function kodluYedekYaz(uid) {
   const key = getOrCreateAccountCode().replace("-", "_");
-  const payload = {
+  return rtdb.put(`accounts/${key}`, {
     name: save.playerName,
     save: JSON.stringify(save),
     updatedAt: Date.now(),
-  };
-  if (uid) payload.ownerUid = uid;
-  return rtdb.put(`accounts/${key}`, payload);
+    ownerUid: uid,
+  });
 }
 
 async function restoreAccount() {

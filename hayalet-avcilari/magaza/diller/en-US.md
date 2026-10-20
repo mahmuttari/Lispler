@@ -38,4 +38,4 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 
 ## Sürüm notu
 
-Ghost Hunters is on Google Play! The game now comes in 6 languages: Türkçe, English, Español, 简体中文, हिन्दी, العربية. Ghosts no longer spawn inside obstacles; a ghost stuck in one pops right out, so levels never get stuck. In online games everyone sees the same map. A "Delete Account" option was added to the Account screen.
+Online rooms, code backups and the champions list are now always protected by your player ID. If the game can't connect, it tells you so; check your internet and try again.

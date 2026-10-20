@@ -16,10 +16,9 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // Girişli istemci (3.10.2+) skoru kendi uid'iyle yazar. Geçiş dönemi: eski sürümler girişsiz ve uid'siz yazar.
+    // Skoru yalnız girişli istemci kendi uid'iyle yazar (3.10.2+; girişsiz ve uid'siz yazım 3.10.3'te kapandı).
     function skorSahibi(d) {
-      return (request.auth != null && d.get('uid', '') == request.auth.uid)
-        || (request.auth == null && !('uid' in d));
+      return request.auth != null && d.get('uid', '') == request.auth.uid;
     }
 
     function gecerliIsim(ad) {

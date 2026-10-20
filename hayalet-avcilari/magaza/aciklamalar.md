@@ -73,7 +73,7 @@ Hayalet Avcıları'nda hayaletler her yerden geliyor! Avcını seç, labirent gi
 |---|---|---|---|
 | Kişisel bilgiler › Ad (Google hesap adı) | Evet | Evet | Hesap yönetimi |
 | Kişisel bilgiler › E-posta adresi | Evet | Evet | Hesap yönetimi |
-| Kişisel bilgiler › Kullanıcı kimlikleri (Firebase kimliği, rastgele oyuncu kimliği) | Evet | Evet | Uygulama işlevleri, hesap yönetimi |
+| Kişisel bilgiler › Kullanıcı kimlikleri (Firebase anonim kimliği — 3.10.2'den beri açılışta herkese; Google ile girişte aynı kimlik) | Evet | **Hayır** | Uygulama işlevleri, hesap yönetimi |
 | Uygulama etkinliği › Diğer kullanıcı içeriği (takma ad, oyun ilerlemesi, puan) | Evet | Evet | Uygulama işlevleri |
 | AdMob · Konum › Yaklaşık konum (IP'den) | Evet, **paylaşılıyor** | Hayır | Reklam veya pazarlama, dolandırıcılığı önleme |
 | AdMob · Cihaz veya diğer kimlikler (reklam kimliği) | Evet, **paylaşılıyor** | Hayır | Reklam veya pazarlama, analiz, dolandırıcılığı önleme |

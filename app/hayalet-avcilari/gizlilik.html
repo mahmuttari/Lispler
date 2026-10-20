@@ -20,17 +20,22 @@ uygulaması Google AdMob reklamları gösterir (bkz. 3. bölüm).</p>
 <p>Oyun ilerlemeniz (avcı adınız, bölüm, para, elmas, zümrüt, karakter ve kostümler, ses ayarları) yalnızca
 cihazınızda saklanır. Oyunu kaldırdığınızda bu veriler silinir.</p>
 
-<h2>2. İsteğe bağlı çevrimiçi özellikler</h2>
-<p>Aşağıdaki özellikleri yalnızca siz kullanırsanız veri sunucuya gönderilir. Sunucu, Google'ın
-<b>Firebase</b> hizmetidir (Realtime Database: Avrupa – Belçika; Cloud Firestore).</p>
+<h2>2. Çevrimiçi özellikler</h2>
+<p>Sunucu, Google'ın <b>Firebase</b> hizmetidir (Realtime Database: Avrupa – Belçika; Cloud Firestore).
+Oyun açılırken Firebase Authentication'dan <b>anonim bir oyuncu kimliği</b> alır; bu kimlik ad, e-posta ya da
+telefon içermez ve cihazda saklanır. Çevrimiçi oda, kodlu yedek ve şampiyonlar listesi kayıtlarınız bu kimlikle
+yazılır; böylece bu kayıtları yalnız siz değiştirebilir ya da silebilirsiniz. Google ile giriş yaparsanız aynı kimlik
+Google hesabınıza bağlanır. Aşağıdaki özellikleri kullandığınızda şu veriler sunucuya gönderilir:</p>
 <ul>
   <li><b>Google ile Giriş ve bulut yedeği:</b> Google hesabınızın adı, e-posta adresi ve Firebase kullanıcı
       kimliği; yedeklediğinizde avcı adınız ve oyun ilerlemeniz. Amaç: ilerlemenizi başka cihaza taşımak.</li>
-  <li><b>Kodla yedekleme:</b> 6 karakterlik yedek kodu, avcı adınız ve oyun ilerlemeniz.</li>
-  <li><b>Şampiyonlar listesi:</b> avcı adınız, ulaştığınız bölüm, yakaladığınız hayalet sayısı, para, puan ve
-      tarih. Bu liste <b>herkese açıktır</b>; gerçek adınızı avcı adı olarak kullanmayın.</li>
-  <li><b>Çevrimiçi oda (birlikte oynama):</b> cihazda üretilen rastgele oyuncu kimliği, avcı adınız, seçtiğiniz
-      karakter ve oyun içindeki anlık konumunuz. Odadan çıkınca kaydınız silinir.</li>
+  <li><b>Kodla yedekleme:</b> 6 karakterlik yedek kodu, avcı adınız, oyun ilerlemeniz ve anonim oyuncu kimliğiniz
+      (yedeğin sahibi). Kodu bilen yedeği okuyabilir; üzerine yalnız siz yazabilirsiniz.</li>
+  <li><b>Şampiyonlar listesi:</b> her oyunun sonunda avcı adınız, ulaştığınız bölüm, yakaladığınız hayalet sayısı,
+      para, puan, tarih ve anonim oyuncu kimliğiniz. Bu liste <b>herkese açıktır</b>; gerçek adınızı avcı adı olarak
+      kullanmayın.</li>
+  <li><b>Çevrimiçi oda (birlikte oynama):</b> anonim oyuncu kimliğiniz, avcı adınız, seçtiğiniz karakter ve oyun
+      içindeki anlık konumunuz. Odadan çıkınca kaydınız silinir.</li>
 </ul>
 <p>Firebase, hizmeti sunmak ve güvenliği sağlamak için IP adresi gibi teknik verileri de işleyebilir.
 Google'ın gizlilik politikası: <a href="https://policies.google.com/privacy">policies.google.com/privacy</a></p>
@@ -76,10 +81,13 @@ rewarded ad; never during play). AdMob may process your advertising ID, IP addre
 ad interactions and approximate location to serve, measure and (with your consent) personalise ads and to prevent
 fraud. In the EEA, the UK and Switzerland the game asks for consent with Google's form; change your choice any time
 with the 🔒 Privacy button in the menu, or reset your advertising ID in Android settings.
-Game progress is stored only on your device. Optional online features send data to Google Firebase:
-Google Sign-In and cloud backup (Google name, e-mail, Firebase user ID, nickname, progress), code backup
-(code, nickname, progress), the public leaderboard (nickname, level, ghosts, coins, score, date) and online
-rooms (random player ID, nickname, character, in-game position; removed when you leave). We do not sell your data; it is shared only
+Game progress is stored only on your device. On start the game gets an anonymous player ID from Firebase
+Authentication (no name, e-mail or phone); your online room, code backup and leaderboard records are written with it
+so only you can change them, and Google Sign-In links the same ID to your Google account. Online features send data
+to Google Firebase: Google Sign-In and cloud backup (Google name, e-mail, Firebase user ID, nickname, progress), code
+backup (code, nickname, progress, anonymous ID), the public leaderboard after each game (nickname, level, ghosts,
+coins, score, date, anonymous ID) and online rooms (anonymous ID, nickname, character, in-game position; removed when
+you leave). We do not sell your data; it is shared only
 with our service provider Google (Firebase and AdMob). You can delete your cloud backup and account in the game
 (Account › Google Sign-In › Delete account) or by e-mail; see <a href="hesap-silme.html">Account deletion</a>.
 The game is intended for users aged 13 and over. Contact: <a href="mailto:mahmuttari@gmail.com">mahmuttari@gmail.com</a></p>

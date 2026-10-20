@@ -5316,7 +5316,7 @@ async function signInWithGoogle() {
       u = (await auth.signInWithCredential(credential)).user;
     }
     if (u) {
-      showToast(t("✅ Hoş geldin, {ad}", { ad: u.displayName || u.email }));
+      showToast(t("✅ Hoş geldin, {ad}", { ad: googleAdi(u) || googleEpostasi(u) }));
       refreshAccountScreen();
     }
   } catch (e) {
@@ -5364,14 +5364,24 @@ function currentFirebaseUser() {
   } catch (_) { return null; }
 }
 
+// Anonimden yükseltilen hesapta ad/e-posta üst düzeyde boş kalabilir; Google sağlayıcı kaydına bakılır
+function googleAdi(u) {
+  const g = (u.providerData || []).find((p) => p && p.providerId === "google.com") || {};
+  return u.displayName || g.displayName || "";
+}
+function googleEpostasi(u) {
+  const g = (u.providerData || []).find((p) => p && p.providerId === "google.com") || {};
+  return u.email || g.email || "";
+}
+
 async function backupAccountGoogle() {
   const u = currentFirebaseUser();
   if (!u) { showToast(t("Önce Google ile giriş yap")); return; }
   if (!save.playerName) { showToast(t("Önce avcı adını ayarla")); return; }
   const payload = {
     name: save.playerName,
-    googleName: u.displayName || "",
-    googleEmail: u.email || "",
+    googleName: googleAdi(u),
+    googleEmail: googleEpostasi(u),
     save: JSON.stringify(save),
     updatedAt: Date.now(),
   };
@@ -5387,7 +5397,7 @@ async function restoreAccountGoogle() {
   showToast(t("📥 İndiriliyor..."));
   const data = await rtdb.get(`accounts_google/${u.uid}`);
   if (!data || !data.save) { showToast(t("Bu Google hesabı için yedek yok")); return; }
-  const who = data.name || u.displayName || "?";
+  const who = data.name || googleAdi(u) || "?";
   if (!confirm(t("Bu cihazdaki ilerleme silinip \"{ad}\" hesabıyla değiştirilecek.\nDevam edilsin mi?", { ad: who }))) return;
   try {
     const parsed = JSON.parse(data.save);
@@ -5447,8 +5457,8 @@ function refreshAccountScreen() {
   if (u) {
     if (signedInPane)  signedInPane.style.display  = "";
     if (signedOutPane) signedOutPane.style.display = "none";
-    if (gNameEl)  gNameEl.textContent  = u.displayName || "";
-    if (gEmailEl) gEmailEl.textContent = u.email || "";
+    if (gNameEl)  gNameEl.textContent  = googleAdi(u);
+    if (gEmailEl) gEmailEl.textContent = googleEpostasi(u);
   } else {
     if (signedInPane)  signedInPane.style.display  = "none";
     if (signedOutPane) signedOutPane.style.display = "";

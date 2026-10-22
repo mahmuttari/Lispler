@@ -1,1 +1,4 @@
-Google Play Games geldi: puanın Play Games skor tablosuna gider, 5 başarımın kilidini açabilirsin (Şampiyonlar ekranı). Çevrimiçi oda, kodlu yedek ve şampiyonlar listesi artık hep oyuncu kimliğinle korunuyor; bağlantı kurulamazsa oyun bunu söylüyor.
+👧 Yeni karakterler: Silsen çiçek top atar, Serçin tüy fırlatır — Karakterler menüsünde.
+🎒 Envanter: Mağaza › 🔫 Silahlar'dan 5 yeni silah al, oyunda 🎒 düğmesiyle değiştir; karakterin kendi silahı envanterde kalır.
+🤖 Bot: tek kişilik oyunda yanında savaşır. Ona dokunursan ona ateş edersin; yenilince içinden 1 kalp çıkar.
+🎮 Google Play Games: puanın Play Games skor tablosuna gider, 5 başarımın kilidini açabilirsin (Şampiyonlar ekranı).

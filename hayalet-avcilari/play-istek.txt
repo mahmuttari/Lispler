@@ -20,3 +20,5 @@
 # (yapıldı) durum
 # 2026-10-22 durum: üretimde 3.10.2 (38) "completed"; 7 dilde mağaza metni ve görseller yerinde. Sıradaki paket 3.11.0 (41).
 # Yeni istek: yalnız çalıştırılacak komutları yazın; eski satırları "# (yapıldı)" ile kapatın (her push dosyadaki bütün etkin satırları çalıştırır).
+# istek 2026-10-22T05:38:34Z: 3.11.0 (41) üretime yükle ve incelemeye gönder (kullanıcının açık onayıyla: "evet", "incelemeye de gönder")
+yukle yayinla uygula

@@ -49,11 +49,20 @@ try {
         ses: () => { showScreen('screen-menu'); openSoundSettings(); },
         online: () => { closeSoundSettings(); openOnline(); },
         oda_kur: () => openCreateRoom(),
-        dil: () => { showScreen('screen-menu'); openLanguage(); },
+        oda_listesi: () => { openRoomList(); renderRoomList(null); },
+        lobi: () => {
+          listeyiKapat();
+          Object.assign(online, { uid: 'u1', roomId: 'K7PQ2X', isHost: true, cachedRoom: { name: 'Kiki', maxPlayers: 5, hostUid: 'u1', status: 'lobby',
+            players: { u1: { name: 'Kiki', charKey: 'kinkin', costumeIdx: 0, ready: true, joinedAt: 1 } } } });
+          showScreen('screen-lobby'); renderLobby();
+        },
+        dil: () => { online.roomId = null; online.cachedRoom = null; showScreen('screen-menu'); openLanguage(); },
         guncelleme: () => { closeLanguage(); showUpdateModal(APP_VERSION, UPDATE_NOTES[APP_VERSION]); },
         oyun: () => { dismissUpdateModal(); startGame(); game.player.invuln = 1e9; },
         duraklat: () => pauseGame(),
-        bitti: () => { resumeGame(); endGame(false); },
+        duraklat_cevrimici: () => { resumeGame(); online.mode = 'host'; online.roomId = 'K7PQ2X'; pauseGame(); },
+        bitti: () => { resumeGame(); online.mode = null; online.roomId = null; endGame(false); },
+        tur_sonu: () => { startGame(); game.player.invuln = 1e9; oyunSonu(false, true); },
       };
       for (const [ad, ac] of Object.entries(ekranlar)) {
         await p.evaluate(`(${ac.toString()})()`);

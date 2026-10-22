@@ -145,8 +145,12 @@
     <div class="hud-right">
       <div class="score">👻 <span id="ghost-count">0</span></div>
       <div class="coin">💰 <span id="run-para">0</span></div>
+      <div id="takim" class="takim"></div>
     </div>
   </div>
+
+  <!-- Çevrimiçi: host'tan bir süredir görüntü gelmiyor -->
+  <div id="bekleme" class="bekleme">⏳ Host bekleniyor…</div>
 
   <button class="pause-btn" onclick="pauseGame()">⏸</button>
 
@@ -169,7 +173,9 @@
 <!-- ========== DURAKLAT ========== -->
 <div id="screen-pause" class="screen modal">
   <div class="modal-content">
-    <h2>⏸ Duraklatıldı</h2>
+    <h2 id="pause-title">⏸ Duraklatıldı</h2>
+    <p id="pause-not" class="online-sub" style="display:none"></p>
+    <p id="pause-kod" class="pause-kod" style="display:none"></p>
     <button class="btn btn-big" onclick="resumeGame()">▶ Devam</button>
     <button class="btn" onclick="openSoundSettings()">🎚 Ses Ayarları</button>
     <button class="btn" onclick="quitToMenu()">🏠 Menüye Dön</button>
@@ -270,7 +276,8 @@
       <p>💎 Kazanılan elmas: <b id="final-elmas">0</b></p>
       <p>💚 Kazanılan zümrüt: <b id="final-zumrut">0</b></p>
     </div>
-    <button class="btn btn-big" onclick="startGame()">🔁 Tekrar Oyna</button>
+    <button id="btn-tekrar" class="btn btn-big" onclick="startGame()">🔁 Tekrar Oyna</button>
+    <button id="btn-lobiye-don" class="btn btn-big btn-play" style="display:none" onclick="lobiyeDon()">🎮 Lobiye Dön</button>
     <button class="btn btn-play" id="btn-reklam-odul" style="display:none" onclick="odulluIzle()">🎬 Reklam izle: +10 💚</button>
     <button class="btn" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
     <button class="btn" onclick="quitToMenu()">🏠 Menü</button>
@@ -299,6 +306,10 @@
       <button class="btn-tiny" onclick="refreshRoomList()">↻ Yenile</button>
     </div>
     <div id="room-list" class="room-list"></div>
+    <div class="kod-katil">
+      <input id="room-code-input" class="name-input kod-input" type="text" maxlength="7" placeholder="Oda kodu" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button class="btn btn-play" onclick="kodlaKatil()">🔑 Kodla Katıl</button>
+    </div>
     <button class="btn" onclick="leaveOnlineToOnline()">⬅ Geri</button>
   </div>
 </div>
@@ -328,7 +339,13 @@
   <div class="menu-content">
     <h2 id="lobby-title">🎮 Lobi</h2>
     <p class="online-sub" id="lobby-subtitle">Oyuncuların gelmesini bekle</p>
+    <button class="oda-kodu" onclick="odaKodunuKopyala()">
+      <span class="oda-kodu-etiket">Oda kodu</span>
+      <b id="lobby-kod" class="oda-kodu-deger"></b>
+      <span aria-hidden="true">📋</span>
+    </button>
     <div id="lobby-players" class="lobby-players"></div>
+    <p id="lobby-ipucu" class="online-sub lobby-ipucu"></p>
     <div class="lobby-actions">
       <button id="lobby-ready-btn" class="btn btn-big" onclick="toggleReady()">✓ HAZIR</button>
       <button id="lobby-start-btn" class="btn btn-big btn-play" onclick="startMpGame()" style="display:none;">▶ BAŞLAT</button>

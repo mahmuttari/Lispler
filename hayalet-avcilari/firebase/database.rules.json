@@ -5,6 +5,7 @@
 
     "rooms": {
       ".read": true,
+      ".indexOn": ["lastSeen"],
 
       "$roomId": {
         ".write": "$roomId.length === 6 && $roomId.matches(/^[A-HJKMNP-Z2-9]+$/) && auth != null && ((!data.exists() && newData.child('hostUid').val() === auth.uid) || (!newData.exists() && data.child('hostUid').val() === auth.uid))",

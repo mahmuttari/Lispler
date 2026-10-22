@@ -51,22 +51,30 @@ Kök: `.read: false`, `.write: false`. Aşağıda adı geçmeyen hiçbir yol oku
 
 Her yazım girişli ister (`auth != null`); kimlik `auth.uid`'dir.
 
-| İşlem | game.js | Kural |
+| İşlem | game.js (3.12.0) | Kural |
 |---|---|---|
-| Oda listesi (canlı dinleme) | `openRoomList` › `db.ref("rooms").on("value")` | `rooms/.read: true` — odalarda yalnız oyun verisi var (oda adı, avcı adı, konum). |
-| Oda kur | `submitCreateRoom` › `put rooms/{id}` | Oda yoksa ve `hostUid === auth.uid`. Oda kimliği `makeRoomId()` alfabesinden tam 6 harf; var olan odanın üzerine kurulamaz; `rooms` kökü yazılamaz. |
-| Katıl | `joinRoom` › `get rooms/{id}`, `put players/{uid}`, `patch {lastSeen}` | `players/$uid/.write: auth.uid === $uid`. `lastSeen`'i odadaki oyuncu yazar. |
+| Oda listesi (canlı dinleme) | `openRoomList` › `odaListesiniDinle` › `rooms` sorgusu `orderByChild("lastSeen").startAt(şimdi − 60 sn).limitToLast(40)`, 30 sn'de bir yenilenir; liste ekranından çıkınca kapanır (`listeyiKapat`) | `rooms/.read: true` — odalarda yalnız oyun verisi var (oda adı, avcı adı, konum). `rooms/.indexOn: ["lastSeen"]` süzmeyi sunucuda yaptırır: istemci yalnız lobisi açık odaları indirir. Kural yayınlanmamışsa sorgu yine çalışır ama SDK bütün `rooms`'u indirip cihazda süzer (konsola uyarı yazar). |
+| Oda kur | `submitCreateRoom` › `put rooms/{id}` (kod doluysa yeni kodla 3 deneme) | Oda yoksa ve `hostUid === auth.uid`. Oda kimliği `makeRoomId()` alfabesinden tam 6 harf; var olan odanın üzerine kurulamaz; `rooms` kökü yazılamaz. `createdAt`, `lastSeen`, `joinedAt` sunucu saatidir (`ServerValue.TIMESTAMP`); liste de sunucu saatine göre süzülür (`.info/serverTimeOffset`), cihaz saati yanlış olsa da oda görünür. |
+| Katıl | `joinRoom` (listeden ya da lobideki 6 haneli kodla `kodlaKatil`; oyun sürerken de) › `get rooms/{id}`, `put players/{uid}`, lobideyse `patch {lastSeen}` | `players/$uid/.write: auth.uid === $uid`. `lastSeen`'i odadaki oyuncu yazar. Kurallar oyun sürerken katılmayı zaten engellemiyordu; 3.11.0 ve öncesi istemci engelliyordu. |
+| Lobi nabzı | `odaNabziniBaslat` › host lobideyken 15 sn'de bir `patch {lastSeen}` | Oda listede ancak son 60 sn'de görüldüyse çıkar; eskiden 60 sn sonra kayboluyordu. |
 | Hazır ol | `toggleReady` › `patch players/{uid}` | Yalnız kendi kaydı. |
-| Başlat | `startMpGame` › `patch {status, lastSeen}`, `put state null`, `put events null` | `status`, `state`, `events` silme: `auth.uid === hostUid`. |
-| Oyun içi senkron (10 Hz) | `mpPushImpl` › `patch players/{uid}`, host `put state` | Kendi kaydı; `state` yalnız host. Alanlar ve `state` (`g`, `p`, `e`, `lvl`, `bd`, `bt`, `lt`) tek tek tür denetimli; bilinmeyen alan reddedilir. |
-| İstemci olayları | `rtdb.post rooms/{id}/events`; host `snap.ref.remove()` | Yeni olayda `type` ve `by` zorunlu, `by` odadaki bir oyuncu ve `by === auth.uid`; alanlar `by x y r dmg gi pi duration`. Olayı yalnız host siler. |
-| Host devri | `maybeBecomeNewHost` › `patch {hostUid, hostName, lastSeen}` | `hostUid` yalnız eski host `players`'ta yokken değişir; yeni değer `auth.uid` ve odadaki bir oyuncu olmalı. `hostName`'i yalnız (yeni) host yazar. |
-| Çıkış / kopma | `leaveRoom`, `quitOnlineGame`, `quitToMenu`, `onDisconnect().remove()` | Konuk kendi kaydını siler; **odayı yalnız host siler** (`auth.uid === hostUid`). |
+| Başlat | `startMpGame` › `put state null`, `put events null`, `patch {status: "playing", lastSeen: 0}` | `status`, `state`, `events` silme: `auth.uid === hostUid`. `lastSeen: 0`: oyundaki oda liste sorgusuna girmez. |
+| Oyun içi senkron (10 Hz) | `mpPush` › `kaydimiGonder` (`patch players/{uid}`, yalnız değişen alanlar, 5 sn'de bir `lastSeen`), host `durumuGonder` (`patch state`: `g`, `e`, `lvl`, `bd`, `bt`, `lt` her seferinde, `p` yalnız değişince). Bir yazım bitmeden yenisi gönderilmez; uygulama arka plandayken yazılmaz | Kendi kaydı; `state` yalnız host. Alanlar ve `state` tek tek tür denetimli; bilinmeyen alan reddedilir. **`i` dizideki sıra değil kalıcı kimliktir** (hayalet, para, düşman mermisi; `kimlik()`); olaylardaki `gi`/`pi` bu kimliktir. |
+| İstemci olayları | `olaylariGonder` (aynı hayalete aynı anda gelen vuruşlar tek `hit` olayında) › `rtdb.post rooms/{id}/events`; host `startEventsListener` › `applyHostEvent` + `snap.ref.remove()` | Yeni olayda `type` ve `by` zorunlu, `by` odadaki bir oyuncu ve `by === auth.uid`; alanlar `by x y r dmg gi pi duration`. Olayı yalnız host siler. Türler: `hit`, `areaDmg`, `freezeAll`, `rocketShot`, `pickup` ve 3.12.0'da `mermi` (istemci bir düşman mermisini vurdu ya da mermi ona çarptı; `gi` = merminin kimliği). Eski host bilmediği türü yok sayar. |
+| Tur sonu | host `turuBitir` (herkes hayalet olunca 2,5 sn sonra) › `patch {status: "lobby", lastSeen}`, `put state null`, `put events null`; herkes `turSonu` › kendi kaydına `{ready, dead: 0, hp: 3, maxHp: 3, lastSeen}` | `status` yalnız host; kayıt yalnız kendisi. |
+| Host devri | `maybeBecomeNewHost` › `patch {hostUid, hostName}`; oyun sürüyorsa yeni host `hostOl()` ile hayaletlerin yapay zekâ alanlarını kurup oyunu sürdürür | `hostUid` yalnız eski host `players`'ta yokken değişir; yeni değer `auth.uid` ve odadaki bir oyuncu olmalı. `hostName`'i yalnız (yeni) host yazar. |
+| Çıkış / kopma | `leaveRoom`, `quitToMenu` › `odadanCik`: host tek başınaysa odayı siler, başkası varsa yalnız kendi kaydını; `onDisconnect().remove()` yalnız kendi kaydını; bağlantı geri gelince (`.info/connected`) kayıt ve kopma temizliği yeniden kurulur | Konuk kendi kaydını siler; **odayı yalnız host siler** (`auth.uid === hostUid`). |
 
 Odanın kendisinde `name, hostUid, status, maxPlayers, createdAt, lastSeen` zorunludur; `name`, `maxPlayers`,
 `createdAt`, `level` kurulduktan sonra değişmez. Host odayı sildikten sonra gecikmeli gelen bir `players/{uid}`
 yazımı "zombi oda" yaratamaz, reddedilir. `setupOnDisconnect` oda düğümündeki eski `onDisconnect`'i iptal etmeyi de
 dener; konukta bu reddedilebilir, oyun hatayı yutar.
+
+**Sürüm uyumu (3.12.0):** Veri düzeni ve kurallar 3.11.0 ile aynıdır (`.indexOn` dışında), eski ve yeni sürüm aynı
+odada oynar. 3.11.0 ve öncesinin host'u `i`'ye dizideki sırayı yazar; 3.12.0 istemcisi bunu kimlik sayar, yani eski
+host'la oynarken hayalet sıçraması sürer. Eski istemci `gi`/`pi`'yi host'tan aldığı gibi geri gönderdiği için yeni
+host'la vuruş ve para doğru hayalete/paraya işler; eski istemcinin bir parayı iki kez sayması kendi hatasıdır.
+Herkes hayalet olunca biten tur eski istemcide "oyun sürüyor" olarak kalır (menüden çıkılır).
 
 **Sınırlar:** Oda kimliğini bilen girişli herkes odaya katılabilir (oyun tasarımı). Host yokken odadaki herhangi bir
 oyuncu host olabilir; "en eski oyuncu" kuralı istemcidedir. Anonim hesap bedavadır, yani biri çok sayıda kimlik
@@ -122,13 +130,28 @@ npm test
 ```
 
 `test/kurallar.test.mjs` `www/game.js`'teki gövdelerin aynısını yazar: girişli (anonim) iki oyuncuyla oda kur →
-listele → katıl → hazır ol → başlat → 10 Hz senkron → beş olay türü → çıkış; host devri; odada olmayan, girişsiz ve
+listele → katıl → hazır ol → başlat → 10 Hz senkron → altı olay türü → çıkış; 3.12.0 akışı (sunucu saati, `lastSeen`
+liste sorgusu, oyun sürerken kodla katılma, kimlikli `state` yamaları, tur sonu, host devri); host devri; odada olmayan, girişsiz ve
 konuk birinin host işlerine karışamadığı; kapanan geçişin reddi (girişsiz ve `u_` kimlikli oda kurma, katılma,
 host devri, olay; girişli bağlantının `u_` kimliğiyle yazması; geçişten kalan eski odada girişli oyuncu); şema;
 sahipli kodlu yedek, sahipsiz yazımın reddi ve geçişten kalan sahipsiz yedeğin sahiplenilmesi; Google yedeği; girişsiz
 skorun reddi, skor ekle/listele ve yalnız kendi skorunun adını değiştirme. Her bölümde izinsiz ya da bozuk
 yazımların reddedildiği de sınanır. GitHub Actions'ta `hayalet-firebase-kurallar.yml` bu klasördeki her değişiklikte
 aynı testi çalıştırır.
+
+Çevrimiçi oyunun uçtan uca sınaması (Playwright + Chromium da gerekir; CI'da çalışmaz):
+
+```sh
+cd hayalet-avcilari/firebase
+npm run test:cevrimici      # = firebase emulators:exec --only database,auth … "node ../test/cevrimici.test.mjs"
+```
+
+[`../test/cevrimici.test.mjs`](../test/cevrimici.test.mjs) RTDB ve Auth emülatöründe üç tarayıcı açar: oda kur,
+listeden katıl, oyun sürerken kodla katıl, oyna; oyunun her cihazda bir kez açıldığını, oyun sırasında oda listesinin
+çizilmediğini, istemcide hayaletin sıçramadığını, paranın bir kez alındığını, hayaletlerin konuğu da kovaladığını,
+herkes hayalet olunca turun bitip yeni turun başladığını ve host çıkınca konuğun host olup oyunu sürdürdüğünü sınar.
+Kuralları oyunun ad alanına (`hayalet-avcilari-default-rtdb`) kendisi yükler; Firebase SDK'sını
+`node_modules/firebase`'deki compat dosyalarından verir.
 
 **game.js'te bir veritabanı yoluna ya da gövdesine alan eklerseniz** (ör. oyuncuya yeni bir senkron alanı), aynı
 değişiklikte kurala ve teste de ekleyin: bilinmeyen alan içeren yazım bütünüyle reddedilir ve çevrimiçi oyun bozulur.
@@ -137,6 +160,13 @@ değişiklikte kurala ve teste de ekleyin: bilinmeyen alan içeren yazım bütü
 
 Kurallar konsoldan elle yayınlanır (bu depo Firebase CLI ile dağıtım yapmaz). Konsol eski kuralların geçmişini tutar;
 sorun çıkarsa aynı ekrandan önceki sürüme dönülebilir.
+
+### 3.12.0: oda listesi dizini (yayınlanmayı bekliyor, isteğe bağlı)
+
+`database.rules.json`'a yalnız `rooms` altında `".indexOn": ["lastSeen"]` eklendi; izinler değişmedi. Realtime Database
+› **Kurallar** → dosyanın tamamını yapıştır → **Yayınla**. Yayınlanınca 3.12.0'ın oda listesi yalnız lobisi açık
+odaları indirir; yayınlanmazsa da çalışır (SDK bütün `rooms`'u indirip cihazda süzer). 3.11.0 ve öncesi bundan
+etkilenmez.
 
 ### 3.10.3: geçişi kapatmak (kurallar 20 Ekim 2026'da yayınlandı, canlı deneme 21/21)
 
@@ -150,8 +180,8 @@ sorun çıkarsa aynı ekrandan önceki sürüme dönülebilir.
    `curl -X PUT -d '{"name":"x","hostUid":"u_deneme0001","status":"lobby","maxPlayers":2,"createdAt":1,"lastSeen":1}' https://hayalet-avcilari-default-rtdb.europe-west1.firebasedatabase.app/rooms/ZZZZZZ.json`
    → `Permission denied`.
 5. İsteğe bağlı: Realtime Database › Veriler'de `hostUid`'i `u_` ile başlayan eski odaları sil.
-6. Sıradaki paket 3.11.0 (41: 3.10.4'ün Play Games'i + yeni karakterler, envanter, Bot): merge sonrası `hayalet-android.yml` imzalı AAB'yi derler → `play-istek.txt`'ye `yukle uygula`
-   → onayla `yukle yayinla uygula` ([`magaza/PLAY-YAYIN.md`](../magaza/PLAY-YAYIN.md)).
+6. 3.11.0 (41: 3.10.4'ün Play Games'i + yeni karakterler, envanter, Bot) 22 Ekim 2026'da incelemeye gönderildi
+   ([`magaza/PLAY-YAYIN.md`](../magaza/PLAY-YAYIN.md)).
 
 Sıra serbesttir: 3.10.3 geçiş kurallarıyla da çalışır, kapalı kurallar da 3.10.2'yi bozmaz (yalnız 3.10.2'de anonim
 giriş olmazsa eski `u_` yedeğiyle yapılan yazım reddedilir; oyun "Oda kurulamadı" / "Yedekleme başarısız" der).

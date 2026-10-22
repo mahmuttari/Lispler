@@ -274,32 +274,37 @@ const online = {
   roomId: null,
   isHost: false,
   selectedMax: 5,
-  cachedRoom: null,
+  cachedRoom: null,      // { name, maxPlayers, hostUid, hostName, status, players }
   // Oyun içi senkronizasyon
   mode: null,            // null | "host" | "client"
-  pushTimer: null,       // 200 ms → kendi state'imi yaz (mpPush)
-  remotePlayers: {},     // { uid: { name, charKey, costumeIdx, x, y, hp, facing, ... } }
-  pendingEvents: [],     // client → host event kuyruğu (hits, pickup claims)
-  // Firebase listener referansları
-  _roomRef: null,
-  _roomListener: null,
+  pushTimer: null,       // MP_PUSH_MS'de bir mpPush
+  remotePlayers: {},     // { uid: { name, charKey, costumeIdx, x, y, hp, maxHp, dead, … ara değerleme tamponu } }
+  pendingEvents: [],     // istemci → host olay kuyruğu (vuruş, para alma, cephane)
+  sonDurum: 0,           // istemci: host'tan son durumun geldiği an (performance.now)
+  sunucuFarki: 0,        // .info/serverTimeOffset
+  alinanlar: new Set(),  // istemci: aldığım paraların kimlikleri (host silene kadar yeniden görünmesin)
+  vuranlar: new Set(),   // istemci: bana çarpan / vurduğum düşman mermilerinin kimlikleri
+  vurduklarim: new Map(),// istemci: hayalet kimliği → son vuruşum (yakalananı kendime saymak için)
+  baslatiliyor: false,   // host BAŞLAT'a bastı, durum dinleyicisi oyunu ikinci kez açmasın
+  ayriliyor: false,      // odadan çıkılıyor, dinleyici olayları yok sayılır
+  // Firebase dinleyicileri
+  _odaDinleyicileri: [],
+  _durumDinleyici: null,
   _roomListRef: null,
   _roomListListener: null,
   _eventsRef: null,
   _eventsListener: null,
+  _nabiz: null,
 };
 
-// Senk hız ayarları
-const MP_PUSH_MS = 100;     // host/client kendi pos+state yazar (10 Hz)
-const INTERP_RATE = 14;     // lerp hız faktörü (yüksek = daha hızlı yakalar)
-const INTERP_SNAP_DIST = 200; // bu mesafeden uzak snapshot → ışınla (lerp yerine)
-let _mpPushInflight = false;
-
-function lerp(a, b, t) { return a + (b - a) * t; }
-function smoothToward(current, target, dt) {
-  if (Math.abs(target - current) > INTERP_SNAP_DIST) return target; // çok uzak → snap
-  return lerp(current, target, Math.min(1, dt * INTERP_RATE));
-}
+// Senk ayarları
+const MP_PUSH_MS = 100;        // kendi kaydımı ve (host) oyun durumunu yazma aralığı (10 Hz)
+const ARA_GECIKME_MS = 110;    // istemci görüntüleri bu kadar geriden ara değerler
+const ILERI_KESTIRIM_MS = 160; // yeni görüntü gecikirse en çok bu kadar ileri kestirir
+const ISINLA_MESAFE = 260;     // bundan uzun sıçrama ara değerlenmez, ışınlanır
+const HOST_BEKLEME_MS = 2500;  // host'tan bu kadar durum gelmezse "Host bekleniyor"
+let _mpPushInflight = false, _durumYolda = false;
+let _sonPickupImza = "", _sonOyuncuKaydi = {}, _sonTamKayit = 0;
 
 // ====== KAYIT SİSTEMİ ======
 const SAVE_KEY = "hayaletAvcilariSave_v1";
@@ -308,8 +313,14 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.11.0";
+const APP_VERSION = "3.12.0";
 const UPDATE_NOTES = {
+  "3.12.0": [
+    t("🌐 Online oyun yenilendi: donma ve hayaletlerin ekranda sıçraması bitti, herkes akıcı hareket ediyor."),
+    t("🔑 Lobideki oda kodunu arkadaşına söyle: Oda Listesi › Kodla Katıl ile gelir, oyun başlamış olsa da katılır."),
+    t("👻 Hayaletler artık herkesi kovalar; senin vurduğun hayalet sana sayılır. Hayalet olan arkadaş sonraki bölümde yeniden doğar."),
+    t("🏁 Herkes hayalet olunca tur biter, kazançlar kaydedilir ve lobiye dönülür. Host çıkarsa oyun kapanmaz, sürer."),
+  ],
   "3.11.0": [
     t("👧 Yeni karakterler: Silsen çiçek top atar, Serçin tüy fırlatır — Karakterler menüsünde."),
     t("🐱 Serçin'e kulaklı, kanatlı kostüm: Kanatlı Kedi (Mağaza › Kostümler)."),
@@ -1038,7 +1049,7 @@ function useWeapon(key) {
         // Lokal görsel için hayaletlerin sayısını saymak yeter
         for (const g of game.ghosts) {
           const dx = g.x - px, dy = g.y - py;
-          if (dx * dx + dy * dy < r2) { hit++; spawnHitParticles(g.x, g.y); }
+          if (dx * dx + dy * dy < r2) { hit++; spawnHitParticles(g.x, g.y); online.vurduklarim.set(g._idx, performance.now()); }
         }
       } else {
         for (const g of game.ghosts) {
@@ -1093,7 +1104,7 @@ function useWeapon(key) {
         for (let i = 0; i < game.ghosts.length; i++) {
           const g = game.ghosts[i];
           if (!visible(g)) continue;
-          online.pendingEvents.push({ type: "hit", gi: g._idx, dmg: 3, by: online.uid });
+          uzaktanVur(g, 3);
           spawnHitParticles(g.x, g.y);
           game.effects.push({ type: "spark", x: g.x, y: g.y, ghost: g, life: 0.5, maxLife: 0.5 });
           hit++;
@@ -1132,14 +1143,15 @@ function useWeapon(key) {
       break;
     }
     case "roket": {
-      const t = nearestGhost(99999);
-      if (t) {
-        const dxr = t.x - px, dyr = t.y - py;
+      const hedef = nearestGhost(99999); // "t" adı çeviri işlevini gölgeliyordu: hedef yokken "Hedef yok" yazılamıyordu
+      if (hedef) {
+        const dxr = hedef.x - px, dyr = hedef.y - py;
         const dist = Math.hypot(dxr, dyr) || 1;
         const speed = 720;
         if (online.mode === "client") {
           // Hasarı host hesaplasın (kendi roket effect'ini host kendi tarafında oynatır)
-          online.pendingEvents.push({ type: "rocketShot", x: px, y: py, gi: t._idx, by: online.uid });
+          online.pendingEvents.push({ type: "rocketShot", x: px, y: py, gi: hedef._idx, by: online.uid });
+          online.vurduklarim.set(hedef._idx, performance.now());
           // Lokal görsel için kendi roket efektini de spawn et (sadece görsel, hasar yok)
           game.effects.push({
             type: "rocket",
@@ -1156,7 +1168,7 @@ function useWeapon(key) {
             x: px, y: py,
             vx: (dxr / dist) * speed,
             vy: (dyr / dist) * speed,
-            target: t,
+            target: hedef,
             damage: 25,
             life: dist / speed + 0.5,
           });
@@ -1212,6 +1224,7 @@ function updateEffects(dt) {
       if (t && t.hp > 0 && game.ghosts.indexOf(t) !== -1) {
         if (Math.hypot(t.x - e.x, t.y - e.y) < (t.r || 22) + 14) {
           t.hp -= e.damage;
+          if (e.uzak) t.uzakVurdu = true;
           showFloat("🚀 -" + e.damage, t.x, t.y - 30);
           exploded = true;
         }
@@ -1245,6 +1258,7 @@ function updateEffects(dt) {
           const dd2 = ddx * ddx + ddy * ddy;
           if (dd2 < splashR2) {
             og.hp -= splashDmg;
+            if (e.uzak) og.uzakVurdu = true;
             spawnHitParticles(og.x, og.y);
             const dd = Math.sqrt(dd2) || 1;
             const force = 300 * (1 - dd / splashR);
@@ -1431,6 +1445,7 @@ const UPGRADES = {
 
 // ====== ÇİZİM YARDIMCILARI ======
 function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPhase = 0, aimRaise = 0, shootRecoil = 0, gunKey = "") {
+  if (!CHARACTERS[charKey] || !COSTUMES[charKey]) charKey = "kinkin"; // yeni sürümden gelen oyuncunun karakteri bende yoksa
   const c = CHARACTERS[charKey];
   const cos = COSTUMES[charKey][costumeIdx] || COSTUMES[charKey][0];
   const hair = cos.hair;
@@ -2918,15 +2933,57 @@ function goToMenu() {
 }
 
 // ====== ONLINE / LOBİ ======
+// 3.12.0'da yeniden yazıldı; veri düzeni ve Firebase kuralları aynı kaldı, eski sürümlerle aynı odada oynanır.
+// - Oda tek bir "value" dinleyicisiyle değil hostUid / status / players / state için ayrı dinleyicilerle izlenir;
+//   oda listesi dinleyicisi listeden çıkınca kapanır (eskiden oyun boyunca açık kalıyordu).
+// - Hayalet, para ve düşman mermisi kimlikleri kalıcıdır: state'teki "i" alanı dizideki sıra değil kimliktir. Eski
+//   istemciler bu sayıyı olaylarda (gi, pi) aynen geri gönderdiği için uyumludur. Eskiden bir hayalet ölünce
+//   arkasındakilerin hepsi başka hayaletin yerine geçip ekranda yüzlerce piksel sıçrıyordu.
+// - İstemci görüntüleri ARA_GECIKME_MS geriden ara değerler (akıcı hareket); host bir yazım bitmeden yenisini
+//   göndermez (yavaş ağda kuyruk birikip gecikme büyümez); paralar yalnız değişince yazılır.
+// - Herkes hayalet olunca tur biter (status "lobby"), kazançlar kaydedilir; ölen oyuncu sonraki bölümde doğar.
+// - Host ayrılınca oda silinmez, en eski oyuncu host olur ve oyunu sürdürür.
+// - Hayaletler yalnız host'u değil en yakın canlı oyuncuyu kovalar (update); istemcinin vurduğu hayalet ona sayılır.
+
+function sunucuSimdi() { return Date.now() + (online.sunucuFarki || 0); }
+function sunucuZamani() {
+  return (window.firebase && firebase.database && firebase.database.ServerValue)
+    ? firebase.database.ServerValue.TIMESTAMP : Date.now();
+}
+
+// Hayalet, para ve mermilerin kalıcı kimliği (host verir; state'te "i")
+let _sonKimlik = 0;
+function kimlik(o) {
+  if (!o.id) o.id = ++_sonKimlik;
+  return o.id;
+}
+
+// RTDB dizileri boşluklu dizi ya da nesne olarak gelebilir
+function diziyeCevir(v) {
+  if (!v) return [];
+  return (Array.isArray(v) ? v : Object.values(v)).filter((x) => x && typeof x === "object");
+}
+
+let _sunucuSaatiDinleniyor = false;
+function sunucuSaatiniDinle() {
+  if (_sunucuSaatiDinleniyor) return;
+  const db = fbDb(); if (!db) return;
+  _sunucuSaatiDinleniyor = true;
+  db.ref(".info/serverTimeOffset").on("value", (s) => { online.sunucuFarki = Number(s.val()) || 0; });
+  // Bağlantı kopup gelince kopma temizliği yeniden kurulur; kayıt silindiyse yeniden yazılır
+  db.ref(".info/connected").on("value", (s) => {
+    if (s.val() === true && online.roomId && !online.ayriliyor) { setupOnDisconnect(); kaydimiTazele(true); }
+  });
+}
+
 async function openOnline() {
   showScreen("screen-online");
   setOnlineStatus(t("Firebase'e bağlanıyor..."));
   online.uid = await onlineKimlik();
-  if (online.uid) setOnlineStatus(""); else baglantiYok();
+  if (online.uid) { setOnlineStatus(""); sunucuSaatiniDinle(); } else baglantiYok();
 }
 function leaveOnlineToOnline() {
-  stopRoomListListener();
-  stopRoomListener();
+  listeyiKapat();
   showScreen("screen-online");
   setOnlineStatus("");
 }
@@ -2955,33 +3012,35 @@ async function submitCreateRoom() {
   setOnlineStatus(t("Firebase'e bağlanıyor..."));
   online.uid = await onlineKimlik(); // giriş bu arada tamamlanmış olabilir
   if (!online.uid) { showToast(baglantiYok()); return; }
+  sunucuSaatiniDinle();
   online.lastError = null;
-  const roomId = makeRoomId();
-  const now = Date.now();
   const uid = online.uid;
-  const room = {
-    name,
-    hostUid: uid,
-    hostName: save.playerName,
-    level: 1,
-    status: "lobby",
-    maxPlayers: online.selectedMax || 5,
-    createdAt: now,
-    lastSeen: now,
-    players: {
-      [uid]: makePlayerEntry(true, now),
-    },
-  };
-  const ok = await rtdb.put(`rooms/${roomId}`, room);
-  if (!ok) {
+  let roomId = null, room = null;
+  for (let deneme = 0; deneme < 3 && !roomId; deneme++) { // aynı kodlu oda varsa (çok nadir) yeni kodla dene
+    const id = makeRoomId();
+    room = {
+      name,
+      hostUid: uid,
+      hostName: save.playerName,
+      level: 1,
+      status: "lobby",
+      maxPlayers: online.selectedMax || 5,
+      createdAt: sunucuZamani(),
+      lastSeen: sunucuZamani(),
+      players: { [uid]: makePlayerEntry(true) },
+    };
+    if (await rtdb.put(`rooms/${id}`, room)) roomId = id;
+  }
+  if (!roomId) {
     const reason = online.lastError || t("bilinmeyen hata");
     setOnlineStatus(t("⚠ Oda kurulamadı: {neden}", { neden: reason }));
     showToast(`⚠ ${reason.slice(0, 60)}`);
     return;
   }
+  setOnlineStatus("");
   online.roomId = roomId;
   online.isHost = true;
-  enterLobby();
+  enterLobby(room);
 }
 
 function makeRoomId() {
@@ -2991,23 +3050,35 @@ function makeRoomId() {
   return id;
 }
 
-function makePlayerEntry(ready, now) {
+function makePlayerEntry(ready) {
   return {
     name: save.playerName || t("Avcı"),
     charKey: save.selectedChar || "kinkin",
     costumeIdx: (save.selectedCostume && save.selectedCostume[save.selectedChar]) || 0,
     ready: !!ready,
-    joinedAt: now,
-    lastSeen: now,
+    joinedAt: sunucuZamani(),
+    lastSeen: sunucuZamani(),
   };
 }
 
+// --- Oda listesi: yalnız son dakikada lobisi açık odalar (oyundaki odaların lastSeen'i 0'dır) ---
+let _listeYenile = null;
 async function openRoomList() {
   showScreen("screen-room-list");
-  // Real-time listener — odalar değiştikçe liste anında güncellenir
+  odaListesiniDinle();
+  clearInterval(_listeYenile);
+  _listeYenile = setInterval(() => { // startAt sınırı ilerlesin diye ara ara yeniden sorulur
+    if (document.getElementById("screen-room-list").classList.contains("active")) odaListesiniDinle();
+    else listeyiKapat();
+  }, 30000);
+}
+
+function odaListesiniDinle() {
   stopRoomListListener();
   const db = fbDb(); if (!db) return;
-  online._roomListRef = db.ref("rooms");
+  sunucuSaatiniDinle();
+  // Kurallarda rooms › .indexOn: lastSeen varsa süzme sunucuda yapılır; yoksa SDK listeyi indirip cihazda süzer
+  online._roomListRef = db.ref("rooms").orderByChild("lastSeen").startAt(sunucuSimdi() - ROOM_LIST_TTL_MS).limitToLast(40);
   online._roomListListener = online._roomListRef.on("value", (snap) => {
     renderRoomList(snap.val());
   }, (err) => {
@@ -3024,15 +3095,20 @@ function stopRoomListListener() {
   online._roomListListener = null;
 }
 
+function listeyiKapat() {
+  stopRoomListListener();
+  clearInterval(_listeYenile);
+  _listeYenile = null;
+}
+
 function refreshRoomList() {
-  // Listener zaten gerçek zamanlı çalışır; manuel yenileme buton aksiyonu için
-  if (!online._roomListRef) openRoomList();
+  odaListesiniDinle();
 }
 
 function renderRoomList(all) {
   const list = document.getElementById("room-list");
   if (!list) return;
-  const cutoff = Date.now() - ROOM_LIST_TTL_MS;
+  const cutoff = sunucuSimdi() - ROOM_LIST_TTL_MS;
   const items = [];
   if (all) {
     Object.keys(all).forEach((id) => {
@@ -3040,6 +3116,7 @@ function renderRoomList(all) {
       if (!r || !r.lastSeen || r.lastSeen < cutoff) return;
       if (r.status !== "lobby") return;
       const playerCount = r.players ? Object.keys(r.players).length : 0;
+      if (!playerCount) return;
       items.push({ id, ...r, playerCount });
     });
   }
@@ -3056,7 +3133,7 @@ function renderRoomList(all) {
     card.innerHTML = `
       <div class="room-info">
         <div class="room-name">${escapeHtml(r.name || t("Oda"))}</div>
-        <div class="room-meta">👤 ${escapeHtml(r.hostName || "?")} · <b>${r.playerCount}/${r.maxPlayers}</b> ${t("oyuncu")} · ${t("Bölüm {n}", { n: r.level || 1 })}</div>
+        <div class="room-meta">👤 ${escapeHtml(r.hostName || "?")} · <b>${r.playerCount}/${r.maxPlayers}</b> ${t("oyuncu")}</div>
       </div>
       <button ${full ? "disabled" : ""}>${full ? t("DOLU") : t("KATIL")}</button>
     `;
@@ -3067,131 +3144,208 @@ function renderRoomList(all) {
   });
 }
 
+// Lobideki 6 harfli kodla katılma (oyun başlamışsa da)
+function kodlaKatil() {
+  const inp = document.getElementById("room-code-input");
+  const kod = ((inp && inp.value) || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (kod.length !== 6) { showToast(t("Oda kodu 6 haneli olmalı")); return; }
+  joinRoom(kod);
+}
+
 async function joinRoom(roomId) {
   if (!save.playerName) { showToast(t("Önce avcı adını ayarla")); return; }
   setOnlineStatus("");
   const uid = online.uid = await onlineKimlik();
   if (!uid) { showToast(baglantiYok()); return; }
-  const now = Date.now();
-  // Oda var mı / dolu mu kontrolü
+  sunucuSaatiniDinle();
   const room = await rtdb.get(`rooms/${roomId}`);
-  if (!room) { showToast(t("Oda bulunamadı")); return; }
-  const count = room.players ? Object.keys(room.players).length : 0;
-  if (count >= (room.maxPlayers || 5)) { showToast(t("Oda dolu")); return; }
-  if (room.status !== "lobby") { showToast(t("Oyun zaten başladı")); return; }
-  await rtdb.put(`rooms/${roomId}/players/${uid}`, makePlayerEntry(false, now));
-  await rtdb.patch(`rooms/${roomId}`, { lastSeen: now });
+  if (!room || !room.hostUid) { showToast(t("Oda bulunamadı")); return; }
+  const players = room.players || {};
+  if (!players[uid] && Object.keys(players).length >= (room.maxPlayers || 5)) { showToast(t("Oda dolu")); return; }
+  const giris = makePlayerEntry(room.status === "playing");
+  if (players[uid] && players[uid].joinedAt) giris.joinedAt = players[uid].joinedAt;
+  if (!await rtdb.put(`rooms/${roomId}/players/${uid}`, giris)) { showToast(t("Oda bulunamadı")); return; }
+  if (room.status === "lobby") rtdb.patch(`rooms/${roomId}`, { lastSeen: sunucuZamani() });
+  else showToast(t("🎮 Oyun sürüyor, hemen katılıyorsun!"));
   online.roomId = roomId;
   online.isHost = (room.hostUid === uid);
-  enterLobby();
+  enterLobby(room);
 }
 
-function enterLobby() {
+function enterLobby(room) {
+  listeyiKapat();
+  online.ayriliyor = false;
+  online.cachedRoom = {
+    name: room.name, maxPlayers: room.maxPlayers || 5, hostUid: room.hostUid, hostName: room.hostName,
+    status: room.status || "lobby", players: room.players || {},
+  };
+  online.alinanlar = new Set();
+  online.vuranlar = new Set();
+  online.vurduklarim = new Map();
   showScreen("screen-lobby");
+  renderLobby();
   startRoomListener();
   setupOnDisconnect();
+  odaNabziniBaslat();
 }
 
+function lobidemi() {
+  const el = document.getElementById("screen-lobby");
+  return !!(el && el.classList.contains("active"));
+}
+
+// --- Oda dinleyicileri ---
 function startRoomListener() {
   stopRoomListener();
-  const db = fbDb(); if (!db || !online.roomId) return;
-  online._roomRef = db.ref(`rooms/${online.roomId}`);
-  online._roomListener = online._roomRef.on("value", (snap) => {
-    const room = snap.val();
-    if (!room) {
-      // Oda silindi
-      stopRoomListener();
-      stopMpSync();
-      online.roomId = null;
-      online.mode = null;
-      showToast(t("Oda kapandı"));
-      if (game.running) {
-        game.running = false;
-        const wb = document.getElementById("weapon-bar");
-        if (wb) wb.innerHTML = "";
-      }
-      showScreen("screen-online");
-      return;
-    }
-    online.cachedRoom = room;
-    // Host hâlâ odada mı? Değilse yeni host seç (host transferi)
-    if (room.hostUid && room.players && !room.players[room.hostUid]) {
-      maybeBecomeNewHost(room);
-      return; // Bu snapshot'ta hostUid eski; yeni snapshot'ı bekle
-    }
-    online.isHost = (room.hostUid === online.uid);
-    // Lobi açıksa render et
-    if (document.getElementById("screen-lobby").classList.contains("active")) {
-      renderLobby(room);
-    }
-    // Host oyunu başlattıysa client de geçsin
-    if (room.status === "playing" && !game.running) {
-      startMpGameClient();
-    }
-    // Oyun içinde state varsa client'a uygula
-    if (game.running) handleRoomSnapshot(room);
+  const yol = `rooms/${online.roomId}`;
+  odaDinle(`${yol}/hostUid`, (v) => hostDegisti(v));
+  odaDinle(`${yol}/status`, (v) => durumDegisti(v));
+  odaDinle(`${yol}/players`, (v) => oyuncularDegisti(v || {}));
+}
+
+function odaDinle(yol, fn) {
+  const db = fbDb(); if (!db) return;
+  const ref = db.ref(yol);
+  const dinleyici = ref.on("value", (s) => {
+    try { fn(s.val()); } catch (e) { console.error("oda", yol, e); }
   }, (err) => {
-    console.error("room listener", err);
+    console.error("room listener", yol, err);
     setOnlineStatus(t("⚠ Bağlantı: {hata}", { hata: err.message }));
   });
+  online._odaDinleyicileri.push({ ref, fn: dinleyici });
 }
 
 function stopRoomListener() {
-  if (online._roomRef && online._roomListener) {
-    online._roomRef.off("value", online._roomListener);
+  for (const d of online._odaDinleyicileri) d.ref.off("value", d.fn);
+  online._odaDinleyicileri = [];
+  durumDinlemeyiBirak();
+}
+
+function hostDegisti(hostUid) {
+  if (!online.roomId || online.ayriliyor) return;
+  if (!hostUid) { odaKapandi(); return; } // hostUid zorunlu alan: yoksa oda silinmiştir
+  const r = online.cachedRoom;
+  const onceki = r.hostUid;
+  r.hostUid = hostUid;
+  const benim = hostUid === online.uid;
+  online.isHost = benim;
+  if (game.running && online.mode) {
+    if (benim && online.mode !== "host") hostOl();
+    else if (!benim && online.mode === "host") istemciOl();
   }
-  online._roomRef = null;
-  online._roomListener = null;
+  if (onceki && onceki !== hostUid) {
+    const p = r.players && r.players[hostUid];
+    showToast(benim ? t("👑 Artık sen Host'sun!") : t("👑 Yeni host: {ad}", { ad: (p && p.name) || "?" }));
+  }
+  if (lobidemi()) renderLobby();
+}
+
+function durumDegisti(status) {
+  if (!online.roomId || online.ayriliyor || !status) return;
+  online.cachedRoom.status = status;
+  if (status === "playing" && !game.running && !online.baslatiliyor) startMpGameClient();
+  else if (status === "lobby" && game.running && online.mode) turSonu();
+  if (lobidemi()) renderLobby();
+}
+
+function oyuncularDegisti(players) {
+  if (!online.roomId || online.ayriliyor) return;
+  const r = online.cachedRoom;
+  const onceki = r.players || {};
+  r.players = players;
+  if (Object.keys(onceki).length) {
+    for (const uid of Object.keys(players)) {
+      if (!onceki[uid] && uid !== online.uid) showToast(t("👋 {ad} geldi", { ad: players[uid].name || "?" }));
+    }
+    for (const uid of Object.keys(onceki)) {
+      if (!players[uid] && uid !== online.uid) showToast(t("👋 {ad} ayrıldı", { ad: onceki[uid].name || "?" }));
+    }
+  }
+  // Kaydım silinmişse (bağlantı kopunca onDisconnect siler) yeniden yaz
+  if (!players[online.uid]) kaydimiTazele(true);
+  // Host odada değilse en eski oyuncu host olur
+  if (r.hostUid && !players[r.hostUid] && Object.keys(players).length) maybeBecomeNewHost(players);
+  uzakOyunculariGuncelle(players);
+  if (lobidemi()) renderLobby();
+}
+
+let _tazeleZamani = 0;
+function kaydimiTazele(zorla) {
+  if (!online.roomId || online.ayriliyor || !online.uid) return;
+  const r = online.cachedRoom;
+  const benim = r && r.players && r.players[online.uid];
+  if (benim && !zorla) return;
+  const simdi = performance.now();
+  if (simdi - _tazeleZamani < 2000) return;
+  _tazeleZamani = simdi;
+  const kayit = makePlayerEntry(benim ? !!benim.ready : (!!r && r.status === "playing"));
+  if (benim && benim.joinedAt) kayit.joinedAt = benim.joinedAt;
+  if (game.running && online.mode && game.player) Object.assign(kayit, oyuncuAnlik());
+  _sonOyuncuKaydi = {}; // sonraki yazımda bütün alanlar yeniden gider
+  rtdb.patch(`rooms/${online.roomId}/players/${online.uid}`, kayit);
 }
 
 function setupOnDisconnect() {
   const db = fbDb(); if (!db || !online.roomId || !online.uid) return;
-  // Host olsa bile sadece kendi player'ını sil — kalan oyunculardan biri host olur
-  // Önce eski onDisconnect'leri iptal et (oda düğümüne yazma izni yalnız host'ta; konukta reddedilebilir)
+  // Kopunca yalnız kendi kaydım silinir; host da öyle — kalanlardan biri host olur
   db.ref(`rooms/${online.roomId}`).onDisconnect().cancel().catch(() => {});
   db.ref(`rooms/${online.roomId}/players/${online.uid}`).onDisconnect().cancel().catch(() => {});
-  // Sadece kendi player'ını sil
   db.ref(`rooms/${online.roomId}/players/${online.uid}`).onDisconnect().remove()
     .catch((e) => console.error("onDisconnect", e));
 }
 
-// Mevcut host kayıpsa, deterministik olarak yeni host seç
-function maybeBecomeNewHost(room) {
-  if (!room || !room.players) return;
-  const players = room.players;
-  // Mevcut host hâlâ odadaysa hiçbir şey yapma
-  if (room.hostUid && players[room.hostUid]) return;
-  // Yeni host: en eski katılan (joinedAt'e göre) — herkes aynı kararı verir
+// Mevcut host odada değilse deterministik olarak yeni host seç (herkes aynı kararı verir)
+function maybeBecomeNewHost(players) {
+  const r = online.cachedRoom;
+  if (!players || !r || (r.hostUid && players[r.hostUid])) return;
   const uids = Object.keys(players).sort((a, b) => {
     const ja = players[a].joinedAt || 0, jb = players[b].joinedAt || 0;
     if (ja !== jb) return ja - jb;
     return a < b ? -1 : 1;
   });
-  const newHostUid = uids[0];
-  if (!newHostUid) return;
-  if (newHostUid === online.uid && !online.isHost) {
-    // Ben yeni host'um
-    online.isHost = true;
-    online.mode = "host";
-    rtdb.patch(`rooms/${online.roomId}`, {
-      hostUid: online.uid,
-      hostName: save.playerName,
-      lastSeen: Date.now(),
-    });
-    setupOnDisconnect();
-    if (game.running) startEventsListener();
-    showToast(t("👑 Artık sen Host'sun!"));
+  if (uids[0] === online.uid && r.hostUid !== online.uid) {
+    rtdb.patch(`rooms/${online.roomId}`, { hostUid: online.uid, hostName: save.playerName || t("Avcı") });
   }
 }
 
-function renderLobby(room) {
+// Host lobideyken oda listede görünsün diye lastSeen'i yeniler
+function odaNabziniBaslat() {
+  odaNabziniDurdur();
+  online._nabiz = setInterval(() => {
+    const r = online.cachedRoom;
+    if (online.roomId && online.isHost && r && r.status === "lobby") {
+      rtdb.patch(`rooms/${online.roomId}`, { lastSeen: sunucuZamani() });
+    }
+  }, 15000);
+}
+function odaNabziniDurdur() {
+  clearInterval(online._nabiz);
+  online._nabiz = null;
+}
+
+// --- Lobi ---
+const _simgeOnbellek = {};
+function karakterSimgesi(charKey, costumeIdx) {
+  const anahtar = `${charKey}:${costumeIdx || 0}`;
+  if (_simgeOnbellek[anahtar]) return _simgeOnbellek[anahtar];
+  const cv = document.createElement("canvas");
+  cv.width = 80; cv.height = 90;
+  drawCharacter(cv.getContext("2d"), charKey, costumeIdx || 0, 40, 60, 80);
+  return (_simgeOnbellek[anahtar] = cv.toDataURL());
+}
+
+function renderLobby() {
+  const room = online.cachedRoom;
+  if (!room) return;
   document.getElementById("lobby-title").textContent = "🎮 " + (room.name || t("Lobi"));
   const players = room.players || {};
   const uids = Object.keys(players);
-  const playerCount = uids.length;
   const max = room.maxPlayers || 5;
+  const host = players[room.hostUid];
   document.getElementById("lobby-subtitle").textContent =
-    `${t("{a}/{b} oyuncu", { a: playerCount, b: max })} · ${online.isHost ? t("Sen Host'sun") : t("Host: {ad}", { ad: room.hostName || "?" })}`;
+    `${t("{a}/{b} oyuncu", { a: uids.length, b: max })} · ${online.isHost ? t("Sen Host'sun") : t("Host: {ad}", { ad: (host && host.name) || room.hostName || "?" })}`;
+  const kodEl = document.getElementById("lobby-kod");
+  if (kodEl) kodEl.textContent = online.roomId || "";
 
   const list = document.getElementById("lobby-players");
   list.innerHTML = "";
@@ -3207,31 +3361,42 @@ function renderLobby(room) {
     const row = document.createElement("div");
     row.className = "lobby-player";
     if (uid === room.hostUid) row.classList.add("is-host");
-    if (uid === online.uid)   row.classList.add("is-me");
+    if (uid === online.uid) row.classList.add("is-me");
     const charName = (CHARACTERS[p.charKey] || { name: "?" }).name;
     row.innerHTML = `
+      <span class="lp-img" style="background-image:url(${karakterSimgesi(p.charKey, p.costumeIdx)})"></span>
+      <span class="lp-name">${uid === room.hostUid ? "👑 " : ""}${escapeHtml(p.name || "?")}${uid === online.uid ? ` (${t("Sen")})` : ""}</span>
       <span class="lp-tag">${escapeHtml(charName)}</span>
-      <span class="lp-name">${escapeHtml(p.name || "?")}${uid === online.uid ? ` (${t("Sen")})` : ""}</span>
       <span class="lp-ready">${p.ready ? "✓" : "⏳"}</span>
     `;
     list.appendChild(row);
   });
 
-  // Hazır butonu durumu
+  // Hazır düğmesi
   const me = players[online.uid];
   const readyBtn = document.getElementById("lobby-ready-btn");
   if (me) {
     readyBtn.classList.toggle("is-ready", !!me.ready);
     readyBtn.textContent = me.ready ? t("✓ HAZIRIM") : t("HAZIR OL");
   }
-
-  // BAŞLAT butonu sadece host'a ve tüm oyuncular hazırsa görünür
-  const startBtn = document.getElementById("lobby-start-btn");
+  // BAŞLAT yalnız host'ta ve herkes hazırsa
   const allReady = uids.length >= 2 && uids.every((u) => players[u] && players[u].ready);
-  if (online.isHost && allReady) {
-    startBtn.style.display = "";
+  document.getElementById("lobby-start-btn").style.display = (online.isHost && allReady) ? "" : "none";
+  const ipucu = document.getElementById("lobby-ipucu");
+  if (ipucu) {
+    ipucu.textContent = uids.length < 2 ? t("Arkadaşına oda kodunu söyle: Online Oyna › Oda Listesi › Kodla Katıl.")
+      : online.isHost ? (allReady ? "" : t("Herkes hazır olunca ▶ BAŞLAT çıkar."))
+      : t("Host başlatınca oyun açılır.");
+  }
+}
+
+function odaKodunuKopyala() {
+  const kod = online.roomId;
+  if (!kod) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(kod).then(() => showToast(t("📋 Kopyalandı: {kod}", { kod })), () => fallbackCopy(kod));
   } else {
-    startBtn.style.display = "none";
+    fallbackCopy(kod);
   }
 }
 
@@ -3239,58 +3404,114 @@ async function toggleReady() {
   if (!online.roomId) return;
   const room = online.cachedRoom;
   const me = room && room.players && room.players[online.uid];
-  const newReady = !(me && me.ready);
-  await rtdb.patch(`rooms/${online.roomId}/players/${online.uid}`, { ready: newReady, lastSeen: Date.now() });
-  // Listener anında yeni state'i fark eder, manuel render'a gerek yok
+  await rtdb.patch(`rooms/${online.roomId}/players/${online.uid}`, { ready: !(me && me.ready), lastSeen: sunucuZamani() });
 }
 
 async function leaveRoom() {
-  if (!online.roomId) { showScreen("screen-online"); return; }
-  const roomId = online.roomId;
-  const wasHost = online.isHost;
-  stopRoomListener();
-  online.roomId = null;
-  online.isHost = false;
-  if (wasHost) {
-    await rtdb.remove(`rooms/${roomId}`);
-  } else {
-    await rtdb.remove(`rooms/${roomId}/players/${online.uid}`);
-  }
+  await odadanCik();
   showScreen("screen-online");
   setOnlineStatus(t("Odadan ayrıldın"));
 }
 
+// Odadan çık: host tek başınaysa oda silinir; başka oyuncu varsa yalnız kaydı silinir, en eski oyuncu host olur
+async function odadanCik() {
+  const roomId = online.roomId;
+  if (!roomId) return;
+  online.ayriliyor = true;
+  if (game.running && online.mode) flushOnlineRewards();
+  stopMpSync();
+  stopRoomListener();
+  odaNabziniDurdur();
+  const uid = online.uid;
+  const players = (online.cachedRoom && online.cachedRoom.players) || {};
+  const tekBasina = Object.keys(players).every((u) => u === uid);
+  const hostum = online.isHost;
+  online.roomId = null;
+  online.isHost = false;
+  online.mode = null;
+  online.remotePlayers = {};
+  online.cachedRoom = null;
+  const db = fbDb();
+  if (db) db.ref(`rooms/${roomId}/players/${uid}`).onDisconnect().cancel().catch(() => {});
+  if (hostum && tekBasina) await rtdb.remove(`rooms/${roomId}`);
+  else await rtdb.remove(`rooms/${roomId}/players/${uid}`);
+  online.ayriliyor = false;
+}
+
+// Oda silindi (eski sürümlü host çıktı ya da oda kapandı): kazançlar kaydedilir
+function odaKapandi() {
+  if (game.running && online.mode) flushOnlineRewards();
+  stopMpSync();
+  stopRoomListener();
+  odaNabziniDurdur();
+  online.roomId = null;
+  online.isHost = false;
+  online.mode = null;
+  online.remotePlayers = {};
+  online.cachedRoom = null;
+  hostBeklemeGostergesi(0);
+  if (game.running) {
+    game.running = false;
+    const wb = document.getElementById("weapon-bar");
+    if (wb) wb.innerHTML = "";
+  }
+  game.menude = false;
+  document.getElementById("screen-pause").classList.remove("active");
+  document.getElementById("screen-gameover").classList.remove("active");
+  showToast(t("Oda kapandı"));
+  showScreen("screen-online");
+}
+
+// --- Oyun başlatma ---
 async function startMpGame() {
-  if (!online.isHost) return;
-  // Host: oda durumunu "playing" yap, listener'lar fark eder
-  await rtdb.patch(`rooms/${online.roomId}`, { status: "playing", lastSeen: Date.now() });
-  startMpGameClient();
+  if (!online.isHost || online.baslatiliyor || !online.roomId) return;
+  online.baslatiliyor = true; // durum dinleyicisi oyunu ikinci kez açmasın
+  try {
+    await rtdb.put(`rooms/${online.roomId}/state`, null);
+    await rtdb.put(`rooms/${online.roomId}/events`, null);
+    // lastSeen 0: oyundaki oda listeye girmez (liste lastSeen'e göre sorulur)
+    if (!await rtdb.patch(`rooms/${online.roomId}`, { status: "playing", lastSeen: 0 })) {
+      showToast(t("⚠ Bağlantı: {hata}", { hata: online.lastError || t("bilinmeyen hata") }));
+      return;
+    }
+    startMpGameClient();
+  } finally {
+    online.baslatiliyor = false;
+  }
 }
 
 function startMpGameClient() {
+  if (!online.roomId || (game.running && online.mode)) return; // zaten oyunda
   online.mode = online.isHost ? "host" : "client";
   online.remotePlayers = {};
   online.pendingEvents = [];
-  // Host yeni başlangıçta state'i temizler
-  if (online.mode === "host") {
-    rtdb.put(`rooms/${online.roomId}/state`, null);
-    rtdb.put(`rooms/${online.roomId}/events`, null);
-  }
+  online.alinanlar = new Set();
+  online.vuranlar = new Set();
+  online.vurduklarim = new Map();
+  online.sonDurum = performance.now();
+  document.getElementById("screen-gameover").classList.remove("active");
   showToast(online.isHost ? t("👑 Host olarak başlattın") : t("🌐 Bağlanıldı"));
   startGame();
+  uzakOyunculariGuncelle((online.cachedRoom && online.cachedRoom.players) || {});
   startMpSync();
 }
 
 function startMpSync() {
   stopMpSync();
+  _sonOyuncuKaydi = {};
+  _sonTamKayit = 0;
+  _sonPickupImza = "";
   online.pushTimer = setInterval(mpPush, MP_PUSH_MS);
-  // Host: events koleksiyonunu listener ile dinle (client'lardan gelen hit/pickup)
   if (online.mode === "host") startEventsListener();
+  else durumDinle();
 }
 function stopMpSync() {
   if (online.pushTimer) { clearInterval(online.pushTimer); online.pushTimer = null; }
   stopEventsListener();
+  durumDinlemeyiBirak();
 }
+
+// Host: istemcilerden gelen olaylar (vuruş, para alma, cephane)
 function startEventsListener() {
   stopEventsListener();
   const db = fbDb(); if (!db || !online.roomId) return;
@@ -3309,188 +3530,324 @@ function stopEventsListener() {
   online._eventsListener = null;
 }
 
+// İstemci: host'un yazdığı oyun durumu
+function durumDinle() {
+  durumDinlemeyiBirak();
+  const db = fbDb(); if (!db || !online.roomId) return;
+  const ref = db.ref(`rooms/${online.roomId}/state`);
+  const fn = ref.on("value", (s) => {
+    try { durumGeldi(s.val()); } catch (e) { console.error("state", e); }
+  });
+  online._durumDinleyici = { ref, fn };
+  online.sonDurum = performance.now();
+}
+function durumDinlemeyiBirak() {
+  const d = online._durumDinleyici;
+  if (d) d.ref.off("value", d.fn);
+  online._durumDinleyici = null;
+}
+
+// --- Senkron yazımı ---
 async function mpPush() {
-  if (_mpPushInflight) return;
-  if (!online.roomId || !game.player || !game.running) return;
-  _mpPushInflight = true;
-  try { await mpPushImpl(); } finally { _mpPushInflight = false; }
-}
-async function mpPushImpl() {
-  const uid = online.uid;
-  const now = performance.now();
-  const me = {
-    name: save.playerName || t("Avcı"),
-    charKey: game.player.charKey,
-    costumeIdx: game.player.costumeIdx,
-    x: Math.round(game.player.x),
-    y: Math.round(game.player.y),
-    facing: +(game.player.facing || 0).toFixed(2),
-    hp: game.player.hp,
-    maxHp: game.player.maxHp,
-    walk: +((game.player.walkTimer || 0)).toFixed(2),
-    invuln: game.player.invuln > 0,
-    invisible: ((game.player.invisibleUntil || 0) > now) ? 1 : 0,
-    dead: game.player.dead ? 1 : 0,
-    lastSeen: Date.now(),
-  };
-  // fire-and-forget; sıraya sokmaya gerek yok
-  rtdb.patch(`rooms/${online.roomId}/players/${uid}`, me);
-
+  if (!online.roomId || !game.player || !game.running || !online.mode) return;
+  if (document.hidden) return; // arka plandayken yazılmaz; diğerleri "Host bekleniyor" görür
+  if (!_mpPushInflight) {
+    _mpPushInflight = true;
+    kaydimiGonder().catch(() => {}).finally(() => { _mpPushInflight = false; });
+  }
   if (online.mode === "host") {
-    // Hayaletler, pickup'lar, düşman mermileri, level meta
-    const ghosts = game.ghosts.map((g, i) => ({
-      i,
-      x: Math.round(g.x), y: Math.round(g.y),
-      hp: g.hp, maxHp: g.maxHp, size: g.size,
-      isBoss: g.isBoss ? 1 : 0,
-      isShooter: g.isShooter ? 1 : 0,
-      frozen: ((g.frozenUntil || 0) > now) ? 1 : 0,
-    }));
-    const pickups = game.pickups.map((p, i) => {
-      const o = { i, x: Math.round(p.x), y: Math.round(p.y), kind: p.kind };
-      if (p.value !== undefined) o.value = p.value;
-      if (p.life !== undefined)  o.life  = +p.life.toFixed(2);
-      return o;
-    });
-    const ep = game.enemyProjectiles.map((p, i) => ({
-      i,
-      x: Math.round(p.x), y: Math.round(p.y),
-      vx: Math.round(p.vx), vy: Math.round(p.vy),
-      isBoss: p.isBoss ? 1 : 0,
-    }));
-    rtdb.put(`rooms/${online.roomId}/state`, {
-      g: ghosts,
-      p: pickups,
-      e: ep,
-      lvl: game.level,
-      bd: game.bossDefeated ? 1 : 0,
-      bt: +(game.bossSpawnTimer || 0).toFixed(1),
-      lt: game.levelTransitioning ? 1 : 0,
-    });
-  } else if (online.mode === "client" && online.pendingEvents.length > 0) {
-    const evs = online.pendingEvents.splice(0);
-    for (const ev of evs) {
-      rtdb.post(`rooms/${online.roomId}/events`, ev);
+    if (!_durumYolda) {
+      _durumYolda = true;
+      durumuGonder().catch((e) => console.error("state", e)).finally(() => { _durumYolda = false; });
     }
+  } else if (online.pendingEvents.length) {
+    olaylariGonder();
   }
 }
 
-// Real-time listener'dan gelen oda snapshot'ı — pull yok artık
-function handleRoomSnapshot(room) {
-  if (!room) return;
-  // Diğer oyuncuları güncelle (target pos koru, görsel pos lerp ile yetişir)
-  const newRemote = {};
-  if (room.players) {
-    Object.keys(room.players).forEach((uid) => {
-      if (uid === online.uid) return;
-      const np = room.players[uid];
-      const old = online.remotePlayers[uid];
-      newRemote[uid] = {
-        ...np,
-        targetX: np.x,
-        targetY: np.y,
-        x: old && typeof old.x === "number" ? old.x : np.x,
-        y: old && typeof old.y === "number" ? old.y : np.y,
-      };
+function oyuncuAnlik() {
+  const p = game.player;
+  const simdi = performance.now();
+  const say = (v) => (Number.isFinite(v) ? v : 0);
+  return {
+    x: Math.round(say(p.x)),
+    y: Math.round(say(p.y)),
+    facing: Math.round(say(p.facing) * 100) / 100,
+    hp: say(p.hp),
+    maxHp: say(p.maxHp) || 3,
+    walk: Math.round(say(p.walkTimer) * 10) / 10,
+    invuln: p.invuln > 0,
+    invisible: ((p.invisibleUntil || 0) > simdi) ? 1 : 0,
+    dead: p.dead ? 1 : 0,
+  };
+}
+
+// Kendi kaydım: yalnız değişen alanlar (ad, karakter, kostüm odaya girerken yazıldı); 5 sn'de bir lastSeen
+async function kaydimiGonder() {
+  const anlik = oyuncuAnlik();
+  const degisen = {};
+  for (const k of Object.keys(anlik)) if (_sonOyuncuKaydi[k] !== anlik[k]) degisen[k] = anlik[k];
+  const simdi = performance.now();
+  if (simdi - _sonTamKayit > 5000) { degisen.lastSeen = sunucuZamani(); _sonTamKayit = simdi; }
+  if (!Object.keys(degisen).length) return;
+  Object.assign(_sonOyuncuKaydi, degisen);
+  await rtdb.patch(`rooms/${online.roomId}/players/${online.uid}`, degisen);
+}
+
+// Host: hayaletler, düşman mermileri ve bölüm bilgisi her seferinde; paralar yalnız değişince
+async function durumuGonder() {
+  if (!online.roomId) return;
+  const simdi = performance.now();
+  const sayi = (v) => (Number.isFinite(v) ? Math.round(v * 100) / 100 : 0);
+  const g = [];
+  for (const h of game.ghosts) {
+    if (!Number.isFinite(h.x) || !Number.isFinite(h.y)) continue;
+    g.push({
+      i: kimlik(h), x: Math.round(h.x), y: Math.round(h.y),
+      hp: sayi(h.hp), maxHp: sayi(h.maxHp) || 1, size: sayi(h.size) || 40,
+      isBoss: h.isBoss ? 1 : 0, isShooter: h.isShooter ? 1 : 0,
+      frozen: ((h.frozenUntil || 0) > simdi) ? 1 : 0,
     });
   }
-  online.remotePlayers = newRemote;
+  const e = [];
+  for (const p of game.enemyProjectiles) {
+    if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) continue;
+    e.push({ i: kimlik(p), x: Math.round(p.x), y: Math.round(p.y), vx: Math.round(sayi(p.vx)), vy: Math.round(sayi(p.vy)), isBoss: p.isBoss ? 1 : 0 });
+  }
+  const govde = {
+    g, e,
+    lvl: game.level,
+    bd: game.bossDefeated ? 1 : 0,
+    bt: Math.round((game.bossSpawnTimer || 0) * 10) / 10,
+    lt: game.levelTransitioning ? 1 : 0,
+  };
+  const p = [];
+  for (const q of game.pickups) {
+    if (!Number.isFinite(q.x) || !Number.isFinite(q.y)) continue;
+    const o = { i: kimlik(q), x: Math.round(q.x), y: Math.round(q.y), kind: q.kind };
+    if (Number.isFinite(q.value)) o.value = q.value;
+    p.push(o);
+  }
+  const imza = JSON.stringify(p);
+  if (imza !== _sonPickupImza) govde.p = p;
+  if (await rtdb.patch(`rooms/${online.roomId}/state`, govde) && govde.p) _sonPickupImza = imza;
+}
 
-  // Client modu: host state'i lokal game'e yansıt (hayaletler için de target/lerp)
-  if (online.mode === "client") {
-    const st = room.state;
-    if (st) {
-      // Mevcut hayaletleri _idx ile eşleştir (smooth tutmak için)
-      const oldByIdx = {};
-      for (const g of game.ghosts) {
-        if (g._idx !== undefined) oldByIdx[g._idx] = g;
-      }
-      const newIdxSet = new Set();
-      (st.g || []).forEach((g) => newIdxSet.add(g.i));
-      // Yeni snapshot'ta olmayan eski hayaletler için fade + ölüm efekti spawn et
-      Object.keys(oldByIdx).forEach((idxStr) => {
-        const idx = parseInt(idxStr, 10);
-        if (!newIdxSet.has(idx)) {
-          const old = oldByIdx[idxStr];
-          game.effects.push({
-            type: "ghostFade",
-            x: old.x, y: old.y,
-            size: old.size || 40,
-            hp: 0, maxHp: old.maxHp || 1,
-            isBoss: !!old.isBoss,
-            life: 1, maxLife: 1,
-          });
-          spawnDeathParticles(old.x, old.y);
-        }
-      });
-      game.ghosts = (st.g || []).map((g) => {
-        const old = oldByIdx[g.i];
-        return {
-          x: old && typeof old.x === "number" ? old.x : g.x,
-          y: old && typeof old.y === "number" ? old.y : g.y,
-          targetX: g.x, targetY: g.y,
-          r: g.isBoss ? 44 : 22,
-          hp: g.hp, maxHp: g.maxHp, size: g.size || 40,
-          isBoss: !!g.isBoss, isShooter: !!g.isShooter,
-          frozenUntil: g.frozen ? performance.now() + 300 : 0,
-          _idx: g.i,
-        };
-      });
-      game.pickups = (st.p || []).map((p) => ({
-        x: p.x, y: p.y, kind: p.kind,
-        value: p.value, life: p.life,
-        _idx: p.i,
-      }));
-      // Düşman mermileri: hız vektörüyle local hareket eder (her frame),
-      // snapshot sadece düzeltir
-      const oldEpByIdx = {};
-      for (const p of game.enemyProjectiles) {
-        if (p._idx !== undefined) oldEpByIdx[p._idx] = p;
-      }
-      game.enemyProjectiles = (st.e || []).map((p) => {
-        const old = oldEpByIdx[p.i];
-        return {
-          x: old && typeof old.x === "number" ? old.x : p.x,
-          y: old && typeof old.y === "number" ? old.y : p.y,
-          targetX: p.x, targetY: p.y,
-          vx: p.vx, vy: p.vy,
-          isBoss: !!p.isBoss, life: 1,
-          _idx: p.i,
-        };
-      });
-      if (typeof st.lvl === "number" && st.lvl !== game.level) {
-        clientApplyLevel(st.lvl);
-      }
-      game.bossDefeated = !!st.bd;
-      game.bossSpawnTimer = st.bt || 0;
-      game.levelTransitioning = !!st.lt;
+// İstemci: olaylar; aynı hayalete aynı aralıkta gelen vuruşlar tek olayda toplanır
+function olaylariGonder() {
+  const evs = online.pendingEvents.splice(0);
+  const hasar = new Map();
+  const yol = `rooms/${online.roomId}/events`;
+  for (const ev of evs) {
+    if (ev.type === "hit") {
+      if (typeof ev.gi === "number") hasar.set(ev.gi, (hasar.get(ev.gi) || 0) + (ev.dmg || 1));
+      continue;
     }
+    if (Object.values(ev).some((v) => v === undefined || (typeof v === "number" && !Number.isFinite(v)))) continue;
+    rtdb.post(yol, ev);
+  }
+  for (const [gi, dmg] of hasar) rtdb.post(yol, { type: "hit", gi, dmg: Math.round(dmg * 100) / 100, by: online.uid });
+}
+
+// --- İstemci: gelen durumu uygula ---
+// Görüntü tamponu: o.x0,y0,t0 (o an ekrandaki yer) → o.x1,y1,t1 (yeni görüntü); ARA_GECIKME_MS geriden ara değerlenir
+function goruntuEkle(o, x, y, simdi) {
+  if (o.t1 === undefined || !Number.isFinite(o.x) || Math.hypot(x - o.x, y - o.y) > ISINLA_MESAFE) {
+    o.x = o.x0 = o.x1 = x; o.y = o.y0 = o.y1 = y; o.t0 = simdi - ARA_GECIKME_MS; o.t1 = simdi;
+    return;
+  }
+  o.x0 = o.x; o.y0 = o.y; o.t0 = simdi - ARA_GECIKME_MS;
+  o.x1 = x; o.y1 = y; o.t1 = simdi;
+}
+function aradegerle(o, simdi) {
+  if (o.t1 === undefined) return;
+  const sure = Math.max(1, o.t1 - o.t0);
+  let k = (simdi - ARA_GECIKME_MS - o.t0) / sure;
+  if (k > 1) k = 1 + Math.min(k - 1, ILERI_KESTIRIM_MS / sure); // yeni görüntü gecikirse aynı hızla biraz ileri
+  if (k < 0) k = 0;
+  o.x = o.x0 + (o.x1 - o.x0) * k;
+  o.y = o.y0 + (o.y1 - o.y0) * k;
+}
+
+function durumGeldi(st) {
+  if (online.mode !== "client" || !game.running) return;
+  const simdi = performance.now();
+  online.sonDurum = simdi;
+  if (!st) return;
+  if (typeof st.lvl === "number" && st.lvl !== game.level) clientApplyLevel(st.lvl);
+  game.bossDefeated = !!st.bd;
+  game.bossSpawnTimer = st.bt || 0;
+  game.levelTransitioning = !!st.lt;
+
+  // Hayaletler (kimliğe göre)
+  const eski = new Map();
+  for (const g of game.ghosts) eski.set(g._idx, g);
+  const yeni = [];
+  for (const s of diziyeCevir(st.g)) {
+    let g = eski.get(s.i);
+    if (g) eski.delete(s.i);
+    else {
+      g = { _idx: s.i, nextSound: simdi + Math.random() * 5000 };
+      if (s.isBoss) { showToast(t("👑 BÖLÜM {n} BOSS!", { n: game.level })); audio.bigGhost(); }
+    }
+    g.hp = s.hp;
+    g.maxHp = s.maxHp || 1;
+    g.size = s.size || 40;
+    g.isBoss = !!s.isBoss;
+    g.isShooter = !!s.isShooter;
+    g.r = g.isBoss ? 44 : (g.size <= 30 ? 14 : 22);
+    g.frozenUntil = s.frozen ? simdi + 300 : 0;
+    goruntuEkle(g, s.x, s.y, simdi);
+    yeni.push(g);
+  }
+  for (const g of eski.values()) hayaletGitti(g);
+  game.ghosts = yeni;
+
+  // Düşman mermileri
+  const eskiE = new Map();
+  for (const p of game.enemyProjectiles) eskiE.set(p._idx, p);
+  game.enemyProjectiles = diziyeCevir(st.e).filter((s) => !online.vuranlar.has(s.i)).map((s) => {
+    const p = eskiE.get(s.i) || { _idx: s.i };
+    p.vx = s.vx; p.vy = s.vy; p.isBoss = !!s.isBoss; p.life = 1;
+    goruntuEkle(p, s.x, s.y, simdi);
+    return p;
+  });
+
+  // Paralar ve güçler (aldıklarım tekrar görünmez)
+  const eskiP = new Map();
+  for (const p of game.pickups) eskiP.set(p._idx, p);
+  game.pickups = diziyeCevir(st.p).filter((s) => !online.alinanlar.has(s.i)).map((s) => {
+    let p = eskiP.get(s.i);
+    if (!p) p = { _idx: s.i, x: s.x, y: s.y, life: s.kind === "guc" ? 18 : s.kind === "kalp" ? 4 : 12 };
+    else if (!p.cekiliyor) { p.x = s.x; p.y = s.y; } // mıknatısıma kapılan parayı host geri çekmesin
+    p.kind = s.kind; p.value = s.value;
+    return p;
+  });
+}
+
+// İstemci: hayalet durumdan düştü (öldü) — solma izi, parçacık; ben vurduysam yakaladıklarıma sayılır
+function hayaletGitti(g) {
+  game.effects.push({ type: "ghostFade", x: g.x, y: g.y, size: g.size || 40, hp: 0, maxHp: g.maxHp || 1, isBoss: !!g.isBoss, life: 1, maxLife: 1 });
+  spawnDeathParticles(g.x, g.y);
+  if (g.isBoss) { showToast(t("👑 BOSS YENİLDİ! Kalan hayaletleri temizle!")); audio.bossDie(); }
+  const vurus = online.vurduklarim.get(g._idx);
+  online.vurduklarim.delete(g._idx);
+  if (vurus && performance.now() - vurus < 3000) {
+    game.totalCaught++;
+    pgsHayalet(game.totalCaught);
+    audio.kill();
   }
 }
 
-// Host: client'tan gelen event'i uygula
+// --- Host olma / bırakma ---
+// İstemcideki hayaletlerde yalnız görüntü var; host olunca yapay zekâ alanları (hız, atış, boss minyonları) kurulur
+function hostOl() {
+  online.mode = "host";
+  durumDinlemeyiBirak();
+  const lv = game.level, simdi = performance.now();
+  for (const g of game.ghosts) {
+    g.id = g._idx;
+    if (Number.isFinite(g._idx)) _sonKimlik = Math.max(_sonKimlik, g._idx);
+    if (!Number.isFinite(g.x) || !Number.isFinite(g.y)) { g.x = game.worldW / 2; g.y = game.worldH / 2; }
+    if (!g.speed) {
+      if (g.isBoss) {
+        Object.assign(g, { r: 44, speed: 38 + lv * 5, canShoot: true, fireRate: Math.max(1500, 2600 - (lv - 1) * 80), nextShot: simdi + 1500, minionState: "waiting", minionTimer: 5 });
+      } else if ((g.size || 40) <= 30) {
+        Object.assign(g, { r: 14, speed: 90 + lv * 5, fromBoss: true });
+      } else {
+        g.r = 22;
+        g.speed = (50 + lv * 6 + 10) * (g.isShooter ? 0.7 : 1);
+        if (g.isShooter) Object.assign(g, { canShoot: true, fireRate: 2400, nextShot: simdi + 1500 });
+      }
+    }
+  }
+  for (const p of game.pickups) { p.id = p._idx; if (Number.isFinite(p._idx)) _sonKimlik = Math.max(_sonKimlik, p._idx); }
+  for (const p of game.enemyProjectiles) { p.id = p._idx; p.life = 2; if (Number.isFinite(p._idx)) _sonKimlik = Math.max(_sonKimlik, p._idx); }
+  game.spawnTimer = 0;
+  game.levelTransitioning = false; // geçişin zamanlayıcısı eski host'taydı; bölüm temizse yeniden başlar
+  _sonPickupImza = "";
+  startEventsListener();
+}
+
+function istemciOl() {
+  online.mode = "client";
+  stopEventsListener();
+  for (const g of game.ghosts) g._idx = kimlik(g);
+  for (const p of game.pickups) p._idx = kimlik(p);
+  for (const p of game.enemyProjectiles) p._idx = kimlik(p);
+  online.sonDurum = performance.now();
+  durumDinle();
+}
+
+// --- Tur sonu: herkes hayalet olunca host turu bitirir ---
+function herkesOlduMu() {
+  if (!online.mode || !game.player || !game.player.dead) return false;
+  return Object.values(online.remotePlayers).every((rp) => rp.dead);
+}
+
+async function turuBitir() {
+  if (!online.roomId || online.mode !== "host") return;
+  const yol = `rooms/${online.roomId}`;
+  await rtdb.patch(yol, { status: "lobby", lastSeen: sunucuZamani() });
+  rtdb.put(`${yol}/state`, null);
+  rtdb.put(`${yol}/events`, null);
+}
+
+// Herkeste (host dahil) status "lobby" olunca: ödüller, şampiyon listesi, sonuç ekranı; oda ve lobi sürer
+function turSonu() {
+  if (!game.running) return;
+  stopMpSync();
+  const hostum = online.isHost;
+  online.mode = null;
+  online.remotePlayers = {};
+  hostBeklemeGostergesi(0);
+  game.menude = false;
+  document.getElementById("screen-pause").classList.remove("active");
+  oyunSonu(false, true);
+  if (online.roomId) {
+    rtdb.patch(`rooms/${online.roomId}/players/${online.uid}`, { ready: hostum, dead: 0, hp: 3, maxHp: 3, lastSeen: sunucuZamani() });
+  }
+}
+
+function lobiyeDon() {
+  document.getElementById("screen-gameover").classList.remove("active");
+  if (!online.roomId) { showScreen("screen-online"); return; }
+  showScreen("screen-lobby");
+  renderLobby();
+}
+
+// Host: istemciden gelen olayı uygula (gi/pi = kimlik)
+function hayaletBul(id) {
+  if (typeof id !== "number") return null;
+  return game.ghosts.find((g) => g.id === id) || null;
+}
 function applyHostEvent(ev) {
   if (!ev || !ev.type) return;
   if (ev.type === "hit") {
-    const g = game.ghosts[ev.gi];
+    const g = hayaletBul(ev.gi);
     if (g) {
       g.hp -= (ev.dmg || 1);
+      g.uzakVurdu = true; // ölürse host'un yakaladıklarına sayılmaz (vuran oyuncu kendine sayar)
       spawnHitParticles(g.x, g.y);
-      if (g.hp <= 0) killGhost(g, ev.gi);
+      if (g.hp <= 0) killGhost(g, game.ghosts.indexOf(g));
       else audio.hit();
     }
+  } else if (ev.type === "mermi") {
+    // İstemci bir düşman mermisini vurdu ya da mermi ona çarptı: host'ta da biter
+    const k = game.enemyProjectiles.findIndex((p) => p.id === ev.gi);
+    if (k >= 0) game.enemyProjectiles.splice(k, 1);
   } else if (ev.type === "pickup") {
-    if (typeof ev.pi === "number" && game.pickups[ev.pi]) {
-      game.pickups.splice(ev.pi, 1);
-    }
+    const k = game.pickups.findIndex((p) => p.id === ev.pi);
+    if (k >= 0) game.pickups.splice(k, 1);
   } else if (ev.type === "areaDmg") {
-    // {x,y,r,dmg,onScreen?} — bomba/şimşek
+    // {x,y,r,dmg} — bomba
     const r2 = (ev.r || 100) * (ev.r || 100);
     for (let i = game.ghosts.length - 1; i >= 0; i--) {
       const g = game.ghosts[i];
       const dx = g.x - (ev.x || 0), dy = g.y - (ev.y || 0);
       if (dx * dx + dy * dy < r2) {
         g.hp -= (ev.dmg || 1);
+        g.uzakVurdu = true;
         spawnHitParticles(g.x, g.y);
         if (g.hp <= 0) killGhost(g, i);
       }
@@ -3499,10 +3856,10 @@ function applyHostEvent(ev) {
     const until = performance.now() + (ev.duration || 5000);
     for (const g of game.ghosts) g.frozenUntil = until;
   } else if (ev.type === "rocketShot") {
-    // Client roket attı — host hayata geçir
-    const t = (typeof ev.gi === "number") ? game.ghosts[ev.gi] : null;
-    if (t) {
-      const dxr = t.x - (ev.x || 0), dyr = t.y - (ev.y || 0);
+    // İstemci roket attı — host hayata geçirir
+    const hedef = hayaletBul(ev.gi);
+    if (hedef) {
+      const dxr = hedef.x - (ev.x || 0), dyr = hedef.y - (ev.y || 0);
       const dist = Math.hypot(dxr, dyr) || 1;
       const sp = 720;
       game.effects.push({
@@ -3510,9 +3867,10 @@ function applyHostEvent(ev) {
         x: ev.x, y: ev.y,
         vx: (dxr / dist) * sp,
         vy: (dyr / dist) * sp,
-        target: t,
+        target: hedef,
         damage: 25,
         life: dist / sp + 0.5,
+        uzak: true,
       });
     }
   }
@@ -3522,14 +3880,26 @@ function clientApplyLevel(newLevel) {
   game.level = newLevel;
   game.levelTimer = 0;
   game.ghostsCaught = 0;
-  // Walls/waters/hazards rebuild (deterministik seed level'a bağlı)
+  // Engeller bölüme bağlı ve dünya merkezine göre kurulur: herkeste aynı harita
   buildWalls();
   buildWaters();
   buildHazards();
   ensurePlayerSafe();
+  yenidenDog();
   showToast(t("📚 Bölüm {n} — {tema}", { n: game.level, tema: getTheme().name }));
 }
 
+// Çevrimiçi oyunda hayalet olan oyuncu yeni bölümde doğar
+function yenidenDog() {
+  if (!game.player || !game.player.dead) return;
+  game.player.dead = false;
+  game.player.hp = game.player.maxHp;
+  game.player.invuln = 2;
+  showToast(t("💖 Yeniden doğdun!"));
+  audio.heart();
+}
+
+// Oyun yarıda bırakılınca (odadan çıkma, oda kapanması) o ana kadarki kazançlar kaydedilir
 function flushOnlineRewards() {
   if (game.runPara)   save.para   += game.runPara;
   if (game.runElmas)  save.elmas  += game.runElmas;
@@ -3539,21 +3909,96 @@ function flushOnlineRewards() {
   persistSave();
 }
 
-function quitOnlineGame() {
-  flushOnlineRewards();
-  stopMpSync();
-  stopRoomListener();
-  game.running = false;
-  if (online.isHost && online.roomId) {
-    rtdb.remove(`rooms/${online.roomId}`);
-  } else if (online.roomId) {
-    rtdb.remove(`rooms/${online.roomId}/players/${online.uid}`);
+// --- Oyun içi çevrimiçi yardımcılar ---
+// İstemci: hayalete hasarı host'a bildirir; hayalet 3 sn içinde ölürse yakaladıklarıma sayılır
+function uzaktanVur(g, dmg) {
+  if (typeof g._idx !== "number") return;
+  online.pendingEvents.push({ type: "hit", gi: g._idx, dmg, by: online.uid });
+  online.vurduklarim.set(g._idx, performance.now());
+}
+
+// İstemci: düşman mermisi bana çarptı ya da onu vurdum; host'tan tekrar gelmesin, host'ta da bitsin
+function mermiBitti(p) {
+  if (typeof p._idx !== "number") return;
+  online.vuranlar.add(p._idx);
+  online.pendingEvents.push({ type: "mermi", gi: p._idx, by: online.uid });
+}
+
+// Uzaktaki oyuncuların kayıtları (ara değerleme tamponuyla)
+function uzakOyunculariGuncelle(players) {
+  const simdi = performance.now();
+  const yeni = {};
+  for (const [uid, np] of Object.entries(players || {})) {
+    if (uid === online.uid || !np) continue;
+    const rp = online.remotePlayers[uid] || {};
+    rp.name = np.name;
+    rp.charKey = np.charKey;
+    rp.costumeIdx = np.costumeIdx || 0;
+    rp.hp = typeof np.hp === "number" ? np.hp : 3;
+    rp.maxHp = np.maxHp || 3;
+    rp.dead = !!np.dead;
+    rp.invisible = !!np.invisible;
+    if (typeof np.facing === "number") rp.facing = np.facing;
+    if (typeof np.x === "number" && typeof np.y === "number" && (np.x !== rp.sx || np.y !== rp.sy || np.walk !== rp.sw)) {
+      rp.sx = np.x; rp.sy = np.y; rp.sw = np.walk;
+      goruntuEkle(rp, np.x, np.y, simdi);
+    }
+    yeni[uid] = rp;
   }
-  online.roomId = null;
-  online.isHost = false;
-  online.mode = null;
-  showScreen("screen-online");
-  setOnlineStatus(t("Oyundan çıktın"));
+  online.remotePlayers = yeni;
+}
+
+// Uzaktaki oyuncuların atışları yalnız görüntüdür (hasarı kendi cihazları host'a bildirir): en yakın hayalete
+// karakterinin atış aralığıyla mermi uçar, silahı kalkar — arkadaşın savaştığı görülür
+function uzaktakiAtislar(dt, simdi) {
+  for (const rp of Object.values(online.remotePlayers)) {
+    if (!rp || rp.dead || typeof rp.x !== "number") { if (rp) rp.aimRaise = 0; continue; }
+    const c = CHARACTERS[rp.charKey] || CHARACTERS.kinkin;
+    let hedef = null, en = c.baseRange * 1.25;
+    for (const g of game.ghosts) {
+      const d = Math.hypot(g.x - rp.x, g.y - rp.y);
+      if (d < en) { en = d; hedef = g; }
+    }
+    rp.aimRaise = hedef ? Math.min(1, (rp.aimRaise || 0) + dt * 6) : Math.max(0, (rp.aimRaise || 0) - dt * 4);
+    rp.recoil = Math.max(0, (rp.recoil || 0) - dt * 6);
+    if (hedef && simdi - (rp.sonAtis || 0) >= c.baseFireDelay) {
+      rp.sonAtis = simdi;
+      rp.recoil = 1;
+      const a = Math.atan2(hedef.y - rp.y, hedef.x - rp.x);
+      game.projectiles.push({
+        x: rp.x, y: rp.y, vx: Math.cos(a) * 480, vy: Math.sin(a) * 480,
+        life: Math.min(1.5, en / 480 + 0.15), dmg: 0, charKey: rp.charKey, gorsel: true,
+      });
+    }
+  }
+}
+
+// İstemci: host'tan bir süredir görüntü gelmiyorsa uyarı
+let _beklemeAcik = false;
+function hostBeklemeGostergesi(simdi) {
+  const acik = online.mode === "client" && game.running && simdi - online.sonDurum > HOST_BEKLEME_MS;
+  if (acik === _beklemeAcik) return;
+  _beklemeAcik = acik;
+  const el = document.getElementById("bekleme");
+  if (el) el.classList.toggle("acik", acik);
+}
+
+// HUD'daki takım listesi: her oyuncunun adı ve canı (300 ms'de bir)
+let _takimZamani = 0;
+function takimCiz(simdi) {
+  const el = document.getElementById("takim");
+  if (!el) return;
+  if (!online.mode) { if (el.innerHTML) el.innerHTML = ""; return; }
+  if (simdi - _takimZamani < 300) return;
+  _takimZamani = simdi;
+  const hostUid = online.cachedRoom && online.cachedRoom.hostUid;
+  const satir = (ad, hp, maxHp, olu, host) => {
+    const can = olu ? "👻" : "❤️".repeat(Math.max(0, Math.min(hp, maxHp))) + "🖤".repeat(Math.max(0, maxHp - Math.max(0, hp)));
+    return `<div class="takim-oyuncu${olu ? " olu" : ""}"><bdi>${host ? "👑 " : ""}${escapeHtml(String(ad || "?").slice(0, 10))}</bdi> <span>${can}</span></div>`;
+  };
+  let html = satir(save.playerName || t("Avcı"), game.player.hp, game.player.maxHp, game.player.dead, hostUid === online.uid);
+  for (const [uid, rp] of Object.entries(online.remotePlayers)) html += satir(rp.name, rp.hp, rp.maxHp, rp.dead, uid === hostUid);
+  el.innerHTML = html;
 }
 
 function maybeShowUpdateNotes() {
@@ -4367,12 +4812,17 @@ function collidesLavas(x, y, r) {
   return false;
 }
 
+let _donguNo = 0; // her startGame yeni döngü açar; eski döngü kendini bitirir (iki döngü aynı anda koşmasın)
+
 function startGame() {
   showScreen("screen-game");
   setupCanvas();
 
   game.running = true;
   game.paused = false;
+  game.menude = false;   // çevrimiçi menü açık (oyun durmaz)
+  game.turBitisi = 0;    // çevrimiçi: herkes hayalet olunca turun biteceği an
+  game.inputDir.x = 0; game.inputDir.y = 0;
   game.ghosts = [];
   game.projectiles = [];
   game.enemyProjectiles = [];
@@ -4438,7 +4888,8 @@ function startGame() {
   updateHUD();
   refreshWeaponBar();
   game.lastFrame = performance.now();
-  requestAnimationFrame(gameLoop);
+  const no = ++_donguNo;
+  requestAnimationFrame((zaman) => gameLoop(zaman, no));
 }
 
 function setupCanvas() {
@@ -4450,6 +4901,8 @@ function setupCanvas() {
   }
   applyTabletClass();
   resizeCanvas();
+  if (game.canvas._boyutDinleniyor) return; // her oyunda yeniden eklenmesin
+  game.canvas._boyutDinleniyor = true;
   window.addEventListener("resize", () => {
     applyTabletClass();
     resizeCanvas();
@@ -4492,6 +4945,8 @@ function resizeCanvas() {
 function setupJoystick() {
   const stick = document.getElementById("joystick");
   const knob = document.getElementById("joystick-knob");
+  if (stick._kuruldu) return; // her oyunda yeni dinleyici eklenirse bir dokunuş N kez işlenir
+  stick._kuruldu = true;
   let touchId = null;
   let centerX = 0, centerY = 0;
   // maxR: knob'un merkezden uzaklaşabileceği max yarıçap. Joystick'in gerçek boyutuna göre dinamik.
@@ -4581,8 +5036,8 @@ function readKeyboardInput() {
 }
 
 // ====== OYUN DÖNGÜSÜ ======
-function gameLoop(now) {
-  if (!game.running) return;
+function gameLoop(now, no) {
+  if (!game.running || no !== _donguNo) return;
   const dt = Math.min(0.05, (now - game.lastFrame) / 1000);
   game.lastFrame = now;
   if (!game.paused) {
@@ -4597,8 +5052,33 @@ function gameLoop(now) {
     if (window.showErrBanner) window.showErrBanner("render@" + (e.stack || e.message));
     console.error("render", e);
   }
-  requestAnimationFrame(gameLoop);
+  requestAnimationFrame((zaman) => gameLoop(zaman, no));
 }
+
+// Hayaletin periyodik sesi (hayatta olduğu sürece): boss 3 sn, küçükler 10 sn arayla
+function hayaletSesi(g, now) {
+  if (!g.nextSound || now < g.nextSound) return;
+  if (g.isBoss) {
+    audio.bigGhost();
+    g.nextSound = now + 3000;
+  } else {
+    audio.smallGhost();
+    g.nextSound = now + 10000;
+  }
+}
+
+// Hayaletin kovalayacağı en yakın hedef (çevrimiçi oyunda her canlı oyuncu avlanır)
+function enYakinHedef(g, hedefler) {
+  let en = null, enD = Infinity;
+  for (const h of hedefler) {
+    const d = (h.x - g.x) * (h.x - g.x) + (h.y - g.y) * (h.y - g.y);
+    if (d < enD) { enD = d; en = h; }
+  }
+  return en;
+}
+
+const KASIRGA_R = 110;
+const KASIRGA_DPS = 8;
 
 function update(dt, now) {
   // Oyuncu hareketi
@@ -4606,6 +5086,7 @@ function update(dt, now) {
   let dirY = game.inputDir.y;
   const kb = readKeyboardInput();
   if (kb) { dirX = kb.x; dirY = kb.y; }
+  if (game.menude) { dirX = 0; dirY = 0; } // çevrimiçi menü açıkken oyun sürer, oyuncu durur
   const mag = Math.hypot(dirX, dirY);
   const playerFrozen = (game.player.frozenUntil || 0) > now;
   const isSpectator = !!game.player.dead;
@@ -4688,27 +5169,32 @@ function update(dt, now) {
     setTimeout(() => { if (game.running) nextLevel(); }, 1800);
   }
 
+  // Çevrimiçi: herkes hayalet olduysa tur 2,5 sn sonra biter (yazım tutmazsa 5 sn sonra yeniden denenir)
+  if (online.mode === "host") {
+    if (!herkesOlduMu()) game.turBitisi = 0;
+    else if (!game.turBitisi) game.turBitisi = now + 2500;
+    else if (now >= game.turBitisi) { game.turBitisi = now + 5000; turuBitir(); }
+  }
+
   // Hayaletler hareket eder (duvardan dolaşma mantığı ile)
   const power = getActivePower();
   const ghostMode = power && power.type === "kent"; // Kenit: hayaletler hasar veremez
   const playerInvisible = (game.player.invisibleUntil || 0) > now;
   const playerKasirga   = (game.player.kasirgaUntil   || 0) > now;
-  const KASIRGA_R = 110;
-  const KASIRGA_DPS = 8;
   // Boss minion durumu: kalan boss minion sayısı bir kere hesapla
   const bossMinionsAlive = game.ghosts.some(o => o.fromBoss);
+  // Kovalanacaklar: ben (görünmez ya da hayalet değilsem) ve çevrimiçi oyunda canlı, görünür diğer oyuncular
+  const hedefler = [];
+  if (!game.player.dead && !playerInvisible) hedefler.push({ x: game.player.x, y: game.player.y, ben: true });
+  if (online.mode === "host") {
+    for (const rp of Object.values(online.remotePlayers)) {
+      if (rp && !rp.dead && !rp.invisible && Number.isFinite(rp.x) && Number.isFinite(rp.y)) hedefler.push({ x: rp.x, y: rp.y, ben: false });
+    }
+  }
 
   for (const g of game.ghosts) {
     // Periyodik hayalet sesi (hayatta olduğu sürece)
-    if (g.nextSound && now >= g.nextSound) {
-      if (g.isBoss) {
-        audio.bigGhost();
-        g.nextSound = now + 3000;
-      } else {
-        audio.smallGhost();
-        g.nextSound = now + 10000;
-      }
-    }
+    hayaletSesi(g, now);
 
     // Boss minion state machine
     if (g.isBoss && g.minionState) {
@@ -4737,9 +5223,10 @@ function update(dt, now) {
       continue;
     }
 
-    // Görünmezlik: hayaletler oyuncuyu göremez, rastgele dolaşır
+    // En yakın hedefi kovalar; hedef yoksa (görünmezlik, herkes hayalet) rastgele dolaşır
+    const hedef = enYakinHedef(g, hedefler);
     let tx, ty;
-    if (playerInvisible) {
+    if (!hedef) {
       if (!g.wanderUntil || g.wanderUntil < now) {
         g.wanderAngle = Math.random() * Math.PI * 2;
         g.wanderUntil = now + 800 + Math.random() * 1400;
@@ -4747,7 +5234,7 @@ function update(dt, now) {
       tx = g.x + Math.cos(g.wanderAngle) * 200;
       ty = g.y + Math.sin(g.wanderAngle) * 200;
     } else {
-      tx = game.player.x; ty = game.player.y;
+      tx = hedef.x; ty = hedef.y;
     }
     const dx = tx - g.x;
     const dy = ty - g.y;
@@ -4805,14 +5292,16 @@ function update(dt, now) {
       }
     }
 
-    // Ateş edebilen hayaletler / boss
-    if (g.canShoot && (g.nextShot || 0) <= now && !playerInvisible) {
-      const dxf = game.player.x - g.x;
-      const dyf = game.player.y - g.y;
+    // Ateş edebilen hayaletler / boss: kovaladığı hedefe
+    if (g.canShoot && (g.nextShot || 0) <= now && hedef) {
+      const dxf = hedef.x - g.x;
+      const dyf = hedef.y - g.y;
       const df = Math.hypot(dxf, dyf) || 1;
-      // Sadece ekran civarında ve yeterince yakınsa ateş et
-      const onScreen = g.x > game.camera.x - 80 && g.x < game.camera.x + game.W + 80 &&
-                       g.y > game.camera.y - 80 && g.y < game.camera.y + game.H + 80;
+      // Sadece hedefin ekranı civarında ve yeterince yakınsa ateş et
+      const benimEkranimda = g.x > game.camera.x - 80 && g.x < game.camera.x + game.W + 80 &&
+                             g.y > game.camera.y - 80 && g.y < game.camera.y + game.H + 80;
+      const onScreen = hedef.ben ? benimEkranimda
+        : Math.abs(dxf) < game.W / 2 + 80 && Math.abs(dyf) < game.H / 2 + 80;
       if (onScreen && df < 700) {
         const projSpeed = g.isBoss ? 280 : 240;
         // Boss çoklu mermi (geç bölümlerde 3'lü)
@@ -4827,7 +5316,7 @@ function update(dt, now) {
             isBoss: !!g.isBoss,
           });
         }
-        audio.fire();
+        if (benimEkranimda) audio.fire();
         g.nextShot = now + (g.fireRate || 2400);
       } else {
         // Görüş yoksa kısa beklet
@@ -4859,17 +5348,6 @@ function update(dt, now) {
   }
 
   // Aktif güç efektleri (timer'lar)
-  if (power && power.type === "rani") {
-    game.healTimer = (game.healTimer || 0) + dt;
-    if (game.healTimer >= 5) {
-      game.healTimer = 0;
-      if (game.player.hp < game.player.maxHp) {
-        game.player.hp++;
-        audio.pickup();
-        showFloat("+1 ❤️", game.player.x, game.player.y - 30);
-      }
-    }
-  }
   if (power && power.type === "fanatik") {
     game.pulseTimer = (game.pulseTimer || 0) + dt;
     if (game.pulseTimer >= 0.5) {
@@ -4908,20 +5386,14 @@ function update(dt, now) {
 
   } // ========== HOST-ONLY blok bitiş ==========
 
-  // ========== CLIENT-ONLY: invuln + hayalet-temas + düşman mermisi temas + interpolation ==========
+  // ========== CLIENT-ONLY: ara değerleme + invuln + hayalet-temas + düşman mermisi temas + güç hasarları ==========
   if (online.mode === "client") {
-    // Hayaletleri target'a doğru smooth interpolate et (her frame)
+    // Host'un görüntüleri ARA_GECIKME_MS geriden ara değerlenir (sıçramasız, akıcı hareket)
     for (const g of game.ghosts) {
-      if (typeof g.targetX === "number") {
-        g.x = smoothToward(g.x, g.targetX, dt);
-        g.y = smoothToward(g.y, g.targetY, dt);
-      }
+      aradegerle(g, now);
+      hayaletSesi(g, now);
     }
-    // Düşman mermileri: hız vektörüyle her frame ilerle (görsel akış için)
-    for (const p of game.enemyProjectiles) {
-      p.x += (p.vx || 0) * dt;
-      p.y += (p.vy || 0) * dt;
-    }
+    for (const p of game.enemyProjectiles) aradegerle(p, now);
     if (game.player.invuln > 0) game.player.invuln -= dt;
     const cpower = getActivePower();
     const cghostMode = cpower && cpower.type === "kent";
@@ -4941,22 +5413,69 @@ function update(dt, now) {
         if (d < game.player.r + 7) {
           damagePlayer();
           spawnHitParticles(p.x, p.y);
+          mermiBitti(p);
           game.enemyProjectiles.splice(i, 1);
         }
       }
     }
+    // Fanatik gücü ve kasırga: hasar yarım saniyede bir host'a vuruş olarak gider
+    const fanatik = cpower && cpower.type === "fanatik";
+    const kasirga = (game.player.kasirgaUntil || 0) > now;
+    if (!game.player.dead && (fanatik || kasirga)) {
+      game.pulseTimer = (game.pulseTimer || 0) + dt;
+      if (game.pulseTimer >= 0.5) {
+        game.pulseTimer = 0;
+        let any = false;
+        for (const g of game.ghosts) {
+          const d = Math.hypot(g.x - game.player.x, g.y - game.player.y);
+          let dmg = 0;
+          if (fanatik && d < 110) dmg += game.player.damage;
+          if (kasirga && d < KASIRGA_R) dmg += KASIRGA_DPS * 0.5;
+          if (dmg > 0) { uzaktanVur(g, dmg); spawnHitParticles(g.x, g.y); any = true; }
+        }
+        if (fanatik) {
+          for (let k = 0; k < 12; k++) {
+            const a = Math.random() * Math.PI * 2;
+            const r = 60 + Math.random() * 50;
+            game.particles.push({
+              x: game.player.x + Math.cos(a) * r,
+              y: game.player.y + Math.sin(a) * r,
+              vx: Math.cos(a + Math.PI / 2) * 80, vy: Math.sin(a + Math.PI / 2) * 80,
+              life: 0.4, color: "#fde047",
+            });
+          }
+        }
+        if (any) audio.hit();
+      }
+    }
   }
 
-  // Remote oyuncular için interpolation (her modda — host da diğerlerini akıcı görsün)
-  if (online.mode) {
-    Object.keys(online.remotePlayers).forEach((uid) => {
-      const rp = online.remotePlayers[uid];
-      if (typeof rp.targetX === "number") {
-        rp.x = smoothToward(typeof rp.x === "number" ? rp.x : rp.targetX, rp.targetX, dt);
-        rp.y = smoothToward(typeof rp.y === "number" ? rp.y : rp.targetY, rp.targetY, dt);
+  // Rani gücü: 5 sn'de bir 1 can (her modda kendi canıma)
+  const raniGucu = getActivePower();
+  if (raniGucu && raniGucu.type === "rani" && !game.player.dead) {
+    game.healTimer = (game.healTimer || 0) + dt;
+    if (game.healTimer >= 5) {
+      game.healTimer = 0;
+      if (game.player.hp < game.player.maxHp) {
+        game.player.hp++;
+        audio.pickup();
+        showFloat("+1 ❤️", game.player.x, game.player.y - 30);
       }
-    });
+    }
   }
+
+  // Diğer oyuncular: ara değerleme, yürüme adımı, görüntü atışları; "Host bekleniyor" şeridi ve takım listesi
+  if (online.mode) {
+    for (const rp of Object.values(online.remotePlayers)) {
+      const ox = rp.x, oy = rp.y;
+      aradegerle(rp, now);
+      const yurudu = Number.isFinite(ox) && Math.hypot(rp.x - ox, rp.y - oy) > 20 * dt;
+      rp.yurume = (yurudu && !rp.dead) ? (rp.yurume || 0) + dt : 0;
+    }
+    uzaktakiAtislar(dt, now);
+  }
+  hostBeklemeGostergesi(now);
+  takimCiz(now);
 
   // Otomatik atış (en yakın hayalete) — güçle hızlanır (spectator atış yapamaz)
   const firePower = getActivePower();
@@ -4995,6 +5514,17 @@ function update(dt, now) {
       game.projectiles.splice(i, 1);
       continue;
     }
+    // Diğer oyuncunun atışı yalnız görüntüdür (hasarı kendi cihazı bildirir): hayalete değince söner
+    if (p.gorsel) {
+      for (const g of game.ghosts) {
+        if (Math.hypot(p.x - g.x, p.y - g.y) < g.r + 6) {
+          spawnHitParticles(p.x, p.y);
+          game.projectiles.splice(i, 1);
+          break;
+        }
+      }
+      continue;
+    }
     // Bot'a nişanlı mermi Bot'a değdi mi?
     if (p.atBot && game.bot && Math.hypot(p.x - game.bot.x, p.y - game.bot.y) < game.bot.r + 8) {
       game.projectiles.splice(i, 1);
@@ -5014,6 +5544,7 @@ function update(dt, now) {
           const sp = 60 + Math.random() * 80;
           game.particles.push({ x: ep.x, y: ep.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.3, color: ep.isBoss ? "#fb923c" : "#c4b5fd" });
         }
+        if (online.mode === "client") mermiBitti(ep);
         game.enemyProjectiles.splice(k, 1);
         game.projectiles.splice(i, 1);
         audio.hit();
@@ -5032,10 +5563,11 @@ function update(dt, now) {
         else game.projectiles.splice(i, 1);
         if (online.mode === "client") {
           // Client: host'a hit event gönder
-          online.pendingEvents.push({ type: "hit", gi: g._idx, dmg: p.dmg, by: online.uid });
+          uzaktanVur(g, p.dmg);
           audio.hit();
         } else {
           g.hp -= p.dmg;
+          g.uzakVurdu = false; // son vuruş benim: ölürse bana sayılır
           if (g.hp <= 0) {
             killGhost(g, j);
           } else {
@@ -5051,22 +5583,29 @@ function update(dt, now) {
   const pickPower = getActivePower();
   const magnetR = (pickPower && pickPower.type === "mark") ? 5000 : 80;
   const magnetSpeed = (pickPower && pickPower.type === "mark") ? 420 : 200;
+  const istemci = online.mode === "client";
   for (let i = game.pickups.length - 1; i >= 0; i--) {
     const p = game.pickups[i];
     if (p.life === undefined) p.life = (p.kind === "guc") ? 18 : 12;
-    p.life -= dt;
-    if (p.life <= 0) { game.pickups.splice(i, 1); continue; }
+    if (istemci) {
+      p.life = Math.max(0.05, p.life - dt); // ömrü host bilir: süresi dolanı host siler, burada yalnız yanıp söner
+    } else {
+      p.life -= dt;
+      if (p.life <= 0) { game.pickups.splice(i, 1); continue; }
+    }
     const d = Math.hypot(p.x - game.player.x, p.y - game.player.y);
-    if (d < magnetR) {
+    if (d < magnetR && !game.player.dead) {
       const dx = (game.player.x - p.x) / Math.max(d, 1);
       const dy = (game.player.y - p.y) / Math.max(d, 1);
       p.x += dx * magnetSpeed * dt;
       p.y += dy * magnetSpeed * dt;
+      p.cekiliyor = true;
     }
     if (!game.player.dead && d < game.player.r + 8) {
       collectPickup(p);
-      if (online.mode === "client") {
-        // Client: lokal sil + host'a sildirme event'i gönder
+      if (istemci && typeof p._idx === "number") {
+        // Client: lokal sil + host'a sildirme event'i gönder; host silene kadar yeniden görünmesin
+        online.alinanlar.add(p._idx);
         online.pendingEvents.push({ type: "pickup", pi: p._idx, by: online.uid });
       }
       game.pickups.splice(i, 1);
@@ -5132,6 +5671,7 @@ function nextLevel() {
   buildHazards();
   ensurePlayerSafe();
   spawnBot();
+  if (online.mode) yenidenDog();
   showToast(t("📚 Bölüm {n} — {tema}", { n: game.level, tema: getTheme().name }));
   // Boss bölüm seviyesine göre belli bir süre sonra
   game.bossSpawnTimer = getBossTimerForLevel(game.level);
@@ -5253,10 +5793,10 @@ function killGhost(g, idx) {
   });
   game.ghosts.splice(idx, 1);
   spawnDeathParticles(g.x, g.y);
+  const bana = !g.uzakVurdu; // son vuruş başka oyuncudansa o kendine sayar (hayaletGitti)
 
   if (g.isBoss) {
-    game.totalCaught++;
-    pgsHayalet(game.totalCaught);
+    if (bana) { game.totalCaught++; pgsHayalet(game.totalCaught); }
     game.bossDefeated = true;
     showToast(t("👑 BOSS YENİLDİ! Kalan hayaletleri temizle!"));
     audio.bossDie();
@@ -5292,8 +5832,7 @@ function killGhost(g, idx) {
   }
 
   game.ghostsCaught++;
-  game.totalCaught++;
-  pgsHayalet(game.totalCaught);
+  if (bana) { game.totalCaught++; pgsHayalet(game.totalCaught); }
   audio.kill();
 
   // Patlama gücü: çevreye AOE hasar
@@ -5652,7 +6191,7 @@ function becomeSpectator() {
   game.player.dead = true;
   game.player.hp = 0;
   game.player.invuln = 999999; // hasar almasın
-  showToast(t("👻 Hayalet oldun — diğer oyuncuları izle veya menüye dön"));
+  showToast(t("👻 Hayalet oldun! Takımın bölümü bitirince yeniden doğarsın."));
   audio.damage();
 }
 
@@ -5722,9 +6261,10 @@ function render() {
   // Diğer oyuncular (multiplayer)
   if (online.mode) {
     const rps = online.remotePlayers || {};
+    const hostUid = online.cachedRoom && online.cachedRoom.hostUid;
     Object.keys(rps).forEach((uid) => {
       const rp = rps[uid];
-      if (!rp || typeof rp.x !== "number") return;
+      if (!rp || !Number.isFinite(rp.x) || !Number.isFinite(rp.y)) return;
       ctx.save();
       if (rp.dead) {
         ctx.globalAlpha = 0.45;
@@ -5732,17 +6272,19 @@ function render() {
       } else if (rp.invisible) {
         ctx.globalAlpha = 0.4;
       }
-      drawCharacter(ctx, rp.charKey || "kinkin", rp.costumeIdx || 0, rp.x, rp.y, 70, rp.facing || 0, rp.walk || 0);
+      drawCharacter(ctx, rp.charKey || "kinkin", rp.costumeIdx || 0, rp.x, rp.y, 70, rp.facing || 0, rp.yurume || 0,
+        rp.dead ? 0 : (rp.aimRaise || 0), rp.dead ? 0 : (rp.recoil || 0));
       ctx.restore();
-      // İsim etiketi
+      // İsim etiketi (host'un adında taç)
+      const etiket = (uid === hostUid ? "👑 " : "") + (rp.name || "?");
       ctx.save();
       ctx.fillStyle = "#fde047";
       ctx.strokeStyle = "#000";
       ctx.lineWidth = 3;
       ctx.font = "bold 12px sans-serif";
       ctx.textAlign = "center";
-      ctx.strokeText(rp.name || "?", rp.x, rp.y - 50);
-      ctx.fillText(rp.name || "?", rp.x, rp.y - 50);
+      ctx.strokeText(etiket, rp.x, rp.y - 50);
+      ctx.fillText(etiket, rp.x, rp.y - 50);
       // Mini can çubuğu
       const w = 36, h = 4;
       const ratio = Math.max(0, Math.min(1, (rp.hp || 0) / (rp.maxHp || 3)));
@@ -5850,44 +6392,51 @@ function updateHUD() {
 }
 
 // ====== DURAKLAT / ÇIK ======
+// Çevrimiçi oyunda menü oyunu durdurmaz: host dursa herkesin oyunu donardı
 function pauseGame() {
   if (!game.running) return;
-  game.paused = true;
+  const cevrimici = !!online.mode;
+  game.paused = !cevrimici;
+  game.menude = cevrimici;
+  document.getElementById("pause-title").textContent = cevrimici ? t("⏸ Menü") : t("⏸ Duraklatıldı");
+  const not = document.getElementById("pause-not");
+  not.textContent = cevrimici ? t("Çevrimiçi oyun durmaz: hayaletler gelmeye devam eder.") : "";
+  not.style.display = cevrimici ? "" : "none";
+  const kod = document.getElementById("pause-kod");
+  kod.textContent = (cevrimici && online.roomId) ? t("🔑 Oda kodu: {kod}", { kod: online.roomId }) : "";
+  kod.style.display = (cevrimici && online.roomId) ? "" : "none";
   document.getElementById("screen-pause").classList.add("active");
 }
 
 function resumeGame() {
   document.getElementById("screen-pause").classList.remove("active");
   game.paused = false;
+  game.menude = false;
   game.lastFrame = performance.now();
 }
 
 function quitToMenu() {
+  // Odadaysa (oyunda ya da tur sonu ekranında) odadan çık; kazançlar kaydedilir
+  if (online.roomId) odadanCik();
   game.running = false;
+  game.menude = false;
   document.getElementById("screen-pause").classList.remove("active");
   document.getElementById("screen-gameover").classList.remove("active");
   const wb = document.getElementById("weapon-bar");
   if (wb) wb.innerHTML = "";
-  // Online ise odadan da çık + run kazançlarını save'e yaz
-  if (online.mode) {
-    flushOnlineRewards();
-    stopMpSync();
-    stopRoomListener();
-    if (online.isHost) {
-      rtdb.remove(`rooms/${online.roomId}`);
-    } else if (online.roomId) {
-      rtdb.remove(`rooms/${online.roomId}/players/${online.uid}`);
-    }
-    online.roomId = null;
-    online.isHost = false;
-    online.mode = null;
-  }
+  hostBeklemeGostergesi(0);
   goToMenu();
 }
 
 // ====== OYUN BİTTİ ======
 function endGame(won) {
+  oyunSonu(won, false);
+}
+
+// Tek kişilik oyunun sonu ya da çevrimiçi turun sonu (turSonu): kazançlar kaydedilir, sonuç ekranı açılır
+function oyunSonu(won, cevrimici) {
   game.running = false;
+  game.menude = false;
 
   // Bonus para (bölüm başı)
   const completionBonus = (game.level - 1) * 50;
@@ -5922,11 +6471,16 @@ function endGame(won) {
     rankEl.textContent = "";
   }
 
-  document.getElementById("gameover-title").textContent = won ? t("🌟 Harika!") : t("👻 Yakalandın!");
+  document.getElementById("gameover-title").textContent = cevrimici ? t("🏁 Tur bitti!") : won ? t("🌟 Harika!") : t("👻 Yakalandın!");
   document.getElementById("final-ghosts").textContent = game.totalCaught;
   document.getElementById("final-para").textContent = finalPara;
   document.getElementById("final-elmas").textContent = game.runElmas;
   document.getElementById("final-zumrut").textContent = game.runZumrut;
+  // Kazançlar kaydedildi: odadan çıkarken (flushOnlineRewards) ikinci kez eklenmesin
+  game.runPara = 0; game.runElmas = 0; game.runZumrut = 0;
+  // Çevrimiçi turdan sonra "Tekrar Oyna" tek kişilik oyun açardı: yerine lobiye dönülür
+  document.getElementById("btn-tekrar").style.display = cevrimici ? "none" : "";
+  document.getElementById("btn-lobiye-don").style.display = cevrimici ? "" : "none";
   document.getElementById("screen-gameover").classList.add("active");
   if (won) audio.win(); else audio.lose();
   reklamOyunBitti();

@@ -7,14 +7,14 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.11.0 (versionCode 41) — Play'de 3.10.2 (38) |
+| Sürüm | 3.12.0 (versionCode 42) — Play'de 3.10.2 (38); 3.11.0 (41) 22 Ekim 2026'da incelemeye gönderildi |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
 | Firebase kuralları | [`firebase/`](firebase/README.md) — RTDB + Firestore kuralları, yol yol gerekçe, emülatör testi. 3.10.2'den beri Firebase anonim giriş: oda, kodlu yedek ve skor `auth.uid`'e bağlı. 3.10.3 geçişi kapatır (girişsiz ve `u_` kimlikli yazım reddedilir) |
 | Reklam | AdMob, yalnız Android uygulaması — aşağıda "Reklamlar (AdMob)" |
 | Play Games | Play Oyun Hizmetleri v2 (3.10.4), yalnız Android — aşağıda "Google Play Oyun Hizmetleri" |
-| Play paketi | 3.10.1'den itibaren CI (`hayalet-android.yml`) derler; `dist/HayaletAvcilari-play.aab` 3.10.0 (36) olarak kaldı. Geçişi kapatan kurallar 20 Ekim 2026'da yayınlandı ([`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama)); sıradaki paket 3.11.0 (41; 3.10.4'ün Play Games'ini de içerir) |
+| Play paketi | 3.10.1'den itibaren CI (`hayalet-android.yml`) derler; `dist/HayaletAvcilari-play.aab` 3.10.0 (36) olarak kaldı. Geçişi kapatan kurallar 20 Ekim 2026'da yayınlandı ([`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama)); sıradaki paket 3.12.0 (42; çevrimiçi oyun yenilendi) |
 | Denemelik APK | `dist/HayaletAvcilari.apk` (aynı anahtarla imzalı; Play sürümü üstüne kurulmaz, önce kaldırılır) |
 
 ## Reklamlar (AdMob)
@@ -97,6 +97,57 @@ Fikirler ve çizimler bir çocuk oyuncudan geldi (defter sayfaları). `www/game.
 - Çevrimiçi oyunda Bot yoktur ve takılı silah odaya senkronlanmaz (diğer oyuncular karakterin kendi silahını görür);
   bu yüzden Firebase kuralları değişmedi. Senkrona alan eklenirse önce `firebase/database.rules.json` güncellenmeli.
 - Eski kayıtlar (kodlu/Google yedeği dahil) yeni karakter ve silah alanlarını `loadSave()` varsayılanlarıyla alır.
+
+## 3.12.0: çevrimiçi oyun yeniden yazıldı
+
+Şikâyet: "Online oyun donuyor, hiç oynanmıyor." Firebase emülatöründe iki tarayıcıyla ölçüldü (CPU 4 kat yavaş,
+60 ms gecikme, 20 sn oyun; ölçüm düzeni `test/cevrimici.test.mjs`'in öncüsü):
+
+| | 3.11.0 | 3.12.0 |
+|---|---|---|
+| Host kare hızı / %95 kare süresi | 55,7 fps / 33 ms | 59,2 fps / 17 ms |
+| Katılanın ekranında hayalet sıçraması | sn'de 6,2, ortalama 541 px | yok (en büyük adım 2–3 px) |
+| Oyun sırasında oda listesinin yeniden çizimi (katılan) | sn'de 31,5 | yok |
+| Oyun döngüsü (host) | 2 (oyun iki kez açılıyordu) | 1 |
+| Katılanın önüne konan 1 para | — | bir kez sayıldı, host'ta silindi |
+
+Nedenler ve düzeltmeler (`www/game.js` › `// ====== ONLINE / LOBİ ======`):
+
+1. **Hayaletin kimliği dizideki sırasıydı** (`state.g[].i`): bir hayalet ölünce arkasındakilerin hepsi bir öncekinin
+   yerine geçiyor, ekranda yüzlerce piksel sıçrıyordu; vuruş ve para olayları da yanlış hayalete/paraya gidebiliyordu.
+   Artık host her hayalete, paraya ve düşman mermisine kalıcı kimlik verir (`kimlik()`); alan adı aynı kaldı.
+2. **Oda listesi dinleyicisi oyun boyunca açık kalıyordu** ve bütün `rooms` düğümünü (başka odaların 10 Hz durumu
+   dahil) dinliyordu. Artık yalnız liste ekranında ve yalnız son dakikada görülen lobileri sorgular
+   (`orderByChild("lastSeen")`, kurallarda `.indexOn`); oyundaki odanın `lastSeen`'i 0'dır.
+3. **Host'ta oyun iki kez açılıyordu** (BAŞLAT ve oda dinleyicisi): iki oyun döngüsü, iki kat iş. Artık her
+   `startGame` numaralı tek döngü açar; joystick ve ekran boyutu dinleyicileri de bir kez eklenir.
+4. **Yazımlar birikiyordu:** host her 100 ms'de bütün durumu `set` ediyordu, yavaş ağda kuyruk büyüyordu. Artık bir
+   yazım bitmeden yenisi gönderilmez, durum `update` ile yazılır, paralar yalnız değişince, oyuncu kaydında yalnız
+   değişen alanlar gider; uygulama arka plandayken yazılmaz.
+5. **İstemcide hareket:** görüntüler 110 ms geriden ara değerlenir (`goruntuEkle`, `aradegerle`); yeni görüntü
+   gecikirse en çok 160 ms ileri kestirilir, 260 px'ten büyük sıçrama ışınlanır.
+6. **Oda tek dinleyiciyle izleniyordu:** her konum yazımında bütün oda (durum dahil) işleniyordu. Artık `hostUid`,
+   `status`, `players` ve (istemcide) `state` ayrı dinlenir.
+7. **Oyun bitmiyordu:** herkes hayalet olunca da oyun sürüyordu. Artık host turu bitirir (`turuBitir`, status
+   "lobby"), herkeste sonuç ekranı açılır, kazançlar ve şampiyonlar listesi yazılır, "🎮 Lobiye Dön" ile yeni tur
+   kurulur. Hayalet olan oyuncu sonraki bölümde yeniden doğar (`yenidenDog`).
+8. **Host çıkınca oda siliniyordu** (herkesin oyunu kapanıyor, kazançları gidiyordu). Artık yalnız kendi kaydı silinir,
+   en eski oyuncu host olur (`maybeBecomeNewHost`) ve hayaletlerin yapay zekâsını kurup oyunu sürdürür (`hostOl`).
+9. **Duraklat host'u dondurunca herkes donuyordu.** Çevrimiçi oyunda ⏸ menüsü oyunu durdurmaz; menüde oda kodu da
+   yazar. Host'tan 2,5 sn görüntü gelmezse katılanlarda "⏳ Host bekleniyor…" şeridi çıkar.
+10. **Lobide oda listeden 60 sn sonra kayboluyordu** (host `lastSeen` yenilemiyordu): host lobideyken 15 sn'de bir
+    yeniler; zamanlar sunucu saatidir.
+
+Yenilikler: lobide oda kodu (dokununca kopyalanır), Oda Listesi › **🔑 Kodla Katıl** (oyun sürerken de katılınır),
+hayaletler en yakın canlı oyuncuyu kovalar (eskiden yalnız host'u), istemcinin öldürdüğü hayalet ona sayılır (eskiden
+katılanın yakaladığı hep 0'dı), Rani, Fanatik ve Kasırga katılanda da çalışır, diğer oyuncuların atışları ve nişanı
+görünür, HUD'da takım listesi (ad, can, 👑 host), oyuncu gelince/gidince bildirim. Roket hedef yokken çeviri işlevini
+gölgelediği için hata veriyordu (`const t`), düzeldi; başka sürümden gelen bilinmeyen karakter çizimi çökertmez.
+
+Veri düzeni ve izinler değişmedi; kurallara yalnız `rooms/.indexOn` eklendi (yayınlanmasa da çalışır). 3.11.0 ile
+aynı odada oynanır (ayrıntı: [`firebase/README.md`](firebase/README.md) › rooms › Sürüm uyumu).
+
+Test: `cd hayalet-avcilari/firebase && npm run test:cevrimici` (emülatör + Playwright; 11 sınama).
 
 ## Diller
 

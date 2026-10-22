@@ -828,8 +828,9 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
   background: rgba(255,255,255,0.06);
   border-radius: 10px;
 }
-.lobby-player.is-host { border-left: 3px solid #fbbf24; }
-.lobby-player.is-me   { border-left: 3px solid #06b6d4; }
+.lobby-player.is-host { border-inline-start: 3px solid #fbbf24; }
+.lobby-player.is-me   { border-inline-start: 3px solid #06b6d4; }
+.lobby-player .lp-img { width: 34px; height: 38px; flex: none; background: center / contain no-repeat; }
 .lobby-player .lp-name { flex: 1; text-align: start; font-weight: 700; color: white; }
 .lobby-player .lp-tag  { font-size: 11px; color: #cbd5e1; padding: 2px 8px; background: rgba(0,0,0,0.4); border-radius: 8px; }
 .lobby-player .lp-ready { font-size: 18px; }
@@ -838,6 +839,89 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
 #lobby-ready-btn.is-ready {
   background: linear-gradient(180deg, #10b981, #059669);
 }
+
+/* Oda kodu (dokununca kopyalanır), lobi ipucu, kodla katılma */
+.oda-kodu {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin: 0 auto 4px;
+  padding: 6px 16px;
+  background: rgba(253, 224, 71, 0.12);
+  border: 2px dashed rgba(253, 224, 71, 0.6);
+  border-radius: 14px;
+  color: white;
+  font-family: inherit;
+  cursor: pointer;
+}
+.oda-kodu:active { transform: scale(0.97); }
+.oda-kodu-etiket { font-size: 12px; font-weight: 700; color: #cbd5e1; }
+.oda-kodu-deger {
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: #fde047;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+.lobby-ipucu { min-height: 18px; margin: 0 0 6px; font-size: 13px; }
+
+.kod-katil {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 340px;
+  margin: 4px auto 8px;
+}
+.kod-katil .kod-input {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 20px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.kod-katil .btn { margin: 0; padding: 12px 14px; white-space: nowrap; }
+
+/* Oyun içi: takım listesi (HUD sağı) ve "Host bekleniyor" şeridi */
+.takim { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; margin-top: 8px; } /* güç çubuğunun altında */
+.takim:empty { display: none; }
+.takim-oyuncu {
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.takim-oyuncu span { font-size: 10px; letter-spacing: -1px; }
+.takim-oyuncu.olu { opacity: 0.6; }
+
+.bekleme {
+  position: absolute;
+  top: 34%; /* HUD, güç çubuğu ve takım listesinin altında */
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  background: rgba(0,0,0,0.8);
+  border: 2px solid #fbbf24;
+  border-radius: 12px;
+  padding: 8px 14px;
+  color: #fde68a;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 11;
+}
+.bekleme.acik { display: block; animation: beklemeNabiz 1s ease-in-out infinite alternate; }
+@keyframes beklemeNabiz { from { opacity: 0.6; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .bekleme.acik { animation: none; } }
+
+.pause-kod { margin: -6px 0 12px; color: #fde047; font-size: 18px; font-weight: 800; letter-spacing: 1px; }
 
 /* ====== JOYSTICK ====== */
 .joystick {
@@ -923,6 +1007,8 @@ body.is-tablet .coin {
   padding: 8px 16px;
   border-radius: 14px;
 }
+body.is-tablet .takim-oyuncu { font-size: 15px; padding: 4px 10px; }
+body.is-tablet .takim-oyuncu span { font-size: 13px; }
 body.is-tablet .boss-status {
   font-size: 17px;
   padding: 8px 16px;

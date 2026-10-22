@@ -50,13 +50,13 @@ function yeniOda(now, host = HOST) {          // submitCreateRoom
     maxPlayers: 5, createdAt: now, lastSeen: now, players: { [host]: oyuncuGirisi(true, now) },
   };
 }
-function oyuncuAni() {                        // mpPushImpl › me
+function oyuncuAni() {                        // kaydimiGonder (3.11.0 ve öncesi: mpPushImpl › me)
   return {
     name: "Poyraz", charKey: "kinkin", costumeIdx: 2, x: 512, y: 300, facing: -1.57, hp: 3, maxHp: 3,
     walk: 0.42, invuln: false, invisible: 0, dead: 0, lastSeen: Date.now(),
   };
 }
-function hostDurumu() {                       // mpPushImpl › state
+function hostDurumu() {                       // 3.11.0 ve öncesinin host durumu (i = dizideki sıra, paralarda life)
   return {
     g: [
       { i: 0, x: 100, y: 120, hp: 2, maxHp: 3, size: 40, isBoss: 0, isShooter: 0, frozen: 0 },
@@ -71,12 +71,27 @@ function hostDurumu() {                       // mpPushImpl › state
     lvl: 3, bd: 0, bt: 12.5, lt: 0,
   };
 }
+// 3.12.0 durumuGonder: i kalıcı kimlik; patch ile yazılır, paralar (p) yalnız değişince gövdeye girer
+function kimlikliDurum(paralarla) {
+  const d = {
+    g: [
+      { i: 17, x: 100, y: 120, hp: 2, maxHp: 3, size: 40, isBoss: 0, isShooter: 0, frozen: 0 },
+      { i: 42, x: 400, y: 220, hp: 37.5, maxHp: 60, size: 95, isBoss: 1, isShooter: 0, frozen: 1 },
+    ],
+    e: [{ i: 43, x: 300, y: 310, vx: -120, vy: 45, isBoss: 1 }],
+    lvl: 3, bd: 0, bt: 12.5, lt: 0,
+  };
+  if (paralarla) d.p = [{ i: 44, x: 90, y: 80, kind: "para", value: 11 }, { i: 45, x: 99, y: 60, kind: "guc" }];
+  return d;
+}
+const SUNUCU = { ".sv": "timestamp" };         // firebase.database.ServerValue.TIMESTAMP (3.12.0 sunucuZamani)
 const olaylar = (by) => [                     // online.pendingEvents.push(...)
   { type: "areaDmg", x: 200, y: 210, r: 150, dmg: 10, by },
   { type: "freezeAll", duration: 5000, by },
   { type: "hit", gi: 0, dmg: 3, by },
   { type: "rocketShot", x: 220, y: 230, gi: 1, by },
   { type: "pickup", pi: 1, by },
+  { type: "mermi", gi: 43, by },              // 3.12.0: istemci düşman mermisini vurdu ya da mermi ona çarptı
 ];
 
 // Kuralsız kurulum: host'un odası, istenirse ek oyuncular ve bir bekleyen olay
@@ -101,9 +116,9 @@ async function odaAkisi(h, k, hostUid, konukUid) {
   await assertSucceeds(k.ref(`rooms/${ODA}/players/${konukUid}`).onDisconnect().remove());
   await assertSucceeds(k.ref(`rooms/${ODA}/players/${konukUid}`).update({ ready: true, lastSeen: now })); // toggleReady
   await assertSucceeds(h.ref(`rooms/${ODA}`).update({ status: "playing", lastSeen: now }));          // startMpGame
-  await assertSucceeds(h.ref(`rooms/${ODA}/state`).set(null));                     // startMpGameClient (host)
+  await assertSucceeds(h.ref(`rooms/${ODA}/state`).set(null));                     // startMpGame (3.11.0: startMpGameClient)
   await assertSucceeds(h.ref(`rooms/${ODA}/events`).set(null));
-  await assertSucceeds(h.ref(`rooms/${ODA}/players/${hostUid}`).update(oyuncuAni())); // mpPush
+  await assertSucceeds(h.ref(`rooms/${ODA}/players/${hostUid}`).update(oyuncuAni())); // mpPush › kaydimiGonder
   await assertSucceeds(k.ref(`rooms/${ODA}/players/${konukUid}`).update(oyuncuAni()));
   await assertSucceeds(h.ref(`rooms/${ODA}/state`).set(hostDurumu()));
   await assertSucceeds(h.ref(`rooms/${ODA}/state`).set({ g: [], p: [], e: [], lvl: 1, bd: 0, bt: 0, lt: 1 }));
@@ -112,14 +127,57 @@ async function odaAkisi(h, k, hostUid, konukUid) {
     await assertSucceeds(ref.set(ev));
     await assertSucceeds(h.ref(`rooms/${ODA}/events/${ref.key}`).remove());       // host: snap.ref.remove()
   }
-  await assertSucceeds(k.ref(`rooms/${ODA}/players/${konukUid}`).remove());        // leaveRoom (konuk)
-  await assertSucceeds(h.ref(`rooms/${ODA}`).remove());                           // leaveRoom (host)
+  await assertSucceeds(k.ref(`rooms/${ODA}/players/${konukUid}`).remove());        // odadanCik (konuk)
+  await assertSucceeds(h.ref(`rooms/${ODA}`).remove());                           // odadanCik (host tek başına)
   await assertSucceeds(k.ref(`rooms/${ODA}/players/${konukUid}`).remove());        // oda zaten silinmişken çıkış
 }
 
 describe("rooms — girişli oda (3.10.2, anonim giriş)", () => {
   test("oda kur, listele, katıl, hazır ol, başlat, oyna, çık", async () => {
     await odaAkisi(anonim(HOST), anonim(KONUK), HOST, KONUK);
+  });
+
+  test("3.12.0: sunucu saati, liste sorgusu, kodla ara katılma, kimlikli durum, tur sonu, host devri", async () => {
+    const UCUNCU = "Uc7pQ1wE4rT8yU2iO5pA3sD6fG9h";
+    const h = anonim(HOST), k = anonim(KONUK), u = anonim(UCUNCU);
+    const giris = (ready) => ({ ...oyuncuGirisi(ready, 0), joinedAt: SUNUCU, lastSeen: SUNUCU }); // makePlayerEntry
+    await assertSucceeds(h.ref(`rooms/${ODA}`).set({                                // submitCreateRoom
+      ...yeniOda(0, HOST), createdAt: SUNUCU, lastSeen: SUNUCU, players: { [HOST]: giris(true) },
+    }));
+    await assertSucceeds(h.ref(`rooms/${ODA}`).update({ lastSeen: SUNUCU }));       // odaNabziniBaslat (host lobide)
+    const liste = await assertSucceeds(k.ref("rooms").orderByChild("lastSeen").startAt(Date.now() - 60000).limitToLast(40).get());
+    if (!liste.child(ODA).exists()) throw new Error("lobideki oda liste sorgusunda yok");    // odaListesiniDinle
+    await assertSucceeds(k.ref(`rooms/${ODA}/players/${KONUK}`).set(giris(false))); // joinRoom
+    await assertSucceeds(k.ref(`rooms/${ODA}`).update({ lastSeen: SUNUCU }));
+    await assertSucceeds(k.ref(`rooms/${ODA}/players/${KONUK}`).update({ ready: true, lastSeen: SUNUCU })); // toggleReady
+    await assertSucceeds(h.ref(`rooms/${ODA}/state`).set(null));                    // startMpGame
+    await assertSucceeds(h.ref(`rooms/${ODA}/events`).set(null));
+    await assertSucceeds(h.ref(`rooms/${ODA}`).update({ status: "playing", lastSeen: 0 })); // oyundaki oda listeye girmez
+    const oyunda = await assertSucceeds(k.ref("rooms").orderByChild("lastSeen").startAt(Date.now() - 60000).get());
+    if (oyunda.child(ODA).exists()) throw new Error("oyundaki oda listede görünüyor");
+    await assertSucceeds(u.ref(`rooms/${ODA}`).get());                              // kodlaKatil › joinRoom (oyun sürerken)
+    await assertSucceeds(u.ref(`rooms/${ODA}/players/${UCUNCU}`).set(giris(true)));
+    await assertSucceeds(h.ref(`rooms/${ODA}/state`).update(kimlikliDurum(true)));  // durumuGonder
+    await assertSucceeds(h.ref(`rooms/${ODA}/state`).update(kimlikliDurum(false))); // paralar değişmedi
+    await assertSucceeds(k.ref(`rooms/${ODA}/players/${KONUK}`).update({ x: 640, y: 388, walk: 0.3 })); // yalnız değişen alanlar
+    await assertSucceeds(k.ref(`rooms/${ODA}/players/${KONUK}`).update({ dead: 1, hp: 0, lastSeen: SUNUCU }));
+    await assertSucceeds(k.ref(`rooms/${ODA}/events`).push().set({ type: "mermi", gi: 43, by: KONUK }));
+    await assertFails(k.ref(`rooms/${ODA}/state`).update(kimlikliDurum(false)));    // durumu yalnız host yazar
+    await assertFails(k.ref(`rooms/${ODA}`).update({ status: "lobby", lastSeen: SUNUCU })); // turu yalnız host bitirir
+    await assertFails(k.ref(`rooms/${ODA}/events`).push().set({ type: "mermi", gi: 43, by: HOST }));
+    await assertFails(k.ref(`rooms/${ODA}/state/g/0`).update({ i: 17, x: 1, y: 1, kimlik: 9 }));
+    await assertSucceeds(h.ref(`rooms/${ODA}`).update({ status: "lobby", lastSeen: SUNUCU })); // turuBitir
+    await assertSucceeds(h.ref(`rooms/${ODA}/state`).set(null));
+    await assertSucceeds(h.ref(`rooms/${ODA}/events`).set(null));
+    for (const [db, uid] of [[h, HOST], [k, KONUK], [u, UCUNCU]]) {                  // turSonu
+      await assertSucceeds(db.ref(`rooms/${ODA}/players/${uid}`).update({ ready: uid === HOST, dead: 0, hp: 3, maxHp: 3, lastSeen: SUNUCU }));
+    }
+    await assertSucceeds(h.ref(`rooms/${ODA}/players/${HOST}`).remove());           // odadanCik: başkası varken yalnız kaydı
+    await assertSucceeds(k.ref(`rooms/${ODA}`).update({ hostUid: KONUK, hostName: "Ayşe" })); // maybeBecomeNewHost
+    await assertSucceeds(k.ref(`rooms/${ODA}`).update({ status: "playing", lastSeen: 0 }));
+    await assertSucceeds(k.ref(`rooms/${ODA}/state`).update(kimlikliDurum(true)));
+    await assertFails(u.ref(`rooms/${ODA}`).update({ hostUid: UCUNCU, hostName: "Üç" })); // yeni host odada
+    await assertFails(h.ref(`rooms/${ODA}/state`).update(kimlikliDurum(false)));    // eski host artık yazamaz
   });
 
   test("host ayrılınca en eski oyuncu host olur ve odayı yönetir", async () => {

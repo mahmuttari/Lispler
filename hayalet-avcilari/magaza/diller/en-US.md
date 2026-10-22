@@ -38,7 +38,7 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 
 ## Sürüm notu
 
-👧 New characters: Silsen throws flower balls, Serçin throws feathers — in the Characters menu.
-🎒 Inventory: buy 5 new weapons in Shop › 🔫 Weapons and switch them in game with the 🎒 button; your character's own weapon stays in the inventory.
-🤖 Bot: fights by your side in single player. Tap it to shoot at it; when it's defeated, 1 heart pops out.
-🎮 Google Play Games: your score goes to the Play Games leaderboard and you can unlock 5 achievements (Champions screen).
+🌐 Online play is rebuilt: no more freezing or ghosts jumping around — everyone moves smoothly.
+🔑 Tell your friend the room code from the lobby: they join with Room List › Join with Code, even mid-game.
+👻 Ghosts now chase everyone, and the ghosts you hit count for you. A friend who became a ghost comes back on the next level.
+🏁 When everyone is a ghost, the round ends, rewards are saved and you go back to the lobby. If the host leaves, the game keeps going.

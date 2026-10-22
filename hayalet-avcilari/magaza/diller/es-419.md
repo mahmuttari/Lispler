@@ -38,7 +38,7 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 ## Sürüm notu
 
-👧 Nuevos personajes: Silsen lanza bolas de flores y Serçin lanza plumas — en el menú Personajes.
-🎒 Inventario: compra 5 armas nuevas en Tienda › 🔫 Armas y cámbialas en el juego con el botón 🎒; el arma propia del personaje se queda en el inventario.
-🤖 Bot: lucha a tu lado cuando juegas solo. Si lo tocas, le disparas; cuando cae, suelta 1 corazón.
-🎮 Google Play Games: tu puntuación va a la clasificación de Play Games y puedes desbloquear 5 logros (pantalla Campeones).
+🌐 El juego en línea se renovó: ya no se congela ni los fantasmas saltan; todos se mueven con fluidez.
+🔑 Dile a tu amigo el código de la sala de espera: entra con Lista de salas › Unirse con código, incluso en plena partida.
+👻 Ahora los fantasmas persiguen a todos y los que golpeas cuentan para ti. Si un amigo es fantasma, vuelve en el siguiente nivel.
+🏁 Si todos son fantasmas, termina la ronda, se guardan las ganancias y vuelven a la sala de espera. Si el anfitrión se va, la partida sigue.

@@ -38,4 +38,7 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 
 ## Sürüm notu
 
-Google Play Games is here: your score goes to the Play Games leaderboard and you can unlock 5 achievements (Champions screen). Online rooms, code backups and the champions list are now always protected by your player ID; if the game can't connect, it tells you so.
+👧 New characters: Silsen throws flower balls, Serçin throws feathers — in the Characters menu.
+🎒 Inventory: buy 5 new weapons in Shop › 🔫 Weapons and switch them in game with the 🎒 button; your character's own weapon stays in the inventory.
+🤖 Bot: fights by your side in single player. Tap it to shoot at it; when it's defeated, 1 heart pops out.
+🎮 Google Play Games: your score goes to the Play Games leaderboard and you can unlock 5 achievements (Champions screen).

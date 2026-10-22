@@ -38,4 +38,7 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 ## Sürüm notu
 
-Llega Google Play Games: tu puntuación va a la clasificación de Play Games y puedes desbloquear 5 logros (pantalla Campeones). Las salas en línea, la copia con código y la lista de campeones ahora siempre están protegidas por tu ID de jugador; si el juego no puede conectarse, te avisa.
+👧 Nuevos personajes: Silsen lanza bolas de flores y Serçin lanza plumas — en el menú Personajes.
+🎒 Inventario: compra 5 armas nuevas en Tienda › 🔫 Armas y cámbialas en el juego con el botón 🎒; el arma propia del personaje se queda en el inventario.
+🤖 Bot: lucha a tu lado cuando juegas solo. Si lo tocas, le disparas; cuando cae, suelta 1 corazón.
+🎮 Google Play Games: tu puntuación va a la clasificación de Play Games y puedes desbloquear 5 logros (pantalla Campeones).

@@ -11,10 +11,12 @@
 # 2026-10-20 durum: uygulama Console'da oluşturuldu, 3.10.0 (36) taslağı elle yüklendi, hizmet hesabı izinli.
 # 2026-10-20: ilk deneme edits:commit'te 403 verdi (hizmet hesabında "Taslak uygulamaları düzenleme ve silme" yoktu; eklendi).
 # istek 2026-10-20T04:23:21Z: mağaza metni + görseller (7 dil), 3.10.2 (38) üretim kanalına TASLAK (kullanıcı onayıyla)
-durum
-magaza uygula
-gorsel uygula
-yukle uygula
+# (yapıldı) durum
+# (yapıldı) magaza uygula
+# (yapıldı) gorsel uygula
+# (yapıldı) yukle uygula
 
 # istek 2026-10-22T05:25:18Z: salt okuma durum (kullanıcı "izin verildi" dedi; 20 Ekim koşusu 8 sonrası Play'in güncel hali)
-durum
+# (yapıldı) durum
+# 2026-10-22 durum: üretimde 3.10.2 (38) "completed"; 7 dilde mağaza metni ve görseller yerinde. Sıradaki paket 3.11.0 (41).
+# Yeni istek: yalnız çalıştırılacak komutları yazın; eski satırları "# (yapıldı)" ile kapatın (her push dosyadaki bütün etkin satırları çalıştırır).

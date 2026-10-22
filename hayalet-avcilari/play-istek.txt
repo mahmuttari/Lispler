@@ -15,3 +15,6 @@ durum
 magaza uygula
 gorsel uygula
 yukle uygula
+
+# istek 2026-10-22T05:25:18Z: salt okuma durum (kullanıcı "izin verildi" dedi; 20 Ekim koşusu 8 sonrası Play'in güncel hali)
+durum

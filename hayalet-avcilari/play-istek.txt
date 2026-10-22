@@ -22,3 +22,5 @@
 # Yeni istek: yalnız çalıştırılacak komutları yazın; eski satırları "# (yapıldı)" ile kapatın (her push dosyadaki bütün etkin satırları çalıştırır).
 # istek 2026-10-22T05:38:34Z: 3.11.0 (41) üretime yükle ve incelemeye gönder (kullanıcının açık onayıyla: "evet", "incelemeye de gönder")
 # (yapıldı 2026-10-22, koşu 39729190954: AAB 41 yüklendi, üretim → 3.11.0 (41) completed) yukle yayinla uygula
+# istek 2026-10-22T19:08:58Z: 3.12.0 (42) üretime yükle ve incelemeye gönder (kullanıcının açık onayıyla: "Derle ve yayınla poyraz workshop da", "Poyraz da güncellenecek zaten yayında"); AAB: hayalet-android koşusu 39836917452 (bu dal, commit 2841a11, versionCode 42, Poyraz Workshop yükleme anahtarı)
+yukle yayinla uygula

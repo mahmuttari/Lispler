@@ -127,6 +127,18 @@ const akis = (s, ms) => s.p.evaluate((ms) => new Promise((tamam) => {
   requestAnimationFrame(d);
 }), ms);
 
+// 3.13.0: oyun arkadaş dinleyicileri açıkken ölçülür. Herkes sahip yetkisiyle birbirinin arkadaşı yapılır; her sayfa
+// diğerlerinin çevrimiçi durumunu (presence) görene kadar beklenir. Dönen dizi: sayfa başına "hepsini görüyor".
+async function hepsiArkadas(sayfalar) {
+  for (const s of sayfalar) await s.p.waitForFunction(() => typeof sosyal !== 'undefined' && sosyal.hazir && !!sosyal.uid, null, { timeout: 20000 });
+  const kim = await Promise.all(sayfalar.map((s) => s.p.evaluate(() => ({ uid: sosyal.uid, ad: save.playerName }))));
+  const yollar = {};
+  for (const a of kim) for (const k of kim) if (a.uid !== k.uid) yollar[`users/${a.uid}/friends/${k.uid}`] = { name: k.ad, at: Date.now() - 1000 };
+  const r = await fetch(`http://${DB}/.json?ns=${NS}`, { method: 'PATCH', headers: { Authorization: 'Bearer owner' }, body: JSON.stringify(yollar) });
+  assert.equal(r.status, 200, `arkadaşlıklar yazılamadı: ${await r.text()}`);
+  return Promise.all(sayfalar.map((s) => s.p.waitForFunction((n) => Object.keys(sosyal.durumlar).length >= n, kim.length - 1, { timeout: 20000 }).then(() => true, () => false)));
+}
+
 const sonuclar = [];
 function sina(ad, fn) {
   try { fn(); sonuclar.push(`✓ ${ad}`); } catch (e) { sonuclar.push(`✗ ${ad}: ${e.message.split('\n')[0]}`); }
@@ -141,6 +153,10 @@ try {
   for (const ad of ['Can', 'Deniz', 'Ece', 'Fırat']) D.push(await sayfaAc(b, ad, false));
   hepsi.push(H, K, ...D);
   const konuklar = [K, ...D];
+
+  // Arkadaş dinleyicileri açık: altısı birbirinin arkadaşı (her sayfada 5 durum dinleyicisi)
+  const gorenler = await hepsiArkadas(hepsi);
+  sina('arkadaş dinleyicileri açık (her oyuncu diğer beşinin çevrimiçi durumunu görüyor)', () => { assert.deepEqual(gorenler, hepsi.map(() => true)); });
 
   // 0) Kurallar konsolda henüz yayınlanmamışsa (en çok 5 kişi) Oda Kur yine çalışır: oda 5 kişilik kurulur
   await kurallariYukle(ESKI_KURALLAR);

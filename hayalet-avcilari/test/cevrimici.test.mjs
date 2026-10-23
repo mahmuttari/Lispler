@@ -3,7 +3,8 @@
 // üçüncü oyuncu oyun sürerken kodla katılır. Sınananlar:
 //   oda listesi dinleyicisi lobide kapanır · oyun her cihazda bir kez açılır (tek döngü) · istemcide hayalet sıçramaz
 //   · para bir kez alınır · hayaletler konuğu da kovalar · herkes hayalet olunca tur biter, lobiye dönülür, yeni tur
-//   başlar · host ayrılınca oda kapanmaz, en eski oyuncu host olur ve oyun sürer.
+//   başlar · host ayrılınca oda kapanmaz, en eski oyuncu host olur ve oyun sürer. 3.13.0'dan beri ölçümler arkadaş
+//   dinleyicileri açıkken (üçü karşılıklı arkadaş) alınır.
 // Çalıştırma (Java 21, Playwright + Chromium gerekir):
 //   cd hayalet-avcilari/firebase && npm ci && npm run test:cevrimici
 // Emülatör zaten açıksa: node hayalet-avcilari/test/cevrimici.test.mjs
@@ -95,6 +96,18 @@ const dolas = (faz) => {
 };
 const bekle = (s, fn, arg, ms = 15000) => s.p.waitForFunction(fn, arg, { timeout: ms });
 
+// 3.13.0: oyun arkadaş dinleyicileri açıkken ölçülür. Herkes sahip yetkisiyle birbirinin arkadaşı yapılır; her sayfa
+// diğerlerinin çevrimiçi durumunu (presence) görene kadar beklenir. Dönen dizi: sayfa başına "hepsini görüyor".
+async function hepsiArkadas(sayfalar) {
+  for (const s of sayfalar) await s.p.waitForFunction(() => typeof sosyal !== 'undefined' && sosyal.hazir && !!sosyal.uid, null, { timeout: 20000 });
+  const kim = await Promise.all(sayfalar.map((s) => s.p.evaluate(() => ({ uid: sosyal.uid, ad: save.playerName }))));
+  const yollar = {};
+  for (const a of kim) for (const k of kim) if (a.uid !== k.uid) yollar[`users/${a.uid}/friends/${k.uid}`] = { name: k.ad, at: Date.now() - 1000 };
+  const r = await fetch(`http://${DB}/.json?ns=${NS}`, { method: 'PATCH', headers: { Authorization: 'Bearer owner' }, body: JSON.stringify(yollar) });
+  assert.equal(r.status, 200, `arkadaşlıklar yazılamadı: ${await r.text()}`);
+  return Promise.all(sayfalar.map((s) => s.p.waitForFunction((n) => Object.keys(sosyal.durumlar).length >= n, kim.length - 1, { timeout: 20000 }).then(() => true, () => false)));
+}
+
 const sonuclar = [];
 function sina(ad, fn) {
   try { fn(); sonuclar.push(`✓ ${ad}`); } catch (e) { sonuclar.push(`✗ ${ad}: ${e.message.split('\n')[0]}`); }
@@ -112,6 +125,10 @@ try {
     await cdp.send('Network.enable');
     await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 40, downloadThroughput: 2_000_000, uploadThroughput: 750_000 });
   }
+
+  // 0) Arkadaş dinleyicileri açık: üçü birbirinin arkadaşı, her biri ötekilerin çevrimiçi durumunu görüyor
+  const gorenler = await hepsiArkadas([H, K, U]);
+  sina('arkadaş dinleyicileri açık (her oyuncu diğerlerinin çevrimiçi durumunu görüyor)', () => { assert.deepEqual(gorenler, [true, true, true]); });
 
   // 1) Oda kurulur; konuk listeden katılır; liste dinleyicisi lobide kapanır
   await H.p.evaluate(async () => { await openOnline(); openCreateRoom(); await submitCreateRoom(); });

@@ -2,6 +2,8 @@
 // Firebase emülatöründe (RTDB 9000 + Auth 9099) tarayıcı bağlamları: Ayşe, Bora, Cem (+ adsız oyuncu, kuralsız oyuncu).
 // Veri katmanı (www/arkadaslar.js): kod, kod çakışması, istek, kabul, karşılıklı istek, çıkar, engel, davet, adsız
 // oyuncu, çevrimdışı, hesap verisinin silinmesi, kurallar yüklenmemişken.
+// Arkadaşlar ekranı: menüdeki 👫 rozeti, kod kartı, Google satırı, kutudan ekleme, ekrandan kabul, adında HTML ya da
+// bilinmeyen karakter anahtarı olan arkadaş, kurallar yokken uyarı.
 // Çalıştırma (Java 21, Playwright + Chromium gerekir):
 //   cd hayalet-avcilari/firebase && npm ci && npm run test:arkadas
 // Emülatör zaten açıksa: node hayalet-avcilari/test/arkadas.test.mjs
@@ -208,6 +210,70 @@ try {
     assert.equal(cevrimdisi, 'hata');
     assert.ok(sure < 11000, `${sure} ms`);
     assert.equal(kuyruktan, null);
+  });
+
+  // 10b) Arkadaşlar ekranı ve menü düğmesi: rozet, kod, Google satırı; kutudan ekleme; ekrandan kabul
+  await C.p.evaluate((k) => kodlaArkadasEkle(k), kodA);                       // Cem → Ayşe: rozet için bekleyen istek
+  await A.p.evaluate(() => goToMenu());
+  const rozet = await bekle(A, () => document.getElementById('menu-arkadas-rozet').textContent === '1', null, 5000);
+  await A.p.evaluate(() => openFriends());
+  const ekranKod = await A.p.evaluate(() => document.getElementById('arkadas-kod').textContent);
+  const google = await A.p.evaluate(() => { const g = document.getElementById('arkadas-google'); return !!g && g.offsetParent !== null; });
+  sina(`menüde 👫 rozeti 1, Arkadaşlar ekranında kod ${ekranKod}, anonim oyuncuya Google satırı`, () => {
+    assert.ok(rozet, 'rozet 1 değil');
+    assert.equal(ekranKod, '#' + kodA);
+    assert.ok(google, 'Google satırı görünmüyor');
+  });
+  await B.p.evaluate(() => openFriends());
+  await B.p.evaluate((k) => { document.getElementById('arkadas-kod-girdi').value = '#' + k.toLowerCase(); return friendsAddFromInput(); }, kodC);
+  const toastB = await B.p.evaluate(() => document.getElementById('toast').textContent);
+  await C.p.evaluate(() => openFriends());
+  const dugme = await bekle(C, (u) => !!document.querySelector(`#arkadas-istekler [data-uid="${u}"] .arkadas-kabul`), bora, 5000);
+  if (dugme) await C.p.evaluate((u) => document.querySelector(`#arkadas-istekler [data-uid="${u}"] .arkadas-kabul`).click(), bora);
+  const ekrandanKabul = await bekle(C, (u) => !!sosyal.arkadaslar[u], bora, 5000) && await bekle(B, (u) => !!sosyal.arkadaslar[u], cem, 5000);
+  const toastC = await C.p.evaluate(() => document.getElementById('toast').textContent);
+  sina(`kutudan ekleme ("${toastB}") ve ekrandan kabul ("${toastC}")`, () => {
+    assert.equal(toastB, '📨 İstek gönderildi: Cem');
+    assert.ok(dugme, 'Cem\'in ekranında Bora\'nın isteği yok');
+    assert.ok(ekrandanKabul, 'ekrandan kabulle arkadaş olmadılar');
+    assert.equal(toastC, '👫 Artık arkadaşsınız: Bora');
+  });
+  // Adında HTML olan arkadaş düz metin görünür (Review Focus 2)
+  const KOTU = '<img src=x onerror=alert(1)>';
+  let uyariCikti = false;
+  C.p.on('dialog', (d) => { uyariCikti = true; d.dismiss().catch(() => {}); });
+  await B.p.evaluate((ad) => { save.playerName = ad; durumumuYaz(); }, KOTU);
+  const duzMetin = await bekle(C, ([u, ad]) => {
+    const e = document.querySelector(`#arkadas-liste [data-uid="${u}"] .arkadas-ad`);
+    return !!e && e.textContent === ad;
+  }, [bora, KOTU], 5000);
+  const imgYok = await C.p.evaluate(() => document.querySelectorAll('#screen-friends img').length === 0);
+  await B.p.evaluate(() => { save.playerName = 'Bora'; durumumuYaz(); });
+  sina('adında HTML olan arkadaş listede düz metin görünür', () => {
+    assert.ok(duzMetin, 'ad düz metin olarak görünmedi');
+    assert.ok(imgYok, 'img öğesi oluştu');
+    assert.equal(uyariCikti, false);
+  });
+  // Bozuk karakter anahtarı ("constructor" CHARACTERS'ta kalıtımla bulunur, drawCharacter'ı çökertir): satır yine çizilir
+  await sahip(`presence/${bora}`, { method: 'PATCH', body: JSON.stringify({ charKey: 'constructor', name: 'Bora2' }) });
+  const bozukKarakter = await bekle(C, (u) => {
+    const e = document.querySelector(`#arkadas-liste [data-uid="${u}"] .arkadas-ad`);
+    return !!e && e.textContent === 'Bora2';
+  }, bora, 5000);
+  await B.p.evaluate(() => durumumuYaz());
+  sina('bilinmeyen karakter anahtarlı arkadaş listede çizilir', () => { assert.ok(bozukKarakter, 'liste yeniden çizilmedi'); });
+  // Kurallar yokken ya da bağlanılamazken: uyarı görünür, kod kutusu pasif
+  const izinEkrani = await A.p.evaluate(() => {
+    sosyal.hata = 'izin'; renderFriends();
+    const u = document.getElementById('arkadas-uyari');
+    const r = { gorunur: !!u && u.offsetParent !== null, metin: u && u.textContent, pasif: document.getElementById('arkadas-kod-girdi').disabled };
+    sosyal.hata = null; renderFriends();
+    return r;
+  });
+  sina('kurallar yokken ekranda uyarı, kod kutusu pasif', () => {
+    assert.ok(izinEkrani.gorunur, 'uyarı görünmüyor');
+    assert.equal(izinEkrani.metin, '⚠ Arkadaşlar şu an kullanılamıyor');
+    assert.ok(izinEkrani.pasif, 'kod kutusu pasif değil');
   });
 
   // 11) Hesap verisinin silinmesi: Ayşe'nin listesinden çıkar, kendi düğümü ve kodu silinir

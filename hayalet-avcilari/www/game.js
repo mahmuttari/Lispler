@@ -4351,6 +4351,7 @@ function refreshMenu() {
   const stats = computeStats(charKey);
   document.getElementById("character-stats").textContent =
     t("🏃 Hız {hiz} · 💥 Hasar {hasar} · 🎯 Menzil {menzil}", { hiz: stats.speed.toFixed(1), hasar: stats.damage, menzil: Math.round(stats.range) });
+  rozetiGuncelle(); // 👫 düğmesindeki istek + davet sayısı (arkadaslar.js)
 }
 
 function refreshCharacters() {

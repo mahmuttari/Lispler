@@ -50,6 +50,15 @@ try {
         online: () => { closeSoundSettings(); openOnline(); },
         oda_kur: () => openCreateRoom(),
         oda_listesi: () => { openRoomList(); renderRoomList(null); },
+        arkadaslar: () => { // 3.13.0: dolu arkadaş ekranı (adlarda Türkçe harf yok)
+          listeyiKapat();
+          Object.assign(sosyal, { uid: 'u1', kod: 'K7MP2Q', hazir: true, hata: null,
+            istekler: { u5: { name: 'Mila', at: 1 } },
+            arkadaslar: { u2: { name: 'Can', at: 1 }, u3: { name: 'Deniz', at: 1 }, u4: { name: 'Ece', at: 1 } },
+            durumlar: { u2: { name: 'Can', charKey: 'kornet', costumeIdx: 0, state: 'on', at: 1 }, u3: { name: 'Deniz', charKey: 'mark', costumeIdx: 0, state: 'room', at: 1 } },
+            gonderilen: { u6: { name: 'Omer', at: 1 } }, engeller: { u7: { name: 'Zed', at: 1 } } });
+          openFriends();
+        },
         lobi: () => { // 3.12.2: dolu 6 kişilik oda
           listeyiKapat();
           const players = {};

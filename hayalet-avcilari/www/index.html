@@ -66,7 +66,10 @@
       <button class="btn" onclick="openCharacters()">👥 Karakterler</button>
       <button class="btn" onclick="openShop()">🛒 Mağaza</button>
       <button class="btn" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
-      <button class="btn btn-online" onclick="openOnline()">🌐 Online Oyna</button>
+      <div class="menu-satir">
+        <button class="btn btn-online" onclick="openOnline()">🌐 Online Oyna</button>
+        <button id="menu-arkadas" class="btn btn-kare" aria-label="Arkadaşlar" onclick="openFriends()">👫<span id="menu-arkadas-rozet" class="rozet" style="display:none"></span></button>
+      </div>
     </div>
     <div class="menu-footer-row">
       <button class="btn btn-small" onclick="openAccount()">👤 Hesap</button>
@@ -292,7 +295,48 @@
     <p class="online-sub">Diğer avcılarla birlikte oyna</p>
     <button class="btn btn-big btn-play" onclick="openRoomList()">📋 Oda Listesi</button>
     <button class="btn btn-big" onclick="openCreateRoom()">➕ Oda Kur</button>
+    <button class="btn btn-big" onclick="openFriends()">👫 Arkadaşlar</button>
     <p class="online-status" id="online-status"></p>
+    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+  </div>
+</div>
+
+<!-- ========== ARKADAŞLAR (arkadaslar.js) ========== -->
+<div id="screen-friends" class="screen">
+  <div class="menu-bg"></div>
+  <div class="menu-content arkadas-ekran">
+    <h2>👫 ARKADAŞLAR</h2>
+    <p id="arkadas-uyari" class="online-status arkadas-uyari" style="display:none"></p>
+    <div class="arkadas-kod-satir">
+      <button id="arkadas-kod-kart" class="oda-kodu" onclick="arkadasKodunuKopyala()">
+        <span class="oda-kodu-etiket">Kodun:</span>
+        <b id="arkadas-kod" class="oda-kodu-deger">#······</b>
+        <span aria-hidden="true">📋</span>
+      </button>
+      <button id="arkadas-kod-yenile" class="btn-tiny arkadas-yenile" onclick="koduYenileOnayla()">🔄</button>
+    </div>
+    <p class="online-sub arkadas-ipucu">Arkadaşına bu kodu ver. Yedek kodunu (Hesap) kimseyle paylaşma.</p>
+    <div class="kod-katil">
+      <input id="arkadas-kod-girdi" class="name-input kod-input" type="text" maxlength="8" placeholder="#______" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button id="arkadas-ekle-btn" class="btn btn-play" onclick="friendsAddFromInput()">➕ Ekle</button>
+    </div>
+    <div id="arkadas-istekler-kutu" class="arkadas-bolum" style="display:none">
+      <h3 id="arkadas-istekler-baslik" class="arkadas-baslik"></h3>
+      <div id="arkadas-istekler" class="arkadas-liste"></div>
+    </div>
+    <div class="arkadas-bolum">
+      <h3 id="arkadas-liste-baslik" class="arkadas-baslik"></h3>
+      <div id="arkadas-liste" class="arkadas-liste"></div>
+    </div>
+    <details id="arkadas-gonderilen-kutu" class="arkadas-bolum" style="display:none">
+      <summary id="arkadas-gonderilen-baslik" class="arkadas-baslik"></summary>
+      <div id="arkadas-gonderilen" class="arkadas-liste"></div>
+    </details>
+    <details id="arkadas-engellenen-kutu" class="arkadas-bolum" style="display:none">
+      <summary id="arkadas-engellenen-baslik" class="arkadas-baslik"></summary>
+      <div id="arkadas-engellenen" class="arkadas-liste"></div>
+    </details>
+    <button id="arkadas-google" class="btn btn-small arkadas-google" onclick="openAccount()" style="display:none">🔐 Arkadaşların kaybolmasın: Google ile giriş yap ›</button>
     <button class="btn" onclick="goToMenu()">⬅ Geri</button>
   </div>
 </div>

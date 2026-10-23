@@ -101,7 +101,8 @@ async function sosyalKur() {
   const u = typeof fbKullaniciBekle === "function" ? await fbKullaniciBekle(SOSYAL.ZAMAN_ASIMI_MS) : null;
   const db = sosyalDb();
   if (!u || !db) { sosyal.hata = "baglanti"; sosyalTazele(); return; }
-  if (sosyal.uid === u.uid && (sosyal.hazir || sosyal._dinleyiciler.length)) return;
+  // Aynı kimlikle kurulu dinleyiciler varsa bir şey yapılmaz; hata varsa (kurallar sonradan yayınlanmış olabilir) yeniden kurulur
+  if (sosyal.uid === u.uid && !sosyal.hata && (sosyal.hazir || sosyal._dinleyiciler.length)) return;
   sosyalDurdur();
   sosyal.uid = u.uid;
   sosyal.hata = null;
@@ -288,7 +289,8 @@ function koduYenile() {
 }
 
 // ---- istek, kabul, ret, iptal ----
-async function kodlaArkadasEkle(girdi) {
+// bulunan: kodun sahibi bulununca { uid, ad } yazılır (ekrandaki bildirimin adı)
+async function kodlaArkadasEkle(girdi, bulunan = {}) {
   const kod = arkadasKodunuCoz(girdi);
   if (!kod) return "gecersiz";
   if (!adimVar()) return "adyok";
@@ -297,6 +299,8 @@ async function kodlaArkadasEkle(girdi) {
   let kayit;
   try { kayit = await sosyalOku(`friendCodes/${kod}`); } catch (e) { return izinHatasi(e) ? "gonderilemedi" : "hata"; }
   if (!kayit || !kayit.uid) return "yok";
+  bulunan.uid = kayit.uid;
+  bulunan.ad = kisaAd(kayit.name);
   return arkadasIstegiGonder(kayit.uid, kayit.name);
 }
 
@@ -449,4 +453,220 @@ async function arkadaslikVerisiniSil() {
   } catch (e) { console.error("arkadaslikVerisiniSil", e); return false; }
   sosyalDurdur();
   return true;
+}
+
+// ============================================================
+// ARKADAŞLAR EKRANI (screen-friends) ve menüdeki 👫 düğmesi
+// Kullanıcı metni (ad) HTML'e yalnız escapeHtml ile girer; satırlar her veri değişiminde yeniden çizilir.
+// ============================================================
+const DURUM_SIRASI = { on: 0, room: 1, off: 2 };
+const SIMGE_YOK = `<span class="arkadas-simge" aria-hidden="true">👤</span>`;
+let _arkadasEkraniBagli = false;
+let _acikSatir = null;       // ⋯ menüsü açık arkadaşın uid'i (yeniden çizimde açık kalır)
+let _kodlaEkleniyor = false;
+
+function openFriends() {
+  showScreen("screen-friends");
+  arkadasEkraniniBagla();
+  const kurulum = sosyal.hazir && !sosyal.hata ? Promise.resolve() : sosyalBaslat();
+  renderFriends();
+  // Kod yalnız bu ekran açılınca alınır (veri en aza indirme)
+  kurulum.then(() => (sosyal.uid && !sosyal.hata && !sosyal.kod ? kodumuHazirla() : null))
+    .catch((e) => console.error("openFriends", e))
+    .then(renderFriends);
+}
+
+// Satır düğmeleri tek dinleyicide (satırlar innerHTML ile yeniden kurulur)
+function arkadasEkraniniBagla() {
+  const ekran = document.getElementById("screen-friends");
+  if (_arkadasEkraniBagli || !ekran) return;
+  _arkadasEkraniBagli = true;
+  ekran.addEventListener("click", (e) => {
+    const dugme = e.target.closest("button[data-eylem]");
+    const satir = dugme && dugme.closest(".arkadas-satir[data-uid]");
+    if (satir) arkadasEylemi(dugme.dataset.eylem, satir.dataset.uid, dugme);
+  });
+  document.getElementById("arkadas-kod-girdi").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); friendsAddFromInput(); }
+  });
+}
+
+// Kurallar yayınlanmamış, Firebase'e ulaşılamıyor ya da açılışta veri hiç gelmedi
+function sosyalKullanilamaz() {
+  return !!sosyal.hata || (!sosyal.hazir && !sosyal._baslatiliyor);
+}
+
+// { uid: { name, at } } → [{ uid, ad, at }], en yeni önce
+function kayitListesi(kayitlar) {
+  return Object.entries(kayitlar || {})
+    .map(([uid, k]) => ({ uid, ad: kisaAd(k && k.name), at: k && typeof k.at === "number" ? k.at : 0 }))
+    .sort((a, b) => b.at - a.at);
+}
+
+// Arkadaşın adı önce çevrimiçi durumundaki güncel ad, yoksa listedeki kayıt
+function arkadasAdi(uid) {
+  const d = sosyal.durumlar[uid], k = sosyal.arkadaslar[uid];
+  return kisaAd((d && d.name) || (k && k.name));
+}
+
+// Karakter simgesi presence'ten; bilinmeyen karakter anahtarı (yeni sürüm, bozuk veri) Kinkin çizilir
+function arkadasSimgesi(uid) {
+  const d = sosyal.durumlar[uid];
+  if (!d) return SIMGE_YOK;
+  const charKey = Object.prototype.hasOwnProperty.call(CHARACTERS, d.charKey) ? d.charKey : "kinkin";
+  const costumeIdx = Number.isInteger(d.costumeIdx) ? d.costumeIdx : 0;
+  return `<span class="arkadas-simge" aria-hidden="true" style="background-image:url(${karakterSimgesi(charKey, costumeIdx)})"></span>`;
+}
+
+function durumMetni(durum) {
+  return durum === "on" ? t("🟢 Çevrimiçi") : durum === "room" ? t("🎮 Odada") : t("⚪ Çevrimdışı");
+}
+
+function arkadasSatiri(uid, simge, ad, durum, dugmeler, acik = false) {
+  return `<div class="arkadas-satir${acik ? " acik" : ""}" data-uid="${escapeHtml(uid)}">${simge}` +
+    `<span class="arkadas-ad" dir="auto">${escapeHtml(ad)}</span>` +
+    (durum ? `<span class="arkadas-durum">${durum}</span>` : "") + dugmeler + `</div>`;
+}
+
+function renderFriends() {
+  const ekran = document.getElementById("screen-friends");
+  if (!ekran || !ekran.classList.contains("active")) return;
+  const $ = (id) => document.getElementById(id);
+  const kapali = sosyalKullanilamaz();
+  $("arkadas-uyari").textContent = kapali ? t("⚠ Arkadaşlar şu an kullanılamıyor") : "";
+  $("arkadas-uyari").style.display = kapali ? "" : "none";
+  $("arkadas-kod").textContent = "#" + (sosyal.kod || "······");
+  $("arkadas-kod-yenile").disabled = kapali || !sosyal.kod;
+  $("arkadas-kod-girdi").disabled = kapali || !sosyal.uid;
+  $("arkadas-ekle-btn").disabled = kapali || !sosyal.uid || _kodlaEkleniyor;
+
+  // Gelen istekler (arkadaş olunmuşsa artık istek sayılmaz)
+  const istekler = kayitListesi(sosyal.istekler).filter((k) => !sosyal.arkadaslar[k.uid]);
+  $("arkadas-istekler-kutu").style.display = istekler.length ? "" : "none";
+  $("arkadas-istekler-baslik").textContent = t("📬 İstekler ({n})", { n: istekler.length });
+  $("arkadas-istekler").innerHTML = istekler.map((k) => arkadasSatiri(k.uid, SIMGE_YOK, k.ad, "",
+    `<button class="arkadas-kabul" data-eylem="kabul">✓</button>` +
+    `<button class="arkadas-reddet" data-eylem="reddet">✕</button>` +
+    `<button class="arkadas-istek-engelle" data-eylem="engelle">🚫</button>`)).join("");
+
+  // Arkadaşlar: 🟢, 🎮, ⚪; her grupta ada göre
+  const arkadaslar = Object.keys(sosyal.arkadaslar)
+    .map((uid) => ({ uid, ad: arkadasAdi(uid), durum: arkadasDurumu(uid) }))
+    .sort((a, b) => DURUM_SIRASI[a.durum] - DURUM_SIRASI[b.durum] || a.ad.localeCompare(b.ad));
+  $("arkadas-liste-baslik").textContent = t("👫 Arkadaşların ({n}/{max})", { n: arkadaslar.length, max: SOSYAL.ARKADAS_EN_COK });
+  $("arkadas-liste").innerHTML = arkadaslar.length
+    ? arkadaslar.map((a) => arkadasSatiri(a.uid, arkadasSimgesi(a.uid), a.ad, durumMetni(a.durum),
+        `<button class="arkadas-menu" data-eylem="menu" aria-expanded="${a.uid === _acikSatir}">⋯</button>` +
+        `<div class="arkadas-eylemler"><button class="arkadas-cikar" data-eylem="cikar">${t("Çıkar")}</button>` +
+        `<button class="arkadas-engelle" data-eylem="engelle">${t("Engelle")}</button></div>`, a.uid === _acikSatir)).join("")
+    : `<div class="arkadas-bos">${sosyal.hazir ? t("Henüz arkadaşın yok. Kodunu paylaş ya da odada ➕'ya dokun.") : kapali ? "" : "⏳"}</div>`;
+
+  // Gönderilen istekler ve engellenenler (açılır kutular; boşken gizli)
+  const gonderilen = kayitListesi(sosyal.gonderilen).filter((k) => !sosyal.arkadaslar[k.uid]);
+  $("arkadas-gonderilen-kutu").style.display = gonderilen.length ? "" : "none";
+  $("arkadas-gonderilen-baslik").textContent = t("▸ Gönderilenler ({n})", { n: gonderilen.length });
+  $("arkadas-gonderilen").innerHTML = gonderilen.map((k) => arkadasSatiri(k.uid, SIMGE_YOK, k.ad, "",
+    `<button class="arkadas-iptal" data-eylem="iptal">${t("✕ İptal")}</button>`)).join("");
+  const engeller = kayitListesi(sosyal.engeller);
+  $("arkadas-engellenen-kutu").style.display = engeller.length ? "" : "none";
+  $("arkadas-engellenen-baslik").textContent = t("▸ Engellenenler ({n})", { n: engeller.length });
+  $("arkadas-engellenen").innerHTML = engeller.map((k) => arkadasSatiri(k.uid, SIMGE_YOK, k.ad, "",
+    `<button class="arkadas-kaldir" data-eylem="kaldir">${t("Kaldır")}</button>`)).join("");
+
+  // Google girişi satırı yalnız anonim oyuncuya (arkadaşlar Firebase kimliğine bağlı)
+  $("arkadas-google").style.display = currentFirebaseUser() ? "none" : "";
+}
+
+async function arkadasEylemi(eylem, uid, dugme) {
+  const satir = dugme.closest(".arkadas-satir");
+  const adEl = satir && satir.querySelector(".arkadas-ad");
+  const ad = (adEl && adEl.textContent) || "?";
+  if (eylem === "menu") { _acikSatir = _acikSatir === uid ? null : uid; renderFriends(); return; }
+  if (eylem === "cikar" && !confirm(t("{ad} arkadaşlarından çıkarılsın mı?", { ad }))) return;
+  if (eylem === "engelle" && !confirm(t("{ad} engellensin mi? İstek ve davet gönderemez.", { ad }))) return;
+  dugme.disabled = true;
+  let tamam = false;
+  if (eylem === "kabul") {
+    const r = await istegiKabulEt(uid);
+    tamam = r !== "hata";
+    if (r === "kabul") showToast(t("👫 Artık arkadaşsınız: {ad}", { ad }));
+    else if (r === "dolu") showToast(sonucMesaji("dolu", ad));
+  } else if (eylem === "engelle") {
+    tamam = await engelle(uid, ad);
+  } else {
+    const islem = { reddet: istegiReddet, iptal: istegiIptalEt, kaldir: engeliKaldir, cikar: arkadasliktanCikar }[eylem];
+    if (!islem) return;
+    tamam = await islem(uid);
+  }
+  if (!tamam) showToast(sonucMesaji("hata", ad));
+  if (eylem === "cikar" || eylem === "engelle") _acikSatir = null;
+  renderFriends();
+}
+
+async function friendsAddFromInput() {
+  const girdi = document.getElementById("arkadas-kod-girdi");
+  if (_kodlaEkleniyor || !girdi || girdi.disabled) return;
+  _kodlaEkleniyor = true;
+  renderFriends();
+  try {
+    const bulunan = {};
+    const r = await kodlaArkadasEkle(girdi.value, bulunan);
+    showToast(sonucMesaji(r, bulunan.ad));
+    if (r === "gonderildi" || r === "kabul") girdi.value = "";
+  } finally {
+    _kodlaEkleniyor = false;
+    renderFriends();
+  }
+}
+
+// Türkçede "de/da" bağlacı adın son ünlüsüne uyar (Ayşe de, Bora da); ünlüsü olmayan adda "de"
+function kalinUnluyleBiter(ad) {
+  const unluler = String(ad).match(/[aeıioöuüAEIİOÖUÜ]/g);
+  return !!unluler && "aıouAIOU".includes(unluler[unluler.length - 1]);
+}
+
+// kodlaArkadasEkle / arkadasIstegiGonder sonucunun bildirimi
+function sonucMesaji(sonuc, ad) {
+  const d = { ad: kisaAd(ad), n: SOSYAL.ARKADAS_EN_COK };
+  switch (sonuc) {
+    case "gonderildi": return t("📨 İstek gönderildi: {ad}", d);
+    case "kabul": return kalinUnluyleBiter(d.ad) ? t("{ad} da seni eklemiş, artık arkadaşsınız!", d) : t("{ad} de seni eklemiş, artık arkadaşsınız!", d);
+    case "kendi": return t("Bu senin kodun");
+    case "yok": return t("Kod bulunamadı");
+    case "gecersiz": return t("Arkadaş kodu 6 karakter olmalı");
+    case "zaten": return t("Zaten arkadaşsınız");
+    case "bekliyor": return t("İstek zaten gönderildi");
+    case "dolu": return t("Arkadaş listen dolu ({n})", d);
+    case "engelli": return t("Önce engeli kaldır");
+    case "adyok": return t("Önce avcı adını ayarla");
+    case "gonderilemedi": return t("İstek gönderilemedi");
+    default: return t("⚠ Bağlanılamadı, yeniden dene");
+  }
+}
+
+// Menüdeki 👫 rozeti: bekleyen istek + gösterilecek davet; sıfırsa gizli
+function rozetiGuncelle() {
+  const rozet = document.getElementById("menu-arkadas-rozet");
+  if (!rozet) return;
+  const n = sosyalRozetSayisi();
+  rozet.textContent = n ? String(n) : "";
+  rozet.style.display = n ? "" : "none";
+  const dugme = document.getElementById("menu-arkadas");
+  if (dugme) dugme.setAttribute("aria-label", n ? `${t("Arkadaşlar")} (${n})` : t("Arkadaşlar"));
+}
+
+function arkadasKodunuKopyala() {
+  if (!sosyal.kod) return;
+  const kod = "#" + sosyal.kod;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(kod).then(() => showToast(t("📋 Kopyalandı: {kod}", { kod })), () => fallbackCopy(kod));
+  } else {
+    fallbackCopy(kod);
+  }
+}
+
+async function koduYenileOnayla() {
+  if (!sosyal.kod || !confirm(t("Yeni kod alınsın mı? Eski kod artık çalışmaz."))) return;
+  if (!(await koduYenile())) showToast(sonucMesaji("hata"));
+  renderFriends();
 }

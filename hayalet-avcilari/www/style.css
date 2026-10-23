@@ -1292,3 +1292,43 @@ body.is-tablet .name-input { font-size: 26px; max-width: 400px; }
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* ====== ARKADAŞLAR (3.13.0, arkadaslar.js) ====== */
+.menu-satir { flex-basis: 100%; display: flex; justify-content: center; align-items: stretch; }
+.btn-kare { position: relative; min-width: 56px; padding: 10px 14px; font-size: 22px; line-height: 1; background: linear-gradient(180deg, #06b6d4, #0e7490); }
+.rozet {
+  position: absolute; top: -6px; inset-inline-end: -6px;
+  min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px;
+  background: #ef4444; color: white; font-size: 13px; font-weight: 800; line-height: 22px;
+  box-shadow: 0 0 0 2px #1a0b2e;
+}
+.arkadas-uyari { margin: 0 0 8px; }
+.arkadas-kod-satir { display: flex; gap: 8px; justify-content: center; align-items: center; }
+.arkadas-kod-satir .oda-kodu { margin: 0; }
+.arkadas-yenile { min-width: 44px; min-height: 44px; font-size: 18px; }
+.arkadas-ipucu { font-size: 12px; margin: 6px 0 8px; }
+.arkadas-bolum { margin: 10px 0; text-align: start; }
+.arkadas-baslik { font-size: 15px; color: #fde047; margin: 0 0 6px; }
+details.arkadas-bolum > summary { cursor: pointer; list-style: none; min-height: 32px; }
+details.arkadas-bolum > summary::-webkit-details-marker { display: none; }
+.arkadas-liste { display: flex; flex-direction: column; gap: 6px; }
+.arkadas-satir {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 6px 10px; min-height: 44px;
+  background: rgba(0,0,0,0.35); border: 2px solid rgba(157, 78, 221, 0.35); border-radius: 12px;
+}
+.arkadas-satir.soluk { opacity: 0.5; }
+.arkadas-simge { width: 30px; height: 34px; flex: none; background: center / contain no-repeat; text-align: center; line-height: 34px; }
+.arkadas-ad { flex: 1; min-width: 0; font-weight: 700; color: white; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arkadas-durum { font-size: 12px; color: #cbd5e1; white-space: nowrap; }
+.arkadas-satir button {
+  min-width: 44px; min-height: 40px; padding: 0 10px; border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.08);
+  color: white; font-weight: 800; font-family: inherit; cursor: pointer;
+}
+.arkadas-satir .arkadas-kabul { background: #16a34a; }
+.arkadas-satir button:disabled { opacity: 0.5; cursor: default; }
+.arkadas-eylemler { display: none; flex-basis: 100%; gap: 6px; justify-content: flex-end; }
+.arkadas-satir.acik .arkadas-eylemler { display: flex; }
+.arkadas-bos { color: #cbd5e1; font-size: 13px; text-align: center; padding: 8px; }
+.arkadas-google { margin-top: 8px; text-wrap: balance; }

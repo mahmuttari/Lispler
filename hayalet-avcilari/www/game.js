@@ -4153,6 +4153,7 @@ function submitName() {
   }
   save.playerName = name;
   persistSave();
+  sosyalAdGuncelle(); // arkadaş kodundaki ve çevrimiçi durumdaki ad (arkadaslar.js)
   if (isChange) {
     showToast(t("✏️ İsim değişti: {ad} (−{n}💚)", { ad: name, n: NAME_CHANGE_COST }));
     renameInLeaderboard(oldName, name);
@@ -6686,6 +6687,9 @@ async function deleteAccountGoogle() {
   const u = currentFirebaseUser();
   if (!u) { showToast(t("Önce Google ile giriş yap")); return; }
   if (!confirm(t("Google hesabına bağlı bulut yedeğin ve oyundaki hesabın kalıcı olarak silinecek.\nBu cihazdaki ilerleme kalır. Devam edilsin mi?"))) return;
+  // Önce arkadaşlık verisi (arkadaslar.js): hesap silinince bu kayıtları kimse silemez. Silinemezse hesap da silinmez;
+  // kurallar yayınlanmamışsa ("izin") arkadaşlık verisi hiç yazılamamıştır
+  if (!(await arkadaslikVerisiniSil()) && sosyal.hata !== "izin") { showToast(t("⚠ Bağlanılamadı, yeniden dene")); return; }
   await rtdb.remove(`accounts_google/${u.uid}`);
   if (save.accountCode) {
     await rtdb.remove(`accounts/${save.accountCode.replace("-", "_")}`);

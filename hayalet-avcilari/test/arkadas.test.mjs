@@ -8,6 +8,8 @@
 // ⏸ Menü'de 📨 yalnız çevrimiçi oyunda, dolu odada pasif 📨 Davet et.
 // Davet şeridi: menüde ve tek kişilik oyunda görünür, Katıl (oyun biter, kazanç kasaya, reklam yok), ✕, aynı oda,
 // dolu oda, süresi geçmiş davet, adında HTML olan gönderen, arkadaşlık bitince kalkar.
+// Yaşam döngüsü: arka planda ⚪, öne gelince 🟢; ad değişince arkadaşta ve kodda yeni ad; Google hesabı silinince
+// arkadaşlık verisi de silinir, yeni anonim kimlik.
 // Çalıştırma (Java 21, Playwright + Chromium gerekir):
 //   cd hayalet-avcilari/firebase && npm ci && npm run test:arkadas
 // Emülatör zaten açıksa: node hayalet-avcilari/test/arkadas.test.mjs
@@ -475,18 +477,46 @@ try {
   await bekle(B, (u) => !!sosyal.arkadaslar[u], ayse, 5000);
   for (const s of [A, C]) await s.p.evaluate(() => quitToMenu());
 
-  // 11) Hesap verisinin silinmesi: Ayşe'nin listesinden çıkar, kendi düğümü ve kodu silinir
-  const silindi = await B.p.evaluate(() => arkadaslikVerisiniSil());
+  // 10e) Yaşam döngüsü: uygulama arka plana geçince ⚪, öne gelince 🟢; ad değişince arkadaşlarda ve kodda yeni ad
+  const gorunurluk = (s, gizli) => s.p.evaluate((gizli) => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => gizli });
+    document.dispatchEvent(new Event('visibilitychange'));
+  }, gizli);
+  await gorunurluk(B, true);
+  const arkada = await bekle(A, (u) => arkadasDurumu(u) === 'off', bora, 5000);
+  await gorunurluk(B, false);
+  const onde = await bekle(A, (u) => arkadasDurumu(u) === 'on', bora, 5000);
+  await B.p.evaluate(() => { save.zumrut = 100; document.getElementById('name-input').value = 'Bora2'; submitName(); });
+  const yeniAd = await bekle(A, (u) => arkadasAdi(u) === 'Bora2', bora, 5000);
+  let kodAdi = null;
+  for (let i = 0; i < 20 && kodAdi !== 'Bora2'; i++) { kodAdi = ((await oku(`friendCodes/${kodB}`)) || {}).name; if (kodAdi !== 'Bora2') await new Promise((r) => setTimeout(r, 250)); }
+  sina(`arka planda ⚪ (${arkada}), öne gelince 🟢 (${onde}); ad değişince arkadaşta ve kodda "Bora2"`, () => {
+    assert.ok(arkada, 'arka plandaki Bora çevrimdışı görünmedi');
+    assert.ok(onde, 'öne gelen Bora çevrimiçi görünmedi');
+    assert.ok(yeniAd, 'Ayşe\'nin listesinde yeni ad yok');
+    assert.equal(kodAdi, 'Bora2');
+  });
+
+  // 11) Hesabı Sil (Google): önce arkadaşlık verisi (arkadaşın listesi, kendi düğümü, kodu, durumu), sonra hesap;
+  //     ardından yeni anonim kimlik
+  const bagli = await B.p.evaluate(async () => {
+    const kimlik = firebase.auth.GoogleAuthProvider.credential(JSON.stringify({ sub: 'g-bora', email: 'bora@example.com', email_verified: true }));
+    await firebase.auth().currentUser.linkWithCredential(kimlik);
+    return !!currentFirebaseUser();
+  });
+  await B.p.evaluate(async () => { window.confirm = () => true; await deleteAccountGoogle(); });
   const listedenCikti = await bekle(A, (u) => !sosyal.arkadaslar[u], bora, 5000);
+  const yeniKimlik = await bekle(B, (u) => !!sosyal.uid && sosyal.uid !== u, bora, 15000);
   const boraDugum = await oku(`users/${bora}`);
   const boraKod = await oku(`friendCodes/${kodB}`);
   const boraDurum = await oku(`presence/${bora}`);
-  sina('hesap verisi silinir: arkadaşın listesinden, kendi düğümü, kodu ve durumu', () => {
-    assert.equal(silindi, true);
+  sina('Hesabı Sil: arkadaşın listesinden, kendi düğümü, kodu ve durumu silinir; yeni anonim kimlik', () => {
+    assert.ok(bagli, 'sahte Google kimliği bağlanamadı');
     assert.ok(listedenCikti, 'Ayşe\'nin listesinde Bora duruyor');
     assert.equal(boraDugum, null);
     assert.equal(boraKod, null);
     assert.equal(boraDurum, null);
+    assert.ok(yeniKimlik, 'Bora\'da yeni anonim kimlik yok');
   });
 
   // 12) Kurallar yüklenmemişken: arkadaşlar "izin" hatası verir, oda kurma etkilenmez

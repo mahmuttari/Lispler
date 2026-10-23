@@ -248,6 +248,9 @@ function durumumuYaz() {
   ref.set({ name: adim(), charKey, costumeIdx, state, at: sunucuZamani() }).catch((e) => console.error("presence", e));
 }
 
+// Uygulama arka plana geçince ⚪, öne gelince yeniden 🟢/🎮 (bağlantı kapatılmaz: oda düzeni bozulmasın)
+document.addEventListener("visibilitychange", () => durumumuYaz());
+
 function arkadasDurumu(uid) {
   const d = sosyal.durumlar[uid];
   return d && (d.state === "on" || d.state === "room") ? d.state : "off";

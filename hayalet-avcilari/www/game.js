@@ -1941,6 +1941,37 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
   ctx.restore();
 }
 
+// Hayalet olan oyuncunun görüntüsü (çevrimiçi oyunda ölen oyuncu): karakter bir kez ayrı bir tuvale çizilip mavi tonla
+// boyanır, her karede tek drawImage ile süzülerek basılır. Eskiden ctx.filter (hue-rotate) kullanılıyordu; tuval
+// filtresi karakterin onlarca çizim işleminin her birine ayrı uygulandığı için biri ölünce iki cihazda da kare
+// 0,4–4 sn sürüyor, oyun donuyordu (test/cizim.test.mjs).
+const _hayaletGorunumleri = {};
+function hayaletGorunumu(charKey, costumeIdx) {
+  const k = Math.min(window.devicePixelRatio || 1, 2) * (game.viewScale || 1); // ekran çözünürlüğünde, bulanık olmasın
+  const anahtar = `${charKey}:${costumeIdx || 0}:${k.toFixed(2)}`;
+  let g = _hayaletGorunumleri[anahtar];
+  if (g) return g;
+  const w = 140, h = 150, ox = 70, oy = 80;
+  const cv = document.createElement("canvas");
+  cv.width = Math.ceil(w * k); cv.height = Math.ceil(h * k);
+  const c = cv.getContext("2d");
+  c.scale(k, k);
+  drawCharacter(c, charKey, costumeIdx || 0, ox, oy, 70);
+  c.globalCompositeOperation = "source-atop"; // yalnız karakterin üstü boyanır
+  c.fillStyle = "rgba(147, 197, 253, 0.6)";
+  c.fillRect(0, 0, w, h);
+  g = _hayaletGorunumleri[anahtar] = { cv, w, h, ox, oy };
+  return g;
+}
+function hayaletOyuncuCiz(ctx, charKey, costumeIdx, x, y, alpha) {
+  const g = hayaletGorunumu(charKey, costumeIdx);
+  const suzul = Math.sin(performance.now() / 350 + x * 0.01) * 4; // hayalet gibi hafifçe süzülür
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.drawImage(g.cv, x - g.ox, y - g.oy + suzul, g.w, g.h);
+  ctx.restore();
+}
+
 // Karaktere özel silah çizimleri — her biri sağ elin hizasında, walkPhase ile hafif sallanır.
 // aimRaise (0..1): hedef yokken silah aşağıda, varken yukarıda. shootRecoil (0..1): atış geri tepmesi.
 function drawCharWeapon(ctx, charKey, s, swing, aimRaise = 0, shootRecoil = 0) {
@@ -6090,7 +6121,6 @@ function drawBot(ctx, b) {
   const walk = b.walkTimer > 0 ? Math.sin(b.walkTimer * 12) : 0;
   ctx.save();
   ctx.translate(b.x, b.y - Math.abs(walk) * 1.5 * s);
-  if (b.hitFlash > 0) ctx.filter = "brightness(2.2)";
   ctx.fillStyle = "rgba(0,0,0,0.3)";
   ctx.beginPath(); ctx.ellipse(0, 45 * s, 20 * s, 6 * s, 0, 0, Math.PI * 2); ctx.fill();
   // Sırttaki uzun saç
@@ -6149,6 +6179,14 @@ function drawBot(ctx, b) {
   ctx.fillStyle = "#67e8f9";
   ctx.fillRect(15 * s, -2 * s, 3 * s, 4 * s);
   ctx.restore();
+  // Vuruş parlaması: üstüne beyaz ışık (eskiden ctx.filter brightness idi; tuval filtresi her çizime ayrı uygulanıp
+  // vurulurken oyunu donduruyordu — test/cizim.test.mjs)
+  if (b.hitFlash > 0) {
+    ctx.globalAlpha = 0.55 * Math.min(1, b.hitFlash / 0.25);
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath(); ctx.ellipse(0, -4 * s, 34 * s, 46 * s, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
   ctx.restore();
   // İsim, can çubuğu ve hedef işareti
   ctx.save();
@@ -6265,16 +6303,15 @@ function render() {
     Object.keys(rps).forEach((uid) => {
       const rp = rps[uid];
       if (!rp || !Number.isFinite(rp.x) || !Number.isFinite(rp.y)) return;
-      ctx.save();
       if (rp.dead) {
-        ctx.globalAlpha = 0.45;
-        ctx.filter = "hue-rotate(180deg) brightness(1.3)"; // mavi hayalet tonu
-      } else if (rp.invisible) {
-        ctx.globalAlpha = 0.4;
+        hayaletOyuncuCiz(ctx, rp.charKey || "kinkin", rp.costumeIdx || 0, rp.x, rp.y, 0.45); // mavi hayalet
+      } else {
+        ctx.save();
+        if (rp.invisible) ctx.globalAlpha = 0.4;
+        drawCharacter(ctx, rp.charKey || "kinkin", rp.costumeIdx || 0, rp.x, rp.y, 70, rp.facing || 0, rp.yurume || 0,
+          rp.aimRaise || 0, rp.recoil || 0);
+        ctx.restore();
       }
-      drawCharacter(ctx, rp.charKey || "kinkin", rp.costumeIdx || 0, rp.x, rp.y, 70, rp.facing || 0, rp.yurume || 0,
-        rp.dead ? 0 : (rp.aimRaise || 0), rp.dead ? 0 : (rp.recoil || 0));
-      ctx.restore();
       // İsim etiketi (host'un adında taç)
       const etiket = (uid === hostUid ? "👑 " : "") + (rp.name || "?");
       ctx.save();
@@ -6309,11 +6346,7 @@ function render() {
     const ar = game.player.dead ? 0 : (game.player.aimRaise || 0);
     const rc = game.player.dead ? 0 : (game.player.shootRecoil || 0);
     if (game.player.dead) {
-      ctx.save();
-      ctx.globalAlpha = 0.5;
-      ctx.filter = "hue-rotate(180deg) brightness(1.3)";
-      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun);
-      ctx.restore();
+      hayaletOyuncuCiz(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 0.5);
     } else if (isInvisible) {
       ctx.save();
       ctx.globalAlpha = 0.4;

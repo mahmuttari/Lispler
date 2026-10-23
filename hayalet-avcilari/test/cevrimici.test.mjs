@@ -181,6 +181,44 @@ try {
   const kalan = await H.p.evaluate(() => game.pickups.filter((p) => p.value === 1000).length);
   sina('para bir kez alınır, host\'ta silinir', () => { assert.equal(alinan, 1, `konuk ${alinan} kez aldı`); assert.equal(kalan, 0, `host'ta kalan ${kalan}`); });
 
+  // 4b) Bir oyuncu (konuk) hayalet olur: oyun üç cihazda da akar (3.12.0'da hayalet ctx.filter ile çizildiği için
+  //     kare 0,4–4 sn sürüyor, oyun donuyordu), host'tan durum gelmeye devam eder; sonraki bölümde konuk yeniden doğar
+  const akis = (s, ms) => s.p.evaluate((ms) => new Promise((tamam) => {
+    let durum = 0; const asil = window.durumGeldi;
+    window.durumGeldi = function (...a) { durum++; return asil.apply(this, a); };
+    const kare = []; const bas = performance.now();
+    const d = (t) => {
+      kare.push(t);
+      if (t - bas < ms) { requestAnimationFrame(d); return; }
+      window.durumGeldi = asil;
+      const ara = kare.slice(1).map((x, i) => x - kare[i]).sort((a, b) => a - b);
+      const sn = (kare[kare.length - 1] - kare[0]) / 1000;
+      tamam({ fps: +(ara.length / sn).toFixed(1), p95: Math.round(ara[Math.floor(ara.length * 0.95)]), durumSn: +(durum / sn).toFixed(1) });
+    };
+    requestAnimationFrame(d);
+  }), ms);
+  await H.p.evaluate(`(${dolas.toString()})(0)`);
+  await U.p.evaluate(`(${dolas.toString()})(4)`);
+  await K.p.evaluate(() => { game.player.invuln = 0; game.player.hp = 1; damagePlayer(); });
+  await H.p.waitForTimeout(800);
+  const [ah, ak, au] = await Promise.all([akis(H, 3000), akis(K, 3000), akis(U, 3000)]);
+  const oluDurum = {
+    konukOlu: await K.p.evaluate(() => !!game.player.dead),
+    hostGoruyor: await H.p.evaluate((uid) => !!(online.remotePlayers[uid] && online.remotePlayers[uid].dead), await K.p.evaluate(() => online.uid)),
+    suruyor: await Promise.all([H, K, U].map((s) => s.p.evaluate(() => game.running && !!online.mode))),
+  };
+  sina(`biri hayalet olunca oyun akar (kurucu ${ah.fps} fps, hayalet konuk ${ak.fps} fps, üçüncü ${au.fps} fps)`, () => {
+    assert.ok(oluDurum.konukOlu && oluDurum.hostGoruyor, 'konuk hayalet olmadı ya da host görmedi');
+    assert.deepEqual(oluDurum.suruyor, [true, true, true], 'tur erken bitti');
+    for (const [ad, v] of [['kurucu', ah], ['konuk', ak], ['üçüncü', au]]) {
+      assert.ok(v.fps >= 30 && v.p95 <= 100, `${ad}: ${v.fps} fps, %95 kare ${v.p95} ms`);
+    }
+    for (const [ad, v] of [['konuk', ak], ['üçüncü', au]]) assert.ok(v.durumSn >= 5, `${ad}: saniyede ${v.durumSn} durum`);
+  });
+  await H.p.evaluate(() => nextLevel()); // bölüm temizlenince host'un yaptığı
+  const dogdu = await bekle(K, () => !game.player.dead && game.player.hp === game.player.maxHp && game.level >= 2).then(() => true, () => false);
+  sina('hayalet olan oyuncu sonraki bölümde yeniden doğar', () => { assert.ok(dogdu); });
+
   // 5) Herkes hayalet olunca tur biter; lobiye dönülür; yeni tur başlar ve hayaletler yeniden doğar
   for (const s of [H, K, U]) await s.p.evaluate(() => { clearInterval(window.__dolas); game.player.invuln = 0; game.player.hp = 1; damagePlayer(); });
   const bitti = await Promise.all([H, K, U].map((s) => bekle(s, () => !game.running && document.getElementById('screen-gameover').classList.contains('active')).then(() => true, () => false)));

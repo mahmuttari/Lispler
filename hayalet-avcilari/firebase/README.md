@@ -66,7 +66,7 @@ Her yazım girişli ister (`auth != null`); kimlik `auth.uid`'dir.
 | Çıkış / kopma | `leaveRoom`, `quitToMenu` › `odadanCik`: host tek başınaysa odayı siler, başkası varsa yalnız kendi kaydını; `onDisconnect().remove()` yalnız kendi kaydını; bağlantı geri gelince (`.info/connected`) kayıt ve kopma temizliği yeniden kurulur | Konuk kendi kaydını siler; **odayı yalnız host siler** (`auth.uid === hostUid`). |
 
 Odanın kendisinde `name, hostUid, status, maxPlayers, createdAt, lastSeen` zorunludur; `name`, `maxPlayers`,
-`createdAt`, `level` kurulduktan sonra değişmez. Host odayı sildikten sonra gecikmeli gelen bir `players/{uid}`
+`createdAt`, `level` kurulduktan sonra değişmez. `maxPlayers` 2–6'dır (3.12.2'den önce 2–5; Oda Kur'un varsayılanı 6). Host odayı sildikten sonra gecikmeli gelen bir `players/{uid}`
 yazımı "zombi oda" yaratamaz, reddedilir. `setupOnDisconnect` oda düğümündeki eski `onDisconnect`'i iptal etmeyi de
 dener; konukta bu reddedilebilir, oyun hatayı yutar.
 
@@ -75,6 +75,11 @@ odada oynar. 3.11.0 ve öncesinin host'u `i`'ye dizideki sırayı yazar; 3.12.0 
 host'la oynarken hayalet sıçraması sürer. Eski istemci `gi`/`pi`'yi host'tan aldığı gibi geri gönderdiği için yeni
 host'la vuruş ve para doğru hayalete/paraya işler; eski istemcinin bir parayı iki kez sayması kendi hatasıdır.
 Herkes hayalet olunca biten tur eski istemcide "oyun sürüyor" olarak kalır (menüden çıkılır).
+
+**Sürüm uyumu (3.12.2):** Yalnız `maxPlayers` sınırı 5'ten 6'ya çıktı. 3.12.1 ve öncesi sınırı odanın kendisinden
+okuduğu için (`joinRoom`, lobi) 6 kişilik odayı listede görür, katılır ve aynı odada oynar; kendisi en çok 5 kişilik
+oda kurar. Kural yayınlanmadan 3.12.2 6 kişilik oda isteyince sunucu reddeder; `submitCreateRoom` odayı aynı kodla 5
+kişilik kurar, oyuncu hata görmez.
 
 **Sınırlar:** Oda kimliğini bilen girişli herkes odaya katılabilir (oyun tasarımı). Host yokken odadaki herhangi bir
 oyuncu host olabilir; "en eski oyuncu" kuralı istemcidedir. Anonim hesap bedavadır, yani biri çok sayıda kimlik
@@ -133,7 +138,7 @@ npm test
 listele → katıl → hazır ol → başlat → 10 Hz senkron → altı olay türü → çıkış; 3.12.0 akışı (sunucu saati, `lastSeen`
 liste sorgusu, oyun sürerken kodla katılma, kimlikli `state` yamaları, tur sonu, host devri); host devri; odada olmayan, girişsiz ve
 konuk birinin host işlerine karışamadığı; kapanan geçişin reddi (girişsiz ve `u_` kimlikli oda kurma, katılma,
-host devri, olay; girişli bağlantının `u_` kimliğiyle yazması; geçişten kalan eski odada girişli oyuncu); şema;
+host devri, olay; girişli bağlantının `u_` kimliğiyle yazması; geçişten kalan eski odada girişli oyuncu); şema (oda 2–6 kişilik: 1 ve 7 reddedilir);
 sahipli kodlu yedek, sahipsiz yazımın reddi ve geçişten kalan sahipsiz yedeğin sahiplenilmesi; Google yedeği; girişsiz
 skorun reddi, skor ekle/listele ve yalnız kendi skorunun adını değiştirme. Her bölümde izinsiz ya da bozuk
 yazımların reddedildiği de sınanır. GitHub Actions'ta `hayalet-firebase-kurallar.yml` bu klasördeki her değişiklikte
@@ -153,6 +158,18 @@ herkes hayalet olunca turun bitip yeni turun başladığını ve host çıkınca
 Kuralları oyunun ad alanına (`hayalet-avcilari-default-rtdb`) kendisi yükler; Firebase SDK'sını
 `node_modules/firebase`'deki compat dosyalarından verir.
 
+6 kişilik oda (3.12.2):
+
+```sh
+npm run test:alti           # = firebase emulators:exec --only database,auth … "node ../test/alti.test.mjs"
+```
+
+[`../test/alti.test.mjs`](../test/alti.test.mjs) altı tarayıcı açar: kurucu Oda Kur'un varsayılanıyla (6) oda kurar,
+beş oyuncu kodla katılır (altıncı oyuncu "Oda dolu" almaz), lobi 6/6, altısı aynı oyunda; kurucu ve bir konuk telefon
+gibi ölçülür (işlemci 2 kat yavaş, `CPU=4` ile 4 kat; ekran yoğunluğu 2): kare hızı ≥ 30, %95 kare ≤ 100 ms, istemcide
+hayalet sıçramaz, biri hayalet olunca oyun akar. Oyuncu başına WebSocket trafiğini (KB/sn) de yazar. Önce kuralları
+3.12.2 öncesine (en çok 5 kişi) çevirip Oda Kur'un yine çalıştığını (oda 5 kişilik kurulur) sınar.
+
 **game.js'te bir veritabanı yoluna ya da gövdesine alan eklerseniz** (ör. oyuncuya yeni bir senkron alanı), aynı
 değişiklikte kurala ve teste de ekleyin: bilinmeyen alan içeren yazım bütünüyle reddedilir ve çevrimiçi oyun bozulur.
 
@@ -161,7 +178,18 @@ değişiklikte kurala ve teste de ekleyin: bilinmeyen alan içeren yazım bütü
 Kurallar konsoldan elle yayınlanır (bu depo Firebase CLI ile dağıtım yapmaz). Konsol eski kuralların geçmişini tutar;
 sorun çıkarsa aynı ekrandan önceki sürüme dönülebilir.
 
-### 3.12.0: oda listesi dizini (yayınlanmayı bekliyor, isteğe bağlı)
+### 3.12.2: 6 kişilik oda (yayınlanmayı bekliyor — 3.12.2 Play'de yayına çıkmadan)
+
+`rooms/$roomId/maxPlayers` sınırı `<= 5` → `<= 6`; başka izin değişmedi. Aşağıdaki 3.12.0 dizini de bu yayına girer.
+
+1. Firebase konsolu › `hayalet-avcilari` › Realtime Database › **Kurallar** → `database.rules.json`'un tamamını
+   yapıştır → **Yayınla**. Firestore kuralları değişmedi.
+2. Dene (3.12.2): Online Oyna › Oda Kur'da 6 seçiliyken oda kur; altıncı oyuncu kodla katılabilmeli.
+
+Yayınlanmazsa 3.12.2 6 kişilik oda isteyince sunucu reddeder ve oyun odayı 5 kişilik kurar (oyuncu hata görmez); 2–5
+kişilik odalar ve eski sürümler etkilenmez. Geri dönmek gerekirse konsolun kural geçmişinden önceki sürüm seçilir.
+
+### 3.12.0: oda listesi dizini (yayınlanmayı bekliyor, isteğe bağlı; 3.12.2 yayınıyla birlikte gider)
 
 `database.rules.json`'a yalnız `rooms` altında `".indexOn": ["lastSeen"]` eklendi; izinler değişmedi. Realtime Database
 › **Kurallar** → dosyanın tamamını yapıştır → **Yayınla**. Yayınlanınca 3.12.0'ın oda listesi yalnız lobisi açık

@@ -115,6 +115,7 @@ I18N.en = {
   "👤 HESAP": "👤 ACCOUNT",
   "👥 Karakterler": "👥 Characters",
   "👥 KARAKTERLER": "👥 CHARACTERS",
+  "👥 Online odalar artık 6 kişilik: altı avcı aynı odada birlikte oynar.": "👥 Online rooms now hold 6 players: six hunters play together in one room.",
   "👧 Yeni karakterler: Silsen çiçek top atar, Serçin tüy fırlatır — Karakterler menüsünde.": "👧 New characters: Silsen throws flower balls, Serçin throws feathers — in the Characters menu.",
   "👻 Hayalet Avcıları 👻": "👻 Ghost Hunters 👻",
   "👻 Hayalet oldun! Takımın bölümü bitirince yeniden doğarsın.": "👻 You're a ghost! You'll come back when your team finishes the level.",

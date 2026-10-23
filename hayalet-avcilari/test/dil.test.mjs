@@ -50,23 +50,35 @@ try {
         online: () => { closeSoundSettings(); openOnline(); },
         oda_kur: () => openCreateRoom(),
         oda_listesi: () => { openRoomList(); renderRoomList(null); },
-        lobi: () => {
+        lobi: () => { // 3.12.2: dolu 6 kişilik oda
           listeyiKapat();
-          Object.assign(online, { uid: 'u1', roomId: 'K7PQ2X', isHost: true, cachedRoom: { name: 'Kiki', maxPlayers: 5, hostUid: 'u1', status: 'lobby',
-            players: { u1: { name: 'Kiki', charKey: 'kinkin', costumeIdx: 0, ready: true, joinedAt: 1 } } } });
+          const players = {};
+          [['Kiki', 'kinkin'], ['Mila', 'veryi'], ['Can', 'kornet'], ['Deniz', 'mark'], ['Ece', 'kent'], ['Omer', 'ponko']].forEach(([name, charKey], i) => {
+            players[`u${i + 1}`] = { name, charKey, costumeIdx: 0, ready: i % 2 === 0, joinedAt: i + 1 };
+          });
+          Object.assign(online, { uid: 'u1', roomId: 'K7PQ2X', isHost: true, cachedRoom: { name: 'Kiki', maxPlayers: 6, hostUid: 'u1', status: 'lobby', players } });
           showScreen('screen-lobby'); renderLobby();
         },
         dil: () => { online.roomId = null; online.cachedRoom = null; showScreen('screen-menu'); openLanguage(); },
         guncelleme: () => { closeLanguage(); showUpdateModal(APP_VERSION, UPDATE_NOTES[APP_VERSION]); },
         oyun: () => { dismissUpdateModal(); startGame(); game.player.invuln = 1e9; },
         duraklat: () => pauseGame(),
-        duraklat_cevrimici: () => { resumeGame(); online.mode = 'host'; online.roomId = 'K7PQ2X'; pauseGame(); },
+        oyun_takim: () => { // 6 kişilik çevrimiçi oyunda takım göstergesi (biri hayalet)
+          resumeGame();
+          const { x, y } = game.player;
+          Object.assign(online, { mode: 'host', uid: 'u1', roomId: 'K7PQ2X', cachedRoom: { name: 'Kiki', maxPlayers: 6, hostUid: 'u1', status: 'playing', players: {} } });
+          online.remotePlayers = {};
+          [['Mila', 'veryi'], ['Can', 'kornet'], ['Deniz', 'mark'], ['Ece', 'kent'], ['Omer', 'ponko']].forEach(([name, charKey], i) => {
+            online.remotePlayers[`u${i + 2}`] = { name, charKey, costumeIdx: 0, hp: 3 - (i % 3), maxHp: 3, dead: i === 4 ? 1 : 0, x: x + 60 * (i - 2), y: y + 60 };
+          });
+        },
+        duraklat_cevrimici: () => { pauseGame(); },
         bitti: () => { resumeGame(); online.mode = null; online.roomId = null; endGame(false); },
         tur_sonu: () => { startGame(); game.player.invuln = 1e9; oyunSonu(false, true); },
       };
       for (const [ad, ac] of Object.entries(ekranlar)) {
         await p.evaluate(`(${ac.toString()})()`);
-        await p.waitForTimeout(ad === 'oyun' ? 2500 : 200);
+        await p.waitForTimeout(ad === 'oyun' ? 2500 : ad === 'oyun_takim' ? 600 : 200);
         const r = await p.evaluate(() => {
           const gorunur = [...document.querySelectorAll('.screen.active, #toast, .toast')].map((e) => e.innerText).join('\n');
           const tasan = document.documentElement.scrollWidth > window.innerWidth + 1;

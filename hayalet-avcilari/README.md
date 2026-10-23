@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.12.1 (versionCode 43) — biri ölünce donma düzeltmesi; 23 Ekim 2026'da incelemedeki 3.12.0 (42)'nin yerine Play'e gönderildi (kullanıcı onayı: "Şimdi gönder") |
+| Sürüm | 3.12.2 (versionCode 44) — 6 kişilik online oda; Play'e incelemedeki 3.12.1 (43)'in yerine gönderiliyor (kullanıcı onayı: "Uygun: 3.12.2 hemen", 23 Ekim 2026). Kural değişikliği (`maxPlayers` 2–6) Firebase konsolunda yayınlanmalı: [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
@@ -164,6 +164,42 @@ Düzeltme: hayalet görüntüsü karakter/kostüm başına bir kez ayrı tuvale 
 tek `drawImage` ile süzülerek basılır (`hayaletGorunumu`, `hayaletOyuncuCiz`); Bot parlaması filtresiz beyaz ışık.
 `game.js`'te `ctx.filter` kalmadı. Test: `node hayalet-avcilari/test/cizim.test.mjs` (Firebase'siz; eski kodda hayalet 0,3 fps,
 vurulan Bot 1,3 fps) ve `test:cevrimici`'deki "biri hayalet olunca oyun akar" (eski kodda 3,5–4,5 fps, yenide ~60 fps).
+
+## 3.12.2: 6 kişilik oda
+
+İstek: "Multiplayer 6 kişi olunabilsin, zaten bazen 6 kişiyiz." Kurallarda `maxPlayers` sınırı 2–5'ten 2–6'ya çıktı,
+Oda Kur ekranına 6 eklendi ve varsayılan oldu (önceden de en büyük değer varsayılandı). Veri düzeni değişmedi: 3.12.1
+ve öncesi 6 kişilik odaya katılır, kendisi en çok 5 kişilik kurar. Zorluk oyuncu sayısıyla değişmiyor (önceden de öyle).
+Kurallar konsolda yayınlanmadan 3.12.2 oyuncuya ulaşırsa Oda Kur yine çalışır: sunucu 6'yı reddedince `submitCreateRoom`
+odayı 5 kişilik kurar (varsayılan 6 olduğu için bu olmasa her oda kurma reddedilirdi).
+
+Ölçüm (`CPU=4` ile `test/alti.test.mjs` düzeni, emülatör; ölçülen iki cihazın işlemcisi 4 kat yavaş, ekran yoğunluğu 2;
+40 ms gecikme; test makinesi 4 çekirdek; ilk çalıştırmalar):
+
+| | 2 kişi | 2 kişi + odaya girmeyen 4 meşgul tarayıcı | 6 kişi |
+|---|---|---|---|
+| Kurucu: kare/sn, %95 kare | 55,8 · 33 ms | 49,5 · 33 ms | 38,2 · 50 ms |
+| Konuk: kare/sn, %95 kare, saniyede durum | 57,3 · 17 ms · 10 | 52,9 · 33 ms · 9,8 | 39 · 50 ms · 9,3 |
+| Biri hayalet olunca (kurucu · hayalet konuk) | 46,4 · 51,7 | 40,1 · 50,2 | 38,5 · 41,8 |
+| WebSocket KB/sn, kurucu (gelen · giden) | 3,7 · 9,4 | — | 8,4 · 7,0 |
+| WebSocket KB/sn, konuk (gelen · giden) | 11,1 · 1,5 | — | 13,4 · 1,4 |
+
+Düşüşün bir kısmı test makinesinin altı tarayıcıyı birden çalıştırmasından (ortadaki sütun), kalanı ekranda dört karakter
+daha çizilmesinden gelir: ayrı ölçümde `drawCharacter` saniyede 99 → 221 kez çağrıldı, `render`'ın JS süresi kare başına
+1,8 → 3,1 ms oldu; oyuncu listesi dinleyicisi (`oyuncularDegisti`, saniyede 60 kez) yalnız 6,5 ms/sn tuttu. Ağ yükü
+küçük: 6 kişilik bir saatlik oyunda bütün oyuncuların indirdiği toplam yaklaşık 0,27 GB (Blaze'de ayda ilk 10 GB ücretsiz;
+emülatörde ölçüldü, üretim aynı protokolü kullanır, TLS ek yükü hariç).
+
+4 katta altı tarayıcı test makinesinin 4 çekirdeğini paylaştığı için sonuç çalıştırmadan çalıştırmaya oynuyor (kurucu
+26–41 kare/sn). Biri hayalet olunca düşüş görülen çalıştırmalarda, kimsenin ölmediği karşılaştırma çalıştırmasında da
+aynı pencerede aynı düşüş ölçüldü (25,6 kare/sn): düşüş ölümden değil, makine yükünden ve artan hayalet sayısından. Test
+bu yüzden `cevrimici.test.mjs` gibi 2 katta sınar: üç çalıştırmada kurucu 33–53, konuk 48–53 kare/sn, hayalet sıçraması yok.
+
+Test: `cd hayalet-avcilari/firebase && npm run test:alti` (10 sınama: eski kurallarla oda 5 kişilik kurulur, Oda Kur'da
+2–6 ve 6 seçili, altıncı oyuncu katılır, lobi 6/6, altısı aynı oyunda, kare hızı, hayalet sıçraması, ağ ölçümü, biri
+hayalet olunca akış, sayfa hatası). Eski kodda eski kurallarla oda kurulamaz, düğmeler 2–5, oda 5 kişilik ve altıncı
+oyuncu "Oda dolu" alır. Kural testine "2, 5, 6 kabul; 1, 7 ve '6' ret",
+dil testine 6 kişilik lobi ve takım göstergesi (her dilde 390 ve 340 px) eklendi.
 
 ## Diller
 

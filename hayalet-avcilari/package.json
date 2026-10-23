@@ -1,6 +1,6 @@
 {
   "name": "hayalet-avcilari",
-  "version": "3.12.1",
+  "version": "3.12.2",
   "private": true,
   "description": "Hayalet Avcıları — Capacitor ile Android oyunu (Poyraz Workshop)",
   "scripts": {

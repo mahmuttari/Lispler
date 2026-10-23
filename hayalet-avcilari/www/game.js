@@ -273,7 +273,7 @@ const online = {
   uid: null,
   roomId: null,
   isHost: false,
-  selectedMax: 5,
+  selectedMax: 6,        // Oda Kur'un varsayılanı: en büyük oda (3.12.2'den beri 6, kurallar 2–6)
   cachedRoom: null,      // { name, maxPlayers, hostUid, hostName, status, players }
   // Oyun içi senkronizasyon
   mode: null,            // null | "host" | "client"
@@ -313,8 +313,16 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.12.1";
+const APP_VERSION = "3.12.2";
 const UPDATE_NOTES = {
+  // 3.12.1 incelemedeyken 3.12.2 geldi: notlar 3.12.x'i de anlatır (oyuncular 3.11.0'dan doğrudan geçebilir;
+  // mağaza notu 500 karakteri aşmasın diye 👻 satırı bu sürümde yok)
+  "3.12.2": [
+    t("👥 Online odalar artık 6 kişilik: altı avcı aynı odada birlikte oynar."),
+    t("🌐 Online oyun yenilendi: donma ve hayalet sıçraması bitti, biri hayalet olunca da oyun akıcı sürüyor."),
+    t("🔑 Lobideki oda kodunu arkadaşına söyle: Oda Listesi › Kodla Katıl ile gelir, oyun başlamış olsa da katılır."),
+    t("🏁 Herkes hayalet olunca tur biter, kazançlar kaydedilir ve lobiye dönülür. Host çıkarsa oyun kapanmaz, sürer."),
+  ],
   // 3.12.0 Play'e çıkmadan 3.12.1 geldi: notlar 3.12.0'ı da anlatır (oyuncular 3.11.0'dan doğrudan geçer)
   "3.12.1": [
     t("🌐 Online oyun yenilendi: donma ve hayalet sıçraması bitti, biri hayalet olunca da oyun akıcı sürüyor."),
@@ -3034,7 +3042,7 @@ function openCreateRoom() {
   showScreen("screen-create-room");
   const inp = document.getElementById("room-name-input");
   if (inp && !inp.value) inp.value = t("{ad}'in Odası", { ad: save.playerName || t("Avcı") });
-  selectMaxPlayers(online.selectedMax || 5);
+  selectMaxPlayers(online.selectedMax || 6);
 }
 function selectMaxPlayers(n) {
   online.selectedMax = n;
@@ -3062,12 +3070,17 @@ async function submitCreateRoom() {
       hostName: save.playerName,
       level: 1,
       status: "lobby",
-      maxPlayers: online.selectedMax || 5,
+      maxPlayers: online.selectedMax || 6,
       createdAt: sunucuZamani(),
       lastSeen: sunucuZamani(),
       players: { [uid]: makePlayerEntry(true) },
     };
     if (await rtdb.put(`rooms/${id}`, room)) roomId = id;
+    else if (room.maxPlayers > 5 && /permission/i.test(online.lastError || "")) {
+      // Konsoldaki kurallar 3.12.2'den eskiyse (en çok 5 kişi) 6 kişilik oda reddedilir: oda 5 kişilik kurulur
+      room.maxPlayers = 5;
+      if (await rtdb.put(`rooms/${id}`, room)) roomId = id;
+    }
   }
   if (!roomId) {
     const reason = online.lastError || t("bilinmeyen hata");

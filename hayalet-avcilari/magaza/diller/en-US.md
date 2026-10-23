@@ -38,7 +38,7 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 
 ## Sürüm notu
 
+👥 Online rooms now hold 6 players: six hunters play together in one room.
 🌐 Online play is rebuilt: no more freezing or jumping ghosts, even when someone becomes a ghost.
 🔑 Tell your friend the room code from the lobby: they join with Room List › Join with Code, even mid-game.
-👻 Ghosts now chase everyone, and the ghosts you hit count for you. A friend who became a ghost comes back on the next level.
 🏁 When everyone is a ghost, the round ends, rewards are saved and you go back to the lobby. If the host leaves, the game keeps going.

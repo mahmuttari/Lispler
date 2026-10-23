@@ -115,6 +115,7 @@ I18N.hi = {
   "👤 HESAP": "👤 अकाउंट",
   "👥 Karakterler": "👥 कैरेक्टर",
   "👥 KARAKTERLER": "👥 कैरेक्टर",
+  "👥 Online odalar artık 6 kişilik: altı avcı aynı odada birlikte oynar.": "👥 ऑनलाइन रूम अब 6 खिलाड़ियों के: छह शिकारी एक ही रूम में साथ खेलते हैं।",
   "👧 Yeni karakterler: Silsen çiçek top atar, Serçin tüy fırlatır — Karakterler menüsünde.": "👧 नए कैरेक्टर: Silsen फूलों की गेंद फेंकती है, Serçin पंख फेंकती है — कैरेक्टर मेन्यू में।",
   "👻 Hayalet Avcıları 👻": "👻 भूत शिकारी 👻",
   "👻 Hayalet oldun! Takımın bölümü bitirince yeniden doğarsın.": "👻 तुम भूत बन गए! टीम लेवल पूरा करेगी तो तुम फिर से ज़िंदा हो जाओगे।",

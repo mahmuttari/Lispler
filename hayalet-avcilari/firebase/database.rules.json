@@ -19,7 +19,7 @@
         "level":      { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 1000" },
         "status":     { ".write": "auth != null && data.parent().child('hostUid').val() === auth.uid",
                         ".validate": "newData.val() === 'lobby' || newData.val() === 'playing'" },
-        "maxPlayers": { ".validate": "newData.isNumber() && newData.val() >= 2 && newData.val() <= 5" },
+        "maxPlayers": { ".validate": "newData.isNumber() && newData.val() >= 2 && newData.val() <= 6" },
         "createdAt":  { ".validate": "newData.isNumber()" },
         "lastSeen":   { ".write": "data.exists() && auth != null && data.parent().child('players').child(auth.uid).exists()",
                         ".validate": "newData.isNumber()" },

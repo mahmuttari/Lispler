@@ -115,6 +115,7 @@ I18N.es = {
   "👤 HESAP": "👤 CUENTA",
   "👥 Karakterler": "👥 Personajes",
   "👥 KARAKTERLER": "👥 PERSONAJES",
+  "👥 Online odalar artık 6 kişilik: altı avcı aynı odada birlikte oynar.": "👥 Las salas en línea ahora son para 6: seis cazadores juegan juntos en una sala.",
   "👧 Yeni karakterler: Silsen çiçek top atar, Serçin tüy fırlatır — Karakterler menüsünde.": "👧 Nuevos personajes: Silsen lanza bolas de flores y Serçin lanza plumas — en el menú Personajes.",
   "👻 Hayalet Avcıları 👻": "👻 Cazadores de Fantasmas 👻",
   "👻 Hayalet oldun! Takımın bölümü bitirince yeniden doğarsın.": "👻 ¡Eres un fantasma! Volverás cuando tu equipo termine el nivel.",

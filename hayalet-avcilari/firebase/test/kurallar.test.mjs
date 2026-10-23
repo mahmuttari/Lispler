@@ -44,10 +44,10 @@ const google = (uid) => env.authenticatedContext(uid).database();
 function oyuncuGirisi(ready, now) {           // makePlayerEntry
   return { name: "Poyraz", charKey: "kinkin", costumeIdx: 0, ready: !!ready, joinedAt: now, lastSeen: now };
 }
-function yeniOda(now, host = HOST) {          // submitCreateRoom
+function yeniOda(now, host = HOST) {          // submitCreateRoom (3.12.2: varsayılan 6 kişi)
   return {
     name: "Poyraz'in Odası", hostUid: host, hostName: "Poyraz", level: 1, status: "lobby",
-    maxPlayers: 5, createdAt: now, lastSeen: now, players: { [host]: oyuncuGirisi(true, now) },
+    maxPlayers: 6, createdAt: now, lastSeen: now, players: { [host]: oyuncuGirisi(true, now) },
   };
 }
 function oyuncuAni() {                        // kaydimiGonder (3.11.0 ve öncesi: mpPushImpl › me)
@@ -335,6 +335,18 @@ describe("rooms — şema", () => {
     await assertFails(oda(k, "events").push().set({ gi: 0, dmg: 3, by: KONUK }));   // type zorunlu
     await assertFails(oda(k, "events").push().set({ type: "hit", gi: 0, dmg: 3 }));  // by zorunlu
     await assertSucceeds(oda(k, "events").push().set({ type: "hit", gi: 0, dmg: 3, by: KONUK }));
+  });
+
+  test("3.12.2: oda 2–6 kişilik kurulur; 1, 7 ve sayı olmayan sınır reddedilir", async () => {
+    const h = anonim(HOST);
+    const now = Date.now();
+    for (const n of [2, 5, 6]) {                                                    // selectMaxPlayers; 3.12.1 ve öncesi en çok 5
+      await assertSucceeds(h.ref("rooms/ZZZZZZ").set({ ...yeniOda(now, HOST), maxPlayers: n }));
+      await assertSucceeds(h.ref("rooms/ZZZZZZ").remove());
+    }
+    for (const n of [1, 7, "6"]) {
+      await assertFails(h.ref("rooms/ZZZZZZ").set({ ...yeniOda(now, HOST), maxPlayers: n }));
+    }
   });
 });
 

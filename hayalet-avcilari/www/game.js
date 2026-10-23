@@ -318,6 +318,7 @@ const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 const APP_VERSION = "3.12.2";
 const UPDATE_NOTES = {
   "3.13.0": [
+    t("🏰 Engeller yenilendi: kaleler, eğri kıyılı göller ve her temaya özel ürkünç ama sevimli objeler."),
     t("🏆 Online turun sonunda herkes yakaladığı hayalete göre sıralanır; birinci kupa kazanır, kupaların menüde görünür."),
   ],
   // 3.12.1 incelemedeyken 3.12.2 geldi: notlar 3.12.x'i de anlatır (oyuncular 3.11.0'dan doğrudan geçebilir;

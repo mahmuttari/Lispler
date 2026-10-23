@@ -117,6 +117,7 @@ I18N.en = {
   "🏆 Tur sıralaması": "🏆 Round ranking",
   "🏠 Menü": "🏠 Menu",
   "🏠 Menüye Dön": "🏠 Back to Menu",
+  "🏰 Engeller yenilendi: kaleler, eğri kıyılı göller ve her temaya özel ürkünç ama sevimli objeler.": "🏰 Obstacles redesigned: castles, curvy-shored ponds and spooky-but-cute objects for every theme.",
   "🐛 Hayaletler artık engellerin içinde doğmuyor; engele sıkışan hayalet kendiliğinden dışarı çıkıyor — bölüm takılmadan bitiyor.": "🐛 Ghosts no longer spawn inside obstacles; a ghost stuck in one pops right out, so levels never get stuck.",
   "🐱 Serçin'e kulaklı, kanatlı kostüm: Kanatlı Kedi (Mağaza › Kostümler).": "🐱 A costume with ears and wings for Serçin: Winged Cat (Shop › Costumes).",
   "👋 {ad} ayrıldı": "👋 {ad} left",

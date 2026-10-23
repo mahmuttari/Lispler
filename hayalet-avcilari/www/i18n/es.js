@@ -117,6 +117,7 @@ I18N.es = {
   "🏆 Tur sıralaması": "🏆 Clasificación de la ronda",
   "🏠 Menü": "🏠 Menú",
   "🏠 Menüye Dön": "🏠 Volver al menú",
+  "🏰 Engeller yenilendi: kaleler, eğri kıyılı göller ve her temaya özel ürkünç ama sevimli objeler.": "🏰 Obstáculos renovados: castillos, lagos de orillas curvas y objetos espeluznantes pero adorables en cada tema.",
   "🐛 Hayaletler artık engellerin içinde doğmuyor; engele sıkışan hayalet kendiliğinden dışarı çıkıyor — bölüm takılmadan bitiyor.": "🐛 Los fantasmas ya no aparecen dentro de los obstáculos; si uno se atasca, sale solo y el nivel ya no se bloquea.",
   "🐱 Serçin'e kulaklı, kanatlı kostüm: Kanatlı Kedi (Mağaza › Kostümler).": "🐱 Disfraz con orejas y alas para Serçin: Gato Alado (Tienda › Disfraces).",
   "👋 {ad} ayrıldı": "👋 {ad} se fue",

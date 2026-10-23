@@ -201,6 +201,54 @@ hayalet olunca akış, sayfa hatası). Eski kodda eski kurallarla oda kurulamaz,
 oyuncu "Oda dolu" alır. Kural testine "2, 5, 6 kabul; 1, 7 ve '6' ret",
 dil testine 6 kişilik lobi ve takım göstergesi (her dilde 390 ve 340 px) eklendi.
 
+## 3.13.0: engeller
+
+İstek: "Suların, duvarların, bütün engel objelerin şekilleri dikdörtgen. Daha güzel formlarda yapalım; duvarlar kale
+gibi olabilir, hayaletlere uygun, ürkünç, çocuklara uygun objeler eklenebilir." İşaretli ekran görüntüsündeki dileğe
+göre kenarlar eğri, yay ve daire biçimli. Tasarım: `docs/superpowers/specs/2026-10-23-hayalet-engeller-design.md`;
+plan: `docs/superpowers/plans/2026-10-23-hayalet-engeller.md`.
+
+- **Harita üretimi değişmedi:** engellerin yeri, boyutu ve yerleşimdeki çakışma denetimleri eskisi gibi dikdörtgenle.
+  `buildWalls/buildWaters/buildHazards` sonunda `engelBicimleriniKur()` her engele dikdörtgenin içinde kalan bir
+  **biçim** ekler: daire, elips ve yuvarlak köşeli kutu parçalarının birleşimi. Biçim ve bütün süsler tohumlu
+  rastgeleyle (xorshift32; tohum bölüm, tür, sıra ve dikdörtgenden FNV-1a) çizilir: her cihazda aynı harita ve resim.
+- **Kılık:** başka bir iç blokla kesişen blok duvardır (üst üste binenler tek kale bütünü olur); diğerleri sırayla
+  duvar, 1. obje, 2. obje (`(i + bölüm) % 3`); dört kenar harita sınırıdır.
+- **Çarpışma biçimi izler** (`engelCarpisir`): duvarda ön yüz dahil, objede biçimin 3 px, dikende 2,5 px büyütülmüşü,
+  su ve lavda biçimin kendisi (kıyı yürünür). Açılan köşeden geçilir, mermi eğri duvara çarpar; `freeSpot` biçime
+  değmeyen yer bulur.
+- **Her tema kendi setiyle** (`www/engel-temalari.js`):
+  Mor Şato (kale, mezarlık, balkabağı tarlası, hendek) · Yeşil Orman (kütük çit, ürkünç ağaçlar, mantar halkası,
+  sazlıklı gölet) · Çöl (kum taşı harabe, kaktüs bahçesi, mumya lahdi, vaha) · Buz Mağarası (buz kalesi, kardan adam,
+  buz kristalleri, buz kıyılı göl) · Volkan (bazalt kaya, ejderha yuvası, alev ruhlu kayalar, sıcak su) · Uzay (uzay
+  istasyonu, göktaşı, düşmüş UFO, metal kıyılı havuz). Diken plakası ve lav bütün temalarda ortak. Su her temada mavi,
+  kıyısı temaya göre.
+- **Canlı katman:** dalga, lav ve üst hattından yükselen alevler, mum alevi, kovukta göz kırpma, ateş böceği, kristal
+  parıltısı, buhar kabarcığı, gülen alev ruhu, yanıp sönen ışıklar, yıldız yansıması (`ENGEL_CANLI`).
+
+Çizim (`www/engeller.js`): her engel ilk görüldüğünde kendi tuvaline bir kez çizilir (ölçek
+`min(min(dpr, 2) × viewScale, 2)`; ekran dönünce ya da tablet boyunda yeniden), `render` tek `engelleriCiz(ctx)`
+çağırır. Ölçek 2'de bütün engellerin resmi bölüm başına 5,3–8,4 MB (1–30. bölümler). İlk denemede kare hızı
+%20 düştü; taranma ölçümünde neden her karedeki kırpma yolu (tek su 4 kat yavaş işlemcide ~11 ms) ve kesirli konuma
+ölçekli basılan resimlerdi. Kırpma kaldırıldı (dalgalar ve lav çatlakları biçimin iç satır aralıklarına, kesişen
+gölün ikinci geçişi hazır maskeli resimle, lav parlaması hazır gölge resmiyle); resimler telefonda piksele hizalı
+1:1 basılıyor (~10 kat ucuz, bulanıklık yok). Sonuç (`cizim.test`, 4 kat yavaş işlemci, ekran yoğunluğu 2): kare
+hızı eskisiyle aynı ya da daha iyi (aynı makinede sırayla: hayaletli sahne 44,8 → 47,7 kare/sn); yavaşlatmasız
+ölçümde en kalabalık Uzay bölümünde tam kare 1,8–1,9 ms, engeller ~1,2 ms.
+
+Onaylı taslaktan gelen bir hata düzeltildi: `kenarNoktalari` biçimin dışına kaydırılmış kenarda (b ≥ 2) hiç nokta
+döndürmüyordu; sazlık göletin kamışları, lav kıyısının taşları ve vaha palmiyeleri o yüzden çizilmiyordu. Kapsama
+kuralı (çarpışma alanının içi boyalı, biçimin kıyı/kenar payıyla birlikte dışı saydam) için ağaç, kaktüs, lahit,
+kardan adam ve kristaller yamadaki boşluğa göre boylanır ve yamanın 8 px ötesinde kırpılır; ağaçlar taslaktakinden
+biraz kısa.
+
+Test: `test/engel-bicim.test.mjs` (12 sınama: biçim dikdörtgende, çarpışma biçimi izler, kılık kuralı, iki sayfada
+aynı biçim ve aynı resim, `freeSpot`, 6 tema, kapsama, ekran dönmesi ve tablet ölçeği, bölüm geçişi, sayfa hatası;
+`--ekran <klasör>` ile her tema için katalog ve TR 390 / AR 340 px oyun içi görüntüler). Kapsama ayrıca son hâliyle
+bir kerelik geniş taramayla 6 tema × 40 tohumda (7 088 resim, taşma yok) denetlendi. `engel.test`, `cizim.test`,
+`dil.test` değişmeden geçer; emülatörde `cevrimici.test` 17/17, `alti.test` 11/11 (6 kişi, 2 kat yavaş işlemci:
+kurucu 48,2, konuk 46,3 kare/sn; 3.12.2 ölçümleri 33–53 ve 48–53).
+
 ## 3.13.0: tur sıralaması ve kupa
 
 Bildirim: "Multiplayer'da herkese 1. sıra dedi; herkesin kendi hayalet avına göre sıraya koysun, birinciye kupa

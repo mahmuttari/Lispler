@@ -117,6 +117,7 @@ I18N.hi = {
   "🏆 Tur sıralaması": "🏆 राउंड रैंकिंग",
   "🏠 Menü": "🏠 मेन्यू",
   "🏠 Menüye Dön": "🏠 मेन्यू पर जाओ",
+  "🏰 Engeller yenilendi: kaleler, eğri kıyılı göller ve her temaya özel ürkünç ama sevimli objeler.": "🏰 बाधाएँ नए रूप में: किले, घुमावदार किनारों वाले तालाब और हर थीम के लिए डरावनी पर प्यारी चीज़ें।",
   "🐛 Hayaletler artık engellerin içinde doğmuyor; engele sıkışan hayalet kendiliğinden dışarı çıkıyor — bölüm takılmadan bitiyor.": "🐛 अब भूत रुकावटों के अंदर पैदा नहीं होते; रुकावट में फँसा भूत खुद बाहर निकल आता है — लेवल बिना अटके पूरा होता है।",
   "🐱 Serçin'e kulaklı, kanatlı kostüm: Kanatlı Kedi (Mağaza › Kostümler).": "🐱 Serçin के लिए कानों और पंखों वाली पोशाक: पंखों वाली बिल्ली (दुकान › पोशाकें)।",
   "👋 {ad} ayrıldı": "👋 {ad} रूम से चले गए",

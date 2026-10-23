@@ -117,6 +117,7 @@ I18N.zh = {
   "🏆 Tur sıralaması": "🏆 本轮排名",
   "🏠 Menü": "🏠 菜单",
   "🏠 Menüye Dön": "🏠 返回菜单",
+  "🏰 Engeller yenilendi: kaleler, eğri kıyılı göller ve her temaya özel ürkünç ama sevimli objeler.": "🏰 障碍物焕然一新：城堡、弯曲岸边的池塘，以及每个主题专属的诡异又可爱的物件。",
   "🐛 Hayaletler artık engellerin içinde doğmuyor; engele sıkışan hayalet kendiliğinden dışarı çıkıyor — bölüm takılmadan bitiyor.": "🐛 幽灵不会再在障碍物里出生了；卡在障碍里的幽灵会自己出来——关卡不会再卡住。",
   "🐱 Serçin'e kulaklı, kanatlı kostüm: Kanatlı Kedi (Mağaza › Kostümler).": "🐱 Serçin 的带耳朵和翅膀的服装：飞天猫（商店 › 服装）。",
   "👋 {ad} ayrıldı": "👋 {ad} 离开了",

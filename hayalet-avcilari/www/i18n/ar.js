@@ -117,6 +117,7 @@ I18N.ar = {
   "🏆 Tur sıralaması": "🏆 ترتيب الجولة",
   "🏠 Menü": "🏠 القائمة",
   "🏠 Menüye Dön": "🏠 العودة للقائمة",
+  "🏰 Engeller yenilendi: kaleler, eğri kıyılı göller ve her temaya özel ürkünç ama sevimli objeler.": "🏰 تجديد العوائق: قلاع وبرك بشواطئ منحنية وأشياء مخيفة لكن لطيفة لكل عالم.",
   "🐛 Hayaletler artık engellerin içinde doğmuyor; engele sıkışan hayalet kendiliğinden dışarı çıkıyor — bölüm takılmadan bitiyor.": "🐛 لم تعد الأشباح تظهر داخل العوائق، والشبح العالق في عائق يخرج وحده — تنتهي المرحلة دون أن تعلق.",
   "🐱 Serçin'e kulaklı, kanatlı kostüm: Kanatlı Kedi (Mağaza › Kostümler).": "🐱 زي بأذنين وجناحين لـ Serçin: قطة مجنّحة (المتجر › الأزياء).",
   "👋 {ad} ayrıldı": "👋 غادر {ad}",

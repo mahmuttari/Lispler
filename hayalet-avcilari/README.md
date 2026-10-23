@@ -7,14 +7,14 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.12.1 (versionCode 43) — biri ölünce donma düzeltmesi; Play'e incelemedeki 3.12.0 (42)'nin yerine gönderiliyor (kullanıcı onayı, 23 Ekim 2026) |
+| Sürüm | 3.12.1 (versionCode 43) — biri ölünce donma düzeltmesi; 23 Ekim 2026'da incelemedeki 3.12.0 (42)'nin yerine Play'e gönderildi (kullanıcı onayı: "Şimdi gönder") |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
 | Firebase kuralları | [`firebase/`](firebase/README.md) — RTDB + Firestore kuralları, yol yol gerekçe, emülatör testi. 3.10.2'den beri Firebase anonim giriş: oda, kodlu yedek ve skor `auth.uid`'e bağlı. 3.10.3 geçişi kapatır (girişsiz ve `u_` kimlikli yazım reddedilir) |
 | Reklam | AdMob, yalnız Android uygulaması — aşağıda "Reklamlar (AdMob)" |
 | Play Games | Play Oyun Hizmetleri v2 (3.10.4), yalnız Android — aşağıda "Google Play Oyun Hizmetleri" |
-| Play paketi | 3.10.1'den itibaren CI (`hayalet-android.yml`) derler; `dist/HayaletAvcilari-play.aab` 3.10.0 (36) olarak kaldı. Geçişi kapatan kurallar 20 Ekim 2026'da yayınlandı ([`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama)); 3.12.0 (42; çevrimiçi oyun yenilendi) 22 Ekim 2026'da kullanıcının isteğiyle ("Derle ve yayınla") `claude/beautiful-feynman-pxwdju` dalından derlendi (koşu 39836917452, Poyraz Workshop yükleme anahtarı) ve Play'e gönderildi (koşu 39837609373) |
+| Play paketi | 3.10.1'den itibaren CI (`hayalet-android.yml`) derler; `dist/HayaletAvcilari-play.aab` 3.10.0 (36) olarak kaldı. Geçişi kapatan kurallar 20 Ekim 2026'da yayınlandı ([`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama)); 3.12.0 (42; çevrimiçi oyun yenilendi) 22 Ekim 2026'da kullanıcının isteğiyle ("Derle ve yayınla") `claude/beautiful-feynman-pxwdju` dalından derlendi (koşu 39836917452, Poyraz Workshop yükleme anahtarı) ve Play'e gönderildi (koşu 39837609373); 3.12.1 (43; biri ölünce donma düzeltmesi) 23 Ekim 2026'da aynı daldan derlendi (koşu 39944259051) ve incelemedeki 3.12.0'ın yerine Play'e gönderildi (koşu 39960541073) |
 | Denemelik APK | `dist/HayaletAvcilari.apk` (aynı anahtarla imzalı; Play sürümü üstüne kurulmaz, önce kaldırılır) |
 
 ## Reklamlar (AdMob)

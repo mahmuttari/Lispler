@@ -4781,6 +4781,7 @@ function buildWalls() {
     if (Math.hypot(x + w/2 - cx, y + h/2 - cy) < 200) continue;
     game.walls.push({ x, y, w, h });
   }
+  engelBicimleriniKur();
 }
 
 function buildWaters() {
@@ -4809,15 +4810,11 @@ function buildWaters() {
     game.waters.push({ x, y, w, h });
     placed++;
   }
+  engelBicimleriniKur();
 }
 
 function collidesWaters(x, y, r) {
-  for (const w of game.waters) {
-    const cx = Math.max(w.x, Math.min(x, w.x + w.w));
-    const cy = Math.max(w.y, Math.min(y, w.y + w.h));
-    if (Math.hypot(x - cx, y - cy) < r) return true;
-  }
-  return false;
+  return engelCarpisir(game.waters, x, y, r);
 }
 
 function buildHazards() {
@@ -4853,24 +4850,15 @@ function buildHazards() {
 
   for (let i = 0; i < spikeCount; i++) place(game.spikes, 90, 90, 18);
   for (let i = 0; i < lavaCount;  i++) place(game.lavas,  110, 90, 18);
+  engelBicimleriniKur();
 }
 
 function collidesSpikes(x, y, r) {
-  for (const s of game.spikes) {
-    const cx = Math.max(s.x, Math.min(x, s.x + s.w));
-    const cy = Math.max(s.y, Math.min(y, s.y + s.h));
-    if (Math.hypot(x - cx, y - cy) < r) return true;
-  }
-  return false;
+  return engelCarpisir(game.spikes, x, y, r);
 }
 
 function collidesLavas(x, y, r) {
-  for (const l of game.lavas) {
-    const cx = Math.max(l.x, Math.min(x, l.x + l.w));
-    const cy = Math.max(l.y, Math.min(y, l.y + l.h));
-    if (Math.hypot(x - cx, y - cy) < r) return true;
-  }
-  return false;
+  return engelCarpisir(game.lavas, x, y, r);
 }
 
 let _donguNo = 0; // her startGame yeni döngü açar; eski döngü kendini bitirir (iki döngü aynı anda koşmasın)
@@ -6264,12 +6252,7 @@ function becomeSpectator() {
 }
 
 function collidesWalls(x, y, r) {
-  for (const w of game.walls) {
-    const cx = Math.max(w.x, Math.min(x, w.x + w.w));
-    const cy = Math.max(w.y, Math.min(y, w.y + w.h));
-    if (Math.hypot(x - cx, y - cy) < r) return true;
-  }
-  return false;
+  return engelCarpisir(game.walls, x, y, r);
 }
 
 // ====== ÇİZİM ======

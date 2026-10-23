@@ -62,6 +62,7 @@ Her yazım girişli ister (`auth != null`); kimlik `auth.uid`'dir.
 | Oyun içi senkron (10 Hz) | `mpPush` › `kaydimiGonder` (`patch players/{uid}`, yalnız değişen alanlar, 5 sn'de bir `lastSeen`), host `durumuGonder` (`patch state`: `g`, `e`, `lvl`, `bd`, `bt`, `lt` her seferinde, `p` yalnız değişince). Bir yazım bitmeden yenisi gönderilmez; uygulama arka plandayken yazılmaz | Kendi kaydı; `state` yalnız host. Alanlar ve `state` tek tek tür denetimli; bilinmeyen alan reddedilir. **`i` dizideki sıra değil kalıcı kimliktir** (hayalet, para, düşman mermisi; `kimlik()`); olaylardaki `gi`/`pi` bu kimliktir. |
 | İstemci olayları | `olaylariGonder` (aynı hayalete aynı anda gelen vuruşlar tek `hit` olayında) › `rtdb.post rooms/{id}/events`; host `startEventsListener` › `applyHostEvent` + `snap.ref.remove()` | Yeni olayda `type` ve `by` zorunlu, `by` odadaki bir oyuncu ve `by === auth.uid`; alanlar `by x y r dmg gi pi duration`. Olayı yalnız host siler. Türler: `hit`, `areaDmg`, `freezeAll`, `rocketShot`, `pickup` ve 3.12.0'da `mermi` (istemci bir düşman mermisini vurdu ya da mermi ona çarptı; `gi` = merminin kimliği). Eski host bilmediği türü yok sayar. |
 | Tur sonu | host `turuBitir` (herkes hayalet olunca 2,5 sn sonra) › `patch {status: "lobby", lastSeen}`, `put state null`, `put events null`; herkes `turSonu` › kendi kaydına `{ready, dead: 0, hp: 3, maxHp: 3, lastSeen}` | `status` yalnız host; kayıt yalnız kendisi. |
+| Tur sıralaması (3.13.0) | `kaydimiGonder` › yakalanan hayalet sayısı (`game.totalCaught`) değişince, en çok 400 ms'de bir, konum yazımından ayrı `patch players/{uid} {av}`; tur sonunda herkes `online.cachedRoom.players`'tan sıralar (`turSiralamasi`), birinci kupa alır | `players/$uid/av`: 0–100000 arası sayı, yalnız kendisi. Kural yayınlanmadan yazım reddedilir; ayrı yazım olduğu için konum eşitlemesi bozulmaz, sıralamada başkalarının sayısı "?" görünür ve kupa verilmez. Eski sürüm `av` yazmaz, sıralamada sona "?" ile yazılır. |
 | Host devri | `maybeBecomeNewHost` › `patch {hostUid, hostName}`; oyun sürüyorsa yeni host `hostOl()` ile hayaletlerin yapay zekâ alanlarını kurup oyunu sürdürür | `hostUid` yalnız eski host `players`'ta yokken değişir; yeni değer `auth.uid` ve odadaki bir oyuncu olmalı. `hostName`'i yalnız (yeni) host yazar. |
 | Çıkış / kopma | `leaveRoom`, `quitToMenu` › `odadanCik`: host tek başınaysa odayı siler, başkası varsa yalnız kendi kaydını; `onDisconnect().remove()` yalnız kendi kaydını; bağlantı geri gelince (`.info/connected`) kayıt ve kopma temizliği yeniden kurulur | Konuk kendi kaydını siler; **odayı yalnız host siler** (`auth.uid === hostUid`). |
 
@@ -186,9 +187,22 @@ npm run test:cevrimici      # = firebase emulators:exec --only database,auth …
 [`../test/cevrimici.test.mjs`](../test/cevrimici.test.mjs) RTDB ve Auth emülatöründe üç tarayıcı açar: oda kur,
 listeden katıl, oyun sürerken kodla katıl, oyna; oyunun her cihazda bir kez açıldığını, oyun sırasında oda listesinin
 çizilmediğini, istemcide hayaletin sıçramadığını, paranın bir kez alındığını, hayaletlerin konuğu da kovaladığını,
-herkes hayalet olunca turun bitip yeni turun başladığını ve host çıkınca konuğun host olup oyunu sürdürdüğünü sınar.
+herkes hayalet olunca turun bitip yeni turun başladığını, tur sonu sıralamasının her cihazda aynı çıktığını ve kupanın
+yalnız birinciye gittiğini (3.13.0; `av` kuralı dahil), host çıkınca konuğun host olup oyunu sürdürdüğünü sınar.
 Kuralları oyunun ad alanına (`hayalet-avcilari-default-rtdb`) kendisi yükler; Firebase SDK'sını
 `node_modules/firebase`'deki compat dosyalarından verir.
+
+Arkadaşlar (3.13.0):
+
+```sh
+npm run test:arkadas        # = firebase emulators:exec --only database,auth … "node ../test/arkadas.test.mjs"
+```
+
+[`../test/arkadas.test.mjs`](../test/arkadas.test.mjs) Ayşe, Bora ve Cem'i (ayrıca adsız ve kuralsız birer oyuncu)
+açar: kodla ve lobideki ➕ ile ekleme, kabul, karşılıklı istek, çıkarma, engel, davet penceresi, davet şeridi ve Katıl
+(tek kişilik oyun biter, kazanç kasaya), dolu oda, süresi geçmiş davet, arka planda ⚪, ad değişikliği, Hesabı Sil'in
+arkadaşlık verisini silmesi ve kurallar yokken uyarı. `cevrimici.test` ile `alti.test` oyun başlamadan oyuncuları
+karşılıklı arkadaş yapar; kare hızı ve ağ ölçümleri arkadaş dinleyicileri açıkken alınır.
 
 6 kişilik oda (3.12.2):
 
@@ -212,15 +226,18 @@ sorun çıkarsa aynı ekrandan önceki sürüme dönülebilir.
 
 ### 3.13.0: arkadaşlar (yayınlanmayı bekliyor — 3.13.0 Play'de yayına çıkmadan)
 
-Kökte üç yeni düğüm (`friendCodes`, `users`, `presence`, yukarıda); mevcut düğümlerin izinleri değişmedi. 3.12.2'nin
-`maxPlayers` 2–6 değişikliği ve 3.12.0'ın dizini henüz yayınlanmadıysa bu yayına girer.
+Kökte üç yeni düğüm (`friendCodes`, `users`, `presence`, yukarıda) ve oda oyuncusunda yeni `av` alanı (tur
+sıralaması, `rooms` tablosunda); mevcut alanların izinleri değişmedi. 3.12.2'nin `maxPlayers` 2–6 değişikliği ve
+3.12.0'ın dizini henüz yayınlanmadıysa bu yayına girer.
 
 1. Firebase konsolu › `hayalet-avcilari` › Realtime Database › **Kurallar** → `database.rules.json`'un tamamını
    yapıştır → **Yayınla**. Firestore kuralları değişmedi.
 2. Dene (3.13.0, iki cihaz): Arkadaşlar ekranında kod görünür; diğer cihaz kodla ekler, istek kabul edilir; lobide
-   📨 Davet et ile çağrılan cihazda şerit çıkar ve Katıl odaya götürür.
+   📨 Davet et ile çağrılan cihazda şerit çıkar ve Katıl odaya götürür. Bir tur oynanınca tur sonu ekranında iki
+   oyuncunun hayalet sayısı görünür, birinci 🏆 alır.
 
-Yayınlanmazsa 3.13.0'da yalnız Arkadaşlar ekranı "Arkadaşlar şu an kullanılamıyor" der; oda, yedek ve skor etkilenmez.
+Yayınlanmazsa 3.13.0'da Arkadaşlar ekranı "Arkadaşlar şu an kullanılamıyor" der, tur sıralamasında başkalarının sayısı
+"?" görünür ve kupa verilmez; oda, yedek ve skor etkilenmez.
 
 ### 3.12.2: 6 kişilik oda (yayınlanmayı bekliyor — 3.12.2 Play'de yayına çıkmadan)
 

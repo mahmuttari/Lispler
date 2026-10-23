@@ -38,7 +38,9 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 ## Sürüm notu
 
-👥 Las salas en línea ahora son para 6: seis cazadores juegan juntos en una sala.
-🌐 El juego en línea se renovó: no se congela ni los fantasmas saltan, ni cuando alguien es fantasma.
-🔑 Dile a tu amigo el código de la sala de espera: entra con Lista de salas › Unirse con código, incluso en plena partida.
-🏁 Si todos son fantasmas, termina la ronda, se guardan las ganancias y vuelven a la sala de espera. Si el anfitrión se va, la partida sigue.
+👫 Añade amigos: comparte tu código o toca ➕ junto a un jugador en la sala de espera.
+📨 Llama a un amigo a tu sala; si te invitan, toca Unirse en la franja de arriba.
+🟢 Mira si tus amigos están en línea o en una sala; bloquea a quien no quieras.
+👥 Las salas en línea ahora son para 6.
+🏰 Nuevos obstáculos: castillos, lagos de orillas curvas y objetos espeluznantes pero adorables.
+🏆 Al terminar una ronda en línea, todos se ordenan por fantasmas atrapados; el primero gana un trofeo.

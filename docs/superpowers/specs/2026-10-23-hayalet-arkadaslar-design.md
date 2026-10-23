@@ -1,7 +1,7 @@
 # Hayalet Avcıları — Arkadaş ekleme ve oyuna davet (tasarım)
 
 - **Tarih:** 23 Ekim 2026
-- **Durum:** Kullanıcı onayladı (23 Ekim 2026: "Belgeyi onaylıyorum, uygulamaya geç"); uygulama planı `docs/superpowers/plans/2026-10-23-hayalet-arkadaslar.md`
+- **Durum:** Kullanıcı onayladı (23 Ekim 2026: "Belgeyi onaylıyorum, uygulamaya geç"); uygulandı, 3.13.0 (45). Uygulama planı `docs/superpowers/plans/2026-10-23-hayalet-arkadaslar.md`
 - **Hedef sürüm:** 3.13.0 (versionCode 45)
 - **Proje:** `hayalet-avcilari/` (Capacitor 8, HTML5 canvas, Firebase Realtime Database + Anonymous Auth)
 

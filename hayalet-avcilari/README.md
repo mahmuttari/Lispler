@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.12.2 (versionCode 44) — 6 kişilik online oda; 23 Ekim 2026'da incelemedeki 3.12.1 (43)'in yerine Play'e gönderildi (kullanıcı onayı: "Uygun: 3.12.2 hemen"). Kural değişikliği (`maxPlayers` 2–6) Firebase konsolunda yayınlanmalı: [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
+| Sürüm | 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; Play'e gönderilmedi (kullanıcı onayı bekleniyor). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı) Firebase konsolunda yayınlanmalı: [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama). Önceki: 3.12.2 (44), 23 Ekim 2026'da incelemedeki 3.12.1 (43)'in yerine Play'e gönderildi |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
@@ -200,6 +200,61 @@ Test: `cd hayalet-avcilari/firebase && npm run test:alti` (10 sınama: eski kura
 hayalet olunca akış, sayfa hatası). Eski kodda eski kurallarla oda kurulamaz, düğmeler 2–5, oda 5 kişilik ve altıncı
 oyuncu "Oda dolu" alır. Kural testine "2, 5, 6 kabul; 1, 7 ve '6' ret",
 dil testine 6 kişilik lobi ve takım göstergesi (her dilde 390 ve 340 px) eklendi.
+
+## 3.13.0: arkadaşlar
+
+İstek: "Arkadaş ekleme olsun, arkadaşları oyuna davet etme olsun." Tasarım:
+`docs/superpowers/specs/2026-10-23-hayalet-arkadaslar-design.md`; plan: `docs/superpowers/plans/2026-10-23-hayalet-arkadaslar.md`.
+Mantık ve ekranlar `www/arkadaslar.js`'te; sunucu kodu yok, tutarlılığı Realtime Database kuralları sağlar.
+
+- **Ekleme:** Arkadaşlar ekranındaki (ana menüde 🌐 Online Oyna'nın yanında rozetli 👫) 6 karakterli kodla (`#K7MP2Q`;
+  oda kodu alfabesi, `crypto.getRandomValues`) ya da lobide oyuncunun yanındaki ➕ ile istek gider; karşı taraf
+  ✓ Kabul, ✕ Reddet ya da 🚫 Engelle der. Karşı taraf beni önceden eklemişse istek yerine onunki kabul edilir. 🔄 yeni
+  kod eskisini siler (eski kodla istek gelmez).
+- **Davet:** lobide ve çevrimiçi oyunun ⏸ Menü'sünde 📨 Davet et. Davet edilen hangi ekranda olursa olsun üstteki
+  şeritten Katıl der; tek kişilik oyun sürüyorsa onayla biter, kazançlar kasaya girer. Davet 5 dk geçerli, aynı
+  arkadaşa 30 sn'de bir gönderilir; telefon bildirimi (push) yok, davet yalnız oyun açıkken gelir.
+- **Çevrimiçi durum:** 🟢 menüde (`on`), 🎮 odada (`room`), ⚪ çevrimdışı (`off`: bağlantı kopunca `onDisconnect`
+  ile, uygulama arka plandayken oyun yazar). Yalnız arkadaşlar görür; içinde ad, karakter, kostüm ve durum var, oda
+  kodu yok.
+
+Veri düzeni (yol yol kurallar: [`firebase/README.md`](firebase/README.md) › `friendCodes`, `users`, `presence`):
+
+| Düğüm | İçerik | Okuyan |
+|---|---|---|
+| `friendCodes/{KOD}` | `{uid, name}` | Kodu bilen girişli kullanıcı, yalnız o kod; liste okunamaz |
+| `users/{uid}` | `code`, `friends`, `requests`, `sent`, `invites`, `blocks` | Yalnız sahibi |
+| `presence/{uid}` | `{name, charKey, costumeIdx, state, at}` | Sahibi ve arkadaş listesindekiler |
+
+Kabul iki tarafın arkadaş kaydını tek çok yollu `update()` ile yazar; kural karşı tarafın isteğinin gerçekten var
+olduğunu denetler (`root` yazımdan önceki veridir). Engel listesini sahibinden başkası okuyamaz ama kurallar okur:
+engellenen istek ve davet gönderemez, ona yalnız "İstek gönderilemedi" denir. Davet yalnız arkadaştan ve davet edenin
+oyuncusu olduğu odaya yazılır. Kuralların sayamadığını oyun sayar: en çok 50 arkadaş, gösterilen en yeni 30 istek ve
+10 davet. Hesabı Sil önce başkalarındaki izleri (arkadaşların listesindeki kayıt, gönderilen istek ve davetler), sonra
+kendi düğümlerini, en son Firebase hesabını siler; çevrimdışıyken durur ("⚠ Bağlanılamadı, yeniden dene"), çünkü hesap
+gittikten sonra o kayıtları kimse silemez. Arkadaşlık Firebase kimliğine bağlıdır: Google ile giriş yapan cihaz
+değiştirince de arkadaşlarını bulur; girişsiz oyuncuya ekran Google girişini önerir. Kurallar konsolda yayınlanmadan
+3.13.0 oyuncuya ulaşırsa Arkadaşlar ekranı ve davet penceresi "⚠ Arkadaşlar şu an kullanılamıyor" der, lobide ➕
+çizilmez; oda, yedek ve skor etkilenmez.
+
+Test: `cd hayalet-avcilari/firebase && npm test` (kural testinin "arkadaşlar" bölümü 9 sınama: kod, istek, kabul,
+çıkar, engel, davet, çevrimiçi durum, hesap silme, şema; her işlem izinli ve izinsiz yoldan) ve `npm run test:arkadas`
+(emülatörde Ayşe, Bora, Cem ile adsız ve kuralsız oyuncu; 27 sınama: veri katmanı, Arkadaşlar ekranı, lobi, davet
+penceresi, davet şeridi, arka plan, ad değişikliği, hesap silme, kurallar yokken). Dil testine dolu arkadaş listesi,
+davet penceresi, menü ve oyun üstünde davet şeridi eklendi (her dilde 390 ve 340 px). `cevrimici.test` ve `alti.test`
+oyun başlamadan bütün oyuncuları karşılıklı arkadaş yapıp birbirinin çevrimiçi durumunu görmelerini bekler; kare hızı ve
+ağ ölçümleri bu dinleyiciler açıkken alınır. Ölçüm (2 kat yavaş işlemci, 6 kişi): kurucu 51,7 kare/sn (%95 kare 33 ms),
+konuk 48,1 (34 ms), biri hayaletken 47,4 ve 53,7; 3.12.2 aralığında.
+
+Yayın sırası:
+1. **Kurallar:** Firebase konsolunda `database.rules.json`'un tamamı yayınlanır ([`firebase/README.md` ›
+   Yayınlama](firebase/README.md#yayınlama)). Bu yayın arkadaş düğümlerini, tur sıralamasının `av` alanını ve
+   henüz yayınlanmadıysa 3.12.2'nin `maxPlayers` 2–6 değişikliğini birlikte getirir.
+2. **Gizlilik politikası ve hesap silme sayfası:** GitHub Pages yalnız `main`'den yayınlar; `main`'e PR kullanıcının
+   onayıyla.
+3. **Uygulama 3.13.0 (45):** CI derler; Play'e gönderme kullanıcının açık onayıyla.
+4. **Play Console › Veri güvenliği:** "Kişiler" ve "Diğer işlemler" satırları ([`magaza/aciklamalar.md`](magaza/aciklamalar.md)
+   › Veri güvenliği formu).
 
 ## 3.13.0: engeller
 

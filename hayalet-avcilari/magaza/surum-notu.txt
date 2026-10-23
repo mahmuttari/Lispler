@@ -1,4 +1,6 @@
-👥 Online odalar artık 6 kişilik: altı avcı aynı odada birlikte oynar.
-🌐 Online oyun yenilendi: donma ve hayalet sıçraması bitti, biri hayalet olunca da oyun akıcı sürüyor.
-🔑 Lobideki oda kodunu arkadaşına söyle: Oda Listesi › Kodla Katıl ile gelir, oyun başlamış olsa da katılır.
-🏁 Herkes hayalet olunca tur biter, kazançlar kaydedilir ve lobiye dönülür. Host çıkarsa oyun kapanmaz, sürer.
+👫 Arkadaş ekle: kodunu paylaş ya da lobide oyuncunun yanındaki ➕'ya dokun.
+📨 Arkadaşını odana çağır; davet gelince üstteki şeritten Katıl.
+🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle.
+👥 Online odalar artık 6 kişilik.
+🏰 Yeni engeller: kaleler, eğri kıyılı göller, ürkünç ama sevimli objeler.
+🏆 Online tur sonunda herkes yakaladığı hayalete göre sıralanır, birinci kupa kazanır.

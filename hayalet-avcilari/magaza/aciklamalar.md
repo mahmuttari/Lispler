@@ -57,7 +57,7 @@ Hayalet Avcıları'nda hayaletler her yerden geliyor! Avcını seç, labirent gi
 | Gizlilik politikası | yukarıdaki adres |
 | Uygulama erişimi | Tüm işlevler özel erişim olmadan kullanılabilir |
 | Reklamlar | **Evet**, reklam içeriyor (Google AdMob: oyun bitti ekranında geçiş + isteğe bağlı ödüllü reklam) |
-| İçerik derecelendirmesi (IARC) | Kategori: Oyun. Şiddet: **çizgi film / fantastik** (hayaletlere ateş etme), kan yok. Cinsellik, küfür, uyuşturucu, kumar: Hayır. Kullanıcılar birbiriyle etkileşir: **Evet** (çevrimiçi oda, herkese açık takma ad; sohbet yok). Konum paylaşımı: Hayır. Dijital ürün satın alma: Hayır |
+| İçerik derecelendirmesi (IARC) | Kategori: Oyun. Şiddet: **çizgi film / fantastik** (hayaletlere ateş etme), kan yok. Cinsellik, küfür, uyuşturucu, kumar: Hayır. Kullanıcılar birbiriyle etkileşir: **Evet** (çevrimiçi oda, herkese açık takma ad, 3.13.0'dan beri arkadaş ekleme ve odaya davet; sohbet yok). Konum paylaşımı: Hayır. Dijital ürün satın alma: Hayır |
 | Hedef kitle | 13-15, 16-17, 18 ve üzeri · "Çocuklara hitap ediyor mu?" sorusuna **Hayır** |
 | Haber uygulaması · Kamu · Finans · Sağlık | Hayır · Hayır · Yok · Yok |
 | Reklam kimliği | **Evet** — amaç: **Reklam veya pazarlama** (AdMob SDK `AD_ID` iznini ekler) |
@@ -75,12 +75,19 @@ Hayalet Avcıları'nda hayaletler her yerden geliyor! Avcını seç, labirent gi
 | Kişisel bilgiler › E-posta adresi | Evet | Evet | Hesap yönetimi |
 | Kişisel bilgiler › Kullanıcı kimlikleri (Firebase anonim kimliği — 3.10.2'den beri açılışta herkese; Google ile girişte aynı kimlik) | Evet | **Hayır** | Uygulama işlevleri, hesap yönetimi |
 | Uygulama etkinliği › Diğer kullanıcı içeriği (takma ad, oyun ilerlemesi, puan) | Evet | Evet | Uygulama işlevleri |
+| Kişiler › Kişiler (3.13.0: oyun içi arkadaş listesi, istekler, engeller — avcı adları) | Evet | Evet | Uygulama işlevleri |
+| Uygulama etkinliği › Diğer işlemler (3.13.0: çevrimiçi durum — çevrimiçi / odada / çevrimdışı — ve oyuna davetler) | Evet | Evet | Uygulama işlevleri |
 | AdMob · Konum › Yaklaşık konum (IP'den) | Evet, **paylaşılıyor** | Hayır | Reklam veya pazarlama, dolandırıcılığı önleme |
 | AdMob · Cihaz veya diğer kimlikler (reklam kimliği) | Evet, **paylaşılıyor** | Hayır | Reklam veya pazarlama, analiz, dolandırıcılığı önleme |
 | AdMob · Uygulama etkinliği › Uygulama etkileşimleri (reklam tıklama/izleme) | Evet, **paylaşılıyor** | Hayır | Reklam veya pazarlama, analiz |
 | AdMob · Uygulama bilgileri ve performans › Kilitlenme günlükleri, Teşhis | Evet, **paylaşılıyor** | Hayır | Analiz, dolandırıcılığı önleme |
 
-Hassas konum, rehber, fotoğraf, mesaj, finans, sağlık, tarama geçmişi: **toplanmıyor**.
+Hassas konum, telefon rehberi (cihazdaki kişiler), fotoğraf, mesaj, finans, sağlık, tarama geçmişi: **toplanmıyor**.
+3.13.0 (arkadaşlar): Google'ın tanımında **Kişiler** "kullanıcı adları gibi sosyal grafik bilgisini" de kapsar; oyun içi
+arkadaş listesi bu türde, çevrimiçi durum ve davetler "oyun içi diğer etkinlik ve işlemler" tanımıyla **Diğer işlemler**
+türünde beyan edilir ([Play Console Yardım: Veri güvenliği](https://support.google.com/googleplay/android-developer/answer/10787469)).
+Paylaşılmıyor (yalnız hizmet sağlayıcı Firebase); Hesabı Sil ve e-posta isteğiyle silinir. Tur sonu sıralaması için
+odaya yazılan hayalet sayısı "Diğer kullanıcı içeriği (oyun ilerlemesi, puan)" satırına girer, form değişmez.
 AdMob satırları Google'ın AdMob için yayımladığı veri güvenliği rehberine göredir; AB/İngiltere/İsviçre'de UMP onay formu gösterilir.
 Play Oyun Hizmetleri (3.10.4): skor ve başarımlar "Uygulama etkinliği › Diğer kullanıcı içeriği (oyun ilerlemesi, puan)",
 SDK'nın analiz/teşhis verisi "Uygulama bilgileri ve performans › Teşhis" satırına girer; ikisi zaten beyan edildiği için form

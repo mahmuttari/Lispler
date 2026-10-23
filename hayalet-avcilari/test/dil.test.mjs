@@ -103,7 +103,11 @@ try {
         },
         duraklat_cevrimici: () => { delete sosyal.davetler.u2; davetSeridiniGuncelle(); pauseGame(); },
         bitti: () => { resumeGame(); online.mode = null; online.roomId = null; endGame(false); },
-        tur_sonu: () => { startGame(); game.player.invuln = 1e9; oyunSonu(false, true); },
+        tur_sonu: () => { // 3.13.0: 6 kişilik turun sıralaması (berabere, eski sürüm oyuncusu "?")
+          startGame(); game.player.invuln = 1e9; game.totalCaught = 9; online.uid = 'u1';
+          oyunSonu(false, true, false, turSiralamasi({ u1: { name: 'Kiki' }, u2: { name: 'Mila', av: 12 }, u3: { name: 'Can', av: 9 },
+            u4: { name: 'Deniz', av: 4 }, u5: { name: 'Ece', av: 1 }, u6: { name: 'Omer' } }, 'u1', 9, 'Kiki'));
+        },
       };
       for (const [ad, ac] of Object.entries(ekranlar)) {
         await p.evaluate(`(${ac.toString()})()`);

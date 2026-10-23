@@ -305,6 +305,8 @@ const ISINLA_MESAFE = 260;     // bundan uzun sıçrama ara değerlenmez, ışı
 const HOST_BEKLEME_MS = 2500;  // host'tan bu kadar durum gelmezse "Host bekleniyor"
 let _mpPushInflight = false, _durumYolda = false;
 let _sonPickupImza = "", _sonOyuncuKaydi = {}, _sonTamKayit = 0;
+const AV_ARALIK_MS = 400;      // hayalet sayım (av) değişince en çok bu aralıkla yazılır (tur sonu sıralaması)
+let _sonAv = -1, _avZamani = 0;
 
 // ====== KAYIT SİSTEMİ ======
 const SAVE_KEY = "hayaletAvcilariSave_v1";
@@ -315,6 +317,9 @@ const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 // ====== SÜRÜM NOTLARI ======
 const APP_VERSION = "3.12.2";
 const UPDATE_NOTES = {
+  "3.13.0": [
+    t("🏆 Online turun sonunda herkes yakaladığı hayalete göre sıralanır; birinci kupa kazanır, kupaların menüde görünür."),
+  ],
   // 3.12.1 incelemedeyken 3.12.2 geldi: notlar 3.12.x'i de anlatır (oyuncular 3.11.0'dan doğrudan geçebilir;
   // mağaza notu 500 karakteri aşmasın diye 👻 satırı bu sürümde yok)
   "3.12.2": [
@@ -566,6 +571,7 @@ const defaultSave = {
   para: 0,
   elmas: 0,
   zumrut: 0,
+  kupa: 0,             // çevrimiçi turu birinci bitirince (3.13.0)
   selectedChar: "kinkin",
   selectedCostume: { kinkin: 0, veryi: 0, kornet: 0, mark: 0, kent: 0, ponko: 0, gul: 0, rani: 0, beti: 0, fanatik: 0, silsen: 0, sercin: 0 },
   unlockedChars: { kinkin: true, veryi: false, kornet: false, mark: false, kent: false, ponko: false, gul: false, rani: false, beti: false, fanatik: false, silsen: false, sercin: false },
@@ -3169,6 +3175,7 @@ function kaydimiTazele(zorla) {
   if (benim && benim.joinedAt) kayit.joinedAt = benim.joinedAt;
   if (game.running && online.mode && game.player) Object.assign(kayit, oyuncuAnlik());
   _sonOyuncuKaydi = {}; // sonraki yazımda bütün alanlar yeniden gider
+  _sonAv = -1;
   rtdb.patch(`rooms/${online.roomId}/players/${online.uid}`, kayit);
 }
 
@@ -3393,6 +3400,7 @@ function startMpSync() {
   stopMpSync();
   _sonOyuncuKaydi = {};
   _sonTamKayit = 0;
+  _sonAv = -1;
   _sonPickupImza = "";
   online.pushTimer = setInterval(mpPush, MP_PUSH_MS);
   if (online.mode === "host") startEventsListener();
@@ -3482,6 +3490,11 @@ async function kaydimiGonder() {
   for (const k of Object.keys(anlik)) if (_sonOyuncuKaydi[k] !== anlik[k]) degisen[k] = anlik[k];
   const simdi = performance.now();
   if (simdi - _sonTamKayit > 5000) { degisen.lastSeen = sunucuZamani(); _sonTamKayit = simdi; }
+  // Yakaladığım hayalet sayısı (tur sonu sıralaması): ayrı yazım — kural reddederse (eski kural) konum yazımı bozulmasın
+  if (game.totalCaught !== _sonAv && simdi - _avZamani >= AV_ARALIK_MS) {
+    _sonAv = game.totalCaught; _avZamani = simdi;
+    rtdb.patch(`rooms/${online.roomId}/players/${online.uid}`, { av: _sonAv });
+  }
   if (!Object.keys(degisen).length) return;
   Object.assign(_sonOyuncuKaydi, degisen);
   await rtdb.patch(`rooms/${online.roomId}/players/${online.uid}`, degisen);
@@ -3686,9 +3699,60 @@ async function turuBitir() {
   rtdb.put(`${yol}/events`, null);
 }
 
+// --- Tur sıralaması: herkes kendi yakaladığı hayalete göre (oda kaydındaki av; benimki game.totalCaught) ---
+// Eşitlikte sıra paylaşılır (1, 1, 3) ve kimliğe göre dizilir: her cihazda aynı liste. Sayısı gelmeyen oyuncu (eski
+// sürüm) sıralamaya girmez, sonda "?" ile. Tur herkes hayalet olduktan 2,5 sn sonra biter: sayılar o an oturmuştur.
+function turSiralamasi(oyuncular, benUid, benimAv, benimAd) {
+  const satirlar = [];
+  for (const [uid, p] of Object.entries(oyuncular || {})) {
+    if (!p || uid === benUid) continue;
+    satirlar.push({ uid, ad: String(p.name || "?"), av: Number.isFinite(p.av) ? p.av : null, ben: false });
+  }
+  const benim = oyuncular && oyuncular[benUid];
+  satirlar.push({ uid: benUid, ad: String((benim && benim.name) || benimAd || "?"), av: benimAv, ben: true });
+  const deger = (s) => (s.av === null ? -1 : s.av);
+  satirlar.sort((a, c) => deger(c) - deger(a) || (a.uid < c.uid ? -1 : a.uid > c.uid ? 1 : 0));
+  let onceki = null, sira = 0;
+  satirlar.forEach((s, i) => {
+    if (s.av === null) { s.sira = null; return; }
+    if (s.av !== onceki) { sira = i + 1; onceki = s.av; }
+    s.sira = sira;
+  });
+  return satirlar;
+}
+// Kupa: birinci (berabereyse hepsi), sayısı bilinen en az 2 oyuncu ve en az 1 hayalet (tek başına kupa toplanmasın)
+function kupaSatiri(s, satirlar) {
+  return !!s && s.sira === 1 && s.av >= 1 && satirlar.filter((x) => x.sira !== null).length >= 2;
+}
+function kupaKazandimMi(satirlar) {
+  return !!satirlar && kupaSatiri(satirlar.find((s) => s.ben), satirlar);
+}
+function turSiraYazisi(satirlar, kupa) {
+  const ben = (satirlar || []).find((s) => s.ben);
+  if (!ben || ben.sira === null || satirlar.filter((s) => s.sira !== null).length < 2) return "";
+  if (ben.sira === 1) return kupa ? t("🥇 Turu 1. bitirdin! 🏆 Kupa senin!") : ""; // hepsi 0 hayalet: yazı yok
+  if (ben.sira === 2) return t("🥈 Turu 2. bitirdin!");
+  if (ben.sira === 3) return t("🥉 Turu 3. bitirdin!");
+  return t("🏅 Turu {n}. bitirdin!", { n: ben.sira });
+}
+// Sonuç ekranındaki sıralama listesi (satirlar null: tek kişilik oyun, liste gizli)
+function turSiralamasiniGoster(satirlar) {
+  const kutu = document.getElementById("tur-siralama");
+  if (!satirlar) { kutu.style.display = "none"; return; }
+  const madalya = (sira) => (sira === 1 ? "🥇" : sira === 2 ? "🥈" : sira === 3 ? "🥉" : sira ? `${sira}.` : "");
+  document.getElementById("tur-siralama-liste").innerHTML = satirlar.map((s) => `<li class="ts-satir${s.ben ? " ben" : ""}">` +
+    `<span class="ts-sira">${madalya(s.sira)}</span><bdi class="ts-ad">${escapeHtml(s.ad)}</bdi>` +
+    (s.ben ? `<span class="ts-sen">(${escapeHtml(t("Sen"))})</span>` : "") +
+    `<span class="ts-av">${s.av === null ? "?" : `${s.av} 👻`}</span>` +
+    (kupaSatiri(s, satirlar) ? `<span class="ts-kupa">🏆</span>` : "") + `</li>`).join("");
+  document.getElementById("kupa-sayisi").textContent = t("🏆 Kupaların: {n}", { n: save.kupa || 0 });
+  kutu.style.display = "";
+}
+
 // Herkeste (host dahil) status "lobby" olunca: ödüller, şampiyon listesi, sonuç ekranı; oda ve lobi sürer
 function turSonu() {
   if (!game.running) return;
+  const siralama = turSiralamasi((online.cachedRoom && online.cachedRoom.players) || {}, online.uid, game.totalCaught, save.playerName || t("Avcı"));
   stopMpSync();
   const hostum = online.isHost;
   online.mode = null;
@@ -3696,7 +3760,7 @@ function turSonu() {
   hostBeklemeGostergesi(0);
   game.menude = false;
   document.getElementById("screen-pause").classList.remove("active");
-  oyunSonu(false, true);
+  oyunSonu(false, true, false, siralama);
   if (online.roomId) {
     rtdb.patch(`rooms/${online.roomId}/players/${online.uid}`, { ready: hostum, dead: 0, hp: 3, maxHp: 3, lastSeen: sunucuZamani() });
   }
@@ -4175,6 +4239,7 @@ function refreshMenu() {
   document.getElementById("menu-para").textContent = save.para;
   document.getElementById("menu-elmas").textContent = save.elmas;
   document.getElementById("menu-zumrut").textContent = save.zumrut;
+  document.getElementById("menu-kupa").textContent = save.kupa || 0;
 
   // Karakter önizleme
   const charKey = save.selectedChar;
@@ -6311,7 +6376,8 @@ function endGame(won) {
 
 // Tek kişilik oyunun sonu ya da çevrimiçi turun sonu (turSonu): kazançlar kaydedilir, sonuç ekranı açılır.
 // reklamsiz: arkadaşın davetiyle odaya geçerken (arkadaslar.js davetiKabulEt) oyun sonu reklamı gösterilmez
-function oyunSonu(won, cevrimici, reklamsiz = false) {
+// siralama: çevrimiçi turun sıralaması (turSiralamasi); birinci kupa kazanır
+function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   game.running = false;
   game.menude = false;
 
@@ -6325,6 +6391,8 @@ function oyunSonu(won, cevrimici, reklamsiz = false) {
   save.para += finalPara;
   save.elmas += game.runElmas;
   save.zumrut += game.runZumrut;
+  const kupa = cevrimici && kupaKazandimMi(siralama);
+  if (kupa) save.kupa = (save.kupa || 0) + 1;
   persistSave();
 
   // Şampiyon listesine ekle (yerel + buluta)
@@ -6339,7 +6407,11 @@ function oyunSonu(won, cevrimici, reklamsiz = false) {
   submitOnlineScore(entry); // sessizce buluta yolla, sonucu beklemiyoruz
   pgsOyunBitti(scoreFor(entry), save.highestLevel, game.totalCaught); // Android: Play Games skor + başarımlar
   const rankEl = document.getElementById("gameover-rank");
-  if (rank >= 0) {
+  if (cevrimici) {
+    // Çevrimiçi turda odadaki sıra yazılır. Eskiden yerel Şampiyonlar sırası yazılıyordu: liste aynı adı tek kayıtta
+    // tuttuğu için çoğu cihazda sıra 0 çıkıyor, herkese "1. SIRA! Şampiyonsun!" yazıyordu.
+    rankEl.textContent = turSiraYazisi(siralama, kupa);
+  } else if (rank >= 0) {
     if (rank === 0) rankEl.textContent = t("🥇 1. SIRA! Şampiyonsun!");
     else if (rank === 1) rankEl.textContent = t("🥈 2. sıraya girdin!");
     else if (rank === 2) rankEl.textContent = t("🥉 3. sıraya girdin!");
@@ -6348,6 +6420,7 @@ function oyunSonu(won, cevrimici, reklamsiz = false) {
     rankEl.textContent = "";
   }
 
+  turSiralamasiniGoster(cevrimici ? siralama : null);
   document.getElementById("gameover-title").textContent = cevrimici ? t("🏁 Tur bitti!") : won ? t("🌟 Harika!") : t("👻 Yakalandın!");
   document.getElementById("final-ghosts").textContent = game.totalCaught;
   document.getElementById("final-para").textContent = finalPara;

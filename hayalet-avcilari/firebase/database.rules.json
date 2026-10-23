@@ -43,6 +43,7 @@
             "invuln":     { ".validate": "newData.isBoolean()" },
             "invisible":  { ".validate": "newData.isNumber()" },
             "dead":       { ".validate": "newData.isNumber()" },
+            "av":         { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100000" },
             "$other":     { ".validate": false }
           }
         },

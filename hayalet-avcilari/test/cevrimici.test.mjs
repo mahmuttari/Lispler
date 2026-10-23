@@ -4,7 +4,8 @@
 //   oda listesi dinleyicisi lobide kapanır · oyun her cihazda bir kez açılır (tek döngü) · istemcide hayalet sıçramaz
 //   · para bir kez alınır · hayaletler konuğu da kovalar · herkes hayalet olunca tur biter, lobiye dönülür, yeni tur
 //   başlar · host ayrılınca oda kapanmaz, en eski oyuncu host olur ve oyun sürer. 3.13.0'dan beri ölçümler arkadaş
-//   dinleyicileri açıkken (üçü karşılıklı arkadaş) alınır.
+//   dinleyicileri açıkken (üçü karşılıklı arkadaş) alınır; tur sonunda oyuncular kendi yakaladıkları hayalete (oda
+//   kaydındaki av) göre sıralanır, her cihaz aynı sırayı görür, kupa yalnız birinciye (berabereyse hepsine) gider.
 // Çalıştırma (Java 21, Playwright + Chromium gerekir):
 //   cd hayalet-avcilari/firebase && npm ci && npm run test:cevrimici
 // Emülatör zaten açıksa: node hayalet-avcilari/test/cevrimici.test.mjs
@@ -95,6 +96,19 @@ const dolas = (faz) => {
   }, 100);
 };
 const bekle = (s, fn, arg, ms = 15000) => s.p.waitForFunction(fn, arg, { timeout: ms });
+// Hayalet sayısını sabitler (havadaki mermi ya da 3 sn'lik vuruş penceresi ölümden sonra sayıyı değiştirmesin); null: çözer
+const sayiSabitle = (s, n) => s.p.evaluate((n) => {
+  if (n === null) { delete game.totalCaught; game.totalCaught = 0; return; }
+  Object.defineProperty(game, 'totalCaught', { get: () => n, set: () => {}, configurable: true });
+}, n);
+// Oda kaydındaki hayalet sayıları (av) bu sayfaya ulaştı mı
+const sayilarGeldi = (s, liste) => bekle(s, (l) => JSON.stringify(Object.values(online.cachedRoom.players).map((p) => p.av).sort((a, c) => a - c)) === l, JSON.stringify(liste));
+// Tur sonu ekranındaki sıralama: "Ad:sayı" (+ ":🏆"), sıra yazısı ve kupa sayısı
+const turSonuEkrani = (s) => s.p.evaluate(() => ({
+  satirlar: [...document.querySelectorAll('#tur-siralama-liste li')].map((li) => `${li.querySelector('.ts-ad').textContent}:${li.querySelector('.ts-av').textContent}${li.querySelector('.ts-kupa') ? ':🏆' : ''}`),
+  yazi: document.getElementById('gameover-rank').textContent,
+  kupa: save.kupa || 0,
+}));
 
 // 3.13.0: oyun arkadaş dinleyicileri açıkken ölçülür. Herkes sahip yetkisiyle birbirinin arkadaşı yapılır; her sayfa
 // diğerlerinin çevrimiçi durumunu (presence) görene kadar beklenir. Dönen dizi: sayfa başına "hepsini görüyor".
@@ -236,9 +250,14 @@ try {
   const dogdu = await bekle(K, () => !game.player.dead && game.player.hp === game.player.maxHp && game.level >= 2).then(() => true, () => false);
   sina('hayalet olan oyuncu sonraki bölümde yeniden doğar', () => { assert.ok(dogdu); });
 
-  // 5) Herkes hayalet olunca tur biter; lobiye dönülür; yeni tur başlar ve hayaletler yeniden doğar
+  // 5) Herkes hayalet olunca tur biter; lobiye dönülür; yeni tur başlar ve hayaletler yeniden doğar. Sıralama: kurucu 5,
+  //    konuk 9, üçüncü 2 hayalet — her cihaz aynı sırayı görür, kupa yalnız konuğa
+  const kupaOnce = await Promise.all([H, K, U].map((s) => s.p.evaluate(() => save.kupa || 0)));
   for (const s of [H, K, U]) await s.p.evaluate(() => { clearInterval(window.__dolas); game.player.invuln = 0; game.player.hp = 1; damagePlayer(); });
+  for (const [s, n] of [[H, 5], [K, 9], [U, 2]]) await sayiSabitle(s, n);
+  const sayilar = await Promise.all([H, K, U].map((s) => sayilarGeldi(s, [2, 5, 9]).then(() => true, () => false)));
   const bitti = await Promise.all([H, K, U].map((s) => bekle(s, () => !game.running && document.getElementById('screen-gameover').classList.contains('active')).then(() => true, () => false)));
+  const siralar = await Promise.all([H, K, U].map(turSonuEkrani));
   const sonEkran = await K.p.evaluate(() => ({
     baslik: document.getElementById('gameover-title').textContent,
     lobi: document.getElementById('btn-lobiye-don').style.display !== 'none',
@@ -251,6 +270,20 @@ try {
     assert.ok(sonEkran.lobi && !sonEkran.tekrar);
     assert.equal(sonEkran.durum, 'lobby');
   });
+  sina('tur sonunda herkes aynı sıralamayı görür (kendi hayaletine göre), kupa yalnız birinciye', () => {
+    assert.deepEqual(sayilar, [true, true, true], 'hayalet sayıları odaya yazılmadı');
+    for (const e of siralar) assert.deepEqual(e.satirlar, ['Konuk:9 👻:🏆', 'Kurucu:5 👻', 'Üçüncü:2 👻']);
+    assert.deepEqual(siralar.map((e) => e.yazi), ['🥈 Turu 2. bitirdin!', '🥇 Turu 1. bitirdin! 🏆 Kupa senin!', '🥉 Turu 3. bitirdin!']);
+    assert.deepEqual(siralar.map((e, i) => e.kupa - kupaOnce[i]), [0, 1, 0]);
+  });
+  // Kural: oyuncu kaydındaki av yalnız 0–100000 arası sayı olabilir
+  const avKurali = await K.p.evaluate(async () => {
+    const yol = `rooms/${online.roomId}/players/${online.uid}`;
+    return { metin: (await rtdb.patch(yol, { av: 'çok' })) === null, eksi: (await rtdb.patch(yol, { av: -1 })) === null,
+      buyuk: (await rtdb.patch(yol, { av: 100001 })) === null, sayi: (await rtdb.patch(yol, { av: 9 })) !== null };
+  });
+  sina('kural: hayalet sayısı (av) yalnız 0–100000 arası sayı', () => { assert.deepEqual(avKurali, { metin: true, eksi: true, buyuk: true, sayi: true }); });
+  for (const s of [H, K, U]) await sayiSabitle(s, null);
   for (const s of [H, K, U]) await s.p.evaluate(() => lobiyeDon());
   for (const s of [K, U]) await s.p.evaluate(async () => { await toggleReady(); });
   await bekle(H, () => document.getElementById('lobby-start-btn').style.display !== 'none');
@@ -263,7 +296,7 @@ try {
   });
 
   // 6) Host ayrılır: oda kapanmaz, en eski oyuncu (konuk) host olur, hayaletler hareket etmeye devam eder
-  for (const s of [K, U]) await s.p.evaluate(() => { setInterval(() => { if (game.player) { game.player.invuln = 2; game.player.hp = 3; } }, 100); });
+  for (const s of [K, U]) await s.p.evaluate(() => { window.__olumsuz = setInterval(() => { if (game.player) { game.player.invuln = 2; game.player.hp = 3; } }, 100); });
   await H.p.evaluate(() => quitToMenu());
   const devir = await bekle(K, () => online.mode === 'host' && online.isHost).then(() => true, () => false);
   await K.p.waitForTimeout(500);
@@ -276,6 +309,22 @@ try {
   sina('host ayrılınca konuk host olur, oyun sürer, üçüncü oyuncu yeni host\'u izler', () => {
     assert.ok(devir); assert.ok(odaVar); assert.ok(ucuncuGoruyor);
     assert.ok(hareket > 0, `hareket eden hayalet ${hareket}/${son.length}`);
+  });
+
+  // 7) İki kişi kalınca berabere birinci (ikisi de 4 hayalet): ikisi de kupa alır
+  const kupaOnce2 = await Promise.all([K, U].map((s) => s.p.evaluate(() => save.kupa || 0)));
+  for (const s of [K, U]) await s.p.evaluate(() => { clearInterval(window.__olumsuz); game.player.invuln = 0; game.player.hp = 1; damagePlayer(); });
+  for (const s of [K, U]) await sayiSabitle(s, 4);
+  const sayilar2 = await Promise.all([K, U].map((s) => sayilarGeldi(s, [4, 4]).then(() => true, () => false)));
+  const bitti2 = await Promise.all([K, U].map((s) => bekle(s, () => !game.running && document.getElementById('screen-gameover').classList.contains('active')).then(() => true, () => false)));
+  const berabere = await Promise.all([K, U].map(turSonuEkrani));
+  sina('berabere birincilerin ikisi de kupa alır', () => {
+    assert.deepEqual([sayilar2, bitti2], [[true, true], [true, true]]);
+    for (const e of berabere) {
+      assert.deepEqual([...e.satirlar].sort(), ['Konuk:4 👻:🏆', 'Üçüncü:4 👻:🏆']);
+      assert.equal(e.yazi, '🥇 Turu 1. bitirdin! 🏆 Kupa senin!');
+    }
+    assert.deepEqual(berabere.map((e, i) => e.kupa - kupaOnce2[i]), [1, 1]);
   });
 
   sina('sayfa hatası yok', () => {

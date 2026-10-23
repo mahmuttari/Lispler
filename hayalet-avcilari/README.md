@@ -201,6 +201,28 @@ hayalet olunca akış, sayfa hatası). Eski kodda eski kurallarla oda kurulamaz,
 oyuncu "Oda dolu" alır. Kural testine "2, 5, 6 kabul; 1, 7 ve '6' ret",
 dil testine 6 kişilik lobi ve takım göstergesi (her dilde 390 ve 340 px) eklendi.
 
+## 3.13.0: tur sıralaması ve kupa
+
+Bildirim: "Multiplayer'da herkese 1. sıra dedi; herkesin kendi hayalet avına göre sıraya koysun, birinciye kupa
+versin." Neden: tur sonu ekranı yerel Şampiyonlar listesindeki sırayı yazıyordu (`addLeaderboardEntry`); liste aynı adı
+tek kayıtta tuttuğu için çoğu cihazda sıra 0 çıkıyor, herkese "🥇 1. SIRA! Şampiyonsun!" yazıyordu.
+
+- Her oyuncu kendi yakaladığı hayalet sayısını (`game.totalCaught`, son vuruşu yapan sayar) oda kaydına `av` olarak
+  yazar: değişince, en çok 400 ms'de bir, konum yazımından ayrı (kural reddederse konum eşitlemesi bozulmaz).
+- Tur sonu ekranında odanın sıralaması: ad, hayalet sayısı, 🥇🥈🥉 ve 4.–6.; eşitlikte sıra paylaşılır (1, 1, 3) ve
+  kimliğe göre dizilir. Tur herkes hayalet olduktan 2,5 sn sonra bittiği için sayılar oturmuştur: her cihaz aynı
+  listeyi görür. Sayısı gelmeyen oyuncu (eski sürüm) sona "?" ile yazılır, sıralamaya girmez.
+- Kupa: birinci (berabereyse hepsi) `save.kupa`'ya +1 alır; en az 2 sayılı oyuncu ve en az 1 hayalet şartıyla (tek
+  başına oda kurup kupa toplanamaz). Kupa sayısı kayıtla birlikte yedeğe girer, ana menüde 💰💎💚'nin yanında 🏆 ile
+  görünür. Tek kişilik oyunun sonuç ekranı değişmedi; çevrimiçi skor yine Şampiyonlar listesine eklenir.
+- Kural: `players/$uid/av` 0–100000 arası sayı. Konsolda yayınlanmadan 3.13.0 oyuncuya ulaşırsa yazım reddedilir,
+  sıralamada başkalarının sayısı "?" görünür ve kupa verilmez; oyun etkilenmez.
+
+Test: `test/siralama.test.mjs` (8 sınama: sıralama ve eşitlik, kupa kuralı, birinci/ikinci/berabere/4. sıra ekranı,
+kupanın kaydı ve menüde görünmesi, tek kişilik oyun değişmez, ad HTML olarak işlenmez); `cevrimici.test.mjs`'e üç
+oyunculu turda her cihazda aynı sıra ve kupa yalnız birinciye, `av` kuralı (metin, eksi ve 100001 ret; 9 kabul) ve iki
+kişide berabere birinci eklendi; dil testinde 6 kişilik tur sonu (her dilde 390 ve 340 px).
+
 ## Diller
 
 Kaynak dil Türkçedir. Metinler kodda Türkçe yazılır ve `t("…")` ile çevrilir (`www/i18n.js`); `{ad}` gibi yer

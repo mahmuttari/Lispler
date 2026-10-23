@@ -60,11 +60,13 @@
     return Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - q.rr;
   }
   function engelUzaklik(P, x, y) { let m = Infinity; for (const q of P) m = Math.min(m, parcaUzaklik(q, x, y)); return m; }
-  // Birleşimin dış hattı boyunca noktalar (her parçanın çevresinden, başka parçanın içinde kalmayanlar); y'ye göre sıralı
+  // Birleşimin dış hattı boyunca noktalar (her parçanın b kadar büyütülmüş çevresinden, başka parçanın içinde
+  // kalmayanlar); y'ye göre sıralı. (Taslaktaki denetim noktayı yarı yola çekip b ile karşılaştırdığı için b ≥ 2'de hiç
+  // nokta dönmüyordu: kamış, lav kıyısı taşları ve palmiye çizilmiyordu.)
   function kenarNoktalari(P, aralik, b = 0) {
     const out = [];
     for (const q of P) {
-      const ekle = (x, y, nx, ny) => { if (engelUzaklik(P, x - nx * b * 0.5, y - ny * b * 0.5) > b - 0.8) out.push({ x, y, nx, ny }); };
+      const ekle = (x, y, nx, ny) => { if (engelUzaklik(P, x, y) > b - 0.8) out.push({ x, y, nx, ny }); };
       if (q.t === "d" || q.t === "e") {
         const rx = (q.t === "d" ? q.r : q.rx) + b, ry = (q.t === "d" ? q.r : q.ry) + b;
         const n = Math.max(6, Math.round((2 * Math.PI * (rx + ry) / 2) / aralik));
@@ -468,6 +470,18 @@
       }
       elips(ctx, x - ara, y, rr * 2.3, rr * 2.3, "rgba(253, 224, 71, 0.2)"); elips(ctx, x + ara, y, rr * 2.3, rr * 2.3, "rgba(253, 224, 71, 0.2)");
       gozler(ctx, x, y, ara, rr, "#fde047");
+    },
+    // kristal ve buz parıltısı: dört kollu yıldız belirip kaybolur
+    parilti(ctx, x, y, zaman, n) {
+      const a = Math.sin(zaman * 2.2 + n * 6.283);
+      if (a < 0.08) return;
+      const s = 2 + a * 3.5, eski = ctx.globalAlpha;
+      ctx.globalAlpha = eski * a;
+      elips(ctx, x, y, s, s, "rgba(165, 243, 252, 0.3)");
+      ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.moveTo(x, y - s * 1.4);
+      ctx.quadraticCurveTo(x, y, x + s * 1.4, y); ctx.quadraticCurveTo(x, y, x, y + s * 1.4);
+      ctx.quadraticCurveTo(x, y, x - s * 1.4, y); ctx.quadraticCurveTo(x, y, x, y - s * 1.4); ctx.fill();
+      ctx.globalAlpha = eski;
     },
     // ateş böceği: sinüsle parlar, hafifçe süzülür
     atesbocegi(ctx, x, y, zaman, n) {

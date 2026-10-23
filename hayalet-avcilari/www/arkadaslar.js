@@ -522,8 +522,8 @@ function durumMetni(durum) {
   return durum === "on" ? t("🟢 Çevrimiçi") : durum === "room" ? t("🎮 Odada") : t("⚪ Çevrimdışı");
 }
 
-function arkadasSatiri(uid, simge, ad, durum, dugmeler, acik = false) {
-  return `<div class="arkadas-satir${acik ? " acik" : ""}" data-uid="${escapeHtml(uid)}">${simge}` +
+function arkadasSatiri(uid, simge, ad, durum, dugmeler, sinif = "") {
+  return `<div class="arkadas-satir${sinif ? " " + sinif : ""}" data-uid="${escapeHtml(uid)}">${simge}` +
     `<span class="arkadas-ad" dir="auto">${escapeHtml(ad)}</span>` +
     (durum ? `<span class="arkadas-durum">${durum}</span>` : "") + dugmeler + `</div>`;
 }
@@ -558,7 +558,7 @@ function renderFriends() {
     ? arkadaslar.map((a) => arkadasSatiri(a.uid, arkadasSimgesi(a.uid), a.ad, durumMetni(a.durum),
         `<button class="arkadas-menu" data-eylem="menu" aria-expanded="${a.uid === _acikSatir}">⋯</button>` +
         `<div class="arkadas-eylemler"><button class="arkadas-cikar" data-eylem="cikar">${t("Çıkar")}</button>` +
-        `<button class="arkadas-engelle" data-eylem="engelle">${t("Engelle")}</button></div>`, a.uid === _acikSatir)).join("")
+        `<button class="arkadas-engelle" data-eylem="engelle">${t("Engelle")}</button></div>`, a.uid === _acikSatir ? "acik" : "")).join("")
     : `<div class="arkadas-bos">${sosyal.hazir ? t("Henüz arkadaşın yok. Kodunu paylaş ya da odada ➕'ya dokun.") : kapali ? "" : "⏳"}</div>`;
 
   // Gönderilen istekler ve engellenenler (açılır kutular; boşken gizli)
@@ -669,4 +669,103 @@ async function koduYenileOnayla() {
   if (!sosyal.kod || !confirm(t("Yeni kod alınsın mı? Eski kod artık çalışmaz."))) return;
   if (!(await koduYenile())) showToast(sonucMesaji("hata"));
   renderFriends();
+}
+
+// ============================================================
+// LOBİ (➕ / ⏳ / 👫) VE DAVET PENCERESİ (screen-davet)
+// Pencere classList ile açılır (duraklat ekranı gibi): altındaki lobi ya da ⏸ Menü açık kalır.
+// ============================================================
+const _lobiEkleniyor = new Set(); // ➕ çalışırken düğme pasif, ikinci dokunuş sessiz
+let _davetPenceresiBagli = false;
+
+// Lobideki diğer oyuncunun satır sonu: arkadaşsa 👫, isteğim gitmişse ⏳, engellediysem boş, değilse ➕
+// (uid onclick metnine yazılmaz: data-uid'den okunur)
+function lobiArkadasDugmesi(uid, ad) {
+  if (!sosyal.uid || !sosyal.hazir || sosyal.hata || uid === sosyal.uid) return "";
+  if (sosyal.arkadaslar[uid]) return `<span class="lp-arkadas">👫</span>`;
+  if (sosyal.engeller[uid]) return "";
+  if (sosyal.gonderilen[uid]) return `<span class="lp-arkadas">⏳</span>`;
+  return `<button class="lp-ekle" data-uid="${escapeHtml(uid)}" aria-label="${escapeHtml(t("➕ Ekle") + ": " + kisaAd(ad))}"` +
+    `${_lobiEkleniyor.has(uid) ? " disabled" : ""} onclick="lobidenEkle(this.dataset.uid)">➕</button>`;
+}
+
+async function lobidenEkle(uid) {
+  if (_lobiEkleniyor.has(uid)) return;
+  const p = online.cachedRoom && online.cachedRoom.players && online.cachedRoom.players[uid];
+  const ad = kisaAd(p && p.name);
+  _lobiEkleniyor.add(uid);
+  if (lobidemi()) renderLobby();
+  try {
+    showToast(sonucMesaji(await arkadasIstegiGonder(uid, ad), ad));
+  } finally {
+    _lobiEkleniyor.delete(uid);
+    if (lobidemi()) renderLobby();
+  }
+}
+
+function davetSonucMesaji(sonuc, ad) {
+  switch (sonuc) {
+    case "gonderildi": return t("📨 Davet gönderildi: {ad}", { ad: kisaAd(ad) });
+    case "bekle": return t("Biraz bekle, az önce çağırdın.");
+    case "adyok": return t("Önce avcı adını ayarla");
+    case "hata": return t("⚠ Bağlanılamadı, yeniden dene");
+    default: return t("Davet gönderilemedi"); // arkadasdegil, odayok
+  }
+}
+
+function odaDolu() {
+  const r = online.cachedRoom;
+  return !!r && Object.keys(r.players || {}).length >= (r.maxPlayers || 5);
+}
+
+function openInviteModal() {
+  davetPenceresiniBagla();
+  document.getElementById("screen-davet").classList.add("active");
+  renderInviteModal();
+  if (!sosyal.hazir || sosyal.hata) sosyalBaslat().then(renderInviteModal, renderInviteModal);
+}
+
+function closeInviteModal() {
+  const pencere = document.getElementById("screen-davet");
+  if (pencere) pencere.classList.remove("active");
+}
+
+function davetPenceresiniBagla() {
+  const pencere = document.getElementById("screen-davet");
+  if (_davetPenceresiBagli || !pencere) return;
+  _davetPenceresiBagli = true;
+  pencere.addEventListener("click", (e) => {
+    const dugme = e.target.closest("button.davet-gonder");
+    const satir = dugme && dugme.closest(".arkadas-satir[data-uid]");
+    if (satir) davetEt(satir.dataset.uid, dugme);
+  });
+}
+
+// Davet edilebilen: 🟢 çevrimiçi ya da 🎮 başka odada; ⚪ çevrimdışı ve bu odadakiler soluk, oda doluyken hiçbiri
+function renderInviteModal() {
+  const pencere = document.getElementById("screen-davet");
+  if (!pencere || !pencere.classList.contains("active")) return;
+  const kapali = sosyalKullanilamaz(), dolu = odaDolu();
+  const oyuncular = (online.cachedRoom && online.cachedRoom.players) || {};
+  document.getElementById("davet-not").textContent = kapali ? t("⚠ Arkadaşlar şu an kullanılamıyor")
+    : dolu ? t("Oda dolu") : t("Davet için arkadaşın çevrimiçi olmalı.");
+  const simdi = performance.now();
+  const satirlar = Object.keys(sosyal.arkadaslar).map((uid) => {
+    const durum = arkadasDurumu(uid), odada = !!oyuncular[uid];
+    return { uid, ad: arkadasAdi(uid), durum, odada, secilir: !odada && durum !== "off" };
+  }).sort((a, b) => (b.secilir - a.secilir) || DURUM_SIRASI[a.durum] - DURUM_SIRASI[b.durum] || a.ad.localeCompare(b.ad));
+  document.getElementById("davet-liste").innerHTML = satirlar.length ? satirlar.map((s) => {
+    const son = sosyal._sonDavet[s.uid];
+    const gitti = !s.odada && son && simdi - son < SOSYAL.DAVET_ARALIK_MS; // aynı arkadaşa 30 sn'de bir
+    const sag = gitti ? `<span class="davet-tamam">${t("✓ Gönderildi")}</span>`
+      : `<button class="davet-gonder"${s.secilir && !dolu && !kapali ? "" : " disabled"}>📨</button>`;
+    return arkadasSatiri(s.uid, arkadasSimgesi(s.uid), s.ad, s.odada ? t("Bu odada") : durumMetni(s.durum), sag, s.secilir ? "" : "soluk");
+  }).join("") : `<div class="arkadas-bos">${t("Henüz arkadaşın yok. Kodunu paylaş ya da odada ➕'ya dokun.")}</div>`;
+}
+
+async function davetEt(uid, dugme) {
+  dugme.disabled = true;
+  const ad = arkadasAdi(uid);
+  showToast(davetSonucMesaji(await davetGonder(uid), ad));
+  renderInviteModal();
 }

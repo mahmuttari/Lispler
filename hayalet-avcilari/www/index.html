@@ -180,8 +180,19 @@
     <p id="pause-not" class="online-sub" style="display:none"></p>
     <p id="pause-kod" class="pause-kod" style="display:none"></p>
     <button class="btn btn-big" onclick="resumeGame()">▶ Devam</button>
+    <button id="pause-davet" class="btn" style="display:none" onclick="openInviteModal()">📨 Davet et</button>
     <button class="btn" onclick="openSoundSettings()">🎚 Ses Ayarları</button>
     <button class="btn" onclick="quitToMenu()">🏠 Menüye Dön</button>
+  </div>
+</div>
+
+<!-- ========== DAVET PENCERESİ (arkadaslar.js; lobinin ve ⏸ Menü'nün üstünde açılır) ========== -->
+<div id="screen-davet" class="screen modal">
+  <div class="modal-content davet-pencere">
+    <h2>📨 ARKADAŞINI ÇAĞIR</h2>
+    <p id="davet-not" class="online-sub"></p>
+    <div id="davet-liste" class="arkadas-liste"></div>
+    <button class="btn" onclick="closeInviteModal()">⬅ Geri</button>
   </div>
 </div>
 
@@ -391,6 +402,7 @@
     </button>
     <div id="lobby-players" class="lobby-players"></div>
     <p id="lobby-ipucu" class="online-sub lobby-ipucu"></p>
+    <button id="lobby-davet-btn" class="btn" onclick="openInviteModal()">📨 Davet et</button>
     <div class="lobby-actions">
       <button id="lobby-ready-btn" class="btn btn-big" onclick="toggleReady()">✓ HAZIR</button>
       <button id="lobby-start-btn" class="btn btn-big btn-play" onclick="startMpGame()" style="display:none;">▶ BAŞLAT</button>

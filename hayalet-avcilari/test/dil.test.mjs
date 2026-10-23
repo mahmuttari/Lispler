@@ -68,7 +68,17 @@ try {
           Object.assign(online, { uid: 'u1', roomId: 'K7PQ2X', isHost: true, cachedRoom: { name: 'Kiki', maxPlayers: 6, hostUid: 'u1', status: 'lobby', players } });
           showScreen('screen-lobby'); renderLobby();
         },
-        dil: () => { online.roomId = null; online.cachedRoom = null; showScreen('screen-menu'); openLanguage(); },
+        davet_penceresi: () => { // 3.13.0: lobide davet penceresi (biri çevrimiçi, biri başka odada, biri durumsuz)
+          const { u1, u2 } = online.cachedRoom.players;
+          online.cachedRoom.players = { u1, u2 };
+          renderLobby();
+          Object.assign(sosyal, {
+            arkadaslar: { f1: { name: 'Lara', at: 1 }, f2: { name: 'Nina', at: 1 }, f3: { name: 'Tom', at: 1 } },
+            durumlar: { f1: { name: 'Lara', charKey: 'kent', costumeIdx: 0, state: 'on', at: 1 }, f2: { name: 'Nina', charKey: 'veryi', costumeIdx: 0, state: 'room', at: 1 } },
+          });
+          openInviteModal();
+        },
+        dil: () => { closeInviteModal(); online.roomId = null; online.cachedRoom = null; showScreen('screen-menu'); openLanguage(); },
         guncelleme: () => { closeLanguage(); showUpdateModal(APP_VERSION, UPDATE_NOTES[APP_VERSION]); },
         oyun: () => { dismissUpdateModal(); startGame(); game.player.invuln = 1e9; },
         duraklat: () => pauseGame(),

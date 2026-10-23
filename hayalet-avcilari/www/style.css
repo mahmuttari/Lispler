@@ -1332,3 +1332,19 @@ details.arkadas-bolum > summary::-webkit-details-marker { display: none; }
 .arkadas-satir.acik .arkadas-eylemler { display: flex; }
 .arkadas-bos { color: #cbd5e1; font-size: 13px; text-align: center; padding: 8px; }
 .arkadas-google { margin-top: 8px; text-wrap: balance; }
+/* Lobi satır sonu (➕ / ⏳ / 👫) ve davet penceresi */
+.lobby-player .lp-ekle {
+  min-width: 44px; min-height: 40px; padding: 0 8px; border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.3); background: #16a34a; color: white;
+  font-size: 16px; font-family: inherit; cursor: pointer;
+}
+.lobby-player .lp-ekle:disabled { opacity: 0.5; cursor: default; }
+.lobby-player .lp-arkadas {
+  min-width: 44px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 10px; background: rgba(0,0,0,0.35); font-size: 18px;
+}
+#lobby-davet-btn:disabled, #pause-davet:disabled { opacity: 0.5; cursor: default; }
+.davet-pencere { max-height: 88vh; overflow-y: auto; }
+.davet-pencere h2 { font-size: 22px; }
+.davet-pencere .arkadas-liste { text-align: start; margin: 8px 0 12px; }
+.davet-tamam { font-size: 13px; font-weight: 800; color: #4ade80; white-space: nowrap; }

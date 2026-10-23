@@ -3238,6 +3238,7 @@ function enterLobby(room) {
   startRoomListener();
   setupOnDisconnect();
   odaNabziniBaslat();
+  durumumuYaz(); // arkadaşlara 🎮 Odada (arkadaslar.js)
 }
 
 function lobidemi() {
@@ -3318,6 +3319,7 @@ function oyuncularDegisti(players) {
   if (r.hostUid && !players[r.hostUid] && Object.keys(players).length) maybeBecomeNewHost(players);
   uzakOyunculariGuncelle(players);
   if (lobidemi()) renderLobby();
+  renderInviteModal(); // açıksa: "Bu odada" ve oda dolu durumu
 }
 
 let _tazeleZamani = 0;
@@ -3411,6 +3413,7 @@ function renderLobby() {
     if (!p) return;
     const row = document.createElement("div");
     row.className = "lobby-player";
+    row.dataset.uid = uid;
     if (uid === room.hostUid) row.classList.add("is-host");
     if (uid === online.uid) row.classList.add("is-me");
     const charName = (CHARACTERS[p.charKey] || { name: "?" }).name;
@@ -3418,6 +3421,7 @@ function renderLobby() {
       <span class="lp-img" style="background-image:url(${karakterSimgesi(p.charKey, p.costumeIdx)})"></span>
       <span class="lp-name">${uid === room.hostUid ? "👑 " : ""}${escapeHtml(p.name || "?")}${uid === online.uid ? ` (${t("Sen")})` : ""}</span>
       <span class="lp-tag">${escapeHtml(charName)}</span>
+      ${uid === online.uid ? "" : lobiArkadasDugmesi(uid, p.name)}
       <span class="lp-ready">${p.ready ? "✓" : "⏳"}</span>
     `;
     list.appendChild(row);
@@ -3433,9 +3437,11 @@ function renderLobby() {
   // BAŞLAT yalnız host'ta ve herkes hazırsa
   const allReady = uids.length >= 2 && uids.every((u) => players[u] && players[u].ready);
   document.getElementById("lobby-start-btn").style.display = (online.isHost && allReady) ? "" : "none";
+  document.getElementById("lobby-davet-btn").disabled = uids.length >= max; // oda doluyken davet yok
   const ipucu = document.getElementById("lobby-ipucu");
   if (ipucu) {
-    ipucu.textContent = uids.length < 2 ? t("Arkadaşına oda kodunu söyle: Online Oyna › Oda Listesi › Kodla Katıl.")
+    ipucu.textContent = uids.length < 2
+      ? (sosyalKullanilamaz() ? t("Arkadaşına oda kodunu söyle: Online Oyna › Oda Listesi › Kodla Katıl.") : t("Arkadaşını 📨 Davet et ile çağır ya da oda kodunu söyle."))
       : online.isHost ? (allReady ? "" : t("Herkes hazır olunca ▶ BAŞLAT çıkar."))
       : t("Host başlatınca oyun açılır.");
   }
@@ -3487,6 +3493,7 @@ async function odadanCik() {
   if (hostum && tekBasina) await rtdb.remove(`rooms/${roomId}`);
   else await rtdb.remove(`rooms/${roomId}/players/${uid}`);
   online.ayriliyor = false;
+  durumumuYaz(); // arkadaşlara yeniden 🟢
 }
 
 // Oda silindi (eski sürümlü host çıktı ya da oda kapandı): kazançlar kaydedilir
@@ -3511,6 +3518,7 @@ function odaKapandi() {
   document.getElementById("screen-gameover").classList.remove("active");
   showToast(t("Oda kapandı"));
   showScreen("screen-online");
+  durumumuYaz();
 }
 
 // --- Oyun başlatma ---
@@ -6459,6 +6467,9 @@ function pauseGame() {
   const kod = document.getElementById("pause-kod");
   kod.textContent = (cevrimici && online.roomId) ? t("🔑 Oda kodu: {kod}", { kod: online.roomId }) : "";
   kod.style.display = (cevrimici && online.roomId) ? "" : "none";
+  const davet = document.getElementById("pause-davet");
+  davet.style.display = (cevrimici && online.roomId) ? "" : "none";
+  davet.disabled = odaDolu();
   document.getElementById("screen-pause").classList.add("active");
 }
 

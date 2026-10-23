@@ -4,6 +4,8 @@
 // oyuncu, çevrimdışı, hesap verisinin silinmesi, kurallar yüklenmemişken.
 // Arkadaşlar ekranı: menüdeki 👫 rozeti, kod kartı, Google satırı, kutudan ekleme, ekrandan kabul, adında HTML ya da
 // bilinmeyen karakter anahtarı olan arkadaş, kurallar yokken uyarı.
+// Lobi: ➕ / ⏳ / 👫, hızlı çift dokunuş, odadaki durum (room / on), davet penceresi (soluk satırlar, ✓ Gönderildi),
+// ⏸ Menü'de 📨 yalnız çevrimiçi oyunda, dolu odada pasif 📨 Davet et.
 // Çalıştırma (Java 21, Playwright + Chromium gerekir):
 //   cd hayalet-avcilari/firebase && npm ci && npm run test:arkadas
 // Emülatör zaten açıksa: node hayalet-avcilari/test/arkadas.test.mjs
@@ -274,6 +276,87 @@ try {
     assert.ok(izinEkrani.gorunur, 'uyarı görünmüyor');
     assert.equal(izinEkrani.metin, '⚠ Arkadaşlar şu an kullanılamıyor');
     assert.ok(izinEkrani.pasif, 'kod kutusu pasif değil');
+  });
+
+  // 10c) Lobi: ➕ / ⏳ / 👫, çift dokunuş, odadaki durum, davet penceresi, ⏸ Menü'de 📨, dolu odada pasif düğme
+  await C.p.evaluate((u) => istegiIptalEt(u), ayse);                        // Cem'in Ayşe'ye bekleyen isteği kalksın: Cem satırı ➕
+  await bekle(A, (u) => !sosyal.istekler[u], cem, 5000);
+  const zeki = 'zekiCevrimdisi';                                             // durumu hiç yazılmamış (çevrimdışı) arkadaş
+  await sahip('', { method: 'PATCH', body: JSON.stringify({ [`users/${ayse}/friends/${zeki}`]: { name: 'Zeki', at: 1 }, [`users/${zeki}/friends/${ayse}`]: { name: 'Ayşe', at: 1 } }) });
+  await A.p.evaluate(async () => { await odadanCik(); await openOnline(); openCreateRoom(); selectMaxPlayers(3); await submitCreateRoom(); });
+  const odaA = await A.p.evaluate(() => online.roomId);
+  await B.p.evaluate((k) => joinRoom(k), odaA);
+  await C.p.evaluate((k) => joinRoom(k), odaA);
+  await bekle(A, () => online.cachedRoom && Object.keys(online.cachedRoom.players).length === 3);
+  const satirSimge = (s, u) => s.p.evaluate((u) => {
+    const r = document.querySelector(`#lobby-players [data-uid="${u}"]`);
+    const e = r && r.querySelector('.lp-arkadas, .lp-ekle');
+    return e ? e.textContent : null;
+  }, u);
+  const boraSatiri = await satirSimge(A, bora);
+  const cemSatiri = await satirSimge(A, cem);
+  const doluPasif = await A.p.evaluate(() => document.getElementById('lobby-davet-btn').disabled);
+  const odada = await bekle(A, (u) => arkadasDurumu(u) === 'room', bora, 5000);
+  await A.p.evaluate((u) => {
+    window._toastlar = [];
+    const asil = showToast;
+    showToast = (m) => { window._toastlar.push(m); asil(m); };
+    const d = document.querySelector(`#lobby-players [data-uid="${u}"] .lp-ekle`);
+    d.click(); d.click();                                                     // hızlı çift dokunuş
+  }, cem);
+  const bekliyor = await bekle(A, (u) => {
+    const r = document.querySelector(`#lobby-players [data-uid="${u}"] .lp-arkadas`);
+    return !!r && r.textContent === '⏳';
+  }, cem, 5000);
+  await bekle(A, () => window._toastlar.length > 0, null, 5000);              // bildirim sunucu onayından sonra gelir
+  await A.p.waitForTimeout(500);                                             // ikinci dokunuşun bildirimi olsaydı gelirdi
+  const ciftToast = await A.p.evaluate(() => window._toastlar.slice());
+  const cemeIstek = await oku(`users/${cem}/requests/${ayse}`);
+  sina(`lobide Bora ${boraSatiri}, Cem ${cemSatiri} → ⏳; çift dokunuşta tek bildirim (${ciftToast.join(' | ')}); dolu odada 📨 pasif`, () => {
+    assert.equal(boraSatiri, '👫');
+    assert.equal(cemSatiri, '➕');
+    assert.ok(bekliyor, 'Cem satırı ⏳ olmadı');
+    assert.deepEqual(ciftToast, ['📨 İstek gönderildi: Cem']);
+    assert.equal(cemeIstek && cemeIstek.name, 'Ayşe');
+    assert.equal(doluPasif, true);
+    assert.ok(odada, 'lobideki Bora "room" görünmüyor');
+  });
+  await A.p.evaluate(() => { sosyal._sonDavet = {}; openInviteModal(); }); // 8. adımdaki davetin 30 sn sınırı burayı etkilemesin
+  const pencere = await bekle(A, ([b, z]) => {
+    const r = (u) => document.querySelector(`#davet-liste [data-uid="${u}"]`);
+    return !!r(b) && r(b).classList.contains('soluk') && !!r(z) && r(z).classList.contains('soluk');
+  }, [bora, zeki], 5000);
+  await B.p.evaluate(() => leaveRoom());
+  const cikinca = await bekle(A, (u) => arkadasDurumu(u) === 'on', bora, 5000);
+  const bosYer = await bekle(A, () => document.getElementById('lobby-davet-btn').disabled === false, null, 5000);
+  const davetDugmesi = await bekle(A, (u) => { const d = document.querySelector(`#davet-liste [data-uid="${u}"] .davet-gonder`); return !!d && !d.disabled; }, bora, 5000);
+  if (davetDugmesi) await A.p.evaluate((u) => document.querySelector(`#davet-liste [data-uid="${u}"] .davet-gonder`).click(), bora);
+  const gonderildi = await bekle(A, (u) => {
+    const r = document.querySelector(`#davet-liste [data-uid="${u}"]`);
+    return !!r && r.textContent.includes('✓ Gönderildi');
+  }, bora, 5000);
+  const boraDavet = await bekle(B, (o) => { const d = gecerliDavet(); return !!d && d.room === o; }, odaA, 5000);
+  await A.p.evaluate(() => closeInviteModal());
+  sina('davet penceresi: odadaki ve çevrimdışı arkadaş soluk; odadan çıkan Bora 🟢, 📨 → ✓ Gönderildi, Bora\'da davet', () => {
+    assert.ok(pencere, 'Bora (bu odada) ya da Zeki (çevrimdışı) soluk değil');
+    assert.ok(cikinca, 'odadan çıkan Bora "on" olmadı');
+    assert.ok(bosYer, 'yer açılınca 📨 Davet et pasif kaldı');
+    assert.ok(davetDugmesi, 'Bora satırında etkin 📨 yok');
+    assert.ok(gonderildi, 'satır "✓ Gönderildi" olmadı');
+    assert.ok(boraDavet, 'Bora\'da geçerli davet yok');
+  });
+  // ⏸ Menü: 📨 yalnız çevrimiçi oyunda
+  await C.p.evaluate(async () => { await toggleReady(); });
+  await bekle(A, () => document.getElementById('lobby-start-btn').style.display !== 'none');
+  await A.p.evaluate(async () => { await startMpGame(); });
+  await bekle(A, () => game.running && online.mode === 'host');
+  const cevrimiciMenu = await A.p.evaluate(() => { pauseGame(); const d = document.getElementById('pause-davet'); const r = d.offsetParent !== null; resumeGame(); return r; });
+  for (const s of [A, C]) await s.p.evaluate(() => quitToMenu());
+  const tekMenu = await B.p.evaluate(() => { startGame(); game.player.invuln = 1e9; pauseGame(); const r = document.getElementById('pause-davet').offsetParent !== null; quitToMenu(); return r; });
+  await sahip('', { method: 'PATCH', body: JSON.stringify({ [`users/${ayse}/friends/${zeki}`]: null, [`users/${zeki}`]: null }) });
+  sina(`⏸ Menü'de 📨 Davet et: çevrimiçi oyunda ${cevrimiciMenu ? 'görünür' : 'yok'}, tek kişilikte ${tekMenu ? 'görünür' : 'gizli'}`, () => {
+    assert.equal(cevrimiciMenu, true);
+    assert.equal(tekMenu, false);
   });
 
   // 11) Hesap verisinin silinmesi: Ayşe'nin listesinden çıkar, kendi düğümü ve kodu silinir

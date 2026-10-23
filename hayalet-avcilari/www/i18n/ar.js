@@ -70,6 +70,7 @@ I18N.ar = {
   "🌐 ONLINE OYNA": "🌐 العب أونلاين",
   "🌐 Online": "🌐 أونلاين",
   "🌐 Online Oyna": "🌐 العب أونلاين",
+  "🌐 Online oyun yenilendi: donma ve hayalet sıçraması bitti, biri hayalet olunca da oyun akıcı sürüyor.": "🌐 تجدّد اللعب أونلاين: لا تجمّد ولا قفز للأشباح، حتى عندما يصبح أحدكم شبحًا.",
   "🌐 Online oyun yenilendi: donma ve hayaletlerin ekranda sıçraması bitti, herkes akıcı hareket ediyor.": "🌐 تجدّد اللعب أونلاين: لا تجمّد بعد الآن ولا قفز للأشباح على الشاشة، والجميع يتحرك بسلاسة.",
   "🌐 Yükleniyor...": "🌐 جارٍ التحميل...",
   "🌟 Bölüm temiz! Sıradaki bölüm geliyor...": "🌟 المرحلة نظيفة! المرحلة التالية قادمة...",

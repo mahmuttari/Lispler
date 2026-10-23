@@ -70,6 +70,7 @@ I18N.hi = {
   "🌐 ONLINE OYNA": "🌐 ऑनलाइन खेलो",
   "🌐 Online": "🌐 ऑनलाइन",
   "🌐 Online Oyna": "🌐 ऑनलाइन खेलो",
+  "🌐 Online oyun yenilendi: donma ve hayalet sıçraması bitti, biri hayalet olunca da oyun akıcı sürüyor.": "🌐 ऑनलाइन गेम नया हो गया: अब न अटकता है, न भूत उछलते हैं — कोई भूत बन जाए तब भी सब आराम से चलता है।",
   "🌐 Online oyun yenilendi: donma ve hayaletlerin ekranda sıçraması bitti, herkes akıcı hareket ediyor.": "🌐 ऑनलाइन गेम नया हो गया: अब न अटकता है, न भूत स्क्रीन पर उछलते हैं — सब आराम से चलते हैं।",
   "🌐 Yükleniyor...": "🌐 लोड हो रहा है...",
   "🌟 Bölüm temiz! Sıradaki bölüm geliyor...": "🌟 लेवल साफ़! अगला लेवल आ रहा है...",

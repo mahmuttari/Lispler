@@ -70,6 +70,7 @@ I18N.es = {
   "🌐 ONLINE OYNA": "🌐 JUGAR EN LÍNEA",
   "🌐 Online": "🌐 En línea",
   "🌐 Online Oyna": "🌐 Jugar en línea",
+  "🌐 Online oyun yenilendi: donma ve hayalet sıçraması bitti, biri hayalet olunca da oyun akıcı sürüyor.": "🌐 El juego en línea se renovó: no se congela ni los fantasmas saltan, ni cuando alguien es fantasma.",
   "🌐 Online oyun yenilendi: donma ve hayaletlerin ekranda sıçraması bitti, herkes akıcı hareket ediyor.": "🌐 El juego en línea se renovó: ya no se congela ni los fantasmas saltan; todos se mueven con fluidez.",
   "🌐 Yükleniyor...": "🌐 Cargando...",
   "🌟 Bölüm temiz! Sıradaki bölüm geliyor...": "🌟 ¡Nivel limpio! Ya llega el siguiente...",

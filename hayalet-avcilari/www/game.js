@@ -313,8 +313,15 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.12.0";
+const APP_VERSION = "3.12.1";
 const UPDATE_NOTES = {
+  // 3.12.0 Play'e çıkmadan 3.12.1 geldi: notlar 3.12.0'ı da anlatır (oyuncular 3.11.0'dan doğrudan geçer)
+  "3.12.1": [
+    t("🌐 Online oyun yenilendi: donma ve hayalet sıçraması bitti, biri hayalet olunca da oyun akıcı sürüyor."),
+    t("🔑 Lobideki oda kodunu arkadaşına söyle: Oda Listesi › Kodla Katıl ile gelir, oyun başlamış olsa da katılır."),
+    t("👻 Hayaletler artık herkesi kovalar; senin vurduğun hayalet sana sayılır. Hayalet olan arkadaş sonraki bölümde yeniden doğar."),
+    t("🏁 Herkes hayalet olunca tur biter, kazançlar kaydedilir ve lobiye dönülür. Host çıkarsa oyun kapanmaz, sürer."),
+  ],
   "3.12.0": [
     t("🌐 Online oyun yenilendi: donma ve hayaletlerin ekranda sıçraması bitti, herkes akıcı hareket ediyor."),
     t("🔑 Lobideki oda kodunu arkadaşına söyle: Oda Listesi › Kodla Katıl ile gelir, oyun başlamış olsa da katılır."),

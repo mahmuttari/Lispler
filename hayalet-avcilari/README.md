@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.12.0 (versionCode 42) — 22 Ekim 2026'da Play üretim kanalına yüklenip incelemeye gönderildi (kanalda 3.11.0 (41)'in yerine) |
+| Sürüm | 3.12.1 (versionCode 43) — biri ölünce donma düzeltmesi; Play'e incelemedeki 3.12.0 (42)'nin yerine gönderiliyor (kullanıcı onayı, 23 Ekim 2026) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
@@ -147,7 +147,23 @@ gölgelediği için hata veriyordu (`const t`), düzeldi; başka sürümden gele
 Veri düzeni ve izinler değişmedi; kurallara yalnız `rooms/.indexOn` eklendi (yayınlanmasa da çalışır). 3.11.0 ile
 aynı odada oynanır (ayrıntı: [`firebase/README.md`](firebase/README.md) › rooms › Sürüm uyumu).
 
-Test: `cd hayalet-avcilari/firebase && npm run test:cevrimici` (emülatör + Playwright; 11 sınama).
+Test: `cd hayalet-avcilari/firebase && npm run test:cevrimici` (emülatör + Playwright; 13 sınama).
+
+## 3.12.1: biri ölünce donma
+
+Şikâyet: "Multiplayer oyunda oyunculardan birisi ölünce oyun donuyor." Emülatörde iki tarayıcıyla (CPU 4 kat yavaş)
+ölçüldü: konuk ölünce kurucu 58 → 12,8 fps, konuk 59 → 1,8 fps; host ölünce 2,7 ve 4,6 fps, kare 0,4–0,9 sn. `render()`'ın
+JS süresi yalnız 2,4 → 4–6 ms'ye çıkıyordu: zaman tuvalin boyanmasında gidiyordu.
+
+Kök neden: hayalet olan oyuncu (kendi ekranında ve diğer oyuncuların ekranında) `ctx.filter = "hue-rotate(180deg)
+brightness(1.3)"` ile çiziliyordu. Tuval filtresi karakterin onlarca çizim işleminin her birine ayrı uygulanır. Yalnız filtre
+etkisizleştirilince ölümden sonra da 46–51 fps sürdü. Aynı sınıftan Bot'un vuruş parlaması (`brightness(2.2)`) tek kişilik
+oyunu parlama süresince 1,6 fps'e düşürüyordu (Bot'u vururken takılma).
+
+Düzeltme: hayalet görüntüsü karakter/kostüm başına bir kez ayrı tuvale çizilip `source-atop` ile mavi tona boyanır, her karede
+tek `drawImage` ile süzülerek basılır (`hayaletGorunumu`, `hayaletOyuncuCiz`); Bot parlaması filtresiz beyaz ışık.
+`game.js`'te `ctx.filter` kalmadı. Test: `node hayalet-avcilari/test/cizim.test.mjs` (Firebase'siz; eski kodda hayalet 0,3 fps,
+vurulan Bot 1,3 fps) ve `test:cevrimici`'deki "biri hayalet olunca oyun akar" (eski kodda 3,5–4,5 fps, yenide ~60 fps).
 
 ## Diller
 

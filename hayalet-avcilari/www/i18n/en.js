@@ -70,6 +70,7 @@ I18N.en = {
   "🌐 ONLINE OYNA": "🌐 PLAY ONLINE",
   "🌐 Online": "🌐 Online",
   "🌐 Online Oyna": "🌐 Play Online",
+  "🌐 Online oyun yenilendi: donma ve hayalet sıçraması bitti, biri hayalet olunca da oyun akıcı sürüyor.": "🌐 Online play is rebuilt: no more freezing or jumping ghosts, even when someone becomes a ghost.",
   "🌐 Online oyun yenilendi: donma ve hayaletlerin ekranda sıçraması bitti, herkes akıcı hareket ediyor.": "🌐 Online play is rebuilt: no more freezing or ghosts jumping around — everyone moves smoothly.",
   "🌐 Yükleniyor...": "🌐 Loading...",
   "🌟 Bölüm temiz! Sıradaki bölüm geliyor...": "🌟 Level cleared! Next level coming up...",

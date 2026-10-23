@@ -70,6 +70,7 @@ I18N.zh = {
   "🌐 ONLINE OYNA": "🌐 在线游戏",
   "🌐 Online": "🌐 在线",
   "🌐 Online Oyna": "🌐 在线游戏",
+  "🌐 Online oyun yenilendi: donma ve hayalet sıçraması bitti, biri hayalet olunca da oyun akıcı sürüyor.": "🌐 在线游戏全新升级：不再卡顿，幽灵不再乱跳，有人变成幽灵时也很流畅。",
   "🌐 Online oyun yenilendi: donma ve hayaletlerin ekranda sıçraması bitti, herkes akıcı hareket ediyor.": "🌐 在线游戏全新升级：不再卡顿，幽灵也不会在屏幕上乱跳，大家都动得很流畅。",
   "🌐 Yükleniyor...": "🌐 加载中...",
   "🌟 Bölüm temiz! Sıradaki bölüm geliyor...": "🌟 本关已清空！下一关马上来...",

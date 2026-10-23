@@ -1,4 +1,4 @@
-🌐 Online oyun yenilendi: donma ve hayaletlerin ekranda sıçraması bitti, herkes akıcı hareket ediyor.
+🌐 Online oyun yenilendi: donma ve hayalet sıçraması bitti, biri hayalet olunca da oyun akıcı sürüyor.
 🔑 Lobideki oda kodunu arkadaşına söyle: Oda Listesi › Kodla Katıl ile gelir, oyun başlamış olsa da katılır.
 👻 Hayaletler artık herkesi kovalar; senin vurduğun hayalet sana sayılır. Hayalet olan arkadaş sonraki bölümde yeniden doğar.
 🏁 Herkes hayalet olunca tur biter, kazançlar kaydedilir ve lobiye dönülür. Host çıkarsa oyun kapanmaz, sürer.

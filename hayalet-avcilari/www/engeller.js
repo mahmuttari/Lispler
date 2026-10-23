@@ -4,6 +4,8 @@
    kutu (k) parçalarının birleşimi. Çarpışma biçimi izler (collidesWalls/Waters/Spikes/Lavas → engelCarpisir).
    Harita üretimi (buildWalls/buildWaters/buildHazards: yer, boyut, çakışma) değişmez; biçim her build işlevinin
    sonunda engelBicimleriniKur() ile eklenir. Bütün süs ve biçimler tohumlu rastgele: her cihazda aynı.
+   Çizim: her engel kendi tuvaline bir kez çizilir (engelResmi, ölçek engelOlcegi), render her karede engelleriCiz ile
+   önbelleği basar ve üstüne canlı katmanı (dalga, lav, alev, ENGEL_CANLI) çizer. Tema ressamları engel-temalari.js'te.
    Tasarım: docs/superpowers/specs/2026-10-23-hayalet-engeller-design.md
    game.js'ten önce yüklenir; game.js'in değişkenlerine (game) yalnız çağrı anında erişir.
    ============================================================ */
@@ -245,11 +247,12 @@
       P.push({ t: "k", x: yon === "sol" ? -8 : 7, y: -8, w: w - 7 + 8, h: h + 16, rr: 6 });
       for (let y = 10; y < h - 6; y += 20) P.push({ t: "d", x: yon === "sol" ? w - 7 : 7, y, r: 6.5 });
     }
+    P.yon = yon;
     return P;
   }
   const AILELER = { kale: bicimKale, harabe: bicimHarabe, kutuk: bicimKutuk, kaya: bicimKaya, istasyon: bicimIstasyon, yama: (w, h, r) => bicimYama(w, h, r) };
   // Görselin biçim dışına taşma payı (kıyı, kenar süsü, gölge)
-  const PAY = { kale: 4, harabe: 4, kutuk: 4, kaya: 4, istasyon: 4, yama: 3, plaka: 2.5, sinir: 0 };
+  const PAY = { kale: 4, harabe: 4, kutuk: 4, kaya: 4, istasyon: 4, yama: 7, plaka: 2.5, sinir: 0 };
   // Tema başına duvar ve obje aileleri (spec §4); belirtilmeyen obje "yama"
   const ENGEL_AILELERI = [{ duvar: "kale" }, { duvar: "kutuk" }, { duvar: "harabe" }, { duvar: "kale" }, { duvar: "kaya" }, { duvar: "istasyon", obje1: "kaya" }];
 
@@ -268,6 +271,7 @@
     else if (tur === "diken") { aile = "plaka"; P = bicimPlaka(o.w, o.h, r); }
     else { aile = set[tur] || (tur === "duvar" ? "kale" : "yama"); P = AILELER[aile](o.w, o.h, r); }
     if (pay === undefined) pay = PAY[aile];
+    P.ox = o.x; P.oy = o.y; // ressamlar için dünya konumu (suyun renk geçişi dünya y'sinde)
     const derinlik = P.derinlik || 0;
     // Çarpışma: duvar ailesinde ön yüz dahil (biçim + derinlik kadar aşağı kaydırılmış kopyası); objede kenar süsü (+3);
     // dikende kırmızı kenar (+2,5); su, lav ve sınırda biçimin kendisi (kıyı yürünür)
@@ -308,6 +312,303 @@
     return false;
   }
 
-  Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, engelBicimleriniKur, engelCarpisir, ENGEL_AILELERI });
-  window.ENGEL = { yol, doldur, cizgi, kirp, hatCiz, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, kutuYolu, tasOrgu, gozler, cimTutami, sinirla, parcaUzaklik };
+  // ---------- ortak ressamlar: kıyı taşları, su tabanı, diken, lav ----------
+  // Biçimin hattına dizili yuvarlak taşlar (b: hattan dışarı kayma, en: en büyük taş)
+  function kayalikKenar(ctx, P, renk, r, aralik = 9, b = 3, en = 7) {
+    for (const k of kenarNoktalari(P, aralik, b)) {
+      const s = 4 + r() * (en - 4);
+      elips(ctx, k.x + 1, k.y + 1.5, s, s * 0.8, "rgba(0,0,0,0.35)");
+      elips(ctx, k.x, k.y, s, s * 0.8, karistir(renk, "#000000", r() * 0.25));
+      elips(ctx, k.x - s * 0.3, k.y - s * 0.3, s * 0.4, s * 0.3, acik(renk, 0.25));
+    }
+  }
+  // Su: tema kıyısı (kiyiCiz), koyu kenar, mavi; renk geçişi dünya y'sinde (0 → SU_BOY) olduğu için kesişen göller
+  // tek göl gibi birleşir
+  const SU_BOY = 1200;
+  function suTabani(ctx, w, h, r, B, kiyiCiz, kenarRengi = "#0b2a55") {
+    if (kiyiCiz) kiyiCiz();
+    doldur(ctx, B, kenarRengi, 0, 0, 2);
+    const oy = B.oy || 0, g = ctx.createLinearGradient(0, -oy, 0, SU_BOY - oy);
+    g.addColorStop(0, "#2b8fe6"); g.addColorStop(1, "#0f4fae");
+    doldur(ctx, B, g);
+    kirp(ctx, B, () => { for (const q of B) if (q.t !== "k") elips(ctx, q.x - (q.r || q.rx) * 0.3, q.y - (q.r || q.ry) * 0.45, (q.r || q.rx) * 0.45, 3, "rgba(255,255,255,0.12)"); });
+  }
+  // Diken plakası (bütün temalarda): kırmızı kenar, taş zemin, metal sivri uçlar
+  function dikenCiz(ctx, w, h, r, p, B) {
+    doldur(ctx, B, "#7f1d1d", 0, 0, 2.5);
+    doldur(ctx, B, "#2a2430");
+    kirp(ctx, B, () => {
+      tasOrgu(ctx, 0, 0, w, h, 11, "#3a3442", r);
+      const s = 12;
+      for (let y = 6, k = 0; y < h + 6; y += s, k++) for (let x = 4 + (k % 2) * (s / 2); x < w; x += s) {
+        if (engelUzaklik(B, x, y) > -5) continue;
+        elips(ctx, x, y + 3, 4, 1.6, "rgba(0,0,0,0.5)");
+        const g = ctx.createLinearGradient(x - 4, 0, x + 4, 0); g.addColorStop(0, "#f1f5f9"); g.addColorStop(1, "#64748b");
+        ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x - 4, y + 3); ctx.lineTo(x, y - 7); ctx.lineTo(x + 4, y + 3); ctx.closePath(); ctx.fill();
+      }
+    });
+    return [];
+  }
+  // Lav tabanı (önbellek): kayalık kıyı ve eski drawLava'nın durağan kızgın renk geçişi; çatlak, kabarcık, 🔥 ve alevler
+  // her karede üstüne çizilir
+  function lavCiz(ctx, w, h, r, p, B) {
+    doldur(ctx, B, "#1a0b0b", 0, 0, 6);
+    kayalikKenar(ctx, B, "#3f3f46", r, 8, 2, 6.5);
+    const g = ctx.createRadialGradient(w / 2, h / 2, 4, w / 2, h / 2, Math.max(w, h) * 0.7);
+    g.addColorStop(0, "#fef3c7"); g.addColorStop(0.25, "#facc15"); g.addColorStop(0.55, "#f97316");
+    g.addColorStop(0.85, "#dc2626"); g.addColorStop(1, "#450a0a");
+    doldur(ctx, B, g);
+    return [];
+  }
+  // Biçimin y satırındaki iç aralıkları (kenardan "ic" px içeride; yalnız daire ve elips parçaları): kırpmadan çizmek için.
+  // Satırdan ±(ic − 1,5) px sapan çizgi de biçimin içinde kalır.
+  function satirAraliklari(P, y, ic) {
+    const ara = [];
+    for (const q of P) {
+      if (q.t === "k") continue;
+      const rx = (q.t === "d" ? q.r : q.rx) - ic, ry = (q.t === "d" ? q.r : q.ry) - ic, dy = y - q.y;
+      if (rx <= 0 || ry <= 0 || Math.abs(dy) >= ry) continue;
+      const yari = rx * Math.sqrt(1 - (dy / ry) * (dy / ry));
+      ara.push([q.x - yari, q.x + yari]);
+    }
+    ara.sort((a, c) => a[0] - c[0]);
+    const out = [];
+    for (const a of ara) { const son = out[out.length - 1]; if (son && a[0] <= son[1]) son[1] = Math.max(son[1], a[1]); else out.push(a.slice()); }
+    return out;
+  }
+  // Aralıklar boyunca kayan sinüs çizgisi (yol; çağıran stroke eder)
+  function sinusYolu(ctx, ox, oy, araliklar, adim, egri) {
+    for (const [x0, x1] of araliklar) {
+      for (let x = x0, ilk = true; ; x = Math.min(x + adim, x1)) {
+        if (ilk) { ctx.moveTo(ox + x, oy + egri(x)); ilk = false; } else ctx.lineTo(ox + x, oy + egri(x));
+        if (x >= x1) break;
+      }
+    }
+  }
+  // Canlı lav: eski drawLava'nın hareketli kısmı (magma çatlakları, patlayan kabarcıklar, titreyen 🔥). B verilirse yalnız
+  // biçimin içine çizilir (kırpma yolu her karede pahalı: çatlaklar satır aralıklarına, kabarcıklar içerideyse);
+  // durağan renk geçişi önbellekte (lavCiz). Eski dikdörtgen kenar çizgileri biçimin dışında kaldığı, saydam dolgunun
+  // gölgesi de hiç görünmediği için taşınmadı; parlama engelleriCiz'de hazır resimle.
+  function lavCanli(ctx, x, y, w, h, B) {
+    const simdi = performance.now(), t = simdi / 300;
+    const satirlar = (B && B._catlaklar) || [0, 1, 2, 3].map((k) => {
+      const yy = 12 + k * (h - 24) / 4;
+      return [k, yy, B ? satirAraliklari(B, yy, 6) : [[4, w - 4]]];
+    });
+    if (B) B._catlaklar = satirlar;
+    ctx.strokeStyle = "rgba(254, 240, 138, 0.85)";
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    for (const [k, yy, araliklar] of satirlar) sinusYolu(ctx, x, y + yy, araliklar, 6, (col) => Math.sin((col + t * 60 + k * 30) / 14) * 4);
+    ctx.stroke();
+    ctx.fillStyle = "rgba(255, 250, 200, 0.95)";
+    ctx.strokeStyle = "rgba(254, 215, 170, 0.7)"; ctx.lineWidth = 1;
+    for (let i = 0; i < 9; i++) {
+      const bx = 6 + ((i * 47 + t * 22) % (w - 12));
+      const by = h - 10 - ((i * 31 + t * 18) % (h - 18));
+      const br = 2.2 + ((i + Math.floor(t)) % 4) * 0.7;
+      if (B && engelUzaklik(B, bx, by) > -(br + 3)) continue;
+      ctx.beginPath(); ctx.arc(x + bx, y + by, br, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + bx, y + by, br + 2, 0, Math.PI * 2); ctx.stroke();
+    }
+    const boy = Math.min(20, Math.min(w, h) / 4), titre = 1 + Math.sin(simdi / 120) * 0.08;
+    ctx.save(); ctx.font = `${boy}px sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; // yazı ayarı sızmasın
+    ctx.translate(x + w / 2, y + h / 2); ctx.scale(titre, titre); ctx.fillText("🔥", 0, 0); ctx.restore();
+  }
+  // Lavın üst hattından yükselen alev dilleri (her karede; uçlar engelde saklı, salınım tohumlu)
+  const ALEV_RENKLERI = [["rgba(249,115,22,0.75)", 1], ["rgba(250,204,21,0.8)", 0.6]];
+  function alevler(ctx, o, zaman) {
+    const uclar = o._alevUclari || (o._alevUclari = kenarNoktalari(o.bicim, 11, 0).filter((k) => k.ny < -0.35));
+    const r = engelRastgele(o.tohum);
+    ctx.save(); ctx.globalCompositeOperation = "lighter";
+    for (const k of uclar) {
+      const faz = r() * 6.28, boy = 12 + r() * 12, gen = 5 + r() * 3;
+      const t = Math.sin(zaman * 4 + faz) * 0.5 + 0.5, b = boy * (0.7 + t * 0.5), sal = Math.sin(zaman * 3 + faz) * 3;
+      for (const [renk, oran] of ALEV_RENKLERI) {
+        const x = o.x + k.x, y = o.y + k.y + 3, g2 = gen * oran, b2 = b * oran;
+        ctx.fillStyle = renk; ctx.beginPath(); ctx.moveTo(x - g2, y);
+        ctx.quadraticCurveTo(x - g2 * 0.9, y - b2 * 0.55, x + sal * oran, y - b2);
+        ctx.quadraticCurveTo(x + g2 * 0.9, y - b2 * 0.55, x + g2, y);
+        ctx.closePath(); ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+  // Suyun içinde kayan dalgalar (eski drawWater'ın dalgaları): her satırda biçimin 4 px içindeki aralıklara, kırpmasız.
+  // Satırlar ve evre dünya koordinatında: kesişen göllerin dalgaları birbirinin devamıdır.
+  function dalgalar(ctx, o, zaman) {
+    const t = zaman * 2.5; // performance.now() / 400
+    if (!o._dalgalar) {
+      o._dalgalar = [];
+      for (let y = Math.ceil((o.y + 10) / 14) * 14; y < o.y + o.h - 4; y += 14) o._dalgalar.push([y - o.y, satirAraliklari(o.bicim, y - o.y, 4)]);
+    }
+    ctx.strokeStyle = "rgba(255,255,255,0.4)"; ctx.lineWidth = 1.5;
+    for (const [satir, araliklar] of o._dalgalar) { // satır satır: ince yolların taranması tek büyük yoldan ucuz
+      ctx.beginPath(); sinusYolu(ctx, o.x, o.y + satir, araliklar, 8, (x) => Math.sin((o.x + x + t * 30) / 22) * 2.5); ctx.stroke();
+    }
+  }
+
+  // ---------- canlı katman: ressamların bıraktığı noktalara her karede küçük şekiller ----------
+  // (ctx, x, y, zaman, n, k): x, y dünya koordinatı; zaman saniye; n [0,1) noktanın evresi; k noktanın kaydı
+  const ENGEL_CANLI = {
+    // mum alevi titrer (x, y mumun üstü)
+    mum(ctx, x, y, zaman, n) {
+      const t = 1 + Math.sin(zaman * 13 + n * 40) * 0.12 + Math.sin(zaman * 7.3 + n * 9) * 0.08;
+      elips(ctx, x, y - 11, 5.5 * t, 6.5 * t, "rgba(251, 191, 36, 0.22)");
+      elips(ctx, x, y - 11 - (t - 1) * 4, 2 * t, 3.5 * t, "#fde047");
+      elips(ctx, x, y - 10, 0.9, 1.4, "#fffbeb");
+    },
+    // kovukta parlayan gözler: 3 sn'de bir 150 ms kırpar
+    goz(ctx, x, y, zaman, n, k) {
+      const ara = (k && k.ara) || 2.2, rr = (k && k.rr) || 1.5;
+      if ((zaman + n * 3) % 3 < 0.15) {
+        ctx.strokeStyle = "#fde047"; ctx.lineWidth = 1; ctx.lineCap = "round"; ctx.beginPath();
+        ctx.moveTo(x - ara - rr, y); ctx.lineTo(x - ara + rr, y); ctx.moveTo(x + ara - rr, y); ctx.lineTo(x + ara + rr, y); ctx.stroke();
+        return;
+      }
+      elips(ctx, x - ara, y, rr * 2.3, rr * 2.3, "rgba(253, 224, 71, 0.2)"); elips(ctx, x + ara, y, rr * 2.3, rr * 2.3, "rgba(253, 224, 71, 0.2)");
+      gozler(ctx, x, y, ara, rr, "#fde047");
+    },
+    // ateş böceği: sinüsle parlar, hafifçe süzülür
+    atesbocegi(ctx, x, y, zaman, n) {
+      const a = 0.5 + 0.5 * Math.sin(zaman * 2.6 + n * 6.283), dx = Math.sin(zaman * 0.9 + n * 11) * 2.5, dy = Math.cos(zaman * 1.1 + n * 7) * 2;
+      const eski = ctx.globalAlpha;
+      ctx.globalAlpha = eski * (0.25 + a * 0.75);
+      elips(ctx, x + dx, y + dy, 5, 5, "rgba(190, 242, 100, 0.3)");
+      elips(ctx, x + dx, y + dy, 1.7, 1.7, "#ecfccb");
+      ctx.globalAlpha = eski;
+    },
+  };
+
+  // ---------- önbellek ----------
+  // Önbellek ölçeği: ekran çözünürlüğü × tablet yakınlaştırması, en çok 2 (bellek)
+  function engelOlcegi() {
+    const vs = (typeof game !== "undefined" && game.viewScale) || 1;
+    return Math.min(Math.min(window.devicePixelRatio || 1, 2) * vs, 2);
+  }
+  function yedekRessam(ctx, w, h, r, p, B) { doldur(ctx, B, "#475569"); return []; }
+  function ressam(o) {
+    if (o.tur === "diken") return [dikenCiz, {}];
+    if (o.tur === "lav") return [lavCiz, {}];
+    const T = window.ENGEL_TEMALARI || [], set = T[o.tema] || T[0] || {};
+    return [set[o.tur === "sinir" ? "duvar" : o.tur] || yedekRessam, set.palet || {}];
+  }
+  // Engeli ctx'e yerel koordinatta çizer; canlı katman noktalarını döndürür. Rastgele dizi biçiminkinden ayrı tohumdan.
+  function engelBoya(ctx, o) {
+    const [ciz, palet] = ressam(o);
+    return ciz(ctx, o.w, o.h, engelRastgele((o.tohum ^ 0x5bd1e995) >>> 0), palet, o.bicim) || [];
+  }
+  // Engelin önbellek resmi { c: tuval, canli: noktalar }; ölçek değişmişse yeniden çizilir. Tuval oluşturulamazsa null
+  // (çağıran o karede doğrudan çizer).
+  function engelResmi(o) {
+    const s = engelOlcegi();
+    if (o._resim && o._olcek === s) return o._resim;
+    o._resim = null; o._olcek = s;
+    const gw = Math.ceil(o.w * s), gh = Math.ceil(o.h * s);
+    if (!(gw > 0 && gh > 0)) return null;
+    let c = null, cx = null;
+    try { c = document.createElement("canvas"); c.width = gw; c.height = gh; cx = c.getContext("2d"); } catch (_) { cx = null; }
+    if (!cx || c.width !== gw || c.height !== gh) return null;
+    cx.scale(s, s);
+    const canli = engelBoya(cx, o);
+    return (o._resim = { c, canli });
+  }
+  // Kesişen göllerin ikinci geçişi için suyun yalnız biçim içi (kırpma yolu yerine bir kez maskelenmiş resim)
+  function icResmi(o) {
+    const R = engelResmi(o);
+    if (!R) return null;
+    if (R.ic !== undefined) return R.ic;
+    R.ic = null;
+    const c = document.createElement("canvas"); c.width = R.c.width; c.height = R.c.height;
+    const cx = c.getContext("2d");
+    if (!cx) return null;
+    cx.drawImage(R.c, 0, 0);
+    cx.globalCompositeOperation = "destination-in"; cx.scale(o._olcek, o._olcek); doldur(cx, o.bicim, "#000", 0, 0, -1.5); // kenar pikseli koyu kıyıyı taşımasın
+    return (R.ic = c);
+  }
+  // Lavın turuncu parlaması: biçimin gölgesi bir kez çizilir, her karede saydamlığı nabız gibi değişir
+  const PARLAMA = 26;
+  function parlamaResmi(o) {
+    const s = engelOlcegi();
+    if (o._parlamaOlcek === s) return o._parlama;
+    o._parlama = null; o._parlamaOlcek = s;
+    let c = null, cx = null;
+    try { c = document.createElement("canvas"); c.width = Math.ceil((o.w + 2 * PARLAMA) * s); c.height = Math.ceil((o.h + 2 * PARLAMA) * s); cx = c.getContext("2d"); } catch (_) { cx = null; }
+    if (!cx) return null;
+    cx.scale(s, s); cx.shadowColor = "#fb923c"; cx.shadowBlur = 20 * s;
+    doldur(cx, o.bicim, "#fb923c", PARLAMA, PARLAMA, 6);
+    return (o._parlama = c);
+  }
+  // Önbellek resmini basar. Önbellek ölçeği tuvalin cihaz ölçeğiyle aynıysa (telefonlar) piksele hizalı 1:1: süzgeç
+  // gerekmez, yazılımsal taramada ~10 kat hızlı ve bulanıklık yok (konum en çok yarım cihaz pikseli kayar). Değilse
+  // (tablette ölçek 2'de sınırlı) dikdörtgene ölçeklenir. _matris her karede engelleriCiz'in başında okunur.
+  let _matris = null;
+  function bas(ctx, c, x, y, w, h) {
+    const m = _matris;
+    if (m && m.bir) ctx.drawImage(c, (Math.round(m.a * x + m.e) - m.e) / m.a, (Math.round(m.a * y + m.f) - m.f) / m.a, c.width / m.a, c.height / m.a);
+    else ctx.drawImage(c, x, y, w, h);
+  }
+  function resimCiz(ctx, o) {
+    const R = engelResmi(o);
+    if (R) { bas(ctx, R.c, o.x, o.y, o.w, o.h); return R.canli; }
+    ctx.save(); ctx.translate(o.x, o.y);
+    const canli = engelBoya(ctx, o);
+    ctx.restore();
+    return canli;
+  }
+  function canliCiz(ctx, o, canli, zaman) {
+    if (!canli || !canli.length) return;
+    for (const k of canli) { const f = ENGEL_CANLI[k.tur]; if (f) f(ctx, o.x + k.x, o.y + k.y, zaman, k.n || 0, k); }
+  }
+
+  // ---------- çizim hattı (render her karede çağırır; ctx dünya koordinatında) ----------
+  let _sonOlcek = 0, _sira = null;
+  const listeler = () => [game.walls || [], game.waters || [], game.spikes || [], game.lavas || []];
+  // duvar ve objeler alt kenarlarına göre (önde duran sonra çizilir); liste her bölümde yenidir
+  function duvarSirasi() {
+    const W = game.walls || [];
+    if (!_sira || _sira.kaynak !== W || _sira.n !== W.length) _sira = { kaynak: W, n: W.length, liste: W.slice().sort((a, b) => (a.y + a.h) - (b.y + b.h)) };
+    return _sira.liste;
+  }
+  function engelleriCiz(ctx) {
+    if (typeof game === "undefined") return;
+    const s = engelOlcegi();
+    if (s !== _sonOlcek) { for (const l of listeler()) for (const o of l) { o._resim = null; o._olcek = 0; } _sonOlcek = s; } // ekran döndü: hepsi yeniden
+    if (listeler().some((l) => l.some((o) => !o.bicim))) engelBicimleriniKur();
+    const m = ctx.getTransform ? ctx.getTransform() : null;
+    _matris = m && { a: m.a, e: m.e, f: m.f, bir: m.b === 0 && m.c === 0 && m.a === m.d && Math.abs(m.a - s) < 1e-9 };
+    const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0;
+    const gor = (o, b) => o.x - b < cam.x + W && o.x + o.w + b > cam.x && o.y - b < cam.y + H && o.y + o.h + b > cam.y;
+    const zaman = performance.now() / 1000;
+    // Sular iki geçişte: önce hepsi kıyısıyla, sonra başka gölle kesişenlerin yalnız suyu yeniden (kesişen göller tek göl
+    // gibi birleşir); dalgalar ve canlı süsler en üstte
+    const sular = (game.waters || []).filter((o) => gor(o, 12)), canlilar = sular.map((o) => resimCiz(ctx, o));
+    sular.forEach((o, i) => {
+      if (o._komsu === undefined) o._komsu = (game.waters || []).some((b) => b !== o && b.x < o.x + o.w && b.x + b.w > o.x && b.y < o.y + o.h && b.y + b.h > o.y);
+      const ic = o._komsu ? icResmi(o) : null;
+      if (ic) bas(ctx, ic, o.x, o.y, o.w, o.h);
+      dalgalar(ctx, o, zaman);
+      canliCiz(ctx, o, canlilar[i], zaman);
+    });
+    for (const o of game.spikes || []) if (gor(o, 6)) resimCiz(ctx, o);
+    for (const o of game.lavas || []) {
+      if (!gor(o, 40)) continue;
+      const parlama = parlamaResmi(o);
+      if (parlama) {
+        const eski = ctx.globalAlpha;
+        ctx.globalAlpha = eski * (0.6 + Math.sin(zaman * 1000 / 220) * 0.25);
+        bas(ctx, parlama, o.x - PARLAMA, o.y - PARLAMA, o.w + 2 * PARLAMA, o.h + 2 * PARLAMA);
+        ctx.globalAlpha = eski;
+      }
+      resimCiz(ctx, o);
+      lavCanli(ctx, o.x, o.y, o.w, o.h, o.bicim);
+      alevler(ctx, o, zaman);
+    }
+    for (const o of duvarSirasi()) if (gor(o, 8)) canliCiz(ctx, o, resimCiz(ctx, o), zaman);
+  }
+
+  Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, engelBicimleriniKur, engelCarpisir, ENGEL_AILELERI,
+    engelOlcegi, engelResmi, engelleriCiz, lavCanli, ENGEL_CANLI });
+  window.ENGEL = { yol, doldur, cizgi, kirp, hatCiz, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, kutuYolu, tasOrgu, gozler, cimTutami, sinirla, parcaUzaklik,
+    kayalikKenar, suTabani, dikenCiz, lavCiz };
 })();

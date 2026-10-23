@@ -117,6 +117,7 @@ I18N.zh = {
   "👥 KARAKTERLER": "👥 角色",
   "👥 Online odalar artık 6 kişilik: altı avcı aynı odada birlikte oynar.": "👥 在线房间现在可容纳 6 人：六位猎人在同一个房间一起玩。",
   "👧 Yeni karakterler: Silsen çiçek top atar, Serçin tüy fırlatır — Karakterler menüsünde.": "👧 新角色：Silsen 会扔花球，Serçin 会扔羽毛——在角色菜单中。",
+  "👫 {ad} arkadaşlık isteği gönderdi": "👫 {ad} 向你发送了好友请求",
   "👻 Hayalet Avcıları 👻": "👻 幽灵猎人 👻",
   "👻 Hayalet oldun! Takımın bölümü bitirince yeniden doğarsın.": "👻 你变成幽灵了！队友完成本关后你会复活。",
   "👻 Hayalet sesleri": "👻 幽灵音效",

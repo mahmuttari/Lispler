@@ -1,0 +1,252 @@
+// Hayalet Avcıları: arkadaş ekleme ve oyuna davet (3.13.0) — uçtan uca sınama.
+// Firebase emülatöründe (RTDB 9000 + Auth 9099) tarayıcı bağlamları: Ayşe, Bora, Cem (+ adsız oyuncu, kuralsız oyuncu).
+// Veri katmanı (www/arkadaslar.js): kod, kod çakışması, istek, kabul, karşılıklı istek, çıkar, engel, davet, adsız
+// oyuncu, çevrimdışı, hesap verisinin silinmesi, kurallar yüklenmemişken.
+// Çalıştırma (Java 21, Playwright + Chromium gerekir):
+//   cd hayalet-avcilari/firebase && npm ci && npm run test:arkadas
+// Emülatör zaten açıksa: node hayalet-avcilari/test/arkadas.test.mjs
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+const KOK = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const WWW = path.join(KOK, 'www');
+const SDK = process.env.FIREBASE_SDK || path.join(KOK, 'firebase', 'node_modules', 'firebase');
+const PW = process.env.PLAYWRIGHT_MODULE || '/opt/node22/lib/node_modules/playwright/index.mjs';
+const DB = process.env.FIREBASE_DATABASE_EMULATOR_HOST || '127.0.0.1:9000';
+const AUTH = process.env.FIREBASE_AUTH_EMULATOR_HOST || '127.0.0.1:9099';
+const NS = 'hayalet-avcilari-default-rtdb'; // game.js › RTDB_URL'nin alt alan adı
+const { chromium } = await import(pathToFileURL(PW).href);
+
+// Kurallar oyunun ad alanına yüklenir; "kurallar yok" sınaması arkadaş düğümleri olmayan hâlini yükler
+const KURALLAR = fs.readFileSync(path.join(KOK, 'firebase', 'database.rules.json'), 'utf8');
+const ARKADASSIZ = (() => { const d = JSON.parse(KURALLAR); for (const k of ['friendCodes', 'users', 'presence']) delete d.rules[k]; return JSON.stringify(d); })();
+const sahip = (yol, secenek = {}) => fetch(`http://${DB}/${yol}.json?ns=${NS}`, { ...secenek, headers: { Authorization: 'Bearer owner' } });
+async function kurallariYukle(metin) {
+  const r = await fetch(`http://${DB}/.settings/rules.json?ns=${NS}`, { method: 'PUT', headers: { Authorization: 'Bearer owner' }, body: metin });
+  assert.equal(r.status, 200, `kurallar emülatöre yüklenemedi: ${await r.text()}`);
+}
+const oku = async (yol) => (await sahip(yol)).json();
+await kurallariYukle(KURALLAR);
+for (const kok of ['rooms', 'friendCodes', 'users', 'presence']) await sahip(kok, { method: 'DELETE' });
+
+const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.m4a': 'audio/mp4' };
+const sunucu = http.createServer((q, r) => {
+  const f = path.join(WWW, decodeURIComponent(new URL(q.url, 'http://x').pathname).replace(/^\/+/, '') || 'index.html');
+  if (!f.startsWith(WWW) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end(); }
+  r.writeHead(200, { 'content-type': TUR[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(r);
+}).listen(0);
+const adres = `http://127.0.0.1:${sunucu.address().port}/index.html`;
+
+const [dbHost, dbPort] = DB.split(':');
+const EMULATOR = `;(function(){var o=firebase.initializeApp;firebase.initializeApp=function(c,n){var a=o.call(this,c,n);
+  a.database().useEmulator(${JSON.stringify(dbHost)},${Number(dbPort)});
+  a.auth().useEmulator(${JSON.stringify('http://' + AUTH)},{disableWarnings:true});
+  return a;};})();`;
+
+async function sayfaAc(b, ad) {
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
+  const p = await ctx.newPage();
+  const hatalar = [];
+  p.on('pageerror', (e) => hatalar.push(e.message));
+  await p.route(/gstatic\.com\/firebasejs\/[^/]+\/(firebase-[a-z-]+\.js)/, async (r) => {
+    const dosya = r.request().url().match(/(firebase-[a-z-]+\.js)/)[1];
+    let govde = fs.readFileSync(path.join(SDK, dosya), 'utf8');
+    if (dosya === 'firebase-app-compat.js') govde += EMULATOR;
+    await r.fulfill({ status: 200, contentType: 'text/javascript', body: govde });
+  });
+  await p.route(/firestore\.googleapis\.com|googlesyndication|doubleclick/, (r) => r.abort());
+  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+  await p.goto(adres, { waitUntil: 'load' });
+  await p.waitForTimeout(300);
+  await p.evaluate((ad) => { save.playerName = ad; persistSave(); try { localStorage.setItem(VERSION_KEY, APP_VERSION); } catch (_) {} }, ad);
+  return { ad, ctx, p, hatalar };
+}
+const bekle = (s, fn, arg, ms = 15000) => s.p.waitForFunction(fn, arg, { timeout: ms }).then(() => true, () => false);
+const hazir = (s) => bekle(s, () => typeof sosyal !== 'undefined' && sosyal.hazir && !!sosyal.uid);
+const uidOf = (s) => s.p.evaluate(() => sosyal.uid);
+
+const sonuclar = [];
+function sina(ad, fn) {
+  try { fn(); sonuclar.push(`✓ ${ad}`); } catch (e) { sonuclar.push(`✗ ${ad}: ${e.message.split('\n')[0]}`); }
+}
+
+const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args: ['--disable-renderer-backgrounding', '--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows'] });
+const hepsi = [];
+try {
+  const A = await sayfaAc(b, 'Ayşe');
+  const B = await sayfaAc(b, 'Bora');
+  const C = await sayfaAc(b, 'Cem');
+  hepsi.push(A, B, C);
+  const hazirlar = await Promise.all([A, B, C].map(hazir));
+  assert.deepEqual(hazirlar, [true, true, true], 'arkadaş dinleyicileri kurulmadı');
+  const [ayse, bora, cem] = await Promise.all([A, B, C].map(uidOf));
+
+  // 1) Kod: alınır, ikinci çağrıda aynı kalır; giriş biçimleri
+  const kodA = await A.p.evaluate(() => kodumuHazirla());
+  const kodA2 = await A.p.evaluate(() => kodumuHazirla());
+  const coz = await A.p.evaluate(() => [arkadasKodunuCoz(' #k7mp2q '), arkadasKodunuCoz('K7MP2O'), arkadasKodunuCoz('K7MP2')]);
+  const kodKaydi = await oku(`friendCodes/${kodA}`);
+  sina(`kod alınır ve aynı kalır (#${kodA}); "#", boşluk ve küçük harf kabul edilir`, () => {
+    assert.match(kodA || '', /^[A-HJKMNP-Z2-9]{6}$/);
+    assert.equal(kodA2, kodA);
+    assert.deepEqual(coz, ['K7MP2Q', null, null]);
+    assert.equal(kodKaydi && kodKaydi.uid, ayse);
+  });
+
+  // 2) Kod çakışması: ilk üretilen kod başkasınınsa yeni kod alınır, başkasının kaydı değişmez
+  await sahip('friendCodes/QQQQQQ', { method: 'PUT', body: JSON.stringify({ uid: 'baskasi0001', name: 'X' }) });
+  const kodC = await C.p.evaluate(() => {
+    const asil = window.arkadasKoduUret; let ilk = true;
+    window.arkadasKoduUret = () => { if (ilk) { ilk = false; return 'QQQQQQ'; } return asil(); };
+    return kodumuHazirla();
+  });
+  const qq = await oku('friendCodes/QQQQQQ');
+  sina(`kod çakışmasında yeni kod alınır (#${kodC})`, () => {
+    assert.match(kodC || '', /^[A-HJKMNP-Z2-9]{6}$/);
+    assert.notEqual(kodC, 'QQQQQQ');
+    assert.equal(qq && qq.uid, 'baskasi0001');
+  });
+
+  // 3) İstek: Bora, Ayşe'nin koduyla ekler
+  const kodB = await B.p.evaluate(() => kodumuHazirla());
+  const istek1 = await B.p.evaluate((k) => kodlaArkadasEkle(k), '#' + kodA.toLowerCase());
+  const geldi = await bekle(A, (u) => !!sosyal.istekler[u], bora, 5000);
+  const gitti = await bekle(B, (u) => !!sosyal.gonderilen[u], ayse, 5000);
+  const istek2 = await B.p.evaluate((k) => kodlaArkadasEkle(k), kodA);
+  const kendi = await B.p.evaluate((k) => kodlaArkadasEkle(k), kodB);
+  const yok = await B.p.evaluate(() => kodlaArkadasEkle('ZZZZZZ'));
+  sina(`istek: gönderildi (${istek1}), Ayşe'ye geldi, tekrar "${istek2}", kendi kodu "${kendi}", olmayan kod "${yok}"`, () => {
+    assert.equal(istek1, 'gonderildi');
+    assert.ok(geldi && gitti, 'istek ya da gönderilen kaydı görünmedi');
+    assert.equal(istek2, 'bekliyor');
+    assert.equal(kendi, 'kendi');
+    assert.equal(yok, 'yok');
+  });
+
+  // 4) Kabul: aynı anda iki kez (çift dokunma) → bir arkadaşlık; Bora'nın çevrimiçi durumu görünür
+  const kabuller = await A.p.evaluate((u) => Promise.all([istegiKabulEt(u), istegiKabulEt(u)]), bora);
+  const ikiTaraf = await bekle(A, (u) => !!sosyal.arkadaslar[u] && !sosyal.istekler[u], bora, 5000)
+    && await bekle(B, (u) => !!sosyal.arkadaslar[u] && !sosyal.gonderilen[u], ayse, 5000);
+  const cevrimici = await bekle(A, (u) => arkadasDurumu(u) === 'on', bora, 5000);
+  sina(`kabul: çift dokunuşta tek arkadaşlık (${kabuller.join(', ')}), iki tarafta kayıt, Bora 🟢`, () => {
+    assert.ok(kabuller.includes('kabul'));
+    assert.ok(!kabuller.includes('hata'), 'ikinci dokunuş hata verdi');
+    assert.ok(ikiTaraf, 'iki tarafta arkadaş kaydı yok ya da istek kalmış');
+    assert.ok(cevrimici, 'Ayşe, Bora\'yı çevrimiçi görmüyor');
+  });
+
+  // 5) Karşılıklı istek: Ayşe ile Cem aynı anda birbirini ekler → ikisi de arkadaş, artık istek kalmaz
+  const karsilikli = await Promise.all([A.p.evaluate((k) => kodlaArkadasEkle(k), kodC), C.p.evaluate((k) => kodlaArkadasEkle(k), kodA)]);
+  const temiz = (u) => !!sosyal.arkadaslar[u] && !sosyal.istekler[u] && !sosyal.gonderilen[u];
+  const karsiliklıTamam = await bekle(A, temiz, cem, 8000) && await bekle(C, temiz, ayse, 8000);
+  sina(`karşılıklı istek arkadaşlıkla biter (${karsilikli.join(', ')})`, () => { assert.ok(karsiliklıTamam); });
+
+  // 6) Çıkar: iki taraf birlikte; Ayşe Cem'in durumunu artık okumaz
+  const cikti = await A.p.evaluate((u) => arkadasliktanCikar(u), cem);
+  const cikarTamam = await bekle(A, (u) => !sosyal.arkadaslar[u] && !sosyal.durumlar[u], cem, 5000)
+    && await bekle(C, (u) => !sosyal.arkadaslar[u], ayse, 5000);
+  sina('arkadaşlıktan çıkar: iki listede de yok, durum okunmuyor', () => { assert.equal(cikti, true); assert.ok(cikarTamam); });
+
+  // 7) Engel: Cem'in isteği engelle silinir; engelliyken istek gidemez; engel kalkınca gider
+  const cemIstek = await C.p.evaluate((k) => kodlaArkadasEkle(k), kodA);
+  await bekle(A, (u) => !!sosyal.istekler[u], cem, 5000);
+  const engellendi = await A.p.evaluate((u) => engelle(u, 'Cem'), cem);
+  const istekSildi = await bekle(A, (u) => !sosyal.istekler[u] && !!sosyal.engeller[u], cem, 5000) && await bekle(C, (u) => !sosyal.gonderilen[u], ayse, 5000);
+  const engelliyken = await C.p.evaluate((k) => kodlaArkadasEkle(k), kodA);
+  const kaldirildi = await A.p.evaluate((u) => engeliKaldir(u), cem);
+  await bekle(A, (u) => !sosyal.engeller[u], cem, 5000);
+  const sonra = await C.p.evaluate((k) => kodlaArkadasEkle(k), kodA);
+  sina(`engel: istek silinir, engelliyken "${engelliyken}", kalkınca "${sonra}"`, () => {
+    assert.equal(cemIstek, 'gonderildi');
+    assert.equal(engellendi, true);
+    assert.ok(istekSildi, 'engel isteği silmedi');
+    assert.equal(engelliyken, 'gonderilemedi');
+    assert.equal(kaldirildi, true);
+    assert.equal(sonra, 'gonderildi');
+  });
+  await bekle(A, (u) => !!sosyal.istekler[u], cem, 5000);
+  await A.p.evaluate((u) => istegiReddet(u), cem);
+
+  // 8) Davet: Ayşe'nin odasından Bora'ya; 30 sn içinde ikinci kez beklemesi istenir; arkadaş olmayana gitmez
+  await A.p.evaluate(async () => { await openOnline(); openCreateRoom(); await submitCreateRoom(); });
+  const oda = await A.p.evaluate(() => online.roomId);
+  const davet1 = await A.p.evaluate((u) => davetGonder(u), bora);
+  const davetGeldi = await bekle(B, (o) => { const d = gecerliDavet(); return !!d && d.room === o; }, oda, 5000);
+  const davet2 = await A.p.evaluate((u) => davetGonder(u), bora);
+  const davetCem = await A.p.evaluate((u) => davetGonder(u), cem);
+  sina(`davet: gönderildi (${davet1}), Bora'da geçerli, tekrar "${davet2}", arkadaş olmayana "${davetCem}"`, () => {
+    assert.match(oda || '', /^[A-HJKMNP-Z2-9]{6}$/);
+    assert.equal(davet1, 'gonderildi');
+    assert.ok(davetGeldi, 'Bora\'da geçerli davet yok');
+    assert.equal(davet2, 'bekle');
+    assert.equal(davetCem, 'arkadasdegil');
+  });
+
+  // 9) Adsız oyuncu (yeni kurulum): istek yazılmaz
+  const D = await sayfaAc(b, '');
+  hepsi.push(D);
+  await hazir(D);
+  const adsiz = await D.p.evaluate((u) => { save.playerName = ''; return arkadasIstegiGonder(u, 'Ayşe'); }, ayse);
+  const adsizUid = await uidOf(D);
+  const adsizKayit = await oku(`users/${ayse}/requests/${adsizUid}`);
+  sina(`adı olmayan oyuncu istek gönderemez ("${adsiz}")`, () => { assert.equal(adsiz, 'adyok'); assert.equal(adsizKayit, null); });
+
+  // 10) Çevrimdışı: işlem hemen "hata" döner, kuyruğa yazım bırakmaz (bağlantı gelince istek gitmez)
+  await B.p.evaluate(() => { fbDb().goOffline(); });
+  await bekle(B, () => sosyal.bagli === false, null, 5000);
+  const t0 = Date.now();
+  const cevrimdisi = await B.p.evaluate((k) => kodlaArkadasEkle(k), kodC);
+  const sure = Date.now() - t0;
+  await B.p.evaluate(() => { fbDb().goOnline(); });
+  await bekle(B, () => sosyal.bagli === true, null, 10000);
+  await B.p.waitForTimeout(1500);
+  const kuyruktan = await oku(`users/${cem}/requests/${bora}`);
+  sina(`çevrimdışıyken "${cevrimdisi}" (${sure} ms), bağlantı gelince istek gitmedi`, () => {
+    assert.equal(cevrimdisi, 'hata');
+    assert.ok(sure < 11000, `${sure} ms`);
+    assert.equal(kuyruktan, null);
+  });
+
+  // 11) Hesap verisinin silinmesi: Ayşe'nin listesinden çıkar, kendi düğümü ve kodu silinir
+  const silindi = await B.p.evaluate(() => arkadaslikVerisiniSil());
+  const listedenCikti = await bekle(A, (u) => !sosyal.arkadaslar[u], bora, 5000);
+  const boraDugum = await oku(`users/${bora}`);
+  const boraKod = await oku(`friendCodes/${kodB}`);
+  const boraDurum = await oku(`presence/${bora}`);
+  sina('hesap verisi silinir: arkadaşın listesinden, kendi düğümü, kodu ve durumu', () => {
+    assert.equal(silindi, true);
+    assert.ok(listedenCikti, 'Ayşe\'nin listesinde Bora duruyor');
+    assert.equal(boraDugum, null);
+    assert.equal(boraKod, null);
+    assert.equal(boraDurum, null);
+  });
+
+  // 12) Kurallar yüklenmemişken: arkadaşlar "izin" hatası verir, oda kurma etkilenmez
+  await kurallariYukle(ARKADASSIZ);
+  const E = await sayfaAc(b, 'Ece');
+  hepsi.push(E);
+  const izin = await bekle(E, () => typeof sosyal !== 'undefined' && sosyal.hata === 'izin', null, 15000);
+  await E.p.evaluate(async () => { await openOnline(); openCreateRoom(); await submitCreateRoom(); });
+  const eOda = await E.p.evaluate(() => online.roomId);
+  await kurallariYukle(KURALLAR);
+  sina('kurallar yokken arkadaşlar "izin" der, oda yine kurulur', () => {
+    assert.ok(izin, 'sosyal.hata "izin" olmadı');
+    assert.match(eOda || '', /^[A-HJKMNP-Z2-9]{6}$/);
+  });
+
+  sina('sayfa hatası yok', () => {
+    assert.deepEqual(hepsi.flatMap((s) => s.hatalar.map((x) => `${s.ad || 'adsız'}: ${x}`)), []);
+  });
+} catch (e) {
+  sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);
+} finally {
+  await b.close();
+  sunucu.close();
+}
+console.log(sonuclar.join('\n'));
+const basarisiz = sonuclar.filter((s) => s.startsWith('✗')).length;
+console.log(basarisiz ? `\n${basarisiz} sınama başarısız` : '\narkadaşlar: hepsi geçti');
+process.exit(basarisiz ? 1 : 0);

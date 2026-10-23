@@ -6553,6 +6553,8 @@ function init() {
       auth.onAuthStateChanged((u) => {
         refreshAccountScreen();
         if (!u) fbKullanici();
+        // Arkadaşlar (arkadaslar.js): istek, davet ve çevrimiçi durum dinleyicileri bu kimlikle kurulur
+        if (u) sosyalBaslat(); else sosyalDurdur();
       });
     }
     // Google Auth plugin'i arka planda hazırla (native)

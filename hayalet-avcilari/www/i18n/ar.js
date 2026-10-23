@@ -117,6 +117,7 @@ I18N.ar = {
   "👥 KARAKTERLER": "👥 الشخصيات",
   "👥 Online odalar artık 6 kişilik: altı avcı aynı odada birlikte oynar.": "👥 أصبحت غرف اللعب أونلاين تتسع لـ 6 لاعبين: ستة صيادين يلعبون معًا في غرفة واحدة.",
   "👧 Yeni karakterler: Silsen çiçek top atar, Serçin tüy fırlatır — Karakterler menüsünde.": "👧 شخصيات جديدة: Silsen ترمي كرات الزهور وSerçin ترمي الريش — في قائمة الشخصيات.",
+  "👫 {ad} arkadaşlık isteği gönderdi": "👫 أرسل {ad} إليك طلب صداقة",
   "👻 Hayalet Avcıları 👻": "👻 صيادو الأشباح 👻",
   "👻 Hayalet oldun! Takımın bölümü bitirince yeniden doğarsın.": "👻 صرت شبحًا! ستعود عندما ينهي فريقك المرحلة.",
   "👻 Hayalet sesleri": "👻 أصوات الأشباح",

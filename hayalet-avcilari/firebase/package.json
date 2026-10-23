@@ -7,7 +7,8 @@
     "test": "firebase emulators:exec --only database,firestore --project demo-hayalet-avcilari \"node --test test/kurallar.test.mjs\"",
     "test:yalniz": "node --test test/kurallar.test.mjs",
     "test:cevrimici": "firebase emulators:exec --only database,auth --project demo-hayalet-avcilari \"node ../test/cevrimici.test.mjs\"",
-    "test:alti": "firebase emulators:exec --only database,auth --project demo-hayalet-avcilari \"node ../test/alti.test.mjs\""
+    "test:alti": "firebase emulators:exec --only database,auth --project demo-hayalet-avcilari \"node ../test/alti.test.mjs\"",
+    "test:arkadas": "firebase emulators:exec --only database,auth --project demo-hayalet-avcilari \"node ../test/arkadas.test.mjs\""
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "5.0.2",

@@ -111,6 +111,38 @@ başka alan yok. Kimse başkasının yedeğini göremez; `accounts_google` liste
 anonim olmayan kullanıcıya açar (`currentFirebaseUser`); kural sağlayıcıya bakmaz (anonimden yükseltilen hesapta
 jetonun ne zaman yenileneceğine bağlı kalmamak için), yani anonim biri yalnız kendi uid'i altına yazabilir.
 
+### `friendCodes`, `users`, `presence` — arkadaşlar (3.13.0)
+
+Tasarım: [`docs/superpowers/specs/2026-10-23-hayalet-arkadaslar-design.md`](../../docs/superpowers/specs/2026-10-23-hayalet-arkadaslar-design.md).
+Oyun tarafı `www/arkadaslar.js`. Her yazım girişli ister; kimlik `auth.uid`'dir.
+
+| Düğüm | İçerik | Okuyan |
+|---|---|---|
+| `friendCodes/{KOD}` | `{uid, name}` — 6 harfli arkadaş kodu (oda kodu alfabesi) → oyuncu | Kodu bilen girişli kullanıcı, yalnız o kod; liste okunamaz |
+| `users/{uid}/code` | oyuncunun kodu | Yalnız sahibi (`users/{uid}`'nin tamamı) |
+| `users/{uid}/friends/{f}` | `{name, at}` arkadaşlar | sahibi |
+| `users/{uid}/requests/{from}` | `{name, at}` gelen istekler (`.indexOn: at`) | sahibi |
+| `users/{uid}/sent/{to}` | `{name, at}` gönderilen, yanıt bekleyen istekler | sahibi |
+| `users/{uid}/invites/{from}` | `{room, roomName, name, at}` davetler (`.indexOn: at`) | sahibi |
+| `users/{uid}/blocks/{b}` | `{name, at}` engellenenler | sahibi |
+| `presence/{uid}` | `{name, charKey, costumeIdx, state: on/room/off, at}` | sahibi ve arkadaş listesindekiler |
+
+| İşlem | Kim | Koşul |
+|---|---|---|
+| İstek gönder (`users/B/requests/A`, `users/A/sent/B`) | A | A ≠ B; B, A'yı engellememiş; zaten arkadaş değiller; istek yeni |
+| Kabul et | B | Tek yazım: `users/B/friends/A` + `users/A/friends/B` + `users/B/requests/A` sil + `users/A/sent/B` sil. Arkadaş kayıtları ancak A'nın isteği varsa yazılabilir (`root` yazımdan önceki veriyi görür) |
+| Reddet / iptal et | B / A | `users/B/requests/A` ve `users/A/sent/B` silinir |
+| Arkadaşlıktan çıkar | ikisinden biri | İki tarafın kaydı ve aradaki davetler tek yazımda silinir; herkes kendini karşı tarafın listesinden silebilir |
+| Davet (`users/B/invites/A`) | A | B'nin listesinde A var, B engellememiş, A `rooms/{room}/players`'ta; yeni davet eskisinin üzerine yazılır |
+| Engelle / kaldır | B | `blocks/A` yazılır; arkadaşlık, istekler, `sent` ve davetler (iki yön) aynı yazımda silinir. Kaldırınca arkadaşlık geri gelmez |
+| Çevrimiçi durum | sahibi yazar | Okuma sahibine ve arkadaş listesindekilere; arkadaşlık bitince okuma izni kalkar |
+| Kod al / yenile | sahibi | Boştaki kod alınır (doluysa yeni kodla); eski kod aynı yazımda silinir (yalnız sahibiyse) |
+| Hesap silme | sahibi | Önce arkadaşların listesindeki kaydım, davetlerim ve gönderdiğim istekler; sonra `users/{uid}`, `presence/{uid}`, kodum |
+
+Bütün alanlar tür ve uzunluk denetimli (`name` 1–50, `roomName` ≤ 60, `charKey` ≤ 30, `at` ≤ `now`), bilinmeyen alan
+reddedilir. **Sınırlar:** kurallar sayamaz; 50 arkadaş ve gösterilen 30 istek / 10 davet sınırını oyun uygular. Çok sayıda
+anonim hesap açan biri çok istek gönderebilir; buna karşı engelleme ve yeni kod var.
+
 ## Cloud Firestore — `scores` (şampiyonlar listesi)
 
 | İşlem | game.js | Kural |
@@ -139,8 +171,8 @@ listele → katıl → hazır ol → başlat → 10 Hz senkron → altı olay t�
 liste sorgusu, oyun sürerken kodla katılma, kimlikli `state` yamaları, tur sonu, host devri); host devri; odada olmayan, girişsiz ve
 konuk birinin host işlerine karışamadığı; kapanan geçişin reddi (girişsiz ve `u_` kimlikli oda kurma, katılma,
 host devri, olay; girişli bağlantının `u_` kimliğiyle yazması; geçişten kalan eski odada girişli oyuncu); şema (oda 2–6 kişilik: 1 ve 7 reddedilir);
-sahipli kodlu yedek, sahipsiz yazımın reddi ve geçişten kalan sahipsiz yedeğin sahiplenilmesi; Google yedeği; girişsiz
-skorun reddi, skor ekle/listele ve yalnız kendi skorunun adını değiştirme. Her bölümde izinsiz ya da bozuk
+sahipli kodlu yedek, sahipsiz yazımın reddi ve geçişten kalan sahipsiz yedeğin sahiplenilmesi; Google yedeği; arkadaşlar
+(kod, istek, kabul, çıkar, engel, davet, çevrimiçi durum, hesap silme, şema); girişsiz skorun reddi, skor ekle/listele ve yalnız kendi skorunun adını değiştirme. Her bölümde izinsiz ya da bozuk
 yazımların reddedildiği de sınanır. GitHub Actions'ta `hayalet-firebase-kurallar.yml` bu klasördeki her değişiklikte
 aynı testi çalıştırır.
 
@@ -177,6 +209,18 @@ değişiklikte kurala ve teste de ekleyin: bilinmeyen alan içeren yazım bütü
 
 Kurallar konsoldan elle yayınlanır (bu depo Firebase CLI ile dağıtım yapmaz). Konsol eski kuralların geçmişini tutar;
 sorun çıkarsa aynı ekrandan önceki sürüme dönülebilir.
+
+### 3.13.0: arkadaşlar (yayınlanmayı bekliyor — 3.13.0 Play'de yayına çıkmadan)
+
+Kökte üç yeni düğüm (`friendCodes`, `users`, `presence`, yukarıda); mevcut düğümlerin izinleri değişmedi. 3.12.2'nin
+`maxPlayers` 2–6 değişikliği ve 3.12.0'ın dizini henüz yayınlanmadıysa bu yayına girer.
+
+1. Firebase konsolu › `hayalet-avcilari` › Realtime Database › **Kurallar** → `database.rules.json`'un tamamını
+   yapıştır → **Yayınla**. Firestore kuralları değişmedi.
+2. Dene (3.13.0, iki cihaz): Arkadaşlar ekranında kod görünür; diğer cihaz kodla ekler, istek kabul edilir; lobide
+   📨 Davet et ile çağrılan cihazda şerit çıkar ve Katıl odaya götürür.
+
+Yayınlanmazsa 3.13.0'da yalnız Arkadaşlar ekranı "Arkadaşlar şu an kullanılamıyor" der; oda, yedek ve skor etkilenmez.
 
 ### 3.12.2: 6 kişilik oda (yayınlanmayı bekliyor — 3.12.2 Play'de yayına çıkmadan)
 

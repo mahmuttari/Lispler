@@ -440,6 +440,174 @@ describe("accounts_google — Google bulut yedeği", () => {
   });
 });
 
+describe("arkadaşlar — kod, istek, kabul, engel, davet, çevrimiçi durum", () => {
+  // www/arkadaslar.js (3.13.0) ile aynı yollar ve gövdeler; yollar ve izinler spec §4.2–4.3
+  const A = HOST, B = KONUK, C = YABANCI;
+  const KODA = "K7MP2Q";                       // arkadasKoduUret(): oda kodu alfabesinden 6 harf
+  const kayit = (name) => ({ name, at: SUNUCU }); // istek, sent, arkadaş ve engel gövdesi
+  const davet = (name = "Ayşe") => ({ room: ODA, roomName: "Poyraz'in Odası", name, at: SUNUCU });
+  const durum = (state) => ({ name: "Ayşe", charKey: "kinkin", costumeIdx: 0, state, at: SUNUCU });
+  const kuralsiz = (yollar) => env.withSecurityRulesDisabled(async (c) => { await c.database().ref().update(yollar); });
+  const arkadasYap = (a, b) => kuralsiz({
+    [`users/${a}/friends/${b}`]: { name: "B", at: 1 }, [`users/${b}/friends/${a}`]: { name: "A", at: 1 },
+  });
+  const istekYaz = (db) => db.ref().update({                // arkadasIstegiGonder: A'dan B'ye
+    [`users/${B}/requests/${A}`]: kayit("Ayşe"), [`users/${A}/sent/${B}`]: kayit("Bora"),
+  });
+
+  test("kod: boştaki kod alınır, tek kod okunur, liste okunamaz; dolu kodun üstüne ve başkası adına yazılamaz", async () => {
+    const a = anonim(A), b = anonim(B);
+    await assertSucceeds(a.ref().update({ [`friendCodes/${KODA}`]: { uid: A, name: "Ayşe" }, [`users/${A}/code`]: KODA })); // kodumuHazirla
+    await assertSucceeds(b.ref(`friendCodes/${KODA}`).get());                                     // kodlaArkadasEkle
+    await assertFails(b.ref("friendCodes").get());
+    await assertFails(misafir().ref(`friendCodes/${KODA}`).get());
+    await assertFails(b.ref(`friendCodes/${KODA}`).set({ uid: B, name: "Bora" }));                // dolu kodun üstüne
+    await assertFails(b.ref("friendCodes/QQQQQQ").set({ uid: A, name: "Ayşe" }));                 // başkası adına
+    await assertFails(b.ref(`users/${A}/code`).set("QQQQQQ"));
+    await assertSucceeds(a.ref(`friendCodes/${KODA}/name`).set("Ayşe2"));                         // sosyalAdGuncelle
+    await assertSucceeds(a.ref().update({                                                         // koduYenile
+      [`friendCodes/${KODA}`]: null, "friendCodes/QQQQQQ": { uid: A, name: "Ayşe2" }, [`users/${A}/code`]: "QQQQQQ",
+    }));
+    await assertFails(b.ref("friendCodes/QQQQQQ").remove());
+    await assertSucceeds(a.ref("friendCodes/QQQQQQ").remove());
+  });
+
+  test("istek: A'dan B'ye istek ve sent; kendine, başkası adına, arkadaşa ve engelleyene istek reddedilir; B'nin isteklerini A okuyamaz", async () => {
+    const a = anonim(A), b = anonim(B);
+    await assertSucceeds(istekYaz(a));
+    await assertFails(a.ref(`users/${B}/requests/${A}`).set(kayit("Ayşe")));                      // aynı istek ikinci kez
+    await assertFails(a.ref(`users/${B}/requests`).get());                                         // başkasının istekleri
+    await assertSucceeds(b.ref(`users/${B}/requests`).orderByChild("at").limitToLast(30).get());   // sahibi dinler
+    await assertSucceeds(a.ref().update({ [`users/${B}/requests/${A}`]: null, [`users/${A}/sent/${B}`]: null })); // istegiIptalEt
+    await assertFails(a.ref(`users/${A}/requests/${A}`).set(kayit("Ayşe")));                      // kendine
+    await assertFails(anonim(C).ref(`users/${B}/requests/${A}`).set(kayit("Ayşe")));              // başkası adına
+    await arkadasYap(A, B);
+    await assertFails(a.ref(`users/${B}/requests/${A}`).set(kayit("Ayşe")));                      // zaten arkadaş
+    await kuralsiz({ [`users/${A}/friends/${B}`]: null, [`users/${B}/friends/${A}`]: null, [`users/${B}/blocks/${A}`]: { name: "Ayşe", at: 1 } });
+    await assertFails(a.ref(`users/${B}/requests/${A}`).set(kayit("Ayşe")));                      // B, A'yı engellemiş
+  });
+
+  test("kabul: tek yazımda iki taraf; istek yokken, yabancının ve var olan kaydın üzerine yazım reddedilir", async () => {
+    const b = anonim(B), c = anonim(C);
+    const kabul = () => b.ref().update({                                                          // istegiKabulEt
+      [`users/${B}/friends/${A}`]: kayit("Ayşe"), [`users/${A}/friends/${B}`]: kayit("Bora"),
+      [`users/${B}/requests/${A}`]: null, [`users/${A}/sent/${B}`]: null,
+    });
+    await assertFails(kabul());                                                                    // istek yok
+    await assertFails(b.ref(`users/${A}/friends/${B}`).set(kayit("Bora")));
+    await kuralsiz({ [`users/${B}/requests/${A}`]: { name: "Ayşe", at: 1 }, [`users/${A}/sent/${B}`]: { name: "Bora", at: 1 } });
+    await assertFails(c.ref(`users/${A}/friends/${B}`).set(kayit("Bora")));                       // yabancı
+    await assertFails(c.ref(`users/${B}/friends/${A}`).set(kayit("Ayşe")));
+    await assertSucceeds(kabul());
+    await kuralsiz({ [`users/${B}/requests/${A}`]: { name: "Ayşe", at: 1 } });
+    await assertFails(b.ref(`users/${A}/friends/${B}`).set(kayit("Sahte")));                      // var olan kaydın üzerine
+    await assertFails(b.ref(`users/${B}/friends/${A}`).set(kayit("Sahte")));
+  });
+
+  test("çıkar: iki taraf birlikte; kişi kendini karşı listeden siler; yabancı silemez", async () => {
+    await arkadasYap(A, B);
+    await assertFails(anonim(C).ref(`users/${A}/friends/${B}`).remove());
+    await assertFails(anonim(C).ref(`users/${B}/friends/${A}`).remove());
+    await assertSucceeds(anonim(A).ref().update({                                                 // arkadasliktanCikar
+      [`users/${A}/friends/${B}`]: null, [`users/${B}/friends/${A}`]: null,
+      [`users/${A}/invites/${B}`]: null, [`users/${B}/invites/${A}`]: null,
+    }));
+    await arkadasYap(A, B);
+    await assertSucceeds(anonim(B).ref(`users/${A}/friends/${B}`).remove());
+  });
+
+  test("engel: tek yazımda engel ve temizlik; sonra istek ve davet reddedilir; engel kalkınca istek gider; engel listesi gizli", async () => {
+    await arkadasYap(A, B);
+    await odaKur(A);
+    await kuralsiz({ [`users/${B}/invites/${A}`]: { room: ODA, roomName: "Oda", name: "Ayşe", at: 1 } });
+    const a = anonim(A), b = anonim(B);
+    await assertSucceeds(b.ref().update({                                                          // engelle
+      [`users/${B}/blocks/${A}`]: kayit("Ayşe"),
+      [`users/${B}/friends/${A}`]: null, [`users/${A}/friends/${B}`]: null,
+      [`users/${B}/requests/${A}`]: null, [`users/${A}/requests/${B}`]: null,
+      [`users/${B}/sent/${A}`]: null, [`users/${A}/sent/${B}`]: null,
+      [`users/${B}/invites/${A}`]: null, [`users/${A}/invites/${B}`]: null,
+    }));
+    await assertFails(istekYaz(a));
+    await assertFails(a.ref(`users/${B}/invites/${A}`).set(davet()));
+    await assertFails(a.ref(`users/${B}/blocks`).get());
+    await assertSucceeds(b.ref(`users/${B}/blocks`).get());
+    await assertSucceeds(b.ref(`users/${B}/blocks/${A}`).remove());                               // engeliKaldir
+    await assertSucceeds(istekYaz(a));
+  });
+
+  test("davet: arkadaş ve odadaysa yazılır ve üzerine yazılır; arkadaş değilken, engelliyken, odada değilken, bozuk oda kodunda reddedilir", async () => {
+    await odaKur(A);
+    const a = anonim(A);
+    await assertFails(a.ref(`users/${B}/invites/${A}`).set(davet()));                             // arkadaş değil
+    await arkadasYap(A, B);
+    await assertSucceeds(a.ref(`users/${B}/invites/${A}`).set(davet()));                          // davetGonder
+    await assertSucceeds(a.ref(`users/${B}/invites/${A}`).set(davet("Ayşe2")));                   // yeni davet eskisinin üzerine
+    await assertFails(a.ref(`users/${B}/invites/${A}`).set({ ...davet(), room: "../x" }));
+    await assertFails(a.ref(`users/${B}/invites/${A}`).set({ ...davet(), room: "ZZZZZZ" }));      // A o odada değil
+    await assertFails(anonim(C).ref(`users/${B}/invites/${A}`).set(davet()));                     // başkası adına
+    await assertSucceeds(anonim(B).ref(`users/${B}/invites`).orderByChild("at").limitToLast(10).get());
+    await assertSucceeds(anonim(B).ref(`users/${B}/invites/${A}`).remove());                      // davetiSil
+    await kuralsiz({ [`users/${B}/blocks/${A}`]: { name: "Ayşe", at: 1 } });
+    await assertFails(a.ref(`users/${B}/invites/${A}`).set(davet()));                             // engelli
+  });
+
+  test("çevrimiçi durum: sahibi yazar, arkadaş okur; yabancı ve eski arkadaş okuyamaz; başkası adına yazılamaz", async () => {
+    const a = anonim(A);
+    await assertSucceeds(a.ref(`presence/${A}`).set(durum("on")));                                // durumumuYaz
+    await assertSucceeds(a.ref(`presence/${A}`).onDisconnect().update({ state: "off", at: SUNUCU }));
+    await assertFails(anonim(B).ref(`presence/${A}`).get());                                       // henüz arkadaş değil
+    await arkadasYap(A, B);
+    await assertSucceeds(anonim(B).ref(`presence/${A}`).get());
+    await assertFails(anonim(C).ref(`presence/${A}`).get());
+    await assertFails(anonim(B).ref(`presence/${A}`).set(durum("on")));
+    await assertFails(a.ref(`presence/${A}`).set(durum("uzak")));
+    await assertSucceeds(a.ref(`presence/${A}`).update({ state: "room", at: SUNUCU }));
+    await kuralsiz({ [`users/${A}/friends/${B}`]: null, [`users/${B}/friends/${A}`]: null });
+    await assertFails(anonim(B).ref(`presence/${A}`).get());                                       // arkadaşlık bitti
+    await assertSucceeds(a.ref(`presence/${A}`).remove());                                        // son arkadaş gidince
+  });
+
+  test("hesap silme: önce başkalarındaki izler, sonra kendi düğümleri; başkasının düğümü silinemez", async () => {
+    await arkadasYap(A, B);
+    await odaKur(A);
+    await kuralsiz({
+      [`users/${B}/invites/${A}`]: { room: ODA, roomName: "Oda", name: "Ayşe", at: 1 },
+      [`users/${C}/requests/${A}`]: { name: "Ayşe", at: 1 }, [`users/${A}/sent/${C}`]: { name: "Cem", at: 1 },
+      [`users/${A}/code`]: KODA, [`friendCodes/${KODA}`]: { uid: A, name: "Ayşe" },
+      [`presence/${A}`]: { name: "Ayşe", state: "on", at: 1 }, [`presence/${B}`]: { name: "Bora", state: "on", at: 1 },
+    });
+    const a = anonim(A);
+    await assertFails(a.ref(`users/${B}`).remove());
+    await assertFails(a.ref(`presence/${B}`).remove());
+    await assertSucceeds(a.ref().update({                                                          // arkadaslikVerisiniSil (1)
+      [`users/${B}/friends/${A}`]: null, [`users/${B}/invites/${A}`]: null, [`users/${C}/requests/${A}`]: null,
+    }));
+    await assertSucceeds(a.ref().update({                                                          // arkadaslikVerisiniSil (2)
+      [`users/${A}`]: null, [`presence/${A}`]: null, [`friendCodes/${KODA}`]: null,
+    }));
+  });
+
+  test("şema: bilinmeyen alan, uzun ad, ileri tarih, bozuk uid ve bozuk kod reddedilir", async () => {
+    await kuralsiz({ [`users/${B}/requests/${A}`]: { name: "Ayşe", at: 1 } });
+    const b = anonim(B);
+    const yaz = (govde) => b.ref(`users/${B}/friends/${A}`).set(govde);
+    await assertFails(yaz({ ...kayit("Ayşe"), hile: 1 }));
+    await assertFails(yaz(kayit("x".repeat(51))));
+    await assertFails(yaz(kayit("")));
+    await assertFails(yaz({ name: "Ayşe", at: Date.now() + 86400000 }));
+    await assertFails(yaz({ name: "Ayşe" }));
+    await assertSucceeds(yaz(kayit("Ayşe")));
+    await assertFails(anonim("k!").ref("users/k!/code").set(KODA));                                // bozuk uid
+    await assertFails(anonim(A).ref(`users/${A}/code`).set("abc123"));
+    await assertFails(anonim(A).ref("friendCodes/K7MP21").set({ uid: A, name: "Ayşe" }));         // 1 alfabede yok
+    await assertFails(anonim(A).ref("friendCodes/K7MP2QX").set({ uid: A, name: "Ayşe" }));        // 7 harf
+    await assertFails(anonim(A).ref(`users/${A}/blocks/${A}`).set(kayit("Ayşe")));                // kendini engelleme
+    await assertFails(anonim(A).ref(`users/${A}/baska`).set(1));
+    await assertFails(anonim(A).ref(`presence/${A}`).set({ ...durum("on"), konum: "x" }));
+  });
+});
+
 describe("Firestore scores — şampiyonlar listesi", () => {
   const fs = () => env.unauthenticatedContext().firestore();
   const fsAnonim = (uid) => env.authenticatedContext(uid, { firebase: { sign_in_provider: "anonymous" } }).firestore();

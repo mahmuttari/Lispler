@@ -79,7 +79,13 @@ try {
           openInviteModal();
         },
         dil: () => { closeInviteModal(); online.roomId = null; online.cachedRoom = null; showScreen('screen-menu'); openLanguage(); },
-        guncelleme: () => { closeLanguage(); showUpdateModal(APP_VERSION, UPDATE_NOTES[APP_VERSION]); },
+        davet_seridi_menu: () => { // 3.13.0: menüde davet şeridi
+          closeLanguage(); refreshMenu();
+          sosyal.arkadaslar.u2 = { name: 'Can', at: 1 };
+          sosyal.davetler.u2 = { room: 'K7PQ2X', roomName: 'Can', name: 'Can', at: Date.now() };
+          davetSeridiniGuncelle();
+        },
+        guncelleme: () => { delete sosyal.davetler.u2; davetSeridiniGuncelle(); showUpdateModal(APP_VERSION, UPDATE_NOTES[APP_VERSION]); },
         oyun: () => { dismissUpdateModal(); startGame(); game.player.invuln = 1e9; },
         duraklat: () => pauseGame(),
         oyun_takim: () => { // 6 kişilik çevrimiçi oyunda takım göstergesi (biri hayalet)
@@ -91,7 +97,11 @@ try {
             online.remotePlayers[`u${i + 2}`] = { name, charKey, costumeIdx: 0, hp: 3 - (i % 3), maxHp: 3, dead: i === 4 ? 1 : 0, x: x + 60 * (i - 2), y: y + 60 };
           });
         },
-        duraklat_cevrimici: () => { pauseGame(); },
+        davet_seridi_oyun: () => { // oyun sürerken başka odadan davet: şerit duraklat düğmesinin ve canın altında
+          sosyal.davetler.u2 = { room: 'M9ZX4C', roomName: 'Can', name: 'Can', at: Date.now() };
+          davetSeridiniGuncelle();
+        },
+        duraklat_cevrimici: () => { delete sosyal.davetler.u2; davetSeridiniGuncelle(); pauseGame(); },
         bitti: () => { resumeGame(); online.mode = null; online.roomId = null; endGame(false); },
         tur_sonu: () => { startGame(); game.player.invuln = 1e9; oyunSonu(false, true); },
       };
@@ -99,7 +109,7 @@ try {
         await p.evaluate(`(${ac.toString()})()`);
         await p.waitForTimeout(ad === 'oyun' ? 2500 : ad === 'oyun_takim' ? 600 : 200);
         const r = await p.evaluate(() => {
-          const gorunur = [...document.querySelectorAll('.screen.active, #toast, .toast')].map((e) => e.innerText).join('\n');
+          const gorunur = [...document.querySelectorAll('.screen.active, #toast, .toast, #davet-seridi')].map((e) => e.innerText).join('\n');
           const tasan = document.documentElement.scrollWidth > window.innerWidth + 1;
           return { metin: gorunur.replace(/Kiki|Avcı|Kinkin|Güllu/g, ''), tasan, yon: document.documentElement.dir };
         });

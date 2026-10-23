@@ -1348,3 +1348,19 @@ details.arkadas-bolum > summary::-webkit-details-marker { display: none; }
 .davet-pencere h2 { font-size: 22px; }
 .davet-pencere .arkadas-liste { text-align: start; margin: 8px 0 12px; }
 .davet-tamam { font-size: 13px; font-weight: 800; color: #4ade80; white-space: nowrap; }
+/* Davet şeridi: her ekranın üstünde, duraklat düğmesinin (12 px + 44 px) altında; toast'un (200) altında */
+.davet-seridi {
+  position: fixed; top: calc(env(safe-area-inset-top, 0px) + 64px); left: 50%; transform: translateX(-50%);
+  z-index: 150; display: flex; align-items: center; gap: 6px;
+  width: max-content; max-width: calc(100vw - 24px);
+  padding: 4px 6px; padding-inline-start: 12px; border-radius: 14px;
+  background: rgba(20, 8, 40, 0.94); border: 2px solid #06b6d4; color: white;
+  font-size: 13px; font-weight: 700; box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+}
+.davet-metin { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.davet-seridi button {
+  flex: none; min-width: 44px; min-height: 40px; padding: 0 12px; border-radius: 10px; border: none;
+  color: white; font-weight: 800; font-family: inherit; cursor: pointer;
+}
+.davet-katil { background: #16a34a; }
+.davet-kapat { background: rgba(255,255,255,0.12); }

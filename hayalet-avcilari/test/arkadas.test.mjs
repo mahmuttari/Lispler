@@ -6,6 +6,8 @@
 // bilinmeyen karakter anahtarı olan arkadaş, kurallar yokken uyarı.
 // Lobi: ➕ / ⏳ / 👫, hızlı çift dokunuş, odadaki durum (room / on), davet penceresi (soluk satırlar, ✓ Gönderildi),
 // ⏸ Menü'de 📨 yalnız çevrimiçi oyunda, dolu odada pasif 📨 Davet et.
+// Davet şeridi: menüde ve tek kişilik oyunda görünür, Katıl (oyun biter, kazanç kasaya, reklam yok), ✕, aynı oda,
+// dolu oda, süresi geçmiş davet, adında HTML olan gönderen, arkadaşlık bitince kalkar.
 // Çalıştırma (Java 21, Playwright + Chromium gerekir):
 //   cd hayalet-avcilari/firebase && npm ci && npm run test:arkadas
 // Emülatör zaten açıksa: node hayalet-avcilari/test/arkadas.test.mjs
@@ -358,6 +360,120 @@ try {
     assert.equal(cevrimiciMenu, true);
     assert.equal(tekMenu, false);
   });
+
+  // 10d) Davet şeridi ve Katıl: menüden, tek kişilik oyundan; ✕; aynı oda; dolu oda; süresi geçmiş; HTML ad; arkadaşlık biterse
+  const serit = (s) => s.p.evaluate(() => {
+    const e = document.getElementById('davet-seridi');
+    const m = e && e.querySelector('.davet-metin');
+    return { gorunur: !!e && e.getClientRects().length > 0, metin: e ? e.textContent : '', kalin: m ? m.querySelectorAll('b').length : -1 };
+  });
+  const seritGorunur = (s, ms = 5000) => bekle(s, () => { const e = document.getElementById('davet-seridi'); return !!e && e.getClientRects().length > 0; }, null, ms);
+  const seritGizli = (s, ms = 5000) => bekle(s, () => { const e = document.getElementById('davet-seridi'); return !!e && e.getClientRects().length === 0; }, null, ms);
+  const cagir = (s, u) => s.p.evaluate((u) => { sosyal._sonDavet = {}; return davetGonder(u); }, u); // 30 sn sınırı sınamaları bekletmesin
+  const silinene = async (yol) => { for (let i = 0; i < 20; i++) { if (await oku(yol) === null) return true; await new Promise((r) => setTimeout(r, 250)); } return false; };
+  await sahip('', { method: 'PATCH', body: JSON.stringify({ [`users/${bora}/invites`]: null, [`users/${cem}/invites`]: null }) });
+  await C.p.evaluate((u) => istegiKabulEt(u), ayse);                        // 10c'deki ➕ isteği: Cem ile Ayşe arkadaş
+  await bekle(A, (u) => !!sosyal.arkadaslar[u], cem, 5000);
+  await A.p.evaluate(async () => { await openOnline(); openCreateRoom(); selectMaxPlayers(3); await submitCreateRoom(); });
+  const odaD = await A.p.evaluate(() => online.roomId);
+  const odaAdi = await A.p.evaluate(() => online.cachedRoom.name);
+  await B.p.evaluate(() => goToMenu());
+  const d1 = await cagir(A, bora);
+  const menudeGorunur = await seritGorunur(B);
+  const menudeSerit = await serit(B);
+  await B.p.evaluate(() => document.querySelector('#davet-seridi .davet-katil').click());
+  const katildi = await bekle(B, (o) => online.roomId === o && document.getElementById('screen-lobby').classList.contains('active'), odaD, 10000);
+  const katilincaGizli = await seritGizli(B);
+  sina(`menüde şerit (${d1}): "${menudeSerit.metin.slice(0, 60)}", Katıl → Bora Ayşe'nin odasında`, () => {
+    assert.ok(menudeGorunur, 'şerit görünmedi');
+    assert.ok(menudeSerit.metin.includes('📨 Ayşe seni çağırıyor'), menudeSerit.metin);
+    assert.ok(menudeSerit.metin.includes(odaAdi), 'oda adı yok');
+    assert.ok(katildi, 'Bora odaya geçmedi');
+    assert.ok(katilincaGizli, 'katılınca şerit kalktı');
+  });
+  // Aynı odadayken gelen davet şerit göstermez ve silinir (Review Focus 5)
+  await cagir(A, bora);
+  await B.p.waitForTimeout(1500);
+  const ayniOda = await serit(B);
+  const ayniOdaSilindi = await silinene(`users/${bora}/invites/${ayse}`);
+  // ✕: davet sessizce silinir
+  await C.p.evaluate(() => goToMenu());
+  await cagir(A, cem);
+  const cemGorur = await seritGorunur(C);
+  await C.p.evaluate(() => document.querySelector('#davet-seridi .davet-kapat').click());
+  const kapatinca = await seritGizli(C);
+  const kapatilanSilindi = await silinene(`users/${cem}/invites/${ayse}`);
+  sina('aynı odadaki oyuncuya şerit çıkmaz; ✕ daveti siler, şerit kalkar', () => {
+    assert.equal(ayniOda.gorunur, false);
+    assert.ok(ayniOdaSilindi, 'aynı odaya davet silinmedi');
+    assert.ok(cemGorur, 'Cem\'de şerit görünmedi');
+    assert.ok(kapatinca, '✕ sonrası şerit duruyor');
+    assert.ok(kapatilanSilindi, '✕ daveti silmedi');
+  });
+  // Tek kişilik oyundan Katıl: oyun biter, kazanç kasaya (bölüm bonusu dahil), reklam yok, Cem odada
+  const paraOnce = await C.p.evaluate(() => {
+    window._reklam = 0;
+    const asil = reklamOyunBitti;
+    reklamOyunBitti = () => { window._reklam++; asil(); };
+    window.confirm = () => true;
+    startGame(); game.player.invuln = 1e9; game.runPara = 120;
+    return save.para;
+  });
+  await cagir(A, cem);
+  const oyundaGorur = await seritGorunur(C);
+  await C.p.evaluate(() => document.querySelector('#davet-seridi .davet-katil').click());
+  const cemOdada = await bekle(C, (o) => online.roomId === o, odaD, 10000);
+  const tekSonra = await C.p.evaluate(() => ({ para: save.para, calisiyor: game.running, reklam: window._reklam, sonuc: document.getElementById('screen-gameover').classList.contains('active') }));
+  sina(`tek kişilik oyundan Katıl: para ${paraOnce} → ${tekSonra.para}, oyun bitti, reklam ${tekSonra.reklam}, Cem odada`, () => {
+    assert.ok(oyundaGorur, 'oyunda şerit görünmedi');
+    assert.ok(tekSonra.para - paraOnce >= 120, `${tekSonra.para - paraOnce}`);
+    assert.equal(tekSonra.calisiyor, false);
+    assert.equal(tekSonra.sonuc, false, 'sonuç ekranı açık kaldı');
+    assert.equal(tekSonra.reklam, 0);
+    assert.ok(cemOdada, 'Cem odaya geçmedi');
+  });
+  // Oda dolmuşken Katıl: "Oda dolu", davet silinmiş (Review Focus 5)
+  await B.p.evaluate(() => leaveRoom());
+  await bekle(A, () => Object.keys(online.cachedRoom.players).length === 2);
+  await cagir(A, bora);
+  await seritGorunur(B);
+  await sahip(`rooms/${odaD}/players/dolduran`, { method: 'PUT', body: JSON.stringify({ name: 'Dolduran', charKey: 'kinkin', costumeIdx: 0, ready: false, joinedAt: Date.now(), lastSeen: Date.now() }) });
+  await B.p.evaluate(() => document.querySelector('#davet-seridi .davet-katil').click());
+  const doluToast = await bekle(B, () => document.getElementById('toast').textContent === 'Oda dolu', null, 5000);
+  const doluSilindi = await silinene(`users/${bora}/invites/${ayse}`);
+  const doluOda = await B.p.evaluate(() => online.roomId);
+  await sahip(`rooms/${odaD}/players/dolduran`, { method: 'DELETE' });
+  sina('oda doluyken Katıl: "Oda dolu", davet silindi, Bora odaya girmedi', () => {
+    assert.ok(doluToast, '"Oda dolu" bildirimi yok');
+    assert.ok(doluSilindi, 'davet silinmedi');
+    assert.equal(doluOda, null);
+  });
+  // Süresi geçmiş davet (6 dk önce) gösterilmez ve silinir
+  await sahip(`users/${bora}/invites/${ayse}`, { method: 'PUT', body: JSON.stringify({ room: odaD, roomName: odaAdi, name: 'Ayşe', at: Date.now() - 6 * 60 * 1000 }) });
+  const eskiSilindi = await silinene(`users/${bora}/invites/${ayse}`);
+  const eskiSerit = await serit(B);
+  // Adında HTML olan gönderen: şeritte düz metin (Review Focus 2)
+  await A.p.evaluate(() => { save.playerName = '<b>x</b>'; });
+  await cagir(A, bora);
+  await seritGorunur(B);
+  const htmlSerit = await serit(B);
+  await A.p.evaluate(() => { save.playerName = 'Ayşe'; });
+  // Ayşe arkadaşlıktan çıkarınca Bora'daki şerit kaybolur
+  await A.p.evaluate((u) => arkadasliktanCikar(u), bora);
+  const cikincaGizli = await seritGizli(B);
+  sina('süresi geçmiş davet görünmez ve silinir; HTML adlı gönderen düz metin; arkadaşlık bitince şerit kalkar', () => {
+    assert.ok(eskiSilindi, 'eski davet silinmedi');
+    assert.equal(eskiSerit.gorunur, false);
+    assert.ok(htmlSerit.metin.includes('📨 <b>x</b> seni çağırıyor'), htmlSerit.metin);
+    assert.equal(htmlSerit.kalin, 0, 'adın içinden <b> öğesi oluştu');
+    assert.ok(cikincaGizli, 'arkadaşlık bitince şerit duruyor');
+  });
+  // 11. adım için Bora ile Ayşe yeniden arkadaş; herkes odadan çıkar
+  await B.p.evaluate((k) => kodlaArkadasEkle(k), kodA);
+  await bekle(A, (u) => !!sosyal.istekler[u], bora, 5000);
+  await A.p.evaluate((u) => istegiKabulEt(u), bora);
+  await bekle(B, (u) => !!sosyal.arkadaslar[u], ayse, 5000);
+  for (const s of [A, C]) await s.p.evaluate(() => quitToMenu());
 
   // 11) Hesap verisinin silinmesi: Ayşe'nin listesinden çıkar, kendi düğümü ve kodu silinir
   const silindi = await B.p.evaluate(() => arkadaslikVerisiniSil());

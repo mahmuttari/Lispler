@@ -229,6 +229,7 @@ function sosyalTazele() {
 // ---- çevrimiçi durum ----
 // Yalnız en az bir arkadaşı olan oyuncu yazar (veri en aza indirme); son arkadaş gidince kayıt silinir
 function durumumuYaz() {
+  davetSeridiniGuncelle(); // odam değişti: davet edildiğim odaya girdiysem şerit kalkar
   const db = sosyalDb();
   if (!db || !sosyal.uid || !sosyal.bagli || !sosyal._yuklenen.has("friends")) return;
   const ref = db.ref(`presence/${sosyal.uid}`);
@@ -768,4 +769,79 @@ async function davetEt(uid, dugme) {
   const ad = arkadasAdi(uid);
   showToast(davetSonucMesaji(await davetGonder(uid), ad));
   renderInviteModal();
+}
+
+// ============================================================
+// DAVET ŞERİDİ (#davet-seridi) VE KATIL
+// ============================================================
+let _seritHtml = null;
+let _seritZamani = null;
+let _davetKatiliyor = false;
+
+// En yeni geçerli davet üstte ince şeritte; davet edildiğim odadaysam gösterilmez ve silinir.
+// Aynı içerik yeniden yazılmaz (dokunuş sırasında düğme değişmesin); süresi dolunca kendiliğinden kalkar.
+function davetSeridiniGuncelle() {
+  const serit = document.getElementById("davet-seridi");
+  if (!serit) return;
+  clearTimeout(_seritZamani);
+  let d = gecerliDavet();
+  while (d && online.roomId && d.room === online.roomId) { davetiSil(d.uid); d = gecerliDavet(); }
+  const html = !d ? "" :
+    `<span class="davet-metin">${t("📨 {ad} seni çağırıyor", { ad: `<bdi>${escapeHtml(kisaAd(d.name))}</bdi>` })}` +
+    (d.roomName ? ` · <bdi>${escapeHtml(String(d.roomName).slice(0, 60))}</bdi>` : "") + `</span>` +
+    `<button class="davet-katil" onclick="davetiKabulEt()">${t("Katıl")}</button>` +
+    `<button class="davet-kapat" onclick="davetiReddet()">✕</button>`;
+  if (html !== _seritHtml) { serit.innerHTML = html; _seritHtml = html; }
+  serit.style.display = d ? "" : "none";
+  if (d) _seritZamani = setTimeout(davetSeridiniGuncelle, Math.max(1000, SOSYAL.DAVET_OMRU_MS - (sunucuSimdi() - d.at) + 500));
+}
+
+// Davetle odaya geçerken açık oyunu kapatır (quitToMenu'nün ekran kısmı)
+function oyunEkraniniKapat() {
+  game.running = false;
+  game.menude = false;
+  game.paused = false;
+  for (const id of ["screen-pause", "screen-gameover", "screen-davet"]) {
+    const e = document.getElementById(id);
+    if (e) e.classList.remove("active");
+  }
+  const wb = document.getElementById("weapon-bar");
+  if (wb) wb.innerHTML = "";
+  if (typeof hostBeklemeGostergesi === "function") hostBeklemeGostergesi(0);
+}
+
+// Katıl: davet silinir; tek kişilik oyun sürüyorsa onayla biter (kazançlar kasaya, reklam yok); başka odadaysa
+// onayla çıkılır; sonra joinRoom (oyun sürüyorsa hemen katılır; "Oda dolu" / "Oda bulunamadı" joinRoom'dan)
+async function davetiKabulEt() {
+  const d = gecerliDavet();
+  if (!d || _davetKatiliyor) return;
+  _davetKatiliyor = true;
+  try {
+    davetiSil(d.uid);
+    davetSeridiniGuncelle();
+    let kapandi = false;
+    if (game.running && !online.mode) {
+      if (!confirm(t("Oyunun biter, kazandıkların kasana eklenir. Arkadaşının odasına geçilsin mi?"))) return;
+      oyunSonu(false, false, true);
+      oyunEkraniniKapat();
+      kapandi = true;
+    } else if (online.roomId) {
+      if (!confirm(t("Bu odadan ayrılıp arkadaşının odasına geçilsin mi?"))) return;
+      await odadanCik();
+      oyunEkraniniKapat();
+      kapandi = true;
+    }
+    await joinRoom(d.room);
+    if (kapandi && online.roomId !== d.room) goToMenu(); // girilemediyse durmuş oyun ekranında kalınmasın
+  } finally {
+    _davetKatiliyor = false;
+  }
+}
+
+// ✕: davet sessizce silinir
+async function davetiReddet() {
+  const d = gecerliDavet();
+  const silme = d ? davetiSil(d.uid) : null;
+  davetSeridiniGuncelle();
+  await silme;
 }

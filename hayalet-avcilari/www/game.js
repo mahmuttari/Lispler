@@ -6498,8 +6498,9 @@ function endGame(won) {
   oyunSonu(won, false);
 }
 
-// Tek kişilik oyunun sonu ya da çevrimiçi turun sonu (turSonu): kazançlar kaydedilir, sonuç ekranı açılır
-function oyunSonu(won, cevrimici) {
+// Tek kişilik oyunun sonu ya da çevrimiçi turun sonu (turSonu): kazançlar kaydedilir, sonuç ekranı açılır.
+// reklamsiz: arkadaşın davetiyle odaya geçerken (arkadaslar.js davetiKabulEt) oyun sonu reklamı gösterilmez
+function oyunSonu(won, cevrimici, reklamsiz = false) {
   game.running = false;
   game.menude = false;
 
@@ -6548,7 +6549,7 @@ function oyunSonu(won, cevrimici) {
   document.getElementById("btn-lobiye-don").style.display = cevrimici ? "" : "none";
   document.getElementById("screen-gameover").classList.add("active");
   if (won) audio.win(); else audio.lose();
-  reklamOyunBitti();
+  if (!reklamsiz) reklamOyunBitti();
 }
 
 // ====== BAŞLAT ======

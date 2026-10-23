@@ -26,3 +26,5 @@
 # (yapıldı 2026-10-22, koşu 39837609373: AAB 42 yüklendi, üretim 3.11.0 (41) → 3.12.0 (42) completed, incelemeye gönderildi) yukle yayinla uygula
 # istek 2026-10-23T13:21:17Z: 3.12.1 (43) üretime yükle ve incelemeye gönder; incelemedeki 3.12.0 (42)'nin yerini alır (kullanıcının açık onayıyla: "Şimdi gönder (Önerilen)"); AAB: hayalet-android koşusu 39944259051 (bu dal, commit 6ad3c79, versionCode 43, Poyraz Workshop yükleme anahtarı)
 # (yapıldı 2026-10-23, koşu 39960541073: AAB 43 yüklendi, üretim 3.12.0 (42) → 3.12.1 (43) completed, incelemeye gönderildi) yukle yayinla uygula
+# istek 2026-10-23T15:07:35Z: 3.12.2 (44) üretime yükle ve incelemeye gönder; incelemedeki 3.12.1 (43)'in yerini alır (kullanıcının açık onayıyla: "Uygun: 3.12.2 hemen (Önerilen)" — testler geçince Play'e gönder); AAB: hayalet-android koşusu 39971239015 (bu dal, commit a354a69, versionCode 44, Poyraz Workshop yükleme anahtarı)
+yukle yayinla uygula

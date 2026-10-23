@@ -315,11 +315,17 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.12.2";
+const APP_VERSION = "3.13.0";
 const UPDATE_NOTES = {
+  // 3.12.2 incelemedeyken gönderilirse oyuncular 3.11.0'dan doğrudan geçer: 👥 satırı bu yüzden. Satırlar kısa: mağaza
+  // notu (aynı satırlar) her dilde 500 karakterin altında kalsın
   "3.13.0": [
+    t("👫 Arkadaş ekle: kodunu paylaş ya da lobide oyuncunun yanındaki ➕'ya dokun."),
+    t("📨 Arkadaşını odana çağır; davet gelince üstteki şeritten Katıl."),
+    t("🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle."),
+    t("👥 Online odalar artık 6 kişilik."),
     t("🏰 Engeller yenilendi: kaleler, eğri kıyılı göller ve her temaya özel ürkünç ama sevimli objeler."),
-    t("🏆 Online turun sonunda herkes yakaladığı hayalete göre sıralanır; birinci kupa kazanır, kupaların menüde görünür."),
+    t("🏆 Online tur sonunda herkes yakaladığı hayalete göre sıralanır, birinci kupa kazanır."),
   ],
   // 3.12.1 incelemedeyken 3.12.2 geldi: notlar 3.12.x'i de anlatır (oyuncular 3.11.0'dan doğrudan geçebilir;
   // mağaza notu 500 karakteri aşmasın diye 👻 satırı bu sürümde yok)

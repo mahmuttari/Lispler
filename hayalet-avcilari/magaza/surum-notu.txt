@@ -2,5 +2,5 @@
 📨 Arkadaşını odana çağır; davet gelince üstteki şeritten Katıl.
 🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle.
 👥 Online odalar artık 6 kişilik.
-🏰 Yeni engeller: kaleler, eğri kıyılı göller, ürkünç ama sevimli objeler.
+🏰 Engeller yenilendi: kaleler, eğri kıyılı göller ve her temaya özel ürkünç ama sevimli objeler.
 🏆 Online tur sonunda herkes yakaladığı hayalete göre sıralanır, birinci kupa kazanır.

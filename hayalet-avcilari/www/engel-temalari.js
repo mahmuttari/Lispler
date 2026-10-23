@@ -606,6 +606,217 @@
     return [];
   }
 
+  // ---------- VOLKAN ----------
+  // Kızıl çatlak (önbellekte, parlamalı): zikzak çizgi
+  function kizilCatlak(ctx, x, y, adim, n, r, renk, kal = 1.6) {
+    ctx.save(); ctx.shadowColor = renk; ctx.shadowBlur = 5; ctx.strokeStyle = renk; ctx.lineWidth = kal; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(x, y);
+    for (let j = 0; j < n; j++) { x += (r() - 0.5) * adim * 1.4; y += adim * (0.6 + r() * 0.5); ctx.lineTo(x, y); }
+    ctx.stroke(); ctx.restore();
+  }
+  // Bazalt kaya: yuvarlak yumrulardan kaya kütlesi, kızıl çatlaklı ön yüz, gözenekli üst yüz
+  function bazaltKaya(ctx, w, h, r, p, B) {
+    if (B.yon) return kaleSuru(ctx, w, h, r, { tas: p.bazalt }, B);
+    const d = B.derinlik || 0;
+    doldur(ctx, B, "rgba(0,0,0,0.35)", 2, d + 1);
+    cizgi(ctx, B, p.koyu, 3, 0, d);                                       // ön yüz: koyu bazalt, kızıl çatlaklar
+    doldur(ctx, B, koyu(p.bazalt, 0.35), 0, d);
+    kirp(ctx, B, () => { for (let i = 0; i < Math.max(2, Math.round(w / 30)); i++) kizilCatlak(ctx, 8 + r() * (w - 16), h - d - 6 - r() * 10, 3, 4, r, p.kizil, 1.4); }, 0, d);
+    cizgi(ctx, B, p.koyu, 3);                                             // üst yüz: yumrular
+    doldur(ctx, B, p.bazalt);
+    kirp(ctx, B, () => {
+      for (const q of B) {                                                // yumruların ışığı ve gölgesi
+        const rx = q.t === "d" ? q.r : q.rx || q.w / 2, ry = q.t === "d" ? q.r : q.ry || q.h / 2, cx = q.t === "k" ? q.x + q.w / 2 : q.x, cy = q.t === "k" ? q.y + q.h / 2 : q.y;
+        elips(ctx, cx + rx * 0.15, cy + ry * 0.2, rx * 0.95, ry * 0.9, koyu(p.bazalt, 0.18));
+        elips(ctx, cx - rx * 0.2, cy - ry * 0.25, rx * 0.6, ry * 0.5, acik(p.bazalt, 0.12));
+      }
+      for (let i = 0; i < w * h / 160; i++) elips(ctx, r() * w, r() * h, 0.9 + r() * 1.2, 0.8 + r(), koyu(p.bazalt, 0.35)); // gözenekler
+      for (let i = 0; i < Math.max(1, Math.round(w * h / 9000)); i++) kizilCatlak(ctx, 10 + r() * (w - 20), 6 + r() * (h - d - 20), 4, 3, r, p.kizil, 1.1);
+    });
+    return [];
+  }
+  // Ejderha yuvası: dal ve çalıdan yuva kenarı, saman, benekli yumurtalar, birinden bakan yavru
+  function ejderhaYuvasi(ctx, w, h, r, p, B) {
+    doldur(ctx, B, koyu(p.dal, 0.45), 0, 0, 3);
+    doldur(ctx, B, "#4a2f1b");
+    kirp(ctx, B, () => {                                                  // saman
+      ctx.lineCap = "round";
+      for (let i = 0; i < w * h / 70; i++) {
+        const x = r() * w, y = r() * h, a = r() * Math.PI, uz = 4 + r() * 6;
+        ctx.strokeStyle = karistir("#c8a165", "#000000", r() * 0.35); ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * uz, y + Math.sin(a) * uz); ctx.stroke();
+      }
+    });
+    for (const k of kenarNoktalari(B, 5, 0)) {                            // dal-çalı kenar
+      const a = Math.atan2(k.ny, k.nx) + (r() - 0.5) * 2.2, uz = 4 + r() * 4;
+      ctx.strokeStyle = karistir(p.dal, "#000000", r() * 0.3); ctx.lineWidth = 2 + r() * 1.5; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(k.x - Math.cos(a) * uz, k.y - Math.sin(a) * uz); ctx.lineTo(k.x + Math.cos(a) * uz * 0.6, k.y + Math.sin(a) * uz * 0.6); ctx.stroke();
+      if (r() < 0.25) elips(ctx, k.x, k.y, 4, 3.2, karistir("#3f6212", "#000000", r() * 0.3));
+    }
+    const n = Math.max(2, Math.min(5, Math.round(w * h / 2600)));
+    const yerler = icNoktalar(B, w, h, n, 15, 20, r), yavrulu = Math.floor(r() * yerler.length);
+    kirp(ctx, B, () => yerler.forEach((k, i) => ejderhaYumurtasi(ctx, k.x, k.y, 7 + r() * 3, r() < 0.5 ? p.yumurta1 : p.yumurta2, r() < 0.5 ? p.yumurta2 : p.yumurta1, r, i === yavrulu)), 0, 0, 8);
+    return [];
+  }
+  function ejderhaYumurtasi(ctx, x, y, s, renk, benek, r, yavru) {
+    elips(ctx, x + 2, y + s * 1.05, s * 0.95, s * 0.3, "rgba(0,0,0,0.35)");
+    const g = ctx.createRadialGradient(x - s * 0.35, y - s * 0.5, 1, x, y, s * 1.4);
+    g.addColorStop(0, acik(renk, 0.45)); g.addColorStop(1, koyu(renk, 0.25));
+    elips(ctx, x, y, s * 0.82, s * 1.12, g);
+    for (let i = 0; i < 5; i++) elips(ctx, x + (r() - 0.5) * s * 1.1, y + (r() - 0.5) * s * 1.5, 1.4 + r() * 1.6, 1.2 + r() * 1.2, benek);
+    if (!yavru) return;                                                    // çatlak kabuk ve bakan sevimli yavru
+    ctx.fillStyle = "#1a0f08"; ctx.beginPath(); ctx.moveTo(x - s * 0.7, y - s * 0.35);
+    for (let i = 1; i <= 6; i++) ctx.lineTo(x - s * 0.7 + i * s * 0.233, y - s * 0.35 + (i % 2 ? -s * 0.22 : 0));
+    ctx.lineTo(x + s * 0.55, y - s * 0.95); ctx.quadraticCurveTo(x, y - s * 1.35, x - s * 0.55, y - s * 0.95); ctx.closePath(); ctx.fill();
+    elips(ctx, x, y - s * 0.6, s * 0.48, s * 0.36, "#65a30d");
+    gozler(ctx, x, y - s * 0.66, s * 0.2, s * 0.11, "#fef9c3", "#1f2937");
+  }
+  // Alev ruhlu kayalar: küllü zemin ve közler, kaya kümesi; kayaların üstünde gülen alev ruhları (canlı)
+  function alevRuhluKayalar(ctx, w, h, r, p, B) {
+    doldur(ctx, B, koyu(p.bazalt, 0.4), 0, 0, 3);
+    kayalikKenar(ctx, B, p.bazalt, r, 8, 1, 6);
+    doldur(ctx, B, "#2b2226");
+    kirp(ctx, B, () => {
+      for (let i = 0; i < w * h / 260; i++) elips(ctx, r() * w, r() * h, 2 + r() * 5, 1 + r() * 2, "rgba(120, 110, 115, 0.25)");
+      ctx.save(); ctx.shadowColor = p.kizil; ctx.shadowBlur = 4;
+      for (let i = 0; i < w * h / 700; i++) elips(ctx, r() * w, r() * h, 1 + r() * 0.8, 1 + r() * 0.8, r() < 0.5 ? p.kizil : "#fbbf24");
+      ctx.restore();
+    });
+    const canli = [], kayalar = icNoktalar(B, w, h, Math.max(2, Math.min(4, Math.round(w * h / 3200))), 16, 26, r);
+    kirp(ctx, B, () => kayalar.forEach((k) => {
+      const s = 9 + r() * 4;
+      elips(ctx, k.x + 2, k.y + s * 0.65, s * 1.1, s * 0.32, "rgba(0,0,0,0.4)");
+      elips(ctx, k.x, k.y, s * 1.05, s * 0.78, p.bazalt);
+      elips(ctx, k.x - s * 0.3, k.y - s * 0.25, s * 0.5, s * 0.3, acik(p.bazalt, 0.15));
+      kizilCatlak(ctx, k.x - s * 0.4, k.y - s * 0.2, 2.5, 3, r, p.kizil, 1);
+      canli.push({ tur: "alevruhu", x: k.x, y: k.y - s * 0.6, n: r() });
+    }), 0, 0, 8);
+    return canli;
+  }
+  // Sıcak su: bazalt kıyı, buhar kabarcıkları (canlı)
+  function sicakSu(ctx, w, h, r, p, B) {
+    suTabani(ctx, w, h, r, B, () => {
+      doldur(ctx, B, p.koyu, 0, 0, 8);
+      kayalikKenar(ctx, B, p.bazalt, r, 8, 2, 6.5);
+    }, koyu(p.bazalt, 0.4));
+    return icNoktalar(B, w, h, Math.max(2, Math.round(w * h / 2500)), 10, 16, r).map((k) => ({ tur: "buhar", x: k.x, y: k.y, n: r() }));
+  }
+
+  // ---------- UZAY ----------
+  // Uzay istasyonu: panelli metal gövde, perçinler, ışıklı pencereli ön yüz, köşe modülleri ve yanıp sönen ışıklar
+  function uzayIstasyonu(ctx, w, h, r, p, B) {
+    if (B.yon) return metalSur(ctx, w, h, r, p, B);
+    const d = B.derinlik || 0, govde = B[0], canli = [];
+    doldur(ctx, B, "rgba(0,0,0,0.4)", 2, d + 1);
+    cizgi(ctx, B, koyu(p.koyu, 0.4), 3, 0, d);                            // ön yüz: dikey paneller, ışıklı pencereler
+    doldur(ctx, B, p.koyu, 0, d);
+    kirp(ctx, B, () => {
+      ctx.strokeStyle = koyu(p.koyu, 0.3); ctx.lineWidth = 1;
+      for (let x = 6; x < w; x += 14) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h + d); ctx.stroke(); }
+    }, 0, d);
+    if (govde.t === "k") {
+      const alt = govde.y + govde.h, n = Math.max(1, Math.floor(govde.w / 34));
+      for (let i = 0; i < n; i++) {
+        const cx = govde.x + govde.w * (i + 0.5) / n;
+        ctx.fillStyle = "#0b1220"; yuvarlak(ctx, cx - 6, alt + 2, 12, d - 6, 4); ctx.fill();
+        ctx.fillStyle = i % 2 ? "rgba(34, 211, 238, 0.75)" : "rgba(244, 114, 182, 0.7)"; yuvarlak(ctx, cx - 4.5, alt + 3.5, 9, d - 9, 3); ctx.fill();
+      }
+    }
+    cizgi(ctx, B, koyu(p.koyu, 0.4), 3);                                   // üst yüz: metal paneller
+    doldur(ctx, B, p.metal);
+    kirp(ctx, B, () => {
+      ctx.strokeStyle = koyu(p.metal, 0.2); ctx.lineWidth = 1;
+      for (let y = 12; y < h; y += 16) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+      for (let y = 12, k = 0; y < h; y += 16, k++) for (let x = (k % 2) * 12; x < w; x += 24) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + 16); ctx.stroke(); }
+      ctx.fillStyle = "rgba(250, 204, 21, 0.85)";                         // sarı-siyah uyarı şeridi
+      if (govde.t === "k") for (let x = govde.x + 4; x < govde.x + govde.w - 8; x += 12) { ctx.beginPath(); ctx.moveTo(x, govde.y + govde.h - 6); ctx.lineTo(x + 6, govde.y + govde.h - 6); ctx.lineTo(x + 3, govde.y + govde.h); ctx.lineTo(x - 3, govde.y + govde.h); ctx.closePath(); ctx.fill(); }
+    });
+    if (govde.t === "k") for (let x = govde.x + 6; x < govde.x + govde.w - 4; x += 10) { elips(ctx, x, govde.y + 4, 1.2, 1.2, koyu(p.metal, 0.35)); } // perçinler
+    B.forEach((q, i) => {                                                  // köşe modülleri: kubbe, halka, ışık
+      if (q.t !== "d") return;
+      const g = ctx.createRadialGradient(q.x - q.r * 0.35, q.y - q.r * 0.35, 1, q.x, q.y, q.r);
+      g.addColorStop(0, acik(p.metal, 0.5)); g.addColorStop(1, koyu(p.metal, 0.25));
+      elips(ctx, q.x, q.y, q.r - 1, q.r - 1, g);
+      ctx.strokeStyle = koyu(p.koyu, 0.2); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(q.x, q.y, q.r * 0.62, 0, Math.PI * 2); ctx.stroke();
+      canli.push({ tur: "isik", x: q.x, y: q.y, n: r(), renk: i % 2 ? p.isik2 : p.isik1 });
+    });
+    return canli;
+  }
+  // Harita sınırı: perçinli metal şerit
+  function metalSur(ctx, w, h, r, p, B) {
+    kaleSuru(ctx, w, h, r, { tas: p.metal }, B);
+    for (const q of B) if (q.t === "d") elips(ctx, q.x, q.y, 1.6, 1.6, koyu(p.koyu, 0.2));
+    return [];
+  }
+  // Göktaşı: mor kaya kütlesi, kraterler, parlak kristaller (uçlarında parıltı)
+  function goktasi(ctx, w, h, r, p, B) {
+    const d = B.derinlik || 0, canli = [];
+    doldur(ctx, B, "rgba(0,0,0,0.4)", 2, d + 1);
+    cizgi(ctx, B, koyu(p.goktasi, 0.5), 3, 0, d);
+    doldur(ctx, B, koyu(p.goktasi, 0.35), 0, d);
+    cizgi(ctx, B, koyu(p.goktasi, 0.5), 3);
+    doldur(ctx, B, p.goktasi);
+    kirp(ctx, B, () => {
+      for (const q of B) {
+        const rx = q.t === "d" ? q.r : q.rx || q.w / 2, ry = q.t === "d" ? q.r : q.ry || q.h / 2, cx = q.t === "k" ? q.x + q.w / 2 : q.x, cy = q.t === "k" ? q.y + q.h / 2 : q.y;
+        elips(ctx, cx - rx * 0.2, cy - ry * 0.25, rx * 0.6, ry * 0.5, acik(p.goktasi, 0.12));
+      }
+      for (const k of icNoktalar(B, w, h, Math.max(2, Math.round(w * h / 1800)), 6, 14, r)) {   // kraterler
+        const s = 3 + r() * 5;
+        elips(ctx, k.x, k.y, s, s * 0.7, koyu(p.goktasi, 0.3)); elips(ctx, k.x + s * 0.2, k.y + s * 0.15, s * 0.7, s * 0.45, koyu(p.goktasi, 0.45));
+        ctx.strokeStyle = acik(p.goktasi, 0.25); ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(k.x, k.y, s, s * 0.7, 0, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+      }
+    });
+    const kp = { kristal: p.kristal, kristal2: koyu(p.kristal, 0.25) };
+    kirp(ctx, B, () => {
+      for (const k of icNoktalar(B, w, h, Math.max(1, Math.min(3, Math.round(w * h / 4500))), 12, 24, r)) {
+        for (const u of kristalKume(ctx, k.x, k.y, Math.min(14 + r() * 8, ustBosluk(B, k.x, k.y) + 4), kp, r)) canli.push({ tur: "parilti", x: u.x, y: u.y, n: r() });
+      }
+    }, 0, 0, 4);
+    return canli;
+  }
+  // Düşmüş UFO: yanık iniş izi, eğik metal gövde, cam kubbede el sallayan uzaylı hayalet, kenar ışıkları (canlı)
+  function dusmusUfo(ctx, w, h, r, p, B) {
+    doldur(ctx, B, "#2a2438", 0, 0, 3);
+    kayalikKenar(ctx, B, "#5b5470", r, 8, 1, 5.5);
+    doldur(ctx, B, "#1e1b2e");
+    const m = icNoktalar(B, w, h, 1, Math.min(w, h) * 0.3, 0, r)[0] || { x: w / 2, y: h / 2 };
+    kirp(ctx, B, () => {
+      ctx.strokeStyle = "rgba(167, 139, 250, 0.25)"; ctx.lineWidth = 2;   // yanık halkalar
+      for (const k of [1, 1.6, 2.3]) { ctx.beginPath(); ctx.ellipse(m.x, m.y + 4, Math.min(w, h) * 0.18 * k, Math.min(w, h) * 0.1 * k, 0, 0, Math.PI * 2); ctx.stroke(); }
+      for (let i = 0; i < w * h / 500; i++) elips(ctx, r() * w, r() * h, 0.8, 0.8, "rgba(255,255,255,0.35)");
+    });
+    const s = Math.min(Math.min(w, h) * 0.3, 2 * Math.min(ustBosluk(B, m.x, m.y), altBosluk(B, m.x, m.y)) / 1.3, 34), canli = [];
+    kirp(ctx, B, () => {
+      ctx.save(); ctx.translate(m.x, m.y); ctx.rotate(-0.18);
+      elips(ctx, 3, s * 0.42, s * 1.15, s * 0.22, "rgba(0,0,0,0.45)");
+      const kub = ctx.createLinearGradient(0, -s, 0, 0); kub.addColorStop(0, "rgba(207, 250, 254, 0.9)"); kub.addColorStop(1, "rgba(103, 232, 249, 0.55)");
+      ctx.fillStyle = kub; ctx.beginPath(); ctx.ellipse(0, -s * 0.12, s * 0.5, s * 0.55, 0, Math.PI, 0); ctx.fill();
+      elips(ctx, 0, -s * 0.28, s * 0.24, s * 0.26, p.uzayli);             // uzaylı hayalet: kafa, gözler, sallanan el
+      gozler(ctx, 0, -s * 0.32, s * 0.09, s * 0.06, "#1f2937", "#ffffff");
+      ctx.strokeStyle = p.uzayli; ctx.lineWidth = Math.max(2, s * 0.08); ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(s * 0.18, -s * 0.2); ctx.lineTo(s * 0.34, -s * 0.46); ctx.stroke();
+      elips(ctx, s * 0.36, -s * 0.5, s * 0.06, s * 0.06, p.uzayli);
+      ctx.strokeStyle = "rgba(255,255,255,0.7)"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.ellipse(0, -s * 0.12, s * 0.42, s * 0.47, 0, Math.PI * 1.15, Math.PI * 1.45); ctx.stroke();
+      const gov = ctx.createLinearGradient(0, -s * 0.2, 0, s * 0.25); gov.addColorStop(0, acik(p.ufo, 0.35)); gov.addColorStop(1, koyu(p.ufo, 0.35));
+      elips(ctx, 0, 0, s, s * 0.3, gov);
+      elips(ctx, 0, s * 0.08, s * 0.55, s * 0.12, koyu(p.ufo, 0.4));
+      ctx.restore();
+      const yer = (a) => { const cx = Math.cos(a) * s * 0.78, cy = Math.sin(a) * s * 0.18; return { x: m.x + cx * Math.cos(-0.18) - cy * Math.sin(-0.18), y: m.y + cx * Math.sin(-0.18) + cy * Math.cos(-0.18) }; };
+      [0.35, 1.2, 1.95, 2.8].forEach((a, i) => { const k = yer(a); canli.push({ tur: "isik", x: k.x, y: k.y, n: r(), renk: i % 2 ? "#f472b6" : "#22d3ee" }); });
+    }, 0, 0, 8);
+    return canli;
+  }
+  // Metal kenarlı havuz: perçinli metal kıyı, suda yıldız yansımaları (canlı)
+  function metalHavuz(ctx, w, h, r, p, B) {
+    suTabani(ctx, w, h, r, B, () => {
+      doldur(ctx, B, p.koyu, 0, 0, 8);
+      kirp(ctx, B, () => tasOrgu(ctx, 0, 0, w, h, 7, p.metal, r), 0, 0, 7);
+      for (const k of kenarNoktalari(B, 12, 5)) elips(ctx, k.x, k.y, 1.2, 1.2, koyu(p.koyu, 0.3));
+    }, koyu(p.koyu, 0.35));
+    return icNoktalar(B, w, h, Math.max(2, Math.round(w * h / 4000)), 8, 18, r).map((k) => ({ tur: "yildiz", x: k.x, y: k.y, n: r() }));
+  }
+
   // ---------- TEMA SETLERİ (sıra LEVEL_THEMES ile aynı; eksik tema dizin 0'a düşer) ----------
   window.ENGEL_TEMALARI = [
     { ad: "Mor Şato", palet: { tas: "#6e5f91", cati: "#7c3aed", toprak: "#2f2442", cim: "#4b3b66", mezar: "#9ca3af", tarla: "#5b3a24" },
@@ -616,5 +827,9 @@
       duvar: harabeDuvari, obje1: kaktusBahcesi, obje2: mumyaLahdi, su: vaha },
     { ad: "Buz Mağarası", palet: { buz: "#bfe8ff", buz2: "#7cc4ee", koyu: "#2b6c9a", kar: "#f4fbff", atki: "#ef4444", havuc: "#f97316", kristal: "#a5f3fc", kristal2: "#67e8f9" },
       duvar: buzKalesi, obje1: kardanAdam, obje2: kristalKumesi, su: buzGolu },
+    { ad: "Volkan", palet: { bazalt: "#3b3138", koyu: "#231c22", kizil: "#f97316", dal: "#7c4a1e", yumurta1: "#a3e635", yumurta2: "#fbbf24" },
+      duvar: bazaltKaya, obje1: ejderhaYuvasi, obje2: alevRuhluKayalar, su: sicakSu },
+    { ad: "Uzay", palet: { metal: "#9ca3af", koyu: "#4b5563", isik1: "#22d3ee", isik2: "#f472b6", goktasi: "#6b5b7b", kristal: "#c084fc", ufo: "#94a3b8", uzayli: "#86efac" },
+      duvar: uzayIstasyonu, obje1: goktasi, obje2: dusmusUfo, su: metalHavuz },
   ];
 })();

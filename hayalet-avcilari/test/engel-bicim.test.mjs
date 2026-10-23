@@ -261,13 +261,13 @@ try {
     for (const tur of ['diken', 'lav']) for (const [w, h] of BOYUTLAR) denetle(engelOlustur({ x: 300, y: 200, w, h }, tur, 0, 3000 + w + h * 7), `${tur}/${w}x${h}`);
     return { sorun, temaSayisi: ENGEL_TEMALARI.length };
   });
-  sina(`temaya özel ressamlar (${kapsama.temaSayisi} tema)`, () => { assert.ok(kapsama.temaSayisi >= 4, `${kapsama.temaSayisi} tema`); });
+  sina(`temaya özel ressamlar (${kapsama.temaSayisi} tema)`, () => { assert.equal(kapsama.temaSayisi, 6); });
   sina(`kapsama: çarpışma içi boyalı, biçim dışı saydam (${kapsama.sorun.length} sorun)`, () => { assert.deepEqual(kapsama.sorun.slice(0, 6), [], kapsama.sorun.slice(0, 8).join(' | ')); });
 
   // 7) Resim aynılığı: iki ayrı sayfada aynı bölümlerin önbellek resimleri birebir aynı (her tema bir kez; 8. bölümde
   //    diken ve lav da var)
   const p5 = await sayfaAc();
-  const [r1, r2] = await Promise.all([resimler(p, [1, 2, 3, 4, 8]), resimler(p5, [1, 2, 3, 4, 8])]);
+  const [r1, r2] = await Promise.all([resimler(p, [1, 2, 3, 4, 5, 6, 8]), resimler(p5, [1, 2, 3, 4, 5, 6, 8])]);
   sina(`iki sayfada engel resimleri aynı (${r1.length} resim)`, () => {
     assert.ok(r1.length > 20 && r1.some((x) => x.startsWith('lav:')) && r1.some((x) => x.startsWith('diken:')));
     assert.ok(!r1.some((x) => x.endsWith(':yok')));

@@ -483,6 +483,47 @@
       ctx.quadraticCurveTo(x, y, x - s * 1.4, y); ctx.quadraticCurveTo(x, y, x, y - s * 1.4); ctx.fill();
       ctx.globalAlpha = eski;
     },
+    // sıcak su buharı: kabarcıklar yükselip söner
+    buhar(ctx, x, y, zaman, n) {
+      const eski = ctx.globalAlpha;
+      for (const k of [0, 0.5]) {
+        const t = (zaman * 0.55 + n + k) % 1;
+        ctx.globalAlpha = eski * (1 - t) * 0.7;
+        elips(ctx, x + Math.sin(t * 6 + n * 9) * 2, y - t * 16, 2 + t * 3, 2 + t * 3, "rgba(255, 255, 255, 0.85)");
+      }
+      ctx.globalAlpha = eski;
+    },
+    // gülen alev ruhu: titreyen alev, iki göz ve gülümseme
+    alevruhu(ctx, x, y, zaman, n) {
+      const t = 1 + Math.sin(zaman * 9 + n * 30) * 0.08, sal = Math.sin(zaman * 5 + n * 12) * 1.5, h = 15 * t, g = 6.5;
+      elips(ctx, x, y - h * 0.4, g * 1.8, h * 0.75, "rgba(249, 115, 22, 0.2)");
+      for (const [renk, o] of [["#f97316", 1], ["#facc15", 0.62]]) {
+        ctx.fillStyle = renk; ctx.beginPath(); ctx.moveTo(x - g * o, y);
+        ctx.quadraticCurveTo(x - g * o * 1.1, y - h * o * 0.55, x + sal * o, y - h * o);
+        ctx.quadraticCurveTo(x + g * o * 1.1, y - h * o * 0.55, x + g * o, y);
+        ctx.quadraticCurveTo(x, y + g * 0.45 * o, x - g * o, y); ctx.fill();
+      }
+      elips(ctx, x - 2, y - h * 0.32, 0.9, 1.2, "#7c2d12"); elips(ctx, x + 2, y - h * 0.32, 0.9, 1.2, "#7c2d12");
+      ctx.strokeStyle = "#7c2d12"; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.arc(x, y - h * 0.24, 2, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+    },
+    // istasyon ve UFO ışıkları: yanıp söner (k.renk)
+    isik(ctx, x, y, zaman, n, k) {
+      const renk = (k && k.renk) || "#22d3ee";
+      if ((zaman * 0.8 + n) % 1 < 0.45) { elips(ctx, x, y, 2, 2, "rgba(255,255,255,0.25)"); return; }
+      elips(ctx, x, y, 5.5, 5.5, renk + "40");
+      elips(ctx, x, y, 2.4, 2.4, renk);
+      elips(ctx, x - 0.7, y - 0.7, 0.9, 0.9, "#ffffff");
+    },
+    // havuzda yıldız yansıması: küçük beş kollu yıldız göz kırpar
+    yildiz(ctx, x, y, zaman, n) {
+      const a = 0.5 + 0.5 * Math.sin(zaman * 2.8 + n * 6.283);
+      const s = 1.6 + a * 2, eski = ctx.globalAlpha;
+      ctx.globalAlpha = eski * (0.3 + a * 0.7);
+      ctx.fillStyle = "#fef9c3"; ctx.beginPath();
+      for (let i = 0; i < 10; i++) { const b = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? s * 0.42 : s; ctx.lineTo(x + Math.cos(b) * rr, y + Math.sin(b) * rr); }
+      ctx.closePath(); ctx.fill();
+      ctx.globalAlpha = eski;
+    },
     // ateş böceği: sinüsle parlar, hafifçe süzülür
     atesbocegi(ctx, x, y, zaman, n) {
       const a = 0.5 + 0.5 * Math.sin(zaman * 2.6 + n * 6.283), dx = Math.sin(zaman * 0.9 + n * 11) * 2.5, dy = Math.cos(zaman * 1.1 + n * 7) * 2;

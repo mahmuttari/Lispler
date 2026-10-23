@@ -1,7 +1,7 @@
 # Hayalet Avcıları — Eğri hatlı, temaya özel engeller (tasarım)
 
 - **Tarih:** 23 Ekim 2026
-- **Durum:** Bölüm bölüm onaylandı; yazılı belge kullanıcı onayını bekliyor
+- **Durum:** Kullanıcı onayladı (23 Ekim 2026: "Onaylıyorum, plana geç"); uygulama planı `docs/superpowers/plans/2026-10-23-hayalet-engeller.md`
 - **Hedef sürüm:** 3.13.0 (versionCode 45), arkadaş özelliğiyle birlikte tek inceleme turu
 - **Proje:** `hayalet-avcilari/` (Capacitor 8, HTML5 canvas, `www/game.js`)
 - **Onaylı taslak:** `docs/superpowers/specs/2026-10-23-hayalet-engeller/` (katalog ve oyun içi görüntüler, taslak ressamlar `taslak.js`)

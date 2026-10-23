@@ -3736,11 +3736,13 @@ function turSiraYazisi(satirlar, kupa) {
   if (ben.sira === 3) return t("🥉 Turu 3. bitirdin!");
   return t("🏅 Turu {n}. bitirdin!", { n: ben.sira });
 }
-// Sonuç ekranındaki sıralama listesi (satirlar null: tek kişilik oyun, liste gizli)
+// Sonuç ekranındaki sıralama listesi (satirlar null: tek kişilik oyun, liste gizli). Sayısı bilinen oyuncu 2'den azsa
+// (kurallar yayınlanmamış ya da ötekiler eski sürüm) sıra yoktur: madalya gösterilmez, yalnız sayılar.
 function turSiralamasiniGoster(satirlar) {
   const kutu = document.getElementById("tur-siralama");
   if (!satirlar) { kutu.style.display = "none"; return; }
-  const madalya = (sira) => (sira === 1 ? "🥇" : sira === 2 ? "🥈" : sira === 3 ? "🥉" : sira ? `${sira}.` : "");
+  const siraVar = satirlar.filter((s) => s.sira !== null).length >= 2;
+  const madalya = (sira) => (!siraVar || !sira ? "" : sira === 1 ? "🥇" : sira === 2 ? "🥈" : sira === 3 ? "🥉" : `${sira}.`);
   document.getElementById("tur-siralama-liste").innerHTML = satirlar.map((s) => `<li class="ts-satir${s.ben ? " ben" : ""}">` +
     `<span class="ts-sira">${madalya(s.sira)}</span><bdi class="ts-ad">${escapeHtml(s.ad)}</bdi>` +
     (s.ben ? `<span class="ts-sen">(${escapeHtml(t("Sen"))})</span>` : "") +
@@ -5029,6 +5031,33 @@ function enYakinHedef(g, hedefler) {
 const KASIRGA_R = 110;
 const KASIRGA_DPS = 8;
 
+// Engele değen adım yüzey boyunca kayar (3.13.0: engeller eğri; eksen eksen denemek eğride ve sınırın mazgal
+// başlarında takılıyordu). Hedef engele girerse uzaklık alanının eğiminden (yüzey normali) batma kadar dışarı itilir;
+// adım yalnız girdi yönünde ilerliyor ve uzamıyorsa kabul edilir, olmazsa eskisi gibi eksen eksen denenir.
+// engel(x, y, r): çarpışma; mesafe(x, y, r): en yakın engelin işaretli uzaklığı (engelMesafesi). Yürüdüyse true.
+function kayarakYuru(o, dx, dy, engel, mesafe) {
+  const r = o.r, boy = Math.hypot(dx, dy);
+  let qx = o.x + dx, qy = o.y + dy;
+  if (!engel(qx, qy, r)) { o.x = qx; o.y = qy; return true; }
+  for (let k = 0; k < 3; k++) {
+    const d = mesafe(qx, qy, r + 2);
+    if (!(d < r)) break;
+    const gx = mesafe(qx + 1, qy, r + 2) - mesafe(qx - 1, qy, r + 2), gy = mesafe(qx, qy + 1, r + 2) - mesafe(qx, qy - 1, r + 2);
+    const gl = Math.hypot(gx, gy);
+    if (!(gl > 1e-6)) break;
+    qx += (gx / gl) * (r - d + 0.05); qy += (gy / gl) * (r - d + 0.05);
+    if (!engel(qx, qy, r)) {
+      const ex = qx - o.x, ey = qy - o.y;
+      if (ex * dx + ey * dy > 0 && Math.hypot(ex, ey) <= boy * 1.05 + 0.05) { o.x = qx; o.y = qy; return true; }
+      break;
+    }
+  }
+  let yurudu = false;
+  if (!engel(o.x + dx, o.y, r)) { o.x += dx; yurudu = true; }
+  if (!engel(o.x, o.y + dy, r)) { o.y += dy; yurudu = true; }
+  return yurudu;
+}
+
 function update(dt, now) {
   // Oyuncu hareketi
   let dirX = game.inputDir.x;
@@ -5058,8 +5087,9 @@ function update(dt, now) {
       const nx = game.player.x + mx * game.player.speed * speedMul * dt;
       const ny = game.player.y + my * game.player.speed * speedMul * dt;
       const waterBlock = !game.player.waterImmune;
-      if (!collidesWalls(nx, game.player.y, game.player.r) && !(waterBlock && collidesWaters(nx, game.player.y, game.player.r))) { game.player.x = nx; movedThisFrame = true; }
-      if (!collidesWalls(game.player.x, ny, game.player.r) && !(waterBlock && collidesWaters(game.player.x, ny, game.player.r))) { game.player.y = ny; movedThisFrame = true; }
+      const engel = (x, y, r) => collidesWalls(x, y, r) || (waterBlock && collidesWaters(x, y, r));
+      const mesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), waterBlock ? engelMesafesi(game.waters, x, y, r) : Infinity);
+      if (kayarakYuru(game.player, nx - game.player.x, ny - game.player.y, engel, mesafe)) movedThisFrame = true;
     }
   }
   // Yürüme animasyonu fazı
@@ -5954,6 +5984,7 @@ function steerHoming(p, dt) {
 // Çevrimiçi oyunda yok: konumu ve canı odaya senkronlanmaz.
 const BOT_MAX_HP = 6;
 const botEngel = (x, y, r) => collidesWalls(x, y, r) || collidesWaters(x, y, r);
+const botMesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), engelMesafesi(game.waters, x, y, r));
 
 function spawnBot() {
   game.bot = null;
@@ -5976,9 +6007,7 @@ function updateBot(dt, now) {
   let yurudu = false;
   if (d > 80) {
     const adim = game.player.speed * 0.95 * dt;
-    const nx = b.x + (dx / d) * adim, ny = b.y + (dy / d) * adim;
-    if (!botEngel(nx, b.y, b.r)) { b.x = nx; yurudu = true; }
-    if (!botEngel(b.x, ny, b.r)) { b.y = ny; yurudu = true; }
+    yurudu = kayarakYuru(b, (dx / d) * adim, (dy / d) * adim, botEngel, botMesafe);
     b.stuck = yurudu ? 0 : b.stuck + dt;
     if (d > 650 || b.stuck > 2) {
       const yer = freeSpot(game.player.x - 50, game.player.y + 30, b.r, botEngel);

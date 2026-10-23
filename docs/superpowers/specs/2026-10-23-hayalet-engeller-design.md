@@ -48,7 +48,9 @@ Taslağa işaretle eklenen yön: *"konturler daha değişken parabolik dairesel 
    kendiliğinden biçime uyar. Duvarlarda ön yüz (3/4 görünüşte alttaki koyu yüz) çarpışmaya dahildir: gövde kutusu
    çarpışmada `d` kadar aşağı uzatılır. Su ve lavın kıyısı yürünür (kıyı biçimin dışındadır; çarpışma suyun ve lavın
    kendisidir). Objelerin kenar süsü (çit, çalı, taş) engelin parçasıdır: obje çarpışması biçimin 3 px büyütülmüşüdür.
-   Diken plakasında hasar alanı plaka ve 2,5 px kırmızı kenarıdır.
+   Diken plakasında hasar alanı plaka ve 2,5 px kırmızı kenarıdır. *Son incelemeden:* engele değen oyuncu ve bot
+   yüzey boyunca kayar (`kayarakYuru`: hedef, uzaklık alanının eğimi yönünde dışarı itilir; adım uzamaz); elipsin
+   işaretli uzaklığı eğimle bölünmüş yaklaşımla hesaplanır (eski formül uzun eksende ~21 px görünmez duvar yapıyordu).
 4. **Eski sürümle karışık oda.** Biçim dikdörtgenin içinde kaldığı için eski sürüm (dikdörtgen çarpışma) yalnız daha
    geniş bir alana takılır; harita, ağ verisi ve kurallar değişmez.
 5. **Aynılık.** Kılık seçimi ve bütün süslerin yeri tohumlu rastgele sayıyla (xorshift32) bölüm numarası, engel türü,
@@ -71,7 +73,7 @@ Tema `(bölüm − 1) % 6` ile döner (`LEVEL_THEMES`, `getTheme`). Renkler tema
 
 | Tema | Duvar (biçim ailesi) | 1. obje | 2. obje | Su kıyısı |
 |---|---|---|---|---|
-| **Mor Şato** | Taş kale (kale): yuvarlak köşeli gövde, üstten taşan külahlı kuleler ve mazgallar, ön yüzde ışıklı kemerli pencereler | Mezarlık (yama): taş kenar, önde demir çit, sevimli mezar taşları (hilal oyma), taşın arkasından bakan hayalet, mum | Balkabağı tarlası (yama): tahta çit, sürülmüş toprak, sarmaşık, gülen fener balkabakları | Kale hendeği: taş kıyı |
+| **Mor Şato** | Taş kale (kale): yuvarlak köşeli gövde, üstten taşan külahlı kuleler ve mazgallar, ön yüzde ışıklı kemerli pencereler | Mezarlık (yama): taş kenar, önde demir çit, sevimli mezar taşları (yarasa oyma; taslaktaki hilal §3.8 gereği son incelemede kaldırıldı), taşın arkasından bakan hayalet, mum | Balkabağı tarlası (yama): tahta çit, sürülmüş toprak, sarmaşık, gülen fener balkabakları | Kale hendeği: taş kıyı |
 | **Yeşil Orman** | Kütük çit (kütük): üstte kütük uçları, kenarda boyları değişen yuvarlak kütük başları, önde dikey kütükler ve ip | Ürkünç ağaçlar (yama): çalı kenar, kıvrık dallı ağaçlar, kovukta parlayan sevimli gözler, yarasa | Dev mantar halkası (yama): yosun kenar, benekli mantarlar, ortada yüzlü dev mantar, ateş böcekleri | Sazlıklı gölet: çimen kıyı, kamış, nilüfer |
 | **Çöl** | Kum taşı harabe (kale ailesi, kırık): gövde, farklı boylarda kırık sütun başları, ön yüzde çatlak kum taşı | Kaktüs bahçesi (yama): çakıl kenar, kollu ve çiçekli, uykulu yüzlü kaktüsler | Mumya lahdi (yama): kumlu taş zemin, kapağı aralık lahit, içinden bakan sevimli mumya | Vaha: kum kıyı, palmiye yaprakları |
 | **Buz Mağarası** | Buz kalesi (kale ailesi): buz tuğla gövde, yuvarlak buz kuleleri, ön yüzde sarkıtlar | Kardan adam (yama): kar yığını kenar, atkılı, havuç burunlu, gülümseyen kardan adam(lar) | Buz kristali kümesi (yama): buzlu zemin, parlayan kristaller | Buz kenarlı göl: buz kıyı, yüzen buz parçaları |
@@ -135,7 +137,9 @@ renk geçişi dünya koordinatında hesaplanır (birleşen göllerde dikiş olma
 
 - Her karede görünen engel başına bir `drawImage`; sular için ikinci geçişte kırpılmış bir `drawImage` daha.
 - Önbellek tuvalleri ilk görüldükleri karede çizilir (bölüm başında takılma olmasın); bir engelin hazırlanması birkaç
-  milisaniyedir.
+  milisaniyedir. *Son incelemeden:* görünmeyenler de bölüm başından itibaren her karede, kameraya en yakından başlayarak
+  hazırlanır (en az bir engel, sonra karenin engel işi 6 ms'yi bulana kadar): ilk çizim 4× yavaş işlemcide oyun
+  ortasında 67–233 ms sıçrama yapıyordu.
 - Çarpışmada dikdörtgen ön elemesi: biçime yalnız dikdörtgenine yakın noktalar bakar.
 - Ölçüt: `cizim.test` (botlu, hayaletli kare hızı) ve 6 kişilik `alti.test` bugünkü eşikleri geçer.
 

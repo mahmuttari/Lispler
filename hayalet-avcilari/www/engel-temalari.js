@@ -88,8 +88,7 @@
       ctx.fillStyle = koyu(p.mezar, 0.35); yuvarlak(ctx, x + 2, y + 1, tw, th, tw * 0.48); ctx.fill();
       const g = ctx.createLinearGradient(x, 0, x + tw, 0); g.addColorStop(0, acik(p.mezar, 0.25)); g.addColorStop(1, p.mezar);
       ctx.fillStyle = g; yuvarlak(ctx, x, y, tw, th, tw * 0.48); ctx.fill();
-      ctx.fillStyle = koyu(p.mezar, 0.4); ctx.beginPath(); ctx.arc(x + tw / 2, y + th * 0.38, tw * 0.17, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x + tw / 2 + tw * 0.08, y + th * 0.34, tw * 0.15, 0, Math.PI * 2); ctx.fill();
+      mezarOymasi(ctx, x + tw / 2, y + th * 0.38, tw, koyu(p.mezar, 0.4));
       ctx.strokeStyle = koyu(p.mezar, 0.35); ctx.lineWidth = 1;
       for (const k of [0.68, 0.8]) { ctx.beginPath(); ctx.moveTo(x + tw * 0.27, y + th * k); ctx.lineTo(x + tw * 0.73, y + th * k); ctx.stroke(); }
     });
@@ -103,6 +102,26 @@
     }
     return canli;
   }
+
+  // Mezar taşının üst yarısındaki oyma: küçük yarasa (spec §3.8 dinî sembol yok; taslaktaki hilal kaldırıldı).
+  // (cx, cy) oymanın ortası, tw taşın eni; kanatlar ayrı ayrı doldurulur (dolgu yönü delik açmasın)
+  function mezarOymasi(ctx, cx, cy, tw, renk) {
+    const s = tw * 0.24;
+    ctx.fillStyle = renk;
+    for (const k of [1, -1]) {
+      ctx.beginPath();
+      ctx.moveTo(cx + k * s * 0.08, cy - s * 0.14);
+      ctx.quadraticCurveTo(cx + k * s * 0.55, cy - s * 0.58, cx + k * s, cy - s * 0.2);
+      ctx.quadraticCurveTo(cx + k * s * 0.86, cy - s * 0.02, cx + k * s * 0.7, cy + s * 0.06);
+      ctx.quadraticCurveTo(cx + k * s * 0.58, cy - s * 0.08, cx + k * s * 0.44, cy + s * 0.1);
+      ctx.quadraticCurveTo(cx + k * s * 0.3, cy - s * 0.02, cx + k * s * 0.08, cy + s * 0.16);
+      ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(cx + k * s * 0.13, cy - s * 0.34); ctx.lineTo(cx + k * s * 0.09, cy - s * 0.54); ctx.lineTo(cx + k * s * 0.02, cy - s * 0.38); ctx.fill(); // kulak
+    }
+    ctx.beginPath(); ctx.ellipse(cx, cy, s * 0.16, s * 0.27, 0, 0, Math.PI * 2); ctx.fill();          // gövde
+    ctx.beginPath(); ctx.arc(cx, cy - s * 0.3, s * 0.14, 0, Math.PI * 2); ctx.fill();                 // baş
+  }
+  window.ENGEL.mezarOymasi = mezarOymasi;
 
   // Balkabağı tarlası: hattı izleyen tahta çit, sürülmüş toprak, sarmaşık, gülen fener balkabakları
   function balkabagiTarlasi(ctx, w, h, r, p, B) {

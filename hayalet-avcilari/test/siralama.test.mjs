@@ -1,7 +1,8 @@
 // Hayalet Avcıları: çevrimiçi tur sonu sıralaması ve kupa (3.13.0) — çevrimdışı sınama.
 // Sıralama her oyuncunun kendi yakaladığı hayalete (oda kaydındaki av) göre; eşitlikte sıra paylaşılır (1, 1, 3); sayısı
-// gelmeyen oyuncu (eski sürüm) sona "?" ile, sıralamaya girmez. Kupa yalnız birinciye: en az 2 sayılı oyuncu ve en az
-// 1 hayalet şartıyla; kupa sayısı kaydedilir ve menüde görünür. Tek kişilik oyunun sonuç ekranı değişmez.
+// gelmeyen oyuncu (eski sürüm) sona "?" ile, sıralamaya girmez; sayısı bilinen tek oyuncuda sıra yazısı ve madalya yok.
+// Kupa yalnız birinciye: en az 2 sayılı oyuncu ve en az 1 hayalet şartıyla; kupa sayısı kaydedilir ve menüde görünür.
+// Tek kişilik oyunun sonuç ekranı değişmez.
 // Uçtan uca (emülatörde üç oyuncu, kural): cevrimici.test.mjs.
 // Çalıştırma: node hayalet-avcilari/test/siralama.test.mjs   (Playwright + Chromium; ağ ve Firebase gerekmez)
 import http from 'node:http';
@@ -122,6 +123,15 @@ try {
     assert.equal(tek.gorunur, false);
     assert.match(tek.yazi, /SIRA|sıra/);
     assert.equal(tek.kupa, 4);
+  });
+
+  // 8) Sayısı bilinen tek oyuncu (kurallar konsolda yayınlanmamış ya da ötekiler eski sürüm): sıra yazısı da madalya da
+  //    yok (son inceleme: herkes kendi adının yanında 🥇 görüyordu), kupa değişmez
+  const tekSayi = await turBitir({ u1: { name: 'Kiki' }, u2: { name: 'Mila' }, u3: { name: 'Can' } }, 7);
+  sina('sayısı bilinen tek oyuncuda sıra yazısı ve madalya yok', () => {
+    assert.equal(tekSayi.yazi, '');
+    assert.deepEqual(tekSayi.satirlar, [['', 'Kiki', '7 👻', false, true], ['', 'Mila', '?', false, false], ['', 'Can', '?', false, false]]);
+    assert.equal(tekSayi.kupa, 4);
   });
 
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });

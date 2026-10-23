@@ -297,12 +297,35 @@ kuralı (çarpışma alanının içi boyalı, biçimin kıyı/kenar payıyla bir
 kardan adam ve kristaller yamadaki boşluğa göre boylanır ve yamanın 8 px ötesinde kırpılır; ağaçlar taslaktakinden
 biraz kısa.
 
-Test: `test/engel-bicim.test.mjs` (12 sınama: biçim dikdörtgende, çarpışma biçimi izler, kılık kuralı, iki sayfada
-aynı biçim ve aynı resim, `freeSpot`, 6 tema, kapsama, ekran dönmesi ve tablet ölçeği, bölüm geçişi, sayfa hatası;
+Test: `test/engel-bicim.test.mjs` (17 sınama: biçim dikdörtgende, çarpışma biçimi izler, kılık kuralı, iki sayfada
+aynı biçim ve aynı resim, `freeSpot`, 6 tema, kapsama, ekran dönmesi ve tablet ölçeği, bölüm geçişi; son incelemeden
+kayarak yürüme, gerçek uzaklık, önbellek ısınması ve ölçek değişince yeniden ısınma, mezar taşı oyması; sayfa hatası;
 `--ekran <klasör>` ile her tema için katalog ve TR 390 / AR 340 px oyun içi görüntüler). Kapsama ayrıca son hâliyle
 bir kerelik geniş taramayla 6 tema × 40 tohumda (7 088 resim, taşma yok) denetlendi. `engel.test`, `cizim.test`,
 `dil.test` değişmeden geçer; emülatörde `cevrimici.test` 17/17, `alti.test` 11/11 (6 kişi, 2 kat yavaş işlemci:
 kurucu 48,2, konuk 46,3 kare/sn; 3.12.2 ölçümleri 33–53 ve 48–53).
+
+Son incelemede (taze inceleyici, bütün dal) bulunan ve düzeltilenler; her biri önce kırmızı veren bir sınamayla:
+
+- **Eğri engele takılma:** hareket eksen eksen denendiği için oyuncu eğri kıyıda ve sınırın mazgal başlarında
+  duruyordu (sınıra hafifçe bastırarak koşarken serbest yürüyüşün %6–11'i). Artık engele değen adım yüzey boyunca kayar
+  (`kayarakYuru`: hedef, uzaklık alanının eğimi yönünde batma kadar dışarı itilir; adım uzamaz, olmazsa eski eksen
+  eksen deneme). Sınırda %96–99, gölde %93–100; 1–6. bölümlerin engellerine 4 096 açılı yaklaşımda takılma %43,3 →
+  %2,4 (eski dikdörtgen engellerde %23,1). Bot da aynı yardımcıyla yürür, göle takılıp ışınlanmaz.
+- **Görünmez duvar:** elipsin işaretli uzaklığı `(k − 1) × min(rx, ry)` uzun eksende yarıya iniyordu; oyuncu
+  yarıçapında (22 px) suya ve kayaya gerçekte 21 px uzaktayken çarpıyordu. Eğimle bölünmüş yaklaşım `k(k − 1) / |∇k|`
+  ile 1–12. bölümlerin 98 elipsli engelinde en çok 2,3 px, içeri girme yok. Kıyı süsleri biraz yer değiştirdiği için geniş
+  kapsama taraması yinelendi (7 088 resim, taşma yok).
+- **İlk çizim sıçraması:** engel resmi ilk görüldüğü karede çiziliyordu; 4 kat yavaş işlemcide (telefon ölçeği)
+  haritada gezinirken 2–4 kare 100–233 ms sürüyordu. Artık bölüm başından itibaren her karede, kameraya en yakından
+  başlayarak hazırlanır (en az bir engel, sonra karenin engel işi 6 ms'yi bulana kadar). Isınmadan sonra gezinmede en
+  uzun kare 33 ms (dikdörtgen sürümle aynı); bedeli bölüm başındaki ilk saniye (60 karede ortalama 17 → 22 ms).
+- **Mezar taşında hilal:** taslaktaki hilal oyma spec §3.8'e (dinî sembol yok) aykırıydı; yerine küçük yarasa.
+
+Ertelenen küçük bulgular (kullanıcıya sunuldu): sınır şeridinde çarpışma parça sayısı, göz kırpmada `lineCap`
+sızıntısı, kesişen göllerde dalga dikişi, kenar süslerinin paydan taşıp düz kesilmesi (lavın sağı), tuval oluşturulamayınca
+geri çekilme, tura etiketsiz `av`, son ölen oyuncuda cihazların ayrışabileceği dar pencere, bir hayaletin iki oyuncuya
+sayılabilmesi (3.12.0'dan beri), kural yokken konsol günlüğü, kullanılmayan tema alanları.
 
 ## 3.13.0: tur sıralaması ve kupa
 
@@ -313,16 +336,19 @@ tek kayıtta tuttuğu için çoğu cihazda sıra 0 çıkıyor, herkese "🥇 1. 
 - Her oyuncu kendi yakaladığı hayalet sayısını (`game.totalCaught`, son vuruşu yapan sayar) oda kaydına `av` olarak
   yazar: değişince, en çok 400 ms'de bir, konum yazımından ayrı (kural reddederse konum eşitlemesi bozulmaz).
 - Tur sonu ekranında odanın sıralaması: ad, hayalet sayısı, 🥇🥈🥉 ve 4.–6.; eşitlikte sıra paylaşılır (1, 1, 3) ve
-  kimliğe göre dizilir. Tur herkes hayalet olduktan 2,5 sn sonra bittiği için sayılar oturmuştur: her cihaz aynı
-  listeyi görür. Sayısı gelmeyen oyuncu (eski sürüm) sona "?" ile yazılır, sıralamaya girmez.
+  kimliğe göre dizilir. Tur herkes hayalet olduktan 2,5 sn sonra bittiği için sayılar o an oturmuştur ve cihazlar aynı
+  listeyi görür; son ölen oyuncunun sayısı uçan mermiyle o 2,5 sn'nin sonunda değişirse cihazlar ayrışabilir (son
+  incelemenin ertelenen küçük bulgusu). Sayısı gelmeyen oyuncu (eski sürüm) sona "?" ile yazılır, sıralamaya girmez;
+  sayısı bilinen tek oyuncu kalırsa sıra yazısı da madalya da gösterilmez (yalnız sayılar).
 - Kupa: birinci (berabereyse hepsi) `save.kupa`'ya +1 alır; en az 2 sayılı oyuncu ve en az 1 hayalet şartıyla (tek
   başına oda kurup kupa toplanamaz). Kupa sayısı kayıtla birlikte yedeğe girer, ana menüde 💰💎💚'nin yanında 🏆 ile
   görünür. Tek kişilik oyunun sonuç ekranı değişmedi; çevrimiçi skor yine Şampiyonlar listesine eklenir.
 - Kural: `players/$uid/av` 0–100000 arası sayı. Konsolda yayınlanmadan 3.13.0 oyuncuya ulaşırsa yazım reddedilir,
   sıralamada başkalarının sayısı "?" görünür ve kupa verilmez; oyun etkilenmez.
 
-Test: `test/siralama.test.mjs` (8 sınama: sıralama ve eşitlik, kupa kuralı, birinci/ikinci/berabere/4. sıra ekranı,
-kupanın kaydı ve menüde görünmesi, tek kişilik oyun değişmez, ad HTML olarak işlenmez); `cevrimici.test.mjs`'e üç
+Test: `test/siralama.test.mjs` (9 sınama: sıralama ve eşitlik, kupa kuralı, birinci/ikinci/berabere/4. sıra ekranı,
+kupanın kaydı ve menüde görünmesi, tek kişilik oyun değişmez, sayısı bilinen tek oyuncuda madalya yok, ad HTML olarak
+işlenmez); `cevrimici.test.mjs`'e üç
 oyunculu turda her cihazda aynı sıra ve kupa yalnız birinciye, `av` kuralı (metin, eksi ve 100001 ret; 9 kabul) ve iki
 kişide berabere birinci eklendi; dil testinde 6 kişilik tur sonu (her dilde 390 ve 340 px).
 

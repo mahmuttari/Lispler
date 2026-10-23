@@ -52,10 +52,14 @@
   function kirp(ctx, P, fn, ox = 0, oy = 0, b = 0) { ctx.save(); yol(ctx, P, ox, oy, b); ctx.clip(); fn(); ctx.restore(); }
 
   // ---------- uzaklık, hat, iç noktalar ----------
-  // işaretli uzaklık (içeride eksi); elips yaklaşık
+  // işaretli uzaklık (içeride eksi). Elips yaklaşık: (k − 1) / |∇k| (eksenlerde tam, dışarıda birkaç px içinde);
+  // eski (k − 1) × min(rx, ry) uzun eksende uzaklığı yarıya indirip ~21 px görünmez duvar yapıyordu
   function parcaUzaklik(q, x, y) {
     if (q.t === "d") return Math.hypot(x - q.x, y - q.y) - q.r;
-    if (q.t === "e") return (Math.hypot((x - q.x) / q.rx, (y - q.y) / q.ry) - 1) * Math.min(q.rx, q.ry);
+    if (q.t === "e") {
+      const px = (x - q.x) / q.rx, py = (y - q.y) / q.ry, k0 = Math.hypot(px, py), k1 = Math.hypot(px / q.rx, py / q.ry);
+      return k1 > 1e-9 ? (k0 * (k0 - 1)) / k1 : -Math.min(q.rx, q.ry);
+    }
     const cx = q.x + q.w / 2, cy = q.y + q.h / 2, qx = Math.abs(x - cx) - (q.w / 2 - q.rr), qy = Math.abs(y - cy) - (q.h / 2 - q.rr);
     return Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - q.rr;
   }
@@ -299,6 +303,18 @@
     }
   }
 
+  // Listedeki engellerin (x, y)'deki en küçük işaretli uzaklığı; yalnız dikdörtgeni r kadar yakın olanlar (uzaktakiler
+  // Infinity). Biçimi kurulmamış engelde dikdörtgenin uzaklığı. Kayarak yürümede yüzey normali bunun eğiminden bulunur.
+  function engelMesafesi(liste, x, y, r) {
+    let m = Infinity;
+    if (!liste) return m;
+    for (const o of liste) {
+      if (x + r <= o.x || x - r >= o.x + o.w || y + r <= o.y || y - r >= o.y + o.h) continue;
+      const d = o.carpisma ? engelUzaklik(o.carpisma, x - o.x, y - o.y) : parcaUzaklik({ t: "k", x: o.x, y: o.y, w: o.w, h: o.h, rr: 0 }, x, y);
+      if (d < m) m = d;
+    }
+    return m;
+  }
   // Dikdörtgenle ön eleme, sonra biçimin işaretli uzaklığı; biçimi kurulmamış engelde dikdörtgen
   function engelCarpisir(liste, x, y, r) {
     if (!liste) return false;
@@ -555,6 +571,7 @@
   }
   // Engelin önbellek resmi { c: tuval, canli: noktalar }; ölçek değişmişse yeniden çizilir. Tuval oluşturulamazsa null
   // (çağıran o karede doğrudan çizer).
+  let _boyanan = 0; // bu karede çizilen resim (engelleriCiz sıfırlar; ısınma bütçesi için)
   function engelResmi(o) {
     const s = engelOlcegi();
     if (o._resim && o._olcek === s) return o._resim;
@@ -565,8 +582,14 @@
     try { c = document.createElement("canvas"); c.width = gw; c.height = gh; cx = c.getContext("2d"); } catch (_) { cx = null; }
     if (!cx || c.width !== gw || c.height !== gh) return null;
     cx.scale(s, s);
+    _boyanan++;
     const canli = engelBoya(cx, o);
     return (o._resim = { c, canli });
+  }
+  // Su başka bir gölle kesişiyor mu (kesişen göller ikinci geçişte maskeli iç resimle birleşir)
+  function komsuMu(o) {
+    if (o._komsu === undefined) o._komsu = (game.waters || []).some((b) => b !== o && b.x < o.x + o.w && b.x + b.w > o.x && b.y < o.y + o.h && b.y + b.h > o.y);
+    return o._komsu;
   }
   // Kesişen göllerin ikinci geçişi için suyun yalnız biçim içi (kırpma yolu yerine bir kez maskelenmiş resim)
   function icResmi(o) {
@@ -625,10 +648,33 @@
     if (!_sira || _sira.kaynak !== W || _sira.n !== W.length) _sira = { kaynak: W, n: W.length, liste: W.slice().sort((a, b) => (a.y + a.h) - (b.y + b.h)) };
     return _sira.liste;
   }
+  // Önbellek ısınması: bölüm başında (ve ölçek değişince) bütün engellerin resmi, her karede çizimden sonra, kameraya en
+  // yakından başlayarak hazırlanır (lavda parlama, kesişen gölde maskeli iç resim de). O karede hiç resim çizilmediyse
+  // en az bir engel, sonra karenin engel işi ISINMA_MS'yi bulana kadar. Engel görüş alanına girdiğinde resmi hazırdır:
+  // oyun ortasında ilk çizim sıçraması olmaz. Her engel ölçek başına bir kez denenir (tuval oluşturulamazsa döngü yok).
+  const ISINMA_MS = 6;
+  function onbellegiIsit(t0, s) {
+    const cam = game.camera || { x: 0, y: 0 }, mx = cam.x + (game.W || 0) / 2, my = cam.y + (game.H || 0) / 2;
+    for (let ilk = _boyanan === 0; ilk || performance.now() - t0 < ISINMA_MS; ilk = false) {
+      let en = null, enD = Infinity;
+      for (const l of listeler()) for (const o of l) {
+        if (!o.bicim || o._isinma === s) continue;
+        const d = Math.hypot(o.x + o.w / 2 - mx, o.y + o.h / 2 - my);
+        if (d < enD) { enD = d; en = o; }
+      }
+      if (!en) return;
+      en._isinma = s;
+      engelResmi(en);
+      if (en.tur === "lav") parlamaResmi(en);
+      else if (en.tur === "su" && komsuMu(en)) icResmi(en);
+    }
+  }
   function engelleriCiz(ctx) {
     if (typeof game === "undefined") return;
+    const t0 = performance.now();
+    _boyanan = 0;
     const s = engelOlcegi();
-    if (s !== _sonOlcek) { for (const l of listeler()) for (const o of l) { o._resim = null; o._olcek = 0; } _sonOlcek = s; } // ekran döndü: hepsi yeniden
+    if (s !== _sonOlcek) { for (const l of listeler()) for (const o of l) { o._resim = null; o._olcek = 0; o._isinma = 0; } _sonOlcek = s; } // ekran döndü: hepsi yeniden
     if (listeler().some((l) => l.some((o) => !o.bicim))) engelBicimleriniKur();
     const m = ctx.getTransform ? ctx.getTransform() : null;
     _matris = m && { a: m.a, e: m.e, f: m.f, bir: m.b === 0 && m.c === 0 && m.a === m.d && Math.abs(m.a - s) < 1e-9 };
@@ -639,8 +685,7 @@
     // gibi birleşir); dalgalar ve canlı süsler en üstte
     const sular = (game.waters || []).filter((o) => gor(o, 12)), canlilar = sular.map((o) => resimCiz(ctx, o));
     sular.forEach((o, i) => {
-      if (o._komsu === undefined) o._komsu = (game.waters || []).some((b) => b !== o && b.x < o.x + o.w && b.x + b.w > o.x && b.y < o.y + o.h && b.y + b.h > o.y);
-      const ic = o._komsu ? icResmi(o) : null;
+      const ic = komsuMu(o) ? icResmi(o) : null;
       if (ic) bas(ctx, ic, o.x, o.y, o.w, o.h);
       dalgalar(ctx, o, zaman);
       canliCiz(ctx, o, canlilar[i], zaman);
@@ -660,9 +705,10 @@
       alevler(ctx, o, zaman);
     }
     for (const o of duvarSirasi()) if (gor(o, 8)) canliCiz(ctx, o, resimCiz(ctx, o), zaman);
+    onbellegiIsit(t0, s);
   }
 
-  Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, engelBicimleriniKur, engelCarpisir, ENGEL_AILELERI,
+  Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, engelBicimleriniKur, engelCarpisir, engelMesafesi, ENGEL_AILELERI,
     engelOlcegi, engelResmi, engelleriCiz, lavCanli, ENGEL_CANLI });
   window.ENGEL = { yol, doldur, cizgi, kirp, hatCiz, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, kutuYolu, tasOrgu, gozler, cimTutami, sinirla, parcaUzaklik,
     kayalikKenar, suTabani, dikenCiz, lavCiz };

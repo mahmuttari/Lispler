@@ -2,7 +2,9 @@
 // Biçim dikdörtgenin içinde; çarpışma biçimi izler (açılan köşeden geçilir, biçimin içinde çarpılır); kesişen iç bloklar
 // duvar, diğerleri (i + bölüm) % 3; iki ayrı sayfa aynı bölümde aynı biçimi ve aynı resmi üretir; freeSpot biçime değmeyen
 // yer bulur; önbellek resminde çarpışma alanının içi boyalı, biçimin (kıyı/kenar payıyla) dışı saydam; ekran döner ya da
-// tablette ölçek değişince resim yeni ölçekle çizilir; bölüm geçişinde eski engel kalmaz.
+// tablette ölçek değişince resim yeni ölçekle çizilir; bölüm geçişinde eski engel kalmaz. Son incelemeden: oyuncu ve bot
+// eğri engel boyunca kayar (takılmaz, hızlanmaz); oyuncu yarıçapında çarpışma gerçek uzaklığa uyar (görünmez duvar yok);
+// önbellek bölüm başında ısınır (gezerken yeni resim çizilmez); mezar taşı oyması yarasa (dinî sembol yok).
 // Çalıştırma: node hayalet-avcilari/test/engel-bicim.test.mjs [--ekran <klasör>]   (Playwright + Chromium; ağ gerekmez)
 // --ekran: her tema için katalog ve oyun içi (TR 390 px, AR 340 px) görüntüleri klasöre yazar (gözle denetim).
 import http from 'node:http';
@@ -317,6 +319,208 @@ try {
     assert.ok(tablet.n > 0); assert.equal(tablet.kotu, 0);
   });
   await p4.close();
+
+  // 11) Kayarak yürüme (son inceleme K1): eğri ve tümsekli engele hafifçe bastırarak yürüyen oyuncu yüzey boyunca kayar,
+  //     takılmaz ve serbest yürüyüşten hızlı gitmez; bot da gölün çevresinden ışınlanmadan dolaşır. Döngü durdurulup
+  //     update() elle sürülür (60 kare/sn; hayalet ve yerdeki güç her karede temizlenir).
+  const kayma = await p.evaluate(() => {
+    save.playerName = 'Defne'; persistSave();
+    startGame(); game.running = false; game.player.invuln = 1e9; game.bot = null;
+    const P = game.player; let t = performance.now();
+    const kare = () => { game.ghosts = []; game.pickups = []; t += 1000 / 60; update(1 / 60, t); };
+    const yuru = (x, y, dx, dy, n = 120) => {
+      P.x = x; P.y = y; P.frozenUntil = 0; P.power = null;
+      const m = Math.hypot(dx, dy); game.inputDir.x = dx / m; game.inputDir.y = dy / m;
+      for (let i = 0; i < n; i++) kare();
+      return { x: P.x - x, y: P.y - y };
+    };
+    const oran = (a, b) => Math.round((100 * a) / b);
+    const out = { sinir: [], gol: [], hizli: [] };
+    game.walls = game.walls.slice(0, 4); game.waters = []; game.spikes = []; game.lavas = [];
+    for (const k of [0.15, 0.3, 0.6]) {                                   // üst ve sol sınıra bastırarak
+      const bos = yuru(800, 600, 1, -k).x, ust = yuru(200, 57, 1, -k).x, sol = yuru(57, 200, -k, 1).y;
+      out.sinir.push(oran(ust, bos), oran(sol, bos));
+      if (ust > bos + 0.5 || sol > bos + 0.5) out.hizli.push(`sınır ${k}`);
+    }
+    for (const tohum of [1234, 777, 4242]) {                              // gölün üstünden suya bastırarak
+      game.waters = [engelOlustur({ x: 600, y: 500, w: 220, h: 150 }, 'su', 0, tohum)];
+      for (const k of [0.15, 0.4]) {
+        const bos = yuru(800, 300, 1, k).x, gol = yuru(560, 473, 1, k).x;
+        out.gol.push(oran(gol, bos));
+        if (gol > bos + 0.5) out.hizli.push(`göl ${tohum} ${k}`);
+      }
+    }
+    // Açılı yaklaşım: 1–6. bölümlerin her iç engeli ve suyu tek başına, 16 yön × 4 açı; 30 kare ilerlemeyen takılmıştır
+    online.mode = 'host';
+    let n = 0, takildi = 0;
+    for (let L = 1; L <= 6; L++) {
+      game.level = L; buildWalls(); buildWaters(); buildHazards();
+      const liste = [...game.walls.slice(4).map((o) => ['duvar', o]), ...game.waters.map((o) => ['su', o])];
+      for (const [tur, o] of liste) {
+        game.walls = tur === 'duvar' ? [o] : []; game.waters = tur === 'su' ? [o] : []; game.spikes = []; game.lavas = [];
+        const cx = o.x + o.w / 2, cy = o.y + o.h / 2, R0 = Math.max(o.w, o.h) * 0.75 + 32;
+        for (let a = 0; a < 16; a++) for (const fi of [-35, -20, 20, 35]) {
+          const sx = cx + Math.cos(a * Math.PI / 8) * R0, sy = cy + Math.sin(a * Math.PI / 8) * R0;
+          if (collidesWalls(sx, sy, 22) || collidesWaters(sx, sy, 22)) continue;
+          const yon = Math.atan2(cy - sy, cx - sx) + fi * Math.PI / 180, vx = Math.cos(yon), vy = Math.sin(yon);
+          P.x = sx; P.y = sy; P.frozenUntil = 0; P.power = null; game.inputDir.x = vx; game.inputDir.y = vy;
+          let dur = 0;
+          for (let i = 0; i < 200 && dur < 30; i++) {
+            const x0 = P.x, y0 = P.y; kare();
+            dur = (P.x - x0) * vx + (P.y - y0) * vy < 0.05 ? dur + 1 : 0;
+          }
+          n++; if (dur >= 30) takildi++;
+        }
+      }
+    }
+    online.mode = null;
+    out.takilma = +(100 * takildi / n).toFixed(1); out.deneme = n;
+    // Bot: gölün sol üstünden sağ alttaki oyuncuya yürür; göle takılıp 2 sn sonra ışınlanmamalı
+    game.walls = []; game.waters = [engelOlustur({ x: 600, y: 500, w: 220, h: 150 }, 'su', 0, 1234)];
+    P.x = 920; P.y = 650; P.power = null; game.inputDir.x = 0; game.inputDir.y = 0;
+    game.bot = { x: 560, y: 470, r: 18, hp: 6, maxHp: 6, walkTimer: 0, lastFire: 0, aimRaise: 0, shootRecoil: 0, hitFlash: 0, stuck: 0 };
+    let enUzun = 0, enBuyukAdim = 0;
+    for (let i = 0; i < 240; i++) {
+      const x0 = game.bot.x, y0 = game.bot.y; kare();
+      enUzun = Math.max(enUzun, game.bot.stuck); enBuyukAdim = Math.max(enBuyukAdim, Math.hypot(game.bot.x - x0, game.bot.y - y0));
+    }
+    out.bot = { uzaklik: Math.round(Math.hypot(P.x - game.bot.x, P.y - game.bot.y)), takilma: +enUzun.toFixed(2), adim: +enBuyukAdim.toFixed(1) };
+    game.bot = null;
+    return out;
+  });
+  sina(`kayarak yürüme: sınırda en az %${Math.min(...kayma.sinir)}, gölde %${Math.min(...kayma.gol)}, açılı yaklaşımda takılma %${kayma.takilma} (${kayma.deneme} deneme), bot ${JSON.stringify(kayma.bot)}`, () => {
+    assert.ok(Math.min(...kayma.sinir) >= 85, `sınır: ${kayma.sinir}`);
+    assert.ok(Math.min(...kayma.gol) >= 80, `göl: ${kayma.gol}`);
+    assert.deepEqual(kayma.hizli, []);
+    assert.ok(kayma.takilma <= 15, `takılma %${kayma.takilma}`);
+    assert.ok(kayma.bot.uzaklik <= 100 && kayma.bot.takilma < 0.5 && kayma.bot.adim < 10, JSON.stringify(kayma.bot));
+  });
+
+  // 12) Gerçek uzaklık (son inceleme Ö2): oyuncu yarıçapında (22 px) çarpışma, biçimin gerçek uzaklığına göre ne
+  //     görünmez duvar (çarpar ama gerçekte ≥ 22 + 3 px uzak) ne içeri girme (çarpmaz ama gerçekte < 22 − 3 px) üretir.
+  //     Elipsin gerçek uzaklığı sınırı örnekleyip inceltilerek bulunur; daire ve yuvarlak köşeli kutu zaten tam.
+  const uzaklik = await p.evaluate(() => {
+    const elipsUzakligi = (px, py, a, b) => {                              // sınıra en kısa uzaklık (dışarıdaki nokta)
+      px = Math.abs(px); py = Math.abs(py);
+      const f = (th) => Math.hypot(a * Math.cos(th) - px, b * Math.sin(th) - py);
+      let en = 0, enD = Infinity;
+      for (let i = 0; i <= 256; i++) { const th = (i / 256) * Math.PI / 2, d = f(th); if (d < enD) { enD = d; en = th; } }
+      let lo = Math.max(0, en - Math.PI / 512), hi = Math.min(Math.PI / 2, en + Math.PI / 512);
+      for (let i = 0; i < 40; i++) { const m1 = lo + (hi - lo) / 3, m2 = hi - (hi - lo) / 3; if (f(m1) < f(m2)) hi = m2; else lo = m1; }
+      return f((lo + hi) / 2);
+    };
+    const gercek = (P, x, y) => {                                           // biçim dışındaki noktanın gerçek uzaklığı
+      let m = Infinity;
+      for (const q of P) {
+        if (q.t !== 'e') { m = Math.min(m, ENGEL.parcaUzaklik(q, x, y)); continue; }
+        const k = Math.hypot((x - q.x) / q.rx, (y - q.y) / q.ry);
+        m = Math.min(m, k <= 1 ? -1 : elipsUzakligi(x - q.x, y - q.y, q.rx, q.ry));
+      }
+      return m;
+    };
+    online.mode = 'host';
+    let gorunmez = 0, iceri = 0, nokta = 0, engel = 0, ornek = '';
+    for (let L = 1; L <= 12; L++) {
+      game.level = L; buildWalls(); buildWaters(); buildHazards();
+      for (const o of [...game.walls.slice(4), ...game.waters, ...game.spikes, ...game.lavas]) {
+        if (!o.carpisma.some((q) => q.t === 'e')) continue;
+        engel++;
+        for (let y = -34; y <= o.h + 34; y += 3) for (let x = -34; x <= o.w + 34; x += 3) {
+          const D = gercek(o.carpisma, x, y);
+          if (D < 0 || D > 60) continue;
+          nokta++;
+          const carpar = engelCarpisir([o], o.x + x, o.y + y, 22);
+          if (carpar && D - 22 > gorunmez) { gorunmez = D - 22; ornek = `bölüm ${L} ${o.tur} (${x},${y}) gerçek ${D.toFixed(1)}`; }
+          if (!carpar && 22 - D > iceri) iceri = 22 - D;
+        }
+      }
+    }
+    online.mode = null;
+    return { gorunmez: +gorunmez.toFixed(1), iceri: +iceri.toFixed(1), nokta, engel, ornek };
+  });
+  sina(`r = 22'de çarpışma gerçek uzaklığa uyar: görünmez duvar ${uzaklik.gorunmez} px, içeri girme ${uzaklik.iceri} px (${uzaklik.engel} elipsli engel, ${uzaklik.nokta} nokta)`, () => {
+    assert.ok(uzaklik.gorunmez <= 3, `görünmez duvar ${uzaklik.gorunmez} px: ${uzaklik.ornek}`);
+    assert.ok(uzaklik.iceri <= 3, `içeri girme ${uzaklik.iceri} px`);
+  });
+
+  // 13) Önbellek ısınması (son inceleme Ö3): bölüm başında engellerin resmi kare başına süre bütçesiyle, kameraya en
+  //     yakından başlayarak hazırlanır; ısınma bitince harita baştan sona gezilirken yeni engel resmi çizilmez (oyun
+  //     ortasında ilk çizim sıçraması yok). Yeni tuval, document.createElement('canvas') sayılarak ölçülür.
+  const p6 = await sayfaAc({ deviceScaleFactor: 2 });
+  await oyunBaslat(p6);
+  const isinma = await p6.evaluate(async () => {
+    game.level = 8; buildWalls(); buildWaters(); buildHazards(); game.bot = null;
+    const kareBekle = (n) => new Promise((tamam) => { let k = 0; const f = () => (++k >= n ? tamam() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+    const hepsi = () => [...game.walls, ...game.waters, ...game.spikes, ...game.lavas];
+    await kareBekle(150);                                                    // oyuncu yerinde: ısınma
+    const s = engelOlcegi(), toplam = hepsi().length, hazir = hepsi().filter((o) => o._resim && o._olcek === s).length;
+    let tuval = 0;
+    const asil = document.createElement;
+    document.createElement = function (ad, ...a) { if (String(ad).toLowerCase() === 'canvas') tuval++; return asil.call(this, ad, ...a); };
+    const W = game.W, H = game.H, adimlar = (boy, gor) => { const d = []; for (let v = gor / 2; v < boy - gor / 2; v += gor * 0.8) d.push(v); d.push(boy - gor / 2); return d; };
+    const yol = [];
+    adimlar(game.worldH, H).forEach((y, i) => { const xs = adimlar(game.worldW, W).flatMap((x, j, a) => (j ? [(a[j - 1] + x) / 2, x] : [x])); (i % 2 ? xs.reverse() : xs).forEach((x) => yol.push([x, y])); });
+    let i = 0;
+    await new Promise((tamam) => { const f = () => { if (i >= yol.length) return tamam(); game.ghosts = []; game.player.x = yol[i][0]; game.player.y = yol[i][1]; i++; requestAnimationFrame(f); }; requestAnimationFrame(f); });
+    await kareBekle(3);
+    document.createElement = asil;
+    game.running = false;
+    return { toplam, hazir, tuval, kare: yol.length };
+  });
+  await p6.close();
+  sina(`önbellek bölüm başında ısınır: ${isinma.hazir}/${isinma.toplam} engel hazır, haritayı gezerken (${isinma.kare} kare) ${isinma.tuval} yeni tuval`, () => {
+    assert.equal(isinma.hazir, isinma.toplam);
+    assert.equal(isinma.tuval, 0);
+  });
+  // Ölçek değişince (tablet boyu 1,35 → telefon boyu 1 → yine 1,35) her seferinde yeniden ısınır
+  const p7 = await sayfaAc({ viewport: { width: 900, height: 1280 } });
+  await oyunBaslat(p7);
+  const hazirSay = () => p7.evaluate(() => {
+    const s = engelOlcegi(), hepsi = [...game.walls, ...game.waters, ...game.spikes, ...game.lavas];
+    return { s, hazir: hepsi.filter((o) => o._resim && o._olcek === s).length, toplam: hepsi.length };
+  });
+  await kareBekle(p7, 150);
+  const olcek1 = await hazirSay();
+  await p7.setViewportSize({ width: 390, height: 844 });
+  await kareBekle(p7, 150);
+  const olcek2 = await hazirSay();
+  await p7.setViewportSize({ width: 900, height: 1280 });
+  await kareBekle(p7, 150);
+  const olcek3 = await hazirSay();
+  // hızlı gidiş-dönüş (döndürürken ara boyutlar): öbür ölçekte tek kare kalıp geri dönülür
+  await p7.setViewportSize({ width: 390, height: 844 });
+  await kareBekle(p7, 1);
+  await p7.setViewportSize({ width: 900, height: 1280 });
+  await kareBekle(p7, 150);
+  const olcek4 = await hazirSay();
+  await p7.evaluate(() => { game.running = false; });
+  await p7.close();
+  sina(`ölçek değişince yeniden ısınır (${[olcek1, olcek2, olcek3, olcek4].map((o) => `${o.s}: ${o.hazir}/${o.toplam}`).join(' → ')})`, () => {
+    assert.deepEqual([olcek1.s, olcek2.s, olcek3.s, olcek4.s], [1.35, 1, 1.35, 1.35]);
+    for (const o of [olcek1, olcek2, olcek3, olcek4]) assert.equal(o.hazir, o.toplam, `${o.s}: ${o.hazir}/${o.toplam}`);
+  });
+
+  // 14) Mezar taşı oyması (spec §3.8 dinî sembol yok; son incelemede hilal oyma bulundu): yarasa — yatay, dikey eksene
+  //     göre simetrik siluet (hilal ne yataydır ne simetrik). Oyma büyük boyda düz zemine siyahla çizilip ölçülür.
+  const oyma = await p.evaluate(() => {
+    const c = document.createElement('canvas'); c.width = 400; c.height = 400;
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 400, 400);
+    ENGEL.mezarOymasi(ctx, 200, 200, 320, '#000000');
+    const d = ctx.getImageData(0, 0, 400, 400).data, koyu = (x, y) => x >= 0 && x < 400 && d[(y * 400 + x) * 4] < 128;
+    let n = 0, x0 = 400, x1 = -1, y0 = 400, y1 = -1;
+    for (let y = 0; y < 400; y++) for (let x = 0; x < 400; x++) if (koyu(x, y)) { n++; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+    let ikisi = 0, biri = 0;
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+      const a = koyu(x, y), b = koyu(x0 + x1 - x, y);
+      if (a || b) { biri++; if (a && b) ikisi++; }
+    }
+    return { n, oran: +((x1 - x0 + 1) / (y1 - y0 + 1)).toFixed(2), simetri: +(ikisi / Math.max(1, biri)).toFixed(2) };
+  });
+  sina(`mezar taşı oyması yarasa: en/boy ${oyma.oran}, simetri ${oyma.simetri} (${oyma.n} piksel)`, () => {
+    assert.ok(oyma.n > 2000, `oyma çok küçük: ${oyma.n}`);
+    assert.ok(oyma.oran >= 1.6, `yatay değil: ${oyma.oran}`);
+    assert.ok(oyma.simetri >= 0.9, `simetrik değil: ${oyma.simetri}`);
+  });
 
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
   if (ekranKlasoru) await ekranlar(ekranKlasoru);

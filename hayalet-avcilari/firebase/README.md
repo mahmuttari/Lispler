@@ -138,11 +138,12 @@ Oyun tarafı `www/arkadaslar.js`. Her yazım girişli ister; kimlik `auth.uid`'d
 | Engelle / kaldır | B | `blocks/A` yazılır; arkadaşlık, istekler, `sent` ve davetler (iki yön) aynı yazımda silinir. Kaldırınca arkadaşlık geri gelmez |
 | Çevrimiçi durum | sahibi yazar | Okuma sahibine ve arkadaş listesindekilere; arkadaşlık bitince okuma izni kalkar |
 | Kod al / yenile | sahibi | Boştaki kod alınır (doluysa yeni kodla); eski kod aynı yazımda silinir (yalnız sahibiyse) |
-| Hesap silme | sahibi | Önce arkadaşların listesindeki kaydım, davetlerim ve gönderdiğim istekler; sonra `users/{uid}`, `presence/{uid}`, kodum |
+| Hesap silme | sahibi | Önce arkadaşların listesindeki kaydım, davetlerim ve gönderdiğim istekler (sunucudaki `users/{uid}` okunarak: dinleyicinin yüklediği eksik olabilir); sonra `users/{uid}`, `presence/{uid}`, kodum. Beni engelleyenin `blocks/{uid}` kaydı kalır: onu yalnız sahibi yazar (yazabilseydim engeli kaldırırdım) |
 
 Bütün alanlar tür ve uzunluk denetimli (`name` 1–50, `roomName` ≤ 60, `charKey` ≤ 30, `at` ≤ `now`), bilinmeyen alan
 reddedilir. **Sınırlar:** kurallar sayamaz; 50 arkadaş ve gösterilen 30 istek / 10 davet sınırını oyun uygular. Çok sayıda
-anonim hesap açan biri çok istek gönderebilir; buna karşı engelleme ve yeni kod var.
+anonim hesap açan biri çok istek gönderebilir. 🔄 Yeni kod yalnız kodla gelen istekleri keser: oyuncu kimliği odalarda ve
+şampiyonlar listesinde açık olduğundan kimliği bilen koddan bağımsız istek gönderebilir; buna karşı tek savunma engellemedir.
 
 ## Cloud Firestore — `scores` (şampiyonlar listesi)
 

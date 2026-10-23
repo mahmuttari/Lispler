@@ -230,21 +230,40 @@ Kabul iki tarafın arkadaş kaydını tek çok yollu `update()` ile yazar; kural
 olduğunu denetler (`root` yazımdan önceki veridir). Engel listesini sahibinden başkası okuyamaz ama kurallar okur:
 engellenen istek ve davet gönderemez, ona yalnız "İstek gönderilemedi" denir. Davet yalnız arkadaştan ve davet edenin
 oyuncusu olduğu odaya yazılır. Kuralların sayamadığını oyun sayar: en çok 50 arkadaş, gösterilen en yeni 30 istek ve
-10 davet. Hesabı Sil önce başkalarındaki izleri (arkadaşların listesindeki kayıt, gönderilen istek ve davetler), sonra
-kendi düğümlerini, en son Firebase hesabını siler; çevrimdışıyken durur ("⚠ Bağlanılamadı, yeniden dene"), çünkü hesap
-gittikten sonra o kayıtları kimse silemez. Arkadaşlık Firebase kimliğine bağlıdır: Google ile giriş yapan cihaz
+10 davet. Hesabı Sil önce başkalarındaki izleri (arkadaşların listesindeki kayıt, gönderilen istek ve davetler;
+sunucudaki `users/{uid}` okunarak), sonra kendi düğümlerini, en son Firebase hesabını siler; çevrimdışıyken durur
+("⚠ Bağlanılamadı, yeniden dene"), çünkü hesap gittikten sonra o kayıtları kimse silemez. Beni engelleyenin engel
+listesindeki adım kalır: o kaydı yalnız sahibi yazar (yazabilen engeli de kaldırırdı); gizlilik ve hesap silme sayfaları
+bunu söyler, e-postayla silinir. Arkadaşlık Firebase kimliğine bağlıdır: Google ile giriş yapan cihaz
 değiştirince de arkadaşlarını bulur; girişsiz oyuncuya ekran Google girişini önerir. Kurallar konsolda yayınlanmadan
 3.13.0 oyuncuya ulaşırsa Arkadaşlar ekranı ve davet penceresi "⚠ Arkadaşlar şu an kullanılamıyor" der, lobide ➕
 çizilmez; oda, yedek ve skor etkilenmez.
 
 Test: `cd hayalet-avcilari/firebase && npm test` (kural testinin "arkadaşlar" bölümü 9 sınama: kod, istek, kabul,
 çıkar, engel, davet, çevrimiçi durum, hesap silme, şema; her işlem izinli ve izinsiz yoldan) ve `npm run test:arkadas`
-(emülatörde Ayşe, Bora, Cem ile adsız ve kuralsız oyuncu; 27 sınama: veri katmanı, Arkadaşlar ekranı, lobi, davet
-penceresi, davet şeridi, arka plan, ad değişikliği, hesap silme, kurallar yokken). Dil testine dolu arkadaş listesi,
+(emülatörde Ayşe, Bora, Cem ile adsız ve kuralsız oyuncu; 28 sınama: veri katmanı, açılışta çevrimiçi durum,
+Arkadaşlar ekranı, lobi, davet penceresi, davet şeridi, arka plan, ad değişikliği, hesap silme, kurallar yokken). Dil testine dolu arkadaş listesi,
 davet penceresi, menü ve oyun üstünde davet şeridi eklendi (her dilde 390 ve 340 px). `cevrimici.test` ve `alti.test`
 oyun başlamadan bütün oyuncuları karşılıklı arkadaş yapıp birbirinin çevrimiçi durumunu görmelerini bekler; kare hızı ve
 ağ ölçümleri bu dinleyiciler açıkken alınır. Ölçüm (2 kat yavaş işlemci, 6 kişi): kurucu 51,7 kare/sn (%95 kare 33 ms),
 konuk 48,1 (34 ms), biri hayaletken 47,4 ve 53,7; 3.12.2 aralığında.
+
+Son incelemede (taze inceleyici, bütün dal) bulunan ve düzeltilenler; her biri önce kırmızı veren bir sınamayla:
+
+- **Açılışta ⚪ kalma:** dinleyici adı ilk yüklemeye geri çağrıdan sonra giriyordu; arkadaş listesinin ilk anlık
+  görüntüsünde `durumumuYaz` erken dönüyor, arkadaşı olan oyuncu uygulamayı açınca önceki oturumun `onDisconnect`'inden
+  kalan ⚪ ile görünüyor ve davet edilemiyordu. Artık ad geri çağrıdan önce girer; sayfa yeniden açılınca arkadaş 🟢 görür.
+- **Davet penceresi her konum yazımında çiziliyordu:** pencere açıkken oyuncu kaydındaki her alan değişimi (oyunda oyuncu
+  başına saniyede 10 yazım) listeyi baştan kuruyordu. Artık yalnız biri gelip gidince çizilir (20 konum yazımında 20 → 0).
+- **Hesap silme izleri eksik kalabiliyordu:** izler dinleyicinin o an yüklediğinden kuruluyordu (ilk yükleme gelmeden
+  silinirse ya da istekler en yeni 30'la sınırlıyken arkadaşın listesinde ad kalıyordu). Artık sunucudaki kayıttan kurulur.
+- **Gizlilik ve hesap silme metni:** gönderilen istek ve davetin alıcıya göründüğü, sizi engelleyenin listesinde adınızın
+  kaldığı yazılmamıştı (sayfa "yalnız anonim kimlik kalır" diyordu); iki sayfa iki dilde düzeltildi. `firebase/README`'deki
+  "buna karşı yeni kod var" da daraltıldı: yeni kod yalnız kodla gelen istekleri keser.
+
+Ertelenen küçük bulgular (kullanıcıya sunuldu): Google'dan çıkışta eski kimliğin durumu bağlantı kapanana dek 🟢 kalır,
+kimlik değişirken kurulum yarışı, tek taraflı kayıtta arkadaşın hep ⚪ görünmesi, karakter/kostüm değişince durumun
+güncellenmemesi, ⏸ Menü'deki 📨'nin menü açıkken güncellenmemesi, test kapsamı (sağdan sola ad, ölü bağlantı).
 
 Yayın sırası:
 1. **Kurallar:** Firebase konsolunda `database.rules.json`'un tamamı yayınlanır ([`firebase/README.md` ›

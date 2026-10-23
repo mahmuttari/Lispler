@@ -8,8 +8,9 @@
 // ⏸ Menü'de 📨 yalnız çevrimiçi oyunda, dolu odada pasif 📨 Davet et.
 // Davet şeridi: menüde ve tek kişilik oyunda görünür, Katıl (oyun biter, kazanç kasaya, reklam yok), ✕, aynı oda,
 // dolu oda, süresi geçmiş davet, adında HTML olan gönderen, arkadaşlık bitince kalkar.
-// Yaşam döngüsü: arka planda ⚪, öne gelince 🟢; ad değişince arkadaşta ve kodda yeni ad; Google hesabı silinince
-// arkadaşlık verisi de silinir, yeni anonim kimlik.
+// Yaşam döngüsü: sayfa yeniden açılınca 🟢; arka planda ⚪, öne gelince 🟢; ad değişince arkadaşta ve kodda yeni ad;
+// Google hesabı silinince (yerel liste boşken de) arkadaşlık verisi sunucudaki kayıttan silinir, yeni anonim kimlik.
+// Davet penceresi oyuncuların konum yazımlarında yeniden çizilmez.
 // Çalıştırma (Java 21, Playwright + Chromium gerekir):
 //   cd hayalet-avcilari/firebase && npm ci && npm run test:arkadas
 // Emülatör zaten açıksa: node hayalet-avcilari/test/arkadas.test.mjs
@@ -144,6 +145,17 @@ try {
     assert.ok(!kabuller.includes('hata'), 'ikinci dokunuş hata verdi');
     assert.ok(ikiTaraf, 'iki tarafta arkadaş kaydı yok ya da istek kalmış');
     assert.ok(cevrimici, 'Ayşe, Bora\'yı çevrimiçi görmüyor');
+  });
+
+  // 4b) Açılış (son inceleme K1): arkadaşı olan Bora uygulamayı yeniden açınca Ayşe onu 🟢 görür (önceki oturumun
+  //     onDisconnect'i "off" bırakır; açılışta durum yazılmazsa davet edilemez)
+  await B.p.reload({ waitUntil: 'load' });
+  const yenidenHazir = await hazir(B);
+  const kapaninca = await bekle(A, (u) => arkadasDurumu(u) === 'off', bora, 10000);
+  const acilinca = await bekle(A, (u) => arkadasDurumu(u) === 'on', bora, 10000);
+  sina(`açılışta çevrimiçi durum yazılır: sayfa kapanınca ⚪ (${kapaninca}), yeniden açılınca 🟢 (${acilinca})`, () => {
+    assert.ok(yenidenHazir, 'Bora\'nın dinleyicileri yeniden kurulmadı');
+    assert.ok(acilinca, 'yeniden açılan Bora, Ayşe\'de çevrimiçi görünmüyor');
   });
 
   // 5) Karşılıklı istek: Ayşe ile Cem aynı anda birbirini ekler → ikisi de arkadaş, artık istek kalmaz
@@ -330,6 +342,20 @@ try {
     const r = (u) => document.querySelector(`#davet-liste [data-uid="${u}"]`);
     return !!r(b) && r(b).classList.contains('soluk') && !!r(z) && r(z).classList.contains('soluk');
   }, [bora, zeki], 5000);
+  // Pencere açıkken oyuncu kayıtlarında yalnız alan değişimi (oyunda oyuncu başına saniyede 10 yazım) pencereyi baştan
+  // çizmez; kimse gelip gitmedikçe (son inceleme Ö1). Gelip gitme aşağıda Bora çıkınca sınanır.
+  const alanCizimi = await A.p.evaluate(() => {
+    let n = 0; const asil = window.renderInviteModal;
+    window.renderInviteModal = (...a) => { n++; return asil(...a); };
+    const oyuncular = online.cachedRoom.players;
+    for (let i = 1; i <= 20; i++) {
+      const kopya = {};
+      for (const [u, o] of Object.entries(oyuncular)) kopya[u] = { ...o, x: (o.x || 0) + i, y: (o.y || 0) + i };
+      oyuncularDegisti(kopya);
+    }
+    window.renderInviteModal = asil;
+    return n;
+  });
   await B.p.evaluate(() => leaveRoom());
   const cikinca = await bekle(A, (u) => arkadasDurumu(u) === 'on', bora, 5000);
   const bosYer = await bekle(A, () => document.getElementById('lobby-davet-btn').disabled === false, null, 5000);
@@ -341,8 +367,9 @@ try {
   }, bora, 5000);
   const boraDavet = await bekle(B, (o) => { const d = gecerliDavet(); return !!d && d.room === o; }, odaA, 5000);
   await A.p.evaluate(() => closeInviteModal());
-  sina('davet penceresi: odadaki ve çevrimdışı arkadaş soluk; odadan çıkan Bora 🟢, 📨 → ✓ Gönderildi, Bora\'da davet', () => {
+  sina(`davet penceresi: odadaki ve çevrimdışı arkadaş soluk; konum yazımlarında yeniden çizilmez (${alanCizimi}); odadan çıkan Bora 🟢, 📨 → ✓ Gönderildi, Bora'da davet`, () => {
     assert.ok(pencere, 'Bora (bu odada) ya da Zeki (çevrimdışı) soluk değil');
+    assert.equal(alanCizimi, 0, `20 alan değişiminde ${alanCizimi} çizim`);
     assert.ok(cikinca, 'odadan çıkan Bora "on" olmadı');
     assert.ok(bosYer, 'yer açılınca 📨 Davet et pasif kaldı');
     assert.ok(davetDugmesi, 'Bora satırında etkin 📨 yok');
@@ -504,13 +531,16 @@ try {
     await firebase.auth().currentUser.linkWithCredential(kimlik);
     return !!currentFirebaseUser();
   });
+  // Silme, dinleyicinin o an yüklediğine değil sunucudaki kayda dayanır (son inceleme: ilk yükleme gelmeden silinirse ya
+  // da istekler en yeni 30'la sınırlıyken arkadaşların listesinde ad kalıyordu): Bora'nın yerel listeleri boşaltılır
+  await B.p.evaluate(() => { sosyal.arkadaslar = {}; sosyal.istekler = {}; sosyal.gonderilen = {}; });
   await B.p.evaluate(async () => { window.confirm = () => true; await deleteAccountGoogle(); });
   const listedenCikti = await bekle(A, (u) => !sosyal.arkadaslar[u], bora, 5000);
   const yeniKimlik = await bekle(B, (u) => !!sosyal.uid && sosyal.uid !== u, bora, 15000);
   const boraDugum = await oku(`users/${bora}`);
   const boraKod = await oku(`friendCodes/${kodB}`);
   const boraDurum = await oku(`presence/${bora}`);
-  sina('Hesabı Sil: arkadaşın listesinden, kendi düğümü, kodu ve durumu silinir; yeni anonim kimlik', () => {
+  sina('Hesabı Sil (yerel liste boşken de): arkadaşın listesinden, kendi düğümü, kodu ve durumu silinir; yeni anonim kimlik', () => {
     assert.ok(bagli, 'sahte Google kimliği bağlanamadı');
     assert.ok(listedenCikti, 'Ayşe\'nin listesinde Bora duruyor');
     assert.equal(boraDugum, null);

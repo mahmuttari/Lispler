@@ -3166,7 +3166,10 @@ function oyuncularDegisti(players) {
   if (r.hostUid && !players[r.hostUid] && Object.keys(players).length) maybeBecomeNewHost(players);
   uzakOyunculariGuncelle(players);
   if (lobidemi()) renderLobby();
-  renderInviteModal(); // açıksa: "Bu odada" ve oda dolu durumu
+  // Açıksa davet penceresi ("Bu odada", oda dolu) yalnız biri gelip gidince: oyunda her oyuncu saniyede 10 kez yazar,
+  // her yazımda bütün listeyi yeniden kurmak kurucunun karesini düşürüyordu
+  const uyeler = Object.keys(players);
+  if (uyeler.length !== Object.keys(onceki).length || uyeler.some((uid) => !onceki[uid])) renderInviteModal();
 }
 
 let _tazeleZamani = 0;

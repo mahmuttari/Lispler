@@ -134,16 +134,17 @@ async function sosyalKur() {
   });
 }
 
-// ad: ilk yüklemede beklenen dinleyici (null: beklenmez)
+// ad: ilk yüklemede beklenen dinleyici (null: beklenmez). Ad, geri çağrıdan önce yüklenenlere girer: arkadaş
+// listesinin ilk anlık görüntüsünde durumumuYaz yazabilsin (sonra girince açılışta durum hiç yazılmıyor, arkadaşlar
+// önceki oturumdan kalan ⚪'u görüyor ve davet edemiyordu)
 function dinle(ref, ad, fn) {
   const geri = ref.on("value", (s) => {
+    const ilk = !!ad && !sosyal._yuklenen.has(ad);
+    if (ilk) sosyal._yuklenen.add(ad);
     try { fn(s); } catch (e) { console.error("sosyal", ad, e); }
-    if (ad && !sosyal._yuklenen.has(ad)) {
-      sosyal._yuklenen.add(ad);
-      if (SOSYAL_ILK_YUKLEME.every((x) => sosyal._yuklenen.has(x))) {
-        sosyal.hazir = true;
-        if (sosyal._ilkYuklemeBitti) sosyal._ilkYuklemeBitti();
-      }
+    if (ilk && SOSYAL_ILK_YUKLEME.every((x) => sosyal._yuklenen.has(x))) {
+      sosyal.hazir = true;
+      if (sosyal._ilkYuklemeBitti) sosyal._ilkYuklemeBitti();
     }
     sosyalDuzenle();
     sosyalTazele();
@@ -442,13 +443,16 @@ async function arkadaslikVerisiniSil() {
   if (!sosyal.uid) await sosyalBaslat();
   const me = sosyal.uid;
   if (!me || !sosyal.bagli) return false;
-  const izler = {};
-  for (const f of Object.keys(sosyal.arkadaslar)) { izler[`users/${f}/friends/${me}`] = null; izler[`users/${f}/invites/${me}`] = null; }
-  for (const u of Object.keys(sosyal.gonderilen)) izler[`users/${u}/requests/${me}`] = null;
-  for (const u of Object.keys(sosyal.istekler)) izler[`users/${u}/sent/${me}`] = null;
   const kendi = { [`users/${me}`]: null, [`presence/${me}`]: null };
   try {
-    const kod = sosyal.kod || await sosyalOku(`users/${me}/code`);
+    // Başkalarındaki izler sunucudaki kayıttan: dinleyicinin yüklediği eksik olabilir (ilk yükleme gelmemiş, istekler
+    // en yeni 30'la sınırlı) ve eksik kalan iz silinmiş hesabın adını başkasının düğümünde bırakır
+    const benim = (await sosyalOku(`users/${me}`)) || {};
+    const izler = {};
+    for (const f of Object.keys(benim.friends || {})) { izler[`users/${f}/friends/${me}`] = null; izler[`users/${f}/invites/${me}`] = null; }
+    for (const u of Object.keys(benim.sent || {})) izler[`users/${u}/requests/${me}`] = null;
+    for (const u of Object.keys(benim.requests || {})) izler[`users/${u}/sent/${me}`] = null;
+    const kod = benim.code || sosyal.kod;
     const kayit = kod ? await sosyalOku(`friendCodes/${kod}`) : null;
     if (kayit && kayit.uid === me) kendi[`friendCodes/${kod}`] = null;
     sosyalDb().ref(`presence/${me}`).onDisconnect().cancel().catch(() => {});

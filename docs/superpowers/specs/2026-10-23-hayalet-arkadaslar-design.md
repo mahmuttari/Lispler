@@ -295,7 +295,9 @@ LOBİ                                👤 Ayşe        [✓] [✕] [🚫]
   yalnız davette). Kodu bilen yalnız adı görür ve istek gönderebilir.
 - **Hesabı Sil:** önce başkalarındaki izlerim (arkadaşların listesindeki kaydım, gönderdiğim istekler ve davetler) tek
   yazımda, sonra kendi düğümlerim (`users/{uid}`, `presence/{uid}`, `friendCodes/{kod}`) silinir; ardından Firebase hesabı
-  bugünkü gibi silinir.
+  bugünkü gibi silinir. İzler sunucudaki `users/{uid}` kaydından kurulur, dinleyicinin o an yüklediğinden değil (son
+  inceleme). Beni engelleyenin `blocks/{uid}` kaydı (ad, zaman) kalır: onu yalnız sahibi yazar, yazabilen engeli de
+  kaldırırdı; gizlilik ve hesap silme sayfaları bunu söyler, e-postayla silinir.
 - **Kimlik sınırı:** arkadaşlık Firebase kimliğine bağlıdır. Google ile giriş yapan oyuncunun arkadaşları cihaz
   değiştirince de gelir; girişsiz oyuncu uygulamayı silip kurarsa ya da daha önce kullanılmış bir Google hesabına geçerse
   arkadaşları eski kimlikte kalır (taşınmaz). Ekran bunu söyler ve anonim oyuncuya Google girişini önerir.

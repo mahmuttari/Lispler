@@ -8,6 +8,8 @@
 // Çalıştırma (Java 21, Playwright + Chromium gerekir):
 //   cd hayalet-avcilari/firebase && npm ci && npm run test:alti
 // Emülatör zaten açıksa: node hayalet-avcilari/test/alti.test.mjs   (ölçüm için: CPU=4 node …)
+// --tur (3.14.0): oda Dünya Turu odası olarak Kenya'dan (KE · SV) kurulur; altısının Kenya'da oynadığı, ölçülen iki
+// cihazda ülkenin müziğinin çaldığı sınanır ve kare hızı müzik çalarken aynı eşiklerle ölçülür.
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -25,6 +27,8 @@ const OLCUM_MS = 8000;
 // Ölçülen iki cihazın işlemci yavaşlatması. 2 kat: cevrimici.test.mjs ile aynı. 4 katta altı tarayıcı 4 çekirdekli test
 // makinesini paylaşınca kare hızı çalıştırmadan çalıştırmaya 26–41 arasında oynuyor (README › 3.12.2).
 const CPU = Number(process.env.CPU || 2);
+const TURDA = process.argv.includes('--tur');
+const TUR_ULKE = 'KE';
 const { chromium } = await import(pathToFileURL(PW).href);
 
 // Kurallar oyunun ad alanına yüklenir (emulators:exec yalnız projenin varsayılan ad alanına yükler)
@@ -40,7 +44,7 @@ const ESKI_KURALLAR = KURALLAR.replace(SINIR, SINIR.replace('<= 6', '<= 5'));
 await kurallariYukle(KURALLAR);
 await fetch(`http://${DB}/rooms.json?ns=${NS}`, { method: 'DELETE', headers: { Authorization: 'Bearer owner' } });
 
-const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.m4a': 'audio/mp4' };
+const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.m4a': 'audio/mp4', '.ogg': 'audio/ogg' };
 const sunucu = http.createServer((q, r) => {
   const f = path.join(WWW, decodeURIComponent(new URL(q.url, 'http://x').pathname).replace(/^\/+/, '') || 'index.html');
   if (!f.startsWith(WWW) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end(); }
@@ -144,7 +148,7 @@ function sina(ad, fn) {
   try { fn(); sonuclar.push(`✓ ${ad}`); } catch (e) { sonuclar.push(`✗ ${ad}: ${e.message.split('\n')[0]}`); }
 }
 
-const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args: ['--disable-renderer-backgrounding', '--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows'] });
+const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args: ['--autoplay-policy=no-user-gesture-required', '--disable-renderer-backgrounding', '--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows'] });
 const hepsi = [];
 try {
   const H = await sayfaAc(b, 'Kurucu', true);
@@ -171,8 +175,11 @@ try {
   if (eskiKuralla.oda) await H.p.evaluate(async () => { await leaveRoom(); });
   await kurallariYukle(KURALLAR);
 
-  // 1) Oda Kur ekranında 2–6, varsayılan 6; oda 6 kişilik kurulur
-  await H.p.evaluate(async () => { await openOnline(); openCreateRoom(); });
+  // 1) Oda Kur ekranında 2–6, varsayılan 6; oda 6 kişilik kurulur (--tur: Dünya Turu odası, Kenya'dan)
+  await H.p.evaluate(async (tur) => {
+    await openOnline(); openCreateRoom();
+    if (tur) { const n = ulkeKodla(tur).sira; save.dunyaTuru = { acik: n, damgalar: {}, bitti: 0 }; persistSave(); odaKipiSec('tur'); odaUlkesiSec(n); }
+  }, TURDA ? TUR_ULKE : null);
   const secim = await H.p.evaluate(() => ({
     dugmeler: [...document.querySelectorAll('.max-btn')].map((d) => Number(d.dataset.max)),
     secili: [...document.querySelectorAll('.max-btn.active')].map((d) => Number(d.dataset.max)),
@@ -181,6 +188,12 @@ try {
   const oda = await H.p.evaluate(() => online.roomId);
   assert.match(oda || '', /^[A-HJKMNP-Z2-9]{6}$/, 'oda kurulamadı: ' + await H.p.evaluate(() => document.getElementById('online-status').textContent));
   const kapasite = await H.p.evaluate(() => online.cachedRoom.maxPlayers);
+  if (TURDA) {
+    const turOda = await H.p.evaluate(() => ({ tur: online.cachedRoom.tur, ulke: (turOdaUlkesi(online.cachedRoom) || {}).kod }));
+    sina(`Dünya Turu odası ${TUR_ULKE}'dan kurulur (tur ${turOda.tur}, ülke ${turOda.ulke})`, () => {
+      assert.deepEqual(turOda, { tur: true, ulke: TUR_ULKE });
+    });
+  }
   sina(`Oda Kur'da 2–6 düğmeleri, 6 seçili; oda 6 kişilik kurulur (${secim.dugmeler.join(' ')} · seçili ${secim.secili} · oda ${kapasite})`, () => {
     assert.deepEqual(secim.dugmeler, [2, 3, 4, 5, 6]);
     assert.deepEqual(secim.secili, [6]);
@@ -227,6 +240,15 @@ try {
     assert.deepEqual(oyunda, [true, true, true, true, true]);
     for (const t of takim) { assert.equal(t.uzak, 5); assert.equal(t.hud, 6); }
   });
+  if (TURDA) {
+    const ulkeler = await Promise.all(hepsi.map((s) => s.p.evaluate(() => (game.dunyaTuru && turUlkesi() ? turUlkesi().kod : null))));
+    const muzikler = await Promise.all([H, K].map((s) => s.p.waitForFunction((kod) => muzikDurumu().calan === 'dongu' && muzikDurumu().kod === kod,
+      TUR_ULKE, { timeout: 30000 }).then(() => 'dongu', () => s.p.evaluate(() => muzikDurumu().calan))));
+    sina(`altısı Dünya Turu'nda ${TUR_ULKE}'da; kurucu ve Ayşe'de ülkenin müziği çalıyor (${ulkeler.join(' ')} · müzik ${muzikler.join(' ')})`, () => {
+      assert.deepEqual(ulkeler, hepsi.map(() => TUR_ULKE));
+      assert.deepEqual(muzikler, ['dongu', 'dongu']);
+    });
+  }
 
   // 4) Altı kişiyle oyun akar (kurucu ve Ayşe işlemci yavaşlatmalı); ağ trafiği ölçülür
   for (const s of [H, K]) Object.assign(s.ag, { al: 0, ver: 0, acik: true });
@@ -236,7 +258,7 @@ try {
   const sicrama = await K.p.evaluate(() => { __olc.acik = false; return { ...__olc }; });
   const kbsn = (s) => ({ al: +(s.ag.al / 1024 / (OLCUM_MS / 1000)).toFixed(1), ver: +(s.ag.ver / 1024 / (OLCUM_MS / 1000)).toFixed(1) });
   const ag = { kurucu: kbsn(H), ayse: kbsn(K) };
-  sina(`altı kişiyle oyun akar, işlemci ${CPU} kat yavaş (kurucu ${ah.fps} fps %95 ${ah.p95} ms; Ayşe ${ak.fps} fps %95 ${ak.p95} ms, saniyede ${ak.durumSn} durum)`, () => {
+  sina(`altı kişiyle oyun akar${TURDA ? ` (Dünya Turu ${TUR_ULKE}, müzik çalarken)` : ''}, işlemci ${CPU} kat yavaş (kurucu ${ah.fps} fps %95 ${ah.p95} ms; Ayşe ${ak.fps} fps %95 ${ak.p95} ms, saniyede ${ak.durumSn} durum)`, () => {
     for (const [ad, v] of [['kurucu', ah], ['Ayşe', ak]]) assert.ok(v.fps >= 30 && v.p95 <= 100, `${ad}: ${v.fps} fps, %95 kare ${v.p95} ms`);
     assert.ok(ak.durumSn >= 5, `Ayşe: saniyede ${ak.durumSn} durum`);
   });

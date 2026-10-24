@@ -65,17 +65,30 @@ try {
   // İkisi hayalet olur: yerel oyuncu ve bir uzak oyuncu (diğer uzak oyuncu canlı, tur sürer)
   await p.evaluate(() => { online.remotePlayers.k2.dead = true; game.player.hp = 0; game.player.dead = true; });
   sonuc.hayalet = await olc(3000);
-  // Dünya Turu, tek kişilik: ülkenin döngü müziği çalarken, Bot ve en az üç hayalet sahnede
+  // Dünya Turu, tek kişilik: ülkenin döngü müziği çalarken, Bot ve en az üç hayalet sahnede. Oyuncu daire çizerek
+  // dolaşır: kamera kesirli piksel konumlarından geçer (zemin deseni piksele hizalı değilse her karede süzgeçle taranır)
   await p.evaluate(() => { online.mode = null; online.uid = null; online.remotePlayers = {}; endGame(false); });
   sonuc.tur = {};
   for (const kod of ['FR', 'KE', 'JP']) {
     await p.evaluate((kod) => { startGame({ tur: true, ulke: ulkeKodla(kod).sira }); game.player.invuln = 1e9; }, kod);
     await p.waitForFunction(() => muzikDurumu().calan === 'dongu' && game.ghosts.length >= 3, null, { timeout: 30000 });
-    const once = await p.evaluate(() => ({
-      kod: turUlkesi().kod, aile: turUlkesi().aile, calan: muzikDurumu().calan, bot: !!game.bot,
-      hayalet: game.ghosts.length, zemin: !!(_turZemini && _turZemini.desen),
-    }));
-    sonuc.tur[kod] = { ...once, ...(await olc(3000)) };
+    const once = await p.evaluate(() => {
+      const t0 = performance.now(), dpr = window.devicePixelRatio || 1;
+      window.__kamera = { x: game.camera.x, y: game.camera.y, kesirli: 0 };
+      window.__dolas = setInterval(() => {
+        const a = (performance.now() - t0) / 1500;
+        game.inputDir.x = Math.cos(a); game.inputDir.y = Math.sin(a * 0.7);
+        if (Math.abs(game.camera.x * dpr - Math.round(game.camera.x * dpr)) > 0.05) __kamera.kesirli++;
+      }, 50);
+      return { kod: turUlkesi().kod, aile: turUlkesi().aile, calan: muzikDurumu().calan, bot: !!game.bot,
+        hayalet: game.ghosts.length, zemin: !!(_turZemini && _turZemini.desen) };
+    }, kod);
+    const kare = await olc(3000);
+    const kamera = await p.evaluate(() => {
+      clearInterval(window.__dolas); game.inputDir.x = 0; game.inputDir.y = 0;
+      return { yol: Math.round(Math.hypot(game.camera.x - __kamera.x, game.camera.y - __kamera.y)), kesirli: __kamera.kesirli };
+    });
+    sonuc.tur[kod] = { ...once, ...kare, kamera };
   }
   await p.evaluate(() => { endGame(false); turMuzigiSondur(0); });
   sonuc.hatalar = hatalar;
@@ -95,6 +108,7 @@ for (const [kod, v] of Object.entries(sonuc.tur)) {
   assert.equal(v.kod, kod, `Dünya Turu ${kod} yerine ${v.kod} ülkesinde`);
   assert.ok(v.calan === 'dongu' && v.bot && v.hayalet >= 3 && v.zemin,
     `Dünya Turu ${kod}: ölçüm başında müzik ${v.calan}, Bot ${v.bot}, ${v.hayalet} hayalet, zemin deseni ${v.zemin}`);
-  assert.ok(v.fps >= 30 && v.p95 <= 100, `Dünya Turu ${kod} (${v.aile}) çizilirken kare hızı ${v.fps} fps, %95 kare ${v.p95} ms`);
+  assert.ok(v.kamera.yol > 50 && v.kamera.kesirli > 5, `Dünya Turu ${kod}: kamera kaymadı (${JSON.stringify(v.kamera)})`);
+  assert.ok(v.fps >= 30 && v.p95 <= 100, `Dünya Turu ${kod} (${v.aile}) kamera kayarken kare hızı ${v.fps} fps, %95 kare ${v.p95} ms`);
 }
 console.log('TAMAM: hayalet olan oyuncu ve vurulan Bot kare hızını düşürmüyor; Dünya Turu FR, KE, JP müzik çalarken akıyor');

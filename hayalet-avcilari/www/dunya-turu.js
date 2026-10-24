@@ -51,8 +51,11 @@ function turUlkesi() {
 // Dünya Turu zemini: ailenin zemin(ctx, boyut, palet) ressamı 96 px'lik desen tuvaline bir kez çizer (önbellek ülke kodu
 // ve ölçekle). Tuval önce ülkenin zemin rengiyle dolar, ressam yalnız soluk deseni çizer. Desen dünya alanına tek dolguyla
 // döşenir ve true döner. Ressam yoksa (ya da tuval kurulamazsa) false: render bugünkü zemini ve ızgarayı çizer.
+// Desen tuvalinin ölçeği tuvalin cihaz ölçeğiyle aynıysa (telefonlar) desen her karede cihaz pikseline hizalanır (engel
+// resimlerindeki bas() gibi; en çok yarım cihaz pikseli kayar): kamera kesirli konumdayken desen süzgeçle taranmaz.
+// Hizasız dolgu yazılımsal taramada ekranın tamamında karede birkaç ms tutar (kamera kayarken kare hızı yarıya iner).
 const TUR_ZEMIN_BOYUT = 96;
-let _turZemini = null; // { anahtar, desen }
+let _turZemini = null; // { anahtar, desen, k: desen tuvalinin birim başına pikseli }
 function turZeminCiz(ctx) {
   const u = turUlkesi(), a = u && window.ULKE_AILELERI[u.aile];
   if (!a || typeof a.zemin !== "function") return false;
@@ -60,7 +63,7 @@ function turZeminCiz(ctx) {
   const donusum = typeof DOMMatrix === "function" && typeof CanvasPattern !== "undefined" && !!CanvasPattern.prototype.setTransform;
   const s = donusum ? engelOlcegi() : 1, anahtar = u.kod + "|" + s;
   if (!_turZemini || _turZemini.anahtar !== anahtar) {
-    _turZemini = { anahtar, desen: null };
+    _turZemini = { anahtar, desen: null, k: 1 };
     try {
       const n = Math.ceil(TUR_ZEMIN_BOYUT * s), c = document.createElement("canvas");
       c.width = n; c.height = n;
@@ -69,12 +72,20 @@ function turZeminCiz(ctx) {
       cx.fillStyle = palet.zemin; cx.fillRect(0, 0, TUR_ZEMIN_BOYUT, TUR_ZEMIN_BOYUT);
       a.zemin(cx, TUR_ZEMIN_BOYUT, palet);
       const desen = ctx.createPattern(c, "repeat");
-      if (desen && n !== TUR_ZEMIN_BOYUT) desen.setTransform(new DOMMatrix().scale(TUR_ZEMIN_BOYUT / n));
+      _turZemini.k = n / TUR_ZEMIN_BOYUT;
+      if (desen && donusum) desen.setTransform(new DOMMatrix().scale(1 / _turZemini.k));
       _turZemini.desen = desen;
     } catch (_) { _turZemini.desen = null; }
   }
-  if (!_turZemini.desen) return false;
-  ctx.fillStyle = _turZemini.desen;
+  const desen = _turZemini.desen;
+  if (!desen) return false;
+  if (donusum && ctx.getTransform) {
+    const m = ctx.getTransform(), k = _turZemini.k;
+    if (m.b === 0 && m.c === 0 && m.a === m.d && Math.abs(m.a - k) < 1e-9) {
+      desen.setTransform(new DOMMatrix([1 / k, 0, 0, 1 / k, (Math.round(m.e) - m.e) / m.a, (Math.round(m.f) - m.f) / m.d]));
+    } else desen.setTransform(new DOMMatrix([1 / k, 0, 0, 1 / k, 0, 0]));
+  }
+  ctx.fillStyle = desen;
   ctx.fillRect(0, 0, game.worldW, game.worldH);
   return true;
 }

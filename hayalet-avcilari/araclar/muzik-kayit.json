@@ -1,1 +1,122 @@
-{}
+{
+  "TR": {
+    "gorev": "72d8aae17ab945f5475b13af065f4964",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-tr-1.mp3",
+        "sure": 118.693,
+        "tempo": 133.58,
+        "dongu": {
+          "bas": 20.7642,
+          "uzunluk": 28.82775,
+          "vurus": 64
+        },
+        "ekYeri": 0.9808,
+        "sabitlik": 0.8018,
+        "puan": 0.9031,
+        "teaser": {
+          "bas": 31.5909,
+          "son": 35.6544
+        },
+        "id": "c34bcca1-00cb-4c01-8258-f06fde2cc311",
+        "etiketler": "Turkish Anatolian folk, steady danceable 2/4 at around 128 BPM, bright warm acoustic mix for cheerful adventure video game background music, instrumental, rich polyphonic ensemble with a lead melody and counter-melody over darbuka and davul bass drum rhythm section, baglama (long-necked lute) and kaval (end-blown shepherd's flute), constant energy, no breakdown, loop-friendly."
+      },
+      {
+        "dosya": "hayalet-avcilari-tr-2.mp3",
+        "sure": 120.013,
+        "tempo": 129.19,
+        "dongu": {
+          "bas": 43.63,
+          "uzunluk": 33.30827,
+          "vurus": 72
+        },
+        "ekYeri": 0.9695,
+        "sabitlik": 0.8359,
+        "puan": 0.9295,
+        "teaser": {
+          "bas": 99.7534,
+          "son": 103.9562
+        },
+        "id": "ab1b7abb-c9bb-48ed-92fc-4ee358952bb4",
+        "etiketler": "Turkish Anatolian folk, baglama (long-necked lute) leads over kaval (end-blown shepherd's flute) counter-melody, darbuka and davul bass drum in a rich polyphonic ensemble; instrumental, cheerful steady danceable 2/4 groove around 128 BPM, constant energy, continuous loop-ready arrangement, bright warm acoustic mix."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -6.1,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.4028,
+    "dosyalar": {
+      "dongu": "muzik/TR-dongu.ogg",
+      "giris": "muzik/TR-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 33.40827,
+    "tempo": 129.19,
+    "kredi": {
+      "kalan": 752.5
+    }
+  },
+  "JP": {
+    "gorev": "75b57b9cf7fa381e84e951e8dc29a130",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-jp-1.mp3",
+        "sure": 119.533,
+        "tempo": 135.76,
+        "dongu": {
+          "bas": 50.9915,
+          "uzunluk": 28.20908,
+          "vurus": 64
+        },
+        "ekYeri": 0.9886,
+        "sabitlik": 0.8013,
+        "puan": 0.8959,
+        "teaser": {
+          "bas": 59.7892,
+          "son": 63.7598
+        },
+        "id": "43c79d4c-a0c0-44c8-b124-3217976bd7f7",
+        "etiketler": "Japanese min'yo folk dance, cheerful adventure video game background music led by nimble tsugaru shamisen runs, shinobue flute carrying the lead melody against koto counter-melody, taiko driving a steady rhythm section; rich polyphonic ensemble in a bright warm acoustic mix, danceable groove around 128 BPM, constant energy, seamless loop-friendly arrangement."
+      },
+      {
+        "dosya": "hayalet-avcilari-jp-2.mp3",
+        "sure": 118.573,
+        "tempo": 132.12,
+        "dongu": {
+          "bas": 15.9556,
+          "uzunluk": 29.22654,
+          "vurus": 64
+        },
+        "ekYeri": 0.9791,
+        "sabitlik": 0.8124,
+        "puan": 0.9126,
+        "teaser": {
+          "bas": 54.7209,
+          "son": 58.8076
+        },
+        "id": "853aa1f7-89dc-48ed-af1a-d9fa8bfaa5ea",
+        "etiketler": "Japanese min'yo folk dance, instrumental, led by a nimble tsugaru shamisen melody and a curling shinobue flute counter-melody; steady danceable groove around 128 BPM, rich polyphonic ensemble with a rhythm section, koto and taiko, bright warm acoustic mix, cheerful adventure video game background music, constant energy, loop-friendly."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -4.4,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.2867,
+    "dosyalar": {
+      "dongu": "muzik/JP-dongu.ogg",
+      "giris": "muzik/JP-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 29.32654,
+    "tempo": 132.12,
+    "kredi": {
+      "kalan": 752.5
+    }
+  }
+}

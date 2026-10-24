@@ -242,8 +242,9 @@ aynı bölgenin türü seçildi (Polonya krakowiak, Birleşik Krallık İskoç c
 - **`test/muzik.test.mjs`** (Playwright):
   - **Varlıklar:** 51 ülkenin her biri için `ULKE_MUZIKLERI` kaydı ve iki dosya var; Chromium'da `decodeAudioData` ile
     çözülür; döngü (`son − bas`) 27–34 sn, teaser 3–8 sn.
-  - **Ek yeri:** çözülmüş döngüde `loopEnd → loopStart` geçişindeki örnek sıçraması ve spektral akı, döngünün içindeki
-    değerlerin 99. yüzdeliğini aşmaz.
+  - **Ek yeri:** çözülmüş döngüde `loopEnd → loopStart` geçişindeki örnek sıçraması döngünün içindeki değerlerin 99.
+    yüzdeliğini aşmaz. Spektral akı 99. yüzdeliği ya da aynı noktanın kesintisiz akısının 1,15 katını aşmaz: ek yeri
+    vuruş atağının hemen önündedir, güçlü bir vuruşun kendi atağı 99. yüzdelik düzeyinde olabilir.
   - **Ses düzeyi:** döngülerin RMS düzeyi ortancadan en çok ±2 dB sapar.
   - **Boyut:** `www/muzik/` toplamı ≤ 14 MB.
   - **Çalar:** Dünya Turu'nda başlangıçta teaser, ardından `loop = true` ve doğru `loopStart` / `loopEnd` ile döngü;

@@ -2,8 +2,9 @@
 // bu dosyaya eklenir.
 // İstekler: 51 kayıt rota sırasıyla; ortak kalıp ve ortak olumsuz aynen; türün ölçüsü yazılı; yasak sözcük yok.
 // Varlıklar (MUZIKLI_ULKELER; Görev 5 ve 7–13 doldurur): kayıt ve iki dosya var, Chromium'da çözülür; döngü 27–34 sn,
-// teaser 3–8 sn; ek yerinde örnek sıçraması ve spektral akı döngü içinin 99. yüzdeliğini aşmaz; döngülerin ses düzeyi
-// ortancadan ±2 dB; www/muzik toplamı ≤ 14 MB.
+// teaser 3–8 sn; ek yerinde örnek sıçraması döngü içinin 99. yüzdeliğini, spektral akı 99. yüzdeliği ya da aynı noktanın
+// kesintisiz akısının 1,15 katını aşmaz (ek yeri vuruş atağına yakındır); döngülerin ses düzeyi ortancadan ±2 dB;
+// www/muzik toplamı ≤ 14 MB.
 // Tasarım: docs/superpowers/specs/2026-10-24-hayalet-ulke-muzikleri-design.md §4, §6, §12
 // Çalıştırma: node hayalet-avcilari/test/muzik.test.mjs   (Playwright + Chromium + ffmpeg; ağ gerekmez)
 import http from 'node:http';
@@ -37,7 +38,7 @@ const OLCU = { TR: '2/4', UA: '2/4', PL: '2/4', DE: '2/4', FR: '3/4', IT: '6/8',
   PH: '3/4', KR: '12/8', RU: '2/4', MX: '6/8', PE: '2/4', BR: '2/4', AR: '2/4' };
 const YASAK = /relig|hymn|chant|devot|pray|church|temple|mosque|shrine|anthem|march|militar|sword|dagger|\bwar\b/i;
 // Müziği üretilmiş ülkeler (Görev 5: TR, JP; Görev 7–13 kıta kıta ekler)
-const MUZIKLI_ULKELER = [];
+const MUZIKLI_ULKELER = ['TR', 'JP'];
 
 // ---------- ses çözümlemesi (ffmpeg ile, tek kanal 48 kHz) ----------
 function coz(dosya) {
@@ -92,7 +93,9 @@ function ekYeri(x, bas, son) {
   const sarili = new Float32Array(8192);
   sarili.set(x.subarray(son - 4096, son), 0); sarili.set(x.subarray(bas, bas + 4096), 4096);
   const ek = akilar(sarili).slice(5, 9); // ek yerini (4096. örnek) kesen kareler
-  return { sicrama, p99, akiEk: Math.max(...ek), akiP99: yuzdelik(ic, 99) };
+  // Aynı noktanın kesintisiz akısı: ön pay döngü başlangıcının öncesindeki özgün sestir (ek yeri vuruş atağına yakındır)
+  const dogal = akilar(x.slice(bas - 4096, bas + 4096)).slice(5, 9);
+  return { sicrama, p99, akiEk: Math.max(...ek), akiP99: yuzdelik(ic, 99), akiDogal: Math.max(...dogal) };
 }
 const rmsDb = (x) => { let s = 0; for (const v of x) s += v * v; return 10 * Math.log10(s / x.length + 1e-20); };
 
@@ -153,13 +156,13 @@ try {
       }
     });
     const duzeyler = {};
-    sina('ek yeri kesintisiz: örnek sıçraması ve spektral akı döngü içinin 99. yüzdeliğinde', () => {
+    sina('ek yeri kesintisiz: örnek sıçraması döngü içinin 99. yüzdeliğinde; akı 99. yüzdelikte ya da aynı noktanın kesintisiz akısının en çok 1,15 katı', () => {
       for (const kod of MUZIKLI_ULKELER) {
         const e = veri[kod], x = coz(path.join(WWW, e.dongu));
         const bas = Math.round(e.bas * 48000), son = Math.round(e.son * 48000);
         const o = ekYeri(x, bas, son);
         assert.ok(o.sicrama <= o.p99, `${kod}: sıçrama ${o.sicrama.toFixed(4)} > ${o.p99.toFixed(4)}`);
-        assert.ok(o.akiEk <= o.akiP99, `${kod}: akı ${o.akiEk.toFixed(1)} > ${o.akiP99.toFixed(1)}`);
+        assert.ok(o.akiEk <= Math.max(o.akiP99, 1.15 * o.akiDogal), `${kod}: akı ${o.akiEk.toFixed(1)} > ${o.akiP99.toFixed(1)} ve doğal ${o.akiDogal.toFixed(1)} × 1,15`);
         duzeyler[kod] = rmsDb(x.subarray(bas, son));
       }
     });

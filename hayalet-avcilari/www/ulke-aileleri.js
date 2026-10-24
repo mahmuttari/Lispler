@@ -5,22 +5,274 @@
    - bicim.duvar: iç duvar bloklarının 3.13.0 biçim ailesi ("kale" ya da "kutuk"; engeller.js engelOlustur)
    - palet: ülke paletinin altına birleşen aile renkleri (ülke üstün gelir; ulkeler.js ulkeEngelSeti)
    - duvar (iç duvar ve harita sınırı; sınırda B.yon), su (göl kıyısı; su her ülkede aynı mavi) ressamları:
-     (ctx, w, h, r, p, B) -> canli[] (engel-temalari.js düzeni)
-   - zemin(ctx, boyut, palet): Dünya Turu'nda ızgaranın yerine döşenen soluk desen (dunya-turu.js turZeminCiz)
+     (ctx, w, h, r, p, B) -> canli[] (engel-temalari.js düzeni; p ülkenin paleti: zemin, desen, duvar, duvarKoyu,
+     vurgu1, vurgu2)
+   - zemin(ctx, boyut, palet): Dünya Turu'nda ızgaranın yerine döşenen soluk desen; tuval önceden zemin rengiyle dolu,
+     desen kenarlarda kesintisiz (dunya-turu.js turZeminCiz)
    Eksik ressam yedek ressama, eksik zemin bugünkü ızgaraya düşer. Ressamlar Görev 5 ve 7–13'te eklenir.
+   Math.random yok: rastgelelik ressama verilen tohumlu r()'den. Dinî simge, yazı ve bayrak yok.
    engel-temalari.js'ten sonra, ulkeler.js'ten önce yüklenir.
    ============================================================ */
 (function () {
+  const { doldur, cizgi, kirp, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, tasOrgu, suTabani, kayalikKenar } = window.ENGEL;
+
+  // ---------- ortak ----------
+  // Sivri kemer (kervansaray nişi): taban (cx, alt), genişlik g, tepe y'si ust
+  function sivriKemer(ctx, cx, ust, alt, g) {
+    const yan = ust + g * 0.75;
+    ctx.beginPath(); ctx.moveTo(cx - g / 2, alt); ctx.lineTo(cx - g / 2, yan);
+    ctx.quadraticCurveTo(cx - g / 2, ust + g * 0.15, cx, ust);
+    ctx.quadraticCurveTo(cx + g / 2, ust + g * 0.15, cx + g / 2, yan);
+    ctx.lineTo(cx + g / 2, alt); ctx.closePath();
+  }
+  // Küçük eşkenar dörtgen (çini süsü)
+  function baklava(ctx, x, y, s, renk) {
+    ctx.fillStyle = renk; ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x + s, y); ctx.lineTo(x, y + s); ctx.lineTo(x - s, y); ctx.closePath(); ctx.fill();
+  }
+
+  // ================= KS — KERVANSARAY =================
+  // Duvar: kesme taş ön yüz, mavi çini kuşak, sivri kemerli nişler; üst yüz düzgün taş, mazgallar, çini halkalı kuleler
+  function kervansarayDuvari(ctx, w, h, r, p, B) {
+    if (B.yon) return kervansaraySuru(ctx, w, h, r, p, B);
+    const d = B.derinlik || 0, govde = B[0];
+    doldur(ctx, B, "rgba(0,0,0,0.3)", 2, d + 1);                         // gölge
+    cizgi(ctx, B, koyu(p.duvarKoyu, 0.45), 3, 0, d);                     // ön yüz
+    doldur(ctx, B, p.duvarKoyu, 0, d);
+    kirp(ctx, B, () => {
+      ctx.strokeStyle = koyu(p.duvarKoyu, 0.32); ctx.lineWidth = 1;     // kesme taş sıraları
+      for (let y = 5, k = 0; y < h + d; y += 6, k++) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+        for (let x = (k % 2) * 7; x < w; x += 14) { ctx.beginPath(); ctx.moveTo(x, y - 6); ctx.lineTo(x, y); ctx.stroke(); }
+      }
+    }, 0, d);
+    if (govde.t === "k") {
+      const altY = govde.y + govde.h;                                     // üst yüzün alt kenarı: ön yüz buradan d iner
+      kirp(ctx, B, () => {
+        ctx.fillStyle = p.vurgu1; ctx.fillRect(0, altY + 1, w, 4);        // çini kuşak
+        for (let x = 3.5, i = 0; x < w; x += 7, i++) baklava(ctx, x, altY + 3, 1.5, i % 2 ? "#f4f1ea" : p.vurgu2);
+        const n = Math.max(1, Math.floor(govde.w / 30));                   // sivri kemerli nişler
+        for (let i = 0; i < n; i++) {
+          const cx = govde.x + govde.w * (i + 0.5) / n, g = 8;
+          sivriKemer(ctx, cx, altY + 7, altY + d - 1, g); ctx.fillStyle = koyu(p.duvarKoyu, 0.5); ctx.fill();
+          sivriKemer(ctx, cx, altY + 8.5, altY + d - 1, g - 3); ctx.fillStyle = koyu(p.vurgu1, 0.35); ctx.fill();
+        }
+      }, 0, d);
+    }
+    cizgi(ctx, B, koyu(p.duvar, 0.5), 3);                                 // üst yüz
+    doldur(ctx, B, p.duvar);
+    kirp(ctx, B, () => {
+      tasOrgu(ctx, 0, 0, w, h, 11, koyu(p.duvar, 0.04), r);
+      if (govde.t === "k") { ctx.fillStyle = "rgba(0,0,0,0.12)"; yuvarlak(ctx, govde.x + 8, govde.y + 6, govde.w - 16, govde.h - 12, govde.rr * 0.6); ctx.fill(); }
+    });
+    for (const q of B) if (q.t === "k" && q !== govde) {                  // mazgallar: açık taş, çini uç
+      ctx.fillStyle = acik(p.duvar, 0.3); yuvarlak(ctx, q.x, q.y, q.w, q.h - 3, q.rr); ctx.fill();
+      ctx.fillStyle = p.vurgu1; yuvarlak(ctx, q.x + 1.5, q.y + 1, q.w - 3, 2.5, 1.2); ctx.fill();
+    }
+    for (const t of B.kuleler || []) {                                    // kule: taş halka, çini halka, sekizgen tepe
+      const cx = t.x, cy = t.y, tr = t.r;
+      for (let a = 0; a < Math.PI * 2; a += Math.PI / 5) elips(ctx, cx + Math.cos(a) * (tr - 2.5), cy + Math.sin(a) * (tr - 2.5), 3.2, 3.2, acik(p.duvar, 0.3));
+      elips(ctx, cx, cy, tr * 0.72, tr * 0.72, p.vurgu1);
+      ctx.beginPath();
+      for (let i = 0; i < 8; i++) { const a = Math.PI / 8 + (i * Math.PI) / 4; ctx.lineTo(cx + Math.cos(a) * tr * 0.55, cy + Math.sin(a) * tr * 0.55); }
+      ctx.closePath(); ctx.fillStyle = koyu(p.duvar, 0.15); ctx.fill();
+      for (let i = 0; i < 8; i++) { const a = (i * Math.PI) / 4; baklava(ctx, cx + Math.cos(a) * tr * 0.63, cy + Math.sin(a) * tr * 0.63, 1.2, "#f4f1ea"); }
+      elips(ctx, cx - tr * 0.15, cy - tr * 0.15, tr * 0.18, tr * 0.14, acik(p.duvar, 0.35));
+    }
+    return [];
+  }
+  // Harita sınırı: kesme taş sur, haritaya bakan kenarda çini şerit ve yuvarlak mazgal başları
+  function kervansaraySuru(ctx, w, h, r, p, B) {
+    cizgi(ctx, B, koyu(p.duvar, 0.6), 3);
+    doldur(ctx, B, p.duvar);
+    kirp(ctx, B, () => {
+      tasOrgu(ctx, 0, 0, w, h, 10, p.duvar, r);
+      ctx.fillStyle = p.vurgu1;
+      if (B.yon === "ust") ctx.fillRect(0, h - 13, w, 3); else if (B.yon === "alt") ctx.fillRect(0, 10, w, 3);
+      else if (B.yon === "sol") ctx.fillRect(w - 13, 0, 3, h); else ctx.fillRect(10, 0, 3, h);
+    });
+    for (const q of B) if (q.t === "d") { elips(ctx, q.x, q.y, q.r - 1.5, q.r - 1.5, acik(p.duvar, 0.28)); elips(ctx, q.x, q.y, q.r * 0.45, q.r * 0.45, p.vurgu1); }
+    return [];
+  }
+  // Su: mermer kenarlı, mavi-beyaz çini bordürlü havuz
+  function ciniliHavuz(ctx, w, h, r, p, B) {
+    suTabani(ctx, w, h, r, B, () => {
+      doldur(ctx, B, koyu(p.duvar, 0.35), 0, 0, 9);
+      doldur(ctx, B, acik(p.duvar, 0.35), 0, 0, 7.5);
+      kenarNoktalari(B, 5, 4).forEach((k, i) => {
+        ctx.save(); ctx.translate(k.x, k.y); ctx.rotate(Math.atan2(k.ny, k.nx));
+        ctx.fillStyle = i % 2 ? "#f4f1ea" : p.vurgu1; ctx.fillRect(-2, -2.2, 4, 4.4);
+        ctx.restore();
+      });
+    }, koyu(p.vurgu1, 0.55));
+    return [];
+  }
+  // Zemin: geometrik çini (sekiz köşeli yıldızlar ve aralarındaki baklavalar); köşelerde ve kenar ortalarında yarım
+  // motifler, böylece döşeme kesintisiz
+  function geometrikCini(ctx, n, p) {
+    ctx.strokeStyle = p.desen; ctx.lineWidth = 1.5; ctx.lineJoin = "round";
+    const yildiz = (cx, cy, R) => {
+      for (const a0 of [0, Math.PI / 4]) {
+        ctx.beginPath();
+        for (let i = 0; i < 4; i++) { const a = a0 + (i * Math.PI) / 2; ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); }
+        ctx.closePath(); ctx.stroke();
+      }
+      ctx.beginPath(); ctx.arc(cx, cy, R * 0.32, 0, Math.PI * 2); ctx.stroke();
+    };
+    for (const [x, y] of [[n / 2, n / 2], [0, 0], [n, 0], [0, n], [n, n]]) yildiz(x, y, n * 0.21);
+    for (const [x, y] of [[n / 2, 0], [n / 2, n], [0, n / 2], [n, n / 2]]) {
+      ctx.beginPath(); ctx.moveTo(x, y - n * 0.09); ctx.lineTo(x + n * 0.09, y); ctx.lineTo(x, y + n * 0.09); ctx.lineTo(x - n * 0.09, y); ctx.closePath(); ctx.stroke();
+    }
+    ctx.globalAlpha = 0.55; ctx.lineWidth = 1;
+    for (const [a, b] of [[[0, n / 2], [n / 2, 0]], [[n / 2, 0], [n, n / 2]], [[n, n / 2], [n / 2, n]], [[n / 2, n], [0, n / 2]]]) {
+      ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ================= DA — DOĞU ASYA =================
+  // Kiremit sıraları: (x0, y0)–(x1, y1) dikdörtgenini yarım daire uçlu kiremitlerle kaplar
+  function kiremitler(ctx, x0, y0, x1, y1, renk, sira = 5) {
+    for (let y = y0, k = 0; y < y1 + sira; y += sira, k++) {
+      for (let x = x0 - (k % 2) * 3; x < x1 + 6; x += 6) {
+        ctx.fillStyle = k % 2 ? renk : koyu(renk, 0.08);
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + sira * 0.6); ctx.arc(x + 3, y + sira * 0.6, 3, Math.PI, 0, true); ctx.lineTo(x + 6, y); ctx.closePath(); ctx.fill();
+      }
+      ctx.strokeStyle = koyu(renk, 0.35); ctx.lineWidth = 0.7; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+    }
+  }
+  // Duvar: taş temel üstünde sıvalı ön yüz ve kafesli küçük pencereler; üst yüz kiremit çatı, sırt, açık saçak;
+  // köşelerde kıvrık uçlu yuvarlak kule çatıları
+  function catiliDuvar(ctx, w, h, r, p, B) {
+    if (B.yon) return catiliSur(ctx, w, h, r, p, B);
+    const d = B.derinlik || 0, govde = B[0], cati = p.vurgu2;
+    doldur(ctx, B, "rgba(0,0,0,0.3)", 2, d + 1);                         // gölge
+    cizgi(ctx, B, koyu(p.duvarKoyu, 0.4), 3, 0, d);                      // ön yüz: sıva ve taş temel
+    doldur(ctx, B, p.duvar, 0, d);
+    if (govde.t === "k") {
+      const altY = govde.y + govde.h;
+      kirp(ctx, B, () => {
+        ctx.fillStyle = p.duvarKoyu; ctx.fillRect(0, altY + d * 0.55, w, d);
+        tasOrgu(ctx, 0, altY + d * 0.55, w, d, 5, p.duvarKoyu, r);
+        ctx.fillStyle = koyu(cati, 0.2); ctx.fillRect(0, altY, w, 2.2);          // saçağın gölgesi
+        const n = Math.max(1, Math.floor(govde.w / 26));
+        for (let i = 0; i < n; i++) {
+          const cx = govde.x + govde.w * (i + 0.5) / n, py = altY + 3.5, pw = 7, ph = Math.max(3, d * 0.55 - 5);
+          ctx.fillStyle = koyu(p.duvarKoyu, 0.35); ctx.fillRect(cx - pw / 2, py, pw, ph);
+          ctx.strokeStyle = acik(p.duvar, 0.2); ctx.lineWidth = 0.7;
+          for (const dx of [-1.2, 1.2]) { ctx.beginPath(); ctx.moveTo(cx + dx, py); ctx.lineTo(cx + dx, py + ph); ctx.stroke(); }
+          ctx.beginPath(); ctx.moveTo(cx - pw / 2, py + ph / 2); ctx.lineTo(cx + pw / 2, py + ph / 2); ctx.stroke();
+        }
+      }, 0, d);
+    }
+    cizgi(ctx, B, koyu(cati, 0.5), 3);                                    // üst yüz: kiremit çatı
+    doldur(ctx, B, cati);
+    kirp(ctx, B, () => {
+      kiremitler(ctx, 0, 0, w, h, acik(cati, 0.08));
+      if (govde.t === "k") {                                               // kırma çatı: dört yüz, mahyalar ve sırt
+        const { x, y, w: gw, h: gh } = govde, ic = Math.min(gw, gh) / 2, yatay = gw >= gh;
+        const k0 = [x, y], k1 = [x + gw, y], k2 = [x + gw, y + gh], k3 = [x, y + gh];
+        const s1 = yatay ? [x + ic, y + gh / 2] : [x + gw / 2, y + ic], s2 = yatay ? [x + gw - ic, y + gh / 2] : [x + gw / 2, y + gh - ic];
+        const yuzler = yatay
+          ? [[[k0, k1, s2, s1], "rgba(0,0,0,0.2)"], [[k3, k0, s1], "rgba(0,0,0,0.1)"], [[k1, k2, s2], "rgba(255,255,255,0.06)"]]
+          : [[[k0, k1, s1], "rgba(0,0,0,0.2)"], [[k3, k0, s1, s2], "rgba(0,0,0,0.1)"], [[k1, k2, s2, s1], "rgba(255,255,255,0.06)"]];
+        for (const [kose, renk] of yuzler) {
+          ctx.fillStyle = renk; ctx.beginPath(); kose.forEach(([px, py], i) => (i ? ctx.lineTo(px, py) : ctx.moveTo(px, py))); ctx.closePath(); ctx.fill();
+        }
+        const mahyalar = yatay ? [[k0, s1], [k3, s1], [k1, s2], [k2, s2], [s1, s2]] : [[k0, s1], [k1, s1], [k2, s2], [k3, s2], [s1, s2]];
+        for (const [kal, ren] of [[3.4, koyu(cati, 0.32)], [1.1, acik(cati, 0.3)]]) {
+          ctx.strokeStyle = ren; ctx.lineWidth = kal; ctx.lineCap = "round";
+          for (const [a, b] of mahyalar) { ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+        }
+        for (const [px, py] of [s1, s2]) { elips(ctx, px, py, 2.6, 2.6, koyu(cati, 0.4)); elips(ctx, px - 0.6, py - 0.6, 1.1, 1.1, acik(cati, 0.35)); }   // sırt uçları
+        ctx.fillStyle = acik(cati, 0.35); ctx.fillRect(0, y + gh - 2.5, w, 2.5);   // saçak ağzı
+      }
+    });
+    for (const q of B) if (q.t === "k" && q !== govde) {                  // mazgallar: kiremit başlıklı sırt taşları
+      ctx.fillStyle = koyu(cati, 0.2); yuvarlak(ctx, q.x, q.y, q.w, q.h - 3, q.rr); ctx.fill();
+      ctx.fillStyle = acik(cati, 0.3); yuvarlak(ctx, q.x + 1.5, q.y + 1, q.w - 3, 2.5, 1.2); ctx.fill();
+    }
+    for (const t of B.kuleler || []) {                                    // kule çatısı: ışınsal kiremit, kıvrık uçlar
+      const cx = t.x, cy = t.y, tr = t.r;
+      elips(ctx, cx, cy, tr, tr, koyu(cati, 0.25));
+      elips(ctx, cx, cy, tr - 1.5, tr - 1.5, acik(cati, 0.05));
+      ctx.strokeStyle = koyu(cati, 0.35); ctx.lineWidth = 0.9;
+      for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) { ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * tr * 0.25, cy + Math.sin(a) * tr * 0.25); ctx.lineTo(cx + Math.cos(a) * (tr - 1.5), cy + Math.sin(a) * (tr - 1.5)); ctx.stroke(); }
+      for (const a of [Math.PI * 0.25, Math.PI * 0.75, Math.PI * 1.25, Math.PI * 1.75]) {
+        const x = cx + Math.cos(a) * tr, y = cy + Math.sin(a) * tr;
+        ctx.strokeStyle = acik(cati, 0.35); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x - Math.cos(a) * 1.5, y - Math.sin(a) * 1.5, 1.6, a - 1.6, a + 1.2); ctx.stroke();
+      }
+      elips(ctx, cx, cy, tr * 0.22, tr * 0.22, p.vurgu1);
+      elips(ctx, cx - tr * 0.06, cy - tr * 0.06, tr * 0.08, tr * 0.08, acik(p.vurgu1, 0.5));
+    }
+    return [];
+  }
+  // Harita sınırı: kiremit başlıklı taş sur; mazgal başları yuvarlak kiremit uçları
+  function catiliSur(ctx, w, h, r, p, B) {
+    const cati = p.vurgu2;
+    cizgi(ctx, B, koyu(cati, 0.55), 3);
+    doldur(ctx, B, cati);
+    kirp(ctx, B, () => {
+      if (w > h) kiremitler(ctx, 0, -8, w, h + 8, acik(cati, 0.08));
+      else { ctx.save(); ctx.translate(w, 0); ctx.rotate(Math.PI / 2); kiremitler(ctx, -8, 0, h + 8, w, acik(cati, 0.08)); ctx.restore(); }
+    });
+    for (const q of B) if (q.t === "d") { elips(ctx, q.x, q.y, q.r - 1.5, q.r - 1.5, acik(cati, 0.2)); elips(ctx, q.x, q.y, q.r * 0.4, q.r * 0.4, p.vurgu1); }
+    return [];
+  }
+  // Su: taş kenarlı koi göleti; nilüfer yaprakları ve turuncu-beyaz koi balıkları
+  function koiGoleti(ctx, w, h, r, p, B) {
+    suTabani(ctx, w, h, r, B, () => {
+      doldur(ctx, B, koyu(p.duvarKoyu, 0.4), 0, 0, 8);
+      kayalikKenar(ctx, B, acik(p.duvarKoyu, 0.25), r, 8, 4, 6.5);
+      for (const k of kenarNoktalari(B, 17, 5)) elips(ctx, k.x, k.y - 2, 2.6, 1.6, "rgba(110, 160, 80, 0.75)");   // yosun
+    }, koyu(p.duvarKoyu, 0.5));
+    kirp(ctx, B, () => {
+      for (const k of icNoktalar(B, w, h, Math.max(1, Math.round(w * h / 3800)), 8, 18, r)) {   // nilüfer yaprakları
+        const s = 5 + r() * 3;
+        ctx.fillStyle = "#3f7f3a"; ctx.beginPath(); ctx.moveTo(k.x, k.y); ctx.arc(k.x, k.y, s, 0.35, Math.PI * 2 - 0.05); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = "#5fa04f"; ctx.lineWidth = 0.6; ctx.beginPath(); ctx.arc(k.x, k.y, s * 0.6, 0.5, Math.PI * 1.9); ctx.stroke();
+      }
+      for (const k of icNoktalar(B, w, h, Math.max(1, Math.min(4, Math.round(w * h / 3000))), 10, 16, r)) {   // koi
+        const a = r() * Math.PI * 2, s = 5 + r() * 2;
+        ctx.save(); ctx.translate(k.x, k.y); ctx.rotate(a);
+        ctx.fillStyle = "rgba(0,0,0,0.18)"; ctx.beginPath(); ctx.ellipse(1.2, 1.6, s, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#f97316"; ctx.beginPath(); ctx.moveTo(-s, 0); ctx.lineTo(-s - 3.5, -2.4); ctx.lineTo(-s - 3.5, 2.4); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#fff7ed"; ctx.beginPath(); ctx.ellipse(0, 0, s, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#f97316"; ctx.beginPath(); ctx.ellipse(-s * 0.15, -s * 0.05, s * 0.45, s * 0.3, 0.3, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(s * 0.55, 0, s * 0.28, s * 0.22, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#1f2937"; ctx.beginPath(); ctx.arc(s * 0.72, -s * 0.12, 0.6, 0, Math.PI * 2); ctx.arc(s * 0.72, s * 0.12, 0.6, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+    });
+    return [];
+  }
+  // Zemin: taş döşeme (kaydırmalı sıralarda yuvarlak köşeli taşlar) ve yosun noktaları; sıralar 96'yı tam böler
+  function tasDoseme(ctx, n, p) {
+    const sira = n / 4, enler = [[30, 34, 32], [26, 38, 32], [34, 28, 34], [32, 30, 34]];
+    ctx.strokeStyle = p.desen; ctx.lineWidth = 1.4;
+    enler.forEach((satir, j) => {
+      let x = (j * 13) % n;
+      for (const en of satir) {
+        for (const dx of [-n, 0]) { ctx.beginPath(); window.ENGEL.kutuYolu(ctx, x + dx + 1.5, j * sira + 1.5, en - 3, sira - 3, 5); ctx.stroke(); }
+        x += en;
+      }
+    });
+    ctx.fillStyle = karistir(p.desen, "#4f7a3a", 0.55);
+    for (const [x, y] of [[8, 23], [46, 47], [71, 22], [20, 72], [88, 70], [59, 95.5], [33, 0.5]]) {
+      for (const [ox, oy] of [[0, 0], [2.2, 0.8], [-1.6, 1.4]]) { ctx.beginPath(); ctx.arc(x + ox, y + oy, 1.2, 0, Math.PI * 2); ctx.fill(); }
+    }
+  }
+
   window.ULKE_AILELERI = {
     K: { bicim: { duvar: "kale" } },
-    KS: { bicim: { duvar: "kale" } },
+    KS: { bicim: { duvar: "kale" }, duvar: kervansarayDuvari, su: ciniliHavuz, zemin: geometrikCini },
     KP: { bicim: { duvar: "kale" } },
     SH: { bicim: { duvar: "kale" } },
     SV: { bicim: { duvar: "kutuk" } },
     GA: { bicim: { duvar: "kale" } },
     GDA: { bicim: { duvar: "kutuk" } },
-    DA: { bicim: { duvar: "kale" } },
+    DA: { bicim: { duvar: "kale" }, duvar: catiliDuvar, su: koiGoleti, zemin: tasDoseme },
     KA: { bicim: { duvar: "kutuk" } },
     LA: { bicim: { duvar: "kale" } },
   };
+  window.ULKE_AILE_YARDIMCI = { sivriKemer, baklava, kiremitler };
 })();

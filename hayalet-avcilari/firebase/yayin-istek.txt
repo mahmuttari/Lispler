@@ -5,4 +5,4 @@
 # Hizmet hesabının (android/play-kimlik.env) hayalet-avcilari projesinde roles/firebasedatabase.admin rolü olmalı.
 
 # istek 2026-10-24: yetki denemesi (salt okuma; kullanıcı "tam yetkilisin sen yap" dedi)
-durum
+# (yapıldı 2026-10-24, koşu 40066100466: kimlik alındı, okuma 401 — hesabın hayalet-avcilari projesinde rolü yok) durum

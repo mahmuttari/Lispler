@@ -225,6 +225,20 @@ değişiklikte kurala ve teste de ekleyin: bilinmeyen alan içeren yazım bütü
 Kurallar konsoldan elle yayınlanır (bu depo Firebase CLI ile dağıtım yapmaz). Konsol eski kuralların geçmişini tutar;
 sorun çıkarsa aynı ekrandan önceki sürüme dönülebilir.
 
+**GitHub'dan yayın (24 Ekim 2026'dan beri):** `yayin-istek.txt`'ye `durum` (yayındakini depodakiyle karşılaştırır) ya da
+`yayinla` (yayınlar, geri okuyup denetler) yazılıp push edilince `.github/workflows/hayalet-kural-yayini.yml` çalışır.
+Kimlik, Play işlerinin anahtarsız Workload Identity hizmet hesabıdır (`android/play-kimlik.env`); bu hesabın Firebase
+projesinde rolü olmalı. Rol bir kez Cloud Shell'de (`hayalet-avcilari` projesinin sahibi olarak) verilir:
+
+```sh
+gcloud projects add-iam-policy-binding hayalet-avcilari --role=roles/firebasedatabase.admin \
+  --member=serviceAccount:notdefteri-play@handcalcbook.iam.gserviceaccount.com
+```
+
+Rol verilmeden önceki deneme (koşu 40066100466): kimlik alındı, okuma `401` döndü. Rol, hesaba veritabanının kural ve
+verilerinde yönetici yetkisi verir; hesabı yalnız `mahmuttari/Lispler` deposunun iş akışları kullanabilir
+(`play-kurulum.sh` › `attribute-condition`). Rol kaldırılınca bu yol kapanır, konsoldan yayın sürer.
+
 ### 3.13.0: arkadaşlar (yayınlanmayı bekliyor — 3.13.0 Play'de yayına çıkmadan)
 
 Kökte üç yeni düğüm (`friendCodes`, `users`, `presence`, yukarıda) ve oda oyuncusunda yeni `av` alanı (tur

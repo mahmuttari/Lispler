@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı) Firebase konsolunda yayınlanmalı: [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama). Önceki: 3.12.2 (44), 23 Ekim 2026'da incelemedeki 3.12.1 (43)'in yerine Play'e gönderildi |
+| Sürüm | 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı) Firebase konsolunda yayınlanmalı: [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama). Önceki: 3.12.2 (44), 23 Ekim 2026'da incelemedeki 3.12.1 (43)'in yerine Play'e gönderildi |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |

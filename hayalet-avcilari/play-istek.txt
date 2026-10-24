@@ -31,4 +31,4 @@
 # istek 2026-10-24T04:39:52Z: 3.13.0 (45) üretime yükle ve incelemeye gönder; 3.12.2 (44) incelemedeyse onun yerini alır (kullanıcının açık onayıyla: "Evet, gönder"); AAB: hayalet-android koşusu 40040731793 (bu dal, commit 950117c, versionCode 45, Poyraz Workshop yükleme anahtarı)
 # (yapıldı 2026-10-24, koşu 40063254710: AAB 45 yüklendi, üretim 3.12.2 (44) → 3.13.0 (45) completed, incelemeye gönderildi) yukle yayinla uygula
 # istek 2026-10-24T05:06:19Z: mağaza görselleri 3.13.0'a göre (7 dil: 6 telefon karesi, tanıtım görseli, simge) yükle (kullanıcının açık onayıyla: "Evet, yükle"); görseller commit 2d4c5a6 (araclar/magaza-gorsel.mjs)
-gorsel uygula
+# (yapıldı 2026-10-24, koşu 40064955789: 7 dilde simge, tanıtım görseli ve 6 telefon karesi yüklendi, düzenleme onaylandı) gorsel uygula

@@ -1,7 +1,7 @@
 # Hayalet Avcıları — Dünya Turu: 51 ülkelik kip (tasarım)
 
 - **Tarih:** 24 Ekim 2026
-- **Durum:** Bölüm 1–6 sohbette onaylandı (24 Ekim 2026); yazılı belgenin onayı bekleniyor
+- **Durum:** Kullanıcı onayladı (24 Ekim 2026: "Onaylıyorum, plana geç"); uygulama planı `docs/superpowers/plans/2026-10-24-hayalet-ulkeler.md`
 - **Hedef sürüm:** 3.14.0 (versionCode 47); 3.13.1'in reklam içerik sınırı (G) bu sürümle birlikte çıkar
 - **Proje:** `hayalet-avcilari/` (Capacitor 8, HTML5 canvas, Firebase Realtime Database + Anonymous Auth)
 

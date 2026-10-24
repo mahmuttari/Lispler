@@ -30,6 +30,12 @@ Hayalet Avcıları'nda hayaletler her yerden geliyor! Avcını seç, labirent gi
 • Mor Şato, Yeşil Orman, Çöl, Buz Mağarası, Volkan ve Uzay temalı bölümler.
 • Dikenler, lav ve su engellerine dikkat!
 
+🌍 DÜNYA TURU
+• En kalabalık 50 ülke ve Filistin: Türkiye'den başla, ülke ülke gezerek Arjantin'e kadar git.
+• Her ülkenin kendi görselleri: Eyfel Kulesi, Kilimanjaro, Fuji Dağı, Machu Picchu terasları ve daha fazlası.
+• Bosslar ülkenin geleneksel kıyafetini giyer; her ülkenin kendi kültüründen müziği var.
+• Ülkeyi geçince pasaportuna damga bas, turu arkadaşlarınla birlikte tamamla.
+
 🦸 KARAKTERLER VE KOSTÜMLER
 • Kinkin, Veryi, Kornet, Marli, Kenit, Ponko ve daha fazlası: her avcının kendine özel gücü ve silahı var.
 • Topladığın parayla hızını, hasarını, atış hızını ve menzilini yükselt.
@@ -45,7 +51,7 @@ Hayalet Avcıları'nda hayaletler her yerden geliyor! Avcını seç, labirent gi
 ☁️ İLERLEMEN KAYBOLMASIN
 • İstersen Google ile giriş yap, ilerlemeni buluta yedekle ve başka telefona taşı.
 
-🌍 6 DİL
+🗣️ 6 DİL
 • Türkçe, English, Español, 简体中文, हिन्दी, العربية — oyun telefonunun dilinde açılır, menüden değiştirebilirsin.
 
 Ücretsiz oyun: gerçek parayla satın alma yok. Oyundaki para, elmas ve zümrüt yalnızca oynayarak kazanılır. Oyun bitişlerinde arada bir reklam gösterilir; oyun sırasında reklam yok.

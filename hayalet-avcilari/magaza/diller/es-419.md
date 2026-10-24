@@ -16,6 +16,12 @@
 • Niveles con temas: Castillo Morado, Bosque Verde, Desierto, Cueva de Hielo, Volcán y Espacio.
 • ¡Cuidado con los pinchos, la lava y el agua!
 
+🌍 GIRA MUNDIAL
+• Los 50 países más poblados y Palestina: empieza en Turquía y viaja país por país hasta Argentina.
+• Cada país tiene sus propios paisajes: la Torre Eiffel, el Kilimanjaro, el monte Fuji, las terrazas de Machu Picchu y mucho más.
+• Los jefes visten el traje tradicional del país, y cada país tiene música de su propia cultura.
+• Supera un país para sellar tu pasaporte y completa la gira junto a tus amigos.
+
 🦸 PERSONAJES Y DISFRACES
 • Kinkin, Veryi, Kornet, Marli, Kenit, Ponko y muchos más: cada cazador tiene su propio poder y su propia arma.
 • Con las monedas que reúnas, mejora tu velocidad, daño, cadencia y alcance.
@@ -31,7 +37,7 @@
 ☁️ NO PIERDAS TU PROGRESO
 • Si quieres, inicia sesión con Google, guarda tu progreso en la nube y llévalo a otro teléfono.
 
-🌍 6 IDIOMAS
+🗣️ 6 IDIOMAS
 • Türkçe, English, Español, 简体中文, हिन्दी, العربية: el juego se abre en el idioma de tu teléfono y puedes cambiarlo desde el menú.
 
 Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeraldas del juego solo se ganan jugando. A veces se muestra un anuncio al terminar una partida; nunca mientras juegas.

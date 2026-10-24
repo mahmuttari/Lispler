@@ -1,5 +1,6 @@
-// Play mağaza görselleri: her dil için 6 telefon ekran görüntüsü (1080×1920) ve tanıtım görseli (1024×500).
+// Play mağaza görselleri: her dil için 7 telefon ekran görüntüsü (1080×1920) ve tanıtım görseli (1024×500).
 // 3.13.0: oyun ve boss kareleri yeni engelleri gösterir (Yeşil Orman, Mor Şato), menüde kupa, 6. kare Arkadaşlar.
+// 3.14.0: 7. kare Dünya Turu (Japonya, kimonolu boss).
 // Kullanım: node hayalet-avcilari/araclar/magaza-gorsel.mjs [play-dili…]   (Playwright + Chromium gerekir)
 // Çıktı: tr-TR → magaza/play/, diğerleri → magaza/play/<play-dili>/ (android/play.mjs gorsel bu klasörleri yükler)
 import http from 'node:http';
@@ -69,13 +70,16 @@ try {
     // Oyun ve boss: engellerin en çok göründüğü boş yere oyuncu konur (engel-bicim.test --ekran yöntemi; alt %26 joystick
     // ve çanta, üst %16 göstergeler puana girmez). Güçlendirme toplanmaz (görünmezlik ya da hız bildirimi kareyi bozmasın).
     // Hasar yok: invuln > 0 iken oyuncu 0,1 sn'de bir çizilmez (yanıp söner), damagePlayer da canı düşürüp invuln koyar.
-    const sahne = (bolum) => p.evaluate((bolum) => {
-      startGame(); game.level = bolum; buildWalls(); buildWaters(); buildHazards();
+    const sahne = (bolum, tur) => p.evaluate(([bolum, tur]) => {
+      if (tur) startGame({ tur: true, ulke: ulkeKodla(tur).sira }); // Dünya Turu: bölüm ve engeller ülkeden
+      else { startGame(); game.level = bolum; buildWalls(); buildWaters(); buildHazards(); }
       const W = game.W, H = game.H; let en = null;
       for (let x = 200; x < game.worldW - 200; x += 30) for (let y = 260; y < game.worldH - 260; y += 30) {
         if (collidesWalls(x, y, 30) || collidesWaters(x, y, 30) || collidesSpikes(x, y, 30) || collidesLavas(x, y, 30)) continue;
         const tam = (o) => o.x > x - W / 2 && o.x + o.w < x + W / 2 && o.y > y - H / 2 + H * 0.16 && o.y + o.h < y + H / 2 - H * 0.26;
-        const puan = game.walls.slice(4).filter(tam).length * 3 + game.waters.filter(tam).length * 3 + game.spikes.concat(game.lavas).filter(tam).length * 2;
+        // Dünya Turu'nda ülkenin objeleri (obje1, obje2) öne çıksın
+        const duvar = game.walls.slice(4).filter(tam).reduce((s, o) => s + (tur && /^obje/.test(o.tur) ? 8 : 3), 0);
+        const puan = duvar + game.waters.filter(tam).length * 3 + game.spikes.concat(game.lavas).filter(tam).length * 2;
         if (!en || puan > en.puan) en = { x, y, puan };
       }
       game.player.x = en.x; game.player.y = en.y;
@@ -83,7 +87,7 @@ try {
       game.player.invuln = 0; game.bossSpawnTimer = 1e9;
       clearInterval(window.gucsuz);
       window.gucsuz = setInterval(() => { game.pickups = game.pickups.filter((k) => k.kind !== 'guc'); game.player.power = null; }, 50);
-    }, bolum);
+    }, [bolum, tur || null]);
     await sahne(8); // Yeşil Orman
     await p.evaluate(() => {
       game.player.range = 1;
@@ -100,6 +104,21 @@ try {
     await p.evaluate(() => { game.player.invuln = 0; const bs = game.ghosts.find((g) => g.isBoss); if (bs) { bs.x = game.player.x + 40; bs.y = game.player.y - 170; } });
     await p.waitForTimeout(250);
     await p.screenshot({ path: path.join(cikis, 'telefon-3-boss.png') });
+    // Dünya Turu (3.14.0): Japonya — kiraz ağaçları ve Fuji Dağı arasında kimonolu boss
+    await sahne(0, 'JP');
+    await p.waitForTimeout(5000);
+    await p.evaluate(() => { game.bossSpawnTimer = 0.05; });
+    await p.waitForTimeout(3500);
+    await p.evaluate(() => {
+      game.player.invuln = 0;
+      // boss her dilde aynı yerde, oyuncunun sağında; çekim sürerken yürümez ve ateş etmez (bu bölümün bossu saniyede
+      // ~250 px gider, büyük ekran görüntüsü yarım saniye sürebilir). Ekrandaki öteki hayaletler kalkar
+      const bs = game.ghosts.find((g) => g.isBoss);
+      if (bs) { bs.x = game.player.x + 95; bs.y = game.player.y - 25; bs.speed = 0; bs.nextShot = performance.now() + 1e9; }
+      game.ghosts = game.ghosts.filter((g) => g.isBoss || Math.hypot(g.x - game.player.x, g.y - game.player.y) > 700);
+    });
+    await p.waitForTimeout(400); // bildirim ve vuruş parıltıları geçsin
+    await p.screenshot({ path: path.join(cikis, 'telefon-7-dunya-turu.png') });
     await p.close();
 
     const t = await b.newPage({ viewport: { width: 1024, height: 500 } });

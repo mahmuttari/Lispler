@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.13.1 (versionCode 46) — reklam içerik derecesi en çok G (aşağıda "3.13.1: reklam içerik sınırı"); derlenip Play'e gönderilecek ("Play paketi" satırı). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
+| Sürüm | 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
@@ -400,6 +400,72 @@ Test: `test/reklam.test.mjs` (sahte AdMob eklentisi, 5 sınama: initialize bir k
 initialize'dan sonra, geçiş ve ödüllü reklam yine yüklenir, sayfa hatası yok); düzeltmeden önce derece sınaması düştü.
 Sürüm notu: 3.13.0 incelemedeyken gönderilebileceği için 3.13.0'ın satırlarını da taşır; mağaza notu İspanyolcada 500'ü
 aşmasın diye 👥 (3.12.2) satırı çıktı (tr 450, en 453, es 490, zh 179, hi 454, ar 404).
+
+## 3.14.0: Dünya Turu
+
+İstek (24 Ekim 2026): her ülkenin kültürünü ve mimarisini yansıtan bölümlerle, tek kişilik ve çevrimiçi oynanan bir ülke
+serisi; en kalabalık 50 ülke, İsrail yok, Filistin var; bosslar ülkenin geleneksel kıyafetini giysin. Tasarım
+[`docs/superpowers/specs/2026-10-24-hayalet-ulkeler-design.md`](../docs/superpowers/specs/2026-10-24-hayalet-ulkeler-design.md),
+plan [`docs/superpowers/plans/2026-10-24-hayalet-ulkeler.md`](../docs/superpowers/plans/2026-10-24-hayalet-ulkeler.md).
+
+- **Rota:** 51 ülke, Türkiye (1) → Arjantin (51); Avrupa 1–8, Afrika 9–24, Asya 25–44, Amerika 45–51. Bölüm numarası
+  ülkenin sırasıdır. Veri `www/ulkeler.js` (ad, aile, iki obje, palet, kostüm).
+- **Görseller:** 10 bölge ailesinin duvar, su ve zemin ressamları `www/ulke-aileleri.js` (K, KS, KP, SH, SV, GA, GDA, DA,
+  KA, LA); ülkelerin iki objesi `www/ulke-objeleri-{avrupa,afrika,asya,amerika}.js`; 51 boss kostümü `www/kostumler.js`.
+  Engeller 3.13.0'daki gibi önbellekten çizilir; zemin her karede tek desen dolgusudur.
+- **İçerik kuralları:** dinî yapı, sembol ve giysi; bayrak; sınır gösteren harita; silah; insan; savaş, siyaset ve kan
+  yok. Objelerde insan gerekiyorsa kıyafetli sevimli hayalet ya da hayvan konur; boss da hayalettir, yalnız kıyafet çizilir.
+- **Akış:** menüde 🌍 Dünya Turu → ülke listesi ve 🛂 Pasaport. Ülke geçilince damga basılır (ilk damgada +3 💎) ve
+  sıradaki ülke açılır; uçak geçişi, ülke tanıtımı ve ülkenin müziği gelir. 51. ülkeden sonra tur tamamlanır.
+- **Çevrimiçi:** Oda Kur'da "Oyun türü" Normal ya da Dünya Turu; Dünya Turu odası açılmış ülkelerden biriyle başlar.
+  İstemciler ülke geçişini odanın `level` düğümünden alır (damga, müzik ve tanıtım ev sahibiyle aynı akışta; ortadan
+  katılana damga basılmaz). Kural: `rooms/$id/tur` boolean, `level` yalnız ev sahibince 1–1000. Kurallar yayınlanmadan
+  Dünya Turu odası kurulamaz ("⚠ Dünya Turu odası şu an kurulamıyor"); normal oda `tur` alanı taşımaz, etkilenmez.
+- **Reklam sıklığı** (istek: "insan psikolojisine en uygun, hiç sıkmayacak şekilde"; `www/reklam.js`): ilk 5 oyunda ve
+  ilk 10 dk oyun süresinde geçiş reklamı yok; 45 sn'den kısa oyundan sonra yok; iki geçiş reklamı arasında en az 6 dk
+  oyun süresi; saatte en çok 4; çevrimiçi oyunda ve kutlama ekranında yok; kendi isteğiyle ödüllü reklam izleyenin
+  sayacı yeniden başlar.
+- **Kare hızı:** doğrulamada zemin deseninin kesirli kamera konumunda çift doğrusal süzgeçle tarandığı bulundu (kamera
+  kayarken kare süresi iki katı). `turZeminCiz` deseni her karede cihaz pikseline hizalar (engel resimlerindeki `bas()`
+  gibi; en çok yarım cihaz pikseli kayar). Kamera kayarken tek kişilik FR/KE/JP 21–24 → 44–50 fps (işlemci 4 kat
+  yavaş); 6 kişilik Kenya odasında kurucu 21,7 → 44,9 fps (işlemci 2 kat yavaş, müzik çalarken).
+- **Ekran denetimi:** 51 ülke × katalog, iki oyun içi görüntü (TR 390 px, AR 340 px) ve boss. KS ailesinin zemininde iki
+  üst üste kare ve halkadan oluşan sekiz köşeli yıldız dinî bir işarete (Rub el-Hizb) benzediği için lale çinisiyle
+  değiştirildi.
+
+Testler: `test/ulkeler.test.mjs`, `test/dunya-turu.test.mjs`, `test/ulke-cizim.test.mjs [--ekran <klasör>]`
+(ressam kapsaması, biçim içi boyalı / dışı saydam, zemin hizası 51 ülke × 2 ölçek), `test/cizim.test.mjs` (Dünya Turu
+FR, KE, JP kamera kayarken, müzik çalarken), `test/reklam.test.mjs`, emülatörde `firebase/test/kurallar.test.mjs`,
+`test/cevrimici.test.mjs` (Dünya Turu odası), `test/alti.test.mjs --tur` (6 kişilik Kenya odası).
+
+## 3.14.0: ülke müzikleri
+
+İstek: "SUNO'yu kullanarak her ülke için birkaç sn'lik teaser giriş müziği ve arka planda 30 sn'de bir başa saran
+kültürel bir oyun polifonik müziği ekleyelim"; "müzikler maceracı, hareketli tarzda olmalı". Tasarım
+[`docs/superpowers/specs/2026-10-24-hayalet-ulke-muzikleri-design.md`](../docs/superpowers/specs/2026-10-24-hayalet-ulke-muzikleri-design.md).
+
+- **Oyunda:** ülkeye varışta ~5 sn giriş, ardından ~30 sn'lik döngü bölüm boyunca başa sarar (Web Audio `loop`,
+  `loopStart`/`loopEnd`; ek yeri kesim hattında hazırlanır). Ses Ayarları'nda 🎵 Müzik kaydırıcısı (varsayılan %60).
+  Çalar `www/muzik.js`, kayıtlar `www/ulke-muzikleri.js` (üretilir, elle düzenlenmez), dosyalar `www/muzik/<KOD>-giris.ogg`
+  ve `<KOD>-dongu.ogg` (102 dosya, ~11 MB). Ölçümde müzik kare hızına yük getirmedi (ses iş parçacıkları ~%1,6 çekirdek).
+- **Kaynak:** Suno, sunoapi.org üzerinden (`GENEL-KONULAR/suno/suno.mjs`), model V6, sözsüz. İstek metinleri
+  `araclar/muzik-istekleri.json`: ülkenin türü ve çalgıları (ek spec §6) + ortak kalıp; dinî tür, marş ve kılıçlı dans
+  yok, sanatçı ve eser adı yazılmaz.
+- **Üretim** (GENEL-KONULAR kökünden; istek başına ~12 kredi, iki parça):
+  `node suno/suno.mjs sarki --sozsuz --model V6 --sure 120 --baslik "Hayalet Avcilari <KOD>" --stil "<stil>" --olumsuz "<olumsuz>" --cikis <klasör>`
+- **Kesim:** `python3 hayalet-avcilari/araclar/muzik_kes.py isle --kod <KOD> --gorev <görev> --kredi <kalan> [--sec 1|2] <parça1.mp3> <parça2.mp3>`
+  (iki parçayı ölçer; ek yeri ve tempo sabitliği puanı yüksek olanı seçer, `--sec` ile değiştirilir; -18 LUFS; teaser, döngü ve kayıt yazılır).
+  Sınama: `python3 hayalet-avcilari/araclar/muzik_kes.py --sina`, `node hayalet-avcilari/test/muzik.test.mjs`.
+- **Gözden geçirme:** ilk 32 ülke 1. kalıpla ("cheerful adventure…"), son 19 ülke kullanıcının "maceracı, hareketli"
+  isteğinden sonra 2. kalıpla ("upbeat energetic adventure…, playful and heroic, driving rhythm"; olumsuza "sad,
+  melancholic, sentimental…") üretildi. Türkiye ("biraz fazla duygusal") 24 Ekim 2026'da 2. kalıpla ve kavalın yerine
+  zurnayla yenilendi. Ötekiler kullanıcının dinleme sayfasındaki (claude.ai) "Yenilensin" işaretiyle, kalan krediyle
+  (152,5 ≈ 12 ülke) sonraki sürümde yenilenir.
+- **Hak notu:** Suno Kullanım Koşulları (yürürlük 3 Eylül 2026) onaylı kanaldan indirilmeyen çıktının ticari
+  kullanımına izin vermez; sunoapi.org onaylı kanal değildir ve oyun reklamlı olduğu için kullanım ticaridir. Kullanıcı
+  bu bilgiyle 24 Ekim 2026'da "sunoapi.org ile ben üreteyim" seçeneğini seçti; risk kullanıcıdadır. Müzikler ileride
+  suno.com'da ya da lisanslı bir serviste aynı istek metinleriyle yeniden üretilirse yalnız `www/muzik/` ve
+  `ulke-muzikleri.js` değişir (ek spec §10).
 
 ## Diller
 

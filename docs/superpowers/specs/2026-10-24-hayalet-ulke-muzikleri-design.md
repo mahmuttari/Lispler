@@ -1,7 +1,7 @@
 # Hayalet Avcıları — Dünya Turu: ülke müzikleri (ek tasarım)
 
 - **Tarih:** 24 Ekim 2026
-- **Durum:** Kullanıcı onayladı (24 Ekim 2026: "Onaylıyorum, plana işle"); plan `docs/superpowers/plans/2026-10-24-hayalet-ulkeler.md` Görev 17, 18 ve kıta görevlerinin E adımı
+- **Durum:** Uygulandı, 3.14.0 (47). Kullanıcı onayladı (24 Ekim 2026: "Onaylıyorum, plana işle"); plan `docs/superpowers/plans/2026-10-24-hayalet-ulkeler.md` Görev 17, 18 ve kıta görevlerinin E adımı
 - **Ana tasarım:** `docs/superpowers/specs/2026-10-24-hayalet-ulkeler-design.md` (bu belge onun §12'deki "müzik kapsam
   dışı" maddesini kaldırır; geri kalanı aynen geçerlidir)
 - **Hedef sürüm:** 3.14.0 (versionCode 47), Dünya Turu ile birlikte

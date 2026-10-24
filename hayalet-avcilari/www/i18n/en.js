@@ -215,6 +215,7 @@ I18N.en = {
   "🛒 Mağaza": "🛒 Shop",
   "🛒 MAĞAZA": "🛒 SHOP",
   "🛠 <b>{ad}</b> için yükseltmeler": "🛠 Upgrades for <b>{ad}</b>",
+  "🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir.": "🛡️ Only ads suitable for all ages are shown now.",
   "🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle.": "🟢 See if friends are online or in a room; block anyone you don't want.",
   "🟢 Çevrimiçi": "🟢 Online",
   "200 px alandaki tüm hayaletlere 10 hasar.": "10 damage to all ghosts within 200 px.",

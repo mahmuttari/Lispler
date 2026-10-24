@@ -215,6 +215,7 @@ I18N.hi = {
   "🛒 Mağaza": "🛒 दुकान",
   "🛒 MAĞAZA": "🛒 दुकान",
   "🛠 <b>{ad}</b> için yükseltmeler": "🛠 <b>{ad}</b> के लिए अपग्रेड",
+  "🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir.": "🛡️ अब केवल हर उम्र के लिए उपयुक्त विज्ञापन दिखेंगे।",
   "🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle.": "🟢 देखो दोस्त ऑनलाइन है या रूम में; जिसे न चाहो उसे ब्लॉक करो।",
   "🟢 Çevrimiçi": "🟢 ऑनलाइन",
   "200 px alandaki tüm hayaletlere 10 hasar.": "200 px के दायरे में सभी भूतों को 10 डैमेज।",

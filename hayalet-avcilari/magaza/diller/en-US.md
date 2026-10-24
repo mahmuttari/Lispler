@@ -41,6 +41,6 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 👫 Add friends: share your code or tap ➕ next to a player in the lobby.
 📨 Call a friend to your room; when invited, tap Join on the top banner.
 🟢 See if friends are online or in a room; block anyone you don't want.
-👥 Online rooms now hold 6 players.
 🏰 Obstacles redesigned: castles, curvy-shored ponds and spooky-but-cute objects for every theme.
 🏆 After an online round everyone is ranked by ghosts caught; the winner earns a trophy.
+🛡️ Only ads suitable for all ages are shown now.

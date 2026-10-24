@@ -215,6 +215,7 @@ I18N.es = {
   "🛒 Mağaza": "🛒 Tienda",
   "🛒 MAĞAZA": "🛒 TIENDA",
   "🛠 <b>{ad}</b> için yükseltmeler": "🛠 Mejoras para <b>{ad}</b>",
+  "🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir.": "🛡️ Solo verás anuncios aptos para todos.",
   "🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle.": "🟢 Mira si tus amigos están en línea o en una sala; bloquea a quien no quieras.",
   "🟢 Çevrimiçi": "🟢 En línea",
   "200 px alandaki tüm hayaletlere 10 hasar.": "10 de daño a todos los fantasmas en 200 px.",

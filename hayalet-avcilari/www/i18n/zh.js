@@ -215,6 +215,7 @@ I18N.zh = {
   "🛒 Mağaza": "🛒 商店",
   "🛒 MAĞAZA": "🛒 商店",
   "🛠 <b>{ad}</b> için yükseltmeler": "🛠 <b>{ad}</b>的升级",
+  "🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir.": "🛡️ 现在只显示适合所有年龄的广告。",
   "🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle.": "🟢 看看好友是否在线或在房间中；不想理的人可以屏蔽。",
   "🟢 Çevrimiçi": "🟢 在线",
   "200 px alandaki tüm hayaletlere 10 hasar.": "对200 px范围内所有幽灵造成10点伤害。",

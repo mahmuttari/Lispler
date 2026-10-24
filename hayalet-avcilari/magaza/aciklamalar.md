@@ -56,7 +56,7 @@ Hayalet Avcıları'nda hayaletler her yerden geliyor! Avcını seç, labirent gi
 |---|---|
 | Gizlilik politikası | yukarıdaki adres |
 | Uygulama erişimi | Tüm işlevler özel erişim olmadan kullanılabilir |
-| Reklamlar | **Evet**, reklam içeriyor (Google AdMob: oyun bitti ekranında geçiş + isteğe bağlı ödüllü reklam) |
+| Reklamlar | **Evet**, reklam içeriyor (Google AdMob: oyun bitti ekranında geçiş + isteğe bağlı ödüllü reklam; 3.13.1'den beri en yüksek reklam içerik derecesi **G**, README › "3.13.1: reklam içerik sınırı") |
 | İçerik derecelendirmesi (IARC) | Kategori: Oyun. Şiddet: **çizgi film / fantastik** (hayaletlere ateş etme), kan yok. Cinsellik, küfür, uyuşturucu, kumar: Hayır. Kullanıcılar birbiriyle etkileşir: **Evet** (çevrimiçi oda, herkese açık takma ad, 3.13.0'dan beri arkadaş ekleme ve odaya davet; sohbet yok). Konum paylaşımı: Hayır. Dijital ürün satın alma: Hayır |
 | Hedef kitle | 13-15, 16-17, 18 ve üzeri · "Çocuklara hitap ediyor mu?" sorusuna **Hayır** |
 | Haber uygulaması · Kamu · Finans · Sağlık | Hayır · Hayır · Yok · Yok |

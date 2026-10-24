@@ -41,6 +41,6 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 👫 Añade amigos: comparte tu código o toca ➕ junto a un jugador en la sala de espera.
 📨 Llama a un amigo a tu sala; si te invitan, toca Unirse arriba.
 🟢 Mira si tus amigos están en línea o en una sala; bloquea a quien no quieras.
-👥 Las salas en línea ahora son para 6.
 🏰 Obstáculos renovados: castillos, lagos de orillas curvas y objetos espeluznantes pero adorables en cada tema.
 🏆 Al terminar una ronda en línea, todos se ordenan por fantasmas atrapados; el primero gana un trofeo.
+🛡️ Solo verás anuncios aptos para todos.

@@ -215,6 +215,7 @@ I18N.ar = {
   "🛒 Mağaza": "🛒 المتجر",
   "🛒 MAĞAZA": "🛒 المتجر",
   "🛠 <b>{ad}</b> için yükseltmeler": "🛠 ترقيات <b>{ad}</b>",
+  "🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir.": "🛡️ لن تظهر بعد الآن إلا إعلانات مناسبة لجميع الأعمار.",
   "🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle.": "🟢 اعرف إن كان أصدقاؤك متصلين أو في غرفة، واحظر من لا تريده.",
   "🟢 Çevrimiçi": "🟢 متصل",
   "200 px alandaki tüm hayaletlere 10 hasar.": "ضرر 10 لكل الأشباح ضمن دائرة 200 px.",

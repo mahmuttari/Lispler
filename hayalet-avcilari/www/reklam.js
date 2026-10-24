@@ -3,6 +3,8 @@
    @capacitor-community/admob eklentisi window.Capacitor.Plugins.AdMob olarak gelir;
    web/PWA sürümünde eklenti yoktur ve bu dosyadaki her şey sessizce devre dışı kalır.
    - AB/İngiltere/İsviçre: Google UMP onay formu (AdMob › Gizlilik ve mesajlaşma) ilk açılışta sorulur.
+   - Reklam içerik derecesi en çok G (genel izleyici, 3.13.1): PG, T ve MA dereceli reklamlar (müstehcen, kumar, alkol…)
+     istenmez. Sınama: test/reklam.test.mjs.
    - Geçiş reklamı: oyun bitti ekranında, her 2 oyunda bir, en az 3 dakika arayla. Oyun sırasında reklam yok.
    - Ödüllü reklam: oyun bitti ekranındaki "Reklam izle" düğmesi, izleyene 10 💚 zümrüt (oyun başına bir kez).
    ============================================================ */
@@ -34,7 +36,8 @@ async function reklamBaslat() {
   const ad = admobPlugin();
   if (!ad) return;
   try {
-    await ad.initialize();
+    // Derece bundan sonraki bütün reklam isteklerine uygulanır; eklenti yalnız tam "General" yazımını tanır
+    await ad.initialize({ maxAdContentRating: "General" });
     let bilgi = await ad.requestConsentInfo();
     if (!bilgi.canRequestAds && bilgi.isConsentFormAvailable && bilgi.status === "REQUIRED") {
       bilgi = await ad.showConsentForm();

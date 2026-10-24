@@ -1,6 +1,6 @@
 👫 Arkadaş ekle: kodunu paylaş ya da lobide oyuncunun yanındaki ➕'ya dokun.
 📨 Arkadaşını odana çağır; davet gelince üstteki şeritten Katıl.
 🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle.
-👥 Online odalar artık 6 kişilik.
 🏰 Engeller yenilendi: kaleler, eğri kıyılı göller ve her temaya özel ürkünç ama sevimli objeler.
 🏆 Online tur sonunda herkes yakaladığı hayalete göre sıralanır, birinci kupa kazanır.
+🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir.

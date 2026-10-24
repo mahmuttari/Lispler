@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama). Önceki: 3.12.2 (44), 23 Ekim 2026'da incelemedeki 3.12.1 (43)'in yerine Play'e gönderildi |
+| Sürüm | 3.13.1 (versionCode 46) — reklam içerik derecesi en çok G (aşağıda "3.13.1: reklam içerik sınırı"); derlenip Play'e gönderilecek ("Play paketi" satırı). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
@@ -27,6 +27,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | Geçiş ("Oyun bitti gecis") | `ca-app-pub-2417242373034448/5331066264` — oyun bitti ekranında, her 2 oyunda bir, en az 3 dk arayla |
 | Ödüllü ("Zumrut odullu") | `ca-app-pub-2417242373034448/6612358344` — oyun bitti ekranında "🎬 Reklam izle: +10 💚", oyun başına bir kez |
 | AB onayı | AdMob › Gizlilik ve mesajlaşma › "Hayalet Avcıları AB tüzüğü mesajı" (en + tr + es); gerektiğinde menüde 🔒 Gizlilik |
+| İçerik derecesi | En çok **G** (genel izleyici): `initialize({ maxAdContentRating: "General" })`, 3.13.1'den beri — aşağıda "3.13.1: reklam içerik sınırı" |
 
 Oyun sırasında reklam yok. Web/PWA sürümünde eklenti olmadığı için reklam kodu hiçbir şey yapmaz. AdMob uygulaması
 Play'de yayınlanınca AdMob › Uygulamalar › "Mağaza ekle" ile Play girişine bağlanmalı; o zamana kadar "sınırlı reklam
@@ -373,6 +374,31 @@ kupanın kaydı ve menüde görünmesi, tek kişilik oyun değişmez, sayısı b
 işlenmez); `cevrimici.test.mjs`'e üç
 oyunculu turda her cihazda aynı sıra ve kupa yalnız birinciye, `av` kuralı (metin, eksi ve 100001 ret; 9 kabul) ve iki
 kişide berabere birinci eklendi; dil testinde 6 kişilik tur sonu (her dilde 390 ve 340 px).
+
+## 3.13.1: reklam içerik sınırı
+
+Bildirim (24 Ekim 2026, ekran görüntüsüyle): oyun bitti ekranındaki geçiş reklamında müstehcen görselli bir yapay zekâ
+sohbet uygulaması tanıtılıyordu — "Bu reklam çıkmasın." Neden: `reklamBaslat()` AdMob'u seçeneksiz başlatıyordu; uygulama
+reklam içerik derecesine hiçbir sınır koymuyordu.
+
+- `initialize({ maxAdContentRating: "General" })`: Google'ın derecelendirmesinde yalnız **G** (genel izleyici: aileler ve
+  çocuklar dahil herkes) reklamlar istenir. **PG** (ebeveyn rehberliği, ör. çizgi film şiddeti), **T** (genç: sosyal ağlar,
+  korkutucu görüntü…) ve **MA** (yetişkin: cinsel içerik, kumar, alkol, silah) dereceli reklamlar gelmez. Eklenti
+  (`@capacitor-community/admob` 8.2.1, `AdMob.java`) dereceyi `MobileAds.initialize`'dan önce `RequestConfiguration`'a
+  yazar; geçiş ve ödüllü reklam istekleri initialize'dan sonra gelir. Eklenti yalnız tam `"General"` yazımını tanır,
+  başka yazım hata vermeden "belirtilmedi"ye düşer.
+- Bedeli: uygun reklam azalır, doluluk ve gelir düşebilir. Ödüllü reklam yüklenemezse "🎬 Reklam izle" düğmesi görünmez
+  (önceden de böyleydi). Doluluk çok düşerse bir üst basamak `"ParentalGuidance"` (PG) olur.
+- Çocuklara yönelik etiket (`tagForChildDirectedTreatment`) konmadı: Play'de hedef kitle 13 ve üzeri, oyun "çocuklara
+  hitap ediyor" diye beyan edilmedi; etiket bu beyanla çelişir.
+- Uygulama ayarı yalnız 3.13.1'i kuran cihazlarda geçerlidir. Eski sürümlere de hemen uygulanan ayar AdMob konsolundadır
+  (Engelleme denetimleri: en yüksek reklam içerik derecesi G, hassas kategoriler, belli bir uygulamanın ya da tek bir
+  reklamın engellenmesi); hesaba girişle yapılır, AdMob API'si engelleme ayarlarını yönetmez.
+
+Test: `test/reklam.test.mjs` (sahte AdMob eklentisi, 5 sınama: initialize bir kez, derece `"General"`, reklam istekleri
+initialize'dan sonra, geçiş ve ödüllü reklam yine yüklenir, sayfa hatası yok); düzeltmeden önce derece sınaması düştü.
+Sürüm notu: 3.13.0 incelemedeyken gönderilebileceği için 3.13.0'ın satırlarını da taşır; mağaza notu İspanyolcada 500'ü
+aşmasın diye 👥 (3.12.2) satırı çıktı (tr 450, en 453, es 490, zh 179, hi 454, ar 404).
 
 ## Diller
 

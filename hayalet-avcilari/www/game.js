@@ -315,8 +315,18 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.13.0";
+const APP_VERSION = "3.13.1";
 const UPDATE_NOTES = {
+  // 3.13.0 incelemedeyken gönderilirse oyuncular 3.13.0'ı görmeden geçer: notlar onu da anlatır. Mağaza notu (aynı
+  // satırlar) İspanyolcada 500 karakteri aşmasın diye 👥 satırı (3.12.2) bu sürümde yok
+  "3.13.1": [
+    t("👫 Arkadaş ekle: kodunu paylaş ya da lobide oyuncunun yanındaki ➕'ya dokun."),
+    t("📨 Arkadaşını odana çağır; davet gelince üstteki şeritten Katıl."),
+    t("🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle."),
+    t("🏰 Engeller yenilendi: kaleler, eğri kıyılı göller ve her temaya özel ürkünç ama sevimli objeler."),
+    t("🏆 Online tur sonunda herkes yakaladığı hayalete göre sıralanır, birinci kupa kazanır."),
+    t("🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir."),
+  ],
   // 3.12.2 incelemedeyken gönderilirse oyuncular 3.11.0'dan doğrudan geçer: 👥 satırı bu yüzden. Satırlar kısa: mağaza
   // notu (aynı satırlar) her dilde 500 karakterin altında kalsın
   "3.13.0": [

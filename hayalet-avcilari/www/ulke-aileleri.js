@@ -9,7 +9,7 @@
      vurgu1, vurgu2)
    - zemin(ctx, boyut, palet): Dünya Turu'nda ızgaranın yerine döşenen soluk desen; tuval önceden zemin rengiyle dolu,
      desen kenarlarda kesintisiz (dunya-turu.js turZeminCiz)
-   Eksik ressam yedek ressama, eksik zemin bugünkü ızgaraya düşer. Ressamlar Görev 5 ve 7–13'te eklenir (Görev 8: KP, SH).
+   Eksik ressam yedek ressama, eksik zemin bugünkü ızgaraya düşer. Ressamlar Görev 5 ve 7–13'te eklenir (Görev 8: KP, SH; Görev 9: SV).
    Math.random yok: rastgelelik ressama verilen tohumlu r()'den. Dinî simge, yazı ve bayrak yok.
    engel-temalari.js'ten sonra, ulkeler.js'ten önce yüklenir.
    ============================================================ */
@@ -621,8 +621,10 @@
     return [];
   }
   // Zemin: kırmızı toprak — ot tutamları, çakıllar ve kısa çatlaklar; kenara yakın süsler karşı kenarda da çizilir
+  // Döşeme kenarına yakın süsü karşı kenarlarda da çizer (n × n döşeme kesintisiz kalsın)
+  const sarmal = (n) => (x, y, fn) => { for (const dx of [-n, 0, n]) for (const dy of [-n, 0, n]) if (x + dx > -8 && x + dx < n + 8 && y + dy > -8 && y + dy < n + 8) fn(x + dx, y + dy); };
   function kirmiziToprak(ctx, n, p) {
-    const her = (x, y, fn) => { for (const dx of [-n, 0, n]) for (const dy of [-n, 0, n]) if (x + dx > -8 && x + dx < n + 8 && y + dy > -8 && y + dy < n + 8) fn(x + dx, y + dy); };
+    const her = sarmal(n);
     for (const [x, y] of [[12, 16], [44, 8], [76, 22], [26, 48], [60, 52], [90, 62], [8, 82], [42, 90], [72, 84]]) her(x, y, (a, b) => window.ENGEL.cimTutami(ctx, a, b, 3.6, p.desen));
     ctx.fillStyle = p.desen;
     for (const [x, y] of [[30, 26], [58, 32], [86, 42], [16, 64], [50, 72], [82, 6], [64, 94]]) her(x, y, (a, b) => { ctx.beginPath(); ctx.ellipse(a, b, 1.8, 1.2, 0, 0, Math.PI * 2); ctx.fill(); });
@@ -630,17 +632,109 @@
     for (const [x, y] of [[36, 64], [70, 12], [6, 36]]) her(x, y, (a, b) => { ctx.beginPath(); ctx.moveTo(a, b); ctx.lineTo(a + 4, b + 2); ctx.lineTo(a + 7, b + 1); ctx.moveTo(a + 4, b + 2); ctx.lineTo(a + 5, b + 5); ctx.stroke(); });
   }
 
+  // ================= SV — SAVAN =================
+  // Kuru taş öbeği: iri ve küçük yuvarlak taşlar, gölgeli
+  function tasObegi(ctx, x, y, s, r) {
+    const renkler = ["#8a8378", "#a39a8a", "#6f6a62", "#9a8a72"];
+    for (const [dx, dy, k] of [[-0.6, 0.2, 0.7], [0.55, 0.25, 0.65], [0, -0.1, 0.85], [-0.25, 0.55, 0.5], [0.4, 0.6, 0.45]]) {
+      const rx = s * k * 0.55, ry = rx * 0.78, px = x + dx * s * 0.7, py = y + dy * s * 0.5;
+      elips(ctx, px + 0.8, py + 1.2, rx, ry, "rgba(0,0,0,0.3)");
+      elips(ctx, px, py, rx, ry, renkler[Math.floor(r() * 4)]);
+      elips(ctx, px - rx * 0.3, py - ry * 0.35, rx * 0.4, ry * 0.3, "rgba(255,255,255,0.2)");
+    }
+  }
+  // Kazık başı (yukarıdan): koyu halka, açık kesik yüz
+  function kazikBasi(ctx, x, y, s, renk) {
+    elips(ctx, x + 0.7, y + 1, s, s, "rgba(0,0,0,0.35)");
+    elips(ctx, x, y, s, s, koyu(renk, 0.25)); elips(ctx, x, y, s * 0.72, s * 0.72, acik(renk, 0.22));
+    elips(ctx, x - s * 0.15, y - s * 0.15, s * 0.25, s * 0.25, acik(renk, 0.4));
+  }
+  // Duvar: kazık çit — ön yüzde boyları değişen kazıklar ve iki sıra bağ; üst yüz sıkışmış toprak avlu, kenar boyunca
+  // kazık başları, içeride kuru taş öbekleri ve kuru ot; kütük başlarında kalın kazıklar
+  function kazikCit(ctx, w, h, r, p, B) {
+    if (B.yon) return kazikSuru(ctx, w, h, r, p, B);
+    const d = B.derinlik || 0, ahsap = p.duvar, toprak = karistir(p.duvar, "#a88a5c", 0.5);
+    doldur(ctx, B, "rgba(0,0,0,0.3)", 2, d + 1);                         // gölge
+    cizgi(ctx, B, koyu(ahsap, 0.6), 3, 0, d);                            // ön yüz: kazıklar
+    doldur(ctx, B, koyu(ahsap, 0.35), 0, d);
+    kirp(ctx, B, () => {
+      for (let x = 0, i = 0; x < w; x += 5.5, i++) {
+        ctx.fillStyle = [koyu(ahsap, 0.1), acik(ahsap, 0.08), koyu(ahsap, 0.2)][i % 3]; ctx.fillRect(x + 0.4, (i % 3) * 1.5, 4.6, h + d);
+        ctx.fillStyle = "rgba(0,0,0,0.18)"; ctx.fillRect(x + 3.8, (i % 3) * 1.5, 1.2, h + d);
+      }
+      const alt = B[0].y + B[0].h;
+      ctx.strokeStyle = "#c9a86a"; ctx.lineWidth = 1.6;
+      for (const f of [0.35, 0.7]) { ctx.beginPath(); for (let x = 0, i = 0; x <= w + 5.5; x += 5.5, i++) ctx.lineTo(x, alt + d * f + (i % 2) * 0.8); ctx.stroke(); }
+    }, 0, d);
+    cizgi(ctx, B, koyu(ahsap, 0.6), 3);                                   // üst yüz: toprak avlu
+    doldur(ctx, B, toprak);
+    kirp(ctx, B, () => {
+      for (let i = 0; i < w * h / 260; i++) elips(ctx, r() * w, r() * h, 1.5 + r() * 2.5, 1 + r() * 1.5, r() < 0.5 ? koyu(toprak, 0.1) : acik(toprak, 0.08));
+      for (let i = 0; i < w * h / 500; i++) cimTutami(ctx, r() * w, r() * h, 2.2 + r() * 1.5, karistir("#b5a05a", "#000000", r() * 0.25));
+    });
+    for (const k of icNoktalar(B, w, h, Math.max(1, Math.round(w * h / 3500)), 12, 22, r)) tasObegi(ctx, k.x, k.y, 9 + r() * 4, r);
+    for (const k of kenarNoktalari(B, 6, -3)) kazikBasi(ctx, k.x, k.y, 2.4, ahsap);
+    for (const q of B) if (q.t === "d") kazikBasi(ctx, q.x, q.y, q.r - 1, ahsap);
+    return [];
+  }
+  // Harita sınırı: toprak şerit, haritaya bakan kenara paralel kazık sırası, şeritte taşlar; mazgal başlarında kalın kazık
+  function kazikSuru(ctx, w, h, r, p, B) {
+    const ahsap = p.duvar, toprak = karistir(p.duvar, "#a88a5c", 0.5), yatay = B.yon === "ust" || B.yon === "alt";
+    cizgi(ctx, B, koyu(ahsap, 0.6), 3);
+    doldur(ctx, B, toprak);
+    kirp(ctx, B, () => {
+      for (let i = 0; i < w * h / 260; i++) elips(ctx, r() * w, r() * h, 1.5 + r() * 2.5, 1 + r() * 1.5, r() < 0.5 ? koyu(toprak, 0.1) : acik(toprak, 0.08));
+      for (let i = 0; i < w * h / 700; i++) { const x = r() * w, y = r() * h, s = 1.6 + r() * 1.8; elips(ctx, x + 0.6, y + 0.8, s, s * 0.8, "rgba(0,0,0,0.3)"); elips(ctx, x, y, s, s * 0.8, ["#8a8378", "#a39a8a", "#6f6a62"][Math.floor(r() * 3)]); }
+    });
+    const c = B.yon === "ust" ? h - 13 : B.yon === "alt" ? 13 : B.yon === "sol" ? w - 13 : 13;
+    for (let a = 4; a < (yatay ? w : h); a += 5) kazikBasi(ctx, yatay ? a : c, yatay ? c : a, 2.3, ahsap);
+    for (const q of B) if (q.t === "d") kazikBasi(ctx, q.x, q.y, q.r - 1, ahsap);
+    return [];
+  }
+  // Su: sazlıklı su birikintisi — çatlak çamur kıyı, kıyıda toynak izleri, yan ve alt kıyıda sazlar
+  function sazlikBirikinti(ctx, w, h, r, p, B) {
+    const camur = karistir(p.duvar, "#7a5a3a", 0.5);
+    suTabani(ctx, w, h, r, B, () => {
+      doldur(ctx, B, koyu(camur, 0.3), 0, 0, 9.5);
+      doldur(ctx, B, camur, 0, 0, 8);
+      kirp(ctx, B, () => {
+        ctx.strokeStyle = koyu(camur, 0.3); ctx.lineWidth = 0.7; ctx.beginPath();
+        for (let i = 0; i < (w + h) / 5; i++) { const x = r() * w, y = r() * h; ctx.moveTo(x, y); ctx.lineTo(x + (r() - 0.5) * 7, y + (r() - 0.5) * 7); ctx.lineTo(x + (r() - 0.5) * 9, y + (r() - 0.5) * 9); }
+        ctx.stroke();
+      }, 0, 0, 8);
+      for (const k of kenarNoktalari(B, 14, 4)) if (r() < 0.5) for (const s of [-1, 1]) elips(ctx, k.x + s * 0.9, k.y, 0.8, 1.4, koyu(camur, 0.45));   // toynak izleri
+    }, koyu(camur, 0.55));
+    for (const k of kenarNoktalari(B, 9, 5.5)) if (k.ny > -0.15 && r() < 0.5) saz(ctx, k.x, k.y, r, B);
+    return [];
+  }
+  // Zemin: çatlak toprak — 4 × 4 oynak ızgaranın kırık çizgili çatlak ağı (ızgara 96'da kendini tekrarlar), kuru ot
+  function catlakToprak(ctx, n, p) {
+    const G = 4, A = n / G, nokta = (i, j) => {
+      const ii = ((i % G) + G) % G, jj = ((j % G) + G) % G;
+      return [i * A + ((ii * 37 + jj * 91) % 13) - 6, j * A + ((ii * 53 + jj * 29) % 11) - 5];
+    };
+    ctx.strokeStyle = p.desen; ctx.lineWidth = 1.3; ctx.lineJoin = "round"; ctx.lineCap = "round"; ctx.beginPath();
+    for (let i = -1; i <= G; i++) for (let j = -1; j <= G; j++) {
+      const [x, y] = nokta(i, j), [x1, y1] = nokta(i + 1, j), [x2, y2] = nokta(i, j + 1);
+      ctx.moveTo(x, y); ctx.lineTo((x + x1) / 2 + 1.5, (y + y1) / 2 - 1.5); ctx.lineTo(x1, y1);
+      ctx.moveTo(x, y); ctx.lineTo((x + x2) / 2 - 1.5, (y + y2) / 2 + 1); ctx.lineTo(x2, y2);
+    }
+    ctx.stroke();
+    const her = sarmal(n);
+    for (const [x, y] of [[14, 10], [50, 36], [82, 70], [30, 80], [66, 4]]) her(x, y, (a, b) => window.ENGEL.cimTutami(ctx, a, b, 3.2, p.desen));
+  }
+
   window.ULKE_AILELERI = {
     K: { bicim: { duvar: "kale" }, palet: { mazgal: "kare" }, duvar: avrupaKalesi, su: tasRihtim, zemin: arnavutKaldirimi },
     KS: { bicim: { duvar: "kale" }, duvar: kervansarayDuvari, su: ciniliHavuz, zemin: geometrikCini },
     KP: { bicim: { duvar: "kale" }, duvar: kerpicDuvari, su: hurmaliVaha, zemin: kumDalgasi },
     SH: { bicim: { duvar: "kale" }, duvar: sahelDuvari, su: sazlikNehir, zemin: kirmiziToprak },
-    SV: { bicim: { duvar: "kutuk" } },
+    SV: { bicim: { duvar: "kutuk" }, duvar: kazikCit, su: sazlikBirikinti, zemin: catlakToprak },
     GA: { bicim: { duvar: "kale" } },
     GDA: { bicim: { duvar: "kutuk" } },
     DA: { bicim: { duvar: "kale" }, duvar: catiliDuvar, su: koiGoleti, zemin: tasDoseme },
     KA: { bicim: { duvar: "kutuk" } },
     LA: { bicim: { duvar: "kale" } },
   };
-  window.ULKE_AILE_YARDIMCI = { sivriKemer, baklava, kiremitler, orguCiz, tuglaMi, kerpicDoku, samanCati, hurma, zikzak };
+  window.ULKE_AILE_YARDIMCI = { sivriKemer, baklava, kiremitler, orguCiz, tuglaMi, kerpicDoku, samanCati, hurma, zikzak, tasObegi };
 })();

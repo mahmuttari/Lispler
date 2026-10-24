@@ -62,6 +62,13 @@ başa saran kültürel bir oyun polifonik müziği ekleyelim"*, *"her ülkenin k
   için betimlenir (ör. "halay" yerine `Anatolian folk line-dance`). Sanatçı, eser ve kurum adı yazılmaz.
 - **Ortak olumsuz:** `vocals, singing, choir, lyrics, spoken word, religious, hymn, chant, devotional, anthem, military
   march, EDM, trap, dubstep, rap, autotune, distorted guitar, heavy metal, slow ballad, ambient drone, fade out`.
+- **Ortak kalıp, 2. sürüm (24 Ekim 2026):** kullanıcı "müzikler maceracı, hareketli tarzda olmalı; Türkiye'ninki biraz
+  fazla duygusal olmuş, şimdilik böyle kalsın, sonra hepsini bir elden geçireceğiz" dedi. Henüz üretilmemiş ülkeler
+  (Görev 11–13: PK … AR) şu kalıpla istenir: `upbeat energetic adventure video game background music, playful and
+  heroic, driving rhythm,` + 1. sürümün `rich polyphonic ensemble …` ile başlayan kalanı; ortak olumsuza `sad,
+  melancholic, sentimental, emotional, lament, nostalgic, romantic` eklenir. Üretilmiş 32 ülkenin istek kaydı
+  gönderildiği gibi kalır. Sürüm 3.14.0'dan önce bütün müzikler kullanıcıyla birlikte gözden geçirilir; yenilenecek
+  ülkeler 2. sürümle yeniden üretilir (kredi payı aşağıda).
 - **Neden 128 vuruş/dk:** 4/4'te 64 vuruş (16 ölçü) tam 30,0 sn eder; tempo ±10 saptığında da döngü 27–34 sn içinde tam
   ölçüye oturur.
 - **İstek metinleri** `hayalet-avcilari/araclar/muzik-istekleri.json` dosyasındadır: 51 kayıt,

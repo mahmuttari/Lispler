@@ -730,6 +730,11 @@ Bu görevin kendine özgü adımları:
   - Belgeler: `README.md`, `docs/superpowers/specs/2026-10-24-hayalet-ulkeler-design.md` ve `docs/superpowers/specs/2026-10-24-hayalet-ulke-muzikleri-design.md` (durum satırları)
   - İstek dosyaları: `firebase/yayin-istek.txt`, `play-istek.txt`
 
+- [ ] **Step 0: Müziklerin toplu gözden geçirmesi (kullanıcıyla, DUR).** Kullanıcı (24 Ekim 2026): "müzikler maceracı,
+  hareketli tarzda olmalı; Türkiye'ninki biraz fazla duygusal, şimdilik böyle kalsın, sonra hepsini bir elden
+  geçireceğiz." 51 ülkenin teaser ve döngüsü tek listede kullanıcıya sunulur (ilk 32 ülke 1. sürüm, Görev 11–13'teki
+  19 ülke 2. sürüm kalıpla üretildi; ek spec §4). Yenilenecek ülkeler 2. sürüm kalıpla yeniden üretilir; kredi ülke
+  başına 12, kalan kredi bildirilir. Seçimler `isle` ile işlenir, `muzik.test` yeniden çalışır.
 - [ ] **Step 1: Notlar.**
   - `UPDATE_NOTES["3.14.0"]` satırları:
     - "🌍 Dünya Turu: en kalabalık 50 ülke ve Filistin, her ülke kendi görselleri ve geleneksel kıyafetli bossuyla."

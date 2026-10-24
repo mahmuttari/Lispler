@@ -35,6 +35,10 @@ function sina(ad, fn) {
 // Ek tasarım §4 (aynen) ve §6 (4/4 olmayan ölçüler)
 const ORTAK_KALIP = 'cheerful adventure video game background music, rich polyphonic ensemble with a lead melody, a counter-melody and a rhythm section, steady danceable groove at around 128 BPM, constant energy with no breakdown and no fade-out, loop-friendly, bright warm acoustic mix, instrumental, no vocals';
 const ORTAK_OLUMSUZ = 'vocals, singing, choir, lyrics, spoken word, religious, hymn, chant, devotional, anthem, military march, EDM, trap, dubstep, rap, autotune, distorted guitar, heavy metal, slow ballad, ambient drone, fade out';
+// 2. sürüm (24 Ekim 2026, kullanıcı: "müzikler maceracı, hareketli olmalı"): henüz üretilmemiş ülkeler bununla istenir;
+// üretilmiş ülkelerin kaydı gönderildiği gibi kalır (toplu gözden geçirmede yenilenir)
+const ORTAK_KALIP_2 = 'upbeat energetic adventure video game background music, playful and heroic, driving rhythm, rich polyphonic ensemble with a lead melody, a counter-melody and a rhythm section, steady danceable groove at around 128 BPM, constant energy with no breakdown and no fade-out, loop-friendly, bright warm acoustic mix, instrumental, no vocals';
+const ORTAK_OLUMSUZ_2 = `${ORTAK_OLUMSUZ}, sad, melancholic, sentimental, emotional, lament, nostalgic, romantic`;
 const OLCU = { TR: '2/4', UA: '2/4', PL: '2/4', DE: '2/4', FR: '3/4', IT: '6/8', AO: '2/4', MG: '6/8', ET: '6/8', IR: '6/8', AF: '6/8',
   PH: '3/4', KR: '12/8', RU: '2/4', MX: '6/8', PE: '2/4', BR: '2/4', AR: '2/4' };
 const YASAK = /relig|hymn|chant|devot|pray|church|temple|mosque|shrine|anthem|march|militar|sword|dagger|\bwar\b/i;
@@ -115,15 +119,18 @@ try {
   const kodlar = await p.evaluate(() => ULKELER.map((u) => u.kod));
   const istekler = JSON.parse(fs.readFileSync(path.join(KOK, 'araclar', 'muzik-istekleri.json'), 'utf8'));
   sina('51 istek, rota sırasıyla', () => { assert.deepEqual(istekler.map((x) => x.kod), kodlar); });
-  sina('her stil ≤ 1000 harf ve ortak kalıbı aynen içerir', () => {
+  const uretilmis = Object.keys(JSON.parse(fs.readFileSync(path.join(KOK, 'araclar', 'muzik-kayit.json'), 'utf8')));
+  const surum2 = (x) => x.stil.endsWith(`, ${ORTAK_KALIP_2}`);
+  sina('her stil ≤ 1000 harf ve ortak kalıbı (1. ya da 2. sürüm) aynen içerir; üretilmemiş ülkeler 2. sürümde', () => {
     for (const x of istekler) {
       assert.ok(typeof x.stil === 'string' && x.stil.length <= 1000, `${x.kod}: ${x.stil?.length}`);
-      assert.ok(x.stil.endsWith(`, ${ORTAK_KALIP}`), `${x.kod}: ortak kalıp yok`);
-      assert.ok(x.stil.length > ORTAK_KALIP.length + 40, `${x.kod}: ülke betimlemesi kısa`);
+      assert.ok(x.stil.endsWith(`, ${ORTAK_KALIP}`) || surum2(x), `${x.kod}: ortak kalıp yok`);
+      assert.ok(x.stil.length > ORTAK_KALIP_2.length + 40 || (!surum2(x) && x.stil.length > ORTAK_KALIP.length + 40), `${x.kod}: ülke betimlemesi kısa`);
+      if (!uretilmis.includes(x.kod)) assert.ok(surum2(x), `${x.kod}: üretilmemiş ama 1. sürüm kalıp`);
     }
   });
   sina('4/4 olmayan türde ölçü yazılı', () => { for (const [kod, o] of Object.entries(OLCU)) assert.ok(istekler.find((x) => x.kod === kod).stil.includes(`in ${o}`), kod); });
-  sina('olumsuz etiketler ortak listenin aynısı', () => { for (const x of istekler) assert.equal(x.olumsuz, ORTAK_OLUMSUZ, x.kod); });
+  sina('olumsuz etiketler kalıbın sürümündeki ortak listenin aynısı', () => { for (const x of istekler) assert.equal(x.olumsuz, surum2(x) ? ORTAK_OLUMSUZ_2 : ORTAK_OLUMSUZ, x.kod); });
   sina('stilde dinî, askerî ya da silah sözcüğü yok', () => { for (const x of istekler) assert.ok(!YASAK.test(x.stil), `${x.kod}: ${x.stil.match(YASAK)}`); });
 
   // --- 2) Oyun verisi ---

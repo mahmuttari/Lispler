@@ -1,0 +1,7 @@
+İlk sürüm 🎉
+📡 Yakındaki AirTag ve Find My izleyicilerini tara.
+🎯 Bul ekranı: sıcak-soğuk, titreşim, ses çaldır.
+🗺️ Yerini haritada kestir (%95 güven elipsi).
+🕘 Konum geçmişi: ne zaman, nerede görüldü.
+⚠️ Seninle dolaşan yabancı izleyiciye uyarı.
+⬇️ GeoJSON, KML, CSV dışa aktarım.

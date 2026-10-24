@@ -91,6 +91,43 @@ try {
     sonuc.tur[kod] = { ...once, ...kare, kamera };
   }
   await p.evaluate(() => { endGame(false); turMuzigiSondur(0); });
+  // Tablet (800×1280; tuval dönüşümü dpr × 1,35): kamera kayarken Dünya Turu zemini (KE) kare hızını düşürmez. Tablette
+  // oyun başsız Chromium'da 30 fps'in altında kalabildiği için eşik orandır: aynı sahnede zeminli ve zeminsiz (ızgara)
+  // pencereler sırayla ölçülür (hayaletler zamanla çoğalır, sıra iki yanı eşit etkiler). Zemin deseni tuval ölçeğine
+  // hizasızken dpr 2'de zeminli 7, zeminsiz 13 fps idi.
+  sonuc.tablet = {};
+  for (const dpr of [1, 2]) {
+    const t = await b.newPage({ viewport: { width: 800, height: 1280 }, deviceScaleFactor: dpr });
+    t.on('pageerror', (e) => hatalar.push(e.message));
+    await t.route(/gstatic\.com|googleapis|firebase/, (r) => r.abort());
+    await t.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+    await t.goto(adres, { waitUntil: 'load' });
+    await t.waitForTimeout(300);
+    await (await t.context().newCDPSession(t)).send('Emulation.setCPUThrottlingRate', { rate: 4 });
+    const dolasOlc = (ms) => t.evaluate((ms) => new Promise((tamam) => {
+      const t0 = performance.now(), kare = [];
+      const dolas = setInterval(() => { const a = (performance.now() - t0) / 1500; game.inputDir.x = Math.cos(a); game.inputDir.y = Math.sin(a * 0.7); }, 50);
+      const d = (z) => { kare.push(z); if (z - t0 < ms) requestAnimationFrame(d); else {
+        clearInterval(dolas); game.inputDir.x = 0; game.inputDir.y = 0;
+        tamam(+((kare.length - 1) / ((kare[kare.length - 1] - kare[0]) / 1000)).toFixed(1));
+      } };
+      requestAnimationFrame(d);
+    }), ms);
+    await t.evaluate(() => { save.playerName = 'Defne'; persistSave(); startGame({ tur: true, ulke: ulkeKodla('KE').sira }); game.player.invuln = 1e9; });
+    await t.waitForFunction(() => game.ghosts.length >= 3, null, { timeout: 30000 });
+    const zeminli = [], zeminsiz = [];
+    for (let i = 0; i < 2; i++) {
+      zeminli.push(await dolasOlc(1500));
+      await t.evaluate(() => { window.__zemin = turZeminCiz; window.turZeminCiz = () => false; });
+      zeminsiz.push(await dolasOlc(1500));
+      await t.evaluate(() => { window.turZeminCiz = __zemin; });
+    }
+    const ort = (a) => +(a.reduce((x, y) => x + y, 0) / a.length).toFixed(1);
+    const zemin = await t.evaluate(() => ({ olcek: +game.ctx.getTransform().a.toFixed(2), hizali: !!(_turZemini && _turZemini.hizali) }));
+    await t.evaluate(() => { endGame(false); turMuzigiSondur(0); });
+    await t.close();
+    sonuc.tablet[dpr] = { zeminli: ort(zeminli), zeminsiz: ort(zeminsiz), ...zemin };
+  }
   sonuc.hatalar = hatalar;
 } finally {
   await b.close();
@@ -111,4 +148,8 @@ for (const [kod, v] of Object.entries(sonuc.tur)) {
   assert.ok(v.kamera.yol > 50 && v.kamera.kesirli > 5, `Dünya Turu ${kod}: kamera kaymadı (${JSON.stringify(v.kamera)})`);
   assert.ok(v.fps >= 30 && v.p95 <= 100, `Dünya Turu ${kod} (${v.aile}) kamera kayarken kare hızı ${v.fps} fps, %95 kare ${v.p95} ms`);
 }
-console.log('TAMAM: hayalet olan oyuncu ve vurulan Bot kare hızını düşürmüyor; Dünya Turu FR, KE, JP müzik çalarken akıyor');
+for (const [dpr, v] of Object.entries(sonuc.tablet)) {
+  assert.ok(v.hizali, `tablet dpr ${dpr}: zemin deseni tuval ölçeğine (${v.olcek}) hizalı değil`);
+  assert.ok(v.zeminli >= 0.85 * v.zeminsiz, `tablet dpr ${dpr} (ölçek ${v.olcek}): Dünya Turu KE zeminli ${v.zeminli} fps, zeminsiz ${v.zeminsiz} fps`);
+}
+console.log('TAMAM: hayalet olan oyuncu ve vurulan Bot kare hızını düşürmüyor; Dünya Turu FR, KE, JP müzik çalarken akıyor; tablette zemin deseni kare hızını düşürmüyor');

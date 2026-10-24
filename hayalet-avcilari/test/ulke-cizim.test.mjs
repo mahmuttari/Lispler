@@ -319,24 +319,30 @@ try {
   }), CIZILEN_ULKELER);
   sina('Dünya Turu zemini ailenin deseniyle döşenir', () => { for (const z of zemin) { assert.ok(z.sonuc, `${z.kod}: turZeminCiz false`); assert.ok(z.desenli, `${z.kod}: düz renk`); } });
   // Kamera kesirli konumdayken desen cihaz pikseline hizalanır: kesirli ötelemeyle çizilen zemin, en yakın tam ötelemeyle
-  // çizilenle piksel piksel aynıdır (süzgeçle taranan hizasız desen ara renk üretir; kayan kamerada kare hızı yarıya iner)
-  const hiza = await p.evaluate((ulkeler) => [1, 2].flatMap((vs) => ulkeler.map((kod) => {
+  // çizilenle piksel piksel aynıdır (süzgeçle taranan hizasız desen ara renk üretir; kayan kamerada kare hızı yarıya iner).
+  // Ölçekler oyunun gerçek tuval dönüşümleridir (resizeCanvas: dpr × viewScale, dpr en çok 2): telefon dpr 1 ve 2,
+  // kesirli dpr 1,33 ve tablet (viewScale 1,35) dpr 1 ve 2 → 1, 2, 1,33, 1,35, 2,7.
+  const CIHAZLAR = [[1, 1], [2, 1], [1.33, 1], [1, 1.35], [2, 1.35]];
+  const hiza = await p.evaluate(([ulkeler, cihazlar]) => cihazlar.flatMap(([dpr, vs]) => ulkeler.map((kod) => {
     game.dunyaTuru = true; game.level = ulkeKodla(kod).sira;
     const W = game.worldW, H = game.worldH, V = game.viewScale; game.worldW = 1000; game.worldH = 1000;
-    game.viewScale = vs / Math.min(window.devicePixelRatio || 1, 2); // engelOlcegi() = vs (telefonda 2)
-    const k = Math.ceil(TUR_ZEMIN_BOYUT * engelOlcegi()) / TUR_ZEMIN_BOYUT; // desen tuvalinin birim başına pikseli
+    Object.defineProperty(window, 'devicePixelRatio', { value: dpr, configurable: true });
+    game.viewScale = vs;
+    const k = Math.min(dpr, 2) * vs; // resizeCanvas'taki tuval dönüşümü
     const ciz = (e, f) => {
       const c = document.createElement('canvas'); c.width = 160; c.height = 160;
       const ctx = c.getContext('2d'); ctx.setTransform(k, 0, 0, k, e, f); turZeminCiz(ctx);
       return ctx.getImageData(0, 0, 160, 160).data;
     };
     const tam = ciz(-37, -53), farkli = (d) => { let n = 0; for (let i = 0; i < d.length; i++) if (d[i] !== tam[i]) n++; return n; };
-    const sonuc = { kod, k, kesirli1: farkli(ciz(-37.4, -53.3)), kesirli2: farkli(ciz(-36.6, -52.7)) };
+    const sonuc = { kod, k: +k.toFixed(2), kesirli1: farkli(ciz(-37.4, -53.3)), kesirli2: farkli(ciz(-36.6, -52.7)) };
+    delete window.devicePixelRatio;
     game.worldW = W; game.worldH = H; game.viewScale = V; game.dunyaTuru = false; game.level = 1;
     return sonuc;
-  })), CIZILEN_ULKELER);
-  sina(`zemin deseni kesirli kamerada cihaz pikseline hizalı (${hiza.length / 2} ülke, ölçek ${[...new Set(hiza.map((h) => h.k))].join(', ')})`, () => {
-    assert.deepEqual(hiza.filter((h) => h.kesirli1 || h.kesirli2), []);
+  })), [CIZILEN_ULKELER, CIHAZLAR]);
+  const hizasiz = hiza.filter((h) => h.kesirli1 || h.kesirli2);
+  sina(`zemin deseni kesirli kamerada cihaz pikseline hizalı (${hiza.length / CIHAZLAR.length} ülke, ölçek ${[...new Set(hiza.map((h) => h.k))].join(', ')})`, () => {
+    assert.equal(hizasiz.length, 0, `hizasız: ${hizasiz.map((h) => `${h.kod}@${h.k}`).join(' ')}`);
   });
 
   // KS duvarının çini kuşağı palet.kusak ile renklenir: Filistin'de kırmızı işleme, Türkiye'de mavi çini (Görev 10)

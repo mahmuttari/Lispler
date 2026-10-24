@@ -418,8 +418,10 @@ plan [`docs/superpowers/plans/2026-10-24-hayalet-ulkeler.md`](../docs/superpower
 - **Akış:** menüde 🌍 Dünya Turu → ülke listesi ve 🛂 Pasaport. Ülke geçilince damga basılır (ilk damgada +3 💎) ve
   sıradaki ülke açılır; uçak geçişi, ülke tanıtımı ve ülkenin müziği gelir. 51. ülkeden sonra tur tamamlanır.
 - **Çevrimiçi:** Oda Kur'da "Oyun türü" Normal ya da Dünya Turu; Dünya Turu odası açılmış ülkelerden biriyle başlar.
-  İstemciler ülke geçişini odanın `level` düğümünden alır (damga, müzik ve tanıtım ev sahibiyle aynı akışta; ortadan
-  katılana damga basılmaz). Kural: `rooms/$id/tur` boolean, `level` yalnız ev sahibince 1–1000. Kurallar yayınlanmadan
+  İstemciler ülke geçişini ev sahibinin durumundaki bölüm numarasından (`state.lvl`) alır: damga, müzik ve tanıtım ev
+  sahibiyle aynı akıştadır. Odanın `level` düğümü turun başlangıç ve devam ülkesidir (tur bitince ev sahibi yazar).
+  Oyun sürerken katılan, katıldığı ülkeden önceki ülkelerin damgasını ve ödülünü almaz; ülkesini, tanıtımını ve
+  müziğini (teaser'sız) ev sahibinin ilk durumu belirler. Kural: `rooms/$id/tur` boolean, `level` yalnız ev sahibince 1–1000. Kurallar yayınlanmadan
   Dünya Turu odası kurulamaz ("⚠ Dünya Turu odası şu an kurulamıyor"); normal oda `tur` alanı taşımaz, etkilenmez.
 - **Reklam sıklığı** (istek: "insan psikolojisine en uygun, hiç sıkmayacak şekilde"; `www/reklam.js`): ilk 5 oyunda ve
   ilk 10 dk oyun süresinde geçiş reklamı yok; 45 sn'den kısa oyundan sonra yok; iki geçiş reklamı arasında en az 6 dk
@@ -428,14 +430,19 @@ plan [`docs/superpowers/plans/2026-10-24-hayalet-ulkeler.md`](../docs/superpower
 - **Kare hızı:** doğrulamada zemin deseninin kesirli kamera konumunda çift doğrusal süzgeçle tarandığı bulundu (kamera
   kayarken kare süresi iki katı). `turZeminCiz` deseni her karede cihaz pikseline hizalar (engel resimlerindeki `bas()`
   gibi; en çok yarım cihaz pikseli kayar). Kamera kayarken tek kişilik FR/KE/JP 21–24 → 44–50 fps (işlemci 4 kat
-  yavaş); 6 kişilik Kenya odasında kurucu 21,7 → 44,9 fps (işlemci 2 kat yavaş, müzik çalarken).
+  yavaş); 6 kişilik Kenya odasında kurucu 21,7 → 44,9 fps (işlemci 2 kat yavaş, müzik çalarken). Son incelemede
+  tablette (tuval ölçeği dpr × 1,35 = 1,35 ya da 2,7) ve kesirli dpr'li telefonda hizanın tutmadığı bulundu: desen
+  tuvali `engelOlcegi()`'nde (en çok 2, yukarı yuvarlanmış) kuruluyordu. Desen artık çizilen tuvalin kendi ölçeğinde
+  kurulur (bir desen pikseli bir cihaz pikseli); tablette zeminli kare hızı zeminsizle aynı: dpr 1'de 23 → 45, dpr 2'de
+  7 → 14 fps (işlemci 4 kat yavaş).
 - **Ekran denetimi:** 51 ülke × katalog, iki oyun içi görüntü (TR 390 px, AR 340 px) ve boss. KS ailesinin zemininde iki
   üst üste kare ve halkadan oluşan sekiz köşeli yıldız dinî bir işarete (Rub el-Hizb) benzediği için lale çinisiyle
   değiştirildi.
 
 Testler: `test/ulkeler.test.mjs`, `test/dunya-turu.test.mjs`, `test/ulke-cizim.test.mjs [--ekran <klasör>]`
-(ressam kapsaması, biçim içi boyalı / dışı saydam, zemin hizası 51 ülke × 2 ölçek), `test/cizim.test.mjs` (Dünya Turu
-FR, KE, JP kamera kayarken, müzik çalarken), `test/reklam.test.mjs`, emülatörde `firebase/test/kurallar.test.mjs`,
+(ressam kapsaması, biçim içi boyalı / dışı saydam, zemin hizası 51 ülke × 5 ölçek: telefon 1, 2, 1,33; tablet 1,35,
+2,7), `test/cizim.test.mjs` (Dünya Turu FR, KE, JP kamera kayarken, müzik çalarken; tablette dpr 1 ve 2'de zeminli /
+zeminsiz kare hızı), `test/reklam.test.mjs`, emülatörde `firebase/test/kurallar.test.mjs`,
 `test/cevrimici.test.mjs` (Dünya Turu odası), `test/alti.test.mjs --tur` (6 kişilik Kenya odası).
 
 ## 3.14.0: ülke müzikleri

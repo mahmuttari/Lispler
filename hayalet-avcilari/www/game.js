@@ -3461,8 +3461,8 @@ function startMpGameClient() {
   showToast(online.isHost ? t("👑 Host olarak başlattın") : t("🌐 Bağlanıldı"));
   const turUlke = turOdaUlkesi(online.cachedRoom); // Dünya Turu odası: kalınan ülkeden
   online.turSonUlke = null;
-  startGame(turUlke ? { tur: true, ulke: turUlke.sira } : undefined);
-  if (turUlke && online.ortadanKatildi) turMuzigiBaslat(turUlke.kod, { giris: false }); // oyun sürerken katılan
+  // Oyun sürerken katılan: ülkesini, müziğini (teaser'sız) ve tanıtımını kurucunun ilk durumu belirler (turDurumGeldi)
+  startGame(turUlke ? { tur: true, ulke: turUlke.sira, ortadan: online.ortadanKatildi } : undefined);
   online.ortadanKatildi = false;
   uzakOyunculariGuncelle((online.cachedRoom && online.cachedRoom.players) || {});
   startMpSync();
@@ -4848,6 +4848,7 @@ function startGame(secenek) {
 
   game.running = true;
   game.paused = false;
+  if (muzik.duraklatildi) muzikDuraklat(false); // duraklatılıp menüye dönülen oyunun kısıklığı yeni oyuna taşınmaz
   game.menude = false;   // çevrimiçi menü açık (oyun durmaz)
   game.turBitisi = 0;    // çevrimiçi: herkes hayalet olunca turun biteceği an
   game.inputDir.x = 0; game.inputDir.y = 0;
@@ -4861,6 +4862,7 @@ function startGame(secenek) {
   game.dunyaTuru = !!(secenek && secenek.tur);
   game.level = game.dunyaTuru ? ulkeSirada(secenek.ulke).sira : 1;
   game.turBaslangic = game.level; // Dünya Turu: tamamlanma ödülü bu oyunda geçilen ülkelerden
+  game.turOrtadan = game.dunyaTuru && !!secenek.ortadan; // çevrimiçi turda ortadan katılan: tanıtım ve müzik ilk durumla
   game.turBitti = false;
   game._turGeciste = false;
   game._turJeton = null;          // önceki oyunun damga/uçak geçişi bu oyunu ilerletmez
@@ -4911,7 +4913,7 @@ function startGame(secenek) {
   closeInventory();
   refreshInventoryButton();
   // Dünya Turu'nda önce ülkenin tanıtım satırı; bot bildirimi okunabilsin diye sonra gelir
-  if (game.dunyaTuru) showToast(bolumBildirimi());
+  if (game.dunyaTuru && !game.turOrtadan) showToast(bolumBildirimi());
   if (game.bot) setTimeout(() => { if (game.running && game.bot) showToast(t("🤖 Bot seninle savaşıyor! Ona dokunursan ona ateş edersin.")); }, game.dunyaTuru ? 2000 : 600);
 
   setupJoystick();
@@ -4925,7 +4927,7 @@ function startGame(secenek) {
   updateHUD();
   refreshWeaponBar();
   // Dünya Turu'nda ülkenin teaser'ı ve döngüsü (muzik.js); normal oyunda müzik yok
-  if (game.dunyaTuru) turMuzigiBaslat(turUlkesi().kod); else turMuzigiSondur(0);
+  if (game.dunyaTuru && !game.turOrtadan) turMuzigiBaslat(turUlkesi().kod); else turMuzigiSondur(0);
   game.lastFrame = performance.now();
   const no = ++_donguNo;
   requestAnimationFrame((zaman) => gameLoop(zaman, no));

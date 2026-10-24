@@ -261,6 +261,15 @@ try {
   });
   sina('arka planda ses bağlamı askıya alınır, dönünce sürer', () => { assert.deepEqual(arka, ['suspended', 'running']); });
 
+  // Duraklat → 🏠 Menüye Dön → yeni Dünya Turu: duraklatma bir sonraki oyuna taşınmaz (son inceleme bulgusu)
+  await p.evaluate(() => { pauseGame(); quitToMenu(); startGame({ tur: true, ulke: 1 }); game.player.invuln = 1e9; });
+  await bekleDongu('TR');
+  await p.waitForTimeout(1200);
+  const cMenu = await durum();
+  sina('duraklatıp menüye dönünce sonraki Dünya Turu\'nda müzik 0,6 kazançla çalar', () => {
+    assert.equal(cMenu.calan, 'dongu'); assert.ok(yakin(cMenu.kazanc, 0.6), JSON.stringify(cMenu));
+  });
+
   // Review Focus 6: teaser çözülürken oyun biter ve başka ülke başlar → tek kaynak, yeni ülkenin döngüsü
   await p.evaluate(() => { endGame(false); startGame({ tur: true, ulke: 1 }); game.player.invuln = 1e9; });
   await p.waitForTimeout(200);

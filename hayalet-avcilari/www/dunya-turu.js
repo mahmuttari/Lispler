@@ -51,39 +51,42 @@ function turUlkesi() {
 // Dünya Turu zemini: ailenin zemin(ctx, boyut, palet) ressamı 96 px'lik desen tuvaline bir kez çizer (önbellek ülke kodu
 // ve ölçekle). Tuval önce ülkenin zemin rengiyle dolar, ressam yalnız soluk deseni çizer. Desen dünya alanına tek dolguyla
 // döşenir ve true döner. Ressam yoksa (ya da tuval kurulamazsa) false: render bugünkü zemini ve ızgarayı çizer.
-// Desen tuvalinin ölçeği tuvalin cihaz ölçeğiyle aynıysa (telefonlar) desen her karede cihaz pikseline hizalanır (engel
-// resimlerindeki bas() gibi; en çok yarım cihaz pikseli kayar): kamera kesirli konumdayken desen süzgeçle taranmaz.
-// Hizasız dolgu yazılımsal taramada ekranın tamamında karede birkaç ms tutar (kamera kayarken kare hızı yarıya iner).
+// Desen tuvali çizilen tuvalin cihaz ölçeğinde kurulur (bir desen pikseli bir cihaz pikseli; döşemenin dünya boyu
+// n / ölçek, 96'dan en çok yarım cihaz pikseli farklı) ve her karede cihaz pikseline hizalanır (engel resimlerindeki
+// bas() gibi; en çok yarım cihaz pikseli kayar): kamera kesirli konumdayken desen süzgeçle taranmaz. Telefonda ölçek dpr,
+// tablette dpr × 1,35 (1,35 ya da 2,7). Hizasız dolgu yazılımsal taramada ekranın tamamında karede birkaç ms tutar
+// (kamera kayarken kare hızı yarıya iner). Tuval döndürülmüş ya da eşit ölçeksizse desen engelOlcegi()'nde, hizasız.
 const TUR_ZEMIN_BOYUT = 96;
-let _turZemini = null; // { anahtar, desen, k: desen tuvalinin birim başına pikseli }
+let _turZemini = null; // { anahtar, desen, k: desen tuvalinin birim başına pikseli, hizali }
 function turZeminCiz(ctx) {
   const u = turUlkesi(), a = u && window.ULKE_AILELERI[u.aile];
   if (!a || typeof a.zemin !== "function") return false;
   // Desen dönüşümü olmayan tarayıcıda tuval ölçeksiz çizilir (döşeme 96 birimde kalsın)
-  const donusum = typeof DOMMatrix === "function" && typeof CanvasPattern !== "undefined" && !!CanvasPattern.prototype.setTransform;
-  const s = donusum ? engelOlcegi() : 1, anahtar = u.kod + "|" + s;
+  const donusum = typeof DOMMatrix === "function" && typeof CanvasPattern !== "undefined" && !!CanvasPattern.prototype.setTransform
+    && typeof ctx.getTransform === "function";
+  const m = donusum ? ctx.getTransform() : null;
+  const hizali = !!m && m.b === 0 && m.c === 0 && m.a === m.d && m.a > 0;
+  const s = !donusum ? 1 : hizali ? m.a : engelOlcegi(), anahtar = u.kod + "|" + s + "|" + hizali;
   if (!_turZemini || _turZemini.anahtar !== anahtar) {
-    _turZemini = { anahtar, desen: null, k: 1 };
+    _turZemini = { anahtar, desen: null, k: 1, hizali };
     try {
-      const n = Math.ceil(TUR_ZEMIN_BOYUT * s), c = document.createElement("canvas");
+      const n = Math.max(1, Math.round(TUR_ZEMIN_BOYUT * s)), c = document.createElement("canvas");
       c.width = n; c.height = n;
       const cx = c.getContext("2d"), palet = ulkeEngelSeti(u.kod).palet;
       cx.scale(n / TUR_ZEMIN_BOYUT, n / TUR_ZEMIN_BOYUT);
       cx.fillStyle = palet.zemin; cx.fillRect(0, 0, TUR_ZEMIN_BOYUT, TUR_ZEMIN_BOYUT);
       a.zemin(cx, TUR_ZEMIN_BOYUT, palet);
-      const desen = ctx.createPattern(c, "repeat");
-      _turZemini.k = n / TUR_ZEMIN_BOYUT;
-      if (desen && donusum) desen.setTransform(new DOMMatrix().scale(1 / _turZemini.k));
-      _turZemini.desen = desen;
+      _turZemini.k = hizali ? s : n / TUR_ZEMIN_BOYUT;
+      _turZemini.desen = ctx.createPattern(c, "repeat");
     } catch (_) { _turZemini.desen = null; }
   }
   const desen = _turZemini.desen;
   if (!desen) return false;
-  if (donusum && ctx.getTransform) {
-    const m = ctx.getTransform(), k = _turZemini.k;
-    if (m.b === 0 && m.c === 0 && m.a === m.d && Math.abs(m.a - k) < 1e-9) {
-      desen.setTransform(new DOMMatrix([1 / k, 0, 0, 1 / k, (Math.round(m.e) - m.e) / m.a, (Math.round(m.f) - m.f) / m.d]));
-    } else desen.setTransform(new DOMMatrix([1 / k, 0, 0, 1 / k, 0, 0]));
+  if (donusum) {
+    const k = _turZemini.k;
+    desen.setTransform(new DOMMatrix(hizali
+      ? [1 / k, 0, 0, 1 / k, (Math.round(m.e) - m.e) / m.a, (Math.round(m.f) - m.f) / m.d]
+      : [1 / k, 0, 0, 1 / k, 0, 0]));
   }
   ctx.fillStyle = desen;
   ctx.fillRect(0, 0, game.worldW, game.worldH);
@@ -317,13 +320,18 @@ function odaUlkesiSec(n) {
 function odaUlkesiKaydir(d) { odaUlkesiSec((online.selectedUlke || 1) + d); }
 
 // İstemci: kurucunun durumu (st.lvl) Dünya Turu'nda. Ülke bir ilerleyince önceki ülkenin damgası basılır; ortadan katılan
-// katıldığı ülkeden önceki ülkelerin damgasını almaz (online.turSonUlke ilk durumda null). 51'i geçen durum (eski sürümlü
-// kurucu 52, 53… bölüme ilerler ya da yeni kurucu turu bitirmiştir) turu bir kez tamamlar, bölüm 51'de kalır.
+// katıldığı ülkeden önceki ülkelerin damgasını almaz (online.turSonUlke ilk durumda null). İlk durumun ülkesi bu oyunun
+// başlangıcıdır (tamamlanma ödülü ondan sayılır). Ortadan katılanda (game.turOrtadan) tanıtım ve müzik burada başlar,
+// müzik teaser'sız (ek spec §3). 51'i geçen durum (eski sürümlü kurucu 52, 53… bölüme ilerler ya da yeni kurucu turu
+// bitirmiştir) turu bir kez tamamlar, bölüm 51'de kalır.
 // true: bölüm burada uygulandı ya da uygulanmayacak (durumGeldi bölüm uygulamasını atlar)
 function turDurumGeldi(st) {
   if (!st || typeof st.lvl !== "number" || !Number.isFinite(st.lvl)) return false;
-  const lvl = Math.max(1, Math.floor(st.lvl)), onceki = online.turSonUlke;
+  const lvl = Math.max(1, Math.floor(st.lvl)), onceki = online.turSonUlke, ilk = onceki === null || onceki === undefined;
+  const ortadan = ilk && !!game.turOrtadan;
+  game.turOrtadan = false;
   if (lvl > ULKE_SAYISI) {
+    if (ilk) game.turBaslangic = ULKE_SAYISI + 1; // bitmiş tura katılan hiçbir ülkeyi geçmedi
     if (game.level !== ULKE_SAYISI) clientApplyLevel(ULKE_SAYISI);
     if (!game.turBitti) {
       game.turBitti = true;
@@ -337,10 +345,15 @@ function turDurumGeldi(st) {
     return true;
   }
   online.turSonUlke = lvl;
-  if (lvl === game.level) return true;
+  if (ilk) game.turBaslangic = lvl;
+  const muzikSecenegi = ortadan ? { giris: false } : undefined;
+  if (lvl === game.level) {
+    if (ortadan) { showToast(bolumBildirimi()); turMuzigiBaslat(ulkeSirada(lvl).kod, muzikSecenegi); }
+    return true;
+  }
   clientApplyLevel(lvl);
-  turMuzigiBaslat(ulkeSirada(lvl).kod);
-  if (onceki !== null && onceki !== undefined && lvl === onceki + 1) istemciDamgasi(ulkeSirada(onceki), lvl);
+  turMuzigiBaslat(ulkeSirada(lvl).kod, muzikSecenegi);
+  if (!ilk && lvl === onceki + 1) istemciDamgasi(ulkeSirada(onceki), lvl);
   return true;
 }
 // İstemcinin damgası: kayıt, bildirim ve damga perdesi; perde kapanınca yeni ülkenin tanıtım satırı yeniden görünür

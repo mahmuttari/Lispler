@@ -336,6 +336,33 @@ try {
   });
   sina('turOdaUlkesi: level 999 → AR, 3 → PL; tur alanı olmayan oda ve boş oda → null', () => { assert.deepEqual(ist.oda, ['AR', 'PL', null, null]); });
 
+  // Ortadan katılma, oyunun kendi yolundan (startMpGameClient): oda 3. ülkede (PL) kurulmuş, kurucu 7'de (IT). Ek spec §3:
+  // ortadan katılana teaser çalınmaz; Görev 6: geçilmeyen ülkenin ödülü yok (son inceleme bulgusu)
+  const orta = await kopya(p, async () => {
+    const bekle = (ms) => new Promise((r) => setTimeout(r, ms));
+    audio.init();
+    save.dunyaTuru = { acik: 1, damgalar: {}, bitti: 0 }; persistSave();
+    const caldi = [], tanitim = [], _b = window.turMuzigiBaslat, _t = window.showToast;
+    window.turMuzigiBaslat = (kod, o = {}) => { caldi.push(kod + (o.giris === false ? ' teaser\'sız' : ' teaser\'lı')); return _b(kod, o); };
+    window.showToast = (m) => { if (String(m).startsWith('✈️')) tanitim.push(String(m).split(' — ')[0]); return _t(m); };
+    online.roomId = 'DENEME'; online.isHost = false; online.uid = 'ben';
+    online.cachedRoom = { tur: true, level: 3, status: 'playing', hostUid: 'kurucu', players: {} };
+    online.ortadanKatildi = true;
+    startMpGameClient(); game.player.invuln = 1e9;
+    durumGeldi({ lvl: 7, g: [], e: [], p: [], bd: 0, bt: 0, lt: 0 });
+    await bekle(300);
+    stopMpSync(); online.mode = null; online.roomId = null; online.cachedRoom = null; online.uid = null;
+    const para = save.para;
+    oyunSonu(false, false, true);
+    const odul = save.para - para;
+    window.turMuzigiBaslat = _b; window.showToast = _t;
+    turMuzigiSondur(0); document.getElementById('screen-gameover').classList.remove('active');
+    return { caldi, tanitim, odul };
+  });
+  sina('ortadan katılan (oda PL, kurucu IT): yalnız IT döngüsü teaser\'sız, yalnız İtalya tanıtımı, ülke geçmeden ödül 0', () => {
+    assert.deepEqual(orta, { caldi: ['IT teaser\'sız'], tanitim: ['✈️ 7. İtalya'], odul: 0 }, JSON.stringify(orta));
+  });
+
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);

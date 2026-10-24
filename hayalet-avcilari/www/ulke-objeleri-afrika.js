@@ -1477,4 +1477,6 @@ window.ULKE_OBJELERI = window.ULKE_OBJELERI || {};
     baobabCaddesi, lemurlar, kilimanjaro, oymaKapilar, dagGorilleri, murchisonSelalesi, zurafalarAkasya, flamingoGolu,
     aksumTaslari, geladaMaymunlari,
   });
+  // Asya ve Amerika dosyalarının da kullandığı yardımcılar (bu dosya onlardan önce yüklenir)
+  window.ULKE_OBJE_YARDIMCI = Object.assign(window.ULKE_OBJE_YARDIMCI || {}, { yaprakKubbe, icAralik, kumZemin, yanHurma, egrelti });
 })();

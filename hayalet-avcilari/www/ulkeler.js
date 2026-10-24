@@ -98,7 +98,7 @@
       P("#3a2a19", "#534026", "#c99a62", "#8a6740", "#4f7d3a", "#b5703f"),
       K("simag", "entari", "duz", ["#f4f1ea", "#c8302a", "#2a2a2a"])),
     U("PS", "KS", t("Filistin"), t("Tatreezli hayalet"), O("zeytinBahcesi", t("zeytin bahçesi")), O("hayatAgaciMozaigi", t("Hayat Ağacı mozaiği")),
-      P("#2c2a1f", "#423f30", "#d8c9a3", "#9a8d6e", "#7d8f4e", "#b22c2c"),
+      { ...P("#2c2a1f", "#423f30", "#d8c9a3", "#9a8d6e", "#7d8f4e", "#b22c2c"), kusak: "#b22c2c" },
       K("yok", "entari", "nakis", ["#2a2a2a", "#b22c2c", "#e8c35a"])),
     U("IQ", "KS", t("Irak"), t("Biştli hayalet"), O("mudhifEvleri", t("kamış mudhif evleri")), O("senasilBalkonlar", t("şenaşil ahşap balkonlar")),
       P("#2a2a1b", "#403f2a", "#b8875a", "#7a5a3a", "#c9b27a", "#2f6f8f"),

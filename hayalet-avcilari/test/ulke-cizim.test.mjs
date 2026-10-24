@@ -45,7 +45,8 @@ const KOSTUM_TURLERI = {
 
 // Ressamı çizilmiş aileler ve ülkeler (Görev 5: KS, DA ve TR, JP; Görev 7–13 kıta kıta ekler)
 const CIZILEN_AILELER = ['KS', 'DA', 'K', 'KP', 'SH', 'SV'];
-const CIZILEN_ULKELER = ['TR', 'JP', 'UA', 'PL', 'DE', 'GB', 'FR', 'IT', 'ES', 'MA', 'DZ', 'CI', 'GH', 'NG', 'SD', 'EG', 'CD', 'AO', 'ZA', 'MZ', 'MG', 'TZ', 'UG', 'KE', 'ET'];
+const CIZILEN_ULKELER = ['TR', 'JP', 'UA', 'PL', 'DE', 'GB', 'FR', 'IT', 'ES', 'MA', 'DZ', 'CI', 'GH', 'NG', 'SD', 'EG', 'CD', 'AO', 'ZA', 'MZ', 'MG', 'TZ', 'UG', 'KE', 'ET',
+  'YE', 'SA', 'PS', 'IQ', 'IR', 'UZ', 'AF'];
 
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
 const hatalar = [];
@@ -242,11 +243,25 @@ try {
 
   const kapsama = await p.evaluate(([aileler, ulkeler]) => {
     const BOYUTLAR = [[80, 80], [180, 90], [90, 180], [180, 180]];
-    const sorun = [], canliTurler = new Set();
+    const sorun = [], canliTurler = new Set(), canliTasan = [];
+    // Canlı süsler (oyundaki gibi dünya koordinatında, iki ayrı anda) engelin dikdörtgeninin en çok 12 px dışına çıkar
+    const canliDenetle = (o, R, ad) => {
+      if (!R.canli || !R.canli.length) return;
+      const M = 40, c = document.createElement('canvas'); c.width = o.w + 2 * M; c.height = o.h + 2 * M;
+      const ctx = c.getContext('2d');
+      ctx.translate(M - o.x, M - o.y);                                       // engeller.js canliCiz gibi: dünya koordinatı
+      for (const zaman of [0, 1.7]) for (const k of R.canli) { const f = ENGEL_CANLI[k.tur]; if (f) f(ctx, o.x + k.x, o.y + k.y, zaman, k.n || 0, k); }
+      const d = ctx.getImageData(0, 0, c.width, c.height).data;
+      for (let y = 0; y < c.height; y += 2) for (let x = 0; x < c.width; x += 2) {
+        const dis = Math.max(M - 12 - x, x - (M + o.w + 12), M - 12 - y, y - (M + o.h + 12));
+        if (dis > 0 && d[(y * c.width + x) * 4 + 3] > 0) { canliTasan.push(`${ad} ${R.canli[0].tur}: ${x - M},${y - M}`); return; }
+      }
+    };
     const denetle = (o, ad) => {
       const R = engelResmi(o);
       if (!R || !R.c) { sorun.push(`${ad} resim yok`); return; }
       for (const n of R.canli || []) canliTurler.add(n.tur);
+      canliDenetle(o, R, ad);
       const c = R.c, s = c.width / o.w, d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
       const alfa = (x, y) => d[(Math.min(c.height - 1, Math.floor(y * s)) * c.width + Math.min(c.width - 1, Math.floor(x * s))) * 4 + 3];
       let bos = null, tasan = null;
@@ -268,8 +283,11 @@ try {
     for (const kod of ulkeler) for (const tur of ['obje1', 'obje2']) for (const [w, h] of BOYUTLAR) {
       denetle(engelOlustur({ x: 300, y: 200, w, h }, tur, kod, 5000 + w * 7 + h), `${kod}/${tur}/${w}x${h}`);
     }
-    return { sorun, canliTurler: [...canliTurler] };
+    return { sorun, canliTurler: [...canliTurler], canliTasan };
   }, [CIZILEN_AILELER, CIZILEN_ULKELER]);
+  sina(`canlı süsler engelin dikdörtgeninde kalır (±12 px; ${kapsama.canliTasan.length} sorun)`, () => {
+    assert.deepEqual(kapsama.canliTasan.slice(0, 6), [], kapsama.canliTasan.slice(0, 8).join(' | '));
+  });
   sina(`kapsama: çarpışma içi boyalı, biçim dışı saydam (${kapsama.sorun.length} sorun)`, () => {
     assert.deepEqual(kapsama.sorun.slice(0, 6), [], kapsama.sorun.slice(0, 8).join(' | '));
   });
@@ -295,6 +313,26 @@ try {
     return { kod, sonuc, desenli: farkli > 20 };
   }), CIZILEN_ULKELER);
   sina('Dünya Turu zemini ailenin deseniyle döşenir', () => { for (const z of zemin) { assert.ok(z.sonuc, `${z.kod}: turZeminCiz false`); assert.ok(z.desenli, `${z.kod}: düz renk`); } });
+
+  // KS duvarının çini kuşağı palet.kusak ile renklenir: Filistin'de kırmızı işleme, Türkiye'de mavi çini (Görev 10)
+  const kusak = await p.evaluate(() => ['PS', 'TR'].map((kod) => {
+    const o = engelOlustur({ x: 300, y: 200, w: 180, h: 90 }, 'duvar', kod, 4321);
+    const R = engelResmi(o), c = R.c, s = c.width / o.w, d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+    const g = o.bicim[0], y = Math.floor((g.y + g.h + 2.5) * s);
+    let kirmizi = 0, mavi = 0, n = 0;
+    for (let x = Math.floor((g.x + 10) * s); x < (g.x + g.w - 10) * s; x += 2) {
+      const i = (y * c.width + x) * 4; n++;
+      if (d[i] > 140 && d[i + 1] < 90 && d[i + 2] < 90) kirmizi++;
+      if (d[i + 2] > 140 && d[i] < 90) mavi++;
+    }
+    return { kod, kirmizi: kirmizi / n, mavi: mavi / n };
+  }));
+  sina('KS kuşağı palet.kusak ile: Filistin kırmızı işleme, Türkiye mavi çini', () => {
+    const [ps, tr] = kusak;
+    // baskın renk: PS'de kırmızı, TR'de mavi (TR'nin baklavaları kırmızı-beyazdır, kuşağın küçük bir kısmı)
+    assert.ok(ps.kirmizi > 0.4 && ps.kirmizi > ps.mavi * 3, `PS kırmızı ${ps.kirmizi.toFixed(2)}, mavi ${ps.mavi.toFixed(2)}`);
+    assert.ok(tr.mavi > 0.4 && tr.mavi > tr.kirmizi * 3, `TR mavi ${tr.mavi.toFixed(2)}, kırmızı ${tr.kirmizi.toFixed(2)}`);
+  });
 
   if (ekranKlasoru) { await ekranlar(p, ekranKlasoru); await ulkeEkranlari(ekranKlasoru); }
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });

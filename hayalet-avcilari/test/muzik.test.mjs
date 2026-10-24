@@ -39,7 +39,7 @@ const OLCU = { TR: '2/4', UA: '2/4', PL: '2/4', DE: '2/4', FR: '3/4', IT: '6/8',
   PH: '3/4', KR: '12/8', RU: '2/4', MX: '6/8', PE: '2/4', BR: '2/4', AR: '2/4' };
 const YASAK = /relig|hymn|chant|devot|pray|church|temple|mosque|shrine|anthem|march|militar|sword|dagger|\bwar\b/i;
 // Müziği üretilmiş ülkeler (Görev 5: TR, JP; Görev 7–13 kıta kıta ekler)
-const MUZIKLI_ULKELER = ['TR', 'JP', 'UA', 'PL', 'DE', 'GB', 'FR', 'IT', 'ES', 'MA', 'DZ', 'CI', 'GH', 'NG', 'SD', 'EG', 'CD', 'AO', 'ZA', 'MZ', 'MG', 'TZ', 'UG', 'KE', 'ET'];
+const MUZIKLI_ULKELER = ['TR', 'JP', 'UA', 'PL', 'DE', 'GB', 'FR', 'IT', 'ES', 'MA', 'DZ', 'CI', 'GH', 'NG', 'SD', 'EG', 'CD', 'AO', 'ZA', 'MZ', 'MG', 'TZ', 'UG', 'KE', 'ET', 'YE', 'SA', 'PS', 'IQ', 'IR', 'UZ', 'AF'];
 
 // ---------- ses çözümlemesi (ffmpeg ile, tek kanal 48 kHz) ----------
 function coz(dosya) {

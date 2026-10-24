@@ -29,6 +29,11 @@
   function baklava(ctx, x, y, s, renk) {
     ctx.fillStyle = renk; ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x + s, y); ctx.lineTo(x, y + s); ctx.lineTo(x - s, y); ctx.closePath(); ctx.fill();
   }
+  // Çarpı işleme ilmeği (kuşaktaki el işi süsü)
+  function capraz(ctx, x, y, s, renk) {
+    ctx.strokeStyle = renk; ctx.lineWidth = 0.8; ctx.lineCap = "round"; ctx.beginPath();
+    ctx.moveTo(x - s, y - s); ctx.lineTo(x + s, y + s); ctx.moveTo(x + s, y - s); ctx.lineTo(x - s, y + s); ctx.stroke();
+  }
 
   // ================= K — AVRUPA KALESİ =================
   // Taş mı tuğla mı: palet.malzeme yoksa duvar renginden (kırmızımsı → tuğla: PL, IT, ES). Mazgal palet.mazgal:
@@ -163,8 +168,9 @@
     if (govde.t === "k") {
       const altY = govde.y + govde.h;                                     // üst yüzün alt kenarı: ön yüz buradan d iner
       kirp(ctx, B, () => {
-        ctx.fillStyle = p.vurgu1; ctx.fillRect(0, altY + 1, w, 4);        // çini kuşak
-        for (let x = 3.5, i = 0; x < w; x += 7, i++) baklava(ctx, x, altY + 3, 1.5, i % 2 ? "#f4f1ea" : p.vurgu2);
+        ctx.fillStyle = p.kusak || p.vurgu1; ctx.fillRect(0, altY + 1, w, 4);   // çini kuşak; palet.kusak varsa işleme kuşağı
+        if (p.kusak) for (let x = 3, i = 0; x < w; x += 4.5, i++) capraz(ctx, x, altY + 3, 1.2, i % 2 ? "#1f1a14" : "#f4ecd8");
+        else for (let x = 3.5, i = 0; x < w; x += 7, i++) baklava(ctx, x, altY + 3, 1.5, i % 2 ? "#f4f1ea" : p.vurgu2);
         const n = Math.max(1, Math.floor(govde.w / 30));                   // sivri kemerli nişler
         for (let i = 0; i < n; i++) {
           const cx = govde.x + govde.w * (i + 0.5) / n, g = 8;
@@ -201,7 +207,7 @@
     doldur(ctx, B, p.duvar);
     kirp(ctx, B, () => {
       tasOrgu(ctx, 0, 0, w, h, 10, p.duvar, r);
-      ctx.fillStyle = p.vurgu1;
+      ctx.fillStyle = p.kusak || p.vurgu1;
       if (B.yon === "ust") ctx.fillRect(0, h - 13, w, 3); else if (B.yon === "alt") ctx.fillRect(0, 10, w, 3);
       else if (B.yon === "sol") ctx.fillRect(w - 13, 0, 3, h); else ctx.fillRect(10, 0, 3, h);
     });

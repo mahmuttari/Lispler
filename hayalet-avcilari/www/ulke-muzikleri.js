@@ -1,6 +1,7 @@
 /* HAYALET AVCILARI — DÜNYA TURU MÜZİKLERİ (3.14.0). araclar/muzik_kes.py üretir; elle düzenlenmez.
    bas/son: döngünün loopStart/loopEnd değeri (sn); girisSure: teaser süresi. Ek tasarım §7. */
 window.ULKE_MUZIKLERI = {
+  AF: { dongu: "muzik/AF-dongu.ogg", bas: 0.1, son: 28.19804, giris: "muzik/AF-giris.ogg", girisSure: 5.426, tempo: 128.1 },
   AO: { dongu: "muzik/AO-dongu.ogg", bas: 0.1, son: 29.85719, giris: "muzik/AO-giris.ogg", girisSure: 5.4957, tempo: 98.76 },
   CD: { dongu: "muzik/CD-dongu.ogg", bas: 0.1, son: 30.45273, giris: "muzik/CD-giris.ogg", girisSure: 5.0081, tempo: 126.44 },
   CI: { dongu: "muzik/CI-dongu.ogg", bas: 0.1, son: 33.84585, giris: "muzik/CI-giris.ogg", girisSure: 5.3796, tempo: 128.15 },
@@ -12,6 +13,8 @@ window.ULKE_MUZIKLERI = {
   FR: { dongu: "muzik/FR-dongu.ogg", bas: 0.1, son: 29.47567, giris: "muzik/FR-giris.ogg", girisSure: 5.4957, tempo: 98.22 },
   GB: { dongu: "muzik/GB-dongu.ogg", bas: 0.1, son: 27.89817, giris: "muzik/GB-giris.ogg", girisSure: 5.3796, tempo: 129.78 },
   GH: { dongu: "muzik/GH-dongu.ogg", bas: 0.1, son: 30.13054, giris: "muzik/GH-giris.ogg", girisSure: 5.4261, tempo: 127.91 },
+  IQ: { dongu: "muzik/IQ-dongu.ogg", bas: 0.1, son: 29.16175, giris: "muzik/IQ-giris.ogg", girisSure: 5.2868, tempo: 132.74 },
+  IR: { dongu: "muzik/IR-dongu.ogg", bas: 0.1, son: 28.05444, giris: "muzik/IR-giris.ogg", girisSure: 5.426, tempo: 128.86 },
   IT: { dongu: "muzik/IT-dongu.ogg", bas: 0.105, son: 28.96142, giris: "muzik/IT-giris.ogg", girisSure: 5.2635, tempo: 133.04 },
   JP: { dongu: "muzik/JP-dongu.ogg", bas: 0.1, son: 29.32654, giris: "muzik/JP-giris.ogg", girisSure: 5.2867, tempo: 132.12 },
   KE: { dongu: "muzik/KE-dongu.ogg", bas: 0.1, son: 28.08556, giris: "muzik/KE-giris.ogg", girisSure: 5.4028, tempo: 129.0 },
@@ -20,10 +23,14 @@ window.ULKE_MUZIKLERI = {
   MZ: { dongu: "muzik/MZ-dongu.ogg", bas: 0.1, son: 30.43679, giris: "muzik/MZ-giris.ogg", girisSure: 5.0081, tempo: 126.88 },
   NG: { dongu: "muzik/NG-dongu.ogg", bas: 0.1, son: 29.83669, giris: "muzik/NG-giris.ogg", girisSure: 5.3796, tempo: 129.11 },
   PL: { dongu: "muzik/PL-dongu.ogg", bas: 0.1075, son: 28.91083, giris: "muzik/PL-giris.ogg", girisSure: 5.2403, tempo: 134.07 },
+  PS: { dongu: "muzik/PS-dongu.ogg", bas: 0.11, son: 28.40454, giris: "muzik/PS-giris.ogg", girisSure: 5.1706, tempo: 135.89 },
+  SA: { dongu: "muzik/SA-dongu.ogg", bas: 0.115, son: 31.43877, giris: "muzik/SA-giris.ogg", girisSure: 5.3564, tempo: 130.37 },
   SD: { dongu: "muzik/SD-dongu.ogg", bas: 0.1025, son: 29.80238, giris: "muzik/SD-giris.ogg", girisSure: 5.3796, tempo: 129.35 },
   TR: { dongu: "muzik/TR-dongu.ogg", bas: 0.1, son: 33.40827, giris: "muzik/TR-giris.ogg", girisSure: 5.4028, tempo: 129.19 },
   TZ: { dongu: "muzik/TZ-dongu.ogg", bas: 0.1025, son: 29.87452, giris: "muzik/TZ-giris.ogg", girisSure: 5.3796, tempo: 129.02 },
   UA: { dongu: "muzik/UA-dongu.ogg", bas: 0.115, son: 27.76073, giris: "muzik/UA-giris.ogg", girisSure: 5.3564, tempo: 130.19 },
   UG: { dongu: "muzik/UG-dongu.ogg", bas: 0.1, son: 33.79698, giris: "muzik/UG-giris.ogg", girisSure: 5.4029, tempo: 128.29 },
+  UZ: { dongu: "muzik/UZ-dongu.ogg", bas: 0.1, son: 30.32042, giris: "muzik/UZ-giris.ogg", girisSure: 5.1938, tempo: 135.14 },
+  YE: { dongu: "muzik/YE-dongu.ogg", bas: 0.1, son: 33.84246, giris: "muzik/YE-giris.ogg", girisSure: 5.4261, tempo: 128.0 },
   ZA: { dongu: "muzik/ZA-dongu.ogg", bas: 0.1, son: 28.19981, giris: "muzik/ZA-giris.ogg", girisSure: 5.4028, tempo: 128.26 },
 };

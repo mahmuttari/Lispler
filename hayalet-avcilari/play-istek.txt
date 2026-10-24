@@ -43,3 +43,6 @@
 # (yapıldı 2026-10-24, koşu 40122638806: AAB 47 (koşu 40122349542, commit 20fbc66) yüklendi, üretim 3.13.0 (45) → 3.14.0 (47) completed, incelemeye gönderildi) yukle yayinla uygula
 # (yapıldı 2026-10-24, koşu 40122638806: 7 dilde başlık, kısa ve tam açıklama yüklendi; en uzun tam açıklama 1978) magaza uygula
 # (yapıldı 2026-10-24, koşu 40122638806: 7 dilde simge, tanıtım görseli ve 7 telefon karesi yüklendi, düzenleme onaylandı) gorsel uygula
+
+# istek 2026-10-24T19:11:30Z: 3.14.0 (47) gönderiminden sonra durum (salt okuma; kullanıcı "tamam yayınla" dedi)
+durum

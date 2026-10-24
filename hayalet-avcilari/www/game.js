@@ -628,6 +628,8 @@ const defaultSave = {
   highestLevel: 1,
   // Reklam sıklığı sayaçları (reklam.js › reklamOyunBitti)
   reklam: { oyun: 0, toplam: 0, sure: 0, son: [] },
+  // Dünya Turu (dunya-turu.js): en ileri açık ülke, damgalar (ISO kodu → zaman), ilk tamamlanma zamanı
+  dunyaTuru: { acik: 1, damgalar: {}, bitti: 0 },
   soundEnabled: true,
   volumes: { ghost: 1, fire: 1, sfx: 1 },
   accountCode: "",
@@ -670,6 +672,7 @@ function loadSave() {
     }
     delete merged.upgrades;
     merged.reklam = reklamKaydiniTemizle(data.reklam);
+    merged.dunyaTuru = turKaydiniTemizle(data.dunyaTuru);
     // ammoByChar göçü
     merged.ammoByChar = JSON.parse(JSON.stringify(defaultSave.ammoByChar));
     if (data.ammoByChar) {

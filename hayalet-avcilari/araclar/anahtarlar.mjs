@@ -1,4 +1,4 @@
-// Çevrilecek Türkçe metinlerin listesi: game.js, i18n.js, reklam.js, playgames.js ve arkadaslar.js'teki t("…") çağrıları + index.html'deki sabit metinler.
+// Çevrilecek Türkçe metinlerin listesi: game.js, i18n.js, reklam.js, playgames.js, arkadaslar.js, ulkeler.js, dunya-turu.js ve kostumler.js'teki t("…") çağrıları + index.html'deki sabit metinler.
 // Kullanım: node hayalet-avcilari/araclar/anahtarlar.mjs  → JSON dizisi (stdout)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const WWW = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'www');
 const anahtarlar = new Set();
-for (const f of ['game.js', 'i18n.js', 'reklam.js', 'playgames.js', 'arkadaslar.js']) {
+for (const f of ['game.js', 'i18n.js', 'reklam.js', 'playgames.js', 'arkadaslar.js', 'ulkeler.js', 'dunya-turu.js', 'kostumler.js']) {
   const s = fs.readFileSync(path.join(WWW, f), 'utf8');
   for (const m of s.matchAll(/\bt\(\s*("(?:[^"\\\n]|\\.)*")/g)) anahtarlar.add(JSON.parse(m[1].replace(/\\'/g, "'")));
 }

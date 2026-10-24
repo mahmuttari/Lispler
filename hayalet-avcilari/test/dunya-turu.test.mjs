@@ -117,6 +117,186 @@ try {
   sina('zemin ressamı yokken turZeminCiz false (ızgara çizilir)', () => { assert.equal(k.zemin, false); });
   sina('startGame(): normal oyun, bölüm 1, Mor Şato', () => { assert.deepEqual(k.normal, { tur: false, level: 1, tema: 'Mor Şato', ulke: null }); });
 
+  // --- 3) Ekran: ana menü düğmesi, rota kartları, seçim, pasaport ---
+  const e = await kopya(p, () => {
+    goToMenu();
+    const menu = [...document.querySelectorAll('#screen-menu button')];
+    const turDugme = menu.findIndex((b) => b.textContent.trim() === '🌍 Dünya Turu'), online = menu.findIndex((b) => b.textContent.includes('🌐 Online Oyna'));
+    save.dunyaTuru = { acik: 7, damgalar: { TR: 1, UA: 1 }, bitti: 0 }; persistSave();
+    openDunyaTuru();
+    const kart = (n) => document.querySelector(`#tur-liste .tur-kart[data-sira="${n}"]`);
+    const kartlar = [...document.querySelectorAll('#tur-liste .tur-kart')];
+    const say = (s) => kartlar.filter((k) => k.classList.contains(s)).length;
+    const secili = () => [...document.querySelectorAll('#tur-liste .tur-kart.secili')].map((k) => +k.dataset.sira);
+    const r = {
+      turDugme, online, aktif: document.getElementById('screen-dunya-turu').classList.contains('active'),
+      sayi: kartlar.length, damgali: say('damgali'), acik: say('acik'), kilitli: say('kilitli'),
+      sayac: document.getElementById('tur-sayac').textContent.trim(), kitalar: document.querySelectorAll('#tur-liste .tur-kita').length,
+      ilkSecili: secili(), enKisa: Math.min(...kartlar.map((k) => k.getBoundingClientRect().height)),
+      trResim: (kart(1).querySelector('img') || {}).src || '', ad: (kart(6).querySelector('bdi') || {}).textContent,
+      durum: [kart(1), kart(3), kart(20)].map((k) => k.querySelector('.tur-durum').textContent),
+    };
+    kart(20).click(); r.kilitliSonra = secili();
+    kart(3).click(); r.acikSonra = secili();
+    turSekmesi('pasaport');
+    const gorunur = (id) => getComputedStyle(document.getElementById(id)).display !== 'none';
+    r.pasaport = { gorunur: gorunur('tur-pasaport'), liste: gorunur('tur-liste'), damga: document.querySelectorAll('#tur-pasaport .damga:not(.bos)').length,
+      bos: document.querySelectorAll('#tur-pasaport .damga.bos').length };
+    turSekmesi('rota');
+    r.rotaGeri = gorunur('tur-liste') && !gorunur('tur-pasaport');
+    return r;
+  });
+  sina('ana menüde 🌍 Dünya Turu düğmesi Online Oyna\'nın üstünde', () => { assert.ok(e.turDugme >= 0 && e.turDugme < e.online, `${e.turDugme} / ${e.online}`); });
+  sina('Dünya Turu ekranı: 51 kart (2 damgalı, 5 açık, 44 kilitli), 4 kıta, sayaç 🛂 2/51', () => {
+    assert.ok(e.aktif);
+    assert.deepEqual([e.sayi, e.damgali, e.acik, e.kilitli, e.kitalar], [51, 2, 5, 44, 4]);
+    assert.equal(e.sayac, '🛂 2/51');
+    assert.deepEqual(e.durum, ['🛂', '✈️', '🔒']);
+  });
+  sina('kartlarda ad <bdi> içinde, ressamı olan ülkede küçük resim, dokunma hedefi ≥ 44 px', () => {
+    assert.equal(e.ad, 'Fransa'); assert.match(e.trResim, /^data:image\/png/); assert.ok(e.enKisa >= 44, String(e.enKisa));
+  });
+  sina('varsayılan seçili kart en ileri açık ülke (7); kilitli kart seçilmez, açık kart seçilir', () => {
+    assert.deepEqual(e.ilkSecili, [7]); assert.deepEqual(e.kilitliSonra, [7]); assert.deepEqual(e.acikSonra, [3]);
+  });
+  sina('pasaport: 51 yuva (2 damga, 49 soluk boş çerçeve); sekmeler arası geçiş', () => {
+    assert.deepEqual(e.pasaport, { gorunur: true, liste: false, damga: 2, bos: 49 }); assert.ok(e.rotaGeri);
+  });
+
+  // --- 4) Ülke bitince: damga, uçak geçişi, sıradaki ülke ---
+  const g1 = await kopya(p, () => {
+    window._asil = { pgsBolum, submitOnlineScore, pgsOyunBitti, reklamOyunBitti, damgaBas, nextLevel };
+    window._sahte = { pgsBolum: 0, submit: 0, pgsBitti: 0, reklam: [] };
+    window.pgsBolum = () => { _sahte.pgsBolum++; };
+    window.submitOnlineScore = () => { _sahte.submit++; };
+    window.pgsOyunBitti = () => { _sahte.pgsBitti++; };
+    window.reklamOyunBitti = (b) => { _sahte.reklam.push(b); };
+    save.dunyaTuru = { acik: 7, damgalar: { TR: 1, UA: 1 }, bitti: 0 }; save.elmas = 10; persistSave();
+    turUlkeSec(6); dunyaTuruBaslat(); game.player.invuln = 1e9;
+    const r = { tur: game.dunyaTuru, level: game.level, tanitim: document.getElementById('toast').textContent };
+    game.bossDefeated = true; game.ghosts = [];
+    return r;
+  });
+  const perdeler = () => kopya(p, () => ({ damga: document.getElementById('tur-damga').classList.contains('active'), gecis: document.getElementById('tur-gecis').classList.contains('active') }));
+  // Ülke bittiği ilk karede damga basılır (ilk kare yüklü makinede geç gelebilir: sabit süre değil, damga beklenir)
+  await p.waitForFunction(() => typeof save.dunyaTuru.damgalar.FR === 'number', null, { timeout: 5000, polling: 20 });
+  const g2 = await kopya(p, () => ({ fr: typeof save.dunyaTuru.damgalar.FR === 'number', elmas: save.elmas, level: game.level, toast: document.getElementById('toast').textContent }));
+  const g2p = await perdeler();
+  await p.waitForTimeout(2000);
+  const g3p = await perdeler();
+  await p.waitForTimeout(1600);
+  const g4 = await kopya(p, () => ({ level: game.level, tema: getTheme().name, toast: document.getElementById('toast').textContent, pgsBolum: _sahte.pgsBolum, acik: save.dunyaTuru.acik }));
+  const g4p = await perdeler();
+  sina('▶ Başla seçili ülkeden Dünya Turu açar; girişte tanıtım satırı', () => {
+    assert.deepEqual(g1, { tur: true, level: 6, tanitim: '✈️ 6. Fransa — Eyfel Kulesi ve lavanta tarlası' });
+  });
+  sina('ülke bitince damga: FR damgası, +3 💎, bildirim, damga perdesi', () => {
+    assert.ok(g2.fr); assert.equal(g2.elmas, 13); assert.equal(g2.level, 6);
+    assert.equal(g2.toast, '🛂 Fransa damgası! +3 💎'); assert.deepEqual(g2p, { damga: true, gecis: false });
+  });
+  sina('1,8 sn sonra uçak geçişi perdesi', () => { assert.deepEqual(g3p, { damga: false, gecis: true }); });
+  sina('~3,3 sn sonra sıradaki ülke: bölüm 7 İtalya, tanıtım bildirimi, perdeler gizli, pgsBolum yok', () => {
+    assert.deepEqual(g4, { level: 7, tema: 'İtalya', toast: '✈️ 7. İtalya — Kolezyum ve gondollu kanal iskelesi', pgsBolum: 0, acik: 7 });
+    assert.deepEqual(g4p, { damga: false, gecis: false });
+  });
+
+  // --- 5) Yenilgi: skor listelerine ve rekora yazılmaz; tamamlanma ödülü bu oyunda geçilen ülke başına 50; Tekrar Oyna ---
+  const y = await kopya(p, () => {
+    const lb = JSON.stringify(loadLeaderboard()), hl = save.highestLevel;
+    game.runPara = 0; game.runElmas = 0; game.runZumrut = 0;
+    endGame(false);
+    const r = { lb: lb === JSON.stringify(loadLeaderboard()), hlOnce: hl, hlSonra: save.highestLevel, submit: _sahte.submit, pgsBitti: _sahte.pgsBitti,
+      acik: save.dunyaTuru.acik, sira: document.getElementById('gameover-rank').textContent, para: document.getElementById('final-para').textContent,
+      reklam: _sahte.reklam.slice(-1)[0] };
+    tekrarOyna();
+    r.tekrar = { level: game.level, tur: game.dunyaTuru, running: game.running };
+    return r;
+  });
+  sina('yenilgi: Şampiyonlar, buluta skor ve Play Games yok; highestLevel aynı; sıra satırı boş', () => {
+    assert.ok(y.lb); assert.equal(y.hlSonra, y.hlOnce); assert.ok(y.hlOnce < 7, `highestLevel ${y.hlOnce}`);
+    assert.equal(y.submit, 0); assert.equal(y.pgsBitti, 0); assert.equal(y.sira, '');
+  });
+  sina('yenilgi: ulaşılan ülke açık kalır; tamamlanma ödülü geçilen 1 ülke × 50; reklam kutlamasız', () => {
+    assert.ok(y.acik >= 7); assert.equal(y.para, '50'); assert.equal(y.reklam && y.reklam.kutlama, false);
+  });
+  sina('🔁 Tekrar Oyna Dünya Turu\'nu kalınan ülkeden açar', () => { assert.deepEqual(y.tekrar, { level: 7, tur: true, running: true }); });
+
+  // --- 6) 51. ülke: dünya turu tamamlandı ---
+  await kopya(p, () => {
+    endGame(false);
+    save.dunyaTuru = { acik: 51, damgalar: {}, bitti: 0 }; _sahte.reklam = [];
+    startGame({ tur: true, ulke: 51 }); game.player.invuln = 1e9; game.bossDefeated = true; game.ghosts = [];
+  });
+  await p.waitForFunction(() => typeof save.dunyaTuru.damgalar.AR === 'number', null, { timeout: 5000, polling: 20 });
+  await p.waitForTimeout(2200);
+  const s = await kopya(p, () => {
+    const r = { ar: typeof save.dunyaTuru.damgalar.AR === 'number', bitti: save.dunyaTuru.bitti, baslik: document.getElementById('gameover-title').textContent,
+      reklam: _sahte.reklam.map((b) => b.kutlama), turBitti: game.turBitti, running: game.running,
+      perde: [...document.querySelectorAll('.tur-perde')].some((x) => x.classList.contains('active')) };
+    tekrarOyna();
+    r.tekrarEkran = document.getElementById('screen-dunya-turu').classList.contains('active');
+    return r;
+  });
+  sina('51. ülke bitince: AR damgası, bitti zamanı, "🌍 Dünya turu tamamlandı!", reklam kutlamalı', () => {
+    assert.ok(s.ar); assert.ok(s.bitti > 0); assert.equal(s.baslik, '🌍 Dünya turu tamamlandı!');
+    assert.deepEqual(s.reklam, [true]); assert.equal(s.turBitti, true); assert.equal(s.running, false); assert.equal(s.perde, false);
+  });
+  sina('tur bittikten sonra 🔁 Tekrar Oyna Dünya Turu ekranını açar', () => { assert.ok(s.tekrarEkran); });
+
+  // --- 7) Review Focus 4: geçiş sırasında yenilgi ve hızlı yeniden başlatma; çift tetikleme ---
+  await kopya(p, () => {
+    save.dunyaTuru = { acik: 7, damgalar: {}, bitti: 0 }; save.elmas = 10;
+    startGame({ tur: true, ulke: 6 }); game.player.invuln = 1e9; game.bossDefeated = true; game.ghosts = [];
+  });
+  await p.waitForFunction(() => typeof save.dunyaTuru.damgalar.FR === 'number', null, { timeout: 5000, polling: 20 });
+  await p.waitForTimeout(500);
+  await kopya(p, () => { game.runElmas = 0; endGame(false); tekrarOyna(); game.player.invuln = 1e9; });
+  await p.waitForTimeout(1800);
+  const rf1 = await perdeler();
+  await p.waitForTimeout(2200);
+  const rf2 = await kopya(p, () => ({ level: game.level, running: game.running, elmas: save.elmas, fr: typeof save.dunyaTuru.damgalar.FR === 'number' }));
+  const rf2p = await perdeler();
+  sina('geçiş sırasında yenilgi + Tekrar Oyna: eski geçiş iptal, yeni oyun 6\'da kalır, perde yok, tek damga', () => {
+    assert.deepEqual(rf1, { damga: false, gecis: false }); assert.deepEqual(rf2p, { damga: false, gecis: false });
+    assert.deepEqual(rf2, { level: 6, running: true, elmas: 13, fr: true });
+  });
+  await kopya(p, () => {
+    endGame(false);
+    save.dunyaTuru = { acik: 7, damgalar: {}, bitti: 0 };
+    startGame({ tur: true, ulke: 6 }); game.player.invuln = 1e9;
+    window._sayac = { damga: 0, sonraki: 0 };
+    window.damgaBas = (kod) => { _sayac.damga++; return _asil.damgaBas(kod); };
+    window.nextLevel = () => { _sayac.sonraki++; return _asil.nextLevel(); };
+    turUlkesiBitti(); turUlkesiBitti();
+  });
+  await p.waitForTimeout(3700);
+  const ik = await kopya(p, () => {
+    const r = { ..._sayac, level: game.level };
+    window.damgaBas = _asil.damgaBas; window.nextLevel = _asil.nextLevel;
+    return r;
+  });
+  sina('turUlkesiBitti iki kez: tek damga, tek nextLevel', () => { assert.deepEqual(ik, { damga: 1, sonraki: 1, level: 7 }); });
+
+  // --- 8) Boss duyurusu ve istemcinin bölüm bildirimi ---
+  const bo = await kopya(p, () => {
+    endGame(false);
+    startGame({ tur: true, ulke: 6 }); game.player.invuln = 1e9;
+    spawnBoss();
+    const tur = document.getElementById('toast').textContent;
+    clientApplyLevel(7);
+    const istemci = document.getElementById('toast').textContent;
+    endGame(false);
+    startGame(); game.player.invuln = 1e9; spawnBoss();
+    const normal = document.getElementById('toast').textContent;
+    endGame(false);
+    return { tur, istemci, normal };
+  });
+  sina('Dünya Turu bossu: "👻 Bereli hayalet geldi!"; normal oyunda bugünkü duyuru', () => {
+    assert.equal(bo.tur, '👻 Bereli hayalet geldi!'); assert.equal(bo.normal, '👑 BÖLÜM 1 BOSS!');
+  });
+  sina('istemcinin bölüm bildirimi Dünya Turu\'nda tanıtım satırı', () => { assert.equal(bo.istemci, '✈️ 7. İtalya — Kolezyum ve gondollu kanal iskelesi'); });
+  await kopya(p, () => Object.assign(window, _asil));
+
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);

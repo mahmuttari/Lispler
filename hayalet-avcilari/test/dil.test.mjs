@@ -108,20 +108,50 @@ try {
           oyunSonu(false, true, false, turSiralamasi({ u1: { name: 'Kiki' }, u2: { name: 'Mila', av: 12 }, u3: { name: 'Can', av: 9 },
             u4: { name: 'Deniz', av: 4 }, u5: { name: 'Ece', av: 1 }, u6: { name: 'Omer' } }, 'u1', 9, 'Kiki'));
         },
+        // 3.14.0 Dünya Turu: rota, pasaport, damga ve uçak perdeleri, en uzun tanıtım bildirimi, boss duyurusu
+        dunya_turu: () => {
+          online.uid = null;
+          save.dunyaTuru = { acik: 12, damgalar: { TR: 1, UA: 1, GB: 1, DE: 1, FR: 1, IT: 1, ES: 1 }, bitti: 0 }; persistSave();
+          openDunyaTuru();
+        },
+        pasaport: () => turSekmesi('pasaport'),
+        tur_damga: () => {
+          turSekmesi('rota');
+          const uzun = ULKELER.reduce((a, u) => (u.ad.length > a.ad.length ? u : a));
+          damgaGoster(uzun);
+        },
+        tur_gecis: () => {
+          document.getElementById('tur-damga').classList.remove('active');
+          const s = ULKELER.map((u) => u.ad.length), i = s.indexOf(Math.max(...s));
+          ucakGecisi(ULKELER[Math.max(0, i - 1)], ULKELER[Math.max(1, i)], () => {});
+        },
+        tur_tanitim: () => {
+          document.getElementById('tur-gecis').classList.remove('active');
+          startGame({ tur: true, ulke: 1 }); game.player.invuln = 1e9;
+          const uzun = ULKELER.map(ulkeTanitimi).reduce((a, s) => (s.length > a.length ? s : a));
+          showToast(uzun);
+        },
+        tur_boss: () => { spawnBoss(); },
       };
       for (const [ad, ac] of Object.entries(ekranlar)) {
         await p.evaluate(`(${ac.toString()})()`);
         await p.waitForTimeout(ad === 'oyun' ? 2500 : ad === 'oyun_takim' ? 600 : 200);
         const r = await p.evaluate(() => {
-          const gorunur = [...document.querySelectorAll('.screen.active, #toast, .toast, #davet-seridi')].map((e) => e.innerText).join('\n');
-          const tasan = document.documentElement.scrollWidth > window.innerWidth + 1;
+          const gorunur = [...document.querySelectorAll('.screen.active, #toast, .toast, #davet-seridi, .tur-perde.active')].map((e) => e.innerText).join('\n');
+          let tasan = document.documentElement.scrollWidth > window.innerWidth + 1;
+          // Kaydırılan liste içinde ve sabit konumlu öğelerde taşma sayfayı genişletmez: öğenin kendisi ölçülür
+          for (const el of document.querySelectorAll('#tur-liste, .tur-kart, #tur-pasaport, .toast.show, .tur-perde.active .tur-perde-kutu')) {
+            const k = el.getBoundingClientRect();
+            if (!k.width) continue;
+            if (el.scrollWidth > el.clientWidth + 1 || k.left < -1 || k.right > window.innerWidth + 1) tasan = `${el.id || el.className} taşıyor`;
+          }
           return { metin: gorunur.replace(/Kiki|Avcı|Kinkin|Güllu/g, ''), tasan, yon: document.documentElement.dir };
         });
         if (dil !== 'tr') {
           const satir = r.metin.split('\n').find((s) => TURKCE.test(s));
           if (satir) sorunlar.push(`${dil} ${genislik}px ${ad}: çevrilmemiş metin: ${satir.trim().slice(0, 80)}`);
         }
-        if (r.tasan) sorunlar.push(`${dil} ${genislik}px ${ad}: yatay taşma`);
+        if (r.tasan) sorunlar.push(`${dil} ${genislik}px ${ad}: yatay taşma${typeof r.tasan === 'string' ? ` (${r.tasan})` : ''}`);
         if (dil === 'ar' && r.yon !== 'rtl') sorunlar.push(`ar: dir=rtl değil`);
         if (EKRAN && genislik === 390) { fs.mkdirSync(EKRAN, { recursive: true }); await p.screenshot({ path: path.join(EKRAN, `${dil}-${ad}.png`) }); }
       }

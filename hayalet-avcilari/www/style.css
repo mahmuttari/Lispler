@@ -1383,3 +1383,70 @@ details.arkadas-bolum > summary::-webkit-details-marker { display: none; }
 }
 .davet-katil { background: #16a34a; }
 .davet-kapat { background: rgba(255,255,255,0.12); }
+
+/* ====== DÜNYA TURU (3.14.0, dunya-turu.js) ====== */
+/* Menüde Şampiyonlar ile Dünya Turu genişlik yetince yan yana (menü uzamasın); dar ekranda alt satıra iner */
+.menu-buttons > .btn { padding-inline: 18px; }
+@media (max-width: 379px) { .menu-buttons > .btn { padding-inline: 12px; } }
+.btn-tur { background: linear-gradient(180deg, #f59e0b, #b45309); box-shadow: 0 4px 0 #78350f, 0 6px 12px rgba(0,0,0,0.4); }
+.btn-tur:active { box-shadow: 0 1px 0 #78350f, 0 2px 6px rgba(0,0,0,0.4); }
+.tur-ekran h2 { margin-bottom: 6px; }
+.tur-sayac { font-size: 18px; font-weight: 800; color: #fde047; margin: 0 0 4px; }
+.tur-liste {
+  position: relative; display: flex; flex-direction: column; gap: 6px;
+  max-height: 48vh; overflow-y: auto; overflow-x: hidden; margin: 8px 0; padding-inline-end: 4px; text-align: start;
+}
+.tur-kita { font-size: 14px; color: #fde047; margin: 8px 4px 0; }
+.tur-kart {
+  display: flex; align-items: center; gap: 10px; min-height: 52px; width: 100%; padding: 4px 12px;
+  border: 2px solid rgba(255,255,255,0.12); border-radius: 14px; background: rgba(255,255,255,0.07);
+  color: white; font: inherit; font-weight: 700; text-align: start; cursor: pointer;
+}
+.tur-kart.secili { border-color: #ffd166; background: rgba(255, 209, 102, 0.18); box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.35); }
+.tur-kart.kilitli { opacity: 0.5; cursor: default; }
+.tur-kart.kilitli .tur-resim { filter: grayscale(1); }
+.tur-kart.salla { animation: tur-salla 0.35s; }
+.tur-sira { min-width: 24px; text-align: center; font-size: 13px; color: #cbd5e1; direction: ltr; unicode-bidi: isolate; }
+.tur-resim { width: 40px; height: 40px; flex: none; border-radius: 8px; }
+.tur-resim.bos { background: rgba(255,255,255,0.08); }
+.tur-ad { flex: 1; min-width: 0; overflow-wrap: anywhere; line-height: 1.25; }
+.tur-durum { flex: none; font-size: 18px; }
+.tur-pasaport {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px;
+  max-height: 52vh; overflow-y: auto; overflow-x: hidden; margin: 8px 0; padding: 10px;
+  border-radius: 14px; background: #f3e9d2; box-shadow: inset 0 0 0 2px #d8c7a1;
+}
+.damga { aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center; }
+.damga.bos { border: 2px dashed rgba(90, 70, 40, 0.25); border-radius: 50%; color: rgba(90, 70, 40, 0.35); font-weight: 800; font-size: 13px; }
+.damga-svg { width: 100%; height: 100%; overflow: visible; transform: rotate(var(--aci, 0deg)); }
+.damga-ad { font-size: 10px; font-weight: 800; letter-spacing: 0.3px; }
+.damga-sira { font-size: 9px; font-weight: 800; }
+.tur-svg-tanim { position: absolute; width: 0; height: 0; overflow: hidden; }
+/* Perdeler: oyunun üstünde, bildirimin altında; dokunuşu geçirir */
+.tur-perde {
+  position: fixed; inset: 0; z-index: 150; display: none; align-items: center; justify-content: center;
+  background: rgba(10, 6, 24, 0.45); pointer-events: none; padding: 16px;
+}
+.tur-perde.active { display: flex; }
+.tur-damga-kutu {
+  width: min(64vw, 280px); padding: 14px; border-radius: 22px; background: #f3e9d2; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  transform: rotate(var(--aci, 0deg)); animation: tur-damga-bas 0.35s ease-out both;
+}
+.tur-damga-kutu .damga-svg { display: block; transform: none; }
+.tur-gecis-kutu {
+  width: min(88vw, 360px); padding: 16px 18px; border-radius: 20px; display: flex; flex-direction: column; gap: 8px;
+  background: rgba(15, 10, 35, 0.92); border: 2px solid #ffd166; color: white; font-weight: 800; font-size: 18px;
+}
+.tur-gecis-ad { min-width: 0; overflow-wrap: anywhere; }
+.tur-gecis-ad.son { text-align: end; }
+.tur-gecis-sira { color: #fde047; direction: ltr; unicode-bidi: isolate; }
+.tur-gecis-yol { position: relative; height: 30px; border-top: 3px dashed rgba(255, 209, 102, 0.7); margin-top: 14px; }
+.tur-ucak { position: absolute; top: -18px; inset-inline-start: 0; font-size: 26px; line-height: 1; animation: tur-ucak 1.4s ease-in-out forwards; }
+[dir="rtl"] .tur-ucak { transform: scaleX(-1); }
+@keyframes tur-ucak { from { inset-inline-start: 0; } to { inset-inline-start: calc(100% - 28px); } }
+@keyframes tur-damga-bas { 0% { transform: rotate(var(--aci, 0deg)) scale(1.9); opacity: 0; } 70% { transform: rotate(var(--aci, 0deg)) scale(0.94); opacity: 1; } 100% { transform: rotate(var(--aci, 0deg)) scale(1); } }
+@keyframes tur-salla { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+@media (prefers-reduced-motion: reduce) {
+  .tur-damga-kutu, .tur-kart.salla { animation: none; }
+  .tur-ucak { animation: none; inset-inline-start: calc(50% - 14px); }
+}

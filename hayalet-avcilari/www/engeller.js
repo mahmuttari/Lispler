@@ -714,7 +714,7 @@
   }
 
   Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, engelBicimleriniKur, engelCarpisir, engelMesafesi, ENGEL_AILELERI,
-    engelOlcegi, engelResmi, engelleriCiz, lavCanli, ENGEL_CANLI });
+    engelOlcegi, engelResmi, engelBoya, engelleriCiz, lavCanli, ENGEL_CANLI });
   window.ENGEL = { yol, doldur, cizgi, kirp, hatCiz, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, kutuYolu, tasOrgu, gozler, cimTutami, sinirla, parcaUzaklik,
     kayalikKenar, suTabani, dikenCiz, lavCiz };
 })();

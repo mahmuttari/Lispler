@@ -3879,7 +3879,7 @@ function clientApplyLevel(newLevel) {
   buildHazards();
   ensurePlayerSafe();
   yenidenDog();
-  showToast(t("📚 Bölüm {n} — {tema}", { n: game.level, tema: getTheme().name }));
+  showToast(bolumBildirimi());
 }
 
 // Çevrimiçi oyunda hayalet olan oyuncu yeni bölümde doğar
@@ -4818,6 +4818,11 @@ function startGame(secenek) {
   game.spawnTimer = 0;
   game.dunyaTuru = !!(secenek && secenek.tur);
   game.level = game.dunyaTuru ? ulkeSirada(secenek.ulke).sira : 1;
+  game.turBaslangic = game.level; // Dünya Turu: tamamlanma ödülü bu oyunda geçilen ülkelerden
+  game.turBitti = false;
+  game._turGeciste = false;
+  game._turJeton = null;          // önceki oyunun damga/uçak geçişi bu oyunu ilerletmez
+  turPerdeleriniKapat();
   game.levelTimer = 0;
   game.ghostsCaught = 0;
   game.totalCaught = 0;
@@ -4863,7 +4868,9 @@ function startGame(secenek) {
   spawnBot();
   closeInventory();
   refreshInventoryButton();
-  if (game.bot) setTimeout(() => { if (game.running && game.bot) showToast(t("🤖 Bot seninle savaşıyor! Ona dokunursan ona ateş edersin.")); }, 600);
+  // Dünya Turu'nda önce ülkenin tanıtım satırı; bot bildirimi okunabilsin diye sonra gelir
+  if (game.dunyaTuru) showToast(bolumBildirimi());
+  if (game.bot) setTimeout(() => { if (game.running && game.bot) showToast(t("🤖 Bot seninle savaşıyor! Ona dokunursan ona ateş edersin.")); }, game.dunyaTuru ? 2000 : 600);
 
   setupJoystick();
   setupKeyboard();
@@ -5182,8 +5189,11 @@ function update(dt, now) {
   // Bölüm tamamlandı mı? Boss öldü VE diğer tüm hayaletler bitti
   if (game.bossDefeated && game.ghosts.length === 0 && !game.levelTransitioning) {
     game.levelTransitioning = true;
-    showToast(t("🌟 Bölüm temiz! Sıradaki bölüm geliyor..."));
-    setTimeout(() => { if (game.running) nextLevel(); }, 1800);
+    if (game.dunyaTuru) turUlkesiBitti(); // damga, uçak geçişi, sıradaki ülke (dunya-turu.js)
+    else {
+      showToast(t("🌟 Bölüm temiz! Sıradaki bölüm geliyor..."));
+      setTimeout(() => { if (game.running) nextLevel(); }, 1800);
+    }
   }
 
   // Çevrimiçi: herkes hayalet olduysa tur 2,5 sn sonra biter (yazım tutmazsa 5 sn sonra yeniden denenir)
@@ -5674,7 +5684,7 @@ function update(dt, now) {
 
 function nextLevel() {
   game.level++;
-  pgsBolum(game.level);
+  if (!game.dunyaTuru) pgsBolum(game.level); // Dünya Turu Play Games'e yazılmaz
   game.levelTimer = 0;
   game.ghostsCaught = 0;
   audio.levelUp();
@@ -5689,11 +5699,18 @@ function nextLevel() {
   ensurePlayerSafe();
   spawnBot();
   if (online.mode) yenidenDog();
-  showToast(t("📚 Bölüm {n} — {tema}", { n: game.level, tema: getTheme().name }));
+  showToast(bolumBildirimi());
   // Boss bölüm seviyesine göre belli bir süre sonra
   game.bossSpawnTimer = getBossTimerForLevel(game.level);
   game.bossDefeated = false;
   game.levelTransitioning = false;
+  game._turGeciste = false;
+}
+
+// Bölüm başı bildirimi: Dünya Turu'nda ülkenin tanıtım satırı ("✈️ 7. İtalya — Kolezyum ve …")
+function bolumBildirimi() {
+  const u = turUlkesi();
+  return u ? ulkeTanitimi(u) : t("📚 Bölüm {n} — {tema}", { n: game.level, tema: getTheme().name });
 }
 
 function ensurePlayerSafe() {
@@ -5739,7 +5756,8 @@ function spawnBoss() {
     minionState: "waiting",
     minionTimer: 1.5,
   });
-  showToast(t("👑 BÖLÜM {n} BOSS!", { n: game.level }));
+  const u = turUlkesi();
+  showToast(u ? t("👻 {ad} geldi!", { ad: u.bossAd }) : t("👑 BÖLÜM {n} BOSS!", { n: game.level }));
   audio.bigGhost();
 }
 
@@ -6431,6 +6449,7 @@ function quitToMenu() {
   if (online.roomId) odadanCik();
   game.running = false;
   game.menude = false;
+  turPerdeleriniKapat();
   document.getElementById("screen-pause").classList.remove("active");
   document.getElementById("screen-gameover").classList.remove("active");
   const wb = document.getElementById("weapon-bar");
@@ -6450,13 +6469,18 @@ function endGame(won) {
 function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   game.running = false;
   game.menude = false;
+  turPerdeleriniKapat(); // damga ya da uçak geçişi sırasında biten oyunda perde ekranda kalmasın
+  // Dünya Turu skorları Şampiyonlar'a, buluta ve Play Games'e yazılmaz, bölüm rekorunu değiştirmez (spec §3)
+  const tur = game.dunyaTuru, turBitti = tur && game.turBitti;
 
-  // Bonus para (bölüm başı)
-  const completionBonus = (game.level - 1) * 50;
+  // Bonus para: geçilen bölüm başına 50. Dünya Turu'nda bu oyunda geçilen ülkeler sayılır (ortadan başlayan oyuncu
+  // geçmediği ülkelerin ödülünü almaz; son ülke bitince o da sayılır)
+  const gecilen = tur ? game.level - (game.turBaslangic || game.level) + (turBitti ? 1 : 0) : game.level - 1;
+  const completionBonus = gecilen * 50;
   const finalPara = game.runPara + completionBonus;
 
   // Yüksek bölüm rekoru (yeni rekor sevinç anıdır: geçiş reklamı gösterilmez)
-  const yeniRekor = game.level > save.highestLevel;
+  const yeniRekor = !tur && game.level > save.highestLevel;
   if (yeniRekor) save.highestLevel = game.level;
 
   save.para += finalPara;
@@ -6474,9 +6498,12 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
     para: finalPara,
     date: Date.now(),
   };
-  const rank = addLeaderboardEntry(entry);
-  submitOnlineScore(entry); // sessizce buluta yolla, sonucu beklemiyoruz
-  pgsOyunBitti(scoreFor(entry), save.highestLevel, game.totalCaught); // Android: Play Games skor + başarımlar
+  let rank = -1;
+  if (!tur) {
+    rank = addLeaderboardEntry(entry);
+    submitOnlineScore(entry); // sessizce buluta yolla, sonucu beklemiyoruz
+    pgsOyunBitti(scoreFor(entry), save.highestLevel, game.totalCaught); // Android: Play Games skor + başarımlar
+  }
   const rankEl = document.getElementById("gameover-rank");
   if (cevrimici) {
     // Çevrimiçi turda odadaki sıra yazılır. Eskiden yerel Şampiyonlar sırası yazılıyordu: liste aynı adı tek kayıtta
@@ -6492,7 +6519,8 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   }
 
   turSiralamasiniGoster(cevrimici ? siralama : null);
-  document.getElementById("gameover-title").textContent = cevrimici ? t("🏁 Tur bitti!") : won ? t("🌟 Harika!") : t("👻 Yakalandın!");
+  document.getElementById("gameover-title").textContent = cevrimici ? t("🏁 Tur bitti!") : turBitti ? t("🌍 Dünya turu tamamlandı!")
+    : won ? t("🌟 Harika!") : t("👻 Yakalandın!");
   document.getElementById("final-ghosts").textContent = game.totalCaught;
   document.getElementById("final-para").textContent = finalPara;
   document.getElementById("final-elmas").textContent = game.runElmas;
@@ -6504,7 +6532,7 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   document.getElementById("btn-lobiye-don").style.display = cevrimici ? "" : "none";
   document.getElementById("screen-gameover").classList.add("active");
   if (won) audio.win(); else audio.lose();
-  if (!reklamsiz) reklamOyunBitti({ cevrimici, sureSn: game.oynananSure || 0, kutlama: !cevrimici && yeniRekor });
+  if (!reklamsiz) reklamOyunBitti({ cevrimici, sureSn: game.oynananSure || 0, kutlama: !cevrimici && (yeniRekor || turBitti) });
 }
 
 // ====== BAŞLAT ======

@@ -78,3 +78,189 @@ function turZeminCiz(ctx) {
   ctx.fillRect(0, 0, game.worldW, game.worldH);
   return true;
 }
+
+// ---------- Küçük resim ve damga ----------
+// Ülkenin 1. objesi 96 birimlik kutuda 128 px tuvale çizilir (canlı süsler zaman 0'daki hâliyle); dataURL önbellekte.
+// Ressamı henüz olmayan ülkede boş dize (kart yer tutucu gösterir).
+const TUR_RESIM_BIRIM = 96, TUR_RESIM_PIKSEL = 128;
+const _kucukResimler = new Map();
+function ulkeKucukResmi(u) {
+  if (!u) return "";
+  if (_kucukResimler.has(u.kod)) return _kucukResimler.get(u.kod);
+  let url = "";
+  const set = ulkeEngelSeti(u.kod);
+  if (set && typeof set.obje1 === "function") {
+    try {
+      const B = TUR_RESIM_BIRIM, o = engelOlustur({ x: 0, y: 0, w: B, h: B }, "obje1", u.kod, 1000 + u.sira);
+      const c = document.createElement("canvas");
+      c.width = c.height = TUR_RESIM_PIKSEL;
+      const cx = c.getContext("2d");
+      cx.scale(TUR_RESIM_PIKSEL / B, TUR_RESIM_PIKSEL / B);
+      for (const k of engelBoya(cx, o)) { const f = ENGEL_CANLI[k.tur]; if (f) f(cx, k.x, k.y, 0, k.n || 0, k); }
+      url = c.toDataURL("image/png");
+    } catch (_) { url = ""; }
+  }
+  _kucukResimler.set(u.kod, url);
+  return url;
+}
+
+// Damga (spec §4.4): mürekkep görünümlü, hafif eğik oval; üst yayda ülke adı, ortada küçük resim, altta rota sırası.
+// Renk ve eğim rota sırasından gelir (her cihazda aynı). Mürekkep pürüzü index.html'deki #tur-murekkep süzgecidir.
+const TUR_MUREKKEPLER = ["#b3261e", "#1d4ed8", "#047857", "#7c3aed", "#b45309", "#be185d"];
+const damgaAcisi = (u) => ((u.sira * 37) % 15) - 7; // −7°…+7°
+let _damgaNo = 0;
+function damgaSvg(u) {
+  const renk = TUR_MUREKKEPLER[u.sira % TUR_MUREKKEPLER.length];
+  const yay = "tur-yay-" + (++_damgaNo), resim = ulkeKucukResmi(u);
+  return `<svg class="damga-svg" viewBox="0 0 120 90" style="color:${renk};--aci:${damgaAcisi(u)}deg" role="img" aria-label="${escapeHtml(u.ad)}">` +
+    `<g filter="url(#tur-murekkep)" fill="none" stroke="currentColor">` +
+    `<ellipse cx="60" cy="45" rx="56" ry="41" stroke-width="3.2"/><ellipse cx="60" cy="45" rx="50" ry="35" stroke-width="1"/>` +
+    `<path id="${yay}" d="M 20 47 A 40 28 0 0 1 100 47" stroke="none"/>` +
+    `<text class="damga-ad" fill="currentColor" stroke="none"><textPath href="#${yay}" startOffset="50%" text-anchor="middle">${escapeHtml(u.ad)}</textPath></text>` +
+    `<text class="damga-sira" x="60" y="77" text-anchor="middle" fill="currentColor" stroke="none">${u.sira}</text>` +
+    `</g>` +
+    (resim ? `<image href="${resim}" x="43" y="36" width="34" height="34"/>` : "") +
+    `</svg>`;
+}
+// Uzun ad yaya sığmazsa sıkıştırılır (öğe görünür olmalı: gizliyken uzunluk 0 ölçülür)
+function damgaYazilariniSigdir(kok) {
+  kok.querySelectorAll(".damga-ad").forEach((tx) => {
+    try {
+      if (tx.getComputedTextLength() > 92) { tx.setAttribute("textLength", "92"); tx.setAttribute("lengthAdjust", "spacingAndGlyphs"); }
+    } catch (_) {}
+  });
+}
+
+// ---------- Perdeler: damga (0,9 sn) ve uçak geçişi (1,5 sn) ----------
+// Perde dokunuşu geçirir (oyun sürer). Her açılış yeni numara alır; eski zamanlayıcı yeni perdeyi kapatmaz.
+const TUR_DAMGA_MS = 900, TUR_BEKLE_MS = 1800, TUR_UCAK_MS = 1500;
+let _perdeNo = 0;
+function perdeAc(el) {
+  turPerdeleriniKapat();
+  el.classList.add("active");
+  return _perdeNo;
+}
+function turPerdeleriniKapat() {
+  _perdeNo++;
+  document.querySelectorAll(".tur-perde").forEach((p) => p.classList.remove("active"));
+}
+function damgaGoster(u) {
+  const el = document.getElementById("tur-damga");
+  // Perdede kâğıt kutunun kendisi eğilir ve basılır (içindeki damga kutudan taşmasın)
+  el.innerHTML = `<div class="tur-perde-kutu tur-damga-kutu" style="--aci:${damgaAcisi(u)}deg">${damgaSvg(u)}</div>`;
+  const no = perdeAc(el);
+  damgaYazilariniSigdir(el);
+  setTimeout(() => { if (_perdeNo === no) el.classList.remove("active"); }, TUR_DAMGA_MS);
+}
+// İki ülke adı arasında kesikli çizgide uçak; bitince perde kapanır ve bitince() çağrılır
+function ucakGecisi(onceki, sonraki, bitince) {
+  const el = document.getElementById("tur-gecis");
+  const ad = (u, sinif) => `<div class="tur-gecis-ad ${sinif}"><span class="tur-gecis-sira">${u.sira}</span> <bdi>${escapeHtml(u.ad)}</bdi></div>`;
+  el.innerHTML = `<div class="tur-perde-kutu tur-gecis-kutu">${ad(onceki, "bas")}<div class="tur-gecis-yol"><span class="tur-ucak">✈️</span></div>${ad(sonraki, "son")}</div>`;
+  const no = perdeAc(el);
+  setTimeout(() => {
+    if (_perdeNo === no) el.classList.remove("active");
+    if (bitince) bitince();
+  }, TUR_UCAK_MS);
+}
+
+// ---------- Akış: ülke bitti → damga → uçak → sıradaki ülke ----------
+// ms oyun süresi sonra fn (duraklatılan süre sayılmaz). Oyun bittiyse ya da yeni oyun başladıysa (startGame jetonu
+// siler) iptal: eski geçiş yeni oyunu ilerletmez. Perdeleri oyunSonu, quitToMenu ve startGame kapatır.
+function turSonra(ms, jeton, fn) {
+  let kalan = ms, once = performance.now();
+  (function tik() {
+    if (!game.running || game._turJeton !== jeton) return;
+    const simdi = performance.now();
+    if (!game.paused) kalan -= simdi - once;
+    once = simdi;
+    if (kalan <= 0) fn(); else setTimeout(tik, Math.min(kalan, 100));
+  })();
+}
+// Tek kişilik oyunda ve kurucuda boss ve hayaletler bitince (game.js döngüsü). Bir geçiş bir kez çalışır.
+function turUlkesiBitti() {
+  const u = turUlkesi();
+  if (!u || game._turGeciste) return;
+  game._turGeciste = true;
+  const jeton = (game._turJeton = {});
+  const { yeni } = damgaBas(u.kod);
+  showToast(t("🛂 {ulke} damgası!", { ulke: u.ad }) + (yeni ? ` +${TUR_DAMGA_ELMAS} 💎` : ""));
+  damgaGoster(u);
+  turSonra(TUR_BEKLE_MS, jeton, () => {
+    if (u.sira >= ULKE_SAYISI) { turTamamlandi(); return; }
+    ucakGecisi(u, ulkeSirada(u.sira + 1), () => turSonra(0, jeton, () => nextLevel()));
+  });
+}
+// 51. ülke bitti (tek kişilik). Çevrimiçi kurucunun tur sonu Görev 14'te eklenir.
+function turTamamlandi() {
+  if (online.mode) return;
+  const k = turKaydi();
+  if (!k.bitti) { k.bitti = Date.now(); persistSave(); }
+  game.turBitti = true;
+  oyunSonu(true, false);
+}
+// Oyun sonundaki "🔁 Tekrar Oyna": Dünya Turu'nda kalınan ülkeden (tur bittiyse Dünya Turu ekranı), normal oyunda baştan
+function tekrarOyna() {
+  if (!game.dunyaTuru) { startGame(); return; }
+  if (game.turBitti) { openDunyaTuru(); return; }
+  startGame({ tur: true, ulke: Math.min(game.level, ULKE_SAYISI) });
+}
+
+// ---------- Ekran: rota ve pasaport (spec §3, §5.6) ----------
+const TUR_DURUM_SIMGE = { kilitli: "🔒", acik: "✈️", damgali: "🛂" };
+let _turSecili = 1;
+function turDurumu(u, k) {
+  return k.damgalar[u.kod] ? "damgali" : u.sira <= k.acik ? "acik" : "kilitli";
+}
+function openDunyaTuru() {
+  _turSecili = turKaydi().acik;
+  showScreen("screen-dunya-turu");
+  renderDunyaTuru();
+  turSekmesi("rota");
+  const liste = document.getElementById("tur-liste"), kart = liste.querySelector(".tur-kart.secili");
+  if (kart) liste.scrollTop = kart.offsetTop - (liste.clientHeight - kart.offsetHeight) / 2;
+}
+function renderDunyaTuru() {
+  const k = turKaydi();
+  document.getElementById("tur-sayac").textContent = `🛂 ${Object.keys(k.damgalar).length}/${ULKE_SAYISI}`;
+  const kitalar = { avrupa: t("Avrupa"), afrika: t("Afrika"), asya: t("Asya"), amerika: t("Amerika") };
+  let html = "", kita = null;
+  for (const u of ULKELER) {
+    if (u.kita !== kita) { kita = u.kita; html += `<h3 class="tur-kita">${kitalar[kita]}</h3>`; }
+    const durum = turDurumu(u, k), resim = ulkeKucukResmi(u);
+    html += `<button class="tur-kart ${durum}${u.sira === _turSecili ? " secili" : ""}" data-sira="${u.sira}" onclick="turUlkeSec(${u.sira})"` +
+      `${durum === "kilitli" ? ' aria-disabled="true"' : ""}><span class="tur-sira">${u.sira}</span>` +
+      (resim ? `<img class="tur-resim" src="${resim}" alt="">` : `<span class="tur-resim bos" aria-hidden="true"></span>`) +
+      `<bdi class="tur-ad">${escapeHtml(u.ad)}</bdi><span class="tur-durum">${TUR_DURUM_SIMGE[durum]}</span></button>`;
+  }
+  document.getElementById("tur-liste").innerHTML = html;
+}
+function turSekmesi(ad) {
+  const pasaport = ad === "pasaport";
+  document.querySelectorAll("#screen-dunya-turu .lb-tab").forEach((b) => b.classList.toggle("active", b.dataset.sekme === (pasaport ? "pasaport" : "rota")));
+  document.getElementById("tur-liste").style.display = pasaport ? "none" : "";
+  const pp = document.getElementById("tur-pasaport");
+  pp.style.display = pasaport ? "" : "none";
+  if (pasaport) {
+    const k = turKaydi();
+    pp.innerHTML = ULKELER.map((u) => (k.damgalar[u.kod]
+      ? `<div class="damga">${damgaSvg(u)}</div>`
+      : `<div class="damga bos"><span>${u.sira}</span></div>`)).join("");
+    damgaYazilariniSigdir(pp);
+  }
+}
+// Kilitli kart seçilmez (kart kısa bir sallanmayla cevap verir)
+function turUlkeSec(n) {
+  const u = ulkeSirada(n);
+  const kart = document.querySelector(`#tur-liste .tur-kart[data-sira="${u.sira}"]`);
+  if (turDurumu(u, turKaydi()) === "kilitli") {
+    if (kart) { kart.classList.remove("salla"); void kart.offsetWidth; kart.classList.add("salla"); }
+    return;
+  }
+  _turSecili = u.sira;
+  document.querySelectorAll("#tur-liste .tur-kart").forEach((el) => el.classList.toggle("secili", +el.dataset.sira === _turSecili));
+}
+function dunyaTuruBaslat() {
+  const k = turKaydi();
+  startGame({ tur: true, ulke: turDurumu(ulkeSirada(_turSecili), k) === "kilitli" ? k.acik : _turSecili });
+}

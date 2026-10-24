@@ -1,11 +1,12 @@
-// Hayalet Avcıları: Dünya Turu müzikleri (3.14.0) — Suno istek metinleri ve müzik varlıkları; çalar sınamaları Görev 18'de
-// bu dosyaya eklenir.
+// Hayalet Avcıları: Dünya Turu müzikleri (3.14.0) — Suno istek metinleri, müzik varlıkları ve çalar.
 // İstekler: 51 kayıt rota sırasıyla; ortak kalıp ve ortak olumsuz aynen; türün ölçüsü yazılı; yasak sözcük yok.
 // Varlıklar (MUZIKLI_ULKELER; Görev 5 ve 7–13 doldurur): kayıt ve iki dosya var, Chromium'da çözülür; döngü 27–34 sn,
 // teaser 3–8 sn; ek yerinde örnek sıçraması döngü içinin 99. yüzdeliğini, spektral akı 99. yüzdeliği ya da aynı noktanın
 // kesintisiz akısının 1,15 katını aşmaz (ek yeri vuruş atağına yakındır); döngülerin ses düzeyi ortancadan ±2 dB;
 // www/muzik toplamı ≤ 14 MB.
-// Tasarım: docs/superpowers/specs/2026-10-24-hayalet-ulke-muzikleri-design.md §4, §6, §12
+// Çalar (muzik.js): teaser sonra döngü, söndürme, Müzik kaydırıcısı, ses kapalı/açık, normal oyunda sessizlik,
+// duraklatma, arka plan, hızlı yeniden başlatma (tek kaynak), uçak geçişinde sıradaki ülkenin teaser'ı, dosya hatası.
+// Tasarım: docs/superpowers/specs/2026-10-24-hayalet-ulke-muzikleri-design.md §3, §4, §6, §8, §12
 // Çalıştırma: node hayalet-avcilari/test/muzik.test.mjs   (Playwright + Chromium + ffmpeg; ağ gerekmez)
 import http from 'node:http';
 import fs from 'node:fs';
@@ -99,7 +100,8 @@ function ekYeri(x, bas, son) {
 }
 const rmsDb = (x) => { let s = 0; for (const v of x) s += v * v; return 10 * Math.log10(s / x.length + 1e-20); };
 
-const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
+// Ses çalan sınamalar kullanıcı dokunuşu olmadan AudioContext açar
+const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args: ['--autoplay-policy=no-user-gesture-required'] });
 const hatalar = [];
 try {
   const p = await b.newPage({ viewport: { width: 390, height: 844 } });
@@ -176,6 +178,106 @@ try {
     const toplam = fs.existsSync(k) ? fs.readdirSync(k).reduce((t, f) => t + fs.statSync(path.join(k, f)).size, 0) : 0;
     assert.ok(toplam <= 14 * 1024 * 1024, `${(toplam / 1048576).toFixed(2)} MB`);
   });
+
+  // --- 4) Çalar (ek spec §3, §8) ---
+  const TR = veri.TR;
+  const durum = () => p.evaluate(() => muzikDurumu());
+  const yakin = (a, b2, pay = 0.02) => typeof a === 'number' && Math.abs(a - b2) <= pay;
+  const bekleDongu = (kod) => p.waitForFunction((k) => { const d = muzikDurumu(); return d.calan === 'dongu' && d.kod === k; }, kod, { timeout: 15000, polling: 50 });
+  await p.evaluate(() => { save.playerName = 'Kiki'; persistSave(); audio.init(); });
+  await p.evaluate(() => { startGame({ tur: true, ulke: 1 }); game.player.invuln = 1e9; });
+  await p.waitForTimeout(500);
+  const c1 = await durum();
+  await p.waitForTimeout((TR.girisSure + 0.6) * 1000 - 500);
+  const c2 = await durum();
+  sina('Dünya Turu başında teaser çalar (0,5 sn içinde)', () => { assert.equal(c1.calan, 'giris'); assert.equal(c1.kod, 'TR'); });
+  sina('teaser bitince döngü: loopStart/loopEnd kayıttan, tek kaynak, ana kazanç 0,6', () => {
+    assert.equal(c2.calan, 'dongu'); assert.equal(c2.kod, 'TR');
+    assert.equal(c2.loopStart, TR.bas); assert.equal(c2.loopEnd, TR.son); assert.equal(c2.kaynak, 1);
+    assert.ok(yakin(c2.kazanc, 0.6), String(c2.kazanc));
+  });
+  const kay = await p.evaluate(async () => {
+    const s = document.getElementById('vol-slider-muzik');
+    s.value = 30; s.dispatchEvent(new Event('input'));
+    await new Promise((r) => setTimeout(r, 150));
+    const r = { kazanc: muzikDurumu().kazanc, kayit: save.volumes.muzik, etiket: document.getElementById('vol-label-muzik').textContent };
+    s.value = 60; s.dispatchEvent(new Event('input'));
+    return r;
+  });
+  sina('Müzik kaydırıcısı %30: 0,15 sn içinde kazanç 0,3, kayıtta 0,3', () => {
+    assert.ok(yakin(kay.kazanc, 0.3), String(kay.kazanc)); assert.equal(kay.kayit, 0.3); assert.equal(kay.etiket, '30%');
+  });
+  await p.evaluate(() => endGame(false));
+  await p.waitForTimeout(1200);
+  const c3 = await durum();
+  sina('oyun bitince müzik söner (1,2 sn sonra kaynak yok)', () => { assert.equal(c3.calan, null); assert.equal(c3.kaynak, 0); });
+
+  await p.evaluate(() => { audio.enabled = false; startGame({ tur: true, ulke: 1 }); game.player.invuln = 1e9; });
+  await p.waitForTimeout(1000);
+  const c4 = await durum();
+  await p.evaluate(() => toggleSound());
+  await p.waitForTimeout(1500);
+  const c5 = await durum();
+  sina('ses kapalıyken müzik çalmaz; açılınca teaser\'sız döngü (1,5 sn içinde)', () => {
+    assert.equal(c4.kaynak, 0); assert.equal(c5.calan, 'dongu'); assert.equal(c5.kaynak, 1);
+  });
+  await p.evaluate(() => { endGame(false); startGame(); game.player.invuln = 1e9; });
+  await p.waitForTimeout(1000);
+  const c6 = await durum();
+  sina('normal oyunda müzik yok', () => { assert.equal(c6.kaynak, 0); assert.equal(c6.calan, null); });
+
+  await p.evaluate(() => { endGame(false); startGame({ tur: true, ulke: 1 }); game.player.invuln = 1e9; });
+  await bekleDongu('TR');
+  await p.evaluate(() => pauseGame());
+  await p.waitForTimeout(300);
+  const c7 = await durum();
+  await p.evaluate(() => resumeGame());
+  await p.waitForTimeout(400);
+  const c8 = await durum();
+  sina('duraklatmada müzik kısılır, döngü sürer; devamda geri gelir', () => {
+    assert.equal(c7.kazanc, 0); assert.equal(c7.kaynak, 1); assert.equal(c7.calan, 'dongu');
+    assert.ok(yakin(c8.kazanc, 0.6), String(c8.kazanc));
+  });
+  const arka = await p.evaluate(async () => {
+    const goster = async (gizli) => {
+      Object.defineProperty(document, 'hidden', { value: gizli, configurable: true });
+      document.dispatchEvent(new Event('visibilitychange'));
+      await new Promise((r) => setTimeout(r, 300));
+      return audio.ctx.state;
+    };
+    const r = [await goster(true), await goster(false)];
+    delete document.hidden;
+    return r;
+  });
+  sina('arka planda ses bağlamı askıya alınır, dönünce sürer', () => { assert.deepEqual(arka, ['suspended', 'running']); });
+
+  // Review Focus 6: teaser çözülürken oyun biter ve başka ülke başlar → tek kaynak, yeni ülkenin döngüsü
+  await p.evaluate(() => { endGame(false); startGame({ tur: true, ulke: 1 }); game.player.invuln = 1e9; });
+  await p.waitForTimeout(200);
+  await p.evaluate(() => { endGame(false); startGame({ tur: true, ulke: 43 }); game.player.invuln = 1e9; });
+  await p.waitForTimeout(7000);
+  const c9 = await durum();
+  sina('hızlı yeniden başlatma: 7 sn sonra yalnız JP döngüsü (tek kaynak)', () => { assert.deepEqual([c9.calan, c9.kod, c9.kaynak], ['dongu', 'JP', 1]); });
+
+  // Uçak geçişi: 42. ülke bitince uçakla birlikte 43. ülkenin (JP) teaser'ı başlar
+  await p.evaluate(() => { endGame(false); startGame({ tur: true, ulke: 42 }); game.player.invuln = 1e9; game.bossDefeated = true; game.ghosts = []; });
+  const ucak = await p.waitForFunction(() => document.getElementById('tur-gecis').classList.contains('active') && muzikDurumu().calan === 'giris', null, { timeout: 6000, polling: 50 })
+    .then(() => durum(), () => durum());
+  sina('uçak perdesi görünürken sıradaki ülkenin (JP) teaser\'ı çalar', () => { assert.equal(ucak.calan, 'giris'); assert.equal(ucak.kod, 'JP'); });
+
+  // Dosya bulunamazsa müzik çalmaz, oyun sürer, sayfa hatası olmaz
+  const hata = await p.evaluate(async () => {
+    endGame(false);
+    const e = ULKE_MUZIKLERI.TR, asil = { ...e };
+    e.dongu = 'muzik/yok-dongu.ogg'; e.giris = 'muzik/yok-giris.ogg';
+    let atti = null;
+    try { turMuzigiBaslat('TR'); } catch (err) { atti = String(err); }
+    await new Promise((r) => setTimeout(r, 1000));
+    const r = { atti, kaynak: muzikDurumu().kaynak };
+    Object.assign(e, asil);
+    return r;
+  });
+  sina('dosya hatası: turMuzigiBaslat hata atmaz, 1 sn sonra kaynak yok', () => { assert.deepEqual(hata, { atti: null, kaynak: 0 }); });
 
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {

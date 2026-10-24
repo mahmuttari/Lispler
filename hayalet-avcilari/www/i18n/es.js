@@ -111,6 +111,7 @@ I18N.es = {
   "🎮 Play Games skor tablosu": "🎮 Clasificación de Play Games",
   "🎯 <b>{ad}</b> için cephane": "🎯 Munición para <b>{ad}</b>",
   "🎯 Cephane": "🎯 Munición",
+  "🎵 Müzik": "🎵 Música",
   "🏁 Herkes hayalet olunca tur biter, kazançlar kaydedilir ve lobiye dönülür. Host çıkarsa oyun kapanmaz, sürer.": "🏁 Si todos son fantasmas, termina la ronda, se guardan las ganancias y vuelven a la sala de espera. Si el anfitrión se va, la partida sigue.",
   "🏁 Tur bitti!": "🏁 ¡Ronda terminada!",
   "🏃 Hız {hiz} · 💥 Hasar {hasar} · 🎯 Menzil {menzil}": "🏃 Velocidad {hiz} · 💥 Daño {hasar} · 🎯 Alcance {menzil}",

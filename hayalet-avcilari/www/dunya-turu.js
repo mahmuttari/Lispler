@@ -158,6 +158,7 @@ function ucakGecisi(onceki, sonraki, bitince) {
   const ad = (u, sinif) => `<div class="tur-gecis-ad ${sinif}"><span class="tur-gecis-sira">${u.sira}</span> <bdi>${escapeHtml(u.ad)}</bdi></div>`;
   el.innerHTML = `<div class="tur-perde-kutu tur-gecis-kutu">${ad(onceki, "bas")}<div class="tur-gecis-yol"><span class="tur-ucak">✈️</span></div>${ad(sonraki, "son")}</div>`;
   const no = perdeAc(el);
+  turMuzigiBaslat(sonraki.kod); // teaser uçakla başlar, tanıtım bildirimine sarkar (muzik.js)
   setTimeout(() => {
     if (_perdeNo === no) el.classList.remove("active");
     if (bitince) bitince();
@@ -186,6 +187,7 @@ function turUlkesiBitti() {
   const { yeni } = damgaBas(u.kod);
   showToast(t("🛂 {ulke} damgası!", { ulke: u.ad }) + (yeni ? ` +${TUR_DAMGA_ELMAS} 💎` : ""));
   damgaGoster(u);
+  turMuzigiSondur(); // ülkenin müziği damgayla söner
   turSonra(TUR_BEKLE_MS, jeton, () => {
     if (u.sira >= ULKE_SAYISI) { turTamamlandi(); return; }
     ucakGecisi(u, ulkeSirada(u.sira + 1), () => turSonra(0, jeton, () => nextLevel()));

@@ -255,6 +255,14 @@
     <button class="btn sound-toggle" onclick="toggleSound()">🔊 Ses Açık</button>
     <div class="vol-row">
       <div class="vol-head">
+        <span class="vol-name">🎵 Müzik</span>
+        <span class="vol-pct" id="vol-label-muzik">60%</span>
+      </div>
+      <input type="range" id="vol-slider-muzik" min="0" max="100" value="60" class="vol-slider"
+             oninput="setVolume('muzik', this.value)">
+    </div>
+    <div class="vol-row">
+      <div class="vol-head">
         <span class="vol-name">👻 Hayalet sesleri</span>
         <span class="vol-pct" id="vol-label-ghost">100%</span>
       </div>
@@ -499,6 +507,7 @@
 <script src="kostumler.js"></script>
 <script src="dunya-turu.js"></script>
 <script src="ulke-muzikleri.js"></script>
+<script src="muzik.js"></script>
 <script src="arkadaslar.js"></script>
 <script src="game.js"></script>
 <script>

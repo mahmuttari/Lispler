@@ -111,6 +111,7 @@ I18N.hi = {
   "🎮 Play Games skor tablosu": "🎮 Play Games लीडरबोर्ड",
   "🎯 <b>{ad}</b> için cephane": "🎯 <b>{ad}</b> के लिए गोला-बारूद",
   "🎯 Cephane": "🎯 गोला-बारूद",
+  "🎵 Müzik": "🎵 संगीत",
   "🏁 Herkes hayalet olunca tur biter, kazançlar kaydedilir ve lobiye dönülür. Host çıkarsa oyun kapanmaz, sürer.": "🏁 सब भूत बन जाएँ तो राउंड खत्म होता है, कमाई सेव होती है और सब लॉबी में लौटते हैं। होस्ट चला जाए तो भी गेम चलता रहता है।",
   "🏁 Tur bitti!": "🏁 राउंड खत्म!",
   "🏃 Hız {hiz} · 💥 Hasar {hasar} · 🎯 Menzil {menzil}": "🏃 स्पीड {hiz} · 💥 डैमेज {hasar} · 🎯 रेंज {menzil}",

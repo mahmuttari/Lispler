@@ -111,6 +111,7 @@ I18N.en = {
   "🎮 Play Games skor tablosu": "🎮 Play Games leaderboard",
   "🎯 <b>{ad}</b> için cephane": "🎯 Ammo for <b>{ad}</b>",
   "🎯 Cephane": "🎯 Ammo",
+  "🎵 Müzik": "🎵 Music",
   "🏁 Herkes hayalet olunca tur biter, kazançlar kaydedilir ve lobiye dönülür. Host çıkarsa oyun kapanmaz, sürer.": "🏁 When everyone is a ghost, the round ends, rewards are saved and you go back to the lobby. If the host leaves, the game keeps going.",
   "🏁 Tur bitti!": "🏁 Round over!",
   "🏃 Hız {hiz} · 💥 Hasar {hasar} · 🎯 Menzil {menzil}": "🏃 Speed {hiz} · 💥 Damage {hasar} · 🎯 Range {menzil}",

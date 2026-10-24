@@ -111,6 +111,7 @@ I18N.zh = {
   "🎮 Play Games skor tablosu": "🎮 Play 游戏排行榜",
   "🎯 <b>{ad}</b> için cephane": "🎯 <b>{ad}</b>的弹药",
   "🎯 Cephane": "🎯 弹药",
+  "🎵 Müzik": "🎵 音乐",
   "🏁 Herkes hayalet olunca tur biter, kazançlar kaydedilir ve lobiye dönülür. Host çıkarsa oyun kapanmaz, sürer.": "🏁 所有人都变成幽灵时本轮结束，收获会保存，大家返回大厅。房主离开时游戏也会继续。",
   "🏁 Tur bitti!": "🏁 本轮结束！",
   "🏃 Hız {hiz} · 💥 Hasar {hasar} · 🎯 Menzil {menzil}": "🏃 速度 {hiz} · 💥 伤害 {hasar} · 🎯 射程 {menzil}",

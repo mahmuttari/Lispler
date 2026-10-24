@@ -21,7 +21,7 @@ const sunucu = http.createServer((q, r) => {
 }).listen(0);
 const adres = `http://127.0.0.1:${sunucu.address().port}/index.html`;
 // Türkçeye özgü harfler ve sık sözcükler (oyuncu adı "Avcı" gibi kullanıcı verisi hariç tutulur)
-const TURKCE = /[ğışĞİŞ]|\b(Bölüm|Geri|Mağaza|Karakterler|Hesap|Oda|oyuncu|Tamam|Ses)\b/;
+const TURKCE = /[ğışĞİŞ]|\b(Bölüm|Geri|Mağaza|Karakterler|Hesap|Oda|oyuncu|Tamam|Ses|Müzik)\b/;
 
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
 const sorunlar = [];
@@ -46,7 +46,11 @@ try {
         magaza_silah: () => showShopTab('guns'),
         sampiyonlar: () => { openLeaderboard(); setLeaderboardSource('local'); },
         hesap: () => openAccount(),
-        ses: () => { showScreen('screen-menu'); openSoundSettings(); },
+        ses: () => { // 3.14.0: en üstte 🎵 Müzik kaydırıcısı
+          showScreen('screen-menu'); openSoundSettings();
+          const satir = document.getElementById('vol-slider-muzik');
+          if (!satir || document.querySelector('#screen-sound .vol-row') !== satir.closest('.vol-row')) throw new Error('Müzik kaydırıcısı en üstte değil');
+        },
         online: () => { closeSoundSettings(); openOnline(); },
         oda_kur: () => openCreateRoom(),
         oda_listesi: () => { openRoomList(); renderRoomList(null); },

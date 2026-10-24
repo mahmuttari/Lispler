@@ -9,7 +9,7 @@ const audio = {
   enabled: true,
   samples: {},
   // Kategori ses seviyeleri (0..1). save.volumes ile değiştirilebilir
-  volumes: { ghost: 1, fire: 1, sfx: 1 },
+  volumes: { ghost: 1, fire: 1, sfx: 1, muzik: 0.6 },
   _preloaded: false,
   _lastSmallGhost: 0,
   _v(cat) { const v = this.volumes && this.volumes[cat]; return v == null ? 1 : v; },
@@ -631,7 +631,7 @@ const defaultSave = {
   // Dünya Turu (dunya-turu.js): en ileri açık ülke, damgalar (ISO kodu → zaman), ilk tamamlanma zamanı
   dunyaTuru: { acik: 1, damgalar: {}, bitti: 0 },
   soundEnabled: true,
-  volumes: { ghost: 1, fire: 1, sfx: 1 },
+  volumes: { ghost: 1, fire: 1, sfx: 1, muzik: 0.6 }, // muzik: Dünya Turu müziği (muzik.js)
   accountCode: "",
 };
 
@@ -4882,6 +4882,8 @@ function startGame(secenek) {
 
   updateHUD();
   refreshWeaponBar();
+  // Dünya Turu'nda ülkenin teaser'ı ve döngüsü (muzik.js); normal oyunda müzik yok
+  if (game.dunyaTuru) turMuzigiBaslat(turUlkesi().kod); else turMuzigiSondur(0);
   game.lastFrame = performance.now();
   const no = ++_donguNo;
   requestAnimationFrame((zaman) => gameLoop(zaman, no));
@@ -6435,6 +6437,7 @@ function pauseGame() {
   davet.style.display = (cevrimici && online.roomId) ? "" : "none";
   davet.disabled = odaDolu();
   document.getElementById("screen-pause").classList.add("active");
+  if (!cevrimici) muzikDuraklat(true); // çevrimiçi menü oyunu durdurmaz, müzik de sürer
 }
 
 function resumeGame() {
@@ -6442,6 +6445,7 @@ function resumeGame() {
   game.paused = false;
   game.menude = false;
   game.lastFrame = performance.now();
+  muzikDuraklat(false);
 }
 
 function quitToMenu() {
@@ -6450,6 +6454,7 @@ function quitToMenu() {
   game.running = false;
   game.menude = false;
   turPerdeleriniKapat();
+  turMuzigiSondur();
   document.getElementById("screen-pause").classList.remove("active");
   document.getElementById("screen-gameover").classList.remove("active");
   const wb = document.getElementById("weapon-bar");
@@ -6470,6 +6475,7 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   game.running = false;
   game.menude = false;
   turPerdeleriniKapat(); // damga ya da uçak geçişi sırasında biten oyunda perde ekranda kalmasın
+  turMuzigiSondur();
   // Dünya Turu skorları Şampiyonlar'a, buluta ve Play Games'e yazılmaz, bölüm rekorunu değiştirmez (spec §3)
   const tur = game.dunyaTuru, turBitti = tur && game.turBitti;
 
@@ -6539,7 +6545,7 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
 function init() {
   // Ses ayarlarını save'den uygula
   audio.enabled = save.soundEnabled !== false;
-  audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1 }, save.volumes || {});
+  audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1, muzik: 0.6 }, save.volumes || {});
   refreshSoundButtons();
   refreshSoundSliders();
   // Firebase + auth state listener; oturum yoksa (ilk açılış, Google'dan çıkış, hesap silme) anonim giriş
@@ -6738,7 +6744,7 @@ async function restoreAccountGoogle() {
     persistSave();
     Object.assign(save, loadSave()); // eski yedekte olmayan karakter/silah alanlarını tamamla
     audio.enabled = save.soundEnabled !== false;
-    audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1 }, save.volumes || {});
+    audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1, muzik: 0.6 }, save.volumes || {});
     refreshSoundButtons();
     refreshSoundSliders();
     showToast(t("✅ Geri yüklendi: {ad}", { ad: who }));
@@ -6863,7 +6869,7 @@ async function restoreAccount() {
     Object.assign(save, loadSave()); // eski yedekte olmayan karakter/silah alanlarını tamamla
     // Ses ayarlarını yeniden uygula
     audio.enabled = save.soundEnabled !== false;
-    audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1 }, save.volumes || {});
+    audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1, muzik: 0.6 }, save.volumes || {});
     refreshSoundButtons();
     refreshSoundSliders();
     showToast(t("✅ Geri yüklendi: {ad}", { ad: who }));
@@ -6909,6 +6915,11 @@ function toggleSound() {
     audio.init();
     audio.toast();
   }
+  // Dünya Turu müziği: kapanınca 0,2 sn'de söner; açılınca oyun sürüyorsa teaser'sız döngü
+  muzikSesiniUygula();
+  const u = turUlkesi();
+  if (!audio.enabled) turMuzigiSondur(0.2);
+  else if (game.running && u) turMuzigiBaslat(u.kod, { giris: false });
 }
 
 function refreshSoundButtons() {
@@ -6943,8 +6954,10 @@ function setVolume(cat, valStr) {
   const pct = Math.round(v * 100) + "%";
   const lbl = document.getElementById("vol-label-" + cat);
   if (lbl) lbl.textContent = pct;
-  // Kategoriye uygun anında önizleme sesi (throttled)
   audio.init();
+  // Müzik çalıyorsa önizleme odur: kazanç anında ayarlanır
+  if (cat === "muzik") { muzikSesiniUygula(); return; }
+  // Kategoriye uygun anında önizleme sesi (throttled)
   const now = performance.now();
   if (!audio._lastPreview || now - audio._lastPreview > 200) {
     audio._lastPreview = now;
@@ -6955,9 +6968,9 @@ function setVolume(cat, valStr) {
 }
 
 function refreshSoundSliders() {
-  const cats = ["ghost", "fire", "sfx"];
+  const cats = ["muzik", "ghost", "fire", "sfx"];
   for (const cat of cats) {
-    const v = audio.volumes && audio.volumes[cat] != null ? audio.volumes[cat] : 1;
+    const v = audio.volumes && audio.volumes[cat] != null ? audio.volumes[cat] : cat === "muzik" ? 0.6 : 1;
     const slider = document.getElementById("vol-slider-" + cat);
     if (slider) slider.value = Math.round(v * 100);
     const lbl = document.getElementById("vol-label-" + cat);

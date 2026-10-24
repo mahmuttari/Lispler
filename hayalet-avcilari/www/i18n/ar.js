@@ -111,6 +111,7 @@ I18N.ar = {
   "🎮 Play Games skor tablosu": "🎮 لوحة صدارة Play Games",
   "🎯 <b>{ad}</b> için cephane": "🎯 ذخيرة <b>{ad}</b>",
   "🎯 Cephane": "🎯 الذخيرة",
+  "🎵 Müzik": "🎵 الموسيقى",
   "🏁 Herkes hayalet olunca tur biter, kazançlar kaydedilir ve lobiye dönülür. Host çıkarsa oyun kapanmaz, sürer.": "🏁 عندما يصبح الجميع أشباحًا تنتهي الجولة وتُحفظ المكاسب وتعودون إلى الردهة. وإذا غادر المضيف تستمر اللعبة.",
   "🏁 Tur bitti!": "🏁 انتهت الجولة!",
   "🏃 Hız {hiz} · 💥 Hasar {hasar} · 🎯 Menzil {menzil}": "🏃 السرعة {hiz} · 💥 الضرر {hasar} · 🎯 المدى {menzil}",

@@ -7,14 +7,14 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; Play'e gönderilmedi (kullanıcı onayı bekleniyor). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı) Firebase konsolunda yayınlanmalı: [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama). Önceki: 3.12.2 (44), 23 Ekim 2026'da incelemedeki 3.12.1 (43)'in yerine Play'e gönderildi |
+| Sürüm | 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı) Firebase konsolunda yayınlanmalı: [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama). Önceki: 3.12.2 (44), 23 Ekim 2026'da incelemedeki 3.12.1 (43)'in yerine Play'e gönderildi |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
 | Firebase kuralları | [`firebase/`](firebase/README.md) — RTDB + Firestore kuralları, yol yol gerekçe, emülatör testi. 3.10.2'den beri Firebase anonim giriş: oda, kodlu yedek ve skor `auth.uid`'e bağlı. 3.10.3 geçişi kapatır (girişsiz ve `u_` kimlikli yazım reddedilir) |
 | Reklam | AdMob, yalnız Android uygulaması — aşağıda "Reklamlar (AdMob)" |
 | Play Games | Play Oyun Hizmetleri v2 (3.10.4), yalnız Android — aşağıda "Google Play Oyun Hizmetleri" |
-| Play paketi | 3.10.1'den itibaren CI (`hayalet-android.yml`) derler; `dist/HayaletAvcilari-play.aab` 3.10.0 (36) olarak kaldı. Geçişi kapatan kurallar 20 Ekim 2026'da yayınlandı ([`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama)); 3.12.0 (42; çevrimiçi oyun yenilendi) 22 Ekim 2026'da kullanıcının isteğiyle ("Derle ve yayınla") `claude/beautiful-feynman-pxwdju` dalından derlendi (koşu 39836917452, Poyraz Workshop yükleme anahtarı) ve Play'e gönderildi (koşu 39837609373); 3.12.1 (43; biri ölünce donma düzeltmesi) 23 Ekim 2026'da aynı daldan derlendi (koşu 39944259051) ve incelemedeki 3.12.0'ın yerine Play'e gönderildi (koşu 39960541073); 3.12.2 (44; 6 kişilik oda) aynı gün aynı daldan derlendi (koşu 39971239015) ve incelemedeki 3.12.1'in yerine Play'e gönderildi (koşu 39975579074) |
+| Play paketi | 3.10.1'den itibaren CI (`hayalet-android.yml`) derler; `dist/HayaletAvcilari-play.aab` 3.10.0 (36) olarak kaldı. Geçişi kapatan kurallar 20 Ekim 2026'da yayınlandı ([`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama)); 3.12.0 (42; çevrimiçi oyun yenilendi) 22 Ekim 2026'da kullanıcının isteğiyle ("Derle ve yayınla") `claude/beautiful-feynman-pxwdju` dalından derlendi (koşu 39836917452, Poyraz Workshop yükleme anahtarı) ve Play'e gönderildi (koşu 39837609373); 3.12.1 (43; biri ölünce donma düzeltmesi) 23 Ekim 2026'da aynı daldan derlendi (koşu 39944259051) ve incelemedeki 3.12.0'ın yerine Play'e gönderildi (koşu 39960541073); 3.12.2 (44; 6 kişilik oda) aynı gün aynı daldan derlendi (koşu 39971239015) ve incelemedeki 3.12.1'in yerine Play'e gönderildi (koşu 39975579074); 3.13.0 (45; arkadaşlar, engeller, tur sıralaması) aynı daldan son inceleme düzeltmeleriyle derlendi (koşu 40040731793, commit 950117c) ve 24 Ekim 2026'da 3.12.2'nin yerine Play'e gönderildi (koşu 40063254710) |
 | Denemelik APK | `dist/HayaletAvcilari.apk` (aynı anahtarla imzalı; Play sürümü üstüne kurulmaz, önce kaldırılır) |
 
 ## Reklamlar (AdMob)
@@ -271,7 +271,8 @@ Yayın sırası:
    henüz yayınlanmadıysa 3.12.2'nin `maxPlayers` 2–6 değişikliğini birlikte getirir.
 2. **Gizlilik politikası ve hesap silme sayfası:** GitHub Pages yalnız `main`'den yayınlar; `main`'e PR kullanıcının
    onayıyla.
-3. **Uygulama 3.13.0 (45):** CI derler; Play'e gönderme kullanıcının açık onayıyla.
+3. **Uygulama 3.13.0 (45):** CI derledi (koşu 40040731793); 24 Ekim 2026'da kullanıcının onayıyla Play'e gönderildi
+   (koşu 40063254710).
 4. **Play Console › Veri güvenliği:** "Kişiler" ve "Diğer işlemler" satırları ([`magaza/aciklamalar.md`](magaza/aciklamalar.md)
    › Veri güvenliği formu).
 

@@ -1,6 +1,6 @@
 // Play mağaza görselleri: her dil için 7 telefon ekran görüntüsü (1080×1920) ve tanıtım görseli (1024×500).
 // 3.13.0: oyun ve boss kareleri yeni engelleri gösterir (Yeşil Orman, Mor Şato), menüde kupa, 6. kare Arkadaşlar.
-// 3.14.0: 7. kare Dünya Turu (Japonya, kimonolu boss).
+// 3.14.0: 7. kare Dünya Turu (Japonya, kimonolu boss); tanıtım görselinin alt yazısında 🌍 Dünya turu.
 // Kullanım: node hayalet-avcilari/araclar/magaza-gorsel.mjs [play-dili…]   (Playwright + Chromium gerekir)
 // Çıktı: tr-TR → magaza/play/, diğerleri → magaza/play/<play-dili>/ (android/play.mjs gorsel bu klasörleri yükler)
 import http from 'node:http';
@@ -15,13 +15,13 @@ const { chromium } = await import(pathToFileURL(PW).href);
 
 // Play dili → oyun dili, tanıtım görseli başlığı ve alt yazısı
 const DILLER = {
-  'tr-TR': { dil: 'tr', baslik: 'Hayalet<br>Avcıları', alt: "👻 Hayaletleri yakala<br>👑 Boss'u yen · 🎩 Kostüm topla" },
-  'en-US': { dil: 'en', baslik: 'Ghost<br>Hunters', alt: '👻 Catch the ghosts<br>👑 Beat the boss · 🎩 Collect costumes' },
-  'es-ES': { dil: 'es', baslik: 'Cazadores de<br>Fantasmas', alt: '👻 Atrapa fantasmas<br>👑 Vence al jefe · 🎩 Colecciona disfraces', kucuk: true },
-  'es-419': { dil: 'es', baslik: 'Cazadores de<br>Fantasmas', alt: '👻 Atrapa fantasmas<br>👑 Vence al jefe · 🎩 Colecciona disfraces', kucuk: true },
-  'zh-CN': { dil: 'zh', baslik: '幽灵<br>猎人', alt: '👻 抓幽灵<br>👑 打败BOSS · 🎩 收集服装' },
-  'hi-IN': { dil: 'hi', baslik: 'भूत<br>शिकारी', alt: '👻 भूत पकड़ो<br>👑 बॉस को हराओ · 🎩 पोशाकें जमा करो' },
-  ar: { dil: 'ar', baslik: 'صيادو<br>الأشباح', alt: '👻 اصطد الأشباح<br>👑 اهزم الزعيم · 🎩 اجمع الأزياء', rtl: true },
+  'tr-TR': { dil: 'tr', baslik: 'Hayalet<br>Avcıları', alt: "👻 Hayaletleri yakala · 🌍 Dünyayı gez<br>👑 Boss'u yen · 🎩 Kostüm topla" },
+  'en-US': { dil: 'en', baslik: 'Ghost<br>Hunters', alt: '👻 Catch ghosts · 🌍 Tour the world<br>👑 Beat the boss · 🎩 Collect costumes' },
+  'es-ES': { dil: 'es', baslik: 'Cazadores de<br>Fantasmas', alt: '👻 Atrapa fantasmas · 🌍 Recorre el mundo<br>👑 Vence al jefe · 🎩 Colecciona disfraces', kucuk: true },
+  'es-419': { dil: 'es', baslik: 'Cazadores de<br>Fantasmas', alt: '👻 Atrapa fantasmas · 🌍 Recorre el mundo<br>👑 Vence al jefe · 🎩 Colecciona disfraces', kucuk: true },
+  'zh-CN': { dil: 'zh', baslik: '幽灵<br>猎人', alt: '👻 抓幽灵 · 🌍 环游世界<br>👑 打败BOSS · 🎩 收集服装' },
+  'hi-IN': { dil: 'hi', baslik: 'भूत<br>शिकारी', alt: '👻 भूत पकड़ो · 🌍 दुनिया घूमो<br>👑 बॉस को हराओ · 🎩 पोशाकें जमा करो' },
+  ar: { dil: 'ar', baslik: 'صيادو<br>الأشباح', alt: '👻 اصطد الأشباح · 🌍 تجوّل حول العالم<br>👑 اهزم الزعيم · 🎩 اجمع الأزياء', rtl: true },
 };
 const secim = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(DILLER);
 
@@ -128,7 +128,7 @@ try {
       body{background:radial-gradient(circle at ${d.rtl ? '75%' : '25%'} 40%,#5b2a9e 0,#2a1150 45%,#1a0b2e 100%);display:flex;align-items:center;gap:44px;padding:0 64px;box-sizing:border-box}
       img{width:300px;height:300px;border-radius:62px;box-shadow:0 18px 50px rgba(0,0,0,.55);flex:none}
       h1{margin:0 0 22px;font-size:${d.kucuk ? 62 : 82}px;line-height:1.08;font-weight:900;text-shadow:0 6px 0 #3b0764,0 10px 30px rgba(0,0,0,.6)}
-      p{margin:0;font-size:29px;line-height:1.4;font-weight:700;color:#fde047;text-shadow:0 3px 0 #3b0764}
+      p{margin:0;font-size:${d.kucuk ? 25 : 29}px;line-height:1.4;font-weight:700;color:#fde047;text-shadow:0 3px 0 #3b0764}
       .g{position:absolute;font-size:60px;opacity:.85}</style></head><body>
       <img src="${ikon}"><div><h1>${d.baslik}</h1><p>${d.alt}</p></div>
       <div class="g" style="${d.rtl ? 'left' : 'right'}:40px;top:26px">👻</div><div class="g" style="${d.rtl ? 'left' : 'right'}:110px;bottom:24px;font-size:46px">👻</div>

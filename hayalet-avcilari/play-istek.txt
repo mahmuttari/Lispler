@@ -48,4 +48,4 @@
 # (yapıldı 2026-10-24, koşu 40124165355: production 3.14.0 (47) completed; paketler 36, 42–45, 47; 7 dilde icon 1, featureGraphic 1, phoneScreenshots 7) durum
 
 # istek 2026-10-24T19:25:11Z: tanıtım görseli 7 dilde 3.14.0'a göre (alt yazıda "🌍 Dünyayı gez"; İspanyolcada alt yazı 25 px, satırlar bölünmez); telefon kareleri aynı (kullanıcının açık onayıyla: "görselleri de güncelle play de")
-gorsel uygula
+# (yapıldı 2026-10-24, koşu 40125211194: 7 dilde simge, yeni tanıtım görseli ve 7 telefon karesi yüklendi, düzenleme onaylandı) gorsel uygula

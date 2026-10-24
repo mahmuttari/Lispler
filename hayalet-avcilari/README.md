@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
+| Sürüm | 3.14.1 (versionCode 48) — son inceleme ve sınama düzeltmeleri (aşağıda "3.14.1: düzeltmeler"); 3.14.0 onaylanıp yayına çıkınca Play'e gönderilir (inceleme sürerken yeni sürüm yüklemek incelemeyi baştan başlatır). Önceki: 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
@@ -400,6 +400,30 @@ Test: `test/reklam.test.mjs` (sahte AdMob eklentisi, 5 sınama: initialize bir k
 initialize'dan sonra, geçiş ve ödüllü reklam yine yüklenir, sayfa hatası yok); düzeltmeden önce derece sınaması düştü.
 Sürüm notu: 3.13.0 incelemedeyken gönderilebileceği için 3.13.0'ın satırlarını da taşır; mağaza notu İspanyolcada 500'ü
 aşmasın diye 👥 (3.12.2) satırı çıktı (tr 450, en 453, es 490, zh 179, hi 454, ar 404).
+
+## 3.14.1: düzeltmeler
+
+3.14.0'ın son incelemesinde ertelenen küçük bulgular ve sınama boşlukları (24 Ekim 2026; kullanıcı: "müzikleri bu
+şekilde gönder, sonra güncelleriz"). Müzikler değişmedi.
+
+- **Müzik:** oyun bitip hemen yeni oyun başlayınca eski müzik 0,05 sn'de susar (eskiden 0,8 sn'lik sönmesi yenisinin
+  altında sürüyordu; `turMuzigiSondur` sönmekte olan kaynağı daha kısa kesmeyle yeniden kısar). Damga ya da uçak
+  sırasında ses kapatılıp açılırsa biten ülkenin döngüsü başlamaz: damga anında müzik yok, uçakta sıradaki ülkenin
+  müziği (`turMuzikUlkesi`).
+- **Çevrimiçi geçiş:** istemci de kurucu gibi damgayı ülke bitince görür (`st.lt` 0 → 1), 1,8 sn sonra uçak ve sıradaki
+  ülkenin teaser'ı; bölüm kurucunun durumuyla değişir, damga ve müzik tekrarlanmaz. Geçiş görülmediyse (ortadan
+  katılma, kaybolan durum) damga eskisi gibi bölüm değişince basılır. Geçişin ortasında host olan istemcide tur
+  takılmaz (`hostOl` geçişi bırakır; damga ikinci kez basılmaz).
+- **Duraklatma:** uçak sırasında duraklatılan oyunda bölüm duraklatma ekranının arkasında değişmez (`turSonra`
+  süresi dolsa da devamı bekler).
+- **Reklam:** oyun sonu reklamı 800 ms sonra yalnız oyun bitti ekranı hâlâ açıksa gösterilir; hızlı "Tekrar Oyna"da
+  yeni oyunun üstüne gelmez, hak sonraki oyun sonuna kalır.
+- **Karışık sürüm:** eski sürümlü kurucu 52, 53… bölümü oynarken istemci de aynı bölümde (aynı harita); ülke AR kalır,
+  tamamlanma ödülü 51. ülkede sınırlı.
+- **Sınamalar:** `muzik.test` (hızlı yeniden başlatma, geçişte ses kapat-aç), `dunya-turu.test` (istemci geçişi, host
+  olma, duraklatma iki aşamada, karışık sürüm haritası ve ödülü), `reklam.test` (hızlı Tekrar Oyna), `dil.test` (her
+  dilde en uzun boss duyurusu), `cevrimici.test` (tur odasında host değişimi; 51. ülke: iki tarafta AR damgası, tur
+  tamamlandı, oda lobiye ve 1. ülkeye).
 
 ## 3.14.0: Dünya Turu
 

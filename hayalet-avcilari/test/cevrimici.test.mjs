@@ -363,6 +363,49 @@ try {
     assert.deepEqual(turBitti, [true, true]); assert.equal(odaUlkesi, 4); assert.deepEqual(lobi2, ['🌍 4. Almanya', '🌍 4. Almanya']);
   });
 
+  // 8b) 3.14.1: tur odasında host değişimi — oyun sürerken kurucu ayrılır, konuk host olur, tur aynı ülkeden sürer;
+  // yeni host ülkeyi bitirince damga ve sıradaki ülke
+  await U.p.evaluate(async () => { await toggleReady(); });
+  await bekle(K, () => document.getElementById('lobby-start-btn').style.display !== 'none');
+  await K.p.evaluate(async () => { await startMpGame(); });
+  await bekle(U, () => game.running && online.mode === 'client' && online.turSonUlke === 4, null, 20000);
+  await U.p.evaluate(() => { window.__olumsuz = setInterval(() => { if (game.player) { game.player.invuln = 2; game.player.hp = 3; } }, 100); });
+  await K.p.evaluate(() => { quitToMenu(); }); // ⏸ → 🏠 Menüye Dön: odadan çıkar, oyunu bırakır
+  const hostOldu = await bekle(U, () => online.mode === 'host', null, 20000).then(() => true, () => false);
+  await U.p.evaluate(() => { game.bossSpawnTimer = 999; game.bossDefeated = true; game.ghosts = []; });
+  const ilerledi2 = await bekle(U, () => game.level === 5 && !!save.dunyaTuru.damgalar.DE, null, 20000).then(() => true, () => false);
+  const yeniHost = await U.p.evaluate(() => ({ mod: online.mode, level: game.level, ulke: turUlkesi().kod, de: !!save.dunyaTuru.damgalar.DE }));
+  sina('tur odasında kurucu ayrılınca konuk host olur; Almanya\'yı bitirince DE damgası ve 5. ülke', () => {
+    assert.ok(hostOldu); assert.ok(ilerledi2, JSON.stringify(yeniHost));
+    assert.deepEqual({ mod: yeniHost.mod, level: yeniHost.level, de: yeniHost.de }, { mod: 'host', level: 5, de: true });
+  });
+  await U.p.evaluate(async () => { clearInterval(window.__olumsuz); quitToMenu(); await new Promise((r) => setTimeout(r, 500)); showScreen('screen-online'); });
+
+  // 8c) 3.14.1: son ülke — 51. ülkeden kurulan odada kurucu Arjantin'i bitirir: iki tarafta AR damgası ve "tur
+  // tamamlandı" kaydı; tur biter, oda lobiye ve 1. ülkeye döner
+  await K.p.evaluate(async () => {
+    save.dunyaTuru = { acik: 51, damgalar: {}, bitti: 0 }; persistSave();
+    showScreen('screen-online'); openCreateRoom(); odaKipiSec('tur'); odaUlkesiSec(51); await submitCreateRoom();
+  });
+  await U.p.evaluate(async () => { save.dunyaTuru = { acik: 1, damgalar: {}, bitti: 0 }; persistSave(); await openRoomList(); });
+  await bekle(U, () => [...document.querySelectorAll('#room-list .room-card')].some((c) => c.textContent.includes('🌍 Arjantin')));
+  await U.p.evaluate(() => [...document.querySelectorAll('#room-list .room-card')].find((c) => c.textContent.includes('🌍 Arjantin')).querySelector('button').click());
+  await bekle(U, () => online.cachedRoom && online.cachedRoom.players[online.uid] && document.getElementById('screen-lobby').classList.contains('active'));
+  await U.p.evaluate(async () => { await toggleReady(); });
+  await bekle(K, () => document.getElementById('lobby-start-btn').style.display !== 'none');
+  await K.p.evaluate(async () => { await startMpGame(); });
+  await bekle(U, () => game.running && online.mode === 'client' && online.turSonUlke === 51, null, 20000);
+  for (const s of [K, U]) await s.p.evaluate(() => { window.__olumsuz = setInterval(() => { if (game.player) { game.player.invuln = 2; game.player.hp = 3; } }, 100); });
+  await K.p.evaluate(() => { game.bossSpawnTimer = 999; game.bossDefeated = true; game.ghosts = []; });
+  const sonBitti = await Promise.all([K, U].map((s) => bekle(s, () => !game.running, null, 30000).then(() => true, () => false)));
+  const sonUlke = await Promise.all([K, U].map((s) => s.p.evaluate(() => { clearInterval(window.__olumsuz); return { ar: !!save.dunyaTuru.damgalar.AR, bitti: !!save.dunyaTuru.bitti }; })));
+  const odaSon = await K.p.evaluate(async () => ({ level: await rtdb.get(`rooms/${online.roomId}/level`), status: await rtdb.get(`rooms/${online.roomId}/status`) }));
+  sina('son ülke: kurucu Arjantin\'i bitirince iki tarafta AR damgası ve tur tamamlandı; oda lobiye ve 1. ülkeye döner', () => {
+    assert.deepEqual(sonBitti, [true, true]);
+    assert.deepEqual(sonUlke, [{ ar: true, bitti: true }, { ar: true, bitti: true }]);
+    assert.deepEqual(odaSon, { level: 1, status: 'lobby' });
+  });
+
   // 9) Konsolda eski kurallar (tur alanı yok): Dünya Turu odası kurulamaz, uyarı çıkar, normal odaya dönülmez
   const kurallar = JSON.parse(fs.readFileSync(path.join(KOK, 'firebase', 'database.rules.json'), 'utf8'));
   delete kurallar.rules.rooms.$roomId.tur;

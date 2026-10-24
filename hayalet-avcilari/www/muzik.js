@@ -144,7 +144,8 @@ function turMuzigiBaslat(kod, { giris = true } = {}) {
 }
 
 // Müziği sure saniyede söndürür ve kaynakları durdurur; bekleyen başlatma iptal olur. Sönen kaynak durana kadar
-// muzikDurumu().kaynak'ta sayılır (iki müziğin üst üste çalmadığı böyle görülür).
+// muzikDurumu().kaynak'ta sayılır (iki müziğin üst üste çalmadığı böyle görülür). Zaten sönmekte olan kaynak daha
+// kısa bir söndürme gelirse (oyun bitti, hemen yeni oyun) yeniden kısılır: eski müzik yenisinin altında sürmez.
 function turMuzigiSondur(sure = 0.8) {
   muzik.no++;
   clearTimeout(muzik.onceden);
@@ -152,8 +153,9 @@ function turMuzigiSondur(sure = 0.8) {
   if (!audio.ctx) return;
   const t = audio.ctx.currentTime, son = t + Math.max(0.01, sure);
   for (const k of muzik.kaynaklar) {
-    if (k.sonuyor) continue;
+    if (k.sonuyor && k.son <= son) continue;
     k.sonuyor = true;
+    k.son = son;
     try {
       const g = k.kazanc.gain;
       g.cancelScheduledValues(t);

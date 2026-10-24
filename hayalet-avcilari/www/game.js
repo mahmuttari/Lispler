@@ -319,8 +319,17 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.14.0";
+const APP_VERSION = "3.14.1";
 const UPDATE_NOTES = {
+  // 3.13.0'dan doğrudan gelen oyuncu 3.14.0'ı görmemiş olabilir: 3.14.0'ın satırları önce, 3.14.1'in düzeltmeleri sonda.
+  // Mağaza notu (aynı satırlar) her dilde 500 karakterin altında kalsın diye sığmayan eski satırlar yok
+  "3.14.1": [
+    t("🌍 Dünya Turu: en kalabalık 50 ülke ve Filistin, her ülke kendi görselleri ve geleneksel kıyafetli bossuyla."),
+    t("🛂 Ülkeyi geç, pasaportuna damga bas; arkadaşlarınla birlikte gez."),
+    t("🎵 Her ülkenin kendi kültüründen giriş ve fon müziği; Ses Ayarları'nda yeni Müzik kaydırıcısı."),
+    t("✈️ Arkadaşlarla oynarken de damga ve uçak geçişi görünür."),
+    t("🛠️ Müzik ve ülke geçişi düzeltmeleri; oyun sonu reklamı yeni oyunun üstüne gelmez."),
+  ],
   // 3.13.1 Play'e çıkmadı (reklam düzeltmesi bu sürümle gider); 3.13.0 incelemedeyse oyuncular onu görmeden geçer.
   // Mağaza notu (aynı satırlar) her dilde 500 karakterin altında kalsın diye 3.13.0'ın sığmayan son satırları yok
   "3.14.0": [
@@ -3744,6 +3753,7 @@ function hostOl() {
   for (const p of game.enemyProjectiles) { p.id = p._idx; p.life = 2; if (Number.isFinite(p._idx)) _sonKimlik = Math.max(_sonKimlik, p._idx); }
   game.spawnTimer = 0;
   game.levelTransitioning = false; // geçişin zamanlayıcısı eski host'taydı; bölüm temizse yeniden başlar
+  game._turGeciste = false; game._turJeton = null; // istemcinin Dünya Turu geçişi bırakılır; host akışı yeniden yürütür
   _sonPickupImza = "";
   startEventsListener();
 }
@@ -4865,7 +4875,9 @@ function startGame(secenek) {
   game.turOrtadan = game.dunyaTuru && !!secenek.ortadan; // çevrimiçi turda ortadan katılan: tanıtım ve müzik ilk durumla
   game.turBitti = false;
   game._turGeciste = false;
+  game._turSonraki = null;
   game._turJeton = null;          // önceki oyunun damga/uçak geçişi bu oyunu ilerletmez
+  game._turDamgali = null;        // bu oyunda damgası basılmış son ülke (istemci geçişi ve host olma)
   turPerdeleriniKapat();
   game.levelTimer = 0;
   game.ghostsCaught = 0;
@@ -5751,6 +5763,7 @@ function nextLevel() {
   game.bossDefeated = false;
   game.levelTransitioning = false;
   game._turGeciste = false;
+  game._turSonraki = null;
 }
 
 // Bölüm başı bildirimi: Dünya Turu'nda ülkenin tanıtım satırı ("✈️ 7. İtalya — Kolezyum ve …")
@@ -6525,7 +6538,8 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
 
   // Bonus para: geçilen bölüm başına 50. Dünya Turu'nda bu oyunda geçilen ülkeler sayılır (ortadan başlayan oyuncu
   // geçmediği ülkelerin ödülünü almaz; son ülke bitince o da sayılır)
-  const gecilen = tur ? game.level - (game.turBaslangic || game.level) + (turBitti ? 1 : 0) : game.level - 1;
+  // (eski sürümlü kurucuyla 52, 53… bölüm oynanabilir: ülke sayısı 51'de sınırlı)
+  const gecilen = tur ? Math.max(0, Math.min(game.level, ULKE_SAYISI) - (game.turBaslangic || game.level) + (turBitti ? 1 : 0)) : game.level - 1;
   const completionBonus = gecilen * 50;
   const finalPara = game.runPara + completionBonus;
 
@@ -6959,11 +6973,12 @@ function toggleSound() {
     audio.init();
     audio.toast();
   }
-  // Dünya Turu müziği: kapanınca 0,2 sn'de söner; açılınca oyun sürüyorsa teaser'sız döngü
+  // Dünya Turu müziği: kapanınca 0,2 sn'de söner; açılınca oyun sürüyorsa teaser'sız döngü (geçişte sıradaki ülkenin,
+  // damga anında hiçbiri: dunya-turu.js turMuzikUlkesi)
   muzikSesiniUygula();
-  const u = turUlkesi();
+  const u = turMuzikUlkesi();
   if (!audio.enabled) turMuzigiSondur(0.2);
-  else if (game.running && u) turMuzigiBaslat(u.kod, { giris: false });
+  else if (u) turMuzigiBaslat(u.kod, { giris: false });
 }
 
 function refreshSoundButtons() {

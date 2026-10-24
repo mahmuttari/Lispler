@@ -132,6 +132,25 @@ try {
   const rekor = await oyunuBitir(false, 1, 3);
   const g3 = await gosterim();
   sina('yeni en yüksek bölümde (rekor) reklam yok', () => { assert.equal(g3 - g2, 0); assert.equal(rekor.sure, 450); });
+  // Oyun bitince hemen "Tekrar Oyna": reklam 800 ms sonra yeni oyunun üstüne gelmez, hak sonraki oyun sonuna kalır (3.14.1)
+  const hizli = await p.evaluate(async () => {
+    startGame(); game.player.invuln = 1e9;
+    game.level = 3; save.highestLevel = 99;
+    save.reklam = { oyun: 6, toplam: 900, sure: 400, son: [] };
+    game.oynananSure = 50;
+    endGame(false);
+    await new Promise((r) => setTimeout(r, 100));
+    tekrarOyna(); game.player.invuln = 1e9;
+    await new Promise((r) => setTimeout(r, 1100));
+    const r = { running: game.running, reklam: JSON.parse(JSON.stringify(save.reklam)) };
+    endGame(false);
+    return r;
+  });
+  const g4 = await gosterim();
+  sina('oyun bitince hemen Tekrar Oyna: reklam yeni oyunun üstüne gelmez, hak harcanmaz', () => {
+    assert.equal(g4 - g3, 0); assert.equal(hizli.running, true);
+    assert.equal(hizli.reklam.sure, 450); assert.equal(hizli.reklam.son.length, 0);
+  });
   const odul = await p.evaluate(() => {
     save.reklam.sure = 200;
     reklam.odulKazanildi = true; reklam.odulKullanildi = false;

@@ -172,6 +172,7 @@ function ucakGecisi(onceki, sonraki, bitince) {
   const ad = (u, sinif) => `<div class="tur-gecis-ad ${sinif}"><span class="tur-gecis-sira">${u.sira}</span> <bdi>${escapeHtml(u.ad)}</bdi></div>`;
   el.innerHTML = `<div class="tur-perde-kutu tur-gecis-kutu">${ad(onceki, "bas")}<div class="tur-gecis-yol"><span class="tur-ucak">✈️</span></div>${ad(sonraki, "son")}</div>`;
   const no = perdeAc(el);
+  game._turSonraki = sonraki;
   turMuzigiBaslat(sonraki.kod); // teaser uçakla başlar, tanıtım bildirimine sarkar (muzik.js)
   setTimeout(() => {
     if (_perdeNo === no) el.classList.remove("active");
@@ -179,9 +180,17 @@ function ucakGecisi(onceki, sonraki, bitince) {
   }, TUR_UCAK_MS);
 }
 
+// Şu an müziği çalması gereken ülke (ses açılınca): geçişte uçaktaki sıradaki ülke, damga anında hiçbiri (biten ülkenin
+// müziği damgayla söner); geçiş yoksa bulunulan ülke. Oyun yoksa ya da normal oyunda null.
+function turMuzikUlkesi() {
+  if (!game.running) return null;
+  return game._turGeciste ? game._turSonraki || null : turUlkesi();
+}
+
 // ---------- Akış: ülke bitti → damga → uçak → sıradaki ülke ----------
-// ms oyun süresi sonra fn (duraklatılan süre sayılmaz). Oyun bittiyse ya da yeni oyun başladıysa (startGame jetonu
-// siler) iptal: eski geçiş yeni oyunu ilerletmez. Perdeleri oyunSonu, quitToMenu ve startGame kapatır.
+// ms oyun süresi sonra fn (duraklatılan süre sayılmaz; süre dolsa da duraklatılmış oyunda devamı beklenir: uçak
+// sırasında duraklatılan oyunda bölüm duraklatma ekranının arkasında değişmez). Oyun bittiyse ya da yeni oyun başladıysa
+// (startGame jetonu siler) iptal: eski geçiş yeni oyunu ilerletmez. Perdeleri oyunSonu, quitToMenu ve startGame kapatır.
 function turSonra(ms, jeton, fn) {
   let kalan = ms, once = performance.now();
   (function tik() {
@@ -189,7 +198,7 @@ function turSonra(ms, jeton, fn) {
     const simdi = performance.now();
     if (!game.paused) kalan -= simdi - once;
     once = simdi;
-    if (kalan <= 0) fn(); else setTimeout(tik, Math.min(kalan, 100));
+    if (kalan <= 0 && !game.paused) fn(); else setTimeout(tik, Math.max(16, Math.min(kalan, 100)));
   })();
 }
 // Tek kişilik oyunda ve kurucuda boss ve hayaletler bitince (game.js döngüsü). Bir geçiş bir kez çalışır.
@@ -197,10 +206,14 @@ function turUlkesiBitti() {
   const u = turUlkesi();
   if (!u || game._turGeciste) return;
   game._turGeciste = true;
+  game._turSonraki = null;
   const jeton = (game._turJeton = {});
-  const { yeni } = damgaBas(u.kod);
-  showToast(t("🛂 {ulke} damgası!", { ulke: u.ad }) + (yeni ? ` +${TUR_DAMGA_ELMAS} 💎` : ""));
-  damgaGoster(u);
+  if (game._turDamgali !== u.kod) { // istemciyken damgası basılmış ülke (geçişin ortasında host olan) tekrar basılmaz
+    game._turDamgali = u.kod;
+    const { yeni } = damgaBas(u.kod);
+    showToast(t("🛂 {ulke} damgası!", { ulke: u.ad }) + (yeni ? ` +${TUR_DAMGA_ELMAS} 💎` : ""));
+    damgaGoster(u);
+  }
   turMuzigiSondur(); // ülkenin müziği damgayla söner
   turSonra(TUR_BEKLE_MS, jeton, () => {
     if (u.sira >= ULKE_SAYISI) { turTamamlandi(); return; }
@@ -323,7 +336,7 @@ function odaUlkesiKaydir(d) { odaUlkesiSec((online.selectedUlke || 1) + d); }
 // katıldığı ülkeden önceki ülkelerin damgasını almaz (online.turSonUlke ilk durumda null). İlk durumun ülkesi bu oyunun
 // başlangıcıdır (tamamlanma ödülü ondan sayılır). Ortadan katılanda (game.turOrtadan) tanıtım ve müzik burada başlar,
 // müzik teaser'sız (ek spec §3). 51'i geçen durum (eski sürümlü kurucu 52, 53… bölüme ilerler ya da yeni kurucu turu
-// bitirmiştir) turu bir kez tamamlar, bölüm 51'de kalır.
+// bitirmiştir) turu bir kez tamamlar; bölüm kurucununkini izler (aynı harita), ülke 51. ülkede (AR) kalır.
 // true: bölüm burada uygulandı ya da uygulanmayacak (durumGeldi bölüm uygulamasını atlar)
 function turDurumGeldi(st) {
   if (!st || typeof st.lvl !== "number" || !Number.isFinite(st.lvl)) return false;
@@ -332,10 +345,10 @@ function turDurumGeldi(st) {
   game.turOrtadan = false;
   if (lvl > ULKE_SAYISI) {
     if (ilk) game.turBaslangic = ULKE_SAYISI + 1; // bitmiş tura katılan hiçbir ülkeyi geçmedi
-    if (game.level !== ULKE_SAYISI) clientApplyLevel(ULKE_SAYISI);
+    if (game.level !== lvl) clientApplyLevel(lvl); // harita kurucunun bölümüyle aynı; ülke AR kalır (ulkeSirada 51'e sınırlar)
     if (!game.turBitti) {
       game.turBitti = true;
-      if (onceki === ULKE_SAYISI) istemciDamgasi(ulkeSirada(ULKE_SAYISI));
+      if (onceki === ULKE_SAYISI && game._turDamgali !== ulkeSirada(ULKE_SAYISI).kod) istemciDamgasi(ulkeSirada(ULKE_SAYISI));
       const k = turKaydi();
       if (!k.bitti) { k.bitti = Date.now(); persistSave(); }
       turMuzigiSondur();
@@ -349,15 +362,31 @@ function turDurumGeldi(st) {
   const muzikSecenegi = ortadan ? { giris: false } : undefined;
   if (lvl === game.level) {
     if (ortadan) { showToast(bolumBildirimi()); turMuzigiBaslat(ulkeSirada(lvl).kod, muzikSecenegi); }
+    else if (!ilk && st.lt && !game.levelTransitioning) istemciGecisi(ulkeSirada(lvl)); // kurucu ülkeyi bitirdi (lt 0 → 1)
     return true;
   }
+  const yeni = ulkeSirada(lvl);
+  game._turGeciste = false; game._turSonraki = null; game._turJeton = null; // istemcinin geçişi burada biter
   clientApplyLevel(lvl);
-  turMuzigiBaslat(ulkeSirada(lvl).kod, muzikSecenegi);
-  if (!ilk && lvl === onceki + 1) istemciDamgasi(ulkeSirada(onceki), lvl);
+  if (muzik.kod !== yeni.kod) turMuzigiBaslat(yeni.kod, muzikSecenegi); // uçakla başlamış müzik yeniden başlamaz
+  // Geçiş görülmediyse (ortadan katılma, kaybolan durum) damga bölüm değişince basılır
+  if (!ilk && lvl === onceki + 1 && game._turDamgali !== ulkeSirada(onceki).kod) istemciDamgasi(ulkeSirada(onceki), lvl);
   return true;
+}
+// İstemci: kurucudaki gibi damga (müzik söner) ve TUR_BEKLE_MS sonra uçak geçişi (sıradaki ülkenin teaser'ı). Bölüm
+// kurucunun durumuyla değişir (turDurumGeldi); geçiş orada biter, bekleyen uçak iptal olur.
+function istemciGecisi(u) {
+  if (game._turGeciste) return;
+  game._turGeciste = true;
+  game._turSonraki = null;
+  const jeton = (game._turJeton = {});
+  istemciDamgasi(u);
+  turMuzigiSondur();
+  turSonra(TUR_BEKLE_MS, jeton, () => { if (u.sira < ULKE_SAYISI) ucakGecisi(u, ulkeSirada(u.sira + 1)); });
 }
 // İstemcinin damgası: kayıt, bildirim ve damga perdesi; perde kapanınca yeni ülkenin tanıtım satırı yeniden görünür
 function istemciDamgasi(u, yeniBolum) {
+  game._turDamgali = u.kod;
   const { yeni } = damgaBas(u.kod);
   showToast(t("🛂 {ulke} damgası!", { ulke: u.ad }) + (yeni ? ` +${TUR_DAMGA_ELMAS} 💎` : ""));
   damgaGoster(u);

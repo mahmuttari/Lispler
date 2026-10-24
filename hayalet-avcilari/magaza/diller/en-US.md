@@ -47,6 +47,5 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 🌍 World Tour: the 50 most populous countries plus Palestine, each with its own sights and a boss in traditional dress.
 🛂 Clear a country to stamp your passport; tour together with friends.
 🎵 Intro and background music from each country's own culture; new Music slider in Sound Settings.
-😌 Fewer ads: none for new players or after short games.
-🛡️ Only ads suitable for all ages are shown now.
-👫 Add friends: share your code or tap ➕ next to a player in the lobby.
+✈️ Stamps and the plane ride now also show when playing with friends.
+🛠️ Music and country-transition fixes; the end-of-game ad no longer covers a new game.

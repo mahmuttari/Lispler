@@ -47,6 +47,5 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 🌍 Gira mundial: los 50 países más poblados y Palestina, cada uno con sus paisajes y un jefe con traje tradicional.
 🛂 Supera un país y sella tu pasaporte; viaja junto a tus amigos.
 🎵 Música de entrada y de fondo de la cultura de cada país; nuevo control de Música en Ajustes de sonido.
-😌 Menos anuncios: ninguno para jugadores nuevos ni tras partidas cortas.
-🛡️ Solo verás anuncios aptos para todos.
-👫 Añade amigos: comparte tu código o toca ➕ junto a un jugador en la sala de espera.
+✈️ El sello y el viaje en avión también aparecen al jugar con amigos.
+🛠️ Correcciones de música y de cambio de país; el anuncio de fin de partida ya no tapa la nueva.

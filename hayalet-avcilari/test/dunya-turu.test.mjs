@@ -267,6 +267,31 @@ try {
     assert.deepEqual(rf1, { damga: false, gecis: false }); assert.deepEqual(rf2p, { damga: false, gecis: false });
     assert.deepEqual(rf2, { level: 6, running: true, elmas: 13, fr: true });
   });
+  // Review Focus 4'ün duraklatma dalı (3.14.1): damga ya da uçak sırasında duraklatılan oyunda geçiş ilerlemez (bölüm
+  // duraklatma ekranının arkasında değişmez); devam edince sürer
+  const duraklat = (asama) => kopya(p, async (asama) => {
+    const bekle = (ms) => new Promise((r) => setTimeout(r, ms));
+    endGame(false);
+    save.dunyaTuru = { acik: 7, damgalar: {}, bitti: 0 };
+    startGame({ tur: true, ulke: 6 }); game.player.invuln = 1e9;
+    turUlkesiBitti();
+    await bekle(asama === 'ucak' ? TUR_BEKLE_MS + 300 : 300);
+    const perde = document.getElementById(asama === 'ucak' ? 'tur-gecis' : 'tur-damga').classList.contains('active');
+    pauseGame();
+    await bekle(TUR_BEKLE_MS + TUR_UCAK_MS + 600);
+    const durakta = game.level;
+    resumeGame();
+    await bekle(TUR_BEKLE_MS + TUR_UCAK_MS + 600);
+    const r = { perde, durakta, devamda: game.level };
+    endGame(false);
+    return r;
+  }, asama);
+  const dDamga = await duraklat('damga'), dUcak = await duraklat('ucak');
+  sina('damga sırasında duraklatma: geçiş durur (bölüm 6), devamda 7. ülke', () => { assert.deepEqual(dDamga, { perde: true, durakta: 6, devamda: 7 }); });
+  sina('uçak sırasında duraklatma: bölüm duraklatma ekranının arkasında değişmez (6), devamda 7. ülke', () => {
+    assert.deepEqual(dUcak, { perde: true, durakta: 6, devamda: 7 });
+  });
+
   await kopya(p, () => {
     endGame(false);
     save.dunyaTuru = { acik: 7, damgalar: {}, bitti: 0 };
@@ -322,19 +347,62 @@ try {
     let muzik = null;
     for (let i = 0; i < 40 && !(muzik && muzik.kod); i++) { await bekle(100); muzik = muzikDurumu(); }
     for (const lvl of [51, 52, 53, 54]) durumGeldi(bos(lvl));
-    const karisik = { level: game.level, ar: !!save.dunyaTuru.damgalar.AR, damgalar: damgalar(), tamam };
+    const karisik = { level: game.level, ulke: turUlkesi().kod, ar: !!save.dunyaTuru.damgalar.AR, damgalar: damgalar(), tamam };
     window.showToast = _toast;
-    online.mode = null; endGame(false); turMuzigiSondur(0);
+    online.mode = null;
+    const para = save.para; endGame(false); karisik.odul = save.para - para; turMuzigiSondur(0);
     return { ilk, ikinci, muzik: muzik && muzik.kod, karisik, oda: [turOdaUlkesi({ tur: true, level: 999 }), turOdaUlkesi({ tur: true, level: 3 }), turOdaUlkesi({ level: 3 }), turOdaUlkesi(null)].map((u) => u && u.kod) };
   });
   sina('ortadan katılma: ilk durumda (7) damga yok; 8 gelince yalnız 7. ülkenin (IT) damgası', () => {
     assert.deepEqual(ist.ilk, { level: 7, damgalar: [] }); assert.deepEqual(ist.ikinci, { level: 8, damgalar: ['IT'] });
   });
   sina('yeni ülke uygulanınca ülkenin müziği çalar (ES)', () => { assert.equal(ist.muzik, 'ES'); });
-  sina('karışık sürüm: 51, 52, 53, 54 → AR damgası bir kez, "tamamlandı" bir kez, bölüm 51\'de kalır', () => {
-    assert.deepEqual(ist.karisik, { level: 51, ar: true, damgalar: ['AR', 'IT'], tamam: 1 });
+  // Bölüm haritanın tohumudur: eski sürümlü kurucu 52, 53… bölümü oynarken istemci de aynı bölümde kalır (aynı harita;
+  // 3.14.1, 51'de kalınca duvarlar ayrışıyordu); ülke, tema ve engeller AR, ödül 51. ülkede sınırlı (7–51 = 45 ülke)
+  sina('karışık sürüm: 51, 52, 53, 54 → AR damgası bir kez, "tamamlandı" bir kez, bölüm kurucuyla (54), ülke AR, ödül 45 ülke', () => {
+    assert.deepEqual(ist.karisik, { level: 54, ulke: 'AR', ar: true, damgalar: ['AR', 'IT'], tamam: 1, odul: 45 * 50 });
   });
   sina('turOdaUlkesi: level 999 → AR, 3 → PL; tur alanı olmayan oda ve boş oda → null', () => { assert.deepEqual(ist.oda, ['AR', 'PL', null, null]); });
+
+  // İstemcide geçiş (3.14.1): kurucu ülkeyi bitirince (st.lt 0 → 1) istemci de damgayı basar, 1,8 sn sonra uçak ve
+  // sıradaki ülkenin müziği; bölüm kurucunun durumuyla değişir, damga ve müzik ikinci kez başlamaz
+  const gecis = await kopya(p, async () => {
+    const bekle = (ms) => new Promise((r) => setTimeout(r, ms));
+    audio.init();
+    save.dunyaTuru = { acik: 7, damgalar: {}, bitti: 0 }; persistSave();
+    const bos = (lvl, lt = 0) => ({ lvl, g: [], e: [], p: [], bd: lt, bt: 0, lt });
+    const damgaToast = [], caldi = [], _t = window.showToast, _b = window.turMuzigiBaslat;
+    window.showToast = (m) => { if (String(m).includes('damgası')) damgaToast.push(String(m)); return _t(m); };
+    window.turMuzigiBaslat = (kod, o) => { caldi.push(kod); return _b(kod, o); };
+    startGame({ tur: true, ulke: 7 }); game.player.invuln = 1e9;
+    online.mode = 'client'; online.turSonUlke = null;
+    durumGeldi(bos(7));
+    caldi.length = 0;
+    durumGeldi(bos(7, 1));
+    const damgada = { perde: document.getElementById('tur-damga').classList.contains('active'), damgalar: Object.keys(save.dunyaTuru.damgalar) };
+    await bekle(TUR_BEKLE_MS + 300);
+    const ucakta = { perde: document.getElementById('tur-gecis').classList.contains('active'), muzik: muzik.kod };
+    durumGeldi(bos(8));
+    await bekle(300);
+    const sonra = { level: game.level, damgaToast: damgaToast.length, caldi: [...caldi] };
+    // Geçişin ortasında kurucu ayrılır, bu istemci host olur: tur takılmaz, sıradaki ülkeye geçer, damga tekrarlanmaz
+    durumGeldi(bos(8, 1));
+    hostOl(); game.bossDefeated = true; game.ghosts = [];
+    const hostBas = performance.now();
+    while (game.level === 8 && performance.now() - hostBas < 8000) await bekle(100);
+    const hostta = { level: game.level, damgaToast: damgaToast.length, damgalar: Object.keys(save.dunyaTuru.damgalar).sort() };
+    window.showToast = _t; window.turMuzigiBaslat = _b;
+    online.mode = null; endGame(false); turMuzigiSondur(0);
+    return { damgada, ucakta, sonra, hostta };
+  });
+  sina('istemcide geçiş: lt 0→1 damga (IT), 1,8 sn sonra uçak ve ES müziği; 8 gelince damga ve müzik tekrarlanmaz', () => {
+    assert.deepEqual(gecis, {
+      damgada: { perde: true, damgalar: ['IT'] },
+      ucakta: { perde: true, muzik: 'ES' },
+      sonra: { level: 8, damgaToast: 1, caldi: ['ES'] },
+      hostta: { level: 9, damgaToast: 2, damgalar: ['ES', 'IT'] },
+    }, JSON.stringify(gecis));
+  });
 
   // Ortadan katılma, oyunun kendi yolundan (startMpGameClient): oda 3. ülkede (PL) kurulmuş, kurucu 7'de (IT). Ek spec §3:
   // ortadan katılana teaser çalınmaz; Görev 6: geçilmeyen ülkenin ödülü yok (son inceleme bulgusu)

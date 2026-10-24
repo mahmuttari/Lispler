@@ -136,6 +136,12 @@ try {
           showToast(uzun);
         },
         tur_boss: () => { spawnBoss(); },
+        tur_boss_uzun: () => { // 3.14.1: o dildeki en uzun boss duyurusu (önce yalnız Türkiye'nin bossu sınanıyordu)
+          const duyuru = (u) => t('👻 {ad} geldi!', { ad: u.bossAd });
+          const u = ULKELER.reduce((a, b) => (duyuru(b).length > duyuru(a).length ? b : a));
+          window.__uzunBoss = duyuru(u);
+          startGame({ tur: true, ulke: u.sira }); game.player.invuln = 1e9; spawnBoss();
+        },
       };
       for (const [ad, ac] of Object.entries(ekranlar)) {
         await p.evaluate(`(${ac.toString()})()`);

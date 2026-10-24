@@ -278,11 +278,38 @@ try {
   const c9 = await durum();
   sina('hızlı yeniden başlatma: 7 sn sonra yalnız JP döngüsü (tek kaynak)', () => { assert.deepEqual([c9.calan, c9.kod, c9.kaynak], ['dongu', 'JP', 1]); });
 
+  // Döngü çalarken oyun biter (0,8 sn söndürme başlar) ve hemen yeni tur başlar: eski müzik yenisinin altında sönmeye
+  // devam etmez, 0,05 sn'lik kesmeyle susar (3.14.1)
+  const sonen = await p.evaluate(async () => {
+    endGame(false); startGame({ tur: true, ulke: 1 }); game.player.invuln = 1e9;
+    await new Promise((r) => setTimeout(r, 250));
+    return [...muzik.kaynaklar].filter((k) => k.sonuyor).map((k) => Math.round(k.kazanc.gain.value * 100) / 100);
+  });
+  sina('oyun bitip hemen yeni tur başlayınca eski müzik 0,25 sn içinde susar', () => {
+    assert.ok(sonen.every((g) => g <= 0.01), `sönmekte olan kaynakların kazancı: ${JSON.stringify(sonen)}`);
+  });
+
   // Uçak geçişi: 42. ülke bitince uçakla birlikte 43. ülkenin (JP) teaser'ı başlar
   await p.evaluate(() => { endGame(false); startGame({ tur: true, ulke: 42 }); game.player.invuln = 1e9; game.bossDefeated = true; game.ghosts = []; });
   const ucak = await p.waitForFunction(() => document.getElementById('tur-gecis').classList.contains('active') && muzikDurumu().calan === 'giris', null, { timeout: 6000, polling: 50 })
     .then(() => durum(), () => durum());
   sina('uçak perdesi görünürken sıradaki ülkenin (JP) teaser\'ı çalar', () => { assert.equal(ucak.calan, 'giris'); assert.equal(ucak.kod, 'JP'); });
+
+  // Geçişte ses kapatılıp açılırsa: damga anında müzik yok (biten ülkenin döngüsü yeniden başlamaz), uçakta sıradaki
+  // ülkenin müziği (3.14.1)
+  const kapAc = () => p.evaluate(() => { toggleSound(); toggleSound(); });
+  await p.evaluate(() => { endGame(false); startGame({ tur: true, ulke: 42 }); game.player.invuln = 1e9; game.bossDefeated = true; game.ghosts = []; });
+  await p.waitForFunction(() => document.getElementById('tur-damga').classList.contains('active'), null, { timeout: 6000, polling: 50 });
+  await kapAc();
+  await p.waitForTimeout(600);
+  const damgada = await durum();
+  await p.waitForFunction(() => document.getElementById('tur-gecis').classList.contains('active'), null, { timeout: 6000, polling: 50 });
+  await kapAc();
+  await p.waitForTimeout(700);
+  const ucakta = await durum();
+  sina('damga anında ses kapat-aç: müzik yok; uçakta kapat-aç: sıradaki ülkenin (JP) müziği', () => {
+    assert.equal(damgada.calan, null, JSON.stringify(damgada)); assert.equal(ucakta.kod, 'JP', JSON.stringify(ucakta));
+  });
 
   // Dosya bulunamazsa müzik çalmaz, oyun sürer, sayfa hatası olmaz
   const hata = await p.evaluate(async () => {

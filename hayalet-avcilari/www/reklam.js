@@ -112,8 +112,10 @@ function reklamOyunBitti(bilgi = {}) {
   if (ad && reklam.hazir && gecisUygunMu(bilgi, k, simdi)) {
     if (!reklam.gecisYuklu) gecisYukle(); // hazır değil: sayaç sürer, sonraki oyun sonunda
     else {
-      k.sure = 0; k.son.push(simdi);
       setTimeout(() => {
+        // Bu arada yeni oyun başladıysa ("Tekrar Oyna") ya da ekrandan çıkıldıysa reklam gösterilmez: hak sonraki oyun sonuna
+        if (game.running || !document.getElementById("screen-gameover").classList.contains("active")) return;
+        const k2 = save.reklam; k2.sure = 0; k2.son.push(Date.now()); persistSave();
         ad.showInterstitial().catch(() => { reklam.gecisYuklu = false; gecisYukle(); });
       }, 800);
     }

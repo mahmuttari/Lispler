@@ -2405,6 +2405,10 @@ function drawGhost(ctx, g) {
   ctx.save();
   ctx.translate(g.x, g.y);
   const s = size / 40;
+  // Dünya Turu bossu ülkenin geleneksel kıyafetini giyer (kostumler.js); kayıt bozuksa bugünkü taçlı kırmızı boss
+  const turUlke = g.isBoss && game.dunyaTuru ? turUlkesi() : null;
+  const kostum = turUlke && kostumGecerliMi(turUlke.kostum) ? turUlke.kostum : null;
+  const kostumZamani = performance.now() / 1000;
 
   // Boss için kırmızı aura
   if (g.isBoss) {
@@ -2427,7 +2431,7 @@ function drawGhost(ctx, g) {
 
   // Tonlama (HP'ye göre renk)
   let bodyColor;
-  if (g.isBoss) bodyColor = "#dc2626";
+  if (g.isBoss) bodyColor = kostum ? "#ede9fe" : "#dc2626";
   else if (maxHp >= 5) bodyColor = "#a78bfa";
   else if (maxHp >= 3) bodyColor = "#fda4af";
   else if (maxHp >= 2) bodyColor = "#fde68a";
@@ -2452,9 +2456,10 @@ function drawGhost(ctx, g) {
   ctx.lineTo(-18 * s, 18 * s);
   ctx.closePath();
   ctx.fill();
+  if (kostum) bossKostumuCiz(ctx, s, kostum, kostumZamani, "govde");
 
-  // Boss tacı
-  if (g.isBoss) {
+  // Boss tacı (Dünya Turu'nda yerine ülkenin başlığı gelir)
+  if (g.isBoss && !kostum) {
     ctx.fillStyle = "#ffd166";
     ctx.strokeStyle = "#a16207";
     ctx.lineWidth = 1.8 * s;
@@ -2489,6 +2494,7 @@ function drawGhost(ctx, g) {
   ctx.beginPath();
   ctx.ellipse(0, 3 * s, g.isBoss ? 5 * s : 3 * s, g.isBoss ? 5 * s : 4 * s, 0, 0, Math.PI * 2);
   ctx.fill();
+  if (kostum) bossKostumuCiz(ctx, s, kostum, kostumZamani, "bas");
 
   // HP barı
   if (hp < maxHp) {

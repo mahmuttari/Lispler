@@ -428,6 +428,16 @@
       <button class="max-btn" data-max="5" onclick="selectMaxPlayers(5)">5</button>
       <button class="max-btn active" data-max="6" onclick="selectMaxPlayers(6)">6</button>
     </div>
+    <p class="online-sub">Oyun türü</p>
+    <div class="kip-select">
+      <button class="kip-btn active" data-kip="normal" onclick="odaKipiSec('normal')">🎮 Normal</button>
+      <button class="kip-btn" data-kip="tur" onclick="odaKipiSec('tur')">🌍 Dünya Turu</button>
+    </div>
+    <div id="oda-ulke-secici" class="oda-ulke-secici" style="display:none">
+      <button id="oda-ulke-geri" class="kip-btn" onclick="odaUlkesiKaydir(-1)">◀</button>
+      <bdi id="oda-ulke-ad" class="oda-ulke-ad"></bdi>
+      <button id="oda-ulke-ileri" class="kip-btn" onclick="odaUlkesiKaydir(1)">▶</button>
+    </div>
     <button class="btn btn-big btn-play" onclick="submitCreateRoom()">🚀 ODA KUR</button>
     <button class="btn" onclick="leaveOnlineToOnline()">⬅ Geri</button>
   </div>
@@ -439,6 +449,7 @@
   <div class="menu-content">
     <h2 id="lobby-title">🎮 Lobi</h2>
     <p class="online-sub" id="lobby-subtitle">Oyuncuların gelmesini bekle</p>
+    <p class="lobby-tur" id="lobby-tur" style="display:none"></p>
     <button class="oda-kodu" onclick="odaKodunuKopyala()">
       <span class="oda-kodu-etiket">Oda kodu</span>
       <b id="lobby-kod" class="oda-kodu-deger"></b>

@@ -274,7 +274,11 @@ const online = {
   roomId: null,
   isHost: false,
   selectedMax: 6,        // Oda Kur'un varsayılanı: en büyük oda (3.12.2'den beri 6, kurallar 2–6)
-  cachedRoom: null,      // { name, maxPlayers, hostUid, hostName, status, players }
+  selectedKip: "normal", // Oda Kur: "normal" | "tur" (3.14.0 Dünya Turu odası)
+  selectedUlke: 0,       // Oda Kur: Dünya Turu odasının ülkesi (açık ülkelerden; 0 = en ileri açık ülke)
+  turSonUlke: null,      // istemci: son uygulanan ülke (damga için; ortadan katılanda ilk durumda null)
+  ortadanKatildi: false, // oyun sürerken katıldı: müzik teaser'sız başlar
+  cachedRoom: null,      // { name, maxPlayers, hostUid, hostName, status, players, tur, level }
   // Oyun içi senkronizasyon
   mode: null,            // null | "host" | "client"
   pushTimer: null,       // MP_PUSH_MS'de bir mpPush
@@ -2914,6 +2918,7 @@ function openCreateRoom() {
   const inp = document.getElementById("room-name-input");
   if (inp && !inp.value) inp.value = t("{ad}'in Odası", { ad: save.playerName || t("Avcı") });
   selectMaxPlayers(online.selectedMax || 6);
+  odaKipiSec(online.selectedKip || "normal"); // dunya-turu.js
 }
 function selectMaxPlayers(n) {
   online.selectedMax = n;
@@ -2932,26 +2937,35 @@ async function submitCreateRoom() {
   sunucuSaatiniDinle();
   online.lastError = null;
   const uid = online.uid;
-  let roomId = null, room = null;
+  const tur = online.selectedKip === "tur";
+  if (tur) odaUlkesiSec(online.selectedUlke || turKaydi().acik); // açık ülkelere sınırlanır
+  let roomId = null, room = null, turReddi = false;
   for (let deneme = 0; deneme < 3 && !roomId; deneme++) { // aynı kodlu oda varsa (çok nadir) yeni kodla dene
     const id = makeRoomId();
     room = {
       name,
       hostUid: uid,
       hostName: save.playerName,
-      level: 1,
+      level: tur ? online.selectedUlke : 1,
       status: "lobby",
       maxPlayers: online.selectedMax || 6,
       createdAt: sunucuZamani(),
       lastSeen: sunucuZamani(),
       players: { [uid]: makePlayerEntry(true) },
     };
+    if (tur) room.tur = true; // normal odada alan yok: 3.13.x kuralları da kabul eder
     if (await rtdb.put(`rooms/${id}`, room)) roomId = id;
+    else if (tur && /permission/i.test(online.lastError || "")) { turReddi = true; break; } // kurallar tur alanını bilmiyor
     else if (room.maxPlayers > 5 && /permission/i.test(online.lastError || "")) {
       // Konsoldaki kurallar 3.12.2'den eskiyse (en çok 5 kişi) 6 kişilik oda reddedilir: oda 5 kişilik kurulur
       room.maxPlayers = 5;
       if (await rtdb.put(`rooms/${id}`, room)) roomId = id;
     }
+  }
+  if (turReddi) { // Dünya Turu odası kurulamaz; normal odaya dönülmez (oyuncu kipi kendisi değiştirir)
+    setOnlineStatus(t("⚠ Dünya Turu odası şu an kurulamıyor"));
+    showToast(t("⚠ Dünya Turu odası şu an kurulamıyor"));
+    return;
   }
   if (!roomId) {
     const reason = online.lastError || t("bilinmeyen hata");
@@ -3055,7 +3069,7 @@ function renderRoomList(all) {
     card.innerHTML = `
       <div class="room-info">
         <div class="room-name">${escapeHtml(r.name || t("Oda"))}</div>
-        <div class="room-meta">👤 ${escapeHtml(r.hostName || "?")} · <b>${r.playerCount}/${r.maxPlayers}</b> ${t("oyuncu")}</div>
+        <div class="room-meta">👤 ${escapeHtml(r.hostName || "?")} · <b>${r.playerCount}/${r.maxPlayers}</b> ${t("oyuncu")}${turOdaUlkesi(r) ? ` · 🌍 <bdi>${escapeHtml(turOdaUlkesi(r).ad)}</bdi>` : ""}</div>
       </div>
       <button ${full ? "disabled" : ""}>${full ? t("DOLU") : t("KATIL")}</button>
     `;
@@ -3091,6 +3105,7 @@ async function joinRoom(roomId) {
   else showToast(t("🎮 Oyun sürüyor, hemen katılıyorsun!"));
   online.roomId = roomId;
   online.isHost = (room.hostUid === uid);
+  online.ortadanKatildi = room.status === "playing";
   enterLobby(room);
 }
 
@@ -3099,7 +3114,7 @@ function enterLobby(room) {
   online.ayriliyor = false;
   online.cachedRoom = {
     name: room.name, maxPlayers: room.maxPlayers || 5, hostUid: room.hostUid, hostName: room.hostName,
-    status: room.status || "lobby", players: room.players || {},
+    status: room.status || "lobby", players: room.players || {}, tur: !!room.tur, level: room.level || 1,
   };
   online.alinanlar = new Set();
   online.vuranlar = new Set();
@@ -3124,6 +3139,13 @@ function startRoomListener() {
   odaDinle(`${yol}/hostUid`, (v) => hostDegisti(v));
   odaDinle(`${yol}/status`, (v) => durumDegisti(v));
   odaDinle(`${yol}/players`, (v) => oyuncularDegisti(v || {}));
+  if (online.cachedRoom && online.cachedRoom.tur) { // Dünya Turu odası: kalınan ülke (kurucu tur sonunda yazar)
+    odaDinle(`${yol}/level`, (v) => {
+      if (typeof v !== "number" || !online.cachedRoom) return;
+      online.cachedRoom.level = v;
+      if (lobidemi()) renderLobby();
+    });
+  }
 }
 
 function odaDinle(yol, fn) {
@@ -3274,6 +3296,8 @@ function renderLobby() {
     `${t("{a}/{b} oyuncu", { a: uids.length, b: max })} · ${online.isHost ? t("Sen Host'sun") : t("Host: {ad}", { ad: (host && host.name) || room.hostName || "?" })}`;
   const kodEl = document.getElementById("lobby-kod");
   if (kodEl) kodEl.textContent = online.roomId || "";
+  const turEl = document.getElementById("lobby-tur"), turSatiri = odaTurSatiri(room);
+  if (turEl) { turEl.textContent = turSatiri; turEl.style.display = turSatiri ? "" : "none"; }
 
   const list = document.getElementById("lobby-players");
   list.innerHTML = "";
@@ -3425,7 +3449,11 @@ function startMpGameClient() {
   online.sonDurum = performance.now();
   document.getElementById("screen-gameover").classList.remove("active");
   showToast(online.isHost ? t("👑 Host olarak başlattın") : t("🌐 Bağlanıldı"));
-  startGame();
+  const turUlke = turOdaUlkesi(online.cachedRoom); // Dünya Turu odası: kalınan ülkeden
+  online.turSonUlke = null;
+  startGame(turUlke ? { tur: true, ulke: turUlke.sira } : undefined);
+  if (turUlke && online.ortadanKatildi) turMuzigiBaslat(turUlke.kod, { giris: false }); // oyun sürerken katılan
+  online.ortadanKatildi = false;
   uzakOyunculariGuncelle((online.cachedRoom && online.cachedRoom.players) || {});
   startMpSync();
 }
@@ -3556,7 +3584,7 @@ async function durumuGonder() {
   }
   const govde = {
     g, e,
-    lvl: game.level,
+    lvl: game.dunyaTuru && game.turBitti ? ULKE_SAYISI + 1 : game.level, // tur bitti: 52 (istemciler turu tamamlar)
     bd: game.bossDefeated ? 1 : 0,
     bt: Math.round((game.bossSpawnTimer || 0) * 10) / 10,
     lt: game.levelTransitioning ? 1 : 0,
@@ -3614,7 +3642,8 @@ function durumGeldi(st) {
   const simdi = performance.now();
   online.sonDurum = simdi;
   if (!st) return;
-  if (typeof st.lvl === "number" && st.lvl !== game.level) clientApplyLevel(st.lvl);
+  const turdaUygulandi = game.dunyaTuru && turDurumGeldi(st); // damga, tur sonu ve müzik (dunya-turu.js)
+  if (!turdaUygulandi && typeof st.lvl === "number" && st.lvl !== game.level) clientApplyLevel(st.lvl);
   game.bossDefeated = !!st.bd;
   game.bossSpawnTimer = st.bt || 0;
   game.levelTransitioning = !!st.lt;
@@ -3727,10 +3756,13 @@ function herkesOlduMu() {
 
 async function turuBitir() {
   if (!online.roomId || online.mode !== "host") return;
-  const yol = `rooms/${online.roomId}`;
-  await rtdb.patch(yol, { status: "lobby", lastSeen: sunucuZamani() });
+  const yol = `rooms/${online.roomId}`, govde = { status: "lobby", lastSeen: sunucuZamani() };
+  // Dünya Turu odası kalınan ülkeden sürer; tur tamamlandıysa baştan
+  if (online.cachedRoom && online.cachedRoom.tur) govde.level = game.turBitti ? 1 : Math.min(game.level, ULKE_SAYISI);
+  await rtdb.patch(yol, govde);
   rtdb.put(`${yol}/state`, null);
   rtdb.put(`${yol}/events`, null);
+  turMuzigiSondur();
 }
 
 // --- Tur sıralaması: herkes kendi yakaladığı hayalete göre (oda kaydındaki av; benimki game.totalCaught) ---

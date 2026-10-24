@@ -350,6 +350,35 @@ describe("rooms — şema", () => {
   });
 });
 
+describe("rooms — Dünya Turu odası (3.14.0)", () => {
+  test("oda tur alanıyla kurulur: true ve false kabul, metin ve sayı ret", async () => {
+    const h = anonim(HOST);
+    const now = Date.now();
+    for (const tur of [true, false]) {                                              // submitCreateRoom: { …, tur, level: ülke }
+      await assertSucceeds(h.ref("rooms/ZZZZZZ").set({ ...yeniOda(now, HOST), tur, level: 3 }));
+      await assertSucceeds(h.ref("rooms/ZZZZZZ").remove());
+    }
+    for (const tur of ["evet", 1]) await assertFails(h.ref("rooms/ZZZZZZ").set({ ...yeniOda(now, HOST), tur }));
+  });
+  test("kurucu kalınan ülkeyi (level) yazar; konuk yazamaz; 0 ve 1001 ret", async () => {
+    await odaKur(HOST, [KONUK]);
+    const h = anonim(HOST), k = anonim(KONUK);
+    await assertSucceeds(h.ref(`rooms/${ODA}`).update({ status: "lobby", lastSeen: Date.now(), level: 12 }));   // turuBitir
+    await assertSucceeds(h.ref(`rooms/${ODA}/level`).set(12));
+    await assertFails(k.ref(`rooms/${ODA}/level`).set(5));
+    await assertFails(anonim(YABANCI).ref(`rooms/${ODA}/level`).set(5));
+    for (const n of [0, 1001, "12"]) await assertFails(h.ref(`rooms/${ODA}/level`).set(n));
+    await assertFails(h.ref(`rooms/${ODA}/tur`).set(true));                         // kip kurulduktan sonra değişmez
+  });
+  test("eski oda (tur alanı yok) bugünkü gibi çalışır", async () => {
+    await odaAkisi(anonim(HOST), anonim(KONUK), HOST, KONUK);
+    await odaKur(HOST, [KONUK]);
+    const h = anonim(HOST);
+    await assertSucceeds(h.ref(`rooms/${ODA}`).update({ status: "playing", lastSeen: 0 }));
+    await assertSucceeds(h.ref(`rooms/${ODA}`).update({ status: "lobby", lastSeen: Date.now() }));
+  });
+});
+
 describe("accounts — kodlu yedek", () => {
   const yedek = (ownerUid) => ({
     name: "Poyraz", save: JSON.stringify({ para: 120, elmas: 3 }), updatedAt: Date.now(),

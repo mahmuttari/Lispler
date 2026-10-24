@@ -327,6 +327,58 @@ try {
     assert.deepEqual(berabere.map((e, i) => e.kupa - kupaOnce2[i]), [1, 1]);
   });
 
+  // 8) 3.14.0 Dünya Turu odası: konuk (artık host) 3. ülkeden (PL) kurar; üçüncü listede "🌍 Polonya"yı görür, katılır
+  for (const s of [K, U]) await s.p.evaluate(async () => { await odadanCik(); showScreen('screen-online'); });
+  await K.p.evaluate(async () => {
+    save.dunyaTuru = { acik: 3, damgalar: {}, bitti: 0 }; persistSave();
+    openCreateRoom(); odaKipiSec('tur'); odaUlkesiSec(3); await submitCreateRoom();
+  });
+  const turOdasi = await K.p.evaluate(() => ({ oda: online.roomId, tur: online.cachedRoom && online.cachedRoom.tur, level: online.cachedRoom && online.cachedRoom.level }));
+  await U.p.evaluate(async () => { save.dunyaTuru = { acik: 1, damgalar: {}, bitti: 0 }; persistSave(); await openRoomList(); });
+  const listede = await bekle(U, () => [...document.querySelectorAll('#room-list .room-card')].some((c) => c.textContent.includes('🌍 Polonya'))).then(() => true, () => false);
+  await U.p.evaluate(() => [...document.querySelectorAll('#room-list .room-card')].find((c) => c.textContent.includes('🌍 Polonya')).querySelector('button').click());
+  await bekle(U, () => online.cachedRoom && online.cachedRoom.players[online.uid] && document.getElementById('screen-lobby').classList.contains('active'));
+  const lobi1 = await U.p.evaluate(() => document.getElementById('lobby-tur').textContent);
+  await U.p.evaluate(async () => { await toggleReady(); });
+  await bekle(K, () => document.getElementById('lobby-start-btn').style.display !== 'none');
+  await K.p.evaluate(async () => { await startMpGame(); });
+  await bekle(U, () => game.running && online.mode === 'client' && online.turSonUlke === 3, null, 20000);
+  const turTema = await Promise.all([K, U].map((s) => s.p.evaluate(() => ({ tur: game.dunyaTuru, level: game.level, tema: getTheme().name, engel: [...new Set(game.walls.map((w) => w.tema))] }))));
+  sina('Dünya Turu odası 3. ülkeden: listede "🌍 Polonya", lobide "🌍 3. Polonya"; iki tarafta tema Polonya, engeller PL', () => {
+    assert.deepEqual(turOdasi, { oda: turOdasi.oda, tur: true, level: 3 }); assert.ok(listede); assert.equal(lobi1, '🌍 3. Polonya');
+    for (const d of turTema) assert.deepEqual(d, { tur: true, level: 3, tema: 'Polonya', engel: ['PL'] });
+  });
+  for (const s of [K, U]) await s.p.evaluate(() => { window.__olumsuz = setInterval(() => { if (game.player) { game.player.invuln = 2; game.player.hp = 3; } }, 100); });
+  await K.p.evaluate(() => { game.bossSpawnTimer = 999; game.bossDefeated = true; game.ghosts = []; });   // kurucu ülkeyi bitirir
+  const ilerledi = await Promise.all([K, U].map((s) => bekle(s, () => game.level === 4 && !!save.dunyaTuru.damgalar.PL, null, 20000).then(() => true, () => false)));
+  const damgalar = await Promise.all([K, U].map((s) => s.p.evaluate(() => Object.keys(save.dunyaTuru.damgalar))));
+  sina('kurucu ülkeyi bitirince iki tarafta yalnız PL damgası, bölüm 4 (Almanya)', () => { assert.deepEqual(ilerledi, [true, true]); assert.deepEqual(damgalar, [['PL'], ['PL']]); });
+  for (const s of [K, U]) await s.p.evaluate(() => { clearInterval(window.__olumsuz); game.player.invuln = 0; game.player.hp = 1; damagePlayer(); });
+  const turBitti = await Promise.all([K, U].map((s) => bekle(s, () => !game.running && document.getElementById('screen-gameover').classList.contains('active'), null, 20000).then(() => true, () => false)));
+  const odaUlkesi = await K.p.evaluate(async () => rtdb.get(`rooms/${online.roomId}/level`));
+  for (const s of [K, U]) await s.p.evaluate(() => lobiyeDon());
+  await bekle(U, () => document.getElementById('lobby-tur').textContent.includes('4.')).catch(() => {});
+  const lobi2 = await Promise.all([K, U].map((s) => s.p.evaluate(() => document.getElementById('lobby-tur').textContent)));
+  sina('herkes hayalet olunca tur biter; oda kalınan ülkede (level 4), lobide "🌍 4. Almanya"', () => {
+    assert.deepEqual(turBitti, [true, true]); assert.equal(odaUlkesi, 4); assert.deepEqual(lobi2, ['🌍 4. Almanya', '🌍 4. Almanya']);
+  });
+
+  // 9) Konsolda eski kurallar (tur alanı yok): Dünya Turu odası kurulamaz, uyarı çıkar, normal odaya dönülmez
+  const kurallar = JSON.parse(fs.readFileSync(path.join(KOK, 'firebase', 'database.rules.json'), 'utf8'));
+  delete kurallar.rules.rooms.$roomId.tur;
+  const kuralYukle = (govde) => fetch(`http://${DB}/.settings/rules.json?ns=${NS}`, { method: 'PUT', headers: { Authorization: 'Bearer owner' }, body: govde });
+  assert.equal((await kuralYukle(JSON.stringify(kurallar))).status, 200);
+  await U.p.evaluate(async () => { await odadanCik(); });
+  const eskiKural = await K.p.evaluate(async () => {
+    await odadanCik();
+    openCreateRoom(); odaKipiSec('tur'); odaUlkesiSec(2); await submitCreateRoom();
+    return { oda: online.roomId, yazi: document.getElementById('online-status').textContent };
+  });
+  await kuralYukle(fs.readFileSync(path.join(KOK, 'firebase', 'database.rules.json'), 'utf8'));
+  sina('eski kurallarda Dünya Turu odası kurulamaz: "⚠ Dünya Turu odası şu an kurulamıyor", oda yok', () => {
+    assert.equal(eskiKural.oda, null); assert.ok(eskiKural.yazi.includes('Dünya Turu odası şu an kurulamıyor'), eskiKural.yazi);
+  });
+
   sina('sayfa hatası yok', () => {
     const tum = [...H.hatalar.map((x) => 'kurucu: ' + x), ...K.hatalar.map((x) => 'konuk: ' + x), ...U.hatalar.map((x) => 'üçüncü: ' + x)];
     assert.deepEqual(tum, []);

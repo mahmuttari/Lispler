@@ -814,6 +814,51 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
   background: linear-gradient(180deg, #9d4edd, #6d28d9);
   border-color: #fbbf24;
 }
+/* 3.14.0 Oda Kur: oyun türü (Normal / Dünya Turu) ve tur odasının ülkesi */
+.kip-select, .oda-ulke-secici {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+.kip-btn {
+  background: rgba(0,0,0,0.4);
+  border: 2px solid rgba(157, 78, 221, 0.4);
+  color: white;
+  border-radius: 12px;
+  padding: 10px 14px;
+  min-height: 44px;
+  min-width: 44px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.kip-btn.active {
+  background: linear-gradient(180deg, #9d4edd, #6d28d9);
+  border-color: #fbbf24;
+}
+.kip-btn:disabled { opacity: 0.35; cursor: default; }
+[dir="rtl"] #oda-ulke-geri, [dir="rtl"] #oda-ulke-ileri { transform: scaleX(-1); } /* sağdan sola: geri sağda, sağı gösterir */
+.oda-ulke-ad {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 60vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 800;
+  font-size: 17px;
+  color: #fde68a;
+}
+.lobby-tur {
+  margin: 4px 0 8px;
+  font-weight: 800;
+  font-size: 17px;
+  color: #fde68a;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
 
 .lobby-players {
   background: rgba(0,0,0,0.3);

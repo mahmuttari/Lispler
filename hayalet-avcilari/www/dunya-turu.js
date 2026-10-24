@@ -193,12 +193,18 @@ function turUlkesiBitti() {
     ucakGecisi(u, ulkeSirada(u.sira + 1), () => turSonra(0, jeton, () => nextLevel()));
   });
 }
-// 51. ülke bitti (tek kişilik). Çevrimiçi kurucunun tur sonu Görev 14'te eklenir.
+// 51. ülke bitti. Tek kişilikte oyun sonu; çevrimiçi kurucu durumda bölümü 52 yazar (istemciler turu tamamlar) ve 2 sn
+// sonra turu bitirir (oda level'i 1'e döner).
 function turTamamlandi() {
-  if (online.mode) return;
+  if (online.mode === "client") return;
   const k = turKaydi();
   if (!k.bitti) { k.bitti = Date.now(); persistSave(); }
   game.turBitti = true;
+  if (online.mode === "host") {
+    showToast(t("🌍 Dünya turu tamamlandı!"));
+    setTimeout(() => { if (game.running && online.mode === "host") turuBitir(); }, 2000);
+    return;
+  }
   oyunSonu(true, false);
 }
 // Oyun sonundaki "🔁 Tekrar Oyna": Dünya Turu'nda kalınan ülkeden (tur bittiyse Dünya Turu ekranı), normal oyunda baştan
@@ -265,4 +271,71 @@ function turUlkeSec(n) {
 function dunyaTuruBaslat() {
   const k = turKaydi();
   startGame({ tur: true, ulke: turDurumu(ulkeSirada(_turSecili), k) === "kilitli" ? k.acik : _turSecili });
+}
+
+// ---------- Çevrimiçi Dünya Turu odası (spec §6) ----------
+// Oda kaydı { …, tur: true, level: ülke }: level kurucunun kalınan ülkesidir (turuBitir yazar). Eski sürüm tur alanını
+// bilmez ve odayı normal oyun sanar; eski kurallar alanı reddeder (oda kurulamaz, normal odaya dönülmez).
+// Odanın ülkesi (level 1–51'e sınırlanır); Dünya Turu odası değilse null
+function turOdaUlkesi(room) {
+  if (!room || !room.tur) return null;
+  return ulkeSirada(Math.max(1, Math.min(ULKE_SAYISI, Math.floor(Number(room.level)) || 1)));
+}
+// Lobi satırı "🌍 {sıra}. {ülke}"; Dünya Turu odası değilse boş
+function odaTurSatiri(room) {
+  const u = turOdaUlkesi(room);
+  return u ? `🌍 ${u.sira}. ${u.ad}` : "";
+}
+// Oda Kur: kip ("normal" | "tur") ve tur odasının ülkesi (açık ülkelerden; varsayılan en ileri açık ülke)
+function odaKipiSec(kip) {
+  online.selectedKip = kip === "tur" ? "tur" : "normal";
+  document.querySelectorAll("#screen-create-room .kip-btn").forEach((b) => b.classList.toggle("active", b.dataset.kip === online.selectedKip));
+  const secici = document.getElementById("oda-ulke-secici");
+  if (secici) secici.style.display = online.selectedKip === "tur" ? "" : "none";
+  if (online.selectedKip === "tur") odaUlkesiSec(online.selectedUlke || turKaydi().acik);
+}
+function odaUlkesiSec(n) {
+  const acik = turKaydi().acik;
+  online.selectedUlke = Math.max(1, Math.min(acik, Math.floor(Number(n)) || acik));
+  const u = ulkeSirada(online.selectedUlke), ad = document.getElementById("oda-ulke-ad");
+  if (ad) ad.textContent = `${u.sira}. ${u.ad}`;
+  const geri = document.getElementById("oda-ulke-geri"), ileri = document.getElementById("oda-ulke-ileri");
+  if (geri) geri.disabled = online.selectedUlke <= 1;
+  if (ileri) ileri.disabled = online.selectedUlke >= acik;
+}
+function odaUlkesiKaydir(d) { odaUlkesiSec((online.selectedUlke || 1) + d); }
+
+// İstemci: kurucunun durumu (st.lvl) Dünya Turu'nda. Ülke bir ilerleyince önceki ülkenin damgası basılır; ortadan katılan
+// katıldığı ülkeden önceki ülkelerin damgasını almaz (online.turSonUlke ilk durumda null). 51'i geçen durum (eski sürümlü
+// kurucu 52, 53… bölüme ilerler ya da yeni kurucu turu bitirmiştir) turu bir kez tamamlar, bölüm 51'de kalır.
+// true: bölüm burada uygulandı ya da uygulanmayacak (durumGeldi bölüm uygulamasını atlar)
+function turDurumGeldi(st) {
+  if (!st || typeof st.lvl !== "number" || !Number.isFinite(st.lvl)) return false;
+  const lvl = Math.max(1, Math.floor(st.lvl)), onceki = online.turSonUlke;
+  if (lvl > ULKE_SAYISI) {
+    if (game.level !== ULKE_SAYISI) clientApplyLevel(ULKE_SAYISI);
+    if (!game.turBitti) {
+      game.turBitti = true;
+      if (onceki === ULKE_SAYISI) istemciDamgasi(ulkeSirada(ULKE_SAYISI));
+      const k = turKaydi();
+      if (!k.bitti) { k.bitti = Date.now(); persistSave(); }
+      turMuzigiSondur();
+      showToast(t("🌍 Dünya turu tamamlandı!"));
+    }
+    online.turSonUlke = ULKE_SAYISI;
+    return true;
+  }
+  online.turSonUlke = lvl;
+  if (lvl === game.level) return true;
+  clientApplyLevel(lvl);
+  turMuzigiBaslat(ulkeSirada(lvl).kod);
+  if (onceki !== null && onceki !== undefined && lvl === onceki + 1) istemciDamgasi(ulkeSirada(onceki), lvl);
+  return true;
+}
+// İstemcinin damgası: kayıt, bildirim ve damga perdesi; perde kapanınca yeni ülkenin tanıtım satırı yeniden görünür
+function istemciDamgasi(u, yeniBolum) {
+  const { yeni } = damgaBas(u.kod);
+  showToast(t("🛂 {ulke} damgası!", { ulke: u.ad }) + (yeni ? ` +${TUR_DAMGA_ELMAS} 💎` : ""));
+  damgaGoster(u);
+  if (yeniBolum) setTimeout(() => { if (game.running && game.level === yeniBolum) showToast(bolumBildirimi()); }, TUR_DAMGA_MS);
 }

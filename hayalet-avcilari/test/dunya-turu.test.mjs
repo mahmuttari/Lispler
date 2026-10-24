@@ -12,7 +12,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const WWW = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'www');
 const PW = process.env.PLAYWRIGHT_MODULE || '/opt/node22/lib/node_modules/playwright/index.mjs';
 const { chromium } = await import(pathToFileURL(PW).href);
-const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.m4a': 'audio/mp4' };
+const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.m4a': 'audio/mp4', '.ogg': 'audio/ogg' };
 const sunucu = http.createServer((q, r) => {
   const f = path.join(WWW, decodeURIComponent(new URL(q.url, 'http://x').pathname).replace(/^\/+/, '') || 'index.html');
   if (!f.startsWith(WWW) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end(); }
@@ -25,7 +25,7 @@ function sina(ad, fn) {
   try { fn(); sonuclar.push(`✓ ${ad}`); } catch (e) { sonuclar.push(`✗ ${ad}: ${e.message.split('\n')[0]}`); }
 }
 
-const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
+const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args: ['--autoplay-policy=no-user-gesture-required'] });
 const hatalar = [];
 async function sayfaAc(dil = 'tr') {
   const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
@@ -303,6 +303,38 @@ try {
   });
   sina('istemcinin bölüm bildirimi Dünya Turu\'nda tanıtım satırı', () => { assert.equal(bo.istemci, '✈️ 7. İtalya — Kolezyum ve gondollu kanal iskelesi'); });
   await kopya(p, () => Object.assign(window, _asil));
+
+  // --- 9) Çevrimiçi istemci (ağsız; durumGeldi doğrudan): ortadan katılma, karışık sürüm, oda ülkesi, müzik ---
+  const ist = await kopya(p, async () => {
+    const bekle = (ms) => new Promise((r) => setTimeout(r, ms));
+    audio.init();
+    save.dunyaTuru = { acik: 1, damgalar: {}, bitti: 0 }; persistSave();
+    const bos = (lvl) => ({ lvl, g: [], e: [], p: [], bd: 0, bt: 0, lt: 0 });
+    const damgalar = () => Object.keys(save.dunyaTuru.damgalar).sort();
+    let tamam = 0; const _toast = window.showToast;
+    window.showToast = (m) => { if (String(m).includes('Dünya turu tamamlandı')) tamam++; return _toast(m); };
+    startGame({ tur: true, ulke: 3 }); game.player.invuln = 1e9;          // oda 3. ülkede kurulmuş, kurucu 7'ye gelmiş
+    online.mode = 'client'; online.turSonUlke = null;
+    durumGeldi(bos(7));
+    const ilk = { level: game.level, damgalar: damgalar() };
+    durumGeldi(bos(8));
+    const ikinci = { level: game.level, damgalar: damgalar() };
+    let muzik = null;
+    for (let i = 0; i < 40 && !(muzik && muzik.kod); i++) { await bekle(100); muzik = muzikDurumu(); }
+    for (const lvl of [51, 52, 53, 54]) durumGeldi(bos(lvl));
+    const karisik = { level: game.level, ar: !!save.dunyaTuru.damgalar.AR, damgalar: damgalar(), tamam };
+    window.showToast = _toast;
+    online.mode = null; endGame(false); turMuzigiSondur(0);
+    return { ilk, ikinci, muzik: muzik && muzik.kod, karisik, oda: [turOdaUlkesi({ tur: true, level: 999 }), turOdaUlkesi({ tur: true, level: 3 }), turOdaUlkesi({ level: 3 }), turOdaUlkesi(null)].map((u) => u && u.kod) };
+  });
+  sina('ortadan katılma: ilk durumda (7) damga yok; 8 gelince yalnız 7. ülkenin (IT) damgası', () => {
+    assert.deepEqual(ist.ilk, { level: 7, damgalar: [] }); assert.deepEqual(ist.ikinci, { level: 8, damgalar: ['IT'] });
+  });
+  sina('yeni ülke uygulanınca ülkenin müziği çalar (ES)', () => { assert.equal(ist.muzik, 'ES'); });
+  sina('karışık sürüm: 51, 52, 53, 54 → AR damgası bir kez, "tamamlandı" bir kez, bölüm 51\'de kalır', () => {
+    assert.deepEqual(ist.karisik, { level: 51, ar: true, damgalar: ['AR', 'IT'], tamam: 1 });
+  });
+  sina('turOdaUlkesi: level 999 → AR, 3 → PL; tur alanı olmayan oda ve boş oda → null', () => { assert.deepEqual(ist.oda, ['AR', 'PL', null, null]); });
 
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {

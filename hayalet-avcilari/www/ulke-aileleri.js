@@ -228,27 +228,31 @@
     }, koyu(p.vurgu1, 0.55));
     return [];
   }
-  // Zemin: geometrik çini (sekiz köşeli yıldızlar ve aralarındaki baklavalar); köşelerde ve kenar ortalarında yarım
-  // motifler, böylece döşeme kesintisiz
+  // Zemin: lale çinisi; baklava ızgarası, her baklavada üç dilimli üslup lale (sap ve iki yaprak), ızgara düğümlerinde
+  // nokta. Köşelerdeki laleler döşemenin kenarından taşar, komşu karoda tamamlanır: döşeme kesintisiz. (Önceki sekiz
+  // köşeli yıldız, iki kare ve halka, dinî bir işarete (Rub el-Hizb) benzediği için kaldırıldı; spec §4.6.)
   function geometrikCini(ctx, n, p) {
-    ctx.strokeStyle = p.desen; ctx.lineWidth = 1.5; ctx.lineJoin = "round";
-    const yildiz = (cx, cy, R) => {
-      for (const a0 of [0, Math.PI / 4]) {
-        ctx.beginPath();
-        for (let i = 0; i < 4; i++) { const a = a0 + (i * Math.PI) / 2; ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); }
-        ctx.closePath(); ctx.stroke();
+    ctx.strokeStyle = p.desen; ctx.lineWidth = 1.5; ctx.lineJoin = "round"; ctx.lineCap = "round";
+    const lale = (cx, cy, s) => {
+      const y = cy - s * 0.22;
+      ctx.beginPath();                                                                                    // çanak
+      ctx.moveTo(cx - s * 0.42, y - s * 0.2);
+      ctx.quadraticCurveTo(cx - s * 0.46, y + s * 0.26, cx, y + s * 0.28);
+      ctx.quadraticCurveTo(cx + s * 0.46, y + s * 0.26, cx + s * 0.42, y - s * 0.2);
+      ctx.lineTo(cx + s * 0.2, y - s * 0.02); ctx.lineTo(cx, y - s * 0.32); ctx.lineTo(cx - s * 0.2, y - s * 0.02);
+      ctx.closePath(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx, y + s * 0.28); ctx.lineTo(cx, y + s * 0.8); ctx.stroke();              // sap
+      for (const k of [-1, 1]) {                                                                          // yapraklar
+        ctx.beginPath(); ctx.moveTo(cx, y + s * 0.74); ctx.quadraticCurveTo(cx + k * s * 0.38, y + s * 0.62, cx + k * s * 0.42, y + s * 0.34); ctx.stroke();
       }
-      ctx.beginPath(); ctx.arc(cx, cy, R * 0.32, 0, Math.PI * 2); ctx.stroke();
     };
-    for (const [x, y] of [[n / 2, n / 2], [0, 0], [n, 0], [0, n], [n, n]]) yildiz(x, y, n * 0.21);
-    for (const [x, y] of [[n / 2, 0], [n / 2, n], [0, n / 2], [n, n / 2]]) {
-      ctx.beginPath(); ctx.moveTo(x, y - n * 0.09); ctx.lineTo(x + n * 0.09, y); ctx.lineTo(x, y + n * 0.09); ctx.lineTo(x - n * 0.09, y); ctx.closePath(); ctx.stroke();
-    }
+    for (const [x, y] of [[n / 2, n / 2], [0, 0], [n, 0], [0, n], [n, n]]) lale(x, y, n * 0.27);
     ctx.globalAlpha = 0.55; ctx.lineWidth = 1;
     for (const [a, b] of [[[0, n / 2], [n / 2, 0]], [[n / 2, 0], [n, n / 2]], [[n, n / 2], [n / 2, n]], [[n / 2, n], [0, n / 2]]]) {
       ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
     }
-    ctx.globalAlpha = 1;
+    ctx.globalAlpha = 1; ctx.fillStyle = p.desen;
+    for (const [x, y] of [[n / 2, 0], [n / 2, n], [0, n / 2], [n, n / 2]]) { ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2); ctx.fill(); }
   }
 
   // ================= DA — DOĞU ASYA =================

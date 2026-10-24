@@ -83,6 +83,12 @@ Hayalet Avcıları'nda hayaletler her yerden geliyor! Avcını seç, labirent gi
 | AdMob · Uygulama bilgileri ve performans › Kilitlenme günlükleri, Teşhis | Evet, **paylaşılıyor** | Hayır | Analiz, dolandırıcılığı önleme |
 
 Hassas konum, telefon rehberi (cihazdaki kişiler), fotoğraf, mesaj, finans, sağlık, tarama geçmişi: **toplanmıyor**.
+
+**API ile yazım (24 Ekim 2026'dan beri):** form [`veri-guvenligi.csv`](veri-guvenligi.csv) ile yazılır
+(`play-istek.txt` › `veriguvenligi uygula`; `android/play.mjs` önce seçili türleri ve yanıtları yazdırır). CSV, Google'ın
+şablonundan bu tabloya göre üretildi; her türde "geçici işleme: hayır". Şablonda olmayan hesap bölümü: hesap oluşturma
+OAuth (Google ile giriş), hesap silme ve veri silme adresi Hesap silme sayfası. Yazım formun tamamını değiştirir; Play eksik
+ya da çelişkili yanıtı reddeder. Bir yanıt değişince önce bu tablo, sonra CSV güncellenir.
 3.13.0 (arkadaşlar): Google'ın tanımında **Kişiler** "kullanıcı adları gibi sosyal grafik bilgisini" de kapsar; oyun içi
 arkadaş listesi bu türde, çevrimiçi durum ve davetler "oyun içi diğer etkinlik ve işlemler" tanımıyla **Diğer işlemler**
 türünde beyan edilir ([Play Console Yardım: Veri güvenliği](https://support.google.com/googleplay/android-developer/answer/10787469)).

@@ -11,6 +11,9 @@
 //                                               — dist/NotDefteri-play.aab'yi üretim (ya da dahili test) kanalına
 //                                                 TASLAK sürüm olarak koyar; "yayinla" sürümü incelemeye/yayına gönderir
 //   node play.mjs imza                          — Play uygulama imzalama anahtarının SHA-256 parmak izi
+//   node play.mjs veriguvenligi [uygula]        — magaza/veri-guvenligi.csv → Veri güvenliği formunun TAMAMI bununla
+//                                                 yazılır (Play eksik ya da çelişkili yanıtı reddeder, hiçbir şey yazılmaz);
+//                                                 önce seçili veri türleri ve her birinin yanıtları yazdırılır
 //
 // PLAY_UYGULAMA ortam değişkeni hangi uygulamanın işleneceğini seçer: boş ya da "notdefteri" (varsayılan),
 // "hayalet" (Hayalet Avcıları: hayalet-avcilari/ klasörü, .github/workflows/play-hayalet.yml).
@@ -104,6 +107,52 @@ export function gorseller(dil = 'tr-TR') {
   return Object.fromEntries(Object.entries(g).map(([tur, dosyalar]) => [tur, dosyalar.map(yol)]));
 }
 
+/** RFC 4180 CSV (tırnak içinde virgül, "" ve satır sonu olabilir) → satır dizileri */
+export function csvSatirlari(metin) {
+  const satirlar = [];
+  let satir = [], alan = '', tirnak = false;
+  for (let i = 0; i < metin.length; i++) {
+    const c = metin[i];
+    if (tirnak) {
+      if (c === '"' && metin[i + 1] === '"') { alan += '"'; i++; }
+      else if (c === '"') tirnak = false;
+      else alan += c;
+    } else if (c === '"') tirnak = true;
+    else if (c === ',') { satir.push(alan); alan = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && metin[i + 1] === '\n') i++;
+      satir.push(alan); satirlar.push(satir); satir = []; alan = '';
+    } else alan += c;
+  }
+  if (alan !== '' || satir.length) { satir.push(alan); satirlar.push(satir); }
+  return satirlar;
+}
+
+/** Veri güvenliği CSV'si → { satir, genel: {soru[/yanıt]: değer}, turler: {tür: {toplanan, paylasilan, gecici, istege,
+ *  amac, paylasimAmaci}} }; başlık Play'in CSV biçimi değilse hata. */
+export function veriGuvenligiOzeti(csv) {
+  const [baslik, ...satirlar] = csvSatirlari(csv).filter((r) => r.some((h) => h !== ''));
+  if (!/^Question ID/.test(baslik?.[0] || '') || !/^Response ID/.test(baslik?.[1] || '') || !/^Response value/.test(baslik?.[2] || '')) {
+    throw new Error('veri-guvenligi.csv: Play Console CSV başlığı değil');
+  }
+  const genel = {}, turler = {};
+  for (const [soru, yanit, deger] of satirlar) {
+    if (!deger) continue;
+    if (soru.startsWith('PSL_DATA_TYPES_')) { if (deger === 'TRUE') turler[yanit] ??= {}; continue; }
+    const p = /^PSL_DATA_USAGE_RESPONSES:([^:]+):(.+)$/.exec(soru);
+    if (!p) { genel[yanit ? `${soru}/${yanit}` : soru] = deger; continue; }
+    const t = (turler[p[1]] ??= {});
+    if (p[2] === 'PSL_DATA_USAGE_EPHEMERAL') t.gecici = deger === 'TRUE';
+    else if (deger !== 'TRUE') continue;
+    else if (yanit === 'PSL_DATA_USAGE_ONLY_COLLECTED') t.toplanan = true;
+    else if (yanit === 'PSL_DATA_USAGE_ONLY_SHARED') t.paylasilan = true;
+    else if (p[2] === 'DATA_USAGE_USER_CONTROL') t.istege = yanit === 'PSL_DATA_USAGE_USER_CONTROL_OPTIONAL';
+    else if (p[2] === 'DATA_USAGE_COLLECTION_PURPOSE') (t.amac ??= []).push(yanit.replace(/^PSL_/, ''));
+    else if (p[2] === 'DATA_USAGE_SHARING_PURPOSE') (t.paylasimAmaci ??= []).push(yanit.replace(/^PSL_/, ''));
+  }
+  return { satir: satirlar.length, genel, turler };
+}
+
 /** android/app/build.gradle → { versionCode, versionName } */
 export function surumBilgisi(gradle) {
   const versionCode = Number(/versionCode\s+(\d+)/.exec(gradle)?.[1]);
@@ -125,7 +174,7 @@ async function api(yontem, url, govde, tur) {
     if (!r.ok) {
       const ipucu = r.status === 404 ? " — uygulama Play Console'da yok ya da ilk AAB henüz elle yüklenmedi"
         : r.status === 403 ? ' — hizmet hesabı uygulamaya davet edilmemiş, izni eksik ya da Google Play Android Developer API kapalı' : '';
-      throw new Error(`${yontem} ${url.replace(/^https:\/\/[^/]+/, '')} → ${r.status} ${metin.replace(/\s+/g, ' ').slice(0, 500)}${ipucu}`);
+      throw new Error(`${yontem} ${url.replace(/^https:\/\/[^/]+/, '')} → ${r.status} ${metin.replace(/\s+/g, ' ').slice(0, 2000)}${ipucu}`);
     }
     return metin ? JSON.parse(metin) : null;
   }
@@ -223,7 +272,25 @@ async function imza() {
   }
 }
 
-const KOMUTLAR = { durum, magaza, gorsel, yukle, imza };
+/** Veri güvenliği formu: Play API'sinin okuma ucu yoktur ve yazım formun tamamını değiştirir; Play eksik ya da çelişkili
+ *  yanıtı reddeder (hiçbir şey yazılmaz). Yanıtlar magaza/aciklamalar.md › Veri güvenliği formu ile aynı olmalıdır. */
+async function veriguvenligi() {
+  const dosya = path.join(MAGAZA, 'veri-guvenligi.csv');
+  if (!fs.existsSync(dosya)) throw new Error(`${path.relative(KOK, dosya)} yok`);
+  const csv = fs.readFileSync(dosya, 'utf8');
+  const o = veriGuvenligiOzeti(csv);
+  console.log(`  ${o.satir} satır`);
+  for (const [soru, deger] of Object.entries(o.genel)) console.log(`  ${soru} = ${deger}`);
+  for (const [tur, t] of Object.entries(o.turler)) {
+    console.log(`  ${tur}: ${[t.toplanan && 'toplanıyor', t.paylasilan && 'paylaşılıyor'].filter(Boolean).join(' + ') || '?'}`
+      + ` · geçici ${t.gecici ? 'evet' : 'hayır'} · ${t.istege ? 'isteğe bağlı' : 'zorunlu'}`
+      + ` · amaç ${(t.amac || []).join(', ') || '—'}${t.paylasimAmaci ? ` · paylaşım amacı ${t.paylasimAmaci.join(', ')}` : ''}`);
+  }
+  if (UYGULA) { await api('POST', `${API}/dataSafety`, { safetyLabels: csv }); console.log('\n  [tamam] veri güvenliği formu yazıldı'); }
+  else console.log('\nPLAN: hiçbir şey yazılmadı (yazmak için "uygula")');
+}
+
+const KOMUTLAR = { durum, magaza, gorsel, yukle, imza, veriguvenligi };
 
 if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
   const komut = process.argv[2] || 'durum';

@@ -32,3 +32,6 @@
 # (yapıldı 2026-10-24, koşu 40063254710: AAB 45 yüklendi, üretim 3.12.2 (44) → 3.13.0 (45) completed, incelemeye gönderildi) yukle yayinla uygula
 # istek 2026-10-24T05:06:19Z: mağaza görselleri 3.13.0'a göre (7 dil: 6 telefon karesi, tanıtım görseli, simge) yükle (kullanıcının açık onayıyla: "Evet, yükle"); görseller commit 2d4c5a6 (araclar/magaza-gorsel.mjs)
 # (yapıldı 2026-10-24, koşu 40064955789: 7 dilde simge, tanıtım görseli ve 6 telefon karesi yüklendi, düzenleme onaylandı) gorsel uygula
+
+# istek 2026-10-24T06:24:44Z: Veri güvenliği formunu API ile yaz — Kişiler ve Diğer işlemler eklendi, diğer yanıtlar magaza/aciklamalar.md ile aynı (kullanıcının açık onayıyla: "api ile oluyor ise devam et", "sen yap her zaman"); CSV magaza/veri-guvenligi.csv
+veriguvenligi uygula

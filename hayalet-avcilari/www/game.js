@@ -626,6 +626,8 @@ const defaultSave = {
   ownedGuns: {},
   equippedGun: "",
   highestLevel: 1,
+  // Reklam sıklığı sayaçları (reklam.js › reklamOyunBitti)
+  reklam: { oyun: 0, toplam: 0, sure: 0, son: [] },
   soundEnabled: true,
   volumes: { ghost: 1, fire: 1, sfx: 1 },
   accountCode: "",
@@ -667,6 +669,7 @@ function loadSave() {
       merged._charUpgradesIsolated = true;
     }
     delete merged.upgrades;
+    merged.reklam = reklamKaydiniTemizle(data.reklam);
     // ammoByChar göçü
     merged.ammoByChar = JSON.parse(JSON.stringify(defaultSave.ammoByChar));
     if (data.ammoByChar) {
@@ -4808,6 +4811,7 @@ function startGame() {
   game.runElmas = 0;
   game.runZumrut = 0;
   game.lastFire = 0;
+  game.oynananSure = 0; // reklam sıklığı: bu oyunda geçen oyun süresi (sn; duraklatma sayılmaz)
 
   game.player = null; // önceki turun konumu yeni haritayı etkilemesin
   buildWalls();
@@ -5011,6 +5015,7 @@ function gameLoop(now, no) {
   const dt = Math.min(0.05, (now - game.lastFrame) / 1000);
   game.lastFrame = now;
   if (!game.paused) {
+    game.oynananSure = (game.oynananSure || 0) + dt;
     try { update(dt, now); }
     catch (e) {
       if (window.showErrBanner) window.showErrBanner("update@" + (e.stack || e.message));
@@ -6434,8 +6439,9 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   const completionBonus = (game.level - 1) * 50;
   const finalPara = game.runPara + completionBonus;
 
-  // Yüksek bölüm rekoru
-  if (game.level > save.highestLevel) save.highestLevel = game.level;
+  // Yüksek bölüm rekoru (yeni rekor sevinç anıdır: geçiş reklamı gösterilmez)
+  const yeniRekor = game.level > save.highestLevel;
+  if (yeniRekor) save.highestLevel = game.level;
 
   save.para += finalPara;
   save.elmas += game.runElmas;
@@ -6482,7 +6488,7 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   document.getElementById("btn-lobiye-don").style.display = cevrimici ? "" : "none";
   document.getElementById("screen-gameover").classList.add("active");
   if (won) audio.win(); else audio.lose();
-  if (!reklamsiz) reklamOyunBitti();
+  if (!reklamsiz) reklamOyunBitti({ cevrimici, sureSn: game.oynananSure || 0, kutlama: !cevrimici && yeniRekor });
 }
 
 // ====== BAŞLAT ======

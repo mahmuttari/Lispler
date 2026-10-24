@@ -76,6 +76,69 @@ try {
     assert.equal(kayit.find((c) => c.ad === 'prepareInterstitial').arg.adId, kimlik.gecis);
     assert.equal(kayit.find((c) => c.ad === 'prepareRewardVideoAd').arg.adId, kimlik.odullu);
   });
+
+  // 3.14.0 — hiç sıkmayan sıklık. gecisUygunMu saf işlevdir; kayıt bu oyunun sayaçları eklenmiş hâlidir.
+  // Zaman damgaları ms; "son bir saat" 3600 sn.
+  const birim = await p.evaluate(() => {
+    const T = 1e12;
+    const iyi = { cevrimici: false, sureSn: 45, kutlama: false };
+    const k = (o) => Object.assign({ oyun: 6, toplam: 600, sure: 360, son: [] }, o);
+    return {
+      cevrimici: gecisUygunMu({ cevrimici: true, sureSn: 300, kutlama: false }, { oyun: 20, toplam: 9999, sure: 9999, son: [] }, T),
+      kutlama: gecisUygunMu({ ...iyi, kutlama: true }, k({}), T),
+      kisa44: gecisUygunMu({ ...iyi, sureSn: 44 }, k({}), T),
+      uygun: gecisUygunMu(iyi, k({}), T),
+      oyun5: gecisUygunMu(iyi, k({ oyun: 5 }), T),
+      oyun6: gecisUygunMu(iyi, k({ oyun: 6 }), T),
+      toplam599: gecisUygunMu(iyi, k({ toplam: 599 }), T),
+      toplam600: gecisUygunMu(iyi, k({ toplam: 600 }), T),
+      ara359: gecisUygunMu(iyi, k({ sure: 359 }), T),
+      ara360: gecisUygunMu(iyi, k({ sure: 360 }), T),
+      saatte4: gecisUygunMu(iyi, k({ son: [T - 10e3, T - 20e3, T - 30e3, T - 40e3] }), T),
+      biriEski: gecisUygunMu(iyi, k({ son: [T - 10e3, T - 20e3, T - 30e3, T - 3601e3] }), T),
+    };
+  });
+  sina('çevrimiçi turdan sonra geçiş reklamı yok', () => { assert.equal(birim.cevrimici, false); });
+  sina('sevinç anında (rekor, dünya turu bitti) yok', () => { assert.equal(birim.kutlama, false); });
+  sina('45 sn\'den kısa oyundan sonra yok, 45 sn\'de var', () => { assert.equal(birim.kisa44, false); assert.equal(birim.uygun, true); });
+  sina('ilk 5 oyun hoş geldin süresi', () => { assert.equal(birim.oyun5, false); assert.equal(birim.oyun6, true); });
+  sina('ilk 10 dk oyun süresi boyunca yok', () => { assert.equal(birim.toplam599, false); assert.equal(birim.toplam600, true); });
+  sina('iki reklam arası en az 6 dk oyun süresi', () => { assert.equal(birim.ara359, false); assert.equal(birim.ara360, true); });
+  sina('saatte en çok 4', () => { assert.equal(birim.saatte4, false); assert.equal(birim.biriEski, true); });
+
+  // Bütünleşik: oyunSonu sayaçları günceller, uygunsa 800 ms sonra bir geçiş reklamı gösterir
+  const gosterim = () => p.evaluate(() => window.__admob.filter((c) => c.ad === 'showInterstitial').length);
+  const oyunuBitir = (cevrimici, enYuksek, bolum) => p.evaluate(async ({ cevrimici, enYuksek, bolum }) => {
+    submitOnlineScore = async () => {};
+    save.playerName = 'Defne'; persistSave();
+    startGame(); game.player.invuln = 1e9;
+    game.level = bolum; save.highestLevel = enYuksek;
+    save.reklam = { oyun: 6, toplam: 900, sure: 400, son: [] };
+    game.oynananSure = 50;
+    if (cevrimici) oyunSonu(false, true); else endGame(false);
+    await new Promise((r) => setTimeout(r, 1100));
+    return JSON.parse(JSON.stringify(save.reklam));
+  }, { cevrimici, enYuksek, bolum });
+  const g0 = await gosterim();
+  const tek = await oyunuBitir(false, 99, 3);
+  const g1 = await gosterim();
+  sina('tek kişilik oyun sonunda uygunsa bir geçiş reklamı; sayaç sıfırlanır', () => {
+    assert.equal(g1 - g0, 1);
+    assert.equal(tek.sure, 0); assert.equal(tek.son.length, 1); assert.equal(tek.oyun, 7); assert.equal(tek.toplam, 950);
+  });
+  const cev = await oyunuBitir(true, 99, 3);
+  const g2 = await gosterim();
+  sina('çevrimiçi tur sonunda reklam yok, oyun süresi birikir', () => { assert.equal(g2 - g1, 0); assert.equal(cev.sure, 450); });
+  const rekor = await oyunuBitir(false, 1, 3);
+  const g3 = await gosterim();
+  sina('yeni en yüksek bölümde (rekor) reklam yok', () => { assert.equal(g3 - g2, 0); assert.equal(rekor.sure, 450); });
+  const odul = await p.evaluate(() => {
+    save.reklam.sure = 200;
+    reklam.odulKazanildi = true; reklam.odulKullanildi = false;
+    odulluKapandi();
+    return save.reklam.sure;
+  });
+  sina('ödüllü reklamı izleyenin sayacı sıfırlanır', () => { assert.equal(odul, 0); });
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);

@@ -24,7 +24,8 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Uygulama kimliği | `ca-app-pub-2417242373034448~4177766696` (`AndroidManifest.xml` › `APPLICATION_ID`) |
-| Geçiş ("Oyun bitti gecis") | `ca-app-pub-2417242373034448/5331066264` — oyun bitti ekranında, her 2 oyunda bir, en az 3 dk arayla |
+| Geçiş ("Oyun bitti gecis") | `ca-app-pub-2417242373034448/5331066264` — yalnız tek kişilik oyunun bitti ekranında, aşağıdaki "Sıklık" kurallarıyla |
+| Sıklık (3.14.0) | Kullanıcının isteği: *"Hiç sıkmayacak şekilde yapalım."* Geçiş reklamı oyun sırasında, çevrimiçi turdan sonra ve sevinç anında (yeni en yüksek bölüm, dünya turu bitişi) yok. Yeni oyuncuya ilk 5 oyun ve ilk 10 dk oyun süresi boyunca yok. 45 sn'den kısa oyundan sonra yok. İki reklam arası en az 6 dk **oyun** süresi (menüde beklemek sayılmaz); saatte en çok 4. Ödüllü reklamı izleyenin sayacı sıfırlanır. Sayaçlar `save.reklam`'da kalıcıdır (`reklam.js` › `gecisUygunMu`, `test/reklam.test.mjs`). Dayanak: AdMob geçiş reklamını doğal duraklarda ve aşırı sıklık olmadan önerir, sayı vermez ([AdMob: interstitial](https://developers.google.cn/admob/cpp/interstitial?hl=en), [AdMob yardım](https://support.google.com/admob/answer/7311435/)) |
 | Ödüllü ("Zumrut odullu") | `ca-app-pub-2417242373034448/6612358344` — oyun bitti ekranında "🎬 Reklam izle: +10 💚", oyun başına bir kez |
 | AB onayı | AdMob › Gizlilik ve mesajlaşma › "Hayalet Avcıları AB tüzüğü mesajı" (en + tr + es); gerektiğinde menüde 🔒 Gizlilik |
 | İçerik derecesi | En çok **G** (genel izleyici): `initialize({ maxAdContentRating: "General" })`, 3.13.1'den beri — aşağıda "3.13.1: reklam içerik sınırı" |

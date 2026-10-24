@@ -5,15 +5,22 @@
    - AB/İngiltere/İsviçre: Google UMP onay formu (AdMob › Gizlilik ve mesajlaşma) ilk açılışta sorulur.
    - Reklam içerik derecesi en çok G (genel izleyici, 3.13.1): PG, T ve MA dereceli reklamlar (müstehcen, kumar, alkol…)
      istenmez. Sınama: test/reklam.test.mjs.
-   - Geçiş reklamı: oyun bitti ekranında, her 2 oyunda bir, en az 3 dakika arayla. Oyun sırasında reklam yok.
+   - Geçiş reklamı (3.14.0, "hiç sıkmayacak şekilde"): yalnız tek kişilik oyunun sonunda; oyun sırasında, çevrimiçi
+     turdan sonra ve sevinç anında (yeni en yüksek bölüm, dünya turu bitişi) yok. Yeni oyuncuya ilk 5 oyun ve ilk
+     10 dk oyun süresi boyunca yok; 45 sn'den kısa oyundan sonra yok; iki reklam arası en az 6 dk oyun süresi
+     (menüde beklemek sayılmaz); saatte en çok 4. Sayaçlar save.reklam'da kalıcıdır. Dayanak: AdMob, geçiş
+     reklamını doğal duraklarda ve aşırı sıklık olmadan önerir (sayı vermez). Sınama: test/reklam.test.mjs.
    - Ödüllü reklam: oyun bitti ekranındaki "Reklam izle" düğmesi, izleyene 10 💚 zümrüt (oyun başına bir kez).
    ============================================================ */
 
 const REKLAM = {
   gecisId: "ca-app-pub-2417242373034448/5331066264",
   odulluId: "ca-app-pub-2417242373034448/6612358344",
-  gecisAraOyun: 2,            // her N oyun bitişinde bir
-  gecisAraMs: 3 * 60 * 1000,  // iki geçiş reklamı arasında en az
+  ilkOyunlar: 5,       // hoş geldin: ilk N oyunda geçiş reklamı yok
+  ilkSureSn: 600,      // hoş geldin: toplam oyun süresi bu kadar olmadan yok
+  araSureSn: 360,      // iki geçiş reklamı arasında en az bu kadar oyun süresi
+  enKisaOyunSn: 45,    // bundan kısa oyundan sonra yok (çabuk yenilen hemen yeniden oynamak ister)
+  saatlikEnCok: 4,
   odulZumrut: 10,
 };
 
@@ -21,8 +28,6 @@ const reklam = {
   hazir: false,          // initialize + onay tamam, reklam istenebilir
   gecisYuklu: false,
   odulluYuklu: false,
-  oyunSayac: 0,
-  sonGecis: 0,
   odulKazanildi: false,
   odulKullanildi: false, // bu oyun bitti ekranında ödül alındı mı
   gizlilikGerekli: false,
@@ -77,20 +82,43 @@ async function odulluYukle() {
   odulDugmesiniGuncelle();
 }
 
-// endGame() çağırır: ödül düğmesini sıfırlar, sırası geldiyse geçiş reklamını gösterir
-function reklamOyunBitti() {
+// Kalıcı sayaçlar (save.reklam): oyun bitiş sayısı, toplam oyun süresi, son reklamdan beri oyun süresi (sn),
+// son bir saatteki reklamların zamanı (ms)
+function reklamKaydiniTemizle(v) {
+  const k = v && typeof v === "object" ? v : {};
+  const sayi = (x) => (Number.isFinite(x) && x > 0 ? x : 0);
+  return { oyun: sayi(k.oyun), toplam: sayi(k.toplam), sure: sayi(k.sure),
+    son: Array.isArray(k.son) ? k.son.filter((z) => Number.isFinite(z)).slice(-REKLAM.saatlikEnCok) : [] };
+}
+
+// bilgi: {cevrimici, sureSn, kutlama}; kayit bu oyunun sayaçları eklenmiş hâlidir
+function gecisUygunMu(bilgi, kayit, simdi) {
+  if (bilgi.cevrimici || bilgi.kutlama) return false;
+  if (!(bilgi.sureSn >= REKLAM.enKisaOyunSn)) return false;
+  if (kayit.oyun <= REKLAM.ilkOyunlar || kayit.toplam < REKLAM.ilkSureSn) return false;
+  if (kayit.sure < REKLAM.araSureSn) return false;
+  return kayit.son.filter((z) => simdi - z < 3600e3).length < REKLAM.saatlikEnCok;
+}
+
+// oyunSonu() çağırır: ödül düğmesini sıfırlar, sayaçları günceller, uygunsa geçiş reklamını gösterir
+function reklamOyunBitti(bilgi = {}) {
   reklam.odulKullanildi = false;
   odulDugmesiniGuncelle();
+  const k = save.reklam = reklamKaydiniTemizle(save.reklam);
+  const simdi = Date.now(), sn = Math.max(0, Number(bilgi.sureSn) || 0);
+  k.oyun++; k.toplam += sn; k.sure += sn;
+  k.son = k.son.filter((z) => simdi - z < 3600e3);
   const ad = admobPlugin();
-  if (!ad || !reklam.hazir) return;
-  reklam.oyunSayac++;
-  const zamani = reklam.oyunSayac % REKLAM.gecisAraOyun === 0 && Date.now() - reklam.sonGecis >= REKLAM.gecisAraMs;
-  if (!zamani) return;
-  if (!reklam.gecisYuklu) { gecisYukle(); return; }
-  reklam.sonGecis = Date.now();
-  setTimeout(() => {
-    ad.showInterstitial().catch(() => { reklam.gecisYuklu = false; gecisYukle(); });
-  }, 800);
+  if (ad && reklam.hazir && gecisUygunMu(bilgi, k, simdi)) {
+    if (!reklam.gecisYuklu) gecisYukle(); // hazır değil: sayaç sürer, sonraki oyun sonunda
+    else {
+      k.sure = 0; k.son.push(simdi);
+      setTimeout(() => {
+        ad.showInterstitial().catch(() => { reklam.gecisYuklu = false; gecisYukle(); });
+      }, 800);
+    }
+  }
+  persistSave();
 }
 
 async function odulluIzle() {
@@ -111,6 +139,8 @@ function odulluKapandi() {
     reklam.odulKazanildi = false;
     reklam.odulKullanildi = true;
     save.zumrut = (save.zumrut || 0) + REKLAM.odulZumrut;
+    save.reklam = reklamKaydiniTemizle(save.reklam);
+    save.reklam.sure = 0; // kendi isteğiyle reklam izleyene bir sonraki geçiş reklamı için yeniden 6 dk
     persistSave();
     const el = document.getElementById("final-zumrut");
     if (el) el.textContent = String(Number(el.textContent || 0) + REKLAM.odulZumrut);

@@ -16,7 +16,8 @@
 //                                                 önce seçili veri türleri ve her birinin yanıtları yazdırılır
 //
 // PLAY_UYGULAMA ortam değişkeni hangi uygulamanın işleneceğini seçer: boş ya da "notdefteri" (varsayılan),
-// "hayalet" (Hayalet Avcıları: hayalet-avcilari/ klasörü, .github/workflows/play-hayalet.yml).
+// "hayalet" (Hayalet Avcıları: hayalet-avcilari/ klasörü, .github/workflows/play-hayalet.yml),
+// "iz" (İz Haritası: iz-haritasi/ klasörü, .github/workflows/play-iz.yml).
 //
 // "uygula" yoksa hiçbir şey yazılmaz: düzenleme (edit) açılır, plan yazılır, düzenleme silinir. Uygulamayı oluşturmak
 // ve ilk AAB'yi yüklemek Play Console'dan elle yapılır (taslak uygulamada API paketi bulamaz); API ondan sonra çalışır.
@@ -28,6 +29,7 @@ const KOK = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const UYGULAMALAR = {
   notdefteri: { paket: 'com.poyrazworkshop.notdefteri', magaza: 'magaza', aab: 'dist/NotDefteri-play.aab', gradle: 'android/app/build.gradle' },
   hayalet: { paket: 'com.poyrazworkshop.hayaletavcilari', magaza: 'hayalet-avcilari/magaza', aab: 'dist/HayaletAvcilari-play.aab', gradle: 'hayalet-avcilari/android/app/build.gradle' },
+  iz: { paket: 'com.poyrazworkshop.izharitasi', magaza: 'iz-haritasi/magaza', aab: 'dist/IzHaritasi-play.aab', gradle: 'iz-haritasi/android/app/build.gradle' },
 };
 const SECIM = UYGULAMALAR[process.env.PLAY_UYGULAMA || 'notdefteri'];
 if (!SECIM) throw new Error(`PLAY_UYGULAMA bilinmiyor: ${process.env.PLAY_UYGULAMA} (${Object.keys(UYGULAMALAR).join(', ')})`);

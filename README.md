@@ -83,6 +83,15 @@ Poyraz Workshop'un ikinci uygulaması (oyun) [`hayalet-avcilari/`](hayalet-avcil
 projesi, mağaza metinleri ve Play'e yayın talimatı ([`hayalet-avcilari/magaza/PLAY-YAYIN.md`](hayalet-avcilari/magaza/PLAY-YAYIN.md)).
 Gizlilik ve hesap silme sayfaları `app/hayalet-avcilari/` altında, Play paketi `dist/HayaletAvcilari-play.aab`.
 
+## İz Haritası
+
+Poyraz Workshop'un üçüncü uygulaması [`iz-haritasi/`](iz-haritasi/) klasöründedir. Yakındaki AirTag ve Find My
+izleyicilerini bulur, yerini haritada kestirir ve konum geçmişini tutar. GENEL-KONULAR'daki AirTag Harita'nın reklamlı
+Google Play sürümüdür (AdMob banner + dışa aktarımdan sonra geçiş reklamı). Klasörde Android projesi (Gradle), mağaza
+metinleri, Veri güvenliği CSV'si, görseller ve Play'e yayın talimatı ([`iz-haritasi/magaza/PLAY-YAYIN.md`](iz-haritasi/magaza/PLAY-YAYIN.md))
+bulunur. Gizlilik sayfası `app/iz-haritasi/` altındadır. Paket CI'da derlenir (`iz-android.yml` → artifact
+`IzHaritasi-aab`); Play API işleri `play-iz.yml` ile yürür.
+
 ## Proje yapısı
 
 ```
@@ -91,6 +100,8 @@ android/    Android: WebView + AdMob + Google Play Billing (Java)
 ios/        iOS: WKWebView + AdMob + StoreKit 2 (Swift, XcodeGen ile proje üretilir)
 magaza/     Fiyatlandırma ve mağaza metinleri
 dist/       Elle kurulum için hazır APK
+hayalet-avcilari/  Hayalet Avcıları (oyun): kaynak, Android projesi, mağaza
+iz-haritasi/       İz Haritası: Android projesi (web arayüzü GENEL-KONULAR'dan), mağaza
 .github/    Otomatik derleme: Android (APK/AAB), iOS (derleme + TestFlight), Pages (gizlilik sayfaları)
 ```
 

@@ -1,0 +1,6 @@
+# Web arayüzünün kaynağı (araclar/esitle.mjs yazar; elle düzenlenmez)
+depo: mahmuttari/GENEL-KONULAR
+klasor: airtag-harita
+commit: 9cdc87ccf2c246751ae4b738dff32b7f863b6331
+tarih: 2026-10-24T08:21:14+00:00
+ad: İz Haritası

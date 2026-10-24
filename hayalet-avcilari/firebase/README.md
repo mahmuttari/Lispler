@@ -235,18 +235,21 @@ gcloud projects add-iam-policy-binding hayalet-avcilari --role=roles/firebasedat
   --member=serviceAccount:notdefteri-play@handcalcbook.iam.gserviceaccount.com
 ```
 
-Rol verilmeden önceki deneme (koşu 40066100466): kimlik alındı, okuma `401` döndü. Rol, hesaba veritabanının kural ve
+Rol verilmeden önceki deneme (koşu 40066100466): kimlik alındı, okuma `401` döndü. Rol 24 Ekim 2026'da verildi:
+`durum` (koşu 40066772782) yalnız ekleme ve gevşetme farkı gösterdi (yalnız yayında olan kural yoktu), `yayinla`
+(koşu 40066828973) yayınladı ve geri okunan kurallar depodakiyle aynı çıktı. Rol, hesaba veritabanının kural ve
 verilerinde yönetici yetkisi verir; hesabı yalnız `mahmuttari/Lispler` deposunun iş akışları kullanabilir
 (`play-kurulum.sh` › `attribute-condition`). Rol kaldırılınca bu yol kapanır, konsoldan yayın sürer.
 
-### 3.13.0: arkadaşlar (yayınlanmayı bekliyor — 3.13.0 Play'de yayına çıkmadan)
+### 3.13.0: arkadaşlar (kurallar 24 Ekim 2026'da GitHub'dan yayınlandı, koşu 40066828973)
 
 Kökte üç yeni düğüm (`friendCodes`, `users`, `presence`, yukarıda) ve oda oyuncusunda yeni `av` alanı (tur
 sıralaması, `rooms` tablosunda); mevcut alanların izinleri değişmedi. 3.12.2'nin `maxPlayers` 2–6 değişikliği ve
-3.12.0'ın dizini henüz yayınlanmadıysa bu yayına girer.
+3.12.0'ın dizini de bu yayınla gitti.
 
-1. Firebase konsolu › `hayalet-avcilari` › Realtime Database › **Kurallar** → `database.rules.json`'un tamamını
-   yapıştır → **Yayınla**. Firestore kuralları değişmedi.
+1. Yayın: `yayin-istek.txt` › `yayinla` (yukarıda). Konsoldan da yapılabilir: Firebase konsolu › `hayalet-avcilari` ›
+   Realtime Database › **Kurallar** → `database.rules.json`'un tamamını yapıştır → **Yayınla**. Firestore kuralları
+   değişmedi.
 2. Dene (3.13.0, iki cihaz): Arkadaşlar ekranında kod görünür; diğer cihaz kodla ekler, istek kabul edilir; lobide
    📨 Davet et ile çağrılan cihazda şerit çıkar ve Katıl odaya götürür. Bir tur oynanınca tur sonu ekranında iki
    oyuncunun hayalet sayısı görünür, birinci 🏆 alır.
@@ -254,7 +257,7 @@ sıralaması, `rooms` tablosunda); mevcut alanların izinleri değişmedi. 3.12.
 Yayınlanmazsa 3.13.0'da Arkadaşlar ekranı "Arkadaşlar şu an kullanılamıyor" der, tur sıralamasında başkalarının sayısı
 "?" görünür ve kupa verilmez; oda, yedek ve skor etkilenmez.
 
-### 3.12.2: 6 kişilik oda (yayınlanmayı bekliyor — 3.12.2 Play'de yayına çıkmadan)
+### 3.12.2: 6 kişilik oda (kurallar 24 Ekim 2026'da 3.13.0 yayınıyla birlikte yayınlandı)
 
 `rooms/$roomId/maxPlayers` sınırı `<= 5` → `<= 6`; başka izin değişmedi. Aşağıdaki 3.12.0 dizini de bu yayına girer.
 
@@ -265,7 +268,7 @@ Yayınlanmazsa 3.13.0'da Arkadaşlar ekranı "Arkadaşlar şu an kullanılamıyo
 Yayınlanmazsa 3.12.2 6 kişilik oda isteyince sunucu reddeder ve oyun odayı 5 kişilik kurar (oyuncu hata görmez); 2–5
 kişilik odalar ve eski sürümler etkilenmez. Geri dönmek gerekirse konsolun kural geçmişinden önceki sürüm seçilir.
 
-### 3.12.0: oda listesi dizini (yayınlanmayı bekliyor, isteğe bağlı; 3.12.2 yayınıyla birlikte gider)
+### 3.12.0: oda listesi dizini (24 Ekim 2026'da 3.13.0 yayınıyla birlikte yayınlandı)
 
 `database.rules.json`'a yalnız `rooms` altında `".indexOn": ["lastSeen"]` eklendi; izinler değişmedi. Realtime Database
 › **Kurallar** → dosyanın tamamını yapıştır → **Yayınla**. Yayınlanınca 3.12.0'ın oda listesi yalnız lobisi açık

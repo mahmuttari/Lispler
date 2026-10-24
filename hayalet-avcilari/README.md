@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı) Firebase konsolunda yayınlanmalı: [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama). Önceki: 3.12.2 (44), 23 Ekim 2026'da incelemedeki 3.12.1 (43)'in yerine Play'e gönderildi |
+| Sürüm | 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama). Önceki: 3.12.2 (44), 23 Ekim 2026'da incelemedeki 3.12.1 (43)'in yerine Play'e gönderildi |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
@@ -266,11 +266,12 @@ kimlik değişirken kurulum yarışı, tek taraflı kayıtta arkadaşın hep ⚪
 güncellenmemesi, ⏸ Menü'deki 📨'nin menü açıkken güncellenmemesi, test kapsamı (sağdan sola ad, ölü bağlantı).
 
 Yayın sırası:
-1. **Kurallar:** Firebase konsolunda `database.rules.json`'un tamamı yayınlanır ([`firebase/README.md` ›
-   Yayınlama](firebase/README.md#yayınlama)). Bu yayın arkadaş düğümlerini, tur sıralamasının `av` alanını ve
-   henüz yayınlanmadıysa 3.12.2'nin `maxPlayers` 2–6 değişikliğini birlikte getirir.
-2. **Gizlilik politikası ve hesap silme sayfası:** GitHub Pages yalnız `main`'den yayınlar; `main`'e PR kullanıcının
-   onayıyla.
+1. **Kurallar:** 24 Ekim 2026'da GitHub'dan yayınlandı (`firebase/yayin-istek.txt` › `yayinla`, koşu 40066828973;
+   geri okunan kurallar depodakiyle aynı). Yayın arkadaş düğümlerini, tur sıralamasının `av` alanını, 3.12.2'nin
+   `maxPlayers` 2–6 değişikliğini ve 3.12.0 dizinini birlikte getirdi ([`firebase/README.md` ›
+   Yayınlama](firebase/README.md#yayınlama)).
+2. **Gizlilik politikası ve hesap silme sayfası:** 24 Ekim 2026'da kullanıcının onayıyla `main`'e birleştirildi ve
+   GitHub Pages'te yayında.
 3. **Uygulama 3.13.0 (45):** CI derledi (koşu 40040731793); 24 Ekim 2026'da kullanıcının onayıyla Play'e gönderildi
    (koşu 40063254710).
 4. **Play Console › Veri güvenliği:** "Kişiler" ve "Diğer işlemler" satırları ([`magaza/aciklamalar.md`](magaza/aciklamalar.md)

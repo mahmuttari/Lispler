@@ -319,8 +319,18 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.13.1";
+const APP_VERSION = "3.14.0";
 const UPDATE_NOTES = {
+  // 3.13.1 Play'e çıkmadı (reklam düzeltmesi bu sürümle gider); 3.13.0 incelemedeyse oyuncular onu görmeden geçer.
+  // Mağaza notu (aynı satırlar) her dilde 500 karakterin altında kalsın diye 3.13.0'ın sığmayan son satırları yok
+  "3.14.0": [
+    t("🌍 Dünya Turu: en kalabalık 50 ülke ve Filistin, her ülke kendi görselleri ve geleneksel kıyafetli bossuyla."),
+    t("🛂 Ülkeyi geç, pasaportuna damga bas; arkadaşlarınla birlikte gez."),
+    t("🎵 Her ülkenin kendi kültüründen giriş ve fon müziği; Ses Ayarları'nda yeni Müzik kaydırıcısı."),
+    t("😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok."),
+    t("🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir."),
+    t("👫 Arkadaş ekle: kodunu paylaş ya da lobide oyuncunun yanındaki ➕'ya dokun."),
+  ],
   // 3.13.0 incelemedeyken gönderilirse oyuncular 3.13.0'ı görmeden geçer: notlar onu da anlatır. Mağaza notu (aynı
   // satırlar) İspanyolcada 500 karakteri aşmasın diye 👥 satırı (3.12.2) bu sürümde yok
   "3.13.1": [

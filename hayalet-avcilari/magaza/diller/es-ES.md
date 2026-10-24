@@ -38,9 +38,9 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 ## Sürüm notu
 
-👫 Añade amigos: comparte tu código o toca ➕ junto a un jugador en la sala de espera.
-📨 Llama a un amigo a tu sala; si te invitan, toca Unirse arriba.
-🟢 Mira si tus amigos están en línea o en una sala; bloquea a quien no quieras.
-🏰 Obstáculos renovados: castillos, lagos de orillas curvas y objetos espeluznantes pero adorables en cada tema.
-🏆 Al terminar una ronda en línea, todos se ordenan por fantasmas atrapados; el primero gana un trofeo.
+🌍 Gira mundial: los 50 países más poblados y Palestina, cada uno con sus paisajes y un jefe con traje tradicional.
+🛂 Supera un país y sella tu pasaporte; viaja junto a tus amigos.
+🎵 Música de entrada y de fondo de la cultura de cada país; nuevo control de Música en Ajustes de sonido.
+😌 Menos anuncios: ninguno para jugadores nuevos ni tras partidas cortas.
 🛡️ Solo verás anuncios aptos para todos.
+👫 Añade amigos: comparte tu código o toca ➕ junto a un jugador en la sala de espera.

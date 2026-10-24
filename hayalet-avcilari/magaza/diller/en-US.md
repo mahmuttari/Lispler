@@ -38,9 +38,9 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 
 ## Sürüm notu
 
-👫 Add friends: share your code or tap ➕ next to a player in the lobby.
-📨 Call a friend to your room; when invited, tap Join on the top banner.
-🟢 See if friends are online or in a room; block anyone you don't want.
-🏰 Obstacles redesigned: castles, curvy-shored ponds and spooky-but-cute objects for every theme.
-🏆 After an online round everyone is ranked by ghosts caught; the winner earns a trophy.
+🌍 World Tour: the 50 most populous countries plus Palestine, each with its own sights and a boss in traditional dress.
+🛂 Clear a country to stamp your passport; tour together with friends.
+🎵 Intro and background music from each country's own culture; new Music slider in Sound Settings.
+😌 Fewer ads: none for new players or after short games.
 🛡️ Only ads suitable for all ages are shown now.
+👫 Add friends: share your code or tap ➕ next to a player in the lobby.

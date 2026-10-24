@@ -1,7 +1,7 @@
 # Hayalet Avcıları — Dünya Turu: ülke müzikleri (ek tasarım)
 
 - **Tarih:** 24 Ekim 2026
-- **Durum:** Bölümler 1–4 sohbette onaylandı (24 Ekim 2026, dördü de "Uygun"); yazılı belge kullanıcı onayı bekliyor
+- **Durum:** Kullanıcı onayladı (24 Ekim 2026: "Onaylıyorum, plana işle"); plan `docs/superpowers/plans/2026-10-24-hayalet-ulkeler.md` Görev 17, 18 ve kıta görevlerinin E adımı
 - **Ana tasarım:** `docs/superpowers/specs/2026-10-24-hayalet-ulkeler-design.md` (bu belge onun §12'deki "müzik kapsam
   dışı" maddesini kaldırır; geri kalanı aynen geçerlidir)
 - **Hedef sürüm:** 3.14.0 (versionCode 47), Dünya Turu ile birlikte
@@ -196,7 +196,8 @@ aynı bölgenin türü seçildi (Polonya krakowiak, Birleşik Krallık İskoç c
   - `turMuzigiSondur(sure = 0.8)`: kazancı söndürür, kaynakları durdurur.
   - `muzikDuraklat(evet)`: tek oyunculu duraklatmada kısar ya da geri getirir.
   - `muzikSesiniUygula()`: kaydırıcı ve ses düğmesi değişince çalan müziği anında ayarlar.
-  - `muzikDurumu() -> { calan: "giris"|"dongu"|null, kod, loopStart, loopEnd, kazanc }`: sınamalar için.
+  - `muzikDurumu() -> { calan: "giris"|"dongu"|null, kod, loopStart, loopEnd, kazanc, kaynak }`: sınamalar için
+    (`kaynak`: çalan müzik kaynaklarının sayısı; iki müziğin üst üste çalmadığını gösterir).
 - **Akış kancaları** (ana tasarımın Görev 6 ve 14'te kurulan işlevlerine): ülkeye varış → `turMuzigiBaslat`; bölüm
   başladıktan 5 sn sonra sıradaki ülke için `muzikHazirla(kod, { yalnizGiris: true })`; damga, `endGame`,
   `quitToMenu`, tur sonu → `turMuzigiSondur`; `pauseGame` / `resumeGame` (yalnız tek oyunculu) → `muzikDuraklat`;
@@ -254,6 +255,8 @@ aynı bölgenin türü seçildi (Polonya krakowiak, Birleşik Krallık İskoç c
   seçilen parçalar gönderilir.
 
 ## 13. Plana etkisi
+
+Planda yeni görevler Görev 17 (kesim hattı) ve Görev 18 (çalar) adını alır; yürütme sırası 1–4, 17, 5, 6, 18, 7–16.
 
 - **Yeni görev (Görev 5'ten önce):** kesim hattı (`muzik_kes.py` ve öz sınaması) ve 51 istek metni
   (`muzik-istekleri.json`).

@@ -2,15 +2,18 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ana menüye 51 ülkelik "🌍 Dünya Turu" kipini eklemek ve 3.14.0 (47) olarak yayına hazırlamak. Kip tek kişilik ve çevrimiçi oynanır; her ülkenin kendi görselleri ve geleneksel kıyafetli bossu vardır. Aynı sürüme kullanıcının istediği "hiç sıkmayan" reklam sıklığı da girer.
+**Goal:** Ana menüye 51 ülkelik "🌍 Dünya Turu" kipini eklemek ve 3.14.0 (47) olarak yayına hazırlamak. Kip tek kişilik ve çevrimiçi oynanır; her ülkenin kendi görselleri, geleneksel kıyafetli bossu, kendi kültüründen teaser'ı ve 30 sn'de bir başa saran fon müziği vardır. Aynı sürüme kullanıcının istediği "hiç sıkmayan" reklam sıklığı da girer.
 
 **Architecture:** Dünya Turu'nda `game.level` ülkenin rota sırasıdır. Harita, zorluk ve çarpışma bugünkü bölüm üreticisinden gelir.
 - 3.13.0'ın engel hattına bir dal eklenir: engelin `tema` alanı sayı yerine ülke kodu olunca aile duvarı ve suyu, ülkenin objeleri ve paleti kullanılır.
 - Ülke verisi, aileler, ülke objeleri, kostüm takımı ve kip akışı ayrı dosyalardadır; `game.js`'e yalnız kancalar eklenir.
+- Müzik: Suno'dan (sunoapi.org) gelen iki parçalık çıktı `araclar/muzik_kes.py` ile ölçülür, döngü ve teaser'a kesilir, Opus olarak `www/muzik/`'e yazılır; `www/muzik.js` Web Audio ile çalar.
 
-**Tech Stack:** HTML5 canvas, düz JS (modülsüz, `window` üstünden), Capacitor 8 (Android), Firebase Realtime Database + kurallar, @capacitor-community/admob 8.2.1. Testler Playwright + Chromium ve Firebase emülatöründe çalışır.
+**Tech Stack:** HTML5 canvas, düz JS (modülsüz, `window` üstünden), Capacitor 8 (Android), Firebase Realtime Database + kurallar, @capacitor-community/admob 8.2.1. Testler Playwright + Chromium ve Firebase emülatöründe çalışır. Müzik araçları: Python 3 + numpy + ffmpeg (ortamda kurulu), Suno istemcisi `/home/user/GENEL-KONULAR/suno/suno.mjs`.
 
-**Spec:** `docs/superpowers/specs/2026-10-24-hayalet-ulkeler-design.md` (§ numaraları bu belgeye aittir).
+**Spec:** `docs/superpowers/specs/2026-10-24-hayalet-ulkeler-design.md` (§ numaraları bu belgeye aittir). Müzik için ek spec: `docs/superpowers/specs/2026-10-24-hayalet-ulke-muzikleri-design.md` ("ek spec §n").
+
+**Yürütme sırası:** 1, 2, 3, 4, **17**, 5, 6, **18**, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16. Görev 17 ve 18 müzik ek tasarımıyla eklendi; eski göndermeler bozulmasın diye öteki görevlerin numarası kaydırılmadı.
 
 ## Global Constraints
 
@@ -43,6 +46,12 @@
   - Push yalnız `claude/beautiful-feynman-pxwdju` dalına yapılır.
   - `main`, kural yayını ve Play'e gönderim **yalnız kullanıcının açık onayıyla** yapılır.
 - **Sürüm:** 3.14.0 (versionCode 47). Mağaza sürüm notu her dilde ≤ 500 karakter (`android/play.mjs` › `surumNotlari`).
+- **Müzik içeriği** (ek spec §6): sözsüz; dinî tür, marş, kılıç ya da hançer dansı, sanatçı, eser ve kurum adı yok.
+- **Suno:**
+  - Üretim yalnız `node suno/suno.mjs` ile yapılır (`/home/user/GENEL-KONULAR` kökünden). Her gerçek istekten önce `--kuru` çalıştırılır; anahtar vekil sunucudadır, hiçbir dosyaya ya da sohbete yazılmaz.
+  - Ham parçalar oturumun geçici klasörüne yazılır (`--cikis`), depoya girmez. Görev kimlikleri, ölçümler ve kredi `araclar/muzik-kayit.json`'dadır.
+  - Kredi ülke başına en çok 13 sayılır. Kalan kredi, kalan ülkelerin gereksiniminin altına düşecekse üretim durur ve kullanıcıya söylenir.
+- **Müzik dosyaları:** Ogg Opus 48 kb/sn stereo; `www/muzik/` toplamı ≤ 14 MB. Ses çalan tarayıcı sınamaları Chromium'u `--autoplay-policy=no-user-gesture-required` ile açar.
 
 ## Review Focus
 
@@ -51,6 +60,7 @@
 3. **Ortadan katılan oyuncu:** katıldığı ülkeden önceki ülkelerin damgasını almaz. İlk geçtiği ülkenin damgası basılır. → Görev 14 sınaması.
 4. **Damga ve uçak geçişi sırasında yenilgi, duraklatma ya da çift tetikleme:** tek damga, tek `nextLevel`. Oyun bittiyse geçiş iptal olur, perde ekranda kalmaz. → Görev 6 sınaması.
 5. **Uzun adlar dar ekranda:** tanıtım bildirimi ve kartlar 340 px Hintçe ve Arapçada taşmaz. → Görev 6 dil sınaması.
+6. **Teaser çalarken hızlı yeniden başlatma ya da ülke değişimi** (oyun sonu → 🔁 Tekrar Oyna, çevrimiçi bölüm atlaması): iki müzik üst üste çalmaz, tek döngü kaynağı kalır ve yeni ülkenindir. → Görev 18 sınaması.
 
 ---
 
@@ -60,21 +70,28 @@
 |---|---|---|
 | `www/reklam.js` (değişir) | 1 | Geçiş reklamı sıklığı: `gecisUygunMu`, kalıcı sayaçlar |
 | `www/ulkeler.js` (yeni) | 2, 3 | 51 ülkenin verisi, rota, tema ve engel seti yardımcıları |
-| `www/dunya-turu.js` (yeni) | 2, 3, 6, 14 | Kayıt (`turKaydi`, `damgaBas`), kip durumu, zemin, ekranlar, akış, çevrimiçi kancalar |
+| `www/dunya-turu.js` (yeni) | 2, 3, 6, 14, 18 | Kayıt (`turKaydi`, `damgaBas`), kip durumu, zemin, ekranlar, akış, çevrimiçi kancalar |
 | `www/ulke-aileleri.js` (yeni) | 3, 5, 7–13 | 10 aile: biçim ailesi, varsayılan palet, `duvar`, `su`, `zemin` ressamları |
 | `www/ulke-objeleri-avrupa.js`, `-afrika.js`, `-asya.js`, `-amerika.js` (yeni) | 5, 7–13 | 102 ülke objesi ressamı ve yeni canlı süs türleri |
 | `www/kostumler.js` (yeni) | 4 | Kostüm takımı, `kostumGecerliMi`, `bossKostumuCiz` |
 | `www/engeller.js` (değişir) | 3 | Ülke kodlu tema dalı (üç satır) |
-| `www/game.js` (değişir) | 1, 3, 4, 6, 14 | Kancalar: `startGame`, `getTheme`, `render`, `drawGhost`, döngü, `nextLevel`, `spawnBoss`, `oyunSonu`, çevrimiçi |
-| `www/index.html`, `www/style.css` (değişir) | 6, 14 | Menü düğmesi, Dünya Turu ekranı, perdeler, Oda Kur kip seçimi |
-| `www/i18n/*.js` (değişir) | 1–14 | Yeni anahtarlar (sozluk.mjs ile) |
-| `araclar/anahtarlar.mjs` (değişir) | 2 | Yeni dosyaları tarar |
+| `www/game.js` (değişir) | 1, 3, 4, 6, 14, 18 | Kancalar: `startGame`, `getTheme`, `render`, `drawGhost`, döngü, `nextLevel`, `spawnBoss`, `oyunSonu`, çevrimiçi, müzik ve ses ayarı |
+| `www/index.html`, `www/style.css` (değişir) | 6, 14, 17, 18 | Menü düğmesi, Dünya Turu ekranı, perdeler, Oda Kur kip seçimi, müzik betikleri, "🎵 Müzik" kaydırıcısı |
+| `www/i18n/*.js` (değişir) | 1–14, 18 | Yeni anahtarlar (sozluk.mjs ile) |
+| `araclar/anahtarlar.mjs` (değişir) | 2, 18 | Yeni dosyaları tarar |
 | `firebase/database.rules.json`, `firebase/test/kurallar.test.mjs` | 14 | `tur` alanı, kurucunun `level` yazımı |
 | `test/reklam.test.mjs` (değişir) | 1 | Sıklık kuralları |
 | `test/ulkeler.test.mjs` (yeni) | 2 | Veri bütünlüğü |
 | `test/dunya-turu.test.mjs` (yeni) | 2, 3, 6, 14 | Kayıt, kancalar, akış, istemci damgası |
 | `test/ulke-cizim.test.mjs` (yeni) | 4, 5, 7–13 | Kostümler; aile ve obje kapsaması, aynılık, katalog görüntüleri |
-| `test/cevrimici.test.mjs`, `test/dil.test.mjs`, `test/cizim.test.mjs`, `test/alti.test.mjs` (değişir) | 6, 14, 15 | Çevrimiçi Dünya Turu, yeni ekranlar, kare hızı |
+| `test/cevrimici.test.mjs`, `test/dil.test.mjs`, `test/cizim.test.mjs`, `test/alti.test.mjs` (değişir) | 6, 14, 15, 18 | Çevrimiçi Dünya Turu, yeni ekranlar, kare hızı |
+| `araclar/muzik_kes.py` (yeni) | 17 | Kesim hattı: tempo, vuruş, döngü ve teaser, ses düzeyi, Opus; öz sınama |
+| `araclar/muzik-istekleri.json` (yeni) | 17 | 51 ülkenin Suno istek metni |
+| `araclar/muzik-kayit.json` (yeni) | 17, 5, 7–13 | Görev ve parça kimlikleri, puanlar, ölçümler, kredi |
+| `www/muzik/<KOD>-dongu.ogg`, `<KOD>-giris.ogg` (yeni) | 5, 7–13 | Döngü ve teaser |
+| `www/ulke-muzikleri.js` (yeni, araç üretir) | 17, 5, 7–13 | `ULKE_MUZIKLERI`: dosyalar ve kesim değerleri |
+| `www/muzik.js` (yeni) | 18 | Çalar: hazırla, teaser ve döngü, söndür, duraklat, ses, arka plan |
+| `test/muzik.test.mjs` (yeni) | 17, 5, 7–13, 18 | İstek metinleri, müzik varlıkları, çalar |
 
 ---
 
@@ -280,20 +297,78 @@ Dayanak: Google AdMob geçiş reklamını doğal duraklarda ve aşırı sıklık
   - Dinî giysi, silah, insan yüzü yok.
 - [ ] **Step 5: Commit:** `Hayalet Avcıları: boss kostüm takımı (51 ülke)`.
 
+### Task 17: Müzik kesim hattı ve 51 istek metni (Görev 4'ten sonra, Görev 5'ten önce)
+
+**Files:**
+- Create: `hayalet-avcilari/araclar/muzik_kes.py`, `hayalet-avcilari/araclar/muzik-istekleri.json`, `hayalet-avcilari/araclar/muzik-kayit.json` (`{}`), `hayalet-avcilari/www/ulke-muzikleri.js` (araç üretir), `hayalet-avcilari/test/muzik.test.mjs`
+- Modify: `hayalet-avcilari/www/index.html` (`dunya-turu.js`'ten sonra `ulke-muzikleri.js`)
+
+**Interfaces:**
+- Consumes: Görev 2'nin `ULKELER` (rota sırası ve kodlar); ek spec §4–§7.
+- Produces:
+  - `muzik_kes.py --sina`: öz sınama, çıktı `TAMAM: n sınama`.
+  - `muzik_kes.py olc <mp3>…`: her parça için tempo, en iyi döngü (s, L, vuruş sayısı), ek yeri, sabitlik ve puan; dosya yazmaz.
+  - `muzik_kes.py isle --kod KOD --gorev GÖREV [--kredi KALAN] [--sec 1|2] [--dinleme KLASÖR] [--kok KÖK] <parça-1.mp3> [<parça-2.mp3>]`:
+    - `www/muzik/KOD-dongu.ogg` ve `KOD-giris.ogg` yazar;
+    - `araclar/muzik-kayit.json`'daki KOD kaydını yazar (görev, iki parçanın kimliği ve ölçümleri, seçilen, LUFS, kredi);
+    - `www/ulke-muzikleri.js`'i kayıttan yeniden üretir.
+    - `--dinleme` iki parçanın da döngü ve teaser'ını `KLASÖR/KOD-<n>-dongu.ogg`, `KOD-<n>-giris.ogg` olarak yazar.
+    - `--kok` çıktı kökünü değiştirir (varsayılan `hayalet-avcilari/`; öz sınama geçici klasör verir).
+  - `muzik_kes.py yaz [--kok KÖK]`: `ulke-muzikleri.js`'i kayıttan yeniden üretir.
+  - `window.ULKE_MUZIKLERI[kod] = { dongu: "muzik/KOD-dongu.ogg", bas, son, giris: "muzik/KOD-giris.ogg", girisSure, tempo }`. Süreler saniye ve 4 ondalıklıdır; `bas` = P = 0,1, `son` = P + L.
+  - `muzik-istekleri.json`: rota sırasıyla 51 kayıt `[{ kod, stil, olumsuz }]`. `stil` = ülke betimlemesi + ", " + ek spec §4'teki ortak kalıp (aynen); `olumsuz` = ek spec §4'teki ortak olumsuz (aynen).
+  - Test sabiti `MUZIKLI_ULKELER = []` (`muzik.test.mjs`); Görev 5 ve 7–13 doldurur.
+
+- [ ] **Step 1: Öz sınamayı yaz** (`muzik_kes.py --sina`, `sina()` düzeninde; önce yalnız sınama gövdesi ve yapay parça üreticisi):
+  - **Yapay parçalar** (numpy ile üretilir, ffmpeg ile MP3'e yazılıp oradan okunur; 48 kHz stereo, 140 sn):
+    - 1. parça: 0–12 sn yalnız ped (gövdede olmayan bir akor). 12–120 sn arası 128 vuruş/dk'da 8 ölçülük döngülü gövde: her ölçüde akor değişir, 1. vuruşta bas davul, 2. ve 4. vuruşta el çırpma. 120–140 sn sönen bitiş.
+    - 2. parça: aynı yapı, 112 vuruş/dk.
+  - **Sınamalar:**
+    - Tempo 1. parçada 128 ± 1, 2. parçada 112 ± 1.
+    - 1. parçanın döngüsü 64 vuruş; |L − 30,0| ≤ 0,005 sn; s ≥ 10 ve s + L ≤ 125.
+    - `isle` iki parçadan 1.'yi seçer (puanı yüksek).
+    - **Ek yeri:** yazılan döngü dosyası ffmpeg ile çözülür. `bas`–`son` aralığında |x[son − 1] − x[bas]|, döngü içindeki |Δx|'in 99. yüzdeliğini aşmaz. Çözülmüş veri −1024, +1024 ve +2112 örnek kaydırıldığında da aynı sınır tutar (ek spec §5.7 ön ve son pay).
+    - **Teaser:** 3–8 sn sürer, bir vuruşun ±10 ms yakınında başlar, son 0,1 sn'si −40 dBFS'nin altındadır.
+    - **Ses düzeyi:** döngü −18 ± 0,5 LUFS, gerçek tepe ≤ −1,3 dBTP (ffmpeg `ebur128=peak=true`).
+    - **Veri:** üretilen `ulke-muzikleri.js` Node'da çalıştırılınca `ULKE_MUZIKLERI.XX` alanları doğru türde; `bas === 0.1`, `son − bas` = L ± 0,0001.
+- [ ] **Step 2: `muzik.test.mjs`'i yaz** (Playwright; sayfa `ULKELER`'i ve `ULKE_MUZIKLERI`'ni okur):
+  - **İstekler:**
+    - 51 kayıt, `kod` sırası `ULKELER` ile aynı.
+    - Her `stil` ≤ 1000 harf. Ortak kalıbı aynen içerir. Ek spec §6'da ölçüsü 4/4 olmayan ülkede `in <ölçü>` geçer.
+    - Her `olumsuz` ortak olumsuzun aynısı.
+    - `stil` içinde `/relig|hymn|chant|devot|pray|church|temple|mosque|shrine|anthem|march|militar|sword|dagger|\bwar\b/i` yok.
+  - **Varlıklar** (`MUZIKLI_ULKELER`'deki her kod için; liste boşken atlanır):
+    - `ULKE_MUZIKLERI[kod]` var, iki dosya HTTP 200 döner ve `OfflineAudioContext.decodeAudioData` ile çözülür.
+    - `son − bas` 27–34 sn; `girisSure` 3–8 sn ve çözülen teaser süresiyle ±0,1 sn.
+    - Ek yeri sıçraması ve spektral akısı, döngü içi değerlerin 99. yüzdeliğini aşmaz.
+    - Döngülerin RMS düzeyi ortancadan en çok ±2 dB sapar.
+    - `www/muzik/` toplamı ≤ 14 MB.
+  - Sayfa hatası yok.
+- [ ] **Step 3: Çalıştır, düştüğünü gör:** `python3 hayalet-avcilari/araclar/muzik_kes.py --sina` (işlevler yok) ve `node hayalet-avcilari/test/muzik.test.mjs` (`muzik-istekleri.json` yok).
+- [ ] **Step 4: Uygula.**
+  - `muzik_kes.py` ek spec §5'in 1–10. adımlarını izler.
+  - **Döngü uzunluğu:** L, vuruş aralıklarının ortalaması × k'dan bulunur. Sonra s ve s + L çevresindeki ±20 ms içinde, alçak geçiren zarfın çapraz ilintisiyle örnek düzeyinde inceltilir.
+  - **Ses yolu:** çözme ve kodlama ffmpeg boruyla yapılır (`-f f32le`); Opus `libopus -b:a 48k -application audio`.
+  - **İstek metinleri:** `muzik-istekleri.json`'daki 51 ülke betimlemesi ek spec §6 tablosunun tür, çalgı ve ölçüsünden İngilizce yazılır. Yerel tür adı süzgece takılabilecekse betimlenir (ör. `Anatolian folk line-dance`). Sanatçı ve eser adı yazılmaz.
+  - `ulke-muzikleri.js` boş kayıtla üretilir (`window.ULKE_MUZIKLERI = {};`), `index.html`'e eklenir.
+- [ ] **Step 5: Çalıştır, geçtiğini gör:** öz sınama → `TAMAM`, `muzik` → `TAMAM`, `engel-bicim` → `TAMAM` (betik sırası değişti).
+- [ ] **Step 6: Commit:** `Hayalet Avcıları: müzik kesim hattı ve 51 ülkenin Suno istek metni`.
+
 ### Task 5: Taslak — KS ve DA aileleri, Türkiye ve Japonya (kullanıcı onayı)
 
 **Files:**
 - Modify: `hayalet-avcilari/www/ulke-aileleri.js` (KS, DA: `palet`, `duvar`, `su`, `zemin`)
-- Create: `hayalet-avcilari/www/ulke-objeleri-avrupa.js` (`periBacalari`, `laleBahcesi`), `hayalet-avcilari/www/ulke-objeleri-asya.js` (`kirazAgaclari`, `fujiDagi`)
-- Test: `hayalet-avcilari/test/ulke-cizim.test.mjs`
+- Create: `hayalet-avcilari/www/ulke-objeleri-avrupa.js` (`periBacalari`, `laleBahcesi`), `hayalet-avcilari/www/ulke-objeleri-asya.js` (`kirazAgaclari`, `fujiDagi`), `hayalet-avcilari/www/muzik/{TR,JP}-{dongu,giris}.ogg`
+- Modify: `hayalet-avcilari/www/ulke-muzikleri.js` ve `hayalet-avcilari/araclar/muzik-kayit.json` (araçla)
+- Test: `hayalet-avcilari/test/ulke-cizim.test.mjs`, `hayalet-avcilari/test/muzik.test.mjs`
 
 **Interfaces:**
 - Consumes: 3.13.0 `window.ENGEL` yardımcıları ve `window.ENGEL_CANLI`. Ressam imzası engel-temalari ile aynıdır: `(ctx, w, h, r, p, B) -> canli[]`.
 - Produces:
-  - Kıta görevlerinin ortak adımları (aşağıda) ve test sabitleri `CIZILEN_AILELER = ['KS','DA']`, `CIZILEN_ULKELER = ['TR','JP']`.
+  - Kıta görevlerinin ortak adımları (aşağıda) ve test sabitleri `CIZILEN_AILELER = ['KS','DA']`, `CIZILEN_ULKELER = ['TR','JP']`, `MUZIKLI_ULKELER = ['TR','JP']`.
   - Yeni canlı türleri `ENGEL_CANLI.balon` (Kapadokya balonu yavaş süzülür) ve `ENGEL_CANLI.yaprak` (kiraz yaprağı düşer). Kıta dosyaları `Object.assign(window.ENGEL_CANLI, {...})` ile ekler.
 
-**Kıta görevlerinin ortak adımları** (Görev 5 ve 7–13 aynen izler):
+**Kıta görevlerinin ortak adımları** (Görev 5 ve 7–13 aynen izler; Görev 17'nin aracı ve istek metinleri hazır olmalıdır):
 
 - [ ] **A — Sınama.** `ulke-cizim.test.mjs`'te `CIZILEN_AILELER` ve `CIZILEN_ULKELER`'e görevin aile ve ülke kodlarını ekle. Sınamalar listelenen her aile ve ülke için:
   - Ressam var (`ULKE_AILELERI[a].duvar/su/zemin`, `ULKE_OBJELERI[ad]`).
@@ -310,16 +385,31 @@ Dayanak: Google AdMob geçiş reklamını doğal duraklarda ve aşırı sıklık
   - Objeler tanınıyor.
   - İnsan, bayrak, dinî öğe, silah yok.
   - Hayaletler zeminde okunuyor.
-- [ ] **E — Commit:** `Hayalet Avcıları: Dünya Turu — <kıta/aile> (<kodlar>)`.
+- [ ] **E — Müzik** (ek spec §4–§5). Görevin her ülkesi için:
+  1. `muzik.test.mjs`'te `MUZIKLI_ULKELER`'e kodu ekle; çalıştır, düştüğünü gör (`müzik kaydı yok: <KOD>`).
+  2. `muzik-istekleri.json`'daki kayıtla, `/home/user/GENEL-KONULAR` kökünden önce `--kuru`, sonra arka planda üretim:
+
+     ```bash
+     node suno/suno.mjs sarki --sozsuz --model V6 --sure 120 --baslik "Hayalet Avcilari <KOD>" \
+       --stil "<stil>" --olumsuz "<olumsuz>" --cikis <oturumun geçici klasörü>/muzik-ham
+     ```
+
+     `SENSITIVE_WORD_ERROR` kredi harcatmaz: süzgece takılan sözcük İngilizce betimlenir, `muzik-istekleri.json` da düzeltilir.
+  3. `python3 hayalet-avcilari/araclar/muzik_kes.py isle --kod <KOD> --gorev <görev> --kredi <kalan> <parça-1.mp3> <parça-2.mp3>`.
+  4. `node hayalet-avcilari/test/muzik.test.mjs` → `TAMAM`.
+  5. Görevin sonunda seçilen döngü ve teaser'lar tek mesajla kullanıcıya gönderilir (`SendUserFile`), kalan kredi yazılır. Kullanıcı öteki parçayı isterse `isle --sec 2`, yeniden üretim isterse yeni istek.
+  6. Kalan kredi kalan ülke sayısı × 13'ün altına düşecekse üretim durur, kullanıcıya söylenir (DUR).
+- [ ] **F — Commit:** `Hayalet Avcıları: Dünya Turu — <kıta/aile> (<kodlar>)` (müzik dosyaları ve kayıt dahil).
 
 Bu görevin kendine özgü adımları:
 
-- [ ] **Step 1–5:** Ortak adımlar A–E; aileler KS, DA; ülkeler TR, JP.
+- [ ] **Step 1–6:** Ortak adımlar A–F; aileler KS, DA; ülkeler TR, JP.
   - KS: kesme taş, çini kuşak, sivri kemerli nişler; su kıyısı çinili havuz; zemin geometrik çini (yıldız ve çokgen; dinî yazı yok).
   - DA: gri taş gövde, kıvrık kiremit saçaklı kuleler; koi göleti; taş döşeme ve yosun.
   - TR: peri bacaları (3–4 konik, şapkalı kaya; canlı `balon`), lale bahçesi (çini kenarlı tarh, kırmızı-sarı laleler).
   - JP: kiraz ağaçları (pembe taç; canlı `yaprak`), Fuji Dağı (`kaya` biçimi, karlı zirve maketi).
-- [ ] **Step 6: Kullanıcı onayı (DUR).** Katalog ve oyun içi görüntüler ile Görev 4'ün TR ve JP boss görüntüleri kullanıcıya gönderilir (`SendUserFile`). Üslup, renkler, objeler ve kostümler için onay istenir. **Onay gelmeden Görev 7–13'e geçilmez.** Görev 6 (akış) onay beklerken yapılabilir. Düzeltme istenirse bu görevde yapılır ve yeniden gösterilir.
+  - Müzik (E): iki ülkede de `isle … --dinleme <geçici klasör>/dinleme` ile iki parçanın döngü ve teaser'ı ayrıca yazılır (`TR-1-dongu.ogg`, `TR-1-giris.ogg`, `TR-2-…`, `JP-…`; 8 dosya).
+- [ ] **Step 7: Kullanıcı onayı (DUR).** Katalog ve oyun içi görüntüler, Görev 4'ün TR ve JP boss görüntüleri ve 8 müzik dosyası kullanıcıya gönderilir (`SendUserFile`). Üslup, renkler, objeler, kostümler ve müzik için onay istenir; her ülke için iki parçadan biri seçilir (seçim `isle --sec n` ile uygulanır, test yeniden çalışır). **Onay gelmeden Görev 7–13'e geçilmez.** Görev 6 ve 18 onay beklerken yapılabilir. Düzeltme istenirse bu görevde yapılır ve yeniden gösterilir.
 
 ### Task 6: Akış ve ekranlar
 
@@ -392,9 +482,73 @@ Bu görevin kendine özgü adımları:
 - [ ] **Step 5: Çalıştır, geçtiğini gör:** `dunya-turu`, `dil`, `siralama`, `reklam`, `engel` → `TAMAM`; sözlük denetimi temiz.
 - [ ] **Step 6: Commit:** `Hayalet Avcıları: Dünya Turu ekranı, pasaport, damga ve uçak geçişi`.
 
+### Task 18: Müzik çalar, ayar ve akış kancaları (Görev 6'dan sonra, Görev 7'den önce)
+
+**Files:**
+- Create: `hayalet-avcilari/www/muzik.js`
+- Modify:
+  - `hayalet-avcilari/www/index.html`: `ulke-muzikleri.js`'ten sonra `muzik.js`; Ses Ayarları'nın en üstüne "🎵 Müzik" satırı (`vol-slider-muzik`, `vol-label-muzik`).
+  - `hayalet-avcilari/www/game.js`:
+    - Ses kategorisi varsayılanı `muzik: 0.6`: `audio.volumes`, `defaultSave.volumes` ve kaydı açan üç `Object.assign({ ghost: 1, fire: 1, sfx: 1 }, …)` satırı.
+    - Kancalar: `startGame`, `pauseGame`, `resumeGame`, `quitToMenu`, `oyunSonu`, `toggleSound`, ses kaydırıcısı işlevi.
+  - `hayalet-avcilari/www/dunya-turu.js`: `turUlkesiBitti`, `ucakGecisi`.
+  - `hayalet-avcilari/araclar/anahtarlar.mjs` (`muzik.js`), `www/i18n/*.js`.
+- Test: `hayalet-avcilari/test/muzik.test.mjs` (çalar bölümü), `hayalet-avcilari/test/dil.test.mjs`
+
+**Interfaces:**
+- Consumes:
+  - Görev 17'nin `ULKE_MUZIKLERI`; Görev 5'in TR ve JP dosyaları.
+  - Görev 6'nın `turUlkesiBitti`, `ucakGecisi(onceki, sonraki, bitince)` ve `oyunSonu` dalı.
+  - `game.js`'teki `audio` (`ctx`, `enabled`, `volumes`).
+- Produces (ek spec §8):
+  - `muzikHazirla(kod, { yalnizGiris } = {}) -> Promise<boolean>`
+  - `turMuzigiBaslat(kod, { giris = true } = {})`: önce çalan müzik 0,05 sn'de kesilir. Teaser `t0`'da başlar. Döngü `t0 + girisSure − 0,2`'de kendi kazancıyla 0,4 sn'de açılır: `src.loop = true`, `loopStart = bas`, `loopEnd = son`, `src.start(t, bas)`. Teaser yoksa ya da 1,5 sn içinde çözülemediyse döngü 1 sn'de açılır. 5 sn sonra rotadaki sıradaki ülke için `muzikHazirla(sonraki, { yalnizGiris: true })` çağrılır. Ses kapalıysa ya da kayıt yoksa hiçbir şey yapmaz.
+  - `turMuzigiSondur(sure = 0.8)`
+  - `muzikDuraklat(evet: boolean)`: 0,2 sn'de kısar, 0,3 sn'de geri getirir.
+  - `muzikSesiniUygula()`: ana müzik kazancı = `audio.enabled ? audio.volumes.muzik : 0`.
+  - `muzikDurumu() -> { calan: "giris"|"dongu"|null, kod: string|null, loopStart: number|null, loopEnd: number|null, kazanc: number, kaynak: number }`. `kaynak` çalan müzik kaynaklarının sayısıdır; ek spec §8'e bu alan eklenir.
+- Kancalar:
+  - `startGame`: Dünya Turu'nda `turMuzigiBaslat(turUlkesi().kod)`, normal oyunda `turMuzigiSondur(0)`.
+  - `ucakGecisi` başında `turMuzigiBaslat(sonraki.kod)`: teaser uçakla birlikte başlar, tanıtım bildirimine sarkar.
+  - `turUlkesiBitti` (damga anı), `oyunSonu` ve `quitToMenu`: `turMuzigiSondur()`.
+  - `pauseGame` yalnız tek kişilikte `muzikDuraklat(true)` çağırır; `resumeGame` `muzikDuraklat(false)` çağırır.
+  - `toggleSound`: kapandıysa `turMuzigiSondur(0.2)`. Açıldıysa ve Dünya Turu'nda oyun sürüyorsa `turMuzigiBaslat(kod, { giris: false })`.
+  - Ses kaydırıcısı işlevi `muzik` kategorisinde `muzikSesiniUygula()` çağırır.
+  - `muzik.js` yüklenirken `visibilitychange` dinleyicisi kurulur: gizliyken `audio.ctx.suspend()`, görünür olunca `audio.ctx.resume()`.
+
+- [ ] **Step 1: Çalar sınamalarını yaz.**
+  - **Düzen:** `muzik.test.mjs`'in çalar bölümü Chromium'u `--autoplay-policy=no-user-gesture-required` ile açar. Sınama `audio.init()` çağırır; durum `muzikDurumu()` ile okunur.
+  - **Teaser ve döngü:** `startGame({tur:true, ulke:1})` → 0,5 sn içinde `{calan:'giris', kod:'TR'}`. `ULKE_MUZIKLERI.TR.girisSure + 0,6` sn sonra `{calan:'dongu', loopStart: TR.bas, loopEnd: TR.son, kaynak: 1}`, `kazanc` 0,6 ± 0,02.
+  - **Söndürme:** `endGame(false)` → 1,2 sn sonra `{calan: null, kaynak: 0}`.
+  - **Kaydırıcı:** döngü çalarken müzik kaydırıcısı %30'a çekilir → 0,15 sn içinde `kazanc` 0,3 ± 0,02 ve `save.volumes.muzik === 0.3`.
+  - **Ses kapalı:**
+    - `audio.enabled = false` → `startGame({tur:true, ulke:1})` → 1 sn sonra `kaynak === 0`.
+    - `toggleSound()` ile açınca 1,5 sn içinde `calan === 'dongu'` (teaser'sız).
+  - **Normal oyun:** `startGame()` → 1 sn sonra `kaynak === 0`.
+  - **Duraklatma** (tek kişilik):
+    - `pauseGame()` → 0,3 sn sonra `kazanc === 0`, `kaynak === 1`.
+    - `resumeGame()` → 0,4 sn sonra `kazanc` 0,6.
+  - **Arka plan:** `document.hidden` true + `visibilitychange` → `audio.ctx.state === 'suspended'`; false → `'running'`.
+  - **Review Focus 6:**
+    - `startGame({tur:true, ulke:1})`; 0,2 sn sonra `endGame(false)`; hemen ardından `startGame({tur:true, ulke:43})`.
+    - 7 sn sonra `{calan:'dongu', kod:'JP', kaynak:1}`.
+  - **Uçak geçişi:** `startGame({tur:true, ulke:42})`, bölüm bitirilir (`bossDefeated = true; ghosts = []`) → uçak perdesi görünürken `{calan:'giris', kod:'JP'}`.
+  - **Hata:**
+    - `ULKE_MUZIKLERI.TR`'nin dosyaları geçici olarak var olmayan adlara çevrilir → `turMuzigiBaslat('TR')` hata atmaz.
+    - 1 sn sonra `kaynak === 0`; sayfa hatası yok.
+- [ ] **Step 2: `dil.test.mjs`:** Ses Ayarları ekranında "🎵 Müzik" satırı 6 dilde çevrilmiş görünür, 340 px'te taşmaz.
+- [ ] **Step 3: Çalıştır, düştüğünü gör.**
+- [ ] **Step 4: Uygula.**
+  - **Ses grafiği:** tek ana müzik `GainNode`'u `audio.ctx.destination`'a bağlanır; her kaynağın kendi kazancı bu düğüme girer.
+  - **Önbellek:** çözülmüş tamponlar kod anahtarıyla tutulur, en çok 2 ülke (en eskisi atılır).
+  - **Hata:** getirme ya da çözme hatasında her kod için konsola bir kez uyarı yazılır.
+  - **Metin:** "🎵 Müzik" 5 dile çevrilir.
+- [ ] **Step 5: Çalıştır, geçtiğini gör:** `muzik`, `dunya-turu`, `dil`, `reklam`, `cizim` → `TAMAM`; sözlük denetimi temiz.
+- [ ] **Step 6: Commit:** `Hayalet Avcıları: Dünya Turu müzik çaları, Müzik kaydırıcısı ve akış kancaları`.
+
 ### Task 7: Avrupa — K ailesi; UA, PL, DE, GB, FR, IT, ES
 
-- [ ] **Step 1–5:** Ortak adımlar A–E (Görev 5); dosya `ulke-objeleri-avrupa.js`.
+- [ ] **Step 1–6:** Ortak adımlar A–F (Görev 5); dosya `ulke-objeleri-avrupa.js`.
   - **K ailesi:**
     - Taş ya da tuğla kale. Mazgal `palet.mazgal: "kare"|"kirlangic"` (IT ve RU kırlangıç).
     - Su kıyısı taş rıhtım; zemin Arnavut kaldırımı.
@@ -408,7 +562,7 @@ Bu görevin kendine özgü adımları:
 
 ### Task 8: Kuzey Afrika ve Sahel — KP ve SH aileleri; MA, DZ, CI, GH, NG, SD, EG
 
-- [ ] **Step 1–5:** Ortak adımlar A–E; dosya `ulke-objeleri-afrika.js`.
+- [ ] **Step 1–6:** Ortak adımlar A–F; dosya `ulke-objeleri-afrika.js`.
   - **KP ailesi:** kerpiç gövde, basamaklı mazgal, beyaz badana, çıkıntılı ahşap kirişler; hurmalı vaha kıyısı; kum dalgası zemin.
   - **SH ailesi:** kerpiç duvar, köşelerde saman çatılı yuvarlak ambar kuleleri; kırmızı topraklı, sazlıklı nehir kıyısı; kırmızı toprak ve ot tutamı zemin.
   - **MA:** mavi sokak ve saksılar; fenerli çarşı tezgâhı (canlı `fener`).
@@ -422,7 +576,7 @@ Bu görevin kendine özgü adımları:
 
 ### Task 9: Savan — SV ailesi; CD, AO, ZA, MZ, MG, TZ, UG, KE, ET
 
-- [ ] **Step 1–5:** Ortak adımlar A–E; dosya `ulke-objeleri-afrika.js`.
+- [ ] **Step 1–6:** Ortak adımlar A–F; dosya `ulke-objeleri-afrika.js`.
   - **SV ailesi:** kazık çit ve aralarda kuru taş öbekleri; sazlıklı su birikintisi; çatlak toprak ve kuru ot zemin.
   - **CD:** okapi ormanı; nehirde piroglar (kıyı şeridi yamanın içinde).
   - **AO:** Kalandula Şelalesi (canlı `sele`: akan su çizgileri); welwitschia (iki uzun kıvrık yaprak).
@@ -436,7 +590,7 @@ Bu görevin kendine özgü adımları:
 
 ### Task 10: Arabistan, Filistin, İran ve Orta Asya — YE, SA (KP); PS, IQ, IR, UZ, AF (KS)
 
-- [ ] **Step 1–5:** Ortak adımlar A–E; dosya `ulke-objeleri-asya.js`.
+- [ ] **Step 1–6:** Ortak adımlar A–F; dosya `ulke-objeleri-asya.js`.
   - **YE:** Sokotra ejder kanı ağaçları (şemsiye taç); Sana'a kule evleri (beyaz süslü kerpiç, renkli kemerli pencere).
   - **SA:** hurma bahçesi; AlUla Fil Kayası (`kaya`).
   - **PS:** zeytin bahçesi (gümüş yeşili taç, zeytinler); Hayat Ağacı mozaiği (taş mozaik zemin, ortada ağaç, iki otlayan ceylan; aslan ve av sahnesi **yok**). KS ailesinde kuşak rengi kırmızı işleme (`palet.kusak`).
@@ -447,7 +601,7 @@ Bu görevin kendine özgü adımları:
 
 ### Task 11: Güney ve Güneydoğu Asya — GA ve GDA aileleri; PK, IN, BD, MM, TH, MY, ID, PH, VN
 
-- [ ] **Step 1–5:** Ortak adımlar A–E; dosya `ulke-objeleri-asya.js`.
+- [ ] **Step 1–6:** Ortak adımlar A–F; dosya `ulke-objeleri-asya.js`.
   - **GA ailesi:** kırmızı kumtaşı (BD'de tuğla), köşelerde küçük kubbeli köşk kuleleri; basamaklı havuz kenarı; kumtaşı döşeme zemin.
   - **GDA ailesi:** bambu çit ve ahşap direkler; lotus ve bambu kıyısı; hasır örgü zemin.
   - **PK:** süslü kamyonlar (renkli boya, püsküller); Hunza kayısı bahçesi (çiçekli ağaçlar, karlı dağ silueti).
@@ -462,14 +616,14 @@ Bu görevin kendine özgü adımları:
 
 ### Task 12: Doğu Asya ve Rusya — CN, KR (DA); RU (K)
 
-- [ ] **Step 1–5:** Ortak adımlar A–E; dosya `ulke-objeleri-asya.js`.
+- [ ] **Step 1–6:** Ortak adımlar A–F; dosya `ulke-objeleri-asya.js`.
   - **CN:** pandalar ve bambu; ejder dansı (sopalar üstünde uzun, sevimli kumaş ejder; canlı `ejderDans`: dalgalanır).
   - **KR:** hanok evleri; kimçi küpleri (onggi).
   - **RU:** matruşka bebekleri; oymalı ahşap izba evi. K ailesinde kırmızı tuğla ve kırlangıç mazgal.
 
 ### Task 13: Amerika — KA ve LA aileleri; CA, US, MX, CO, PE, BR, AR
 
-- [ ] **Step 1–5:** Ortak adımlar A–E; dosya `ulke-objeleri-amerika.js`.
+- [ ] **Step 1–6:** Ortak adımlar A–F; dosya `ulke-objeleri-amerika.js`.
   - **KA ailesi:** sivri kütük palisat; kütük iskeleli göl kıyısı; çimen ve çam iğnesi zemin.
   - **LA ailesi:** renkli sıvalı duvar (PE'de İnka çokgen taşı: `palet.tas: "inka"`); renkli karo kenarlı kanal; pişmiş toprak karo zemin.
   - **CA:** akçaağaç ormanı ve şurup kovaları (canlı `yaprak`, kırmızı); kunduz barajı (sevimli kunduz).
@@ -479,7 +633,7 @@ Bu görevin kendine özgü adımları:
   - **PE:** Machu Picchu terasları (yalnız teraslar ve taş evler, tapınak yok); lamalar.
   - **BR:** Amazon tukanları ve araları; Şeker Somunu Dağı ve teleferik (canlı: teleferik gider gelir, `teleferik`).
   - **AR:** Perito Moreno Buzulu (buz duvarı, yüzen buz); Caminito'nun renkli evleri.
-- [ ] **Step 6:** `ulke-cizim.test.mjs`'e son sınama: `CIZILEN_ULKELER.length === 51` ve `CIZILEN_AILELER.length === 10`. Ressamı eksik ülke ya da aile kalmadı.
+- [ ] **Step 7:** Son sınamalar: `ulke-cizim.test.mjs`'te `CIZILEN_ULKELER.length === 51` ve `CIZILEN_AILELER.length === 10`; `muzik.test.mjs`'te `MUZIKLI_ULKELER.length === 51` ve `Object.keys(ULKE_MUZIKLERI).length === 51`. Ressamı ya da müziği eksik ülke ve aile kalmadı.
 
 ### Task 14: Çevrimiçi ve kural
 
@@ -521,6 +675,7 @@ Bu görevin kendine özgü adımları:
   - **`turuBitir`** Dünya Turu odasında `level` alanını da yazar: devam edilecek ülke `min(game.level, 51)`; tur tamamlandıysa 1.
   - **Lobi ve liste:** lobide "🌍 {sıra}. {ülke}" satırı (`level` dinleyicisiyle güncel). Oda listesinde Dünya Turu odası "🌍 {ülke}" ile.
   - **Eski sürüm:** `tur` alanı olmayan oda bugünkü gibi.
+  - **Müzik** (Görev 18'in arabirimi): `turDurumGeldi` yeni bir ülkeyi uyguladığında `turMuzigiBaslat(kod)`. `startMpGameClient`'te oda zaten oyundaysa (ortadan katılma) `{ giris: false }`. `turuBitir` → `turMuzigiSondur()`.
 
 - [ ] **Step 1: Kural sınamalarını yaz:**
   - Kurulumda `tur: true` ve `tur: false` kabul; `tur: "evet"` ve `tur: 1` ret.
@@ -530,6 +685,7 @@ Bu görevin kendine özgü adımları:
   - Ortadan katılma (Review Focus 3): ilk durum `lvl: 7` → damga yok. Sonra `lvl: 8` → yalnız 7. ülkenin damgası (`FR` değil `IT`).
   - Karışık sürüm (Review Focus 1): `lvl: 51`, `52`, `53`, `54` → 51 damgası bir kez, tamamlandı bildirimi bir kez, `game.level === 51`, sayfa hatası yok.
   - `turOdaUlkesi({tur:true, level:999}).kod === 'AR'`.
+  - Müzik: `lvl: 8` uygulandıktan sonra `muzikDurumu().kod === 'ES'` (tarayıcı `--autoplay-policy=no-user-gesture-required`).
 - [ ] **Step 3: `cevrimici.test.mjs`'e ekle** (emülatör, iki tarayıcı):
   - Kurucu Dünya Turu odasını 3. ülkeden (PL) kurar; konuk listede "🌍 Polonya"yı görür, katılır; ikisinde de tema "Polonya", engellerde `tema === 'PL'`.
   - Kurucu bölümü bitirir → iki tarafta `PL` damgası, `game.level === 4`.
@@ -553,8 +709,9 @@ Bu görevin kendine özgü adımları:
   - `cizim.test.mjs` Dünya Turu'nda FR (K), KE (SV) ve JP (DA) için de ölçer: botlu ve hayaletli, CPU 4 kat yavaş.
   - Eşikler bugünküyle aynı. Zemin deseni açıkken de geçer.
   - `alti.test.mjs` 6 kişilik Dünya Turu odasında (KE) bugünkü eşikleri geçer.
+  - Dünya Turu ölçümleri müzik çalarken yapılır (`--autoplay-policy=no-user-gesture-required`; ölçüm başında `muzikDurumu().calan === 'dongu'`).
 - [ ] **Step 2: Bütün testler:**
-  - Çevrimdışı: `reklam`, `ulkeler`, `dunya-turu`, `ulke-cizim`, `engel`, `engel-bicim`, `cizim`, `siralama`, `dil` (6 dil × 390/340)
+  - Çevrimdışı: `reklam`, `ulkeler`, `dunya-turu`, `ulke-cizim`, `muzik`, `engel`, `engel-bicim`, `cizim`, `siralama`, `dil` (6 dil × 390/340); `python3 hayalet-avcilari/araclar/muzik_kes.py --sina`
   - Emülatör: `kurallar`, `arkadas`, `cevrimici`, `alti`
   - `sozluk.mjs denetle` → hepsi `TAMAM`.
 - [ ] **Step 3: Ekran denetimi.**
@@ -570,13 +727,14 @@ Bu görevin kendine özgü adımları:
   - Sürüm: `hayalet-avcilari/android/app/build.gradle` (versionCode 47, versionName '3.14.0'), `package.json`, `package-lock.json`
   - Notlar ve sözlük: `www/game.js` (`APP_VERSION`, `UPDATE_NOTES["3.14.0"]`), `www/i18n/*.js`
   - Mağaza: `magaza/surum-notu.txt`, `magaza/diller/*.md` (sürüm notu + uzun açıklamaya "🌍 DÜNYA TURU"), `magaza/aciklamalar.md`, `araclar/magaza-gorsel.mjs` (yedinci kare: Dünya Turu)
-  - Belgeler: `README.md`, `docs/superpowers/specs/2026-10-24-hayalet-ulkeler-design.md` (durum satırı)
+  - Belgeler: `README.md`, `docs/superpowers/specs/2026-10-24-hayalet-ulkeler-design.md` ve `docs/superpowers/specs/2026-10-24-hayalet-ulke-muzikleri-design.md` (durum satırları)
   - İstek dosyaları: `firebase/yayin-istek.txt`, `play-istek.txt`
 
 - [ ] **Step 1: Notlar.**
   - `UPDATE_NOTES["3.14.0"]` satırları:
     - "🌍 Dünya Turu: en kalabalık 50 ülke ve Filistin, her ülke kendi görselleri ve geleneksel kıyafetli bossuyla."
     - "🛂 Ülkeyi geç, pasaportuna damga bas; arkadaşlarınla birlikte gez."
+    - "🎵 Her ülkenin kendi kültüründen giriş ve fon müziği; Ses Ayarları'nda yeni Müzik kaydırıcısı."
     - 3.13.1'in "🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir." satırı
     - "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok."
     - 3.13.0 incelemedeyse onun satırları.
@@ -585,8 +743,8 @@ Bu görevin kendine özgü adımları:
 - [ ] **Step 3: Mağaza ve belgeler.**
   - Mağaza uzun açıklamasına 7 dilde "🌍 DÜNYA TURU" bölümü (≤ 4000 karakter).
   - Görsel üreticisine Dünya Turu karesi; 7 dilde görseller yeniden üretilir.
-  - README: "Dünya Turu" ve "3.14.0" bölümleri, sürüm ve Play satırları.
-  - Spec durum satırı "uygulandı, 3.14.0 (47)".
+  - README: "Dünya Turu" ve "3.14.0" bölümleri, sürüm ve Play satırları; "Müzik" bölümü: kaynak (Suno, sunoapi.org), üretim ve kesim komutları, ek spec §10'daki hak notu ve kullanıcı kararı.
+  - İki spec'in durum satırı "uygulandı, 3.14.0 (47)".
   - Commit ve push. `hayalet-android` derlemesinin yeşil olduğu doğrulanır (koşu numarası not edilir).
 - [ ] **Step 4: Kural yayını (kullanıcının açık onayıyla).** `firebase/yayin-istek.txt`'e `durum` + `yayinla` satırları; push. Koşu "AYNI" diyene kadar izlenir; satırlar "# (yapıldı …)" ile kapatılır.
 - [ ] **Step 5: Play (kullanıcının açık onayıyla).** `play-istek.txt`'e `yukle yayinla uygula`, `magaza uygula`, `gorsel uygula`; push. Koşular izlenir, satırlar kapatılır. 3.13.1'in Play gönderimi beklemesi (görev #44) böylece kapanır.

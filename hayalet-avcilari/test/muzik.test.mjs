@@ -39,7 +39,7 @@ const OLCU = { TR: '2/4', UA: '2/4', PL: '2/4', DE: '2/4', FR: '3/4', IT: '6/8',
   PH: '3/4', KR: '12/8', RU: '2/4', MX: '6/8', PE: '2/4', BR: '2/4', AR: '2/4' };
 const YASAK = /relig|hymn|chant|devot|pray|church|temple|mosque|shrine|anthem|march|militar|sword|dagger|\bwar\b/i;
 // Müziği üretilmiş ülkeler (Görev 5: TR, JP; Görev 7–13 kıta kıta ekler)
-const MUZIKLI_ULKELER = ['TR', 'JP', 'UA', 'PL', 'DE', 'GB', 'FR', 'IT', 'ES'];
+const MUZIKLI_ULKELER = ['TR', 'JP', 'UA', 'PL', 'DE', 'GB', 'FR', 'IT', 'ES', 'MA', 'DZ', 'CI', 'GH', 'NG', 'SD', 'EG'];
 
 // ---------- ses çözümlemesi (ffmpeg ile, tek kanal 48 kHz) ----------
 function coz(dosya) {
@@ -192,8 +192,9 @@ try {
   const c2 = await durum();
   sina('Dünya Turu başında teaser çalar (0,5 sn içinde)', () => { assert.equal(c1.calan, 'giris'); assert.equal(c1.kod, 'TR'); });
   sina('teaser bitince döngü: loopStart/loopEnd kayıttan, tek kaynak, ana kazanç 0,6', () => {
-    assert.equal(c2.calan, 'dongu'); assert.equal(c2.kod, 'TR');
-    assert.equal(c2.loopStart, TR.bas); assert.equal(c2.loopEnd, TR.son); assert.equal(c2.kaynak, 1);
+    const ne = JSON.stringify(c2);
+    assert.equal(c2.calan, 'dongu', ne); assert.equal(c2.kod, 'TR', ne);
+    assert.equal(c2.loopStart, TR.bas, ne); assert.equal(c2.loopEnd, TR.son, ne); assert.equal(c2.kaynak, 1, ne);
     assert.ok(yakin(c2.kazanc, 0.6), String(c2.kazanc));
   });
   const kay = await p.evaluate(async () => {

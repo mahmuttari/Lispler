@@ -670,5 +670,6 @@ window.ULKE_OBJELERI = window.ULKE_OBJELERI || {};
     periBacalari, laleBahcesi, aycicegiTarlasi, samanCatiliEv, wawelEjderi, leylekYuvalari, gugukluSaatEvi, yarimAhsapEvler,
     telefonKulubeleri, saatKulesi, eyfelKulesi, lavantaTarlasi, kolezyum, gondolIskelesi, yelDegirmenleri, aslanliCesme,
   });
-  window.ULKE_OBJE_YARDIMCI = Object.assign(window.ULKE_OBJE_YARDIMCI || {}, { ustBosluk, gozler });
+  // Yerleşim yardımcıları öteki kıta dosyalarına (bu dosya onlardan önce yüklenir: index.html)
+  window.ULKE_OBJE_YARDIMCI = Object.assign(window.ULKE_OBJE_YARDIMCI || {}, { ustBosluk, gozler, yamaZemin, yapiSigdir, kutuIcinde, enIyiYer, disinda, yuz });
 })();

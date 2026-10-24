@@ -545,5 +545,432 @@
     "kredi": {
       "kalan": 668.5
     }
+  },
+  "MA": {
+    "gorev": "1d64870adc0aba821cc61c485efc545a",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-ma-1.mp3",
+        "sure": 119.173,
+        "tempo": 132.81,
+        "dongu": {
+          "bas": 11.7237,
+          "uzunluk": 28.89077,
+          "vurus": 64
+        },
+        "ekYeri": 0.9853,
+        "sabitlik": 0.791,
+        "puan": 0.9059,
+        "teaser": {
+          "bas": 93.4866,
+          "son": 97.5733
+        },
+        "id": "6f08eb24-cd85-43bb-9c52-8d34e56c6a41",
+        "etiketler": "Moroccan Amazigh (Berber) folk dance, loutar (Amazigh lute) driving a lead melody, ribab fiddle answering with a counter-melody over bendir frame drum and handclaps; steady danceable groove at around 128 BPM, instrumental, cheerful adventure video game background music; rich polyphonic ensemble, bright warm acoustic mix, constant energy, loop-friendly."
+      },
+      {
+        "dosya": "hayalet-avcilari-ma-2.mp3",
+        "sure": 119.629,
+        "tempo": 130.0,
+        "dongu": {
+          "bas": 54.8895,
+          "uzunluk": 31.39446,
+          "vurus": 68
+        },
+        "ekYeri": 0.9858,
+        "sabitlik": 0.8127,
+        "puan": 0.9267,
+        "teaser": {
+          "bas": 90.4222,
+          "son": 94.5786
+        },
+        "id": "360260be-6bf3-41fe-bbb5-5ddad9de407f",
+        "etiketler": "Moroccan Amazigh (Berber) folk dance, bright warm acoustic mix, rich polyphonic ensemble with lead melody, counter-melody and rhythm section, loop-friendly with a seamless return; cheerful steady danceable groove around 128 BPM, instrumental, loutar (Amazigh lute) and ribab fiddle weave a nimble folk figure over bendir frame drum and handclaps, constant energy throughout."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -3.9,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3564,
+    "ekOrani": 0.062,
+    "dosyalar": {
+      "dongu": "muzik/MA-dongu.ogg",
+      "giris": "muzik/MA-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 31.49446,
+    "tempo": 130.0,
+    "kredi": {
+      "kalan": 656.5
+    }
+  },
+  "DZ": {
+    "gorev": "2df5cb325327cc2f3430cd43ed825d2d",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-dz-1.mp3",
+        "sure": 119.629,
+        "tempo": 130.0,
+        "dongu": {
+          "bas": 21.2175,
+          "uzunluk": 29.52208,
+          "vurus": 64
+        },
+        "ekYeri": 0.9847,
+        "sabitlik": 0.798,
+        "puan": 0.9217,
+        "teaser": {
+          "bas": 94.5943,
+          "son": 98.7506
+        },
+        "id": "79f9ad53-7d7e-42f7-96d5-f75444c221b4",
+        "etiketler": "Algerian Kabyle folk dance, instrumental; bright warm acoustic mix, cheerful adventure video game background music; mandole carries a lead melody over ajouag flute counter-melody, with derbouka and bendir frame drum in a rich polyphonic rhythm section; steady, danceable groove around 128 BPM, constant energy, loop-friendly arrangement with no breakdown."
+      },
+      {
+        "dosya": "hayalet-avcilari-dz-2.mp3",
+        "sure": 120.013,
+        "tempo": 130.01,
+        "dongu": {
+          "bas": 19.3163,
+          "uzunluk": 33.23827,
+          "vurus": 72
+        },
+        "ekYeri": 0.9774,
+        "sabitlik": 0.8117,
+        "puan": 0.9221,
+        "teaser": {
+          "bas": 77.9217,
+          "son": 82.0781
+        },
+        "id": "13489710-5257-4e67-8dfd-57c2c93abbf9",
+        "etiketler": "Algerian Kabyle folk dance, cheerful adventure video game background music; bright warm acoustic mix, rich polyphonic ensemble led by mandole melody, ajouag flute counter-melody, and derbouka and bendir frame drum rhythm; steady danceable groove around 128 BPM, constant energy, continuous loop-friendly arrangement."
+      }
+    ],
+    "lufs": -17.9,
+    "tepe": -5.2,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3564,
+    "ekOrani": 0.545,
+    "dosyalar": {
+      "dongu": "muzik/DZ-dongu.ogg",
+      "giris": "muzik/DZ-giris.ogg"
+    },
+    "bas": 0.1175,
+    "son": 33.35577,
+    "tempo": 130.01,
+    "kredi": {
+      "kalan": 644.5
+    }
+  },
+  "CI": {
+    "gorev": "2e2b32cd63e5de1b67b94a29b1e462ba",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-ci-1.mp3",
+        "sure": 119.173,
+        "tempo": 128.15,
+        "dongu": {
+          "bas": 48.9054,
+          "uzunluk": 33.74585,
+          "vurus": 72
+        },
+        "ekYeri": 0.9681,
+        "sabitlik": 0.8971,
+        "puan": 0.9524,
+        "teaser": {
+          "bas": 17.9181,
+          "son": 22.0977
+        },
+        "id": "b453fccd-57e9-43f9-a01e-16319b05a13c",
+        "etiketler": "Ivorian balafon festival dance, balafon carries a nimble lead melody over djembe and talking drum, bright guitar accents the counter-melody; steady, danceable groove around 128 BPM, rich polyphonic ensemble with layered balafon figures and a buoyant rhythm section; cheerful adventure video game background music, constant energy, loop-friendly transitions, bright warm acoustic mix, instrumental."
+      },
+      {
+        "dosya": "hayalet-avcilari-ci-2.mp3",
+        "sure": 118.813,
+        "tempo": 129.02,
+        "dongu": {
+          "bas": 30.7024,
+          "uzunluk": 33.47265,
+          "vurus": 72
+        },
+        "ekYeri": 0.9774,
+        "sabitlik": 0.8919,
+        "puan": 0.9512,
+        "teaser": {
+          "bas": 32.5786,
+          "son": 36.7582
+        },
+        "id": "c0582a39-1555-47f9-9cbe-bac8754619f3",
+        "etiketler": "Ivorian balafon festival dance, cheerful adventure video game background music in a bright warm acoustic mix; steady, danceable groove at around 128 BPM, constant energy through a loop-friendly arrangement; instrumental; balafon leads the melody and counter-melody, with djembe, talking drum, and bright guitar supporting a rich polyphonic rhythm section."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -5.8,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3796,
+    "ekOrani": 0.049,
+    "dosyalar": {
+      "dongu": "muzik/CI-dongu.ogg",
+      "giris": "muzik/CI-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 33.84585,
+    "tempo": 128.15,
+    "kredi": {
+      "kalan": 632.5
+    }
+  },
+  "GH": {
+    "gorev": "5a67ecfd3186b73b58950f78f7686a71",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-gh-1.mp3",
+        "sure": 118.573,
+        "tempo": 127.08,
+        "dongu": {
+          "bas": 59.4844,
+          "uzunluk": 30.19769,
+          "vurus": 64
+        },
+        "ekYeri": 0.9739,
+        "sabitlik": 0.8194,
+        "puan": 0.9282,
+        "teaser": {
+          "bas": 22.6454,
+          "son": 26.4302
+        },
+        "id": "b7f17c9b-b39e-43b9-b7bb-a70d4298b2a6",
+        "etiketler": "Ghanaian highlife, palm-wine guitars, gyil xylophone, kpanlogo drums and shaker carry a bright lead melody over interweaving counter-melody and polyphonic rhythm; cheerful adventure-video-game background feel, steady danceable groove around 128 BPM, constant energy with a seamless loop-ready closing figure, bright warm acoustic mix, instrumental."
+      },
+      {
+        "dosya": "hayalet-avcilari-gh-2.mp3",
+        "sure": 119.629,
+        "tempo": 127.91,
+        "dongu": {
+          "bas": 45.747,
+          "uzunluk": 30.03054,
+          "vurus": 64
+        },
+        "ekYeri": 0.9777,
+        "sabitlik": 0.8912,
+        "puan": 0.9558,
+        "teaser": {
+          "bas": 40.5823,
+          "son": 44.8084
+        },
+        "id": "66bf6009-e647-4d36-b0e4-efc6cda9c04d",
+        "etiketler": "Ghanaian highlife, instrumental; bright warm acoustic mix with a playful, buoyant lead melody trading short phrases with interlocking counter-melodies; steady danceable groove at around 128 BPM; palm-wine guitars weave around gyil xylophone, kpanlogo drums and shaker, rich polyphonic ensemble keeping constant energy for seamless loopable adventure video game background music."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -5.8,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.4261,
+    "ekOrani": 0.069,
+    "dosyalar": {
+      "dongu": "muzik/GH-dongu.ogg",
+      "giris": "muzik/GH-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 30.13054,
+    "tempo": 127.91,
+    "kredi": {
+      "kalan": 620.5
+    }
+  },
+  "NG": {
+    "gorev": "e57bbd0c319475bb12436af7037bfdd5",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-ng-1.mp3",
+        "sure": 118.909,
+        "tempo": 129.11,
+        "dongu": {
+          "bas": 23.5242,
+          "uzunluk": 29.73669,
+          "vurus": 64
+        },
+        "ekYeri": 0.9822,
+        "sabitlik": 0.9026,
+        "puan": 0.9563,
+        "teaser": {
+          "bas": 63.521,
+          "son": 67.7006
+        },
+        "id": "ab78dfe3-cfa6-4d5f-adf7-d0dbb1d41e63",
+        "etiketler": "Nigerian juju, bright warm acoustic mix, cheerful adventure video game background music, steady danceable groove around 128 BPM, dundun talking drum and shekere anchor interlocking guitars, rich polyphonic ensemble with lead melody, counter-melody and rhythm section, constant energy, loop-friendly instrumental arrangement."
+      },
+      {
+        "dosya": "hayalet-avcilari-ng-2.mp3",
+        "sure": 118.813,
+        "tempo": 130.15,
+        "dongu": {
+          "bas": 53.6849,
+          "uzunluk": 27.63529,
+          "vurus": 60
+        },
+        "ekYeri": 0.9773,
+        "sabitlik": 0.8694,
+        "puan": 0.9387,
+        "teaser": {
+          "bas": 84.5727,
+          "son": 88.7291
+        },
+        "id": "c7373755-5f33-49d6-afe2-82e633033504",
+        "etiketler": "Nigerian juju, cheerful adventure video game background music with a steady danceable groove around 128 BPM, instrumental; bright warm acoustic mix, constant energy and loop-friendly continuity; rich polyphonic ensemble with dundun talking drum, shekere and interlocking guitars, lead melody, counter-melody and interlocking rhythm section."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -4.8,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3796,
+    "ekOrani": 0.386,
+    "dosyalar": {
+      "dongu": "muzik/NG-dongu.ogg",
+      "giris": "muzik/NG-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 29.83669,
+    "tempo": 129.11,
+    "kredi": {
+      "kalan": 608.5
+    }
+  },
+  "SD": {
+    "gorev": "d47fae3c425d92d897afc7e2bd539136",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-sd-1.mp3",
+        "sure": 119.029,
+        "tempo": 129.35,
+        "dongu": {
+          "bas": 49.8537,
+          "uzunluk": 29.69987,
+          "vurus": 64
+        },
+        "ekYeri": 0.9729,
+        "sabitlik": 0.7732,
+        "puan": 0.9116,
+        "teaser": {
+          "bas": 59.1165,
+          "son": 63.2961
+        },
+        "id": "26598f2e-d4b5-4e7f-9fd8-0736b4c38a06",
+        "etiketler": "Sudanese dance music, steady danceable groove around 128 BPM, instrumental; bright warm acoustic mix; a pentatonic oud lead melody moves above a tanbur lyre counter-melody, while daluka drum and handclaps anchor a rich polyphonic rhythm section, cheerful adventure video game background music, constant energy, seamless loop-friendly phrasing."
+      },
+      {
+        "dosya": "hayalet-avcilari-sd-2.mp3",
+        "sure": 119.629,
+        "tempo": 128.56,
+        "dongu": {
+          "bas": 40.2888,
+          "uzunluk": 29.81887,
+          "vurus": 64
+        },
+        "ekYeri": 0.987,
+        "sabitlik": 0.6751,
+        "puan": 0.8933,
+        "teaser": {
+          "bas": 97.6142,
+          "son": 101.817
+        },
+        "id": "91a8f88c-59ea-448c-b904-0ed75d138c34",
+        "etiketler": "Sudanese dance music, instrumental; bright warm acoustic mix with a rich polyphonic ensemble; oud carries a lead melody while tanbur lyre answers with a counter-melody, daluka drum and handclaps drive the rhythm section on a pentatonic scale; cheerful adventure video game background music, steady danceable groove around 128 BPM, constant energy, loop-friendly."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -3.6,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3796,
+    "ekOrani": 0.045,
+    "dosyalar": {
+      "dongu": "muzik/SD-dongu.ogg",
+      "giris": "muzik/SD-giris.ogg"
+    },
+    "bas": 0.1025,
+    "son": 29.80238,
+    "tempo": 129.35,
+    "kredi": {
+      "kalan": 596.5
+    }
+  },
+  "EG": {
+    "gorev": "445f774b064702602f5e2e8bb2031c76",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-eg-1.mp3",
+        "sure": 118.789,
+        "tempo": 130.57,
+        "dongu": {
+          "bas": 47.2039,
+          "uzunluk": 29.40142,
+          "vurus": 64
+        },
+        "ekYeri": 0.9743,
+        "sabitlik": 0.7927,
+        "puan": 0.9121,
+        "teaser": {
+          "bas": 96.7703,
+          "son": 100.9034
+        },
+        "id": "b5bccd92-3e09-48ed-b788-44309a25c12c",
+        "etiketler": "Upper Egyptian Saidi festival music, a jaunty, buoyant dance groove around 128 BPM; bright warm acoustic mix, cheerful adventure video game background music with a bright repeating figure and nimble call-and-response turns; mizmar, rababa, tabla and riq tambourine build a rich polyphonic ensemble with lead melody, counter-melody and rhythm section; constant energy, seamless loop-ready transitions, instrumental."
+      },
+      {
+        "dosya": "hayalet-avcilari-eg-2.mp3",
+        "sure": 120.829,
+        "tempo": 131.21,
+        "dongu": {
+          "bas": 45.5494,
+          "uzunluk": 29.27579,
+          "vurus": 64
+        },
+        "ekYeri": 0.9798,
+        "sabitlik": 0.8112,
+        "puan": 0.9172,
+        "teaser": {
+          "bas": 37.7785,
+          "son": 41.9117
+        },
+        "id": "c0add6a1-6c59-4382-a4ce-d1c3f957e9c6",
+        "etiketler": "Upper Egyptian Saidi festival music, steady danceable groove at around 128 BPM; bright warm acoustic mix, rich polyphonic ensemble with a lead melody and counter-melody over tabla and riq tambourine, mizmar and rababa; cheerful adventure video game background music, constant energy, seamless loop-ready arrangement."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -4.3,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3332,
+    "ekOrani": 0.75,
+    "dosyalar": {
+      "dongu": "muzik/EG-dongu.ogg",
+      "giris": "muzik/EG-giris.ogg"
+    },
+    "bas": 0.1175,
+    "son": 29.39329,
+    "tempo": 131.21,
+    "kredi": {
+      "kalan": 584.5
+    }
   }
 }

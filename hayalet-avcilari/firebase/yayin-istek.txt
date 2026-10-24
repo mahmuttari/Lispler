@@ -13,4 +13,4 @@
 # (yapıldı 2026-10-24, koşu 40066828973: {"status":"ok"}; geri okunan kurallar depodakiyle AYNI) yayinla
 
 # istek 2026-10-24T06:41:51Z: son denetim (salt okuma; kullanıcı "herşey tamam mı?" diye sordu)
-durum
+# (yapıldı 2026-10-24, koşu 40071224837: AYNI — yayındaki kurallar depodakiyle aynı) durum

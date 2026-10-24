@@ -2,7 +2,8 @@
 // Hayalet olan oyuncu (kendi ekranında ve diğer oyuncunun ekranında) ve vurulan Bot eskiden ctx.filter ile çiziliyordu;
 // tuval filtresi çizimin onlarca işleminin her birine ayrı uygulandığı için kare 0,4–4 sn sürüyordu. Bu test Firebase'siz
 // bir sayfada önce sürekli vurulan Bot'u (tek kişilik), sonra hayalet olan yerel ve uzak oyuncuyu çizdirir; CPU 4 kat
-// yavaşken kare hızını ölçer.
+// yavaşken kare hızını ölçer. 3.14.0: Dünya Turu'nda üç ailede (FR · K, KE · SV, JP · DA) ülkenin müziği çalarken,
+// zemin deseni açık, Bot ve hayaletler sahnedeyken de aynı eşikler aranır.
 // Çalıştırma (Playwright + Chromium gerekir):  node hayalet-avcilari/test/cizim.test.mjs
 import http from 'node:http';
 import fs from 'node:fs';
@@ -13,7 +14,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const WWW = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'www');
 const PW = process.env.PLAYWRIGHT_MODULE || '/opt/node22/lib/node_modules/playwright/index.mjs';
 const { chromium } = await import(pathToFileURL(PW).href);
-const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.m4a': 'audio/mp4' };
+const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.m4a': 'audio/mp4', '.ogg': 'audio/ogg' };
 const sunucu = http.createServer((q, r) => {
   const f = path.join(WWW, decodeURIComponent(new URL(q.url, 'http://x').pathname).replace(/^\/+/, '') || 'index.html');
   if (!f.startsWith(WWW) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end(); }
@@ -21,7 +22,7 @@ const sunucu = http.createServer((q, r) => {
 }).listen(0);
 const adres = `http://127.0.0.1:${sunucu.address().port}/index.html`;
 
-const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
+const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args: ['--autoplay-policy=no-user-gesture-required'] });
 const sonuc = {};
 try {
   const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
@@ -64,6 +65,19 @@ try {
   // İkisi hayalet olur: yerel oyuncu ve bir uzak oyuncu (diğer uzak oyuncu canlı, tur sürer)
   await p.evaluate(() => { online.remotePlayers.k2.dead = true; game.player.hp = 0; game.player.dead = true; });
   sonuc.hayalet = await olc(3000);
+  // Dünya Turu, tek kişilik: ülkenin döngü müziği çalarken, Bot ve en az üç hayalet sahnede
+  await p.evaluate(() => { online.mode = null; online.uid = null; online.remotePlayers = {}; endGame(false); });
+  sonuc.tur = {};
+  for (const kod of ['FR', 'KE', 'JP']) {
+    await p.evaluate((kod) => { startGame({ tur: true, ulke: ulkeKodla(kod).sira }); game.player.invuln = 1e9; }, kod);
+    await p.waitForFunction(() => muzikDurumu().calan === 'dongu' && game.ghosts.length >= 3, null, { timeout: 30000 });
+    const once = await p.evaluate(() => ({
+      kod: turUlkesi().kod, aile: turUlkesi().aile, calan: muzikDurumu().calan, bot: !!game.bot,
+      hayalet: game.ghosts.length, zemin: !!(_turZemini && _turZemini.desen),
+    }));
+    sonuc.tur[kod] = { ...once, ...(await olc(3000)) };
+  }
+  await p.evaluate(() => { endGame(false); turMuzigiSondur(0); });
   sonuc.hatalar = hatalar;
 } finally {
   await b.close();
@@ -77,4 +91,10 @@ assert.ok(sonuc.botParliyor.fps >= 30 && sonuc.botParliyor.p95 <= 100,
 assert.ok(sonuc.canli.fps >= 30, `canlıyken kare hızı düşük: ${sonuc.canli.fps}`);
 assert.ok(sonuc.hayalet.fps >= 30 && sonuc.hayalet.p95 <= 100,
   `hayalet olan oyuncu çizilirken kare hızı ${sonuc.hayalet.fps} fps, %95 kare ${sonuc.hayalet.p95} ms (canlıyken ${sonuc.canli.fps} fps)`);
-console.log('TAMAM: hayalet olan oyuncu ve vurulan Bot kare hızını düşürmüyor');
+for (const [kod, v] of Object.entries(sonuc.tur)) {
+  assert.equal(v.kod, kod, `Dünya Turu ${kod} yerine ${v.kod} ülkesinde`);
+  assert.ok(v.calan === 'dongu' && v.bot && v.hayalet >= 3 && v.zemin,
+    `Dünya Turu ${kod}: ölçüm başında müzik ${v.calan}, Bot ${v.bot}, ${v.hayalet} hayalet, zemin deseni ${v.zemin}`);
+  assert.ok(v.fps >= 30 && v.p95 <= 100, `Dünya Turu ${kod} (${v.aile}) çizilirken kare hızı ${v.fps} fps, %95 kare ${v.p95} ms`);
+}
+console.log('TAMAM: hayalet olan oyuncu ve vurulan Bot kare hızını düşürmüyor; Dünya Turu FR, KE, JP müzik çalarken akıyor');

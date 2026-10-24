@@ -1,4 +1,5 @@
-// Play mağaza görselleri: her dil için 5 telefon ekran görüntüsü (1080×1920) ve tanıtım görseli (1024×500).
+// Play mağaza görselleri: her dil için 6 telefon ekran görüntüsü (1080×1920) ve tanıtım görseli (1024×500).
+// 3.13.0: oyun ve boss kareleri yeni engelleri gösterir (Yeşil Orman, Mor Şato), menüde kupa, 6. kare Arkadaşlar.
 // Kullanım: node hayalet-avcilari/araclar/magaza-gorsel.mjs [play-dili…]   (Playwright + Chromium gerekir)
 // Çıktı: tr-TR → magaza/play/, diğerleri → magaza/play/<play-dili>/ (android/play.mjs gorsel bu klasörleri yükler)
 import http from 'node:http';
@@ -44,7 +45,7 @@ try {
     await p.goto(adres, { waitUntil: 'load' });
     await p.waitForTimeout(800);
     await p.evaluate(() => {
-      save.playerName = 'Kiki'; save.para = 1250; save.elmas = 14; save.zumrut = 6; save.highestLevel = 7; persistSave();
+      save.playerName = 'Kiki'; save.para = 1250; save.elmas = 14; save.zumrut = 6; save.kupa = 3; save.highestLevel = 7; persistSave();
       try { localStorage.setItem(VERSION_KEY, APP_VERSION); } catch (_) {}
       showScreen('screen-menu'); refreshMenu();
     });
@@ -54,16 +55,47 @@ try {
     await p.screenshot({ path: path.join(cikis, 'telefon-4-karakterler.png') });
     await p.evaluate(() => openShop()); await p.waitForTimeout(400);
     await p.screenshot({ path: path.join(cikis, 'telefon-5-magaza.png') });
+    // Arkadaşlar (3.13.0): kod kartı, gelen istek, çevrimiçi / odada / çevrimdışı arkadaşlar (sunucu yok, veri elle)
     await p.evaluate(() => {
-      startGame(); game.level = 3; buildWalls(); buildWaters(); buildHazards(); ensurePlayerSafe();
-      game.player.invuln = 1e9; game.bossSpawnTimer = 1e9; game.player.range = 1;
+      Object.assign(sosyal, { uid: 'u1', kod: 'K7MP2Q', hazir: true, hata: null, bagli: true,
+        istekler: { u5: { name: 'Mila', at: Date.now() } }, gonderilen: {}, engeller: {}, davetler: {},
+        arkadaslar: { u2: { name: 'Can', at: 1 }, u3: { name: 'Deniz', at: 1 }, u4: { name: 'Ece', at: 1 }, u6: { name: 'Lara', at: 1 } },
+        durumlar: { u2: { name: 'Can', charKey: 'kornet', costumeIdx: 0, state: 'on', at: 1 }, u3: { name: 'Deniz', charKey: 'mark', costumeIdx: 0, state: 'room', at: 1 },
+          u6: { name: 'Lara', charKey: 'veryi', costumeIdx: 0, state: 'on', at: 1 } } });
+      openFriends();
+    });
+    await p.waitForTimeout(400);
+    await p.screenshot({ path: path.join(cikis, 'telefon-6-arkadaslar.png') });
+    // Oyun ve boss: engellerin en çok göründüğü boş yere oyuncu konur (engel-bicim.test --ekran yöntemi; alt %26 joystick
+    // ve çanta, üst %16 göstergeler puana girmez). Güçlendirme toplanmaz (görünmezlik ya da hız bildirimi kareyi bozmasın).
+    // Hasar yok: invuln > 0 iken oyuncu 0,1 sn'de bir çizilmez (yanıp söner), damagePlayer da canı düşürüp invuln koyar.
+    const sahne = (bolum) => p.evaluate((bolum) => {
+      startGame(); game.level = bolum; buildWalls(); buildWaters(); buildHazards();
+      const W = game.W, H = game.H; let en = null;
+      for (let x = 200; x < game.worldW - 200; x += 30) for (let y = 260; y < game.worldH - 260; y += 30) {
+        if (collidesWalls(x, y, 30) || collidesWaters(x, y, 30) || collidesSpikes(x, y, 30) || collidesLavas(x, y, 30)) continue;
+        const tam = (o) => o.x > x - W / 2 && o.x + o.w < x + W / 2 && o.y > y - H / 2 + H * 0.16 && o.y + o.h < y + H / 2 - H * 0.26;
+        const puan = game.walls.slice(4).filter(tam).length * 3 + game.waters.filter(tam).length * 3 + game.spikes.concat(game.lavas).filter(tam).length * 2;
+        if (!en || puan > en.puan) en = { x, y, puan };
+      }
+      game.player.x = en.x; game.player.y = en.y;
+      damagePlayer = () => {};
+      game.player.invuln = 0; game.bossSpawnTimer = 1e9;
+      clearInterval(window.gucsuz);
+      window.gucsuz = setInterval(() => { game.pickups = game.pickups.filter((k) => k.kind !== 'guc'); game.player.power = null; }, 50);
+    }, bolum);
+    await sahne(8); // Yeşil Orman
+    await p.evaluate(() => {
+      game.player.range = 1;
       setTimeout(() => { game.player.range = 260; }, 5200);
     });
     await p.waitForTimeout(7000);
-    await p.evaluate(() => { game.player.invuln = 0; game.bossSpawnTimer = 24.4; });
+    await p.evaluate(() => { game.bossSpawnTimer = 24.4; });
     await p.waitForTimeout(150);
     await p.screenshot({ path: path.join(cikis, 'telefon-2-oyun.png') });
-    await p.evaluate(() => { game.player.invuln = 1e9; game.bossSpawnTimer = 0.05; });
+    await sahne(7); // Mor Şato
+    await p.waitForTimeout(5000);
+    await p.evaluate(() => { game.bossSpawnTimer = 0.05; });
     await p.waitForTimeout(3500);
     await p.evaluate(() => { game.player.invuln = 0; const bs = game.ghosts.find((g) => g.isBoss); if (bs) { bs.x = game.player.x + 40; bs.y = game.player.y - 170; } });
     await p.waitForTimeout(250);

@@ -26,7 +26,7 @@ Kullanıcı bilgisayardaki oturuma yalnız şunu yazar:
 | Gizlilik politikası | `https://mahmuttari.github.io/Lispler/hayalet-avcilari/gizlilik.html` |
 | Hesap silme adresi | `https://mahmuttari.github.io/Lispler/hayalet-avcilari/hesap-silme.html` |
 | Metinler ve form cevapları | [`aciklamalar.md`](aciklamalar.md); çeviriler [`diller/`](diller/) (en-US, es-ES, es-419, zh-CN, hi-IN, ar) |
-| Görseller | [`play/`](play/): `simge-512.png`, `tanitim-gorseli-1024x500.png`, `telefon-1…5-*.png` (sırayla); her dil için `play/<dil>/` |
+| Görseller | [`play/`](play/): `simge-512.png`, `tanitim-gorseli-1024x500.png`, `telefon-1…6-*.png` (sırayla; 3.13.0'dan beri oyun Yeşil Orman'da, boss Mor Şato'da yeni engellerle, 6. kare Arkadaşlar); her dil için `play/<dil>/`. Üretici `araclar/magaza-gorsel.mjs` |
 | Sürüm notu | [`surum-notu.txt`](surum-notu.txt) |
 | İlk paket | Console'a elle yüklenen taslak: `dist/HayaletAvcilari-play.aab` **3.10.0 (36)**. Yayına giden paket CI'ın derlediği **3.10.2 (38)** (AdMob + Firebase anonim giriş): bulut oturumu `yukle` ile taslağı bununla değiştirir. Önce [`firebase/README.md` › Yayınlama](../firebase/README.md#yayınlama) 1–3 (anonim sağlayıcı, kurallar) ve Veri güvenliği formundaki "Kullanıcı kimlikleri" satırı (aşağıda, `aciklamalar.md`) |
 | Yükleme anahtarı SHA-1 | `D0:88:A0:75:77:D1:89:B0:15:D4:A5:88:74:9A:1A:8C:C2:EE:56:99` |

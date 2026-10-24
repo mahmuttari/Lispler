@@ -14,3 +14,7 @@
 
 # istek 2026-10-24T06:41:51Z: son denetim (salt okuma; kullanıcı "herşey tamam mı?" diye sordu)
 # (yapıldı 2026-10-24, koşu 40071224837: AYNI — yayındaki kurallar depodakiyle aynı) durum
+
+# istek 2026-10-24T18:48:14Z: 3.14.0 kuralları (Dünya Turu odası: rooms/$id/tur, level yalnız ev sahibince 1–1000; commit 94dc04a) — önce yayındakiyle karşılaştır, sonra yayınla (kullanıcının açık onayıyla: "Kalan işleri de yap"); kurallar.test 31/31
+durum
+yayinla

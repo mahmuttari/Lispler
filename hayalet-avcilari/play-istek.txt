@@ -40,6 +40,6 @@
 # (yapıldı 2026-10-24, koşu 40071224823: production 3.13.0 (45) completed; paketler 36, 41–45; 7 dilde icon 1, featureGraphic 1, phoneScreenshots 6) durum
 
 # istek 2026-10-24T18:51:35Z: 3.14.0 (47) üretime yükle ve incelemeye gönder; 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) gönderilmedi); mağaza metni (7 dil, "🌍 DÜNYA TURU" bölümü, sürüm notu) ve görseller (7 dil, 7 telefon karesi) (kullanıcının açık onayıyla: "Kalan işleri de yap"); AAB: hayalet-android koşusu 40122349542 (bu dal, commit 20fbc66, versionCode 47, Poyraz Workshop yükleme anahtarı)
-yukle yayinla uygula
-magaza uygula
-gorsel uygula
+# (yapıldı 2026-10-24, koşu 40122638806: AAB 47 (koşu 40122349542, commit 20fbc66) yüklendi, üretim 3.13.0 (45) → 3.14.0 (47) completed, incelemeye gönderildi) yukle yayinla uygula
+# (yapıldı 2026-10-24, koşu 40122638806: 7 dilde başlık, kısa ve tam açıklama yüklendi; en uzun tam açıklama 1978) magaza uygula
+# (yapıldı 2026-10-24, koşu 40122638806: 7 dilde simge, tanıtım görseli ve 7 telefon karesi yüklendi, düzenleme onaylandı) gorsel uygula

@@ -69,6 +69,11 @@ başa saran kültürel bir oyun polifonik müziği ekleyelim"*, *"her ülkenin k
   melancholic, sentimental, emotional, lament, nostalgic, romantic` eklenir. Üretilmiş 32 ülkenin istek kaydı
   gönderildiği gibi kalır. Sürüm 3.14.0'dan önce bütün müzikler kullanıcıyla birlikte gözden geçirilir; yenilenecek
   ülkeler 2. sürümle yeniden üretilir (kredi payı aşağıda).
+- **Toplu gözden geçirme (24 Ekim 2026):** Türkiye 2. kalıpla ve kavalın yerine zurnayla (davul-zurna, Anadolu
+  şenliğinin sesi) yeniden üretildi: görev `7b7659d0dbc5ce717768e68a3d2fe01c`, 2. parça, 130 vuruş/dk, 12 kredi, kalan
+  152,5. Öteki 50 ülke için ölçümle seçim denendi (majör/minör eğilimi, vuruş yoğunluğu, parlaklık, tempo): ölçüt
+  kullanıcının "duygusal" bulduğu Türkiye'yi ayırt edemediği için kredi tahmine harcanmadı. Kalan ülkeler kullanıcının
+  dinleme sayfasındaki (claude.ai yayını) "Yenilensin" işaretiyle, kalan krediyle (≈ 12 ülke) sonraki sürümde yenilenir.
 - **Neden 128 vuruş/dk:** 4/4'te 64 vuruş (16 ölçü) tam 30,0 sn eder; tempo ±10 saptığında da döngü 27–34 sn içinde tam
   ölçüye oturur.
 - **İstek metinleri** `hayalet-avcilari/araclar/muzik-istekleri.json` dosyasındadır: 51 kayıt,
@@ -131,7 +136,7 @@ aynı bölgenin türü seçildi (Polonya krakowiak, Birleşik Krallık İskoç c
 
 | # | Kod | Ülke | Tür | Çalgılar | Ölçü |
 |---|---|---|---|---|---|
-| 1 | TR | Türkiye | Anadolu halayı, şenlik havası | bağlama, kaval, darbuka, davul | 2/4 |
+| 1 | TR | Türkiye | Anadolu halayı, şenlik havası | bağlama, zurna, darbuka, davul (24 Ekim 2026'ya dek kaval) | 2/4 |
 | 2 | UA | Ukrayna | hopak dansı | bandura, tsimbali, sopilka, keman | 2/4 |
 | 3 | PL | Polonya | krakowiak dansı | keman, klarnet, akordeon, kontrbas | 2/4 |
 | 4 | DE | Almanya | Bavyera polkası | akordeon, klarnet, tuba, trompet | 2/4 |

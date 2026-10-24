@@ -4,6 +4,7 @@
 - **Durum:** Kullanıcı onayladı (24 Ekim 2026: "Onaylıyorum, plana geç"); uygulama planı `docs/superpowers/plans/2026-10-24-hayalet-ulkeler.md`
 - **Hedef sürüm:** 3.14.0 (versionCode 47); 3.13.1'in reklam içerik sınırı (G) bu sürümle birlikte çıkar
 - **Proje:** `hayalet-avcilari/` (Capacitor 8, HTML5 canvas, Firebase Realtime Database + Anonymous Auth)
+- **Ek tasarım:** `docs/superpowers/specs/2026-10-24-hayalet-ulke-muzikleri-design.md` (her ülkeye teaser ve 30 sn'lik döngülü fon müziği)
 
 ## 1. Amaç
 
@@ -387,6 +388,6 @@ alınmaz. Kesin değerler taslakta ve ekran denetiminde oturur. Aile paleti ile 
 ## 12. Kapsam dışı
 
 - Siyasi harita, bayrak.
-- Ülkeye özel yeni düşman, oynanış ya da müzik.
+- Ülkeye özel yeni düşman ya da oynanış. (Ülke müzikleri sonradan kapsama alındı: `2026-10-24-hayalet-ulke-muzikleri-design.md`.)
 - Dünya Turu için ayrı Şampiyonlar listesi ve Play Games başarımları (sonraya bırakılabilir).
 - Normal oyunun 6 teması, zemini ve harita üretimi (değişmez).

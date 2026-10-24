@@ -1,0 +1,73 @@
+# Hayalet Avcıları — Realtime Database kurallarını yayınlar (Firebase konsolundaki "Yayınla" ile aynı iş: REST
+# /.settings/rules.json). Komutlar hayalet-avcilari/firebase/yayin-istek.txt'ye yazılır (play-istek.txt düzeni):
+#   durum    — yayındaki kuralları okur, depodaki database.rules.json ile karşılaştırır; hiçbir şey yazmaz
+#   yayinla  — database.rules.json'u yayınlar, geri okuyup depodakiyle aynı olduğunu denetler
+# Kimlik anahtarsız: Play işleriyle aynı Workload Identity hizmet hesabı (android/play-kimlik.env). Hesabın
+# hayalet-avcilari projesinde roles/firebasedatabase.admin rolü olmalı (firebase/README.md › Yayınlama).
+name: Firebase kural yayını (Hayalet Avcıları)
+
+on:
+  push:
+    paths: ['hayalet-avcilari/firebase/yayin-istek.txt']
+  workflow_dispatch:
+
+concurrency:
+  group: hayalet-kural-yayini
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  yayin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Komutlar ve kimlik
+        run: |
+          grep -v '^[[:space:]]*#' hayalet-avcilari/firebase/yayin-istek.txt | tr -d '\r' | sed '/^[[:space:]]*$/d' > "$RUNNER_TEMP/komutlar"
+          while IFS= read -r K; do case "$K" in durum|yayinla) ;; *) echo "::error::geçersiz komut: $K"; exit 1;; esac; done < "$RUNNER_TEMP/komutlar"
+          echo "Komutlar:"; cat "$RUNNER_TEMP/komutlar"
+          grep -E '^(PLAY_WIF_PROVIDER|PLAY_SERVICE_ACCOUNT)=' android/play-kimlik.env >> "$GITHUB_ENV"
+          if [ -s "$RUNNER_TEMP/komutlar" ]; then echo "KOMUT_VAR=1" >> "$GITHUB_ENV"; fi
+      - id: auth
+        if: env.KOMUT_VAR == '1'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.PLAY_WIF_PROVIDER }}
+          service_account: ${{ env.PLAY_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/firebase.database,https://www.googleapis.com/auth/userinfo.email
+      - name: Kurallar
+        if: env.KOMUT_VAR == '1'
+        env:
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+          URL: https://hayalet-avcilari-default-rtdb.europe-west1.firebasedatabase.app/.settings/rules.json
+          KURAL: hayalet-avcilari/firebase/database.rules.json
+        run: |
+          oku() { curl -sS --fail-with-body -H "Authorization: Bearer $TOKEN" "$URL" -o "$RUNNER_TEMP/yayinda.json"; }
+          # Anlamca karşılaştırma (anahtar sırası ve boşluk önemsiz); yayındaki metin yorum içeriyorsa okunamadığı söylenir
+          ayni() { node -e '
+            const fs = require("fs");
+            const sirali = (o) => JSON.stringify(o, (k, v) => v && typeof v === "object" && !Array.isArray(v) ? Object.fromEntries(Object.entries(v).sort()) : v);
+            let yayinda;
+            try { yayinda = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); }
+            catch { console.log("Yayındaki kurallar düz JSON değil (yorum içeriyor olabilir); karşılaştırılamadı"); process.exit(3); }
+            const depoda = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
+            const kok = (o) => Object.keys(o.rules || {}).join(", ");
+            console.log("  yayında: " + kok(yayinda)); console.log("  depoda:  " + kok(depoda));
+            const esit = sirali(yayinda) === sirali(depoda);
+            console.log(esit ? "AYNI: yayındaki kurallar depodakiyle aynı" : "FARKLI: yayındaki kurallar depodakinden farklı");
+            process.exit(esit ? 0 : 3);
+          ' "$RUNNER_TEMP/yayinda.json" "$KURAL"; }
+          while IFS= read -r K; do
+            echo; echo "════ $K ════"
+            case "$K" in
+              durum) oku; ayni || true ;;
+              yayinla)
+                curl -sS --fail-with-body -X PUT -H "Authorization: Bearer $TOKEN" -H 'content-type: application/json' --data-binary @"$KURAL" "$URL"; echo
+                oku; ayni ;;
+            esac
+          done < "$RUNNER_TEMP/komutlar"

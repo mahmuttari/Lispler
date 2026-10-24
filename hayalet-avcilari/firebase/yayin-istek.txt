@@ -1,0 +1,8 @@
+# Realtime Database kural yayını — .github/workflows/hayalet-kural-yayini.yml bu dosya push edilince çalışır.
+# Her satır bir komut (sırayla); etkin satırlar her push'ta yeniden çalışır, işi biten satır "# (yapıldı …)" ile kapatılır.
+#   durum     yayındaki kuralları depodaki database.rules.json ile karşılaştırır (yazmaz)
+#   yayinla   database.rules.json'u yayınlar ve geri okuyup denetler — yalnız kullanıcının açık onayıyla
+# Hizmet hesabının (android/play-kimlik.env) hayalet-avcilari projesinde roles/firebasedatabase.admin rolü olmalı.
+
+# istek 2026-10-24: yetki denemesi (salt okuma; kullanıcı "tam yetkilisin sen yap" dedi)
+durum

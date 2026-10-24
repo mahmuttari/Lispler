@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- css/uygulama.css belirteçleriyle aynı: yuzey belirteci (üst çubuk ve sistem çubuklarının zemini) -->
+<resources>
+    <color name="zemin">#fcfcfb</color>
+    <color name="simge_zemin">#1c5cab</color>
+</resources>

@@ -1,0 +1,69 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Google Play'e yüklenecek AAB'nin imzası: android/keystore.properties (depoya EKLENMEZ; iz-android.yml secret'tan yazar)
+def keystorePropsFile = rootProject.file('keystore.properties')
+def keystoreProps = new Properties()
+if (keystorePropsFile.exists()) keystoreProps.load(new FileInputStream(keystorePropsFile))
+
+// Google'ın test reklam kimlikleri (debug sürümünde her zaman bunlar kullanılır)
+def TEST_APP_ID = 'ca-app-pub-3940256099942544~3347511713'
+def TEST_BANNER = 'ca-app-pub-3940256099942544/9214589741'
+def TEST_INTERSTITIAL = 'ca-app-pub-3940256099942544/1033173712'
+
+android {
+    namespace 'com.poyrazworkshop.izharitasi'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.poyrazworkshop.izharitasi'
+        minSdk 24
+        targetSdk 36
+        versionCode 1
+        versionName '1.1.0'
+    }
+
+    signingConfigs {
+        if (keystorePropsFile.exists()) {
+            upload {
+                storeFile rootProject.file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // Yükleme anahtarı yoksa (yerel deneme) hata ayıklama anahtarıyla imzalanır; Play bunu kabul etmez
+            signingConfig keystorePropsFile.exists() ? signingConfigs.upload : signingConfigs.debug
+            manifestPlaceholders = [admobAppId: project.property('ADMOB_APP_ID')]
+            buildConfigField 'String', 'BANNER_ID', "\"${project.property('ADMOB_BANNER_ID')}\""
+            buildConfigField 'String', 'INTERSTITIAL_ID', "\"${project.property('ADMOB_INTERSTITIAL_ID')}\""
+        }
+        debug {
+            manifestPlaceholders = [admobAppId: TEST_APP_ID]
+            buildConfigField 'String', 'BANNER_ID', "\"${TEST_BANNER}\""
+            buildConfigField 'String', 'INTERSTITIAL_ID', "\"${TEST_INTERSTITIAL}\""
+        }
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'com.google.android.gms:play-services-ads:25.5.0'
+    implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
+}

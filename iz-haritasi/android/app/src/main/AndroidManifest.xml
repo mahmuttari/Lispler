@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- İz Haritası (Google Play sürümü, Poyraz Workshop). Kaynağı GENEL-KONULAR/airtag-harita/android/AndroidManifest.xml;
+     farkları: paket adı ve sürüm app/build.gradle'da, AdMob uygulama kimliği, ağ durumu izni (reklam SDK'sı). -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Harita karoları ve reklamlar -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Android 11 ve öncesi -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+
+    <!-- Android 12+: "Yakındaki cihazlar". neverForLocation BİLEREK yok: o işaret bazı BLE işaretçilerini
+         (beacon) tarama sonuçlarından süzer ve uygulama tarama sonucundan konum türetir. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- Tarama sonucundan konum türetildiği için tam konum gerekir; telefonun konumu haritaya da işlenir.
+         Konum yalnız cihazda kalır, reklam sağlayıcıya verilmez. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- BLE'siz cihaza da kurulabilir (benzetim çalışır) -->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+    <uses-feature android:name="android.hardware.location" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+
+    <application
+        android:label="@string/uygulama_adi"
+        android:icon="@mipmap/simge"
+        android:theme="@style/Tema"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/veri_aktarimi"
+        android:fullBackupContent="false"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="false"
+        android:enableOnBackInvokedCallback="true">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+
+        <activity
+            android:name=".AnaEtkinlik"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|density"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

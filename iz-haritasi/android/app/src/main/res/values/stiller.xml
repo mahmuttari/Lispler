@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Açık tema. WebView, sayfanın prefers-color-scheme değerini temanın isLightTheme niteliğinden alır
+     (Theme.Material.Light: açık, Theme.Material: koyu); sayfanın kendi koyu teması böylece telefonla uyumlu açılır. -->
+<resources>
+    <style name="Tema" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/zemin</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

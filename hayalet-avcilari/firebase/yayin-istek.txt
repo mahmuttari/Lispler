@@ -6,3 +6,6 @@
 
 # istek 2026-10-24: yetki denemesi (salt okuma; kullanıcı "tam yetkilisin sen yap" dedi)
 # (yapıldı 2026-10-24, koşu 40066100466: kimlik alındı, okuma 401 — hesabın hayalet-avcilari projesinde rolü yok) durum
+
+# istek 2026-10-24T05:34:14Z: rol verildi (kullanıcı: "google consol a komutu girdim"); yayındakini depodakiyle yol yol karşılaştır (salt okuma)
+durum

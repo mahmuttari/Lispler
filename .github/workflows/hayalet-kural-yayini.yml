@@ -47,8 +47,18 @@ jobs:
           URL: https://hayalet-avcilari-default-rtdb.europe-west1.firebasedatabase.app/.settings/rules.json
           KURAL: hayalet-avcilari/firebase/database.rules.json
         run: |
-          oku() { curl -sS --fail-with-body -H "Authorization: Bearer $TOKEN" "$URL" -o "$RUNNER_TEMP/yayinda.json"; }
-          # Anlamca karşılaştırma (anahtar sırası ve boşluk önemsiz); yayındaki metin yorum içeriyorsa okunamadığı söylenir
+          # Yeni verilen IAM rolü birkaç dakikada yayılır: 401/403'te 30 sn arayla 8 kez denenir
+          oku() {
+            for d in 1 2 3 4 5 6 7 8; do
+              kod=$(curl -sS -o "$RUNNER_TEMP/yayinda.json" -w '%{http_code}' -H "Authorization: Bearer $TOKEN" "$URL")
+              [ "$kod" = 200 ] && return 0
+              echo "okuma $kod (deneme $d): $(head -c 200 "$RUNNER_TEMP/yayinda.json")"
+              case "$kod" in 401|403) sleep 30 ;; *) return 1 ;; esac
+            done
+            return 1
+          }
+          # Anlamca karşılaştırma (anahtar sırası ve boşluk önemsiz) ve yol yol fark: "+" yalnız depoda (yayınla eklenir),
+          # "-" yalnız yayında (yayınla silinir), "~" değeri farklı. Yayındaki metin yorum içeriyorsa okunamadığı söylenir.
           ayni() { node -e '
             const fs = require("fs");
             const sirali = (o) => JSON.stringify(o, (k, v) => v && typeof v === "object" && !Array.isArray(v) ? Object.fromEntries(Object.entries(v).sort()) : v);
@@ -56,10 +66,22 @@ jobs:
             try { yayinda = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); }
             catch { console.log("Yayındaki kurallar düz JSON değil (yorum içeriyor olabilir); karşılaştırılamadı"); process.exit(3); }
             const depoda = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
-            const kok = (o) => Object.keys(o.rules || {}).join(", ");
-            console.log("  yayında: " + kok(yayinda)); console.log("  depoda:  " + kok(depoda));
+            const fark = [], kisa = (v) => JSON.stringify(v).slice(0, 160);
+            const nesne = (v) => v && typeof v === "object" && !Array.isArray(v);
+            const gez = (a, b, yol) => {
+              if (nesne(a) && nesne(b)) {
+                for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) {
+                  if (!(k in a)) fark.push("+ " + yol + "/" + k + " = " + kisa(b[k]));
+                  else if (!(k in b)) fark.push("- " + yol + "/" + k + " = " + kisa(a[k]));
+                  else gez(a[k], b[k], yol + "/" + k);
+                }
+              } else if (sirali(a) !== sirali(b)) fark.push("~ " + yol + ": " + kisa(a) + " → " + kisa(b));
+            };
+            gez(yayinda, depoda, "");
+            for (const f of fark.slice(0, 60)) console.log("  " + f);
+            if (fark.length > 60) console.log("  … " + (fark.length - 60) + " fark daha");
             const esit = sirali(yayinda) === sirali(depoda);
-            console.log(esit ? "AYNI: yayındaki kurallar depodakiyle aynı" : "FARKLI: yayındaki kurallar depodakinden farklı");
+            console.log(esit ? "AYNI: yayındaki kurallar depodakiyle aynı" : "FARKLI: " + fark.length + " fark (+ yalnız depoda, - yalnız yayında, ~ değişen)");
             process.exit(esit ? 0 : 3);
           ' "$RUNNER_TEMP/yayinda.json" "$KURAL"; }
           while IFS= read -r K; do

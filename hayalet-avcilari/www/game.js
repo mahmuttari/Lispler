@@ -899,6 +899,8 @@ const LEVEL_THEMES = [
   { name: t("Uzay"),         floor: "#0c0a1e", grid: "rgba(192, 132, 252, 0.18)", wall: "#1e1b4b", wallDark: "#0f0a2e", waterTop: "#a855f7", waterBot: "#3b0764" },
 ];
 function getTheme() {
+  const u = turUlkesi(); // Dünya Turu'nda ülkenin teması (ulkeler.js ulkeTemasi)
+  if (u) return ulkeTemasi(u);
   return LEVEL_THEMES[(game.level - 1) % LEVEL_THEMES.length];
 }
 
@@ -4634,6 +4636,7 @@ const game = {
   boss: null,
   spawnTimer: 0,
   level: 1,
+  dunyaTuru: false, // Dünya Turu kipi: bölüm = rota sırası, tema ve engeller ülkeden (dunya-turu.js)
   levelTimer: 0,
   levelDuration: 25, // saniye
   ghostsRequired: 8,
@@ -4790,7 +4793,8 @@ function collidesLavas(x, y, r) {
 
 let _donguNo = 0; // her startGame yeni döngü açar; eski döngü kendini bitirir (iki döngü aynı anda koşmasın)
 
-function startGame() {
+// secenek: { tur: true, ulke: <rota sırası> } Dünya Turu'nu o ülkeden başlatır (bölüm = ülke sırası); verilmezse normal oyun
+function startGame(secenek) {
   showScreen("screen-game");
   setupCanvas();
 
@@ -4806,7 +4810,8 @@ function startGame() {
   game.particles = [];
   game.effects = [];
   game.spawnTimer = 0;
-  game.level = 1;
+  game.dunyaTuru = !!(secenek && secenek.tur);
+  game.level = game.dunyaTuru ? ulkeSirada(secenek.ulke).sira : 1;
   game.levelTimer = 0;
   game.ghostsCaught = 0;
   game.totalCaught = 0;
@@ -6220,20 +6225,22 @@ function render() {
   ctx.save();
   ctx.translate(-game.camera.x, -game.camera.y);
 
-  // Zemin (bölüm temasından)
-  const th = getTheme();
-  ctx.fillStyle = th.floor;
-  ctx.fillRect(0, 0, game.worldW, game.worldH);
+  // Zemin: Dünya Turu'nda ailenin deseni (dunya-turu.js turZeminCiz), değilse bölüm temasının rengi ve ızgara
+  if (!(window.turZeminCiz && turZeminCiz(ctx))) {
+    const th = getTheme();
+    ctx.fillStyle = th.floor;
+    ctx.fillRect(0, 0, game.worldW, game.worldH);
 
-  // Grid
-  ctx.strokeStyle = th.grid;
-  ctx.lineWidth = 1;
-  const gridSize = 80;
-  for (let x = 0; x < game.worldW; x += gridSize) {
-    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, game.worldH); ctx.stroke();
-  }
-  for (let y = 0; y < game.worldH; y += gridSize) {
-    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(game.worldW, y); ctx.stroke();
+    // Grid
+    ctx.strokeStyle = th.grid;
+    ctx.lineWidth = 1;
+    const gridSize = 80;
+    for (let x = 0; x < game.worldW; x += gridSize) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, game.worldH); ctx.stroke();
+    }
+    for (let y = 0; y < game.worldH; y += gridSize) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(game.worldW, y); ctx.stroke();
+    }
   }
 
   // Engeller: su, diken, lav, duvar ve objeler — eğri hatlı, temaya özel, önbellekli (engeller.js)

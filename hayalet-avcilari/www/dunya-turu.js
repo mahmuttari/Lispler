@@ -41,3 +41,40 @@ function damgaBas(kod) {
   persistSave();
   return { yeni };
 }
+
+// ---------- Kip ----------
+// Dünya Turu'nda oynanan ülke (bölüm numarası = rota sırası); normal oyunda null
+function turUlkesi() {
+  return typeof game !== "undefined" && game.dunyaTuru ? ulkeSirada(game.level) : null;
+}
+
+// Dünya Turu zemini: ailenin zemin(ctx, boyut, palet) ressamı 96 px'lik desen tuvaline bir kez çizer (önbellek ülke kodu
+// ve ölçekle). Tuval önce ülkenin zemin rengiyle dolar, ressam yalnız soluk deseni çizer. Desen dünya alanına tek dolguyla
+// döşenir ve true döner. Ressam yoksa (ya da tuval kurulamazsa) false: render bugünkü zemini ve ızgarayı çizer.
+const TUR_ZEMIN_BOYUT = 96;
+let _turZemini = null; // { anahtar, desen }
+function turZeminCiz(ctx) {
+  const u = turUlkesi(), a = u && window.ULKE_AILELERI[u.aile];
+  if (!a || typeof a.zemin !== "function") return false;
+  // Desen dönüşümü olmayan tarayıcıda tuval ölçeksiz çizilir (döşeme 96 birimde kalsın)
+  const donusum = typeof DOMMatrix === "function" && typeof CanvasPattern !== "undefined" && !!CanvasPattern.prototype.setTransform;
+  const s = donusum ? engelOlcegi() : 1, anahtar = u.kod + "|" + s;
+  if (!_turZemini || _turZemini.anahtar !== anahtar) {
+    _turZemini = { anahtar, desen: null };
+    try {
+      const n = Math.ceil(TUR_ZEMIN_BOYUT * s), c = document.createElement("canvas");
+      c.width = n; c.height = n;
+      const cx = c.getContext("2d"), palet = ulkeEngelSeti(u.kod).palet;
+      cx.scale(n / TUR_ZEMIN_BOYUT, n / TUR_ZEMIN_BOYUT);
+      cx.fillStyle = palet.zemin; cx.fillRect(0, 0, TUR_ZEMIN_BOYUT, TUR_ZEMIN_BOYUT);
+      a.zemin(cx, TUR_ZEMIN_BOYUT, palet);
+      const desen = ctx.createPattern(c, "repeat");
+      if (desen && n !== TUR_ZEMIN_BOYUT) desen.setTransform(new DOMMatrix().scale(TUR_ZEMIN_BOYUT / n));
+      _turZemini.desen = desen;
+    } catch (_) { _turZemini.desen = null; }
+  }
+  if (!_turZemini.desen) return false;
+  ctx.fillStyle = _turZemini.desen;
+  ctx.fillRect(0, 0, game.worldW, game.worldH);
+  return true;
+}

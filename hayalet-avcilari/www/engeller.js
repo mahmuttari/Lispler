@@ -270,7 +270,8 @@
 
   // Kutuya biçim, çarpışma ve süs bilgisi ekler (yerinde) ve kutuyu döndürür
   function engelOlustur(o, tur, tema, tohum, yon) {
-    const r = engelRastgele(tohum), set = ENGEL_AILELERI[tema] || ENGEL_AILELERI[0];
+    // Dünya Turu'nda tema ülke kodudur (ulkeler.js ulkeBicimSeti); normal oyunda tema dizini
+    const r = engelRastgele(tohum), set = typeof tema === "string" ? window.ulkeBicimSeti(tema) : (ENGEL_AILELERI[tema] || ENGEL_AILELERI[0]);
     let aile, P, pay;
     if (tur === "sinir") { aile = "sinir"; P = bicimSinir(o.w, o.h, yon); }
     else if (tur === "su" || tur === "lav") { aile = "gol"; pay = tur === "su" ? 9 : 7; P = bicimGol(o.w, o.h, r, pay); }
@@ -289,7 +290,9 @@
   // build işlevlerinin sonunda: biçimi olmayan her engeli tamamlar (kılık: kesişen iç blok duvar, değilse (i + bölüm) % 3)
   function engelBicimleriniKur() {
     if (typeof game === "undefined" || !game.walls) return;
-    const L = game.level, tema = (L - 1) % 6, ic = game.walls.slice(4);
+    const L = game.level, ic = game.walls.slice(4);
+    const u = window.turUlkesi && window.turUlkesi();
+    const tema = u ? u.kod : (L - 1) % 6; // Dünya Turu'nda ülke kodu
     const kesisir = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
     game.walls.forEach((o, i) => {
       if (o.bicim) return;
@@ -561,7 +564,9 @@
   function ressam(o) {
     if (o.tur === "diken") return [dikenCiz, {}];
     if (o.tur === "lav") return [lavCiz, {}];
-    const T = window.ENGEL_TEMALARI || [], set = T[o.tema] || T[0] || {};
+    // Dünya Turu'nda tema ülke kodudur: aile duvarı ve suyu, ülkenin objeleri, birleşik palet (ulkeler.js ulkeEngelSeti)
+    const T = window.ENGEL_TEMALARI || [];
+    const set = typeof o.tema === "string" ? (window.ulkeEngelSeti(o.tema) || {}) : (T[o.tema] || T[0] || {});
     return [set[o.tur === "sinir" ? "duvar" : o.tur] || yedekRessam, set.palet || {}];
   }
   // Engeli ctx'e yerel koordinatta çizer; canlı katman noktalarını döndürür. Rastgele dizi biçiminkinden ayrı tohumdan.

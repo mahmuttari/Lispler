@@ -82,6 +82,41 @@ try {
   sina('bilinmeyen kod kaydı değiştirmez', () => { assert.deepEqual(d.xx, { yeni: false }); assert.ok(d.ayni); });
   sina('damga kalıcı (localStorage)', () => { assert.ok(d.kayitli && d.kayitli.damgalar.FR && d.kayitli.damgalar.AR); });
 
+  // --- 2) Kip kancaları: tema ülkeden, harita normal oyunun aynı bölümüyle aynı, engellerde ülke kodu ---
+  const k = await kopya(p, () => {
+    save.playerName = 'Defne'; persistSave();
+    startGame({ tur: true, ulke: 6 }); game.player.invuln = 1e9;
+    const bas = { tur: game.dunyaTuru, level: game.level, tema: getTheme().name };
+    const kutular = () => [game.walls, game.waters, game.spikes, game.lavas].flat().map((o) => [o.x, o.y, o.w, o.h, o.tur]);
+    online.mode = 'host';
+    game.dunyaTuru = true; game.level = 6; buildWalls(); buildWaters(); buildHazards();
+    const turKutular = kutular();
+    const temalar = [...new Set([game.walls, game.waters, game.spikes, game.lavas].flat().map((o) => o.tema))];
+    let resimHatasi = null;
+    try { for (const o of [game.walls, game.waters, game.spikes, game.lavas].flat()) engelResmi(o); } catch (e) { resimHatasi = e.message; }
+    game.dunyaTuru = false; buildWalls(); buildWaters(); buildHazards();
+    const normalKutular = kutular();
+    online.mode = null;
+    game.dunyaTuru = true; game.level = 6;
+    const zemin = turZeminCiz(game.ctx);
+    endGame(false);
+    startGame();
+    const normal = { tur: game.dunyaTuru, level: game.level, tema: getTheme().name, ulke: turUlkesi() };
+    endGame(false);
+    return { bas, turKutular, normalKutular, temalar, resimHatasi, zemin, normal };
+  });
+  sina('startGame({tur, ulke}): Dünya Turu, bölüm = ülke sırası, tema ülkeden', () => {
+    assert.deepEqual(k.bas, { tur: true, level: 6, tema: 'Fransa' });
+  });
+  sina('engellerde ülke kodu; harita normal oyunun aynı bölümüyle aynı', () => {
+    assert.deepEqual(k.temalar, ['FR']);
+    assert.ok(k.turKutular.length > 10);
+    assert.deepEqual(k.turKutular, k.normalKutular);
+  });
+  sina('ressamı olmayan ülkede engel resmi hata vermez (yedek ressam)', () => { assert.equal(k.resimHatasi, null); });
+  sina('zemin ressamı yokken turZeminCiz false (ızgara çizilir)', () => { assert.equal(k.zemin, false); });
+  sina('startGame(): normal oyun, bölüm 1, Mor Şato', () => { assert.deepEqual(k.normal, { tur: false, level: 1, tema: 'Mor Şato', ulke: null }); });
+
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);

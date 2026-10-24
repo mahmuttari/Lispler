@@ -199,6 +199,20 @@
   function ulkeTanitimi(u) {
     return t("✈️ {sira}. {ulke} — {obje1} ve {obje2}", { sira: u.sira, ulke: u.ad, obje1: u.obje1.ad, obje2: u.obje2.ad });
   }
+  // Engel biçim seti (engeller.js engelOlustur): iç duvar ailenin biçim ailesinden, objeler "yama" (kaya biçimli objeler
+  // "kaya"). Bilinmeyen kod ya da eksik aile kale duvarına düşer.
+  function ulkeBicimSeti(kod) {
+    const u = ulkeKodla(kod), a = u && window.ULKE_AILELERI[u.aile];
+    return { duvar: (a && a.bicim && a.bicim.duvar) || "kale", obje1: (u && u.obje1.bicim) || "yama", obje2: (u && u.obje2.bicim) || "yama" };
+  }
+  // Ressam seti (engeller.js ressam): ailenin duvar ve su ressamı, ülkenin iki obje ressamı (ULKE_OBJELERI), birleşik
+  // palet (aile paleti + ülke paleti; ülke üstün). Eksik ressam undefined kalır, yedek ressam çizer. Bilinmeyen kod null.
+  function ulkeEngelSeti(kod) {
+    const u = ulkeKodla(kod);
+    if (!u) return null;
+    const a = window.ULKE_AILELERI[u.aile] || {}, O = window.ULKE_OBJELERI;
+    return { palet: { ...(a.palet || {}), ...u.palet }, duvar: a.duvar, obje1: O[u.obje1.ressam], obje2: O[u.obje2.ressam], su: a.su };
+  }
 
-  Object.assign(window, { ULKELER, ULKE_SAYISI: ULKELER.length, ulkeSirada, ulkeKodla, ulkeTemasi, ulkeTanitimi });
+  Object.assign(window, { ULKELER, ULKE_SAYISI: ULKELER.length, ulkeSirada, ulkeKodla, ulkeTemasi, ulkeTanitimi, ulkeBicimSeti, ulkeEngelSeti });
 })();

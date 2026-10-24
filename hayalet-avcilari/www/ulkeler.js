@@ -119,7 +119,7 @@
       P("#2e2025", "#463039", "#d0717a", "#8e4850", "#1f8a8a", "#f2c94c"),
       K("yok", "sarili", "nakis", ["#e0457a", "#f2c94c", "#2a8a8a"])),
     U("BD", "GA", t("Bangladeş"), t("Lungili hayalet"), O("susluRiksalar", t("süslü rikşalar")), O("sundarbans", t("Sundarbans ve Bengal kaplanı")),
-      P("#1d2a20", "#2f4232", "#a65a3e", "#6b3a28", "#e07b2a", "#2f8f5a"),
+      { ...P("#1d2a20", "#2f4232", "#a65a3e", "#6b3a28", "#e07b2a", "#2f8f5a"), malzeme: "tugla" },
       K("yok", "sarili", "ekose", ["#2f6f9f", "#f4f1ea", "#c8302a"], ["sal"])),
     U("MM", "GDA", t("Myanmar"), t("Longyili hayalet"), O("inleBalikcilari", t("Inle Gölü balıkçıları")), O("patheinSemsiyeleri", t("Pathein şemsiyeleri")),
       P("#1e2a26", "#30413b", "#a07a4c", "#65502f", "#d94f3a", "#3f8fa8"),

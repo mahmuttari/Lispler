@@ -23,8 +23,9 @@ window.ULKE_OBJELERI = window.ULKE_OBJELERI || {};
       for (let i = 0; i < w * h / 220; i++) elips(ctx, r() * w, r() * h, 0.8, 0.6, r() < 0.5 ? koyu(renk, 0.2) : acik(renk, 0.25));
     });
   }
-  // Yandan hurma ağacı: kavisli halkalı gövde, sarkan yapraklar, turuncu salkım
-  function yanHurma(ctx, x, taban, boy) {
+  // Yandan hurma ağacı: kavisli halkalı gövde, sarkan yapraklar, turuncu salkım (meyve: salkım renkleri; yeşil verilince
+  // hindistancevizi palmiyesi)
+  function yanHurma(ctx, x, taban, boy, meyve = ["#d0702a", "#9a4a1a"]) {
     const egik = boy * 0.12, tx = x + egik, ty = taban - boy;
     elips(ctx, x + 2, taban, boy * 0.22, boy * 0.06, "rgba(0,0,0,0.25)");
     ctx.strokeStyle = "#7c5a2e"; ctx.lineWidth = Math.max(1.6, boy * 0.08); ctx.lineCap = "round";
@@ -38,7 +39,7 @@ window.ULKE_OBJELERI = window.ULKE_OBJELERI || {};
       ctx.strokeStyle = renk; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(tx, ty);
       ctx.quadraticCurveTo(tx + ux * s * 0.7, ty + uy * s * 0.7, tx + (ux * 0.6 + ux2 * 0.5) * s, ty + (uy * 0.6 + uy2 * 0.5) * s + s * 0.25); ctx.stroke();
     }
-    for (let j = 0; j < 4; j++) elips(ctx, tx - 1 + (j % 2) * 2, ty + 1.5 + Math.floor(j / 2) * 1.5, 1, 1.1, j % 2 ? "#d0702a" : "#9a4a1a");
+    for (let j = 0; j < 4; j++) elips(ctx, tx - 1 + (j % 2) * 2, ty + 1.5 + Math.floor(j / 2) * 1.5, 1, 1.1, meyve[j % 2 ? 0 : 1]);
   }
 
   // Yoğun yaprak kubbesi (yandan ağaç tacı): yarım daire dizili yaprak öbekleri, ortada bir öbek, ışık lekeleri;
@@ -61,6 +62,7 @@ window.ULKE_OBJELERI = window.ULKE_OBJELERI || {};
   }
 
   // ---------- canlı: çarşı feneri (askıda hafifçe sallanır, ışığı titrer; k.renk cam rengi, k.s boy) ----------
+  // k.yuvarlak: altıgen cam yerine kaburgalı, yuvarlak ipek fener ve püskül (Hoi An)
   Object.assign(window.ENGEL_CANLI, {
     fener(ctx, x, y, zaman, n, k) {
       const renk = (k && k.renk) || "#e0a83a", s = (k && k.s) || 4, eski = ctx.globalAlpha;
@@ -68,6 +70,19 @@ window.ULKE_OBJELERI = window.ULKE_OBJELERI || {};
       ctx.save(); ctx.translate(x, y); ctx.rotate(Math.sin(zaman * 1.6 + n * 6.3) * 0.12);
       ctx.globalAlpha = eski * 0.3 * isik; elips(ctx, 0, s * 2.1, s * 2.2, s * 2.2, renk); ctx.globalAlpha = eski;   // hale
       ctx.strokeStyle = "#5a4a32"; ctx.lineWidth = 0.7; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s * 0.7); ctx.stroke();
+      if (k && k.yuvarlak) {
+        ctx.fillStyle = "#6a3a1a"; ctx.fillRect(-s * 0.4, s * 0.6, s * 0.8, s * 0.32); ctx.fillRect(-s * 0.32, s * 3.02, s * 0.64, s * 0.3);   // kapaklar
+        elips(ctx, 0, s * 1.97, s * 0.98, s * 1.1, karistir(renk, "#fff6d0", Math.min(1, isik * 0.45)));               // ipek gövde
+        ctx.strokeStyle = koyu(renk, 0.32); ctx.lineWidth = 0.45; ctx.beginPath();                                      // kaburgalar
+        for (const f of [0.36, 0.72]) ctx.ellipse(0, s * 1.97, s * 0.98 * f, s * 1.1, 0, 0, Math.PI * 2);
+        ctx.moveTo(0, s * 0.87); ctx.lineTo(0, s * 3.07); ctx.stroke();
+        elips(ctx, -s * 0.38, s * 1.6, s * 0.22, s * 0.4, "rgba(255,255,255,0.28)");
+        ctx.strokeStyle = koyu(renk, 0.45); ctx.lineWidth = 0.6; ctx.beginPath();                                       // püskül
+        for (const dx of [-0.12, 0, 0.12]) { ctx.moveTo(dx * s, s * 3.3); ctx.lineTo(dx * s * 1.8, s * 4); }
+        ctx.stroke();
+        ctx.restore();
+        return;
+      }
       ctx.fillStyle = "#8a6a2a"; ctx.beginPath(); ctx.moveTo(-s * 0.5, s * 1.25); ctx.lineTo(0, s * 0.6); ctx.lineTo(s * 0.5, s * 1.25); ctx.closePath(); ctx.fill();
       ctx.fillStyle = karistir(renk, "#fff6d0", Math.min(1, isik * 0.55)); ctx.beginPath();                          // altıgen cam
       ctx.moveTo(-s * 0.5, s * 1.25); ctx.lineTo(-s * 0.7, s * 2.1); ctx.lineTo(-s * 0.45, s * 3); ctx.lineTo(s * 0.45, s * 3); ctx.lineTo(s * 0.7, s * 2.1); ctx.lineTo(s * 0.5, s * 1.25); ctx.closePath(); ctx.fill();

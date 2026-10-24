@@ -44,9 +44,9 @@ const KOSTUM_TURLERI = {
 };
 
 // Ressamı çizilmiş aileler ve ülkeler (Görev 5: KS, DA ve TR, JP; Görev 7–13 kıta kıta ekler)
-const CIZILEN_AILELER = ['KS', 'DA', 'K', 'KP', 'SH', 'SV'];
+const CIZILEN_AILELER = ['KS', 'DA', 'K', 'KP', 'SH', 'SV', 'GA', 'GDA'];
 const CIZILEN_ULKELER = ['TR', 'JP', 'UA', 'PL', 'DE', 'GB', 'FR', 'IT', 'ES', 'MA', 'DZ', 'CI', 'GH', 'NG', 'SD', 'EG', 'CD', 'AO', 'ZA', 'MZ', 'MG', 'TZ', 'UG', 'KE', 'ET',
-  'YE', 'SA', 'PS', 'IQ', 'IR', 'UZ', 'AF'];
+  'YE', 'SA', 'PS', 'IQ', 'IR', 'UZ', 'AF', 'PK', 'IN', 'BD', 'MM', 'TH', 'MY', 'ID', 'PH', 'VN'];
 
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
 const hatalar = [];

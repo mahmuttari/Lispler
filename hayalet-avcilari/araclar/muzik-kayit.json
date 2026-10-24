@@ -1948,5 +1948,554 @@
     "kredi": {
       "kalan": 392.5
     }
+  },
+  "PK": {
+    "gorev": "1af7bac3642c61f8161a2b0a4d1a59b7",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-pk-1.mp3",
+        "sure": 119.341,
+        "tempo": 97.52,
+        "dongu": {
+          "bas": 68.9936,
+          "uzunluk": 29.3905,
+          "vurus": 48
+        },
+        "ekYeri": 0.9711,
+        "sabitlik": 0.8084,
+        "puan": 0.7757,
+        "teaser": {
+          "bas": 60.4334,
+          "son": 64.7059
+        },
+        "id": "86459e17-9c2c-4384-8c91-2b9634ce8266",
+        "etiketler": "Punjabi bhangra, instrumental; dhol drives a steady danceable groove around 128 BPM, with tumbi answering a lead melody and chimta marking the pulse; algoza double flute carries a counter-melody over rich polyphonic ensemble; upbeat energetic, playful and heroic adventure video game background music, bright warm acoustic mix, constant energy, loop-friendly."
+      },
+      {
+        "dosya": "hayalet-avcilari-pk-2.mp3",
+        "sure": 119.941,
+        "tempo": 129.8,
+        "dongu": {
+          "bas": 53.4046,
+          "uzunluk": 29.5214,
+          "vurus": 64
+        },
+        "ekYeri": 0.9844,
+        "sabitlik": 0.7847,
+        "puan": 0.9186,
+        "teaser": {
+          "bas": 12.5844,
+          "son": 16.7872
+        },
+        "id": "79ff048c-2c17-4a01-9643-f015d517349f",
+        "etiketler": "Punjabi bhangra adventure video game background music, instrumental; bright warm acoustic mix, loop-friendly, constant energy; dhol leads with tumbi, algoza double flute and chimta weaving a playful and heroic lead melody, counter-melody and rich polyphonic rhythm section; driving danceable groove around 128 BPM."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -6.0,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.4028,
+    "ekOrani": 0.327,
+    "dosyalar": {
+      "dongu": "muzik/PK-dongu.ogg",
+      "giris": "muzik/PK-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 29.6214,
+    "tempo": 129.8,
+    "kredi": {
+      "kalan": 380.5
+    }
+  },
+  "IN": {
+    "gorev": "f748989988ccdc5de1a9ac3c8aa9c678",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-in-1.mp3",
+        "sure": 119.173,
+        "tempo": 127.71,
+        "dongu": {
+          "bas": 27.3912,
+          "uzunluk": 33.87508,
+          "vurus": 72
+        },
+        "ekYeri": 0.9826,
+        "sabitlik": 0.8204,
+        "puan": 0.936,
+        "teaser": {
+          "bas": 28.3364,
+          "son": 32.5857
+        },
+        "id": "9faed97a-9ebb-4ec1-b2d8-f7c6caaf3c3c",
+        "etiketler": "Rajasthani folk, upbeat dance pulse around 128 BPM; sitar carries the lead melody, bansuri flute threads a playful counter-melody, tabla and dholak lock a driving, steady rhythm section; instrumental adventure-game background music, playful and heroic, rich polyphony, bright warm acoustic mix, loop-friendly, constant energy through the full arrangement."
+      },
+      {
+        "dosya": "hayalet-avcilari-in-2.mp3",
+        "sure": 118.669,
+        "tempo": 130.15,
+        "dongu": {
+          "bas": 69.2368,
+          "uzunluk": 29.4794,
+          "vurus": 64
+        },
+        "ekYeri": 0.9751,
+        "sabitlik": 0.8223,
+        "puan": 0.9235,
+        "teaser": {
+          "bas": 23.5996,
+          "son": 27.756
+        },
+        "id": "5c67b48e-3b3b-4a78-9cac-9f65c318656b",
+        "etiketler": "Rajasthani folk, upbeat energetic driving dance groove around 128 BPM, sitar lead melody, bansuri flute counter-melody, tabla and dholak rhythm section, playful and heroic adventure video game scoring, bright warm acoustic mix, loop-friendly arrangement with constant energy and a seamless loop return."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -6.3,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3564,
+    "ekOrani": 0.494,
+    "dosyalar": {
+      "dongu": "muzik/IN-dongu.ogg",
+      "giris": "muzik/IN-giris.ogg"
+    },
+    "bas": 0.1175,
+    "son": 29.5969,
+    "tempo": 130.15,
+    "kredi": {
+      "kalan": 368.5
+    }
+  },
+  "BD": {
+    "gorev": "561b2fb6c2a38ef2f5fa1e049db44625",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-bd-1.mp3",
+        "sure": 118.789,
+        "tempo": 131.73,
+        "dongu": {
+          "bas": 25.1461,
+          "uzunluk": 30.9946,
+          "vurus": 68
+        },
+        "ekYeri": 0.9789,
+        "sabitlik": 0.8113,
+        "puan": 0.9142,
+        "teaser": {
+          "bas": 63.4136,
+          "son": 67.5236
+        },
+        "id": "07c23ad1-706a-4f7a-b56d-a9f47e1480e6",
+        "etiketler": "Folk music, Bengali new year fair in an upbeat adventure video game feel, playful and heroic; dotara lead melody, bansuri flute counter-melody, dhol and ektara rhythm section in a rich polyphonic ensemble; bright warm acoustic mix; instrumental; driving, steady danceable groove around 128 BPM, constant energy, seamless loop-friendly continuation."
+      },
+      {
+        "dosya": "hayalet-avcilari-bd-2.mp3",
+        "sure": 119.989,
+        "tempo": 132.35,
+        "dongu": {
+          "bas": 14.5359,
+          "uzunluk": 27.20669,
+          "vurus": 60
+        },
+        "ekYeri": 0.9718,
+        "sabitlik": 0.8466,
+        "puan": 0.9182,
+        "teaser": {
+          "bas": 46.2644,
+          "son": 50.3511
+        },
+        "id": "1688b48b-6051-45c5-8205-3e84dcaf7473",
+        "etiketler": "Bengali folk music, instrumental, around 128 BPM with a steady danceable driving groove; bright warm acoustic mix, rich polyphonic ensemble, playful and heroic, upbeat energetic feel for a Bengali new year fair; dotara and ektara drive beneath dhol, bansuri flute carries the lead melody over a nimble counter-melody, continuous energy and loop-friendly transitions."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -4.9,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.2867,
+    "ekOrani": 0.495,
+    "dosyalar": {
+      "dongu": "muzik/BD-dongu.ogg",
+      "giris": "muzik/BD-giris.ogg"
+    },
+    "bas": 0.1025,
+    "son": 27.30919,
+    "tempo": 132.35,
+    "kredi": {
+      "kalan": 356.5
+    }
+  },
+  "MM": {
+    "gorev": "b839d62ff831f8c2e4b7bd0e944268cd",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-mm-1.mp3",
+        "sure": 118.693,
+        "tempo": 129.51,
+        "dongu": {
+          "bas": 49.2109,
+          "uzunluk": 27.79281,
+          "vurus": 60
+        },
+        "ekYeri": 0.977,
+        "sabitlik": 0.7811,
+        "puan": 0.9153,
+        "teaser": {
+          "bas": 82.5404,
+          "son": 86.6968
+        },
+        "id": "07e38834-2f62-4cef-a609-07ace1890a30",
+        "etiketler": "Burmese saing waing, bright warm acoustic mix with crisp gong transients and rounded drum attacks, upbeat energetic adventure video game background music, steady danceable groove around 128 BPM, instrumental; pat waing drum circle, kyi waing gong circle, hne oboe lead melody, saung harp counter-melody, rich polyphonic ensemble with a driving rhythm section, playful and heroic, constant loop-friendly energy throughout."
+      },
+      {
+        "dosya": "hayalet-avcilari-mm-2.mp3",
+        "sure": 118.693,
+        "tempo": 130.26,
+        "dongu": {
+          "bas": 12.5827,
+          "uzunluk": 27.6934,
+          "vurus": 60
+        },
+        "ekYeri": 0.965,
+        "sabitlik": 0.7404,
+        "puan": 0.8933,
+        "teaser": {
+          "bas": 74.8286,
+          "son": 78.9618
+        },
+        "id": "bf432efa-2265-41b3-ace4-836fe5cd0f79",
+        "etiketler": "Burmese saing waing, pat waing drum circle drives the kyi waing gong circle beneath hne oboe and saung harp; lead melody trades with a counter-melody over a rhythm section, keeping constant upbeat energetic drive; instrumental, bright warm acoustic mix, playful and heroic, steady danceable groove around 128 BPM, loop-friendly adventure video game background music."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -3.6,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3564,
+    "ekOrani": 0.257,
+    "dosyalar": {
+      "dongu": "muzik/MM-dongu.ogg",
+      "giris": "muzik/MM-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 27.89281,
+    "tempo": 129.51,
+    "kredi": {
+      "kalan": 344.5
+    }
+  },
+  "TH": {
+    "gorev": "c9a16c001a856bf31f5bb230802ee4c3",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-th-1.mp3",
+        "sure": 119.629,
+        "tempo": 130.04,
+        "dongu": {
+          "bas": 61.1226,
+          "uzunluk": 29.52485,
+          "vurus": 64
+        },
+        "ekYeri": 0.9766,
+        "sabitlik": 0.8324,
+        "puan": 0.9278,
+        "teaser": {
+          "bas": 95.2581,
+          "son": 99.4145
+        },
+        "id": "541ddbef-696e-491d-9354-78207f12092c",
+        "etiketler": "Thai Isan folk music, instrumental adventure video game background music led by a nimble khaen bamboo mouth organ; phin lute answers with crisp runs as ranat xylophone and ching cymbals shape the rich polyphonic ensemble, with a lead melody, counter-melody and driving rhythm section; bright warm acoustic mix, playful and heroic, upbeat and energetic, loop-friendly at around 128 BPM with a steady danceable groove and constant energy."
+      },
+      {
+        "dosya": "hayalet-avcilari-th-2.mp3",
+        "sure": 120.421,
+        "tempo": 129.77,
+        "dongu": {
+          "bas": 26.4444,
+          "uzunluk": 29.63927,
+          "vurus": 64
+        },
+        "ekYeri": 0.9746,
+        "sabitlik": 0.8311,
+        "puan": 0.9278,
+        "teaser": {
+          "bas": 18.0946,
+          "son": 22.2509
+        },
+        "id": "6dbe9fed-6bda-4f4e-9074-b0be7dd9cd17",
+        "etiketler": "Thai Isan folk music, upbeat energetic adventure video game background music, playful and heroic at around 128 BPM with a steady danceable groove; khaen bamboo mouth organ leads, phin lute answers with a counter-melody, ranat xylophone and ching cymbals drive a rich polyphonic ensemble; instrumental, bright warm acoustic mix, constant energy, loop-friendly."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -3.9,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3564,
+    "ekOrani": 0.035,
+    "dosyalar": {
+      "dongu": "muzik/TH-dongu.ogg",
+      "giris": "muzik/TH-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 29.62485,
+    "tempo": 130.04,
+    "kredi": {
+      "kalan": 332.5
+    }
+  },
+  "MY": {
+    "gorev": "9ad81c79b82c59bda4303b0597151d9c",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-my-1.mp3",
+        "sure": 119.389,
+        "tempo": 130.43,
+        "dongu": {
+          "bas": 40.5197,
+          "uzunluk": 27.61254,
+          "vurus": 60
+        },
+        "ekYeri": 0.9726,
+        "sabitlik": 0.8114,
+        "puan": 0.9175,
+        "teaser": {
+          "bas": 94.7571,
+          "son": 98.8902
+        },
+        "id": "afcfe309-bde1-4fb6-a709-0e5534429bd2",
+        "etiketler": "Malay joget folk dance, instrumental; playful, heroic adventure-game background music; violin and accordion lead a bright melody over gendang drums and gong, with interlocking counter-melody and driving rhythm section; bright warm acoustic mix; upbeat, energetic driving groove around 128 BPM, constant forward motion, seamless loop-ready arrangement."
+      },
+      {
+        "dosya": "hayalet-avcilari-my-2.mp3",
+        "sure": 119.941,
+        "tempo": 131.61,
+        "dongu": {
+          "bas": 48.1792,
+          "uzunluk": 27.35179,
+          "vurus": 60
+        },
+        "ekYeri": 0.9781,
+        "sabitlik": 0.821,
+        "puan": 0.9173,
+        "teaser": {
+          "bas": 95.5464,
+          "son": 99.6331
+        },
+        "id": "4ec752d9-a1ee-4599-8037-60812c8d13cb",
+        "etiketler": "Malay joget folk dance, driving, danceable pulse around 128 BPM, playful and heroic adventure game music, instrumental; bright warm acoustic mix with a rich polyphonic ensemble and constant energy, loop-friendly, violin lead melody trading with accordion counter-melody over gendang drums and gong, steady rhythm section carries into the final phrase."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -4.1,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3331,
+    "ekOrani": 0.079,
+    "dosyalar": {
+      "dongu": "muzik/MY-dongu.ogg",
+      "giris": "muzik/MY-giris.ogg"
+    },
+    "bas": 0.1075,
+    "son": 27.72004,
+    "tempo": 130.43,
+    "kredi": {
+      "kalan": 320.5
+    }
+  },
+  "ID": {
+    "gorev": "37daaca23c1cf0ef5a168f98a53973c6",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-id-1.mp3",
+        "sure": 119.629,
+        "tempo": 131.74,
+        "dongu": {
+          "bas": 68.9832,
+          "uzunluk": 27.21198,
+          "vurus": 60
+        },
+        "ekYeri": 0.9684,
+        "sabitlik": 0.8117,
+        "puan": 0.909,
+        "teaser": {
+          "bas": 96.6438,
+          "son": 100.7073
+        },
+        "id": "b9a40689-68fd-4630-b80b-b417f43780e6",
+        "etiketler": "Balinese gong kebyar gamelan, steady danceable driving rhythm around 128 BPM, instrumental; interlocking Sundanese angklung and kendang drums drive a rich polyphonic ensemble, with a bright lead melody over nimble counter-melody and locked rhythm section; playful and heroic adventure-game pacing, unbroken loop-friendly flow, bright warm acoustic mix."
+      },
+      {
+        "dosya": "hayalet-avcilari-id-2.mp3",
+        "sure": 119.893,
+        "tempo": 132.03,
+        "dongu": {
+          "bas": 76.6946,
+          "uzunluk": 27.22479,
+          "vurus": 60
+        },
+        "ekYeri": 0.9643,
+        "sabitlik": 0.8382,
+        "puan": 0.9135,
+        "teaser": {
+          "bas": 69.4227,
+          "son": 73.5094
+        },
+        "id": "8142fdad-5fb9-4337-bcc4-bdeec11d6ca6",
+        "etiketler": "Balinese gong kebyar gamelan, around 128 BPM in a steady danceable drive; Sundanese angklung and kendang drums propel a rich polyphonic ensemble, with a playful, heroic lead melody answered by a nimble counter-melody over a driving rhythm section; instrumental, bright warm acoustic mix, constant energy and loop-friendly phrasing."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -5.5,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.2867,
+    "ekOrani": 0.219,
+    "dosyalar": {
+      "dongu": "muzik/ID-dongu.ogg",
+      "giris": "muzik/ID-giris.ogg"
+    },
+    "bas": 0.1025,
+    "son": 27.32729,
+    "tempo": 132.03,
+    "kredi": {
+      "kalan": 308.5
+    }
+  },
+  "PH": {
+    "gorev": "b27e6e00a12b8f9c1e6ffe317b0ac23f",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-ph-1.mp3",
+        "sure": 118.741,
+        "tempo": 132.31,
+        "dongu": {
+          "bas": 49.5685,
+          "uzunluk": 27.16725,
+          "vurus": 60
+        },
+        "ekYeri": 0.981,
+        "sabitlik": 0.8872,
+        "puan": 0.9351,
+        "teaser": {
+          "bas": 88.0475,
+          "son": 92.1807
+        },
+        "id": "1a71d065-ce23-41c3-83a2-7429d34034ae",
+        "etiketler": "Folk dance, Filipino tinikling; bright warm acoustic mix, loop-friendly arrangement ending on a resolved full-band phrase; instrumental; upbeat energetic 3/4 driving rhythm around 128 BPM, playful and heroic; adventure video game background music led by a clear melody, rich polyphonic rondalla of bandurria, laud and guitar, kulintang gongs, countermelody and steady rhythm section, constant energy."
+      },
+      {
+        "dosya": "hayalet-avcilari-ph-2.mp3",
+        "sure": 118.693,
+        "tempo": 134.64,
+        "dongu": {
+          "bas": 28.7191,
+          "uzunluk": 28.55054,
+          "vurus": 64
+        },
+        "ekYeri": 0.9731,
+        "sabitlik": 0.8472,
+        "puan": 0.9075,
+        "teaser": {
+          "bas": 49.6781,
+          "son": 53.6952
+        },
+        "id": "009c0be3-ab3d-414a-90fa-b51cdf138641",
+        "etiketler": "Filipino tinikling folk dance, instrumental adventure-video-game background music; bright warm acoustic mix, loop-friendly with a seamless ending; driving 3/4 groove around 128 BPM, upbeat, playful and heroic; rich polyphonic rondalla of bandurria, laud and guitar over kulintang gongs, lead melody and counter-melody weaving over a steady rhythm section."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -4.4,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3332,
+    "ekOrani": 0.634,
+    "dosyalar": {
+      "dongu": "muzik/PH-dongu.ogg",
+      "giris": "muzik/PH-giris.ogg"
+    },
+    "bas": 0.1025,
+    "son": 27.26975,
+    "tempo": 132.31,
+    "kredi": {
+      "kalan": 296.5
+    }
+  },
+  "VN": {
+    "gorev": "596350b709459cb50ea129563866e399",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-vn-1.mp3",
+        "sure": 118.741,
+        "tempo": 131.53,
+        "dongu": {
+          "bas": 46.3275,
+          "uzunluk": 29.18254,
+          "vurus": 64
+        },
+        "ekYeri": 0.9799,
+        "sabitlik": 0.7436,
+        "puan": 0.8954,
+        "teaser": {
+          "bas": 77.7769,
+          "son": 81.8636
+        },
+        "id": "a9dddee0-cd37-4a9f-b46a-706177c40c39",
+        "etiketler": "Vietnamese folk festival music, instrumental, bright warm acoustic mix; dan tranh zither and dan bau monochord weave lead and counter-melody, sao bamboo flute curls through rich polyphonic ensemble over trong drums and a driving rhythm section; playful and heroic, upbeat energetic adventure video game background music, steady danceable groove around 128 BPM, constant loop-friendly drive to the end."
+      },
+      {
+        "dosya": "hayalet-avcilari-vn-2.mp3",
+        "sure": 119.893,
+        "tempo": 129.92,
+        "dongu": {
+          "bas": 33.9104,
+          "uzunluk": 31.4306,
+          "vurus": 68
+        },
+        "ekYeri": 0.9878,
+        "sabitlik": 0.7729,
+        "puan": 0.9162,
+        "teaser": {
+          "bas": 81.9439,
+          "son": 86.1002
+        },
+        "id": "b9d604bb-f111-479d-93bf-203fe63713a6",
+        "etiketler": "Vietnamese folk festival music, instrumental adventure video game score, bright warm acoustic mix, upbeat energetic and playful and heroic, steady danceable groove around 128 BPM; dan tranh zither, dan bau monochord, sao bamboo flute and trong drums interlock in rich polyphonic ensemble, with a lead melody, nimble counter-melody and driving rhythm section, keeping energy even through a seamless loop-ready finish."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -6.3,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.2867,
+    "ekOrani": 0.389,
+    "dosyalar": {
+      "dongu": "muzik/VN-dongu.ogg",
+      "giris": "muzik/VN-giris.ogg"
+    },
+    "bas": 0.1125,
+    "son": 29.29504,
+    "tempo": 131.53,
+    "kredi": {
+      "kalan": 284.5
+    }
   }
 }

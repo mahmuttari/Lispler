@@ -44,7 +44,7 @@ const OLCU = { TR: '2/4', UA: '2/4', PL: '2/4', DE: '2/4', FR: '3/4', IT: '6/8',
 const YASAK = /relig|hymn|chant|devot|pray|church|temple|mosque|shrine|anthem|march|militar|sword|dagger|\bwar\b/i;
 // Müziği üretilmiş ülkeler (Görev 5: TR, JP; Görev 7–13 kıta kıta ekler)
 const MUZIKLI_ULKELER = ['TR', 'JP', 'UA', 'PL', 'DE', 'GB', 'FR', 'IT', 'ES', 'MA', 'DZ', 'CI', 'GH', 'NG', 'SD', 'EG', 'CD', 'AO', 'ZA', 'MZ', 'MG', 'TZ', 'UG', 'KE', 'ET', 'YE', 'SA', 'PS', 'IQ', 'IR', 'UZ', 'AF',
-  'PK', 'IN', 'BD', 'MM', 'TH', 'MY', 'ID', 'PH', 'VN', 'CN', 'KR', 'RU'];
+  'PK', 'IN', 'BD', 'MM', 'TH', 'MY', 'ID', 'PH', 'VN', 'CN', 'KR', 'RU', 'CA', 'US', 'MX', 'CO', 'PE', 'BR', 'AR'];
 
 // ---------- ses çözümlemesi (ffmpeg ile, tek kanal 48 kHz) ----------
 function coz(dosya) {
@@ -137,6 +137,7 @@ try {
   // --- 2) Oyun verisi ---
   const veri = await p.evaluate(() => (window.ULKE_MUZIKLERI && typeof window.ULKE_MUZIKLERI === 'object' ? JSON.parse(JSON.stringify(window.ULKE_MUZIKLERI)) : null));
   sina('ULKE_MUZIKLERI yüklü; anahtarlar ülke kodu', () => { assert.ok(veri); for (const k of Object.keys(veri)) assert.ok(kodlar.includes(k), k); });
+  sina('51 ülkenin hepsinin müziği var', () => { assert.equal(MUZIKLI_ULKELER.length, 51); assert.equal(Object.keys(veri || {}).length, 51); });
 
   // --- 3) Varlıklar ---
   if (MUZIKLI_ULKELER.length) {

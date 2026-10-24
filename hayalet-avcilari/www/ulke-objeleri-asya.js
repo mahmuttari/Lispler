@@ -1891,4 +1891,5 @@ window.ULKE_OBJELERI = window.ULKE_OBJELERI || {};
     yuzenPazar, tukTuk, petronasKuleleri, rafflesia, komodoEjderleri, pirincTeraslari, cikolataTepeleri, jeepney,
     haLongKorfezi, hoiAnFenerleri, pandalar, ejderDansi, hanokEvleri, onggiKupleri, matruskalar, izbaEvi,
   });
+  window.ULKE_OBJE_YARDIMCI = Object.assign(window.ULKE_OBJE_YARDIMCI || {}, { sevimliHayalet, ustteYer, kayik });
 })();

@@ -165,7 +165,7 @@
       P("#1e2a1f", "#2f4231", "#e8b84a", "#a07a28", "#3a8f5a", "#d24a6a"),
       K("vueltiao", "panco", "cizgili", ["#8a6a4a", "#f4f1ea", "#2a2a2a"])),
     U("PE", "LA", t("Peru"), t("Chullolu hayalet"), O("machuPicchu", t("Machu Picchu terasları")), O("lamalar", t("lamalar")),
-      P("#262a20", "#3a4032", "#8f8a78", "#5c584a", "#c8402a", "#e8c35a"),
+      { ...P("#262a20", "#3a4032", "#8f8a78", "#5c584a", "#c8402a", "#e8c35a"), tas: "inka" },
       K("chullo", "panco", "geometrik", ["#c8302a", "#f2c94c", "#2a6a8a"])),
     U("BR", "LA", t("Brezilya"), t("Frevocu hayalet"), O("amazonKuslari", t("Amazon tukanları ve araları")), O("sekerSomunu", t("Şeker Somunu Dağı")),
       P("#16291b", "#26402b", "#e0a050", "#9a6a2a", "#1f8f5a", "#f2c94c"),

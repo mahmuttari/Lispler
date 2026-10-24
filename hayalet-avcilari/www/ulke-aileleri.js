@@ -9,7 +9,8 @@
      vurgu1, vurgu2)
    - zemin(ctx, boyut, palet): Dünya Turu'nda ızgaranın yerine döşenen soluk desen; tuval önceden zemin rengiyle dolu,
      desen kenarlarda kesintisiz (dunya-turu.js turZeminCiz)
-   Eksik ressam yedek ressama, eksik zemin bugünkü ızgaraya düşer. Ressamlar Görev 5 ve 7–13'te eklenir (Görev 8: KP, SH; Görev 9: SV; Görev 11: GA, GDA).
+   Eksik ressam yedek ressama, eksik zemin bugünkü ızgaraya düşer. Ressamlar Görev 5 ve 7–13'te eklenir (Görev 8: KP, SH; Görev 9: SV; Görev 11: GA, GDA;
+   Görev 13: KA, LA — LA'da palet.tas "inka" Peru'nun çokgen taş örgüsünü seçer).
    Math.random yok: rastgelelik ressama verilen tohumlu r()'den. Dinî simge, yazı ve bayrak yok.
    engel-temalari.js'ten sonra, ulkeler.js'ten önce yüklenir.
    ============================================================ */
@@ -926,6 +927,237 @@
     ctx.stroke();
   }
 
+  // ================= KA — KUZEY AMERİKA =================
+  // Sivri kütük ucu (yukarıdan): ışıklı ve gölgeli yamaçlı koni, yonga çizgileri, tepe noktası
+  function sivriUc(ctx, x, y, s, renk) {
+    elips(ctx, x + 0.8, y + 1.2, s, s, "rgba(0,0,0,0.35)");
+    const g = ctx.createRadialGradient(x - s * 0.35, y - s * 0.35, 0.5, x, y, s);
+    g.addColorStop(0, acik(renk, 0.45)); g.addColorStop(0.6, renk); g.addColorStop(1, koyu(renk, 0.35));
+    elips(ctx, x, y, s, s, g);
+    ctx.strokeStyle = koyu(renk, 0.3); ctx.lineWidth = 0.5; ctx.beginPath();
+    for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) { ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * s * 0.9, y + Math.sin(a) * s * 0.9); }
+    ctx.stroke();
+    elips(ctx, x - s * 0.1, y - s * 0.1, s * 0.16, s * 0.16, acik(renk, 0.6));
+  }
+  // Kesik kütük (yukarıdan): kabuk halkası, açık öz, yıllık halkalar
+  function kesikKutuk(ctx, x, y, s, renk) {
+    elips(ctx, x + 1, y + 1.4, s, s * 0.9, "rgba(0,0,0,0.3)");
+    elips(ctx, x, y, s, s * 0.9, koyu(renk, 0.35)); elips(ctx, x, y, s * 0.8, s * 0.72, "#d9b47a");
+    ctx.strokeStyle = "#a8844a"; ctx.lineWidth = 0.5; ctx.beginPath();
+    for (const k of [0.25, 0.45, 0.62]) ctx.ellipse(x, y, s * 0.8 * k, s * 0.72 * k, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  // Duvar: sivri kütük palisat — ön yüzde kabuklu dikey kütükler ve iki sıra yatay bağ kütüğü; üst yüzde çam iğneli
+  // orman tabanı ve kesik kütükler, kenar boyunca sivri kütük uçları, kütük başlarında iri uçlar
+  function palisat(ctx, w, h, r, p, B) {
+    if (B.yon) return palisatSuru(ctx, w, h, r, p, B);
+    const d = B.derinlik || 0, ahsap = p.duvar, orman = "#4f6a34";
+    doldur(ctx, B, "rgba(0,0,0,0.3)", 2, d + 1);                         // gölge
+    cizgi(ctx, B, koyu(ahsap, 0.6), 3, 0, d);                            // ön yüz: dikey kütükler
+    doldur(ctx, B, koyu(ahsap, 0.3), 0, d);
+    kirp(ctx, B, () => {
+      for (let x = 0, i = 0; x < w + 6; x += 6, i++) {
+        const gr = ctx.createLinearGradient(x, 0, x + 6, 0); gr.addColorStop(0, acik(ahsap, 0.15)); gr.addColorStop(0.55, ahsap); gr.addColorStop(1, koyu(ahsap, 0.35));
+        ctx.fillStyle = gr; ctx.fillRect(x + 0.3, 0, 5.4, h + d);
+        ctx.strokeStyle = koyu(ahsap, 0.3); ctx.lineWidth = 0.5; ctx.beginPath(); for (let y = (i * 7) % 9; y < h + d; y += 9) { ctx.moveTo(x + 1.5, y); ctx.lineTo(x + 2.2, y + 4); } ctx.stroke();
+      }
+      const alt = B[0].y + B[0].h;
+      for (const f of [0.3, 0.68]) { const y = alt + d * f; ctx.fillStyle = koyu(ahsap, 0.15); ctx.fillRect(0, y - 1.6, w, 3.2); ctx.fillStyle = acik(ahsap, 0.2); ctx.fillRect(0, y - 1.6, w, 0.9); }
+    }, 0, d);
+    cizgi(ctx, B, koyu(orman, 0.5), 3);                                   // üst yüz: orman tabanı
+    doldur(ctx, B, orman);
+    kirp(ctx, B, () => {
+      for (let i = 0; i < w * h / 180; i++) {                                                              // çam iğneleri
+        const x = r() * w, y = r() * h, a = r() * Math.PI;
+        ctx.strokeStyle = r() < 0.5 ? "#8a6a3a" : "#6a8a3a"; ctx.lineWidth = 0.6; ctx.beginPath();
+        ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * 3, y + Math.sin(a) * 3); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a + 0.5) * 3, y + Math.sin(a + 0.5) * 3); ctx.stroke();
+      }
+      for (let i = 0; i < w * h / 600; i++) cimTutami(ctx, r() * w, r() * h, 2.2 + r() * 1.5, karistir("#6f8a44", "#000000", r() * 0.3));
+    });
+    for (const k of icNoktalar(B, w, h, Math.max(1, Math.round(w * h / 4500)), 12, 26, r)) kesikKutuk(ctx, k.x, k.y, 5 + r() * 2, ahsap);
+    for (const k of kenarNoktalari(B, 6, -3)) sivriUc(ctx, k.x, k.y, 2.6, ahsap);
+    for (const q of B) if (q.t === "d") sivriUc(ctx, q.x, q.y, q.r - 1, ahsap);
+    return [];
+  }
+  // Harita sınırı: çam iğneli orman şeridi, haritaya bakan kenara paralel sivri kütük sırası; mazgal başlarında iri uçlar
+  function palisatSuru(ctx, w, h, r, p, B) {
+    const ahsap = p.duvar, orman = "#4f6a34", yatay = B.yon === "ust" || B.yon === "alt";
+    cizgi(ctx, B, koyu(orman, 0.6), 3);
+    doldur(ctx, B, orman);
+    kirp(ctx, B, () => {
+      for (let i = 0; i < w * h / 160; i++) { const x = r() * w, y = r() * h, a = r() * Math.PI; ctx.strokeStyle = r() < 0.5 ? "#8a6a3a" : "#6a8a3a"; ctx.lineWidth = 0.6; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * 3, y + Math.sin(a) * 3); ctx.stroke(); }
+    });
+    const c = B.yon === "ust" ? h - 13 : B.yon === "alt" ? 13 : B.yon === "sol" ? w - 13 : 13;
+    for (let a = 4; a < (yatay ? w : h); a += 5.5) sivriUc(ctx, yatay ? a : c, yatay ? c : a, 2.6, ahsap);
+    for (const q of B) if (q.t === "d") sivriUc(ctx, q.x, q.y, q.r - 1, ahsap);
+    return [];
+  }
+  // Su: kütük iskeleli göl kıyısı — çimenli kıyı ve çakıl şeridi; üst kıyıdan suya uzanan tahta iskeleler, yan ve alt
+  // kıyıda sazlar
+  function kutukIskele(ctx, w, h, r, p, B) {
+    const ahsap = p.duvar;
+    suTabani(ctx, w, h, r, B, () => {
+      doldur(ctx, B, "#3f5a2a", 0, 0, 9.5);
+      doldur(ctx, B, "#5f7a3a", 0, 0, 8);
+      kirp(ctx, B, () => { for (let i = 0; i < (w + h) / 2; i++) cimTutami(ctx, r() * w, r() * h, 2 + r() * 1.5, karistir("#7f9a4a", "#000000", r() * 0.3)); }, 0, 0, 8);
+      for (const k of kenarNoktalari(B, 4, 2)) elips(ctx, k.x, k.y, 1.6 + r(), 1.2, ["#9a958a", "#7a756a", "#b5ae9e"][Math.floor(r() * 3)]);   // çakıl
+    }, "#2f4a24");
+    for (const k of kenarNoktalari(B, 46, 6).filter((k) => k.ny < -0.7).slice(0, 2)) {                    // iskeleler
+      ctx.save(); ctx.translate(k.x, k.y); ctx.rotate(Math.atan2(-k.ny, -k.nx) - Math.PI / 2);
+      elips(ctx, 1.5, 9, 4.5, 8, "rgba(0,0,0,0.25)");
+      for (let t = -2; t < 16; t += 2.4) { ctx.fillStyle = (Math.round(t) % 2) ? ahsap : acik(ahsap, 0.12); ctx.fillRect(-4, t, 8, 2); ctx.fillStyle = koyu(ahsap, 0.35); ctx.fillRect(-4, t + 2, 8, 0.4); }
+      for (const [px, py] of [[-4.2, 15], [4.2, 15], [-4.2, 6], [4.2, 6]]) elips(ctx, px, py, 1.3, 1.3, koyu(ahsap, 0.4));
+      ctx.restore();
+    }
+    for (const k of kenarNoktalari(B, 9, 5.5)) if (k.ny > -0.15 && r() < 0.5) saz(ctx, k.x, k.y, r, B);
+    return [];
+  }
+  // Zemin: çimen ve çam iğneleri — ot tutamları, V biçimli iğne çiftleri ve küçük kozalaklar (96'da kendini tekrarlar)
+  function cimVeIgne(ctx, n, p) {
+    const her = sarmal(n);
+    for (const [x, y] of [[10, 14], [46, 8], [80, 26], [28, 46], [64, 54], [90, 70], [12, 80], [48, 88]]) her(x, y, (a, b) => window.ENGEL.cimTutami(ctx, a, b, 3.4, p.desen));
+    ctx.strokeStyle = p.desen; ctx.lineWidth = 1; ctx.lineCap = "round";
+    for (const [x, y, a] of [[30, 22, 0.3], [70, 10, 1.4], [8, 50, 2.2], [52, 34, 0.9], [84, 48, 2.8], [36, 70, 1.8], [72, 84, 0.5], [20, 94, 2.5]]) her(x, y, (u, v) => {
+      ctx.beginPath(); ctx.moveTo(u, v); ctx.lineTo(u + Math.cos(a) * 5, v + Math.sin(a) * 5); ctx.moveTo(u, v); ctx.lineTo(u + Math.cos(a + 0.45) * 5, v + Math.sin(a + 0.45) * 5); ctx.stroke();
+    });
+    ctx.fillStyle = p.desen;
+    for (const [x, y] of [[58, 72], [18, 30], [88, 92]]) her(x, y, (u, v) => { ctx.beginPath(); ctx.ellipse(u, v, 1.6, 2.6, 0.4, 0, Math.PI * 2); ctx.fill(); });
+  }
+
+  // ================= LA — LATİN AMERİKA =================
+  const KIREMIT_LA = "#b8562e";
+  // İnka çokgen taşı: köşeleri oynatılmış, sıraları kaydırılmış ızgaradan iri, koyu derzli bloklar
+  function inkaTasi(ctx, x0, y0, w, h, renk, r, boy = 11) {
+    const sut = Math.ceil(w / boy) + 2, sat = Math.ceil(h / (boy * 0.8)) + 2, N = [];
+    for (let j = 0; j <= sat; j++) { N.push([]); for (let i = 0; i <= sut; i++) N[j].push([x0 + (i - 1) * boy + (r() - 0.5) * boy * 0.5 + (j % 2) * boy * 0.3, y0 + (j - 1) * boy * 0.8 + (r() - 0.5) * boy * 0.35]); }
+    ctx.lineJoin = "round";
+    for (let j = 0; j < sat; j++) for (let i = 0; i < sut; i++) {
+      const a = N[j][i], b = N[j][i + 1], c = N[j + 1][i + 1], d = N[j + 1][i];
+      ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.lineTo(d[0], d[1]); ctx.closePath();
+      ctx.fillStyle = karistir(renk, r() < 0.5 ? "#ffffff" : "#000000", r() * 0.12); ctx.fill();
+      ctx.strokeStyle = koyu(renk, 0.45); ctx.lineWidth = 1.1; ctx.stroke();
+      elips(ctx, (a[0] + b[0] + c[0] + d[0]) / 4 - 1, (a[1] + b[1] + c[1] + d[1]) / 4 - 1, boy * 0.2, boy * 0.12, "rgba(255,255,255,0.12)");
+    }
+  }
+  // Sıva dokusu: ince benekler ve yer yer dökülmüş sıvanın altından görünen tuğla
+  function sivaDoku(ctx, w, h, renk, r) {
+    for (let i = 0; i < w * h / 70; i++) elips(ctx, r() * w, r() * h, 0.6 + r() * 0.8, 0.5, r() < 0.5 ? koyu(renk, 0.08) : acik(renk, 0.1));
+    for (let i = 0; i < w * h / 4000; i++) {
+      const x = r() * w, y = r() * h;
+      ctx.fillStyle = acik(renk, 0.15); ctx.fillRect(x - 5, y - 3, 10, 6);
+      ctx.strokeStyle = "#a8603a"; ctx.lineWidth = 0.6; ctx.beginPath(); ctx.moveTo(x - 4, y); ctx.lineTo(x + 4, y); ctx.moveTo(x, y - 2.5); ctx.lineTo(x, y); ctx.moveTo(x - 2, y); ctx.lineTo(x - 2, y + 2.5); ctx.stroke();
+    }
+  }
+  // Çini kubbe (yukarıdan, azulejo): ışıklı kubbe, dama karo dilimleri, küçük fener başı
+  function ciniKubbe(ctx, cx, cy, R, renk) {
+    elips(ctx, cx + 1.4, cy + 1.8, R, R * 0.92, "rgba(0,0,0,0.25)");
+    elips(ctx, cx, cy, R, R, "#f1e8d6");
+    for (let i = 0; i < 8; i++) { ctx.fillStyle = i % 2 ? renk : "#f6efe0"; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R * 0.82, (i * Math.PI) / 4, ((i + 1) * Math.PI) / 4); ctx.closePath(); ctx.fill(); }
+    const g = ctx.createRadialGradient(cx - R * 0.3, cy - R * 0.3, 1, cx, cy, R * 0.85); g.addColorStop(0, "rgba(255,255,255,0.45)"); g.addColorStop(1, "rgba(0,0,0,0.2)");
+    elips(ctx, cx, cy, R * 0.82, R * 0.82, g);
+    elips(ctx, cx, cy, R * 0.22, R * 0.22, "#f6efe0"); elips(ctx, cx, cy, R * 0.12, R * 0.12, "#d4a73a");
+  }
+  // Duvar: renkli sıvalı ön yüz, boyalı kuşak ve kepenkli kemerli pencereler (Peru'da İnka çokgen taşı ve yamuk
+  // nişler); üst yüz sıvalı düz dam, kenarında kiremit, mazgallar kiremit başlıklı; kuleler çini kubbeli (Peru'da saman
+  // çatılı taş kule)
+  function latinDuvari(ctx, w, h, r, p, B) {
+    if (B.yon) return latinSuru(ctx, w, h, r, p, B);
+    const d = B.derinlik || 0, govde = B[0], inka = p.tas === "inka";
+    doldur(ctx, B, "rgba(0,0,0,0.3)", 2, d + 1);                         // gölge
+    cizgi(ctx, B, koyu(p.duvarKoyu, 0.45), 3, 0, d);                     // ön yüz
+    doldur(ctx, B, p.duvarKoyu, 0, d);
+    kirp(ctx, B, () => {
+      if (inka) inkaTasi(ctx, 0, 0, w, h + d, p.duvarKoyu, r, 10);
+      else sivaDoku(ctx, w, h + d, p.duvarKoyu, r);
+    }, 0, d);
+    if (govde.t === "k") {
+      const altY = govde.y + govde.h, n = Math.max(1, Math.floor(govde.w / 34));
+      kirp(ctx, B, () => {
+        if (!inka) { ctx.fillStyle = p.vurgu1; ctx.fillRect(0, altY, w, 2.4); ctx.fillStyle = koyu(p.duvarKoyu, 0.25); ctx.fillRect(0, altY + d - 3.5, w, 3.5); }   // kuşak ve süpürgelik
+        for (let i = 0; i < n; i++) {
+          const cx = govde.x + govde.w * (i + 0.5) / n, py = altY + 4.5, ph = Math.max(5, d - 10);
+          if (inka) {                                                                                       // yamuk niş
+            ctx.fillStyle = koyu(p.duvarKoyu, 0.55); ctx.beginPath(); ctx.moveTo(cx - 3, py); ctx.lineTo(cx + 3, py); ctx.lineTo(cx + 4.5, py + ph); ctx.lineTo(cx - 4.5, py + ph); ctx.closePath(); ctx.fill();
+          } else {                                                                                          // kepenkli kemerli pencere
+            for (const sx of [-1, 1]) { ctx.fillStyle = p.vurgu2; ctx.fillRect(cx + sx * 4.5 - (sx < 0 ? 3 : 0), py, 3, ph); }
+            ctx.fillStyle = "#2a2a3a"; yuvarlak(ctx, cx - 4, py, 8, ph, 3.5); ctx.fill();
+            ctx.strokeStyle = "#3a3a40"; ctx.lineWidth = 0.6; ctx.beginPath(); for (let xx = cx - 2.5; xx < cx + 4; xx += 2) { ctx.moveTo(xx, py + 2); ctx.lineTo(xx, py + ph); } ctx.stroke();
+            ctx.fillStyle = "rgba(200, 225, 255, 0.3)"; ctx.fillRect(cx - 3, py + 2, 1.4, ph - 3);
+          }
+        }
+      }, 0, d);
+    }
+    cizgi(ctx, B, koyu(p.duvar, 0.5), 3);                                 // üst yüz
+    doldur(ctx, B, p.duvar);
+    kirp(ctx, B, () => {
+      if (inka) inkaTasi(ctx, 0, 0, w, h, p.duvar, r, 13);
+      else {
+        sivaDoku(ctx, w, h, p.duvar, r);
+        if (govde.t === "k") {
+          ctx.fillStyle = "rgba(0,0,0,0.12)"; yuvarlak(ctx, govde.x + 8, govde.y + 7, govde.w - 16, govde.h - 14, govde.rr * 0.6); ctx.fill();
+          ctx.strokeStyle = KIREMIT_LA; ctx.lineWidth = 3; ctx.setLineDash([3, 1.2]); yuvarlak(ctx, govde.x + 3.5, govde.y + 3, govde.w - 7, govde.h - 6, govde.rr * 0.7); ctx.stroke(); ctx.setLineDash([]);   // kenar kiremidi
+        }
+      }
+    });
+    for (const q of B) if (q.t === "k" && q !== govde) {                  // mazgallar
+      if (inka) { ctx.fillStyle = acik(p.duvar, 0.15); yuvarlak(ctx, q.x, q.y, q.w, q.h - 3, 2); ctx.fill(); ctx.strokeStyle = koyu(p.duvar, 0.45); ctx.lineWidth = 1; ctx.stroke(); }
+      else {
+        ctx.fillStyle = acik(p.duvar, 0.2); yuvarlak(ctx, q.x, q.y, q.w, q.h - 3, q.rr); ctx.fill();
+        ctx.fillStyle = KIREMIT_LA; yuvarlak(ctx, q.x - 0.5, q.y, q.w + 1, 3.2, 1.5); ctx.fill();
+        ctx.strokeStyle = koyu(KIREMIT_LA, 0.3); ctx.lineWidth = 0.5; ctx.beginPath(); for (let x = q.x + 2; x < q.x + q.w; x += 2.5) { ctx.moveTo(x, q.y); ctx.lineTo(x, q.y + 3.2); } ctx.stroke();
+      }
+    }
+    for (const t of B.kuleler || []) {
+      if (inka) { for (let a = 0; a < Math.PI * 2; a += Math.PI / 5) elips(ctx, t.x + Math.cos(a) * (t.r - 2.5), t.y + Math.sin(a) * (t.r - 2.5), 3.4, 3, acik(p.duvar, 0.2)); samanCati(ctx, t.x, t.y, t.r * 0.8); }
+      else ciniKubbe(ctx, t.x, t.y, t.r * 0.92, p.vurgu1);
+    }
+    return [];
+  }
+  // Harita sınırı: renkli sıvalı sur (Peru'da İnka taşı); haritaya bakan kenarda kiremit şerit, mazgal başlarında
+  // kiremit kubbecikler
+  function latinSuru(ctx, w, h, r, p, B) {
+    const inka = p.tas === "inka";
+    cizgi(ctx, B, koyu(p.duvar, 0.6), 3);
+    doldur(ctx, B, p.duvar);
+    kirp(ctx, B, () => {
+      if (inka) inkaTasi(ctx, 0, 0, w, h, p.duvar, r, 12);
+      else {
+        sivaDoku(ctx, w, h, p.duvar, r);
+        ctx.fillStyle = KIREMIT_LA;
+        if (B.yon === "ust") ctx.fillRect(0, h - 13, w, 3); else if (B.yon === "alt") ctx.fillRect(0, 10, w, 3);
+        else if (B.yon === "sol") ctx.fillRect(w - 13, 0, 3, h); else ctx.fillRect(10, 0, 3, h);
+      }
+    });
+    for (const q of B) if (q.t === "d") {
+      if (inka) { elips(ctx, q.x, q.y, q.r - 1.5, q.r - 1.5, acik(p.duvar, 0.18)); ctx.strokeStyle = koyu(p.duvar, 0.45); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(q.x, q.y, q.r - 1.5, 0, Math.PI * 2); ctx.stroke(); }
+      else { elips(ctx, q.x + 0.8, q.y + 1, q.r - 1.5, q.r - 1.5, "rgba(0,0,0,0.3)"); elips(ctx, q.x, q.y, q.r - 1.5, q.r - 1.5, KIREMIT_LA); elips(ctx, q.x - 1.2, q.y - 1.2, q.r * 0.35, q.r * 0.3, acik(KIREMIT_LA, 0.35)); }
+    }
+    return [];
+  }
+  // Su: renkli karo kenarlı kanal — krem derz şeridi üstünde sırayla üç renk karo, ortalarında küçük çiçek
+  function karoKanal(ctx, w, h, r, p, B) {
+    const renkler = [p.vurgu1, "#2f5fa0", p.vurgu2];
+    suTabani(ctx, w, h, r, B, () => {
+      doldur(ctx, B, koyu(p.duvar, 0.35), 0, 0, 9.5);
+      doldur(ctx, B, "#f1e8d6", 0, 0, 8);
+      kenarNoktalari(B, 6.4, 4.2).forEach((k, i) => {
+        ctx.save(); ctx.translate(k.x, k.y); ctx.rotate(Math.atan2(k.ny, k.nx));
+        ctx.fillStyle = renkler[i % 3]; ctx.fillRect(-2.6, -2.6, 5.2, 5.2);
+        ctx.fillStyle = "#f6efe0"; ctx.beginPath(); ctx.moveTo(0, -1.6); ctx.lineTo(1.6, 0); ctx.lineTo(0, 1.6); ctx.lineTo(-1.6, 0); ctx.closePath(); ctx.fill();
+        ctx.restore();
+      });
+    }, koyu(p.duvar, 0.5));
+    return [];
+  }
+  // Zemin: pişmiş toprak karo — 24 px kareler (96'yı tam böler), köşelerde küçük çini kakmalar
+  function pismisKaro(ctx, n, p) {
+    const c = n / 4;
+    ctx.strokeStyle = p.desen; ctx.lineWidth = 1.3;
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { ctx.beginPath(); window.ENGEL.kutuYolu(ctx, i * c + 1.2, j * c + 1.2, c - 2.4, c - 2.4, 2); ctx.stroke(); }
+    ctx.fillStyle = p.desen;
+    for (let i = 0; i <= 4; i++) for (let j = 0; j <= 4; j++) { const x = i * c, y = j * c; ctx.beginPath(); ctx.moveTo(x, y - 3.4); ctx.lineTo(x + 3.4, y); ctx.lineTo(x, y + 3.4); ctx.lineTo(x - 3.4, y); ctx.closePath(); ctx.fill(); }
+  }
+
   window.ULKE_AILELERI = {
     K: { bicim: { duvar: "kale" }, palet: { mazgal: "kare" }, duvar: avrupaKalesi, su: tasRihtim, zemin: arnavutKaldirimi },
     KS: { bicim: { duvar: "kale" }, duvar: kervansarayDuvari, su: ciniliHavuz, zemin: geometrikCini },
@@ -935,8 +1167,8 @@
     GA: { bicim: { duvar: "kale" }, duvar: guneyAsyaDuvari, su: basamakliHavuz, zemin: kumtasiDoseme },
     GDA: { bicim: { duvar: "kutuk" }, duvar: bambuCit, su: lotusKiyisi, zemin: hasirOrgu },
     DA: { bicim: { duvar: "kale" }, duvar: catiliDuvar, su: koiGoleti, zemin: tasDoseme },
-    KA: { bicim: { duvar: "kutuk" } },
-    LA: { bicim: { duvar: "kale" } },
+    KA: { bicim: { duvar: "kutuk" }, duvar: palisat, su: kutukIskele, zemin: cimVeIgne },
+    LA: { bicim: { duvar: "kale" }, duvar: latinDuvari, su: karoKanal, zemin: pismisKaro },
   };
   window.ULKE_AILE_YARDIMCI = { sivriKemer, baklava, kiremitler, orguCiz, tuglaMi, kerpicDoku, samanCati, hurma, zikzak, tasObegi, kangura, kosk, bambu, lotus };
 })();

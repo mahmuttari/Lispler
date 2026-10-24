@@ -2680,5 +2680,432 @@
     "kredi": {
       "kalan": 248.5
     }
+  },
+  "CA": {
+    "gorev": "7a901babcf0b88d60f11913cc758c43b",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-ca-1.mp3",
+        "sure": 118.741,
+        "tempo": 131.09,
+        "dongu": {
+          "bas": 42.6014,
+          "uzunluk": 29.23767,
+          "vurus": 64
+        },
+        "ekYeri": 0.9875,
+        "sabitlik": 0.8558,
+        "puan": 0.935,
+        "teaser": {
+          "bas": 62.2575,
+          "son": 66.3675
+        },
+        "id": "1d7d99b7-e7f7-47ab-8646-85d6ae84af12",
+        "etiketler": "Quebecois fiddle reel, upbeat energetic, playful and heroic, steady danceable groove around 128 BPM for adventure video game background music; bright warm acoustic mix, loop-friendly seamless repetition; instrumental; fiddle leads with a counter-melody in a rich polyphonic ensemble, accordion, foot tapping, spoons and guitar driving constant energy, no breakdown or fade-out."
+      },
+      {
+        "dosya": "hayalet-avcilari-ca-2.mp3",
+        "sure": 119.221,
+        "tempo": 130.82,
+        "dongu": {
+          "bas": 36.7577,
+          "uzunluk": 29.40985,
+          "vurus": 64
+        },
+        "ekYeri": 0.9857,
+        "sabitlik": 0.878,
+        "puan": 0.9422,
+        "teaser": {
+          "bas": 67.0546,
+          "son": 71.1878
+        },
+        "id": "9940afae-a3b3-4658-b422-072ed4a3238e",
+        "etiketler": "Quebecois fiddle reel, instrumental; upbeat energetic, playful and heroic, around 128 BPM; bright warm acoustic mix, loop-friendly; fiddle lead melody, interweaving accordion counter-melody, foot tapping, spoons and guitar shape a rich polyphonic ensemble and driving rhythm section, sustaining constant adventure video game background music energy from start to finish."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -5.3,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3332,
+    "ekOrani": 0.246,
+    "dosyalar": {
+      "dongu": "muzik/CA-dongu.ogg",
+      "giris": "muzik/CA-giris.ogg"
+    },
+    "bas": 0.105,
+    "son": 29.51485,
+    "tempo": 130.82,
+    "kredi": {
+      "kalan": 236.5
+    }
+  },
+  "US": {
+    "gorev": "64310ce68a371ba60532bb6149af3254",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-us-1.mp3",
+        "sure": 119.701,
+        "tempo": 131.42,
+        "dongu": {
+          "bas": 34.0198,
+          "uzunluk": 27.38867,
+          "vurus": 60
+        },
+        "ekYeri": 0.9799,
+        "sabitlik": 0.8261,
+        "puan": 0.9207,
+        "teaser": {
+          "bas": 19.4113,
+          "son": 23.5444
+        },
+        "id": "88dbb7d7-fe1d-4be3-b56c-b6ad3c60308d",
+        "etiketler": "American bluegrass, instrumental; playful and heroic adventure game score, steady danceable groove around 128 BPM with constant upbeat energy; banjo, fiddle, mandolin, guitar and double bass form a rich polyphonic ensemble, banjo lead melody answered by fiddle counter-melody; bright warm acoustic mix, loop-friendly and seamless."
+      },
+      {
+        "dosya": "hayalet-avcilari-us-2.mp3",
+        "sure": 118.813,
+        "tempo": 130.48,
+        "dongu": {
+          "bas": 57.6775,
+          "uzunluk": 31.40919,
+          "vurus": 68
+        },
+        "ekYeri": 0.9838,
+        "sabitlik": 0.8873,
+        "puan": 0.9456,
+        "teaser": {
+          "bas": 83.5802,
+          "son": 87.6901
+        },
+        "id": "05e80111-167a-47fa-a0c8-1b7ccb5cce39",
+        "etiketler": "American bluegrass, bright warm acoustic mix for adventure video game background music, instrumental, steady danceable groove around 128 BPM, upbeat and energetic, playful and heroic; banjo leads a rich polyphonic ensemble with a lead melody and counter-melody, fiddle and mandolin weaving against guitar and double bass, unbroken rhythm, loop-friendly arrangement."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -5.9,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3099,
+    "ekOrani": 0.401,
+    "dosyalar": {
+      "dongu": "muzik/US-dongu.ogg",
+      "giris": "muzik/US-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 31.50919,
+    "tempo": 130.48,
+    "kredi": {
+      "kalan": 224.5
+    }
+  },
+  "MX": {
+    "gorev": "638c26dc15904f93eea96111e5025b28",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-mx-1.mp3",
+        "sure": 118.693,
+        "tempo": 136.51,
+        "dongu": {
+          "bas": 46.4262,
+          "uzunluk": 31.65513,
+          "vurus": 72
+        },
+        "ekYeri": 0.9897,
+        "sabitlik": 0.7946,
+        "puan": 0.8907,
+        "teaser": {
+          "bas": 98.6647,
+          "son": 102.5889
+        },
+        "id": "35a34aea-6a09-440a-b2a8-dbab544b4d50",
+        "etiketler": "Mariachi son jalisciense, instrumental; steady 6/8 dance groove around 128 BPM, upbeat energetic, playful and heroic; trumpets, violins, vihuela, guitarron and guitar drive a rich polyphonic lead melody with counter-melody and rhythm section; bright warm acoustic mix, adventure video game score feel, constant-energy arrangement with a seamless loop point and no fade-out."
+      },
+      {
+        "dosya": "hayalet-avcilari-mx-2.mp3",
+        "sure": 119.629,
+        "tempo": 132.9,
+        "dongu": {
+          "bas": 29.2279,
+          "uzunluk": 30.76223,
+          "vurus": 68
+        },
+        "ekYeri": 0.9896,
+        "sabitlik": 0.8048,
+        "puan": 0.9117,
+        "teaser": {
+          "bas": 92.0689,
+          "son": 96.1324
+        },
+        "id": "2eb622bd-3ca1-49f9-90a1-dca26995603d",
+        "etiketler": "Mariachi son jalisciense, trumpets lead the melody over interlocking violins, vihuela, guitarron and guitar drive a steady 6/8 dance groove; rich polyphonic counter-melody, playful and heroic adventure-game motion at around 128 BPM, bright warm acoustic mix, loop-friendly, constant energy throughout, instrumental."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -2.9,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.2635,
+    "ekOrani": 0.027,
+    "dosyalar": {
+      "dongu": "muzik/MX-dongu.ogg",
+      "giris": "muzik/MX-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 30.86223,
+    "tempo": 132.9,
+    "kredi": {
+      "kalan": 212.5
+    }
+  },
+  "CO": {
+    "gorev": "f1ca5b7ef87f8bb9e9c6f5e6246bb775",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-co-1.mp3",
+        "sure": 118.549,
+        "tempo": 134.03,
+        "dongu": {
+          "bas": 45.6878,
+          "uzunluk": 32.21919,
+          "vurus": 72
+        },
+        "ekYeri": 0.9818,
+        "sabitlik": 0.8269,
+        "puan": 0.9088,
+        "teaser": {
+          "bas": 41.6614,
+          "son": 45.7016
+        },
+        "id": "7553cfa4-8ad0-49e5-a588-e9c5bb7fc3f5",
+        "etiketler": "Colombian cumbia, steady danceable groove at around 128 BPM, upbeat energetic adventure video game background music, playful and heroic; gaita flutes lead over tambora, llamador drum, maracas and accordion, with a clear lead melody and interwoven counter-melody; rich polyphonic ensemble, bright warm acoustic mix, loop-friendly with constant energy, instrumental."
+      },
+      {
+        "dosya": "hayalet-avcilari-co-2.mp3",
+        "sure": 120.013,
+        "tempo": 132.8,
+        "dongu": {
+          "bas": 35.6444,
+          "uzunluk": 27.11254,
+          "vurus": 60
+        },
+        "ekYeri": 0.955,
+        "sabitlik": 0.7994,
+        "puan": 0.8933,
+        "teaser": {
+          "bas": 83.0762,
+          "son": 87.1629
+        },
+        "id": "cb9e1993-4d22-449f-b923-d46bfe2c239f",
+        "etiketler": "Colombian cumbia, led by a bright, nimble gaita flute melody; tambora, llamador drum, maracas, and accordion drive the rhythm, with a playful, heroic counter-melody weaving through a rich polyphonic ensemble. Upbeat energetic adventure video game background music, steady danceable groove around 128 BPM; instrumental, bright warm acoustic mix, loop-friendly, constant energy."
+      }
+    ],
+    "lufs": -17.9,
+    "tepe": -5.1,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.2402,
+    "ekOrani": 0.365,
+    "dosyalar": {
+      "dongu": "muzik/CO-dongu.ogg",
+      "giris": "muzik/CO-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 32.31919,
+    "tempo": 134.03,
+    "kredi": {
+      "kalan": 200.5
+    }
+  },
+  "PE": {
+    "gorev": "a3605258dbfa8eba82d3733951bfc299",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-pe-1.mp3",
+        "sure": 119.221,
+        "tempo": 95.33,
+        "dongu": {
+          "bas": 23.5766,
+          "uzunluk": 30.27017,
+          "vurus": 48
+        },
+        "ekYeri": 0.9778,
+        "sabitlik": 0.811,
+        "puan": 0.7689,
+        "teaser": {
+          "bas": 14.1196,
+          "son": 17.9276
+        },
+        "id": "3470af7d-11e5-483e-90a0-f7aa60e6ec75",
+        "etiketler": "Peruvian Andean huayno, bright warm acoustic mix with loop-friendly continuity and a steady pulse throughout; playful, heroic adventure-game feel, upbeat driving 2/4 around 128 BPM; instrumental; quena flute carrying the lead melody over charango and zampona panpipes, with a counter-melody and bombo drum rhythm section, never breaking."
+      },
+      {
+        "dosya": "hayalet-avcilari-pe-2.mp3",
+        "sure": 119.581,
+        "tempo": 91.23,
+        "dongu": {
+          "bas": 32.8234,
+          "uzunluk": 31.63092,
+          "vurus": 48
+        },
+        "ekYeri": 0.9846,
+        "sabitlik": 0.8627,
+        "puan": 0.7672,
+        "teaser": {
+          "bas": 80.8214,
+          "son": 84.7456
+        },
+        "id": "9463fe32-c823-4454-b298-9324040da25e",
+        "etiketler": "Peruvian Andean huayno, instrumental adventure-game score; bright warm acoustic mix, loop-friendly and constant-energy; around 128 BPM, driving 2/4 dance groove; quena flute leads, charango strums, zampona panpipes counter the melody, bombo drum anchors rich polyphony, playful and heroic."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -6.1,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.008,
+    "ekOrani": 0.316,
+    "dosyalar": {
+      "dongu": "muzik/PE-dongu.ogg",
+      "giris": "muzik/PE-giris.ogg"
+    },
+    "bas": 0.115,
+    "son": 30.38517,
+    "tempo": 95.33,
+    "kredi": {
+      "kalan": 188.5
+    }
+  },
+  "BR": {
+    "gorev": "9c3f18e5ed4bb5fb9570dc5faecb7852",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-br-1.mp3",
+        "sure": 119.101,
+        "tempo": 132.68,
+        "dongu": {
+          "bas": 14.76,
+          "uzunluk": 28.92852,
+          "vurus": 64
+        },
+        "ekYeri": 0.981,
+        "sabitlik": 0.8193,
+        "puan": 0.9129,
+        "teaser": {
+          "bas": 75.8248,
+          "son": 79.8883
+        },
+        "id": "5b5a1eb4-0396-4d57-a23c-525d8be42f77",
+        "etiketler": "Brazilian frevo, trumpets, trombones and saxophones weave a rich polyphonic ensemble of lead melody, counter-melody and rhythm section over surdo and caixa snare; bright warm acoustic mix, loop-friendly with a seamless return, steady danceable 2/4 drive around 128 BPM, upbeat energetic, playful and heroic, adventure video game background music, constant energy, instrumental."
+      },
+      {
+        "dosya": "hayalet-avcilari-br-2.mp3",
+        "sure": 118.549,
+        "tempo": 136.18,
+        "dongu": {
+          "bas": 46.6257,
+          "uzunluk": 33.6064,
+          "vurus": 76
+        },
+        "ekYeri": 0.9776,
+        "sabitlik": 0.8385,
+        "puan": 0.8994,
+        "teaser": {
+          "bas": 96.0086,
+          "son": 99.956
+        },
+        "id": "5fbd22f6-4362-4998-94e1-645aecc84cc2",
+        "etiketler": "Brazilian frevo, bright warm acoustic mix with a loop-friendly arrangement sustaining constant energy; driving 2/4 groove around 128 BPM; trumpets, trombones and saxophones carry a rich polyphonic ensemble’s lead melody and counter-melody over surdo and caixa snare, upbeat energetic, playful and heroic adventure video game background music, instrumental."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -5.0,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.2635,
+    "ekOrani": 0.179,
+    "dosyalar": {
+      "dongu": "muzik/BR-dongu.ogg",
+      "giris": "muzik/BR-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 29.02852,
+    "tempo": 132.68,
+    "kredi": {
+      "kalan": 176.5
+    }
+  },
+  "AR": {
+    "gorev": "18d1f1dede4a7fd35e6c82916189f8ae",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-ar-1.mp3",
+        "sure": 121.549,
+        "tempo": 129.92,
+        "dongu": {
+          "bas": 46.2289,
+          "uzunluk": 27.68488,
+          "vurus": 60
+        },
+        "ekYeri": 0.9655,
+        "sabitlik": 0.7075,
+        "puan": 0.8854,
+        "teaser": {
+          "bas": 39.7721,
+          "son": 43.9053
+        },
+        "id": "699da65a-12fe-42fd-ab24-f666f5d8dd6e",
+        "etiketler": "Argentine milonga, the lively member of the tango family; around 128 BPM, driving 2/4 dance groove, playful and heroic; bright warm acoustic mix with constant energy; bandoneon, violin, piano and double bass weave a rich polyphonic ensemble, lead melody over counter-melody; instrumental, loop-friendly ending."
+      },
+      {
+        "dosya": "hayalet-avcilari-ar-2.mp3",
+        "sure": 119.221,
+        "tempo": 131.39,
+        "dongu": {
+          "bas": 40.31,
+          "uzunluk": 29.27529,
+          "vurus": 64
+        },
+        "ekYeri": 0.9722,
+        "sabitlik": 0.5664,
+        "puan": 0.8391,
+        "teaser": {
+          "bas": 85.9406,
+          "son": 90.0505
+        },
+        "id": "a2b724be-3aa8-4b46-adf6-4fbf33599fe6",
+        "etiketler": "Argentine milonga, the lively member of the tango family, bright warm acoustic mix; bandoneon, violin, piano and double bass carry a playful and heroic lead melody with a counter-melody and steady rhythm section; instrumental, driving 2/4 dance groove around 128 BPM, rich polyphonic ensemble, constant energy, loop-friendly."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -3.0,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3332,
+    "ekOrani": 0.074,
+    "dosyalar": {
+      "dongu": "muzik/AR-dongu.ogg",
+      "giris": "muzik/AR-giris.ogg"
+    },
+    "bas": 0.11,
+    "son": 27.79488,
+    "tempo": 129.92,
+    "kredi": {
+      "kalan": 164.5
+    }
   }
 }

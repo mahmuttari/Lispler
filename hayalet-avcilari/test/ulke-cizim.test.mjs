@@ -44,9 +44,9 @@ const KOSTUM_TURLERI = {
 };
 
 // Ressamı çizilmiş aileler ve ülkeler (Görev 5: KS, DA ve TR, JP; Görev 7–13 kıta kıta ekler)
-const CIZILEN_AILELER = ['KS', 'DA', 'K', 'KP', 'SH', 'SV', 'GA', 'GDA'];
+const CIZILEN_AILELER = ['KS', 'DA', 'K', 'KP', 'SH', 'SV', 'GA', 'GDA', 'KA', 'LA'];
 const CIZILEN_ULKELER = ['TR', 'JP', 'UA', 'PL', 'DE', 'GB', 'FR', 'IT', 'ES', 'MA', 'DZ', 'CI', 'GH', 'NG', 'SD', 'EG', 'CD', 'AO', 'ZA', 'MZ', 'MG', 'TZ', 'UG', 'KE', 'ET',
-  'YE', 'SA', 'PS', 'IQ', 'IR', 'UZ', 'AF', 'PK', 'IN', 'BD', 'MM', 'TH', 'MY', 'ID', 'PH', 'VN', 'CN', 'KR', 'RU'];
+  'YE', 'SA', 'PS', 'IQ', 'IR', 'UZ', 'AF', 'PK', 'IN', 'BD', 'MM', 'TH', 'MY', 'ID', 'PH', 'VN', 'CN', 'KR', 'RU', 'CA', 'US', 'MX', 'CO', 'PE', 'BR', 'AR'];
 
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
 const hatalar = [];
@@ -240,6 +240,11 @@ try {
     return eksik;
   }, [CIZILEN_AILELER, CIZILEN_ULKELER]);
   sina(`ressamlar tanımlı (${CIZILEN_AILELER.length} aile, ${CIZILEN_ULKELER.length} ülke)`, () => { assert.deepEqual(ressamlar, []); });
+  const tumu = await p.evaluate(() => ({ ulke: ULKELER.map((u) => u.kod), aile: [...new Set(ULKELER.map((u) => u.aile))] }));
+  sina('bütün ülkeler ve aileler çizildi (51 ülke, 10 aile)', () => {
+    assert.equal(CIZILEN_ULKELER.length, 51); assert.equal(CIZILEN_AILELER.length, 10);
+    assert.deepEqual([...CIZILEN_ULKELER].sort(), [...tumu.ulke].sort()); assert.deepEqual([...CIZILEN_AILELER].sort(), [...tumu.aile].sort());
+  });
 
   const kapsama = await p.evaluate(([aileler, ulkeler]) => {
     const BOYUTLAR = [[80, 80], [180, 90], [90, 180], [180, 180]];
@@ -334,6 +339,8 @@ try {
     assert.ok(tr.mavi > 0.4 && tr.mavi > tr.kirmizi * 3, `TR mavi ${tr.mavi.toFixed(2)}, kırmızı ${tr.kirmizi.toFixed(2)}`);
   });
   const kAilesi = await p.evaluate(() => ['RU', 'DE'].map((kod) => ({ kod, mazgal: ulkeEngelSeti(kod).palet.mazgal })));
+  const laTas = await p.evaluate(() => ['PE', 'MX'].map((kod) => ({ kod, tas: ulkeEngelSeti(kod).palet.tas || null })));
+  sina('LA ailesinde Peru İnka çokgen taşı, Meksika sıva', () => { assert.deepEqual(laTas, [{ kod: 'PE', tas: 'inka' }, { kod: 'MX', tas: null }]); });
   sina('K ailesinde Rusya kırlangıç kuyruğu mazgallı, Almanya kare', () => {
     assert.deepEqual(kAilesi, [{ kod: 'RU', mazgal: 'kirlangic' }, { kod: 'DE', mazgal: 'kare' }]);
   });

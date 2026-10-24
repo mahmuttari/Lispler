@@ -38,3 +38,8 @@
 
 # istek 2026-10-24T06:41:51Z: son denetim (salt okuma; kullanıcı "herşey tamam mı?" diye sordu)
 # (yapıldı 2026-10-24, koşu 40071224823: production 3.13.0 (45) completed; paketler 36, 41–45; 7 dilde icon 1, featureGraphic 1, phoneScreenshots 6) durum
+
+# istek 2026-10-24T18:51:35Z: 3.14.0 (47) üretime yükle ve incelemeye gönder; 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) gönderilmedi); mağaza metni (7 dil, "🌍 DÜNYA TURU" bölümü, sürüm notu) ve görseller (7 dil, 7 telefon karesi) (kullanıcının açık onayıyla: "Kalan işleri de yap"); AAB: hayalet-android koşusu 40122349542 (bu dal, commit 20fbc66, versionCode 47, Poyraz Workshop yükleme anahtarı)
+yukle yayinla uygula
+magaza uygula
+gorsel uygula

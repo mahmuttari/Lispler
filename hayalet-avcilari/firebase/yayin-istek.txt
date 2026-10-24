@@ -11,3 +11,6 @@
 # (yapıldı 2026-10-24, koşu 40066772782: okuma 200; 6 fark, hepsi ekleme ya da gevşetme: maxPlayers ≤5→≤6, rooms .indexOn lastSeen, players av, friendCodes, users, presence; yalnız yayında olan yok) durum
 # istek 2026-10-24T05:35:08Z: database.rules.json'u yayınla (kullanıcının açık onayıyla: "tam yetkilisin sen yap", "yapabildiklerini yap", rolü verdi); kurallar.test 28/28
 # (yapıldı 2026-10-24, koşu 40066828973: {"status":"ok"}; geri okunan kurallar depodakiyle AYNI) yayinla
+
+# istek 2026-10-24T06:41:51Z: son denetim (salt okuma; kullanıcı "herşey tamam mı?" diye sordu)
+durum

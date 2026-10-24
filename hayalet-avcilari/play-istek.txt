@@ -35,3 +35,6 @@
 
 # istek 2026-10-24T06:24:44Z: Veri güvenliği formunu API ile yaz — Kişiler ve Diğer işlemler eklendi, diğer yanıtlar magaza/aciklamalar.md ile aynı (kullanıcının açık onayıyla: "api ile oluyor ise devam et", "sen yap her zaman"); CSV magaza/veri-guvenligi.csv
 # (yapıldı 2026-10-24, koşu 40070106334: CSV kabul edildi — 11 veri türü, Kişiler ve Diğer işlemler dahil; hesap bölümü OAuth + silme adresleri) veriguvenligi uygula
+
+# istek 2026-10-24T06:41:51Z: son denetim (salt okuma; kullanıcı "herşey tamam mı?" diye sordu)
+durum

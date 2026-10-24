@@ -84,7 +84,7 @@ Hayalet Avcıları'nda hayaletler her yerden geliyor! Avcını seç, labirent gi
 
 Hassas konum, telefon rehberi (cihazdaki kişiler), fotoğraf, mesaj, finans, sağlık, tarama geçmişi: **toplanmıyor**.
 
-**API ile yazım (24 Ekim 2026'dan beri):** form [`veri-guvenligi.csv`](veri-guvenligi.csv) ile yazılır
+**API ile yazım (24 Ekim 2026'dan beri; ilk yazım koşu 40070106334):** form [`veri-guvenligi.csv`](veri-guvenligi.csv) ile yazılır
 (`play-istek.txt` › `veriguvenligi uygula`; `android/play.mjs` önce seçili türleri ve yanıtları yazdırır). CSV, Google'ın
 şablonundan bu tabloya göre üretildi; her türde "geçici işleme: hayır". Şablonda olmayan hesap bölümü: hesap oluşturma
 OAuth (Google ile giriş), hesap silme ve veri silme adresi Hesap silme sayfası. Yazım formun tamamını değiştirir; Play eksik

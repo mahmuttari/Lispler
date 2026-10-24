@@ -274,8 +274,9 @@ Yayın sırası:
    GitHub Pages'te yayında.
 3. **Uygulama 3.13.0 (45):** CI derledi (koşu 40040731793); 24 Ekim 2026'da kullanıcının onayıyla Play'e gönderildi
    (koşu 40063254710).
-4. **Play Console › Veri güvenliği:** "Kişiler" ve "Diğer işlemler" satırları ([`magaza/aciklamalar.md`](magaza/aciklamalar.md)
-   › Veri güvenliği formu).
+4. **Play Console › Veri güvenliği:** "Kişiler" ve "Diğer işlemler" satırları 24 Ekim 2026'da API ile yazıldı
+   (`play-istek.txt` › `veriguvenligi uygula`, koşu 40070106334; [`magaza/veri-guvenligi.csv`](magaza/veri-guvenligi.csv),
+   yanıtlar [`magaza/aciklamalar.md`](magaza/aciklamalar.md) › Veri güvenliği formu ile aynı).
 
 ## 3.13.0: engeller
 

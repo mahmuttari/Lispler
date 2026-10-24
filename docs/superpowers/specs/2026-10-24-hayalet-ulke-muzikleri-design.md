@@ -96,9 +96,14 @@ parçadan döngü ve teaser dosyası, ölçüm kaydı.
    - `B[t] = A[s + t]` (t < L − x − g);
    - çapraz geçiş: `B[t] = A[s + t]·cos φ + A[s − (L − t)]·sin φ`, φ 0'dan π/2'ye (L − x − g ≤ t < L − g);
    - koruma: `B[t] = A[s − (L − t)]` (L − g ≤ t < L). Döngünün sonu, başlangıcın hemen öncesindeki özgün sesle biter.
-   - **Dosya:** `A[s − P … s) + B + A[s … s + Q)`, P = Q = 0,1 sn. Böylece çözücü baştan birkaç örnek eklese ya da
-     kırpsa da (P, Q ve g'den küçük her kayma) ek yeri kesintisiz kalır. Oyun `loopStart = P`, `loopEnd = P + L`
-     kullanır.
+   - **Dosya:** `A[s − P … s) + B + A[s … s + Q)`, Q = 0,1 sn, P = 0,1 sn + k × 2,5 ms (k = 0…7). Böylece çözücü
+     baştan birkaç örnek eklese ya da kırpsa da (P, Q ve g'den küçük her kayma) ek yeri kesintisiz kalır. Oyun
+     `loopStart = P`, `loopEnd = P + L` kullanır (kayıttaki `bas` ve `son`).
+   - **Çerçeve evresi taraması:** kaynakta kesintisiz ek yerinin iki ucu Opus'un 20 ms'lik çerçevelerine farklı
+     evrede düşer. Ek yeri vuruş atağının 5 ms önünde, ön-yankı bölgesindedir; iki uç farklı hatayla kurulur ve
+     çözülmüş dosyada sıçrama oluşabilir (Görev 7'de Polonya'da 0,174, sınır 0,085). Bu yüzden döngü k = 0'dan
+     başlayarak kodlanıp çözülür; ek yeri sıçramasının döngü içi farkların 99. yüzdeliğine oranı ölçülür. İlk
+     ≤ 0,5 olan ya da en küçük oranlı aday yazılır, oran kayıtta `ekOrani` olarak durur. İçerik ve L değişmez.
 8. **Teaser:** aynı parçadan, vuruşla başlayan ve süresi 4 sn'ye en yakın tam vuruşlu pencere (128 vuruş/dk'da 4/4'te
    8 vuruş = 2 ölçü; ilk 10 sn ve son 15 sn dışında), en yüksek akı ve ses düzeyi toplamıyla seçilir; 0,02 sn'de açılır, sonuna 1,2 sn'lik sönüş eklenir
    (toplam ~5 sn; sınır 3–8 sn).

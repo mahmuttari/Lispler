@@ -29,6 +29,10 @@ SR_COZ, SR = 22050, 48000           # çözümleme ve çıktı örnekleme hızı
 HOP, PENCERE = 512, 2048            # çözümleme karesi
 ON_PAY = SON_PAY = 0.1              # sn: çözücünün eklediği ya da kırptığı örneklere karşı pay (ek spec §5.7)
 GECIS, KORUMA = 0.25, 0.06          # sn: ek yerindeki çapraz geçiş ve koruma
+# Ek yerinin Opus çerçevesine (20 ms) göre evresi: ön pay 0,1 sn + k × 2,5 ms (k < 8) taranır. Kaynakta kesintisiz ek yeri
+# kodlamada iki ucu farklı çerçeve evresine düştüğü için farklı hatayla kurulur (vuruş atağının önündeki ön-yankı
+# bölgesi); çözülmüş dosyada sıçraması en küçük evre seçilir. İçerik ve döngü uzunluğu değişmez.
+EVRE_ADIM, EVRE_SAYI, EVRE_YETER = 120, 8, 0.5
 DONGU_EN_AZ, DONGU_EN_COK = 27.0, 34.0
 GIRIS_DISI, SON_DISI = 10.0, 15.0   # parçanın girişi ve bitişi döngüye ve teaser'a girmez
 TEASER_HEDEF, TEASER_SONUS, TEASER_ACILIS = 4.0, 1.2, 0.02
@@ -276,9 +280,10 @@ def parca_olc(dosya):
 
 
 # ---------------------------------------------------------------- döngü ve teaser kurma
-def dongu_kur(A, a0, n):
+def dongu_kur(A, a0, n, P=None):
     """Ön pay + döngü (sonu çapraz geçiş ve korumayla başlangıcın öncesine bağlanır) + son pay (ek spec §5.7)."""
-    P, Q = int(round(ON_PAY * SR)), int(round(SON_PAY * SR))
+    P = int(round(ON_PAY * SR)) if P is None else P
+    Q = int(round(SON_PAY * SR))
     X, G = int(round(GECIS * SR)), int(round(KORUMA * SR))
     if a0 - P - X - G < 0 or a0 + n + Q > len(A):
         raise ValueError('döngü parçanın sınırına çok yakın')
@@ -383,15 +388,38 @@ def duzey_ayarla(dongu, P, n, giris):
     return x, g, {'lufs': round(lufs, 2), 'tepe': round(tepe, 2), 'sinirlayici': bool(sinirli), 'deneme': deneme, 'tuttu': tuttu}
 
 
+def ek_orani(y, P, n):
+    """Çözülmüş döngüde ek yeri sıçramasının döngü içi örnekten örneğe farkların 99. yüzdeliğine oranı (≤ 1: kesintisiz)."""
+    m = y.mean(1)
+    p99 = float(np.percentile(np.abs(np.diff(m[P:P + n])), 99))
+    return abs(float(m[P + n - 1] - m[P])) / (p99 + 1e-12)
+
+
 def islenmis_yaz(A, olcum, hedef_dongu, hedef_giris):
-    """Seçilen ölçümden döngü ve teaser dosyalarını yazar; ses düzeyi ve tepe bilgisini döndürür."""
-    n = olcum['dongu']['ornek']
-    dongu, P = dongu_kur(A, olcum['dongu']['basOrnek'], n)
+    """Seçilen ölçümden döngü ve teaser dosyalarını yazar; ses düzeyi, tepe ve ek yeri bilgisini döndürür. Döngü her
+    çerçeve evresi adayında kodlanıp çözülür; ek yeri oranı en küçük (ya da ilk EVRE_YETER altı) aday yazılır."""
+    n, a0 = olcum['dongu']['ornek'], olcum['dongu']['basOrnek']
     giris = teaser_kur(A, olcum['teaser']['bas'], olcum['teaser']['son'])
-    dongu, giris, bilgi = duzey_ayarla(dongu, P, n, giris)
-    kodla(dongu, hedef_dongu)
-    kodla(giris, hedef_giris)
-    return {**bilgi, 'girisSure': round(len(giris) / SR, 4), 'P': P}
+    gecici = tempfile.mkdtemp(prefix='muzik-evre-')
+    try:
+        en = None
+        for k in range(EVRE_SAYI):
+            dongu, P = dongu_kur(A, a0, n, int(round(ON_PAY * SR)) + k * EVRE_ADIM)
+            x, g, bilgi = duzey_ayarla(dongu, P, n, giris)
+            yol = os.path.join(gecici, f'd{k}.ogg')
+            kodla(x, yol)
+            oran = ek_orani(coz(yol, SR, 2), P, n)
+            if en is None or oran < en['oran']:
+                en = {'oran': oran, 'yol': yol, 'g': g, 'bilgi': bilgi, 'P': P}
+            if oran <= EVRE_YETER:
+                break
+        shutil.copyfile(en['yol'], hedef_dongu)
+        kodla(en['g'], hedef_giris)
+    finally:
+        shutil.rmtree(gecici, ignore_errors=True)
+    if en['oran'] > 1:
+        print(f'uyarı: ek yeri {EVRE_SAYI} evrede de kesintisiz olmadı (oran {en["oran"]:.2f})', file=sys.stderr)
+    return {**en['bilgi'], 'girisSure': round(len(en['g']) / SR, 4), 'P': en['P'], 'ekOrani': round(en['oran'], 3)}
 
 
 def isle(kod, gorev, parcalar, kok=KOK, kredi=None, sec=None, dinleme=None):
@@ -522,7 +550,9 @@ def sina():
         veri = json.loads(r.stdout or '{}').get('XX', {})
         turler = all(isinstance(veri.get(a), str) for a in ('dongu', 'giris')) and all(isinstance(veri.get(a), (int, float)) for a in ('bas', 'son', 'girisSure', 'tempo'))
         s_('ulke-muzikleri.js alanları doğru türde', turler, veri)
-        s_('bas = 0,1 ve son − bas = L', veri.get('bas') == 0.1 and abs(veri.get('son', 0) - veri.get('bas', 0) - d['uzunluk']) <= 0.0001, veri)
+        s_('bas 0,1–0,12 sn (Opus çerçeve evresi taraması) ve son − bas = L',
+           0.1 <= veri.get('bas', 0) <= 0.12 and abs(veri.get('son', 0) - veri.get('bas', 0) - d['uzunluk']) <= 0.0001, veri)
+        s_('kayıtta çözülmüş ek yeri oranı ≤ 1', isinstance(k.get('ekOrani'), float) and k['ekOrani'] <= 1, k.get('ekOrani'))
         s_('kayıt kredi ve görevi tutar', k.get('kredi', {}).get('kalan') == 100.0 and k.get('gorev') == 'sina-gorevi', k.get('kredi'))
     except Exception as e:  # noqa: BLE001 — sınama akışı yarıda kalırsa raporla
         sonuclar.append(f'✗ akış yarıda kaldı: {type(e).__name__}: {e}')

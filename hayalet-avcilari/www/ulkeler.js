@@ -36,7 +36,7 @@
       P("#2a2236", "#3e3350", "#d8cbb0", "#9c8f74", "#8e6cc2", "#5a5f66"),
       K("bere", "ceket", "cizgili", ["#1f2f5a", "#f4f1ea", "#c8302a"], ["fular"])),
     U("IT", "K", t("İtalya"), t("Maskeli karnaval hayaleti"), O("kolezyum", t("Kolezyum")), O("gondolIskelesi", t("gondollu kanal iskelesi")),
-      P("#33241c", "#4a3628", "#c97b55", "#8a4f33", "#2f6d8f", "#e8d8b8"),
+      { ...P("#33241c", "#4a3628", "#c97b55", "#8a4f33", "#2f6d8f", "#e8d8b8"), mazgal: "kirlangic" },
       K("ucKose", "panco", "duz", ["#2a2a3a", "#c8a24a", "#f4f1ea"], ["maske"])),
     U("ES", "K", t("İspanya"), t("Flamenkocu hayalet"), O("yelDegirmenleri", t("La Mancha yel değirmenleri")), O("aslanliCesme", t("Elhamra'nın Aslanlı Çeşmesi")),
       P("#3a2c18", "#523f24", "#d6a35c", "#94693a", "#f4efe6", "#3a6ea5"),

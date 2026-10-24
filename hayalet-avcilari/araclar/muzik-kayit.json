@@ -118,5 +118,432 @@
     "kredi": {
       "kalan": 752.5
     }
+  },
+  "UA": {
+    "gorev": "436883d2f2d62a32491c4fc93efb8bee",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-ua-1.mp3",
+        "sure": 119.989,
+        "tempo": 130.19,
+        "dongu": {
+          "bas": 38.8456,
+          "uzunluk": 27.64573,
+          "vurus": 60
+        },
+        "ekYeri": 0.9826,
+        "sabitlik": 0.8916,
+        "puan": 0.9478,
+        "teaser": {
+          "bas": 47.6057,
+          "son": 51.7621
+        },
+        "id": "b5feae72-a85c-4fd6-84c5-6f2002c1f5cf",
+        "etiketler": "Ukrainian hopak folk dance, 2/4 at around 128 BPM, cheerful and bright with a warm acoustic mix; bandura strums the rhythm, tsymbaly hammered dulcimer drives a sparkling counter-melody, sopilka wooden flute and fiddle weave the lead melody; rich polyphonic ensemble, constant energy, seamless loop-friendly arrangement for adventure video game background music, instrumental."
+      },
+      {
+        "dosya": "hayalet-avcilari-ua-2.mp3",
+        "sure": 118.813,
+        "tempo": 132.92,
+        "dongu": {
+          "bas": 23.81,
+          "uzunluk": 29.11083,
+          "vurus": 64
+        },
+        "ekYeri": 0.9836,
+        "sabitlik": 0.8524,
+        "puan": 0.9229,
+        "teaser": {
+          "bas": 87.1246,
+          "son": 91.1416
+        },
+        "id": "758da956-f848-4e7b-bb29-d384470de816",
+        "etiketler": "Folk dance, Ukrainian hopak; instrumental adventure video game background music; bright warm acoustic mix, cheerful energy throughout a steady 2/4 dance groove at around 128 BPM; rich polyphonic ensemble with a clear lead melody and interwoven counter-melody over bandura, tsymbaly hammered dulcimer, sopilka wooden flute and fiddle, buoyant rhythm section, constant drive, seamless loop-friendly ending."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -5.6,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3564,
+    "ekOrani": 0.438,
+    "dosyalar": {
+      "dongu": "muzik/UA-dongu.ogg",
+      "giris": "muzik/UA-giris.ogg"
+    },
+    "bas": 0.115,
+    "son": 27.76073,
+    "tempo": 130.19,
+    "kredi": {
+      "kalan": 740.5
+    }
+  },
+  "PL": {
+    "gorev": "8b440e625d13141618913d3680af9c7f",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-pl-1.mp3",
+        "sure": 118.741,
+        "tempo": 134.07,
+        "dongu": {
+          "bas": 28.8821,
+          "uzunluk": 28.80333,
+          "vurus": 64
+        },
+        "ekYeri": 0.9668,
+        "sabitlik": 0.9126,
+        "puan": 0.9268,
+        "teaser": {
+          "bas": 74.518,
+          "son": 78.5583
+        },
+        "id": "cde2e540-9972-44c2-9200-a18e6c3ac120",
+        "etiketler": "Folk dance, Polish krakowiak, instrumental; bright warm acoustic mix, loop-friendly arrangement with continuous energy; rich polyphonic ensemble led by fiddle, with clarinet counter-melody, accordion and double bass rhythm section, syncopated 2/4 drive, cheerful adventure video game background music, steady danceable pulse around 128 BPM."
+      },
+      {
+        "dosya": "hayalet-avcilari-pl-2.mp3",
+        "sure": 118.813,
+        "tempo": 133.05,
+        "dongu": {
+          "bas": 43.6017,
+          "uzunluk": 29.00454,
+          "vurus": 64
+        },
+        "ekYeri": 0.9757,
+        "sabitlik": 0.8714,
+        "puan": 0.924,
+        "teaser": {
+          "bas": 81.1571,
+          "son": 85.2206
+        },
+        "id": "8cd87531-2fe4-45e1-abcf-0b95a749c228",
+        "etiketler": "Polish krakowiak folk dance, cheerful adventure video game background music, syncopated 2/4 at around 128 BPM; bright warm acoustic mix, loop-friendly; fiddle carries the lead melody, clarinet and accordion weave a counter-melody over double bass in a rich polyphonic ensemble; steady, constant dance groove, seamless loop, instrumental."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -5.8,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.2403,
+    "ekOrani": 0.434,
+    "dosyalar": {
+      "dongu": "muzik/PL-dongu.ogg",
+      "giris": "muzik/PL-giris.ogg"
+    },
+    "bas": 0.1075,
+    "son": 28.91083,
+    "tempo": 134.07,
+    "kredi": {
+      "kalan": 728.5
+    }
+  },
+  "DE": {
+    "gorev": "34e79d196d6cdcd8fe4de0d8df543196",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-de-1.mp3",
+        "sure": 119.989,
+        "tempo": 129.83,
+        "dongu": {
+          "bas": 32.6024,
+          "uzunluk": 33.22904,
+          "vurus": 72
+        },
+        "ekYeri": 0.9887,
+        "sabitlik": 0.7758,
+        "puan": 0.918,
+        "teaser": {
+          "bas": 92.124,
+          "son": 96.2804
+        },
+        "id": "d99400a4-9373-4656-9cfd-4f9d8508f875",
+        "etiketler": "Bavarian polka instrumental, cheerful and steady in 2/4 around 128 BPM, accordion leads a playful adventure-game motif with clarinet counter-melody, trumpet and tuba, cheerful oompah bass under a lively rhythm section, rich polyphonic ensemble keeps energy unbroken for a seamless loop, bright warm acoustic mix."
+      },
+      {
+        "dosya": "hayalet-avcilari-de-2.mp3",
+        "sure": 118.789,
+        "tempo": 139.89,
+        "dongu": {
+          "bas": 29.2781,
+          "uzunluk": 29.15687,
+          "vurus": 68
+        },
+        "ekYeri": 0.9758,
+        "sabitlik": 0.7813,
+        "puan": 0.8628,
+        "teaser": {
+          "bas": 95.1103,
+          "son": 98.9648
+        },
+        "id": "613928e4-fef6-484f-af07-72977a45e59f",
+        "etiketler": "Bavarian polka, steady 2/4 dance groove around 128 BPM, instrumental; accordion leads with clarinet counter-melody, trumpet fills over tuba and cheerful oompah bass in a rich polyphonic ensemble; bright warm acoustic mix, cheerful adventure-game character, loop-friendly continuity at constant energy throughout."
+      }
+    ],
+    "lufs": -17.9,
+    "tepe": -3.5,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3564,
+    "ekOrani": 0.258,
+    "dosyalar": {
+      "dongu": "muzik/DE-dongu.ogg",
+      "giris": "muzik/DE-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 33.32904,
+    "tempo": 129.83,
+    "kredi": {
+      "kalan": 716.5
+    }
+  },
+  "GB": {
+    "gorev": "18f4bc83523adc06c1b660a8ea607ea1",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-gb-1.mp3",
+        "sure": 119.221,
+        "tempo": 130.11,
+        "dongu": {
+          "bas": 48.7045,
+          "uzunluk": 27.6145,
+          "vurus": 60
+        },
+        "ekYeri": 0.9727,
+        "sabitlik": 0.882,
+        "puan": 0.9404,
+        "teaser": {
+          "bas": 33.9019,
+          "son": 38.0815
+        },
+        "id": "4fbbb981-73db-4842-a5fa-ad9fd979412f",
+        "etiketler": "Scottish ceilidh reel, bright warm acoustic mix with rich polyphonic interplay and a steady danceable groove around 128 BPM; instrumental, cheerful adventure video game background music; fiddle leads, accordion and tin whistle trade counter-melodies over light bagpipes and bodhran frame drum, maintaining constant energy, fully loopable."
+      },
+      {
+        "dosya": "hayalet-avcilari-gb-2.mp3",
+        "sure": 121.213,
+        "tempo": 129.78,
+        "dongu": {
+          "bas": 33.8973,
+          "uzunluk": 27.79817,
+          "vurus": 60
+        },
+        "ekYeri": 0.9777,
+        "sabitlik": 0.8926,
+        "puan": 0.9478,
+        "teaser": {
+          "bas": 48.2963,
+          "son": 52.4759
+        },
+        "id": "2319f5ff-ad3a-4adc-8344-9a0d32c5f521",
+        "etiketler": "Scottish ceilidh reel, bright warm acoustic mix; fiddle carries the lead melody, accordion answers with a counter-melody, tin whistle ornaments the phrases, light bagpipes add sustained color, bodhran frame drum keeps a steady danceable groove; rich polyphonic ensemble at around 128 BPM, constant energy, cheerful adventure video game background music, instrumental, loop-friendly."
+      }
+    ],
+    "lufs": -17.9,
+    "tepe": -4.8,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3796,
+    "ekOrani": 0.066,
+    "dosyalar": {
+      "dongu": "muzik/GB-dongu.ogg",
+      "giris": "muzik/GB-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 27.89817,
+    "tempo": 129.78,
+    "kredi": {
+      "kalan": 704.5
+    }
+  },
+  "FR": {
+    "gorev": "a2425f575a750c0f56df4dc733220416",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-fr-1.mp3",
+        "sure": 118.789,
+        "tempo": 96.36,
+        "dongu": {
+          "bas": 62.0866,
+          "uzunluk": 29.89773,
+          "vurus": 48
+        },
+        "ekYeri": 0.955,
+        "sabitlik": 0.7694,
+        "puan": 0.7502,
+        "teaser": {
+          "bas": 37.8046,
+          "son": 41.543
+        },
+        "id": "c81fbcd3-c826-4d25-be3d-a23846877709",
+        "etiketler": "French bal-musette, instrumental; bright warm acoustic mix; cheerful adventure video game background music, steady danceable waltz around 128 BPM; musette accordion leads with a nimble melody, jazz guitar and double bass sustain rich polyphony, counter-melody and rhythm, full energy carried through a seamless loop-friendly refrain."
+      },
+      {
+        "dosya": "hayalet-avcilari-fr-2.mp3",
+        "sure": 118.669,
+        "tempo": 98.22,
+        "dongu": {
+          "bas": 73.3879,
+          "uzunluk": 29.37567,
+          "vurus": 48
+        },
+        "ekYeri": 0.966,
+        "sabitlik": 0.7531,
+        "puan": 0.76,
+        "teaser": {
+          "bas": 69.0888,
+          "son": 73.3845
+        },
+        "id": "32e9ee9b-2134-4e8d-b4d7-29581a45c6ae",
+        "etiketler": "French bal-musette, instrumental, cheerful adventure video game background music, steady danceable 3/4 waltz around 128 BPM, bright warm acoustic mix, musette accordion carries the lead melody, jazz guitar and double bass support a counter-melody and rhythm section in a rich polyphonic ensemble, constant energy, loop-friendly phrasing, seamless ending."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -2.5,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.4957,
+    "ekOrani": 0.009,
+    "dosyalar": {
+      "dongu": "muzik/FR-dongu.ogg",
+      "giris": "muzik/FR-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 29.47567,
+    "tempo": 98.22,
+    "kredi": {
+      "kalan": 692.5
+    }
+  },
+  "IT": {
+    "gorev": "ecd1460804caa1e6ad0c83ba9c22c1f3",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-it-1.mp3",
+        "sure": 118.669,
+        "tempo": 136.62,
+        "dongu": {
+          "bas": 10.3605,
+          "uzunluk": 31.60954,
+          "vurus": 72
+        },
+        "ekYeri": 0.9807,
+        "sabitlik": 0.8581,
+        "puan": 0.9047,
+        "teaser": {
+          "bas": 70.5123,
+          "son": 74.4829
+        },
+        "id": "55d263f3-4726-4295-9789-36ecc453a8c2",
+        "etiketler": "Italian tarantella, around 128 BPM with a steady, danceable 6/8 groove; instrumental, constant energy, cheerful adventure video game background music; bright warm acoustic mix; mandolin and guitar drive the rhythm, accordion threads counter-melody beneath a clear lead melody, with tamburello tambourine marking the pulse; layered polyphony loops seamlessly."
+      },
+      {
+        "dosya": "hayalet-avcilari-it-2.mp3",
+        "sure": 118.813,
+        "tempo": 133.04,
+        "dongu": {
+          "bas": 18.1119,
+          "uzunluk": 28.85642,
+          "vurus": 64
+        },
+        "ekYeri": 0.9727,
+        "sabitlik": 0.8395,
+        "puan": 0.913,
+        "teaser": {
+          "bas": 92.9671,
+          "son": 97.0306
+        },
+        "id": "963d7c79-2b37-4ad0-aab4-93cc835c5ed9",
+        "etiketler": "Italian tarantella, instrumental; steady danceable 6/8 at around 128 BPM, cheerful adventure video game background music; bright warm acoustic mix; mandolin carries the lead melody over a counter-melody, accordion, tamburello tambourine and guitar form a rich polyphonic rhythm section, maintaining constant energy and a loop-friendly arrangement."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -4.0,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.2635,
+    "ekOrani": 0.007,
+    "dosyalar": {
+      "dongu": "muzik/IT-dongu.ogg",
+      "giris": "muzik/IT-giris.ogg"
+    },
+    "bas": 0.105,
+    "son": 28.96142,
+    "tempo": 133.04,
+    "kredi": {
+      "kalan": 680.5
+    }
+  },
+  "ES": {
+    "gorev": "6bd0aa892f33de516f29d5565441a6fa",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-es-1.mp3",
+        "sure": 120.013,
+        "tempo": 129.79,
+        "dongu": {
+          "bas": 30.1842,
+          "uzunluk": 29.76142,
+          "vurus": 64
+        },
+        "ekYeri": 0.9701,
+        "sabitlik": 0.8317,
+        "puan": 0.9256,
+        "teaser": {
+          "bas": 79.3346,
+          "son": 83.491
+        },
+        "id": "b770f9c1-89f3-4ca3-add7-c88ab1ad7249",
+        "etiketler": "Flamenco rumba, bright warm acoustic mix with polished room detail; instrumental, steady danceable groove around 128 BPM, cheerful adventure video game background music; rich polyphonic ensemble led by flamenco guitar, with a clear counter-melody and rhythm section; cajon, palmas handclaps and castanets sustain constant energy in a loop-friendly arrangement."
+      },
+      {
+        "dosya": "hayalet-avcilari-es-2.mp3",
+        "sure": 118.813,
+        "tempo": 131.04,
+        "dongu": {
+          "bas": 47.8158,
+          "uzunluk": 27.46683,
+          "vurus": 60
+        },
+        "ekYeri": 0.9842,
+        "sabitlik": 0.8648,
+        "puan": 0.9363,
+        "teaser": {
+          "bas": 17.598,
+          "son": 21.7311
+        },
+        "id": "15c0bb58-54dc-4acf-b7b2-c319356ecfaf",
+        "etiketler": "Flamenco rumba, instrumental; bright warm acoustic mix; flamenco guitar carries the lead melody over a counter-melody, cajon anchors palmas handclaps and castanets, shaping a rich polyphonic ensemble with a steady danceable groove around 128 BPM; cheerful adventure video game background music, constant energy, loop-friendly refrain, uninterrupted flow."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -5.3,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3331,
+    "ekOrani": 0.081,
+    "dosyalar": {
+      "dongu": "muzik/ES-dongu.ogg",
+      "giris": "muzik/ES-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 27.56683,
+    "tempo": 131.04,
+    "kredi": {
+      "kalan": 668.5
+    }
   }
 }

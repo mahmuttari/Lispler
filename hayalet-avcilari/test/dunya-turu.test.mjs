@@ -92,6 +92,9 @@ try {
     game.dunyaTuru = true; game.level = 6; buildWalls(); buildWaters(); buildHazards();
     const turKutular = kutular();
     const temalar = [...new Set([game.walls, game.waters, game.spikes, game.lavas].flat().map((o) => o.tema))];
+    // Yedek ressam ve ızgara: Fransa'nın (K ailesi) ressamları ve zemini geçici olarak kaldırılır
+    const K = ULKE_AILELERI.K, asil = { duvar: K.duvar, su: K.su, zemin: K.zemin, o1: ULKE_OBJELERI.eyfelKulesi, o2: ULKE_OBJELERI.lavantaTarlasi };
+    delete K.duvar; delete K.su; delete K.zemin; delete ULKE_OBJELERI.eyfelKulesi; delete ULKE_OBJELERI.lavantaTarlasi;
     let resimHatasi = null;
     try { for (const o of [game.walls, game.waters, game.spikes, game.lavas].flat()) engelResmi(o); } catch (e) { resimHatasi = e.message; }
     game.dunyaTuru = false; buildWalls(); buildWaters(); buildHazards();
@@ -99,6 +102,10 @@ try {
     online.mode = null;
     game.dunyaTuru = true; game.level = 6;
     const zemin = turZeminCiz(game.ctx);
+    Object.assign(K, { duvar: asil.duvar, su: asil.su, zemin: asil.zemin });
+    Object.assign(ULKE_OBJELERI, { eyfelKulesi: asil.o1, lavantaTarlasi: asil.o2 });
+    for (const a of ['duvar', 'su', 'zemin']) if (!K[a]) delete K[a];
+    for (const o of ['eyfelKulesi', 'lavantaTarlasi']) if (!ULKE_OBJELERI[o]) delete ULKE_OBJELERI[o];
     endGame(false);
     startGame();
     const normal = { tur: game.dunyaTuru, level: game.level, tema: getTheme().name, ulke: turUlkesi() };
@@ -113,7 +120,7 @@ try {
     assert.ok(k.turKutular.length > 10);
     assert.deepEqual(k.turKutular, k.normalKutular);
   });
-  sina('ressamı olmayan ülkede engel resmi hata vermez (yedek ressam)', () => { assert.equal(k.resimHatasi, null); });
+  sina('ressamı eksik ülkede engel resmi hata vermez (yedek ressam)', () => { assert.equal(k.resimHatasi, null); });
   sina('zemin ressamı yokken turZeminCiz false (ızgara çizilir)', () => { assert.equal(k.zemin, false); });
   sina('startGame(): normal oyun, bölüm 1, Mor Şato', () => { assert.deepEqual(k.normal, { tur: false, level: 1, tema: 'Mor Şato', ulke: null }); });
 

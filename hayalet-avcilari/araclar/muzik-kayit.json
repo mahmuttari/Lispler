@@ -2497,5 +2497,188 @@
     "kredi": {
       "kalan": 284.5
     }
+  },
+  "CN": {
+    "gorev": "800fa6b81c0b848edbdc203411033e94",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-cn-1.mp3",
+        "sure": 119.581,
+        "tempo": 130.93,
+        "dongu": {
+          "bas": 16.3338,
+          "uzunluk": 29.49917,
+          "vurus": 64
+        },
+        "ekYeri": 0.9887,
+        "sabitlik": 0.7828,
+        "puan": 0.9145,
+        "teaser": {
+          "bas": 61.4333,
+          "son": 65.5432
+        },
+        "id": "8bd1d86d-0f4b-40f6-82c1-63bdec3648dd",
+        "etiketler": "Adventure game background music, driving danceable groove around 128 BPM, instrumental lead melody with counter-melody, bright warm acoustic mix, Chinese Spring Festival celebration with playful and heroic guzheng, erhu, dizi, pipa, drums and gongs; rich polyphonic ensemble, steady rhythm section, upbeat energetic, constant energy, loop-friendly."
+      },
+      {
+        "dosya": "hayalet-avcilari-cn-2.mp3",
+        "sure": 118.813,
+        "tempo": 132.96,
+        "dongu": {
+          "bas": 46.7636,
+          "uzunluk": 32.47367,
+          "vurus": 72
+        },
+        "ekYeri": 0.9908,
+        "sabitlik": 0.748,
+        "puan": 0.895,
+        "teaser": {
+          "bas": 92.7038,
+          "son": 96.7673
+        },
+        "id": "295ad186-7e62-42b4-b841-cf2764558a0f",
+        "etiketler": "Chinese Spring Festival celebration music, guzheng, erhu, dizi, and pipa trade a nimble lead melody and interwoven counter-melody over drums and gongs; rich polyphonic ensemble in a bright warm acoustic mix, playful and heroic, upbeat energetic driving rhythm with a steady danceable groove around 128 BPM, constant energy, loop-friendly instrumental."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -5.1,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.2635,
+    "ekOrani": 0.0,
+    "dosyalar": {
+      "dongu": "muzik/CN-dongu.ogg",
+      "giris": "muzik/CN-giris.ogg"
+    },
+    "bas": 0.1025,
+    "son": 32.57617,
+    "tempo": 132.96,
+    "kredi": {
+      "kalan": 272.5
+    }
+  },
+  "KR": {
+    "gorev": "5248765790e7f6e911ba7911eedc592b",
+    "secilen": 1,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-kr-1.mp3",
+        "sure": 118.549,
+        "tempo": 130.51,
+        "dongu": {
+          "bas": 32.3866,
+          "uzunluk": 29.40665,
+          "vurus": 64
+        },
+        "ekYeri": 0.9832,
+        "sabitlik": 0.8793,
+        "puan": 0.9429,
+        "teaser": {
+          "bas": 35.1575,
+          "son": 39.2907
+        },
+        "id": "db1772a6-feab-4e23-801d-ee03312f4d09",
+        "etiketler": "Korean samul nori, gayageum and haegeum carry a lead melody and counter-melody over janggu, buk and kkwaenggwari in a rich polyphonic rhythm section; driving 12/8 groove around 128 BPM; playful, heroic adventure-video-game energy in a bright warm acoustic mix, steady danceable pulse, unbroken loop-friendly arrangement, instrumental."
+      },
+      {
+        "dosya": "hayalet-avcilari-kr-2.mp3",
+        "sure": 118.741,
+        "tempo": 134.15,
+        "dongu": {
+          "bas": 49.4231,
+          "uzunluk": 32.12492,
+          "vurus": 72
+        },
+        "ekYeri": 0.9796,
+        "sabitlik": 0.7121,
+        "puan": 0.8726,
+        "teaser": {
+          "bas": 67.7573,
+          "son": 71.7976
+        },
+        "id": "295865c4-e011-42ee-902e-6038de7fd6d8",
+        "etiketler": "Korean samul nori, gayageum lead melody and haegeum counter-melody weave over a janggu, buk and kkwaenggwari rhythm section; bright warm acoustic mix, playful and heroic adventure video game background music, driving 12/8 danceable groove around 128 BPM, rich polyphonic ensemble, upbeat energetic with constant energy, seamless loop-friendly return, instrumental."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -6.7,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.3332,
+    "ekOrani": 0.048,
+    "dosyalar": {
+      "dongu": "muzik/KR-dongu.ogg",
+      "giris": "muzik/KR-giris.ogg"
+    },
+    "bas": 0.1025,
+    "son": 29.50915,
+    "tempo": 130.51,
+    "kredi": {
+      "kalan": 260.5
+    }
+  },
+  "RU": {
+    "gorev": "d3fd2bda475650d9fb02fa66f24063c5",
+    "secilen": 2,
+    "parcalar": [
+      {
+        "dosya": "hayalet-avcilari-ru-1.mp3",
+        "sure": 119.221,
+        "tempo": 136.46,
+        "dongu": {
+          "bas": 29.6233,
+          "uzunluk": 30.1566,
+          "vurus": 68
+        },
+        "ekYeri": 0.9837,
+        "sabitlik": 0.8822,
+        "puan": 0.9142,
+        "teaser": {
+          "bas": 68.5497,
+          "son": 72.4971
+        },
+        "id": "507ed0f1-fd61-4efb-9356-4508dd93c9ba",
+        "etiketler": "Russian barynya folk dance, instrumental, steady driving 2/4 groove around 128 BPM; bright warm acoustic mix; balalaika leads a playful and heroic melody, domra and bayan accordion weave a counter-melody, wooden spoons mark the rhythm; rich polyphonic ensemble maintains upbeat, energetic constant energy, adventure-game background, loop-friendly, seamless finish."
+      },
+      {
+        "dosya": "hayalet-avcilari-ru-2.mp3",
+        "sure": 119.989,
+        "tempo": 137.06,
+        "dongu": {
+          "bas": 29.9916,
+          "uzunluk": 28.14827,
+          "vurus": 64
+        },
+        "ekYeri": 0.9791,
+        "sabitlik": 0.8838,
+        "puan": 0.9094,
+        "teaser": {
+          "bas": 16.3208,
+          "son": 20.2914
+        },
+        "id": "fd3fb037-db52-4a8f-bc3f-03affeefcda5",
+        "etiketler": "Russian folk dance, barynya, instrumental; driving wooden spoons and balalaika carry a nimble lead through a rich polyphonic ensemble, with domra counter-melody and bayan accordion pulse; bright warm acoustic mix, playful and heroic, steady danceable 2/4 groove around 128 BPM, constant energy, seamless loop-friendly endings for adventure video game background music."
+      }
+    ],
+    "lufs": -18.0,
+    "tepe": -5.9,
+    "sinirlayici": false,
+    "deneme": 1,
+    "tuttu": true,
+    "girisSure": 5.1706,
+    "ekOrani": 0.275,
+    "dosyalar": {
+      "dongu": "muzik/RU-dongu.ogg",
+      "giris": "muzik/RU-giris.ogg"
+    },
+    "bas": 0.1,
+    "son": 28.24827,
+    "tempo": 137.06,
+    "kredi": {
+      "kalan": 248.5
+    }
   }
 }

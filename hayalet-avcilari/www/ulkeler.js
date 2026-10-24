@@ -149,7 +149,7 @@
       P("#1f2a24", "#314038", "#d9d5cc", "#4a4a4a", "#f4a6c0", "#2d3a4a"),
       K("yok", "kimono", "nakis", ["#2a4a8a", "#f4a6c0", "#e8c35a"], ["yelpaze"], "geta")),
     U("RU", "K", t("Rusya"), t("Kokoşnikli hayalet"), O("matruskalar", t("matruşka bebekleri")), O("izbaEvi", t("oymalı ahşap izba")),
-      P("#22261f", "#363b31", "#a8463a", "#6c2c24", "#2f5fa0", "#e8c35a"),
+      { ...P("#22261f", "#363b31", "#a8463a", "#6c2c24", "#2f5fa0", "#e8c35a"), mazgal: "kirlangic" },
       K("kokosnik", "elbise", "nakis", ["#c8302a", "#e8c35a", "#2f5fa0"])),
     // ---------- Amerika ----------
     U("CA", "KA", t("Kanada"), t("Oduncu hayalet"), O("akcaagacOrmani", t("akçaağaç ormanı ve şurup")), O("kunduzBaraji", t("kunduz barajı")),

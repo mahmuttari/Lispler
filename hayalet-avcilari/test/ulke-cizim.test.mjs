@@ -46,7 +46,7 @@ const KOSTUM_TURLERI = {
 // Ressamı çizilmiş aileler ve ülkeler (Görev 5: KS, DA ve TR, JP; Görev 7–13 kıta kıta ekler)
 const CIZILEN_AILELER = ['KS', 'DA', 'K', 'KP', 'SH', 'SV', 'GA', 'GDA'];
 const CIZILEN_ULKELER = ['TR', 'JP', 'UA', 'PL', 'DE', 'GB', 'FR', 'IT', 'ES', 'MA', 'DZ', 'CI', 'GH', 'NG', 'SD', 'EG', 'CD', 'AO', 'ZA', 'MZ', 'MG', 'TZ', 'UG', 'KE', 'ET',
-  'YE', 'SA', 'PS', 'IQ', 'IR', 'UZ', 'AF', 'PK', 'IN', 'BD', 'MM', 'TH', 'MY', 'ID', 'PH', 'VN'];
+  'YE', 'SA', 'PS', 'IQ', 'IR', 'UZ', 'AF', 'PK', 'IN', 'BD', 'MM', 'TH', 'MY', 'ID', 'PH', 'VN', 'CN', 'KR', 'RU'];
 
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
 const hatalar = [];
@@ -332,6 +332,10 @@ try {
     // baskın renk: PS'de kırmızı, TR'de mavi (TR'nin baklavaları kırmızı-beyazdır, kuşağın küçük bir kısmı)
     assert.ok(ps.kirmizi > 0.4 && ps.kirmizi > ps.mavi * 3, `PS kırmızı ${ps.kirmizi.toFixed(2)}, mavi ${ps.mavi.toFixed(2)}`);
     assert.ok(tr.mavi > 0.4 && tr.mavi > tr.kirmizi * 3, `TR mavi ${tr.mavi.toFixed(2)}, kırmızı ${tr.kirmizi.toFixed(2)}`);
+  });
+  const kAilesi = await p.evaluate(() => ['RU', 'DE'].map((kod) => ({ kod, mazgal: ulkeEngelSeti(kod).palet.mazgal })));
+  sina('K ailesinde Rusya kırlangıç kuyruğu mazgallı, Almanya kare', () => {
+    assert.deepEqual(kAilesi, [{ kod: 'RU', mazgal: 'kirlangic' }, { kod: 'DE', mazgal: 'kare' }]);
   });
 
   if (ekranKlasoru) { await ekranlar(p, ekranKlasoru); await ulkeEkranlari(ekranKlasoru); }

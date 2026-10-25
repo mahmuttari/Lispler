@@ -49,3 +49,6 @@
 
 # istek 2026-10-24T19:25:11Z: tanıtım görseli 7 dilde 3.14.0'a göre (alt yazıda "🌍 Dünyayı gez"; İspanyolcada alt yazı 25 px, satırlar bölünmez); telefon kareleri aynı (kullanıcının açık onayıyla: "görselleri de güncelle play de")
 # (yapıldı 2026-10-24, koşu 40125211194: 7 dilde simge, yeni tanıtım görseli ve 7 telefon karesi yüklendi, düzenleme onaylandı) gorsel uygula
+
+# istek 2026-10-25T17:56:49Z: 3.14.1 (48) üretime yükle ve incelemeye gönder; 3.14.0 (47) incelemedeyse onun yerini alır (kullanıcının açık onayıyla: "gönder"); AAB: hayalet-android koşusu 40217723472 (bu dal, commit 84f7176, versionCode 48, Poyraz Workshop yükleme anahtarı); mağaza metni ve görseller değişmedi
+yukle yayinla uygula

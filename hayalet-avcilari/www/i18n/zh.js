@@ -232,7 +232,7 @@ I18N.zh = {
   "🛒 Mağaza": "🛒 商店",
   "🛒 MAĞAZA": "🛒 商店",
   "🛠 <b>{ad}</b> için yükseltmeler": "🛠 <b>{ad}</b>的升级",
-  "🛠️ Müzik ve ülke geçişi düzeltmeleri; oyun sonu reklamı yeni oyunun üstüne gelmez.": "🛠️ 修复音乐和国家切换问题；游戏结束广告不再遮挡新游戏。",
+  "🛠️ Oda kurucusundaki cızırtı giderildi; müzik ve ülke geçişi düzeltildi; oyun sonu reklamı yeni oyunun üstüne gelmez.": "🛠️ 修复房主设备上的杂音；修复音乐和国家切换问题；游戏结束广告不再遮挡新游戏。",
   "🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir.": "🛡️ 现在只显示适合所有年龄的广告。",
   "🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle.": "🟢 看看好友是否在线或在房间中；不想理的人可以屏蔽。",
   "🟢 Çevrimiçi": "🟢 在线",

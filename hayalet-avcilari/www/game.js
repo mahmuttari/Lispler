@@ -328,7 +328,7 @@ const UPDATE_NOTES = {
     t("🛂 Ülkeyi geç, pasaportuna damga bas; arkadaşlarınla birlikte gez."),
     t("🎵 Her ülkenin kendi kültüründen giriş ve fon müziği; Ses Ayarları'nda yeni Müzik kaydırıcısı."),
     t("✈️ Arkadaşlarla oynarken de damga ve uçak geçişi görünür."),
-    t("🛠️ Müzik ve ülke geçişi düzeltmeleri; oyun sonu reklamı yeni oyunun üstüne gelmez."),
+    t("🛠️ Oda kurucusundaki cızırtı giderildi; müzik ve ülke geçişi düzeltildi; oyun sonu reklamı yeni oyunun üstüne gelmez."),
   ],
   // 3.13.1 Play'e çıkmadı (reklam düzeltmesi bu sürümle gider); 3.13.0 incelemedeyse oyuncular onu görmeden geçer.
   // Mağaza notu (aynı satırlar) her dilde 500 karakterin altında kalsın diye 3.13.0'ın sığmayan son satırları yok
@@ -3874,8 +3874,9 @@ function applyHostEvent(ev) {
       g.hp -= (ev.dmg || 1);
       g.uzakVurdu = true; // ölürse host'un yakaladıklarına sayılmaz (vuran oyuncu kendine sayar)
       spawnHitParticles(g.x, g.y);
+      // Vuruş sesini vuran oyuncunun cihazı çalar: kurucu da çalsaydı 6 kişilik odada saniyede ~25 kare dalga, olaylar
+      // paketlerle geldiği için 2–3'ü aynı anda başlayıp cızırtı yapıyordu (3.14.1)
       if (g.hp <= 0) killGhost(g, game.ghosts.indexOf(g));
-      else audio.hit();
     }
   } else if (ev.type === "mermi") {
     // İstemci bir düşman mermisini vurdu ya da mermi ona çarptı: host'ta da biter

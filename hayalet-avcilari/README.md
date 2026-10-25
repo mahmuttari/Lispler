@@ -406,6 +406,13 @@ aşmasın diye 👥 (3.12.2) satırı çıktı (tr 450, en 453, es 490, zh 179, 
 3.14.0'ın son incelemesinde ertelenen küçük bulgular ve sınama boşlukları (24 Ekim 2026; kullanıcı: "müzikleri bu
 şekilde gönder, sonra güncelleriz"). Müzikler değişmedi.
 
+- **Oda kurucusunda cızırtı** (kullanıcı bildirimi, 25 Ekim 2026): kurucu öteki oyuncuların her vuruşu için de 220 Hz
+  kare dalga çalıyordu (`applyHostEvent`). 6 kişilik Kenya odasında ölçüm (`alti.test` düzeninde, oyuncular sürekli
+  ateş ederken, çıkışa analizör): kurucuda 8 sn'de ~200 vuruş sesi, istemcilerin ~100 ms'lik olay paketleri yüzünden
+  29 ikili, 6 üçlü aynı anda başlıyor (aynı frekans, aynı faz: genlikler toplanır), tepe 0,47; istemcide 45 ses, hiç
+  üst üste yok, tepe 0,26. Ses yığılması (kırpılma) ve müzik elendi: kırpılan örnek yok, müzik yeniden başlamıyor.
+  Kurucu artık öteki oyuncuların vuruşlarını sessiz uygular, vuruş sesini vuranın cihazı çalar: kurucuda 34 ses, üst
+  üste yok, tepe 0,29 (istemci 0,30). Yakalama sesleri değişmedi (herkesin yakaladığını duyar; tepeye etkisi yok).
 - **Müzik:** oyun bitip hemen yeni oyun başlayınca eski müzik 0,05 sn'de susar (eskiden 0,8 sn'lik sönmesi yenisinin
   altında sürüyordu; `turMuzigiSondur` sönmekte olan kaynağı daha kısa kesmeyle yeniden kısar). Damga ya da uçak
   sırasında ses kapatılıp açılırsa biten ülkenin döngüsü başlamaz: damga anında müzik yok, uçakta sıradaki ülkenin
@@ -420,7 +427,7 @@ aşmasın diye 👥 (3.12.2) satırı çıktı (tr 450, en 453, es 490, zh 179, 
   yeni oyunun üstüne gelmez, hak sonraki oyun sonuna kalır.
 - **Karışık sürüm:** eski sürümlü kurucu 52, 53… bölümü oynarken istemci de aynı bölümde (aynı harita); ülke AR kalır,
   tamamlanma ödülü 51. ülkede sınırlı.
-- **Sınamalar:** `muzik.test` (hızlı yeniden başlatma, geçişte ses kapat-aç), `dunya-turu.test` (istemci geçişi, host
+- **Sınamalar:** `ses.test` (kurucu öteki oyuncunun vuruşunu sessiz uygular), `muzik.test` (hızlı yeniden başlatma, geçişte ses kapat-aç), `dunya-turu.test` (istemci geçişi, host
   olma, duraklatma iki aşamada, karışık sürüm haritası ve ödülü), `reklam.test` (hızlı Tekrar Oyna), `dil.test` (her
   dilde en uzun boss duyurusu), `cevrimici.test` (tur odasında host değişimi; 51. ülke: iki tarafta AR damgası, tur
   tamamlandı, oda lobiye ve 1. ülkeye).

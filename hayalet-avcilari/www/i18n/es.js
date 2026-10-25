@@ -232,7 +232,7 @@ I18N.es = {
   "🛒 Mağaza": "🛒 Tienda",
   "🛒 MAĞAZA": "🛒 TIENDA",
   "🛠 <b>{ad}</b> için yükseltmeler": "🛠 Mejoras para <b>{ad}</b>",
-  "🛠️ Müzik ve ülke geçişi düzeltmeleri; oyun sonu reklamı yeni oyunun üstüne gelmez.": "🛠️ Correcciones de música y de cambio de país; el anuncio de fin de partida ya no tapa la nueva.",
+  "🛠️ Oda kurucusundaki cızırtı giderildi; müzik ve ülke geçişi düzeltildi; oyun sonu reklamı yeni oyunun üstüne gelmez.": "🛠️ Sin chisporroteo en el anfitrión; correcciones de música y de cambio de país; el anuncio final ya no tapa la nueva partida.",
   "🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir.": "🛡️ Solo verás anuncios aptos para todos.",
   "🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle.": "🟢 Mira si tus amigos están en línea o en una sala; bloquea a quien no quieras.",
   "🟢 Çevrimiçi": "🟢 En línea",

@@ -16,4 +16,4 @@
 # (yapıldı 2026-10-26 21:25, koşu 40404232457: 404 Package not found) durum
 
 # 2026-10-26: bilgisayar oturumunun "Talimat 1-6 bitti" bildirimi üzerine yeniden denetim.
-durum
+# (yapıldı 2026-10-26, koşu 40406149164: yine 404 Package not found; main'de AdMob kimlikleri hâlâ test) durum

@@ -48,4 +48,4 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 🛂 Supera un país y sella tu pasaporte; viaja junto a tus amigos.
 🎵 Música de entrada y de fondo de la cultura de cada país; nuevo control de Música en Ajustes de sonido.
 ✈️ El sello y el viaje en avión también aparecen al jugar con amigos.
-🛠️ Sin chisporroteo en el anfitrión; correcciones de música y de cambio de país; el anuncio final ya no tapa la nueva partida.
+🛠️ Arreglos contra el chisporroteo; correcciones de música y de cambio de país; el anuncio final ya no tapa la nueva partida.

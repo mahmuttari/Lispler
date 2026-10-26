@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.14.1 (versionCode 48) — son inceleme ve sınama düzeltmeleri (aşağıda "3.14.1: düzeltmeler"); 25 Ekim 2026'da kullanıcının onayıyla ("gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40218892928; 3.14.0 (47)'nin yerini aldı). Önceki: 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
+| Sürüm | 3.14.2 (versionCode 49) — ses tamponu: tek oyunculu oyunda da duyulan cızırtıya karşı ses bağlamı Android'de 20 ms'lik tamponla kurulur (aşağıda "3.14.2: ses tamponu"); derlendi, Play'e gönderilmedi (kullanıcı onayı bekliyor). Önceki: 3.14.1 (versionCode 48) — son inceleme ve sınama düzeltmeleri (aşağıda "3.14.1: düzeltmeler"); 25 Ekim 2026'da kullanıcının onayıyla ("gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40218892928; 3.14.0 (47)'nin yerini aldı). Önceki: 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
@@ -400,6 +400,31 @@ Test: `test/reklam.test.mjs` (sahte AdMob eklentisi, 5 sınama: initialize bir k
 initialize'dan sonra, geçiş ve ödüllü reklam yine yüklenir, sayfa hatası yok); düzeltmeden önce derece sınaması düştü.
 Sürüm notu: 3.13.0 incelemedeyken gönderilebileceği için 3.13.0'ın satırlarını da taşır; mağaza notu İspanyolcada 500'ü
 aşmasın diye 👥 (3.12.2) satırı çıktı (tr 450, en 453, es 490, zh 179, hi 454, ar 404).
+
+## 3.14.2: ses tamponu
+
+Kullanıcı bildirimi (26 Ekim 2026): cızırtı çevrimdışı oyunda da çıkıyor; "sürekli hışırtı", Samsung telefonda.
+3.14.1'in düzeltmesi yalnız kurucunun öteki oyuncular için çaldığı vuruş seslerini kaldırmıştı.
+
+- **Elenenler (ölçüm):** tek oyunculu oyunda çıkışa analizör (390 × 844, 4 kat işlemci yavaşlatması): normal 1. ve 15.
+  bölüm, Kenya ve Kenya bossu; tepe en çok 0,51, 1'e ulaşan örnek yok, saniyede 5–25 ses. Müzik dosyalarında (102)
+  en yüksek tepe 0,728; efekt örnekleri −6,2 / −11,1 dB. Kırpılma yok. Sürekli çalan tek kaynak müzik döngüsü.
+- **Ayırt eden gözlem:** çevrimiçi odada aynı müziği çalan istemcide cızırtı yoktu, kurucuda vardı; tek oyunculu oyun da
+  kurucu gibi bütün benzetimi yürütür. Sorun müzik dosyasını değil cihazın yükünü izliyor.
+- **Neden (Chromium kaynağından):** Android'de varsayılan "interactive" ipucu ses tamponunu donanımınki kadar küçük
+  kurar (`media/base/audio_latency.cc` › `GetInteractiveBufferSize`; ör. 192 kare ≈ 4 ms). İşleyici bu sürede tamponu
+  dolduramazsa çıkış kesilir; sürekli müzikte bu bir cızırtı olarak duyulur. "balanced" ipucu Android'de 2 × 10 ms
+  = 20 ms kurar (`GetRtcBufferSize`); efektler ~16 ms geç duyulur. "playback" Android'de güç tasarruflu yola geçer, atış
+  sesleri için fazla gecikir.
+- **Düzeltme:** `audio.init` ses bağlamını `{ latencyHint: "balanced" }` ile kurar. Sınama: `ses.test` (önce seçeneksiz
+  kurulduğu görüldü, kırmızı).
+- **Doğrulanamayan:** kesilme bu kapsayıcıda üretilemedi. Linux'ta iki ipucu da 10 ms kurar; ses iş parçacığı gerçek
+  zaman önceliğiyle (SCHED_RR) çalışır. Öncelik kaldırılıp tek çekirdekte 2 işlemci yükü ve kare başına 12 ms ana iş
+  parçacığı yüküyle de `playoutStats` hiç kesilme saymadı. Sonucu Samsung'da kullanıcı duyacak.
+- **Ayrıca ölçülen (değişmedi):** Opus 48 kb/sn kodlaması özgün Suno parçasında olmayan 18–20 kHz enerjisi ekliyor
+  (özgüne göre +18…+22 dB; TR, KE, JP) ve 10–20 kHz'i gürültüyle dolduruyor (özgünün en sessiz karelerinde +1,8…+3 dB).
+  96 kb/sn'de bu +0,4…+0,7 dB'ye iner ama müzik klasörü ~21 MB olur (sınır 14 MB). Müzikler yeniden elden geçirilirken
+  bit hızı yeniden düşünülecek.
 
 ## 3.14.1: düzeltmeler
 

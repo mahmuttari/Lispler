@@ -48,4 +48,4 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 🛂 Clear a country to stamp your passport; tour together with friends.
 🎵 Intro and background music from each country's own culture; new Music slider in Sound Settings.
 ✈️ Stamps and the plane ride now also show when playing with friends.
-🛠️ Fixed the crackling sound on the room host; music and country-transition fixes; the end-of-game ad no longer covers a new game.
+🛠️ Fixes against crackling sound; music and country-transition fixes; the end-of-game ad no longer covers a new game.

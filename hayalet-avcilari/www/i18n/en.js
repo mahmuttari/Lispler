@@ -233,6 +233,7 @@ I18N.en = {
   "🛒 MAĞAZA": "🛒 SHOP",
   "🛠 <b>{ad}</b> için yükseltmeler": "🛠 Upgrades for <b>{ad}</b>",
   "🛠️ Oda kurucusundaki cızırtı giderildi; müzik ve ülke geçişi düzeltildi; oyun sonu reklamı yeni oyunun üstüne gelmez.": "🛠️ Fixed the crackling sound on the room host; music and country-transition fixes; the end-of-game ad no longer covers a new game.",
+  "🛠️ Ses cızırtısına karşı düzeltmeler; müzik ve ülke geçişi düzeltildi; oyun sonu reklamı yeni oyunun üstüne gelmez.": "🛠️ Fixes against crackling sound; music and country-transition fixes; the end-of-game ad no longer covers a new game.",
   "🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir.": "🛡️ Only ads suitable for all ages are shown now.",
   "🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle.": "🟢 See if friends are online or in a room; block anyone you don't want.",
   "🟢 Çevrimiçi": "🟢 Online",

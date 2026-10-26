@@ -54,4 +54,4 @@
 # (yapıldı 2026-10-25, koşu 40218892928: AAB 48 (koşu 40217723472, commit 84f7176) yüklendi, üretim 3.14.0 (47) → 3.14.1 (48) completed, incelemeye gönderildi) yukle yayinla uygula
 
 # istek 2026-10-26T06:02:03Z: 3.14.2 (49) üretime yükle ve incelemeye gönder; 3.14.1 (48) incelemedeyse onun yerini alır (kullanıcının açık onayıyla: "gönder"); AAB: hayalet-android koşusu 40277139526 (bu dal, commit 0a456dd, versionCode 49, Poyraz Workshop yükleme anahtarı; kod eb0401c ile aynı, yalnız README farklı); mağaza metni ve görseller değişmedi
-yukle yayinla uygula
+# (yapıldı 2026-10-26, koşu 40277498947: AAB 49 (koşu 40277139526, commit 0a456dd) yüklendi, üretim 3.14.1 (48) → 3.14.2 (49) completed, incelemeye gönderildi) yukle yayinla uygula

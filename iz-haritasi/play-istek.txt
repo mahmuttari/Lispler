@@ -11,3 +11,6 @@
 
 # 2026-10-24 durum: Play'de uygulama henüz yok. Önce PR birleştirilir, sonra bilgisayardaki Claude Code
 # magaza/PLAY-YAYIN.md "Talimat" 0-5'i yapar (AdMob kimlikleri main'e, ilk AAB elle taslak). Etkin komut yok.
+
+# 2026-10-26: kullanıcı "Play kurulumu tamam" dedi; Play'deki durum salt okuma ile denetleniyor.
+durum

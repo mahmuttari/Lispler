@@ -1,0 +1,17 @@
+{
+	"appId": "com.poyrazworkshop.unitica",
+	"appName": "Unitica",
+	"webDir": "www",
+	"backgroundColor": "#08183A",
+	"android": {
+		"allowMixedContent": false,
+		"zoomEnabled": false,
+		"minWebViewVersion": 100
+	},
+	"plugins": {
+		"SystemBars": {
+			"insetsHandling": "css",
+			"initialViewportFitValueHint": "cover"
+		}
+	}
+}

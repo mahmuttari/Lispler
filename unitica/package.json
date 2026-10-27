@@ -1,0 +1,22 @@
+{
+  "name": "unitica",
+  "version": "1.4.0",
+  "private": true,
+  "type": "module",
+  "description": "Unitica — çevrimdışı mühendislik birim dönüştürücü, Capacitor ile Android uygulaması (Poyraz Workshop)",
+  "scripts": {
+    "kimlik": "node araclar/kimlik.mjs",
+    "sync": "node araclar/kimlik.mjs && cap sync android",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@capacitor-community/admob": "8.2.1",
+    "@capacitor/android": "8.5.3",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.5.3",
+    "@capgo/native-purchases": "8.9.6"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3"
+  }
+}

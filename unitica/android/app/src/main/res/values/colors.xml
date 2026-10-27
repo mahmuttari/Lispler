@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Özgün Unitica 1.3.1 renkleri (resources.arsc): lacivert açılış ekranı ve sistem çubukları -->
+<resources>
+    <color name="bd_navy">#08183A</color>
+    <color name="bd_accent">#2563EB</color>
+    <color name="colorPrimary">@color/bd_navy</color>
+    <color name="colorPrimaryDark">@color/bd_navy</color>
+    <color name="colorAccent">@color/bd_accent</color>
+</resources>

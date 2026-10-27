@@ -1,0 +1,13 @@
+# Unitica'nın kaynağı: kaynak kodu yok, yalnız APK vardı. Web kodu APK'nın assets/public klasöründen alınıp
+# değiştirildi (www/); simgeler ve açılış ekranı res/'ten (android/app/src/main/res/), tema resources.arsc'ten okundu.
+drive: KUCUK_UYGULAMALAR/Unitica-1.3.1.apk
+drive_dosya_kimligi: 1B339nueCefr9QCtiIv79CLTJTSfe-gT1
+apk_sha256: 942f19915134903af037da166559bee4fa273c7d5974b5bfedb636b76c33e280
+apk_boyut: 1271290
+ozgun_paket: com.unitica.app
+ozgun_surum: 1.3.1 (versionCode 1003001), minSdk 24, targetSdk 36, Capacitor 8 (@capacitor/app), AGP 8.13.0
+ozgun_sertifika: CN=Unitica, OU=Unitica, O=Unitica, C=TR (RSA 4096, 2026-10-21 → 2051-10-15)
+ozgun_sertifika_sha256: 3A:C5:4A:B1:C0:A7:8E:97:F3:5C:BA:BC:59:43:2C:FF:21:E7:0B:9F:B7:F3:36:FC:C8:FE:9B:21:A3:8B:87:86
+yeni_paket: com.poyrazworkshop.unitica
+yeni_surum: 1.4.0 (versionCode 1)
+tarih: 2026-10-27

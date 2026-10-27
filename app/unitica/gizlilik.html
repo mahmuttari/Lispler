@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gizlilik Politikası – Unitica</title>
+<link rel="stylesheet" href="../legal.css">
+</head>
+<body>
+<main>
+<nav><a href="index.html">Unitica</a><a href="gizlilik.html">Gizlilik Politikası</a><a href="#en">English</a></nav>
+<h1>Gizlilik Politikası</h1>
+<p class="date">Son güncelleme: 27 Ekim 2026</p>
+
+<p>Bu politika, <b>Poyraz Workshop</b> ("biz") tarafından Android için yayınlanan <b>Unitica</b> uygulamasının
+("Uygulama") hangi verileri nasıl işlediğini açıklar. Uygulama mühendislik birimlerini dönüştürür; bütün hesap
+telefonunuzda yapılır. Hesap açılmaz, sunucumuz yoktur; girdiğiniz değerler bize gelmez. Uygulama ücretsizdir ve
+Google AdMob reklamları gösterir (4. bölüm); isteğe bağlı reklamsız üyelik Google Play aboneliğidir (5. bölüm).</p>
+
+<div class="box"><b>Kısaca:</b> Dönüştürdüğünüz değerler, geçmiş, favoriler ve ayarlar yalnız telefonunuzda durur.
+İnternete yalnız reklam (Google AdMob ve onay formu) ve Google Play aboneliği için gidilir.</div>
+
+<h2>1. Cihazınızda kalan veriler</h2>
+<ul>
+  <li><b>Ayarlar:</b> dil, tema, anlamlı basamak sayısı, ondalık işareti, sayı gösterimi.</li>
+  <li><b>Dönüştürücü:</b> son yazdığınız değer, seçtiğiniz kategori ve birimler.</li>
+  <li><b>Geçmiş:</b> Dönüştür'e dokunduğunuz son 100 işlem (değer, birimler, sonuç, zaman).</li>
+  <li><b>Favoriler:</b> yıldızladığınız en çok 60 birim çifti ve kartlarına yazdığınız değer.</li>
+  <li><b>Üyelik durumu:</b> Google Play'in reklamsız üyelik için verdiği son yanıt (etkin mi, hangi plan, ne zaman
+      soruldu); çevrimdışıyken de reklamsız kalabilmeniz için.</li>
+  <li><b>Reklam sayacı:</b> son bir saatte gösterilen tam ekran reklamların zamanı (sıklık sınırı için).</li>
+</ul>
+<p>Bu veriler Uygulamanın kendi deposundadır; Google yedeğine ve cihazdan cihaza aktarıma <b>girmez</b>. Geçmişi
+Uygulama içinden silebilirsiniz; Android ayarlarından Uygulamanın verilerini temizlemek ya da Uygulamayı kaldırmak
+hepsini siler.</p>
+
+<h2>2. İzinler</h2>
+<ul>
+  <li><b>İnternet</b> ve <b>ağ durumu:</b> reklamları yüklemek, onay formunu göstermek ve Google Play aboneliğini
+      sorgulamak için. Dönüştürücü internetsiz çalışır.</li>
+  <li><b>Reklam kimliği</b> (<code>AD_ID</code>) ve Android'in reklam API'leri (<code>ACCESS_ADSERVICES_*</code>):
+      Google'ın reklam SDK'sı ekler; reklam göstermek ve ölçmek için (4. bölüm).</li>
+  <li><b>Google Play faturalandırma</b> (<code>BILLING</code>): reklamsız üyeliği satın almak ve geri yüklemek için.</li>
+  <li><b>Uyanık tutma</b> ve <b>ön plan hizmeti</b> (<code>WAKE_LOCK</code>, <code>FOREGROUND_SERVICE</code>): Google'ın
+      reklam SDK'sının kullandığı Android iş kütüphanesi (WorkManager) ekler. Uygulamanın kendisi ekran kapalıyken
+      çalışmaz, ön plan hizmeti başlatmaz.</li>
+</ul>
+<p>Konum, kamera, mikrofon, rehber, dosya ya da bildirim izni <b>istenmez</b>.</p>
+
+<h2>3. İnternete giden istekler</h2>
+<p>Yalnız 4. bölümdeki reklam istekleri ve 5. bölümdeki Google Play abonelik sorguları. Dönüştürdüğünüz değerler,
+geçmişiniz ve favorileriniz hiçbir isteğe <b>eklenmez</b>.</p>
+
+<h2>4. Reklamlar (Google AdMob)</h2>
+<p>Uygulamayı ücretsiz tutmak için Google'ın <b>AdMob</b> hizmetiyle reklam gösteririz: ekranın altında, içeriğin
+üstüne binmeyen bir reklam bandı (klavye açıkken gizlenir) ve seyrek bir tam ekran reklam. Tam ekran reklam yalnız
+Geçmiş, Favoriler ya da Diğer ekranından ayrılırken gelebilir; uygulamanın ilk 5 dakikasında hiç gelmez, en sık 8
+dakikada bir ve saatte en çok 3 kez gelir; değer yazarken, birim seçerken ve bir alt pencere açıkken gelmez. Açılış
+reklamı ve ödüllü reklam yoktur; reklam içerik derecesi en çok "G" (genel izleyici) ile sınırlıdır.</p>
+<p>AdMob; cihazınızın <b>reklam kimliğini</b>, IP adresini (ve ondan çıkan yaklaşık konumu), cihaz ve uygulama
+bilgilerini, reklam etkileşimlerini ve teşhis bilgilerini reklam göstermek, ölçmek, dolandırıcılığı önlemek ve (izin
+verdiyseniz) kişiselleştirmek için işleyebilir. Avrupa Ekonomik Alanı, Birleşik Krallık ve İsviçre'de Uygulama
+reklamdan önce Google'ın onay formunu (UMP) gösterir; tercihinizi <b>Diğer › Reklam gizlilik seçenekleri</b> ile her
+zaman değiştirebilirsiniz. Reklam kimliğinizi Android ayarlarından (Google › Reklamlar) sıfırlayabilir ya da
+silebilirsiniz. Google'ın reklam verilerini nasıl kullandığı:
+<a href="https://policies.google.com/technologies/partner-sites">policies.google.com/technologies/partner-sites</a></p>
+<p>Reklamsız üyeliğiniz etkinse Uygulama reklam SDK'sını <b>hiç başlatmaz</b> ve reklam isteği yapmaz.</p>
+
+<h2>5. Reklamsız üyelik (Google Play aboneliği)</h2>
+<p>Reklamsız üyelik aylık ya da yıllık, kendiliğinden yenilenen bir Google Play aboneliğidir. Ödemeyi Google Play alır
+ve işler; kart ya da ödeme bilgilerinizi görmeyiz. Uygulama Google Play'e yalnız fiyatları ve aboneliğin etkin olup
+olmadığını sorar, yanıtı cihazda saklar. Aboneliği Google Play › Abonelikler'den (Uygulamada <b>Diğer › Reklamsız
+üyelik › Aboneliği yönet</b>) yönetir ve iptal edersiniz. Google Play'in gizlilik politikası:
+<a href="https://policies.google.com/privacy">policies.google.com/privacy</a></p>
+
+<h2>6. Paylaşım</h2>
+<p>Verilerinizi satmayız ve bir sunucuda toplamayız. Cihazınızdan yalnız 4. bölümdeki reklam verileri ve 5. bölümdeki
+abonelik sorguları çıkar.</p>
+
+<h2>7. Çocuklar</h2>
+<p>Uygulama 13 yaş ve üzeri kullanıcılar için yayınlanmıştır ve çocuklara yönelik değildir.</p>
+
+<h2>8. Haklarınız</h2>
+<p>6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve geçerli olduğu yerde GDPR kapsamında haklarınızı
+kullanabilirsiniz. Uygulamanın kendi verileri yalnız cihazınızda olduğu için onları Uygulama içinden görür ve
+silersiniz; reklam verileri için Google'ın yukarıdaki denetimleri, abonelik için Google Play hesabınız geçerlidir.
+Sorularınız için: <a href="mailto:mahmuttari@gmail.com">mahmuttari@gmail.com</a></p>
+
+<h2>9. Değişiklikler</h2>
+<p>Bu politikayı güncellersek yeni tarihi bu sayfada yayınlarız.</p>
+
+<h2 id="en">Privacy Policy (English)</h2>
+<p class="date">Last updated: 27 October 2026</p>
+<p><b>Unitica</b> by <b>Poyraz Workshop</b> converts engineering units; every calculation runs on your phone. There is
+no account and no server of ours. Your settings (language, theme, significant digits, decimal mark, number format),
+the last value and units, your history (the last 100 conversions you saved), your favourites (up to 60 unit pairs),
+the last answer Google Play gave about the ad-free membership and the times of the full-screen ads shown in the last
+hour are stored <b>only on your device</b>, excluded from Google backup and device transfer. Clear the history in the
+app, or clear the app's data or uninstall it to remove everything.</p>
+<p>Permissions: Internet and network state (ads, the consent form and the Google Play subscription; the converter
+itself works offline); advertising ID and Android's ad services APIs (added by Google's ads SDK); Google Play billing
+(buying and restoring the ad-free membership); wake lock and foreground service (added by the Android WorkManager
+library that Google's ads SDK uses; the app itself does not run in the background or start a foreground service). The
+app does not ask for location, camera, microphone, contacts, files or notifications.</p>
+<p>The app shows Google AdMob ads: a bottom banner that never covers the content (hidden while the keyboard is open)
+and a rare full-screen ad, only when you leave the History, Favourites or More screen, never in the first 5 minutes,
+at most once every 8 minutes and 3 times an hour, never while you type, pick a unit or have a sheet open. There are no
+app-open or rewarded ads, and ad content is limited to the "G" rating. AdMob may process your advertising ID, IP
+address and the approximate location derived from it, device and app information, ad interactions and diagnostics to
+serve, measure and (with your consent) personalise ads and to prevent fraud. In the EEA, the UK and Switzerland the app
+shows Google's consent form (UMP) before any ad; change your choice any time in More › Ad privacy options, or reset
+your advertising ID in Android settings. With an active ad-free membership the app never initialises the ads SDK.
+See <a href="https://policies.google.com/technologies/partner-sites">how Google uses information from apps that use its
+services</a>.</p>
+<p>The ad-free membership is an auto-renewing monthly or yearly Google Play subscription. Google Play takes and
+processes the payment; we never see your payment details. The app only asks Google Play for the prices and whether the
+subscription is active, and keeps that answer on the device. Manage or cancel it in Google Play › Subscriptions (in
+the app: More › Ad-free membership › Manage subscription).</p>
+<p>We do not sell your data. The app is intended for users aged 13 and over and is not directed at children. You can
+exercise your rights under the Turkish Personal Data Protection Law (KVKK) and, where it applies, the GDPR. Contact:
+<a href="mailto:mahmuttari@gmail.com">mahmuttari@gmail.com</a></p>
+</main>
+</body>
+</html>

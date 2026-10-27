@@ -94,6 +94,10 @@ kimlikleriyle derlendi" uyarısı **olmamalı**). Her koşunun **Artifacts** bö
 `.aab`'yi çıkar (`Unitica.aab`, `Calqora.aab`, `KibleBul.aab`, `SmartMeasure.aab`).
 
 ### 2. Play Console: dört uygulamayı oluştur
+**Smart Measure'ın adı önce kesinleşmeli:** Play'de "Smart Measure" adında, aynı yöntemle çalışan, 10 milyondan fazla
+indirilmiş başka bir uygulama var (`smart-measure/magaza/DEGERLENDIRME.md` §0). Kullanıcının seçtiği ad depoya
+işlenmemişse Smart Measure'ı oluşturmadan dur ve sor; diğer üç uygulama bundan etkilenmez.
+
 https://play.google.com/console → **Poyraz Workshop** → her uygulama için "Uygulama oluştur": ad (mağaza adı, tablodan),
 varsayılan dil **Türkçe – tr-TR**, **Uygulama**, **Ücretsiz**. Beyan kutuları onay paketiyle işaretlenir; sonra
 "Uygulama oluştur". Paket adı ilk pakette belirlenir ve bir daha değişmez: tablodaki `com.poyrazworkshop.…` olmalı.

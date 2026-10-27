@@ -72,9 +72,11 @@ Her uygulama için (sırayla Unitica, Calqora, Kıble Bul, Smart Measure):
 3. Uygulamanın `PLAY-YAYIN.md`'sinde AdMob için ek bir adım varsa (ör. Kıble Bul'da hassas reklam kategorilerini
    engelleme) onu da yap.
 
-Sonra **Gizlilik ve mesajlaşma → Avrupa tüzükleri** → yeni mesaj: uygulamalar **dördü**, diller **Türkçe + İngilizce**,
-her uygulamanın gizlilik politikası adresi, seçenekler varsayılan → kullanıcıya göster, **onayla Yayınla**. (Bu mesaj
-olmadan AB, Birleşik Krallık ve İsviçre'de onay formu çıkmaz, oralarda reklam kısıtlı kalır.)
+Sonra **Gizlilik ve mesajlaşma → Avrupa tüzükleri** → yeni mesaj: uygulamalar **dördü**, diller uygulamaların
+Avrupa dilleri: **Türkçe, İngilizce, Almanca, Fransızca, İspanyolca, İtalyanca, Portekizce** (Unitica, Calqora ve
+Kıble Bul bu dillerde; onay formu kullanıcıya kendi dilinde çıkar), her uygulamanın gizlilik politikası adresi,
+seçenekler varsayılan → kullanıcıya göster, **onayla Yayınla**. (Bu mesaj olmadan AB, Birleşik Krallık ve İsviçre'de
+onay formu çıkmaz, oralarda reklam kısıtlı kalır.)
 
 Dört uygulamanın `android/gradle.properties` dosyalarındaki üç satırı gerçek kimliklerle değiştir:
 ```

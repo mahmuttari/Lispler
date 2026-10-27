@@ -1,0 +1,88 @@
+# Smart Measure — Google Play Developer API işleri (android/play.mjs, PLAY_UYGULAMA=smartmeasure). Düzen play-iz.yml ile aynıdır.
+# Komutlar smart-measure/play-istek.txt'ye yazılır (her satır bir komut, sırayla; biri hata verirse sonrakiler çalışmaz).
+# Kimlik anahtarsız: GitHub → Workload Identity → android/play-kimlik.env'deki hizmet hesabının kısa ömürlü belirteci.
+# Hizmet hesabı Play Console → Kullanıcılar ve izinler'de bu uygulamaya da verilmiş olmalı (smart-measure/magaza/PLAY-YAYIN.md).
+# "yukle" komutu AAB'yi aynı daldaki (yoksa main'deki) son başarılı smartmeasure-android.yml koşusunun "SmartMeasure-aab" artifact'ından
+# alır (surum.txt'teki versionCode build.gradle ile eşleşmeli). AdMob TEST kimlikleriyle derlenmiş paket yüklenmez.
+name: Google Play (Smart Measure)
+
+on:
+  push:
+    paths: ['smart-measure/play-istek.txt']
+  workflow_dispatch:
+
+concurrency:
+  group: play-smartmeasure
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read     # derleme artifact'ını indirmek için
+  id-token: write
+
+jobs:
+  play:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Komutlar ve kimlik
+        id: hazir
+        run: |
+          grep -v '^[[:space:]]*#' smart-measure/play-istek.txt | tr -d '\r' | sed '/^[[:space:]]*$/d' > "$RUNNER_TEMP/komutlar" || true
+          while IFS= read -r K; do case "$K" in *[!a-z\ ]*) echo "::error::geçersiz komut: $K"; exit 1;; esac; done < "$RUNNER_TEMP/komutlar"
+          echo "Komutlar:"; cat "$RUNNER_TEMP/komutlar"
+          if [ ! -s "$RUNNER_TEMP/komutlar" ]; then echo "komut yok"; echo "tamam=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          grep -E '^(PLAY_WIF_PROVIDER|PLAY_SERVICE_ACCOUNT)=' android/play-kimlik.env >> "$GITHUB_ENV"
+          . android/play-kimlik.env
+          if [ -z "$PLAY_WIF_PROVIDER" ] || [ -z "$PLAY_SERVICE_ACCOUNT" ]; then
+            echo "::warning::android/play-kimlik.env boş: önce Cloud Shell'de android/play-kurulum.sh çalıştırılmalı. Play'e bağlanılmadı."
+            echo "tamam=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "tamam=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mağaza dosyaları denetimi (metin sınırları, Veri güvenliği CSV'si, görsel ölçüleri, AdMob kimlikleri)
+        if: steps.hazir.outputs.tamam == 'true'
+        run: node --test smart-measure/test/*.test.mjs
+      - name: AAB'yi derleme artifact'ından al (yalnız "yukle" komutunda)
+        if: steps.hazir.outputs.tamam == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          grep -qE '^[[:space:]]*yukle' "$RUNNER_TEMP/komutlar" || { echo "yükleme komutu yok"; exit 0; }
+          VC=$(sed -nE 's/^ *versionCode +([0-9]+).*/\1/p' smart-measure/android/app/build.gradle | head -1)
+          TEST=""
+          for RUN in $( (gh run list -R "$GITHUB_REPOSITORY" -w smartmeasure-android.yml -b "$GITHUB_REF_NAME" -s success -L 15 --json databaseId -q '.[].databaseId'; [ "$GITHUB_REF_NAME" = main ] || gh run list -R "$GITHUB_REPOSITORY" -w smartmeasure-android.yml -b main -s success -L 15 --json databaseId -q '.[].databaseId') ); do
+            rm -rf "$RUNNER_TEMP/aab"
+            if gh run download "$RUN" -R "$GITHUB_REPOSITORY" -n SmartMeasure-aab -D "$RUNNER_TEMP/aab" 2>/dev/null \
+               && grep -qx "versionCode=$VC" "$RUNNER_TEMP/aab/surum.txt" 2>/dev/null; then
+              # Test kimlikli derleme atlanır (ör. dalın gerçek kimliklerden önceki koşusu); aramaya main'de devam edilir
+              if grep -q '^admob=ca-app-pub-3940256099942544' "$RUNNER_TEMP/aab/surum.txt"; then TEST="$TEST $RUN"; continue; fi
+              mkdir -p dist && cp "$RUNNER_TEMP/aab/SmartMeasure.aab" dist/SmartMeasure-play.aab
+              echo "AAB: derleme koşusu $RUN"; cat "$RUNNER_TEMP/aab/surum.txt"; exit 0
+            fi
+          done
+          if [ -n "$TEST" ]; then
+            echo "::error::versionCode $VC için yalnız AdMob TEST kimlikli derleme var (koşu$TEST); Play'e yüklenmez. Önce gerçek kimlikler smart-measure/android/gradle.properties'e yazılmalı (magaza/PLAY-YAYIN.md adım 1)."
+          else
+            echo "::error::versionCode $VC için imzalı derleme artifact'ı yok (smartmeasure-android.yml başarıyla çalışmalı)"
+          fi
+          exit 1
+      - id: auth
+        if: steps.hazir.outputs.tamam == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.PLAY_WIF_PROVIDER }}
+          service_account: ${{ env.PLAY_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+      - name: play.mjs
+        if: steps.hazir.outputs.tamam == 'true'
+        env:
+          PLAY_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          PLAY_UYGULAMA: smartmeasure
+        run: |
+          while IFS= read -r K; do echo; echo "════ $K ════"; node android/play.mjs $K < /dev/null; done < "$RUNNER_TEMP/komutlar"

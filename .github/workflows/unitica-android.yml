@@ -1,0 +1,91 @@
+# Unitica (KUCUK_UYGULAMALAR'daki APK'dan yeniden kurulan Poyraz Workshop uygulaması): Android derlemesi. Hayalet Avcıları
+# düzeni (Capacitor 8), İz Haritası'nın AdMob denetimiyle.
+# - Her değişiklikte APK derlenir (Artifacts: Unitica-apk).
+# - Reklam birimi kimlikleri tek yerden gelir: unitica/android/gradle.properties → araclar/kimlik.mjs → www/js/reklam-kimlik.js.
+# - Yükleme anahtarı secret'ı varsa İMZALI AAB derlenir; "Unitica-aab" artifact'ı surum.txt ile kalır. play-unitica.yml'deki
+#   "yukle" komutu AAB'yi buradan alır (versionCode build.gradle ile eşleşen son başarılı koşu).
+# - Anahtar: UNITICA_KEYSTORE_BASE64 / UNITICA_KEYSTORE_PASSWORD (takma ad "upload"); yoksa Poyraz Workshop'un ortak
+#   yükleme anahtarı (HAYALET_KEYSTORE_*) kullanılır. Play aynı yükleme anahtarını birden çok uygulamada kabul eder
+#   (uygulama imzalama anahtarı Google'dadır). Anahtar depoda durmaz, yalnız derleme sırasında diske yazılır.
+name: Android (Unitica)
+
+on:
+  push:
+    paths:
+      - 'unitica/**'
+      - '!unitica/play-istek.txt'
+      - '!unitica/magaza/**'
+      - '.github/workflows/unitica-android.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: unitica
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      # GitHub'ın Ubuntu sunucularında Android SDK hazır kurulu gelir (ANDROID_HOME)
+      - run: npm ci
+      - name: Reklam kimliklerini web tarafına yaz (gradle.properties → www/js/reklam-kimlik.js)
+        run: node araclar/kimlik.mjs
+      - run: npx cap sync android
+      - name: Yükleme anahtarını secret'tan yaz
+        id: imza
+        env:
+          KS_B64: ${{ secrets.UNITICA_KEYSTORE_BASE64 || secrets.HAYALET_KEYSTORE_BASE64 }}
+          KS_PAROLA: ${{ secrets.UNITICA_KEYSTORE_PASSWORD || secrets.HAYALET_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KS_B64" ] || [ -z "$KS_PAROLA" ]; then
+            echo "::warning::Yükleme anahtarı secret'ı yok — derleme Play'e yüklenemez (yalnız deneme APK'sı)"
+            echo "imzali=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          printf '%s' "$KS_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=upload\nkeyPassword=%s\n' "$RUNNER_TEMP/upload.jks" "$KS_PAROLA" "$KS_PAROLA" > android/keystore.properties
+          echo "imzali=true" >> "$GITHUB_OUTPUT"
+      - name: Derle
+        working-directory: unitica/android
+        run: |
+          if [ "${{ steps.imza.outputs.imzali }}" = "true" ]; then
+            ./gradlew assembleRelease bundleRelease --no-daemon --console=plain
+          else
+            ./gradlew assembleRelease --no-daemon --console=plain
+          fi
+          rm -f keystore.properties "$RUNNER_TEMP/upload.jks"
+      - name: Çıktılar ve surum.txt
+        working-directory: unitica/android
+        run: |
+          mkdir -p "$RUNNER_TEMP/cikti"
+          VC=$(sed -nE 's/^ *versionCode +([0-9]+).*/\1/p' app/build.gradle | head -1)
+          VN=$(sed -nE "s/^ *versionName +'([^']+)'.*/\1/p" app/build.gradle | head -1)
+          ADMOB=$(sed -nE 's/^ADMOB_APP_ID=//p' gradle.properties)
+          printf 'versionCode=%s\nversionName=%s\ncommit=%s\nadmob=%s\n' "$VC" "$VN" "$GITHUB_SHA" "$ADMOB" > "$RUNNER_TEMP/cikti/surum.txt"
+          case "$ADMOB" in ca-app-pub-3940256099942544*) echo "::warning::AdMob TEST kimlikleriyle derlendi: Play'e yüklenmez (magaza/PLAY-YAYIN.md adım 1)";; esac
+          cp app/build/outputs/apk/release/*.apk "$RUNNER_TEMP/cikti/Unitica.apk"
+          if [ -f app/build/outputs/bundle/release/app-release.aab ]; then
+            cp app/build/outputs/bundle/release/app-release.aab "$RUNNER_TEMP/cikti/Unitica.aab"
+            keytool -printcert -jarfile "$RUNNER_TEMP/cikti/Unitica.aab" | grep -E "Owner|SHA256:" || true
+          fi
+          ls -la "$RUNNER_TEMP/cikti"; cat "$RUNNER_TEMP/cikti/surum.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Unitica-apk
+          path: ${{ runner.temp }}/cikti/Unitica.apk
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: steps.imza.outputs.imzali == 'true'
+        with:
+          name: Unitica-aab
+          path: |
+            ${{ runner.temp }}/cikti/Unitica.aab
+            ${{ runner.temp }}/cikti/surum.txt
+          retention-days: 30

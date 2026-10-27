@@ -92,6 +92,27 @@ metinleri, Veri güvenliği CSV'si, görseller ve Play'e yayın talimatı ([`iz-
 bulunur. Gizlilik sayfası `app/iz-haritasi/` altındadır. Paket CI'da derlenir (`iz-android.yml` → artifact
 `IzHaritasi-aab`); Play API işleri `play-iz.yml` ile yürür.
 
+## Küçük uygulamalar: Unitica, Calqora, Kıble Bul, Smart Measure
+
+Drive'daki `PROGRAM/KUCUK_UYGULAMALAR` klasöründe yalnız APK olarak duran dört GeoTerva uygulaması, Poyraz Workshop
+hesabından Google Play'e çıkmak için burada yeniden kuruldu (kaynak kodları yoktu). Her biri kendi klasöründedir:
+Capacitor 8 Android projesi, mağaza metinleri (tr-TR varsayılan, uygulamanın bütün dilleri), Veri güvenliği CSV'si,
+görseller, uzman değerlendirmesi ve Play'e yayın talimatı. Hepsi AdMob reklamlı (banner + doğal duraklarda seyrek geçiş
+reklamı) ve reklamları kaldıran `adfree` aboneliklidir (aylık / yıllık). APK'ların içindeki GeoTerva tam ekran iç reklamı
+kaldırıldı; GeoTerva yalnız Hakkında ekranında bir bağlantı olarak durur.
+
+| Uygulama | Klasör | Paket | Derleme → artifact | Play API |
+|---|---|---|---|---|
+| Unitica (birim çevirici) | [`unitica/`](unitica/) | `com.poyrazworkshop.unitica` | `unitica-android.yml` → `Unitica-aab` | `play-unitica.yml` |
+| Calqora (bilimsel hesap makinesi) | [`calqora/`](calqora/) | `com.poyrazworkshop.calqora` | `calqora-android.yml` → `Calqora-aab` | `play-calqora.yml` |
+| Kıble Bul (kıble pusulası) | [`kible-bul/`](kible-bul/) | `com.poyrazworkshop.kiblebul` | `kiblebul-android.yml` → `KibleBul-aab` | `play-kiblebul.yml` |
+| Smart Measure (ölçüm araçları) | [`smart-measure/`](smart-measure/) | `com.poyrazworkshop.smartmeasure` | `smartmeasure-android.yml` → `SmartMeasure-aab` | `play-smartmeasure.yml` |
+
+Dördünün tarayıcı işleri (AdMob, Play'de uygulama oluşturma, ilk AAB, formlar, abonelik) tek oturumda yapılır:
+[`docs/kucuk-uygulamalar-play.md`](docs/kucuk-uygulamalar-play.md). Gizlilik sayfaları `app/<klasör>/gizlilik.html`
+altındadır (GitHub Pages, yalnız main'den yayınlanır). Reklam birimi kimlikleri her uygulamanın
+`android/gradle.properties` dosyasındadır; Google'ın test kimlikleri gerçekleriyle değiştirilmeden paket Play'e yüklenmez.
+
 ## Proje yapısı
 
 ```
@@ -102,6 +123,7 @@ magaza/     Fiyatlandırma ve mağaza metinleri
 dist/       Elle kurulum için hazır APK
 hayalet-avcilari/  Hayalet Avcıları (oyun): kaynak, Android projesi, mağaza
 iz-haritasi/       İz Haritası: Android projesi (web arayüzü GENEL-KONULAR'dan), mağaza
+unitica/ calqora/ kible-bul/ smart-measure/  KUCUK_UYGULAMALAR'dan yeniden kurulan dört uygulama (Capacitor 8), mağaza
 .github/    Otomatik derleme: Android (APK/AAB), iOS (derleme + TestFlight), Pages (gizlilik sayfaları)
 ```
 

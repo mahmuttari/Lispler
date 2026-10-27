@@ -17,7 +17,8 @@
 //
 // PLAY_UYGULAMA ortam değişkeni hangi uygulamanın işleneceğini seçer: boş ya da "notdefteri" (varsayılan),
 // "hayalet" (Hayalet Avcıları: hayalet-avcilari/ klasörü, .github/workflows/play-hayalet.yml),
-// "iz" (İz Haritası: iz-haritasi/ klasörü, .github/workflows/play-iz.yml).
+// "iz" (İz Haritası: iz-haritasi/ klasörü, .github/workflows/play-iz.yml); KUCUK_UYGULAMALAR'dan gelen dört uygulama
+// "unitica", "calqora", "kiblebul" (Kıble Bul) ve "smartmeasure" (Smart Measure): kendi klasörleri ve play-<anahtar>.yml.
 //
 // "uygula" yoksa hiçbir şey yazılmaz: düzenleme (edit) açılır, plan yazılır, düzenleme silinir. Uygulamayı oluşturmak
 // ve ilk AAB'yi yüklemek Play Console'dan elle yapılır (taslak uygulamada API paketi bulamaz); API ondan sonra çalışır.
@@ -30,6 +31,10 @@ export const UYGULAMALAR = {
   notdefteri: { paket: 'com.poyrazworkshop.notdefteri', magaza: 'magaza', aab: 'dist/NotDefteri-play.aab', gradle: 'android/app/build.gradle' },
   hayalet: { paket: 'com.poyrazworkshop.hayaletavcilari', magaza: 'hayalet-avcilari/magaza', aab: 'dist/HayaletAvcilari-play.aab', gradle: 'hayalet-avcilari/android/app/build.gradle' },
   iz: { paket: 'com.poyrazworkshop.izharitasi', magaza: 'iz-haritasi/magaza', aab: 'dist/IzHaritasi-play.aab', gradle: 'iz-haritasi/android/app/build.gradle' },
+  unitica: { paket: 'com.poyrazworkshop.unitica', magaza: 'unitica/magaza', aab: 'dist/Unitica-play.aab', gradle: 'unitica/android/app/build.gradle' },
+  calqora: { paket: 'com.poyrazworkshop.calqora', magaza: 'calqora/magaza', aab: 'dist/Calqora-play.aab', gradle: 'calqora/android/app/build.gradle' },
+  kiblebul: { paket: 'com.poyrazworkshop.kiblebul', magaza: 'kible-bul/magaza', aab: 'dist/KibleBul-play.aab', gradle: 'kible-bul/android/app/build.gradle' },
+  smartmeasure: { paket: 'com.poyrazworkshop.smartmeasure', magaza: 'smart-measure/magaza', aab: 'dist/SmartMeasure-play.aab', gradle: 'smart-measure/android/app/build.gradle' },
 };
 const SECIM = UYGULAMALAR[process.env.PLAY_UYGULAMA || 'notdefteri'];
 if (!SECIM) throw new Error(`PLAY_UYGULAMA bilinmiyor: ${process.env.PLAY_UYGULAMA} (${Object.keys(UYGULAMALAR).join(', ')})`);

@@ -1,0 +1,16 @@
+# Calqora'nın kaynağı: Google Drive'daki APK (kaynak kod yoktu; web kodu APK'dan alındı, Android projesi yeniden kuruldu)
+drive_klasoru: KUCUK_UYGULAMALAR
+drive_dosyasi: Calqora-1.0.0-1.apk
+drive_kimligi: 1nevGYjs7NkOhd-n8LCEzpcyyBC0c0O6F
+apk_sha256: ed5a34b27df98e3291d2f7db27f2256be14025a0d72d1132346f5ced157b5815
+apk_boyutu: 1604066
+ozgun_paket: com.geoterva.calqora
+ozgun_surum: 1.0.0 (versionCode 1000000), minSdk 24, targetSdk 36, AGP 8.13.0, Capacitor 8
+ozgun_eklentiler: @capacitor/app, @capacitor/browser, @capgo/native-purchases 8.9.6 (Play Billing 9.1.0)
+ozgun_izinler: ACCESS_NETWORK_STATE, com.android.vending.BILLING (INTERNET yoktu)
+ozgun_sertifika: CN=Bilimsel Hesap, O=Bilimsel Hesap; RSA 4096, SHA-384; 2026-10-21 → 2126-09-27
+ozgun_sertifika_sha256: 2B:DB:33:F2:5A:DC:A6:5D:D8:F3:FE:DC:7C:0B:E5:CB:0A:69:8C:13:20:66:0A:7F:91:9F:36:02:67:D8:E9:7B
+alinan: assets/public (index.html, css/, js/ — cordova*.js hariç), res/ (simge katmanları, açılış simgesi), tema ve
+        MainActivity davranışı (androguard ile okundu)
+yeni_paket: com.poyrazworkshop.calqora 1.1.0 (versionCode 1)
+tarih: 2026-10-27

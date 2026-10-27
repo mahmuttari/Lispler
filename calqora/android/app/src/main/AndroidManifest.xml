@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Calqora (Poyraz Workshop). Özgün APK'nın (1.0.0, calqora/KAYNAK.txt) manifestine göre: yedekleme kapalı, yalnız
+     HTTPS, singleTask, adjustResize, kenardan kenara açılış ekranı. Farklar: paket adı ve sürüm build.gradle'da,
+     AdMob uygulama kimliği (gradle.properties → manifestPlaceholders), reklam için İnternet izni. Capacitor şablonundaki
+     FileProvider özgünde de yoktu, kaldırıldı. Faturalama izni (BILLING) @capgo/native-purchases'tan, AD_ID ve
+     ACCESS_NETWORK_STATE AdMob SDK'sından birleşir. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Reklamlar (AdMob, UMP) ve Google Play abonelik fiyatları. Hesaplamaların hiçbiri ağa çıkmaz. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/veri_aktarimi"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="false"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBarLaunch"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <!-- AdMob uygulama kimliği: sürüm derlemesi android/gradle.properties › ADMOB_APP_ID, hata ayıklama derlemesi
+             Google'ın test kimliği (app/build.gradle). -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+    </application>
+</manifest>

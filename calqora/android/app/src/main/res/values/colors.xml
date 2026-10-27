@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Calqora renkleri: www/css/app.css'teki accent ve bg belirteçleriyle aynı (açık tema; koyu tema values-night'ta) -->
+<resources>
+    <color name="calqora_accent">#FF2563EB</color>
+    <color name="calqora_bg">#FFF2F4F8</color>
+</resources>

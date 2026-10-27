@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Calqora</string>
+    <string name="title_activity_main">Calqora</string>
+    <string name="package_name">com.poyrazworkshop.calqora</string>
+    <string name="custom_url_scheme">com.poyrazworkshop.calqora</string>
+</resources>

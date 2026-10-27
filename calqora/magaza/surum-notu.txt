@@ -1,0 +1,5 @@
+İlk sürüm 🎉
+🧮 Bilimsel hesap: kökler, trigonometri, toplam, türev, integral, denklem çözme.
+📈 Dört fonksiyona kadar grafik: kök, en küçük / en büyük değer, kesişim.
+ℂ Karmaşık sayılar, ▦ 5×5'e kadar matrisler, ⇄ 140 birim ve 46 sabit.
+🌍 11 dil, açık ve koyu tema.

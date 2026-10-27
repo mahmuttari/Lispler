@@ -1,0 +1,17 @@
+{
+	"appId": "com.poyrazworkshop.calqora",
+	"appName": "Calqora",
+	"webDir": "www",
+	"backgroundColor": "#101418",
+	"android": {
+		"allowMixedContent": false,
+		"zoomEnabled": false,
+		"minWebViewVersion": 100
+	},
+	"plugins": {
+		"SystemBars": {
+			"insetsHandling": "native",
+			"initialViewportFitValueHint": "cover"
+		}
+	}
+}

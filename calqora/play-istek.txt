@@ -1,0 +1,13 @@
+# Calqora — Google Play API komutları (.github/workflows/play-calqora.yml çalıştırır; ayrıntı magaza/PLAY-YAYIN.md).
+# Her satır bir komut; # ile başlayanlar yok sayılır. Önce Play Console'da uygulama oluşturulup ilk AAB elle yüklenmeli.
+#   durum                     salt okuma
+#   magaza uygula             iletişim + tr-TR ve 10 dilin mağaza metni (magaza/aciklamalar.md, magaza/diller/)
+#   gorsel uygula             simge, tanıtım görseli, telefon ekran görüntüleri (magaza/play, magaza/play/<dil>)
+#   veriguvenligi uygula      Veri güvenliği formu (magaza/veri-guvenligi.csv)
+#   yukle uygula              imzalı AAB → üretim kanalına TASLAK
+#   yukle yayinla uygula      incelemeye gönder — yalnız kullanıcının açık onayıyla
+#   veriguvenligi             CSV'nin özeti (salt okuma; yazmak için "uygula" — formun TAMAMINI değiştirir)
+# Her push dosyadaki bütün etkin satırları çalıştırır: çalışan satırlar "# (yapıldı …)" ile kapatılır.
+
+# 2026-10-27 durum: Play'de uygulama henüz yok. Önce PR birleştirilir, sonra bilgisayardaki Claude Code
+# magaza/PLAY-YAYIN.md "Talimat"ı yapar (AdMob kimlikleri main'e, abonelik, ilk AAB elle taslak). Etkin komut yok.

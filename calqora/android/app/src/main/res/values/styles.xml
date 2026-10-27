@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Özgün APK'nın temaları (androguard ile okundu): kenardan kenara, saydam sistem çubukları, açık/koyu zemin,
+     Android 12+ SplashScreen API'siyle açılış ekranı. Yalnız renk adları değişti (bh_* → calqora_*). -->
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/calqora_accent</item>
+        <item name="colorPrimaryDark">@color/calqora_bg</item>
+        <item name="colorAccent">@color/calqora_accent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/calqora_bg</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/calqora_bg</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_drawable</item>
+        <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
+        <item name="android:windowBackground">@color/calqora_bg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

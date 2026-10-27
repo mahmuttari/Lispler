@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Yedekleme kapalı (özgün uygulama gibi): geçmiş ve kalibrasyonlar yalnız bu telefonda kalır -->
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="false"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBarLaunch"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <!-- WorkManager'ın (reklam SDK'sıyla gelir) ön plan hizmeti kullanılmaz: tür beyanı gerektirmesin -->
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            tools:node="remove" />
+
+        <!-- AdMob uygulama kimliği: android/gradle.properties › ADMOB_APP_ID (hata ayıklama derlemesinde Google'ın test kimliği) -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+    </application>
+
+    <!-- Ayarlar › Bu telefon: ARCore kurulu mu (yalnız bildirilir, kullanılmaz) -->
+    <queries>
+        <package android:name="com.google.ar.core" />
+    </queries>
+
+    <!-- İnternet yalnız reklam (AdMob) ve Google Play Faturalandırma için -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Kamerayla ölçüm: görüntü yalnız ekranda gösterilir, kaydedilmez -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Ses ölçer: yalnız ses düzeyi hesaplanır, ses kaydedilmez -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Uygulama ön plan hizmeti çalıştırmaz (WorkManager'ın eklediği izin kaldırılır) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" tools:node="remove" />
+    <!-- Su terazisi hedef açıda titreşir -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Hiçbir donanım zorunlu değil: eksik olan, ona ihtiyaç duyan araçta söylenir -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.light" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <!-- Dikey kilit telefonda geçerli; yalnız yatay ekranlı cihazlar (tablet, Chromebook) da kurabilsin -->
+    <uses-feature android:name="android.hardware.screen.portrait" android:required="false" />
+</manifest>

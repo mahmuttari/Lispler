@@ -1,0 +1,23 @@
+{
+  "name": "smart-measure",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Smart Measure — telefonun sensörleriyle ölçüm araçları (kamerayla mesafe/yükseklik, su terazisi, ekran cetveli, açıölçer, ses ve ışık ölçer), Capacitor ile Android uygulaması (Poyraz Workshop)",
+  "scripts": {
+    "kimlik": "node araclar/kimlik.mjs",
+    "sync": "node araclar/kimlik.mjs && cap sync android",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@capacitor-community/admob": "8.2.1",
+    "@capacitor/android": "8.5.3",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/haptics": "8.0.2",
+    "@capgo/native-purchases": "8.9.6"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3"
+  }
+}

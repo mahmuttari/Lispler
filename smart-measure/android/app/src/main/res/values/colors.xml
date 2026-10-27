@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Özgün uygulamanın simge zemini ve koyu temanın zemini -->
+    <color name="ic_launcher_background">#04070C</color>
+    <color name="zemin">#000000</color>
+    <color name="vurgu">#0A95FF</color>
+</resources>

@@ -1,0 +1,18 @@
+{
+	"appId": "com.poyrazworkshop.smartmeasure",
+	"appName": "Smart Measure",
+	"webDir": "www",
+	"backgroundColor": "#000000",
+	"android": {
+		"allowMixedContent": false,
+		"zoomEnabled": false,
+		"minWebViewVersion": 100
+	},
+	"plugins": {
+		"SystemBars": {
+			"insetsHandling": "css",
+			"style": "DARK",
+			"initialViewportFitValueHint": "cover"
+		}
+	}
+}

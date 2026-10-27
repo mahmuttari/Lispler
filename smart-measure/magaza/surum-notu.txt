@@ -1,0 +1,7 @@
+İlk sürüm 🎉
+📐 Su terazisi: yüzey, çizgi, dikey; kalibrasyon.
+📷 Kamerayla mesafe, yükseklik ve genişlik.
+📏 Banka kartıyla kalibre edilen ekran cetveli, açıölçer.
+🔊 Ses ölçer (A-ağırlıklı) · 💡 ışık ölçer.
+🕘 Geçmiş ve favoriler yalnız telefonunda.
+🎨 Açık ve koyu tema.

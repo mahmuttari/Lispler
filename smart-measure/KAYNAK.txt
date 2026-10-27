@@ -1,0 +1,18 @@
+# Smart Measure'ın kaynağı: Google Drive'daki APK (kaynak kod yoktu; yerel Kotlin + Jetpack Compose uygulaması R8 ile
+# küçültülmüştü). Uygulama aynı özellikler, akışlar ve metinlerle Capacitor 8 ile YENİDEN YAZILDI (README).
+drive_klasoru: KUCUK_UYGULAMALAR
+drive_dosyasi: SmartMeasure-0.1.0.apk
+drive_kimligi: 1Drf7drVSec75iKeBmxtLkqYZXJJYvpOf
+apk_sha256: a7ef29475200cfe9b308b30f404a6d9d1bb2a4e10381e259517869115b1a61e5
+apk_boyutu: 2333206
+ozgun_paket: com.geoterva.smartmeasure
+ozgun_surum: 0.1.0 (versionCode 1000), minSdk 26, targetSdk 36, AGP 8.13.0; Kotlin, Jetpack Compose, CameraX, DataStore
+ozgun_izinler: CAMERA, RECORD_AUDIO, VIBRATE (INTERNET yoktu); <queries> com.google.ar.core; donanımların hepsi zorunlu değil
+ozgun_sertifika: CN=Smart Measure, OU=GeoTerva, O=GeoTerva, C=TR; RSA 4096, SHA-384; 2026-10-22 → 2054-03-09
+ozgun_sertifika_sha256: EA:AB:86:87:D8:E1:32:DC:2A:1F:8E:FA:62:9B:7F:CD:AF:DD:A9:99:24:EB:DE:57:2A:E5:96:34:32:E5:BC:7E
+alinan: 404 dize kaynağı (en + tr) → www/js/lang/; Manrope yazı tipi (res/font, OFL) → www/fonts/; uygulama simgesi
+        (uyarlanabilir: #04070C zemin, küp vektörü) → android/app/src/main/res/; iki renk paleti (koyu ve açık) ve araç
+        renkleri, 64 Lucide simgesinin yol verisi, eşikler (ışık, ses, kamera 8°/85°, telefon yüksekliği 0,5–2,2 m,
+        tolerans 0,1–2°, cetvel ölçeği ±%15, kart ölçüsü) dex'ten (androguard ile okundu)
+yeni_paket: com.poyrazworkshop.smartmeasure 1.0.0 (versionCode 1)
+tarih: 2026-10-27

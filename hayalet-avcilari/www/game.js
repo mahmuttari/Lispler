@@ -319,8 +319,15 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.14.1";
+const APP_VERSION = "3.15.0";
 const UPDATE_NOTES = {
+  // 3.14.1'den gelen Dünya Turu'nu biliyor; daha eskiden gelen için turun üç satırı da (mağaza notu aynı satırlar)
+  "3.15.0": [
+    t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
+    t("🌍 Dünya Turu: en kalabalık 50 ülke ve Filistin, her ülke kendi görselleri ve geleneksel kıyafetli bossuyla."),
+    t("🛂 Ülkeyi geç, pasaportuna damga bas; arkadaşlarınla birlikte gez."),
+    t("🎵 Her ülkenin kendi kültüründen giriş ve fon müziği; Ses Ayarları'nda yeni Müzik kaydırıcısı."),
+  ],
   // 3.13.0'dan doğrudan gelen oyuncu 3.14.0'ı görmemiş olabilir: 3.14.0'ın satırları önce, 3.14.1'in düzeltmeleri sonda.
   // Mağaza notu (aynı satırlar) her dilde 500 karakterin altında kalsın diye sığmayan eski satırlar yok
   "3.14.1": [
@@ -4875,6 +4882,9 @@ function startGame(secenek) {
   game.turBaslangic = game.level; // Dünya Turu: tamamlanma ödülü bu oyunda geçilen ülkelerden
   game.turOrtadan = game.dunyaTuru && !!secenek.ortadan; // çevrimiçi turda ortadan katılan: tanıtım ve müzik ilk durumla
   game.turBitti = false;
+  game.turDevamKalan = game.dunyaTuru ? TUR_DEVAM_HAKKI : 0; // reklamla devam hakkı (dunya-turu.js)
+  game.devamBekliyor = false;
+  document.getElementById("screen-tur-devam").classList.remove("active");
   game._turGeciste = false;
   game._turSonraki = null;
   game._turJeton = null;          // önceki oyunun damga/uçak geçişi bu oyunu ilerletmez
@@ -6274,7 +6284,7 @@ function drawBot(ctx, b) {
 }
 
 function damagePlayer() {
-  if (game.player.dead) return;
+  if (game.player.dead || game.devamBekliyor) return;
   game.player.hp--;
   game.player.invuln = 1.2;
   audio.damage();
@@ -6282,7 +6292,7 @@ function damagePlayer() {
   if (game.player.hp <= 0) {
     if (online.mode) {
       becomeSpectator();
-    } else {
+    } else if (!turDevamTeklifi()) { // Dünya Turu: "Reklam izle, devam et" (dunya-turu.js)
       endGame(false);
     }
   }
@@ -6513,6 +6523,7 @@ function quitToMenu() {
   game.menude = false;
   turPerdeleriniKapat();
   turMuzigiSondur();
+  turDevamKapat();
   document.getElementById("screen-pause").classList.remove("active");
   document.getElementById("screen-gameover").classList.remove("active");
   const wb = document.getElementById("weapon-bar");

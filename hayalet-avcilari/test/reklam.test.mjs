@@ -38,6 +38,8 @@ try {
     localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9');
     const kayit = [];
     window.__admob = kayit;
+    window.__dinle = {};
+    window.__olay = (ad) => (window.__dinle[ad] || []).forEach((fn) => fn());
     const cagri = (ad, sonuc) => async (arg) => {
       kayit.push({ ad, arg: arg === undefined ? null : JSON.parse(JSON.stringify(arg)) });
       return sonuc;
@@ -47,7 +49,11 @@ try {
       initialize: cagri('initialize'),
       requestConsentInfo: cagri('requestConsentInfo', onay),
       showConsentForm: cagri('showConsentForm', onay),
-      addListener: (olay) => { kayit.push({ ad: 'addListener', arg: olay }); return Promise.resolve({ remove: async () => {} }); },
+      addListener: (olay, fn) => {
+        kayit.push({ ad: 'addListener', arg: olay });
+        (window.__dinle[olay] = window.__dinle[olay] || []).push(fn);
+        return Promise.resolve({ remove: async () => {} });
+      },
       prepareInterstitial: cagri('prepareInterstitial'),
       prepareRewardVideoAd: cagri('prepareRewardVideoAd'),
       showInterstitial: cagri('showInterstitial'),
@@ -158,6 +164,68 @@ try {
     return save.reklam.sure;
   });
   sina('ödüllü reklamı izleyenin sayacı sıfırlanır', () => { assert.equal(odul, 0); });
+
+  // 3.15.0 — Dünya Turu'nda reklamla devam: canlar bitince pencere; sonuna kadar izleyenin canları dolar, oyun başına 3 kez
+  const devam = await p.evaluate(async () => {
+    const bekle = (ms) => new Promise((r) => setTimeout(r, ms));
+    const pencere = () => document.getElementById('screen-tur-devam').classList.contains('active');
+    const bitti = () => document.getElementById('screen-gameover').classList.contains('active');
+    const ol = () => { game.player.invuln = 0; game.player.hp = 1; damagePlayer(); };
+    const izle = async (odul) => {
+      turDevamIzle();
+      await bekle(20);
+      if (odul) window.__olay('onRewardedVideoAdReward');
+      window.__olay('onRewardedVideoAdDismissed');
+      await bekle(50); // odulluYukle: yeni reklam yüklenir
+    };
+    const r = {};
+    save.zumrut = 0; save.reklam.sure = 200;
+    startGame({ tur: true, ulke: 1 });
+    ol();
+    r.ilk = { running: game.running, paused: game.paused, pencere: pencere(), kalan: document.getElementById('tur-devam-kalan').textContent };
+    await izle(false);
+    r.yarida = { running: game.running, pencere: pencere(), hp: game.player.hp, hak: game.turDevamKalan };
+    await izle(true);
+    r.dondu = { running: game.running, paused: game.paused, pencere: pencere(), hp: game.player.hp, maxHp: game.player.maxHp,
+      hak: game.turDevamKalan, sure: save.reklam.sure, zumrut: save.zumrut, koruma: game.player.invuln > 2 };
+    ol(); await izle(true);
+    ol(); await izle(true);
+    r.ucuncu = { hak: game.turDevamKalan, hp: game.player.hp, running: game.running };
+    ol();
+    r.dorduncu = { running: game.running, pencere: pencere(), bitti: bitti() };
+    // Vazgeç: oyun her zamanki gibi biter
+    startGame({ tur: true, ulke: 1 });
+    ol(); turDevamVazgec();
+    r.vazgec = { running: game.running, pencere: pencere(), bitti: bitti(), paused: game.paused };
+    // Tekrar Oyna hakları yeniler; normal oyunda ve reklam yüklü değilken pencere yok
+    startGame({ tur: true, ulke: 1 });
+    r.yeniHak = game.turDevamKalan;
+    reklam.odulluYuklu = false; ol();
+    r.reklamsiz = { running: game.running, pencere: pencere() };
+    reklam.odulluYuklu = true;
+    startGame(); ol();
+    r.normal = { running: game.running, pencere: pencere() };
+    return r;
+  });
+  sina('turda canlar bitince oyun durur, "Reklam izle, devam et" penceresi açılır (3/3)', () => {
+    assert.deepEqual(devam.ilk, { running: true, paused: true, pencere: true, kalan: 'Kalan hak: 3/3' });
+  });
+  sina('reklam yarıda kapanırsa can gelmez, hak harcanmaz, pencere kalır', () => {
+    assert.deepEqual(devam.yarida, { running: true, pencere: true, hp: 0, hak: 3 });
+  });
+  sina('reklam sonuna kadar izlenince canlar dolar, oyun sürer; zümrüt verilmez', () => {
+    assert.deepEqual(devam.dondu, { running: true, paused: false, pencere: false, hp: 3, maxHp: 3, hak: 2, sure: 0, zumrut: 0, koruma: true });
+  });
+  sina('en çok 3 kez: dördüncü ölümde oyun biter', () => {
+    assert.deepEqual(devam.ucuncu, { hak: 0, hp: 3, running: true });
+    assert.deepEqual(devam.dorduncu, { running: false, pencere: false, bitti: true });
+  });
+  sina('"Oyunu bitir" oyunu bitirir', () => { assert.deepEqual(devam.vazgec, { running: false, pencere: false, bitti: true, paused: false }); });
+  sina('yeni oyunda 3 hak; reklam yüklü değilken ve normal oyunda pencere yok', () => {
+    assert.equal(devam.yeniHak, 3);
+    assert.deepEqual(devam.reklamsiz, { running: false, pencere: false });
+    assert.deepEqual(devam.normal, { running: false, pencere: false });
+  });
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);

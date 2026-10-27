@@ -11,6 +11,8 @@
      (menüde beklemek sayılmaz); saatte en çok 4. Sayaçlar save.reklam'da kalıcıdır. Dayanak: AdMob, geçiş
      reklamını doğal duraklarda ve aşırı sıklık olmadan önerir (sayı vermez). Sınama: test/reklam.test.mjs.
    - Ödüllü reklam: oyun bitti ekranındaki "Reklam izle" düğmesi, izleyene 10 💚 zümrüt (oyun başına bir kez).
+   - Ödüllü reklamla devam (3.15.0): tek kişilik Dünya Turu'nda canlar bitince "Reklam izle, devam et"; sonuna kadar
+     izleyenin canları dolar. Oyun başına en çok 3 kez (dunya-turu.js, TUR_DEVAM_HAKKI).
    ============================================================ */
 
 const REKLAM = {
@@ -30,6 +32,7 @@ const reklam = {
   odulluYuklu: false,
   odulKazanildi: false,
   odulKullanildi: false, // bu oyun bitti ekranında ödül alındı mı
+  devamSonucu: null,     // reklamla devam bekleniyor: sonuç bu işleve gider (zümrüt ödülü verilmez)
   gizlilikGerekli: false,
 };
 
@@ -136,7 +139,40 @@ async function odulluIzle() {
   }
 }
 
+// Dünya Turu'nda reklamla devam: sonuc(kazandi) reklam kapanınca bir kez çağrılır
+function reklamDevamHazir() {
+  return !!admobPlugin() && reklam.hazir && reklam.odulluYuklu;
+}
+
+async function reklamDevamIzle(sonuc) {
+  const ad = admobPlugin();
+  if (!ad || !reklam.hazir || !reklam.odulluYuklu || reklam.devamSonucu) return;
+  reklam.devamSonucu = sonuc;
+  reklam.odulKazanildi = false;
+  reklam.odulluYuklu = false;
+  odulDugmesiniGuncelle();
+  try {
+    await ad.showRewardVideoAd();
+  } catch (e) {
+    odulluKapandi();
+  }
+}
+
 function odulluKapandi() {
+  if (reklam.devamSonucu) {
+    const sonuc = reklam.devamSonucu, kazandi = reklam.odulKazanildi;
+    reklam.devamSonucu = null;
+    reklam.odulKazanildi = false;
+    if (kazandi) {
+      save.reklam = reklamKaydiniTemizle(save.reklam);
+      save.reklam.sure = 0; // kendi isteğiyle reklam izleyene bir sonraki geçiş reklamı için yeniden 6 dk
+      persistSave();
+    }
+    sonuc(kazandi);
+    odulDugmesiniGuncelle();
+    odulluYukle();
+    return;
+  }
   if (reklam.odulKazanildi && !reklam.odulKullanildi) {
     reklam.odulKazanildi = false;
     reklam.odulKullanildi = true;
@@ -156,6 +192,8 @@ function odulDugmesiniGuncelle() {
   const btn = document.getElementById("btn-reklam-odul");
   if (!btn) return;
   btn.style.display = reklam.hazir && reklam.odulluYuklu && !reklam.odulKullanildi ? "" : "none";
+  const devam = document.getElementById("btn-tur-devam");
+  if (devam) devam.disabled = !(reklam.hazir && reklam.odulluYuklu) || !!reklam.devamSonucu; // yüklenene kadar bekler
 }
 
 // AB kullanıcıları onay tercihini her zaman değiştirebilmeli (UMP "privacy options" girişi)

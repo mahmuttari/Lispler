@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="kb_bg">#06281D</color>
+    <color name="kb_accent">#E1BF6D</color>
+    <color name="colorPrimary">@color/kb_accent</color>
+    <color name="colorPrimaryDark">@color/kb_bg</color>
+    <color name="colorAccent">@color/kb_accent</color>
+</resources>

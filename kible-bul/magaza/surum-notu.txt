@@ -1,0 +1,6 @@
+İlk sürüm 🎉
+🧭 Kâbe'nin yönü, kıble açısı ve mesafe; gerçek kuzey düzeltmesi.
+🗺️ Uydu haritasında Kâbe'ye en kısa yol.
+📍 34.000 şehirde internetsiz arama, koordinat girişi.
+🎯 Doğruluk göstergesi ve kalibrasyon yardımcısı.
+🌐 11 dil.

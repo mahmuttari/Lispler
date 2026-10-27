@@ -1,0 +1,910 @@
+3|Pechino
+4|Canton
+9|Ho Chi Minh
+13|Xi'an
+15|San Paolo
+16|Città del Messico
+20|Mosca
+21|Dacca
+22|Seul
+26|Il Cairo
+30|Nanchino
+33|Londra
+34|New York
+35|Giacarta
+47|Teheran
+65|San Pietroburgo
+67|Alessandria d'Egitto
+70|Santiago del Cile
+71|Città del Capo
+74|Jedda
+76|Calcutta
+90|Riyad
+93|Nuova Taipei
+96|Addis Abeba
+112|Berlino
+122|poona
+134|Smirne
+147|Prefettura di Baoding
+164|Mogadiscio
+177|Algeri
+181|Roma
+198|L'Avana
+201|Parigi
+218|Taskent
+221|Khartum
+222|Amburgo
+227|Sana'a
+236|Bucarest
+246|Delegazione Iztapalapa
+254|Sharja
+270|Pimpri Chinchwad
+272|Varsavia
+277|Barcellona
+279|Mossul
+303|La Mecca
+304|Filadelfia
+307|Damasco
+313|Esfahan
+322|Kōbe
+324|Stoccolma
+326|Can Tho
+327|Monaco di Baviera
+330|Ekaterinburg
+347|Cesarea in Cappadocia
+348|Kai Feng
+356|Iconio
+361|Charkiv
+376|Hué
+377|Milano
+391|Bàssora
+400|Medina
+412|Belgrado
+430|Kazan'
+456|Şımkent
+458|Ghaziabad
+463|Fez
+474|Praga
+481|Copenaghen
+484|Jerevan
+491|Rostov sul Don
+527|Port Elizabeth
+534|Tangeri
+544|Aşgabat
+550|Colonia
+551|Dublino
+554|Bruxelles
+562|Odessa
+577|Marrakech
+578|Città del Guatemala
+583|Perm'
+594|Gerusalemme
+627|Cartagena de Indias
+634|Napoli
+643|Donec'k
+644|Abu Ghraib
+645|Biškek
+653|Gurgaon
+659|Marsiglia
+686|Torino
+687|Al-Ayn
+715|Cracovia
+724|Orano
+751|Tjumen'
+761|Bengasi
+809|Leopoli
+811|Zaporižžja
+818|Togliattigrad
+834|Tunisi
+839|Ta'if
+846|Saragozza
+847|Siviglia
+856|Dušhanbe
+861|Breslavia
+875|Atene
+876|Zagabria
+899|Francoforte sul Meno
+900|Macao
+902|Iževsk
+923|Chişinău
+936|Bhilai Nagar
+939|Ul'janovsk
+940|Gibuti
+952|Habarovsk
+959|Stoccarda
+964|Jaroslavl'
+965|Göteborg
+968|Jhang Sadar
+973|Tuxtla Gutiérrez
+974|Kryvyj Rih
+985|Machačkala
+988|Samarcanda
+1004|Baltimora
+1011|Genova
+1040|Dresda
+1053|Nasiriya
+1056|Santiago di Cuba
+1072|Prishtina
+1080|Sebastopoli
+1083|Brema
+1101|Novokuzneck
+1115|Astrachan'
+1125|Anversa
+1139|Scutari
+1141|Kandahar
+1146|Lione
+1152|Fayyum
+1155|Durango
+1157|Lisbona
+1158|Rahimyar Khan
+1163|Norimberga
+1167|Edimburgo
+1170|Tolosa
+1183|Lipeck
+1196|Lipsia
+1203|Homel'
+1225|Čeboksary
+1235|Porto Sudan
+1239|Jeju
+1240|Danzica
+1282|L'Aia
+1296|Mykolaïv
+1305|Gondar
+1306|Mandaluyong
+1312|Vung Tau
+1320|Hama
+1325|Rach Gia
+1329|Tartus
+1330|Macallè
+1339|Bacólod
+1362|Constantina
+1368|Elâzığ
+1383|Palma di Maiorca
+1406|Vinnycja
+1414|Gerusalemme Est
+1415|Brjansk
+1441|Tver'
+1461|Zurigo
+1492|Panamá
+1519|Antiochia di Siria
+1523|Luhans'k
+1530|Stettino
+1548|San Pédro
+1584|Assuan
+1585|Iași
+1636|Nara
+1637|Firenze
+1659|Gadaref
+1660|Grodno
+1682|Vicebsk
+1704|Qyzylorda
+1713|Mahilëŭ
+1722|Tarso
+1748|Brėst
+1760|Città di Logan
+1775|Nizza
+1791|Makiïvka
+1801|Simferopoli
+1802|Lublino
+1825|Gäncä
+1831|Smoleńsk
+1837|Filippopoli
+1842|Chandrapur
+1854|Cordova
+1875|Oš
+1905|Costanza
+1906|Nuova Delhi
+1907|Salonicco
+1917|Čerepovec
+1919|Distretto di Hamburg-Nord
+2003|Distretto di Hamburg-Mitte
+2004|Augusta
+2005|Contea di South Dublin
+2069|Semej
+2077|Uitenhage
+2144|Černihiv
+2166|Saint Louis
+2198|Strasburgo
+2200|Distretto di Neihu
+2204|Chmel'nyc'kyj
+2212|Istaravšan
+2223|Lubiana
+2225|Deir el-Zor
+2237|Dessiè
+2241|Čerkasy
+2247|Distretto di Eimsbüttel
+2286|Aquisgrana
+2287|Gand
+2302|Černivci
+2326|Žytomyr
+2347|Kokand
+2365|Vitoria
+2411|Petah Tiqwa
+2443|Gimma
+2449|Distretto di Altona
+2489|Città del decimo Ramadan
+2501|Nižnevartovsk
+2503|Groninga
+2508|Pegu
+2509|Magdeburgo
+2513|Trebisonda
+2538|Novorossijsk
+2563|Chimki
+2573|Lilla
+2580|Ivano-Frankivs'k
+2586|Halle sul Saale
+2592|Friburgo in Brisgovia
+2631|Elx
+2636|Nižnekamsk
+2648|Tagum
+2649|Dzeržinsk
+2718|Kam''jans'ke
+2741|Ternopil'
+2744|Blagoveščensk
+2748|Kremenčuk
+2771|Magonza
+2772|Novgorod
+2788|Susa
+2793|Šachty
+2800|Nishapur
+2838|Galați
+2860|Luc'k
+2913|Lubecca
+2941|Béni Mellal
+2947|Qostanay
+2976|Bila Cerkva
+2992|Distretto di Viet Yen
+3025|Padova
+3027|Victoria de Las Tunas
+3037|Provincia di Bandundu
+3046|Chapra
+3055|Ginevra
+3114|Al-Arish
+3118|Južno-Sachalinsk
+3169|El Aaiún
+3183|Durazzo
+3194|Liegi
+3228|Bago
+3259|Ashiaman
+3267|Alessandria Bucefala
+3272|Falluja
+3329|Be'er Sheva
+3349|San Sebastián
+3350|Poza Rica
+3366|Kamishlié
+3375|Castellón de la Plana
+3419|Petropavlovsk-Kamčatskij
+3436|Adrianopoli
+3447|Arcidiocesi di Kasama
+3492|Basilea
+3495|Nimega
+3507|Bielsko-Biała
+3508|Marsa Matruh
+3516|Bijaya
+3547|Pathankot
+3563|Mergui
+3636|Distretto di Harburg
+3648|Tolone
+3667|Patrasso
+3687|Novočerkassk
+3750|Pireo
+3754|Sidone
+3763|Ludwigshafen sul Reno
+3766|Salalah
+3768|Tralli
+3787|Robertson Pet
+3794|Konduz
+3812|Rubcovsk
+3821|Boscoducale
+3822|Seghedino
+3830|Mytišči
+3845|Digione
+3856|San Juan Bautista Tuxtepec
+3904|Salisburgo
+3967|Birendranagara
+3973|Ljubercy
+3996|Limisso
+4052|Ratisbona
+4063|Erzincam
+4066|San Cristóbal de La Laguna
+4067|Kökşetaw
+4084|Balašicha
+4100|Spalato
+4121|Kerč'
+4127|Melitopol'
+4151|Delicias
+4175|Kuncevo
+4177|Aqtau
+4190|Nachodka
+4191|Debre Berhan
+4209|San Felipe de Puerto Plata
+4317|Saida
+4358|Tobruch
+4382|Noril'sk
+4395|Buéa
+4420|Korolëv
+4445|Losanna
+4448|Qayrawan
+4474|Biserta
+4507|Iraklio
+4514|Odincovo
+4568|Prome
+4571|Tay Ninh
+4573|Tiro
+4621|Dong Hoi
+4625|Madinat Hamad
+4742|Sichem
+4831|Kamyšin
+4838|Besanzone
+4880|Wāw
+5043|Žalalabad
+5086|Gottinga
+5102|Berna
+5115|Ekibastūz
+5153|Ulma
+5174|Orechovo-Zuevo
+5191|Leida
+5194|Distretto di Bergedorf
+5220|Madavaram
+5244|Bruges
+5275|Hoshangabad
+5296|Ačinsk
+5334|Cádice
+5360|Taldıqorğan
+5410|Elec
+5422|Riffa
+5423|Užhorod
+5434|Valona
+5601|Novokujbyševsk
+5650|Perpignano
+5664|Saint John's
+5701|Royal Sutton Coldfield
+5739|Leninsk-Kuzneckij
+5787|En Nahud
+5789|Fiume
+5824|Coblenza
+5834|Jevpatorija
+5836|Ėlista
+5862|Berdjans'k
+5867|Novotroick
+5921|Texcoco
+5923|Nikopol'
+5924|Slovjansk
+5986|Ualdia
+5996|Édéa
+6006|Malé
+6064|Puškino
+6087|Concepción de la Vega
+6110|Uchta
+6138|Orsza
+6141|Albareale
+6155|Chanty-Mansijsk
+6158|Mbacké
+6191|Lovanio
+6192|Meždurečensk
+6202|Al-Rashidiyya
+6217|Kallithea
+6237|Klagenfurt
+6253|Treviri
+6268|Giaffa
+6311|Zelenodol'sk
+6318|Santiago di Compostela
+6324|Kasganj
+6359|Kapurthala
+6370|Distretto di Soma
+6407|Balašov
+6422|Kamjanec'-Podil's'kyj
+6463|Thalassery
+6554|Scutari
+6565|Bariloche
+6568|Navapolack
+6613|Parli
+6635|Axum
+6638|São João del-Rei
+6692|Mičurinsk
+6734|Noumea
+6741|Kinešma
+6789|Tubinga
+6837|Turkmenbashi
+6915|Kuzneck
+6929|Kirovo-Čepeck
+6943|Distretto di New Plymouth
+6972|Avignone
+6973|Gatčina
+6992|Muradnagar
+7083|Distretto di Montepuez
+7121|Distretto di Yingge
+7135|Ejsk
+7233|San Andrés de Tumaco
+7259|Amsterdam Centro
+7274|Dunkerque
+7317|Flensburgo
+7329|Adua
+7334|Mukačeve
+7461|Timbuctù
+7497|Derry / Londonderry
+7513|Kafr El-Zayat
+7563|Botafogo quartiere
+7624|Port Arthur
+7625|Troick
+7685|Mhow Cantonment
+7688|Lucerna
+7696|Irgalem
+7705|Uman'
+7724|Costanza
+7740|Dogubayazit
+7807|Kairana
+7814|Giugliano
+7847|Shigatse
+7890|Šadrinsk
+7902|Polack
+7984|Daltonganj
+8013|Zahle
+8075|Malines
+8082|Nazaret
+8114|Susa
+8139|Mawana
+8157|St. Joseph
+8168|Lussemburgo
+8186|Vadakara
+8220|Mineral'nye Vody
+8261|Meymaneh
+8273|San Gallo
+8290|Čechov
+8471|Bochum-Wattenscheid
+8478|Courtrai
+8507|Birobidžan
+8568|Berdyčiv
+8616|Tala
+8665|Sault Sainte Marie
+8674|Larnaka
+8679|Il Bardo
+8746|Medenina
+8768|Luneburgo
+8875|Beloreck
+8918|Čapaevsk
+8931|Bamberga
+9044|Ostenda
+9099|Teodosia
+9120|Bisalpur
+9209|Išim
+9211|Velsen
+9242|Kovel'
+9277|Zara
+9402|Klincy
+9458|Cherson
+9471|Distretto di Rotorua
+9522|Giannina
+9524|distretto di Wufeng
+9592|Irpin'
+9663|West Bloomfield
+9708|Tichoreck
+9853|el Prat de Llobregat
+9878|Põhja
+9901|Collado Villalba
+9961|Distretto di Çubuk
+9965|Belebej
+10010|Ržev
+10039|Tichvin
+10144|Caienna
+10153|Korosten'
+10199|Gallacaio
+10248|Anurādhapura
+10293|Šuja
+10405|Al-Kuwait
+10465|Brandeburgo sulla Havel
+10553|Veliko Tărnovo
+10560|Calcide
+10582|Verchnjaja Pyšma
+10600|Sluck
+10619|Michajlovka
+10620|Solnečnogorsk
+10621|Villaco
+10659|Hamelin
+10689|Uzlovaja
+10750|Nahariya
+10805|Saint Albert
+10862|Al-Mania
+10891|Pergamo
+10910|Francoforte sull'Oder
+11003|Boroviči
+11055|Kaedi
+11070|Kiriši
+11084|Rodi
+11146|Elk
+11191|Raxaul Bazar
+11204|Rîbnița
+11284|Bienne
+11340|Mamoutzou
+11387|Belorečensk
+11519|Chania
+11539|Ottappalam
+11595|Distretto di Menemen
+11653|Andoany
+11676|Cava de' Tirreni
+11709|Alessandropoli
+11871|Pola
+11890|Antracyt
+11955|Bad Homburg
+11981|Saint John's
+12040|Acri
+12047|Nurafshon
+12050|Nuova Ulma
+12071|Venezia
+12104|Croia
+12136|Palmira
+12159|Distretto di Whangarei
+12170|Doneck
+12174|Ayutthaya
+12183|Narbona
+12184|Lahr/Schwarzwald
+12190|Gelendžik
+12223|Passavia
+12276|Spira
+12297|Čusovoj
+12325|Snežinsk
+12353|Nuova Barriera di Lanzo
+12414|Kanaš
+12419|Mončegorsk
+12421|Whitchurch–Stouffville
+12431|Yevla
+12449|Perinthalmanna
+12466|El Carmen de Viboral
+12556|Salechard
+12560|distretto di Whanganui
+12598|Verchnjaja Salda
+12607|Peć
+12696|Toržok
+12753|Kujbyšev
+12779|Vsevoložsk
+12806|Kyaikkhami
+12838|Echmiadzin
+12881|Wereta
+12898|Bilhorod-Dnistrovs'kyj
+12912|Radužnyj
+12930|Mcensk
+12944|Aneho
+12953|Belaja Kalitva
+12972|Šelechov
+13007|Kifisià
+13094|lörrach
+13109|Tizimin
+13130|Agrinio
+13292|Pečora
+13353|Izjum
+13355|Wenchi
+13396|Goletta
+13405|Volchov
+13420|Komotini
+13441|Dahra
+13450|Efremov
+13506|Meiderich/Beeck
+13514|Flessinga
+13529|Černjachovsk
+13624|Drama
+13638|Tiberiade
+13734|Nova Kachovka
+13812|Tulkarm
+13854|Rtiščevo
+13855|Faya Largeau
+13962|Bangangte
+14020|Hyvinkää
+14039|Tejerias
+14149|Kronštadt
+14176|Khashm El Girba
+14186|Balykčy
+14214|Šarypovo
+14274|Frisinga
+14284|Famagosta
+14296|Selebi Pikwe
+14433|Ocrida
+14471|Coburgo
+14573|Bərdə
+14845|Distretto di Edremit
+14945|Apšeronsk
+14967|Chiesa di Saint Sulpice
+15001|Tarawa Sud
+15002|Mirnyj
+15034|San Javier de Loncomilla
+15072|Kašira
+15076|Nibong Tebai
+15087|Corfù
+15146|Langreo
+15281|Neumarkt i.d.OPf.
+15390|Mantova
+15424|Ghosi
+15504|Polichni
+15546|Distretto di Beypazarı
+15559|Nižneudinsk
+15662|Friburgo
+15755|Mühlhausen/Thüringen
+15767|Madinat 'Isa
+15800|Abukir
+15913|Bedessa
+15959|Jasynuvata
+15960|Troick
+16038|Beit Hanun
+16127|Nosy-Varika
+16158|Vasyl'kiv
+16176|Langadas
+16236|Pylaia
+16322|Sciaffusa
+16366|Kozani
+16439|Addis Zemen
+16476|Slancy
+16524|Safad
+16559|Tejkovo
+16570|Città Vecchia
+16590|Pafo
+16606|Port Vila
+16667|Madippakkam
+16800|Pleebo
+16820|Coira
+16828|Distretto di Dinar
+16882|Šumerlja
+16936|Ypres
+16959|Elsinore
+16987|Podujevo
+17072|Rishdan
+17085|Tărgovište
+17110|Jenin
+17121|Sion
+17138|Baraily
+17256|Ostrogožsk
+17339|Blagoveščensk
+17364|Ghelemsò
+17384|Auschwitz
+17438|Kušva
+17454|Gheldria
+17455|Assila
+17540|Limburgo sulla Lahn
+17679|Fürstenwalde/Spree
+17736|Voznesens'k
+17745|Jablonovskij
+17857|Loyabad
+17882|Primorsko-Achtarsk
+17919|Aralsk
+17993|Mira
+18093|Malojaroslavec
+18171|Jubilejnyj
+18176|Savner
+18213|Distretto di Bor
+18238|Luchovicy
+18348|Curtea de Arges
+18554|Gorodec
+18591|Sakhnin
+18652|Možajsk
+18653|Obuchiv
+18796|Bani Suheila
+18874|Sebenico
+18920|Rostov Velikij
+18955|Tanis
+18971|Schooner
+19038|Provincia di Macerata
+19186|Kiržač
+19187|General Villamil
+19201|Zugo
+19235|Stella (Rione Sanità)
+19378|Bogorodick
+19399|Corinto
+19450|Šatura
+19462|Ptolemaida
+19521|Prefettura di Nagqu
+19562|Baqa al-Gharbiyye
+19611|Emanželinsk
+19620|Ramgarh
+19629|Tongres
+19745|Mentone
+19845|Abqayq
+19951|Distretto di Timaru
+20037|Kamaterò
+20130|Betlemme
+20157|Kochma
+20168|Crevillent
+20202|Distretto di Masterton
+20264|Strigonio
+20358|Duliajan No. 1
+20441|Misnia
+20499|Hosdurga
+20500|Neuburg a.d.Donau
+20536|Mitilene
+20552|Pochvistnevo
+20558|Truskavec
+20563|Jalgaon
+20654|Bežeck
+20721|Saalfeld/Saale
+20722|Alejsk
+20725|Xàbia
+20730|Kamyšlov
+20948|Phuentsholing
+21039|Kalač-na-Donu
+21224|Ourossogui
+21235|Casal de’ Pazzi
+21242|Kundarki
+21268|Nikolaevsk-na-Amur
+21295|Città Nuova
+21460|Dedèr
+21471|Zambesi
+21558|Kemri
+21633|Gubacha
+21672|Gibilterra
+21868|Baden bei Wien
+22189|Krasnoarmejsk
+22242|Capodistria
+22296|Krasnoarmejsk
+22312|Migdal HaEmek
+22442|Kireevsk
+22497|Kouthanallur
+22551|Nerechta
+22650|Viljučinsk
+22668|Murri
+22674|Gallipoli
+22858|Šali
+22897|Darrehshahr
+22938|Naqura
+23106|Chillaw
+23116|Yekepa
+23155|El Quseir
+23172|Koderma
+23299|Slavutyč
+23313|Novo mesto
+23638|Kalačinsk
+23645|Mevaseret Zion
+23749|Chio
+23907|Rajčichinsk
+23909|Palayan
+23945|Spinea
+23955|Chinaz
+23974|Eršov
+24002|Bailey's Crossroads
+24172|Megara
+24186|Argirocastro
+24211|Fairlight
+24218|Metehara
+24234|Weilheim in Alta Baviera
+24288|Calpe
+24445|Kudchi
+24497|Massaua
+24634|Distretto di İdil
+24751|Tixtla
+24776|Artašat
+24943|Santi Quaranta
+24952|Nižnjaja Tura
+25031|Kiryat Shmona
+25134|Nuku'alofa
+25180|San Lazzaro di Savena
+25197|Eislingen/Fils
+25283|Nicea
+25300|Argo
+25448|Rjažsk
+25464|Mondragón
+25565|Mira Loma
+25599|Arta
+25657|Lučegorsk
+25791|Chadyžensk
+25843|Cecerleg
+25860|Distretto di Ashburton
+25960|Livadeia
+25978|Šimanovsk
+26127|Baia di Assab
+26294|Zerbst/Anhalt
+26402|Brickaville
+26427|Salona
+26437|Aitos
+26606|Montecchio Maggiore
+26635|Biblo
+26668|Alibag
+26695|Ėlektrogorsk
+26739|al-Qaysūma
+26900|Barhalganj
+26916|Fröndenberg/Ruhr
+26939|Černogolovka
+27284|Sredneural'sk
+27287|Dhaid
+27303|Kymore
+27326|Mau Aima
+27375|Puščino
+27382|Distretto di Emirdağ
+27479|Dinsor
+27480|Ėlektrougli
+27483|Goluin
+27578|Sulya
+27619|Eniséjsk
+27726|Kullu
+27776|Rosignano
+27780|Gerico
+27996|Ostaškov
+28006|Smalcalda
+28027|Castelnuovo di Cattaro
+28292|Candala
+28407|Ščigry
+28441|Kurovskoe
+28558|Maple Shade Township
+28701|Matías Romero
+28740|Cusano Milanino
+28903|Šušenskoe
+29006|Alessio
+29059|Bronnicy
+29099|Talica
+29100|Distretto di Whakatane
+29104|Zeila
+29113|Galič
+29162|Bhum
+29183|Baryš
+29243|Šumicha
+29276|Voločys'k
+29361|Kota
+29475|Llodio
+29507|Beloozërskij
+29565|Makakilo City
+29632|Porto d’Ischia
+29703|Singampuneri
+29735|Nea Makri
+29872|Budua
+29942|Montecatini Terme
+29964|Kurtamyš
+30027|El Escorial
+30056|Privolžsk
+30057|Chortiatis
+30111|Wahiawa
+30117|Bohodochiv
+30280|Florina
+30406|Qobu
+30596|Betania (Lazzaro)
+30620|Cirié
+30690|Čudovo
+30783|Hökməli
+30911|Promyšlennaja
+30957|Kočkor-Ata
+31013|Derhači
+31066|Busko-Zdroj
+31437|Tučkovo
+31467|Ašmjany
+31472|Beit She'an
+31490|Mokha
+31515|Soletta
+31582|Beri
+31760|Kašin
+31972|Bilohirs'k
+32014|St. Michael
+32050|Sulzbach/ Saar
+32182|Fiorano Modenese
+32205|Dulikhel
+32283|Brach
+32416|Suchiniči
+32479|Golicyno
+32572|Quartiere Triennale 8
+32633|Karuzi
+32740|Njasviž
+32775|Antivari
+32781|Petuški
+32792|Escaldes-Engordany
+32892|Lübbenau/Spreewald
+32969|Lido di Venezia
+33067|La Cruz de Elota
+33076|Zabbar
+33087|Užur
+33100|Karabaš
+33157|Qovlar
+33356|Schwarzenberg/Erzgeb.
+33420|Bad Neustadt a.d.Saale
+33448|Efkarpia
+33521|Nerčinsk
+33522|Bah
+33580|Ovruč
+33695|Ajchal
+33699|Udačnyj
+33741|Aramil'
+33812|Jaškino
+33841|Svitto
+33857|Novhorod-Sivers'kyj
+33868|Giaginskaja
+33877|Chienge
+33914|Cettigne
+34045|Appiano
+34132|Weißwasser/O.L.
+34134|Nuuk (Godthåb)
+34145|St. George's
+34147|La Valletta
+34157|Port Stanley
+34168|Città del Vaticano

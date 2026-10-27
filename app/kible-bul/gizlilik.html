@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gizlilik Politikası – Kıble Bul</title>
+<link rel="stylesheet" href="../legal.css">
+</head>
+<body>
+<main>
+<nav><a href="index.html">Kıble Bul</a><a href="gizlilik.html">Gizlilik Politikası</a><a href="#en">English</a></nav>
+<h1>Gizlilik Politikası</h1>
+<p class="date">Son güncelleme: 27 Ekim 2026</p>
+
+<p>Bu politika, <b>Poyraz Workshop</b> ("biz") tarafından Android için yayınlanan <b>Kıble Bul</b> (Qibla Finder,
+paket <code>com.poyrazworkshop.kiblebul</code>) uygulamasının ("Uygulama") hangi verileri nasıl işlediğini açıklar.
+Uygulama bulunduğunuz yerden Mekke'deki Kâbe'nin yönünü pusula, harita ve mesafeyle gösterir. Hesap yoktur, sunucumuz
+yoktur; konumunuz bize gelmez. Uygulama ücretsizdir, Google AdMob reklamları gösterir (bkz. 4. bölüm) ve reklamları
+kaldıran isteğe bağlı bir abonelik sunar (bkz. 5. bölüm).</p>
+
+<div class="box"><b>Kısaca:</b> Konumunuz yaklaşık konumdur ve yalnız telefonunuzda kıble yönünü hesaplamak için
+kullanılır; Uygulama onu bize ya da reklam sağlayıcısına göndermez. İnternete yalnız haritanın uydu görüntüsü
+karoları için istek (NASA'nın sunucusu baktığınız bölgeyi görür) ve reklam gider.</div>
+
+<h2>1. Cihazınızda kalan veriler</h2>
+<ul>
+  <li><b>Seçili yer:</b> kıblenin hesaplandığı yer (telefonun konumu ya da sizin seçtiğiniz şehir veya girdiğiniz
+      koordinat): enlem, boylam, yer adı, ülke kodu, zamanı.</li>
+  <li><b>Son yerler:</b> elle seçtiğiniz en çok 8 yer.</li>
+  <li><b>Ayarlar:</b> dil, pusula stili, gece modu, derece ölçeği, Kâbe görseli, kuzey türü, titreşim, harita türü.</li>
+  <li><b>Üyelik durumu</b> (Google Play'in son yanıtı) ve <b>reklam sayaçları</b> (son bir saatteki tam ekran
+      reklamların zamanı: sıklık sınırı için).</li>
+</ul>
+<p>Bu veriler yalnız Uygulamanın kendi deposundadır; Google yedeğine <b>girmez</b> (<code>allowBackup="false"</code>).
+Uygulamayı kaldırmak ya da Android ayarlarından verisini silmek hepsini siler. Şehir listesi (yaklaşık 34.000 yer) ve
+dünya manyetik modeli Uygulamanın içindedir; şehir araması internete gitmez.</p>
+
+<h2>2. İzinler</h2>
+<ul>
+  <li><b>Yaklaşık konum</b> (<code>ACCESS_COARSE_LOCATION</code>): kıble açısını ve Kâbe'ye mesafeyi hesaplamak, yerin
+      manyetik sapmasını bulmak için. Kıble için birkaç kilometre fark etmez; <b>tam konum izni istenmez</b>. Konum yalnız
+      Uygulama ekrandayken ve siz istediğinizde (ilk açılışta, "Konumumu bul" ya da 15 dakikadan eski konumu yenilerken)
+      alınır; arka planda konum alınmaz. İzin vermezseniz şehir arayarak ya da koordinat girerek kullanabilirsiniz.</li>
+  <li><b>Titreşim:</b> telefon kıbleye dönünce kısa bir titreşim için (Ayarlar'dan kapatılabilir).</li>
+  <li><b>İnternet ve ağ durumu:</b> harita karoları ve reklamlar için.</li>
+  <li><b>Google Play faturalandırması:</b> reklamsız üyelik aboneliği için.</li>
+  <li><b>Reklam kimliği</b> (<code>AD_ID</code>): AdMob SDK'sının eklediği izin (4. bölüm).</li>
+</ul>
+<p>Pusula için telefonun manyetik alan, ivme ve dönme algılayıcıları okunur (izin gerektirmez); bu ölçümler telefondan
+çıkmaz.</p>
+
+<h2>3. İnternete giden istekler</h2>
+<ul>
+  <li><b>Harita karoları:</b> Harita ekranının uydu görüntüsü NASA'nın GIBS hizmetinden (<code>gibs.earthdata.nasa.gov</code>,
+      "Blue Marble") karo karo istenir. İstekte IP adresiniz ve haritada baktığınız bölge (karo adresi) bu sunucuya gider.
+      Harita açıldığında bulunduğunuz yerden Kâbe'ye kadar olan alan gösterildiği için bu, konumunuzun çevresini de içerir;
+      karoların en yakın düzeyi bile yaklaşık 150 km genişliğindedir, yani yalnız yaklaşık bir bölge görünür. Harita
+      ekranını açmazsanız karo isteği yapılmaz. NASA'nın gizlilik bildirimi:
+      <a href="https://www.nasa.gov/privacy/">nasa.gov/privacy</a></li>
+  <li><b>Reklamlar:</b> 4. bölüm.</li>
+  <li><b>Yol Tarifi:</b> Harita ekranındaki "Yol Tarifi" düğmesine dokunursanız seçili yerin koordinatı ve Kâbe'nin
+      konumu bir Google Haritalar adresiyle telefonunuzun tarayıcısında ya da harita uygulamasında açılır. Bu yalnız
+      sizin dokunuşunuzla olur.</li>
+</ul>
+<p>Uygulamanın kendi verisi (1. bölüm) hiçbir sunucuya gönderilmez.</p>
+
+<h2>4. Reklamlar (Google AdMob)</h2>
+<p>Uygulamayı ücretsiz tutmak için Google'ın <b>AdMob</b> hizmetiyle reklam gösteririz: ekranın altında, içeriğin
+üstüne binmeyen ayrı bir şeritte reklam bandı ve yalnız bir yer araması tamamlanınca ya da haritadan çıkarken, en sık 4
+dakikada bir tam ekran reklam. Pusula ve kalibrasyon sırasında tam ekran reklam gösterilmez. Reklam içeriği en çok
+"genel izleyici" (G) düzeyindedir; kumar, alkol, flört gibi hassas reklam kategorileri engellenir. AdMob; cihazınızın
+<b>reklam kimliğini</b>, IP adresini (ve ondan çıkarılabilecek yaklaşık konumu), cihaz ve uygulama bilgilerini, reklam
+etkileşimlerini ve teşhis bilgilerini reklam göstermek, ölçmek, dolandırıcılığı önlemek ve (izin verdiyseniz)
+kişiselleştirmek için işleyebilir. Uygulama AdMob'a konumunuzu ya da seçtiğiniz yeri <b>vermez</b>. Avrupa Ekonomik
+Alanı, Birleşik Krallık ve İsviçre'de Uygulama, reklam istemeden önce Google'ın onay formunu gösterir; tercihinizi
+<b>Ayarlar › Reklam gizlilik seçenekleri</b> ile değiştirebilirsiniz. Reklam kimliğinizi Android ayarlarından (Google ›
+Reklamlar) sıfırlayabilir ya da silebilirsiniz. Google'ın reklam verilerini nasıl kullandığı:
+<a href="https://policies.google.com/technologies/partner-sites">policies.google.com/technologies/partner-sites</a></p>
+
+<h2>5. Reklamsız üyelik (Google Play aboneliği)</h2>
+<p>Reklamları kaldırmak için aylık ya da yıllık abonelik satın alabilirsiniz. Ödeme ve abonelik yönetimi tümüyle
+<b>Google Play</b> tarafından yapılır; ödeme bilgilerinizi görmeyiz. Uygulama yalnız Google Play'e aboneliğin etkin
+olup olmadığını sorar ve yanıtı telefonda saklar. Reklamsız üyelikte AdMob hiç başlatılmaz. Aboneliği Google Play ›
+Ödemeler ve abonelikler'den istediğiniz zaman iptal edebilirsiniz. Google Play gizlilik politikası:
+<a href="https://policies.google.com/privacy">policies.google.com/privacy</a></p>
+
+<h2>6. Paylaşım</h2>
+<p>Verilerinizi satmayız ve bir sunucuda toplamayız. Yalnız 3. bölümdeki harita karosu istekleri, 4. bölümdeki reklam
+verileri ve 5. bölümdeki Google Play abonelik sorgusu cihazınızdan çıkar.</p>
+
+<h2>7. Doğruluk</h2>
+<p>Kıble açısı, konumunuzdan Kâbe'ye en kısa (büyük daire) hattın gerçek kuzeyden ölçülen açısıdır. Ekrandaki yön
+telefonunuzun pusula algılayıcısı kadar doğrudur; mıknatıs, metal ve elektronik cihazlar onu saptırabilir.</p>
+
+<h2>8. Çocuklar</h2>
+<p>Uygulama 13 yaş ve üzeri kullanıcılar için yayınlanmıştır.</p>
+
+<h2>9. Haklarınız</h2>
+<p>6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve geçerli olduğu yerde GDPR kapsamında haklarınızı
+kullanabilirsiniz. Uygulamanın kendi verileri yalnız cihazınızda olduğu için onları Uygulama içinden değiştirir ya da
+Uygulamayı kaldırarak silersiniz; reklam verileri için Google'ın yukarıdaki denetimleri geçerlidir. Sorularınız için:
+<a href="mailto:mahmuttari@gmail.com">mahmuttari@gmail.com</a></p>
+
+<h2>10. Değişiklikler</h2>
+<p>Bu politikayı güncellersek yeni tarihi bu sayfada yayınlarız.</p>
+
+<h2 id="en">Privacy Policy (English)</h2>
+<p><b>Kıble Bul</b> (Qibla Finder, <code>com.poyrazworkshop.kiblebul</code>) by <b>Poyraz Workshop</b> shows the direction
+of the Kaaba in Mecca with a compass, a map and the distance. There is no account and we have no server.</p>
+<p><b>Location:</b> the app asks only for <b>approximate location</b> (<code>ACCESS_COARSE_LOCATION</code>; precise location
+is never requested), only while it is on screen, never in the background. It is used <b>only on your phone</b> to work out
+the Qibla angle, the distance and the magnetic declination; the app does not send it to us or to the ad provider. Without
+the permission you can search for a city or type coordinates. The chosen place, up to 8 recent places, your settings, the
+membership state and the ad counters stay only in the app's storage on the phone, excluded from Google backup; uninstalling
+the app removes them. The city list (about 34,000 places) is inside the app; searching never goes online. Compass sensor
+readings never leave the phone.</p>
+<p><b>Map tiles:</b> the satellite picture of the Map screen is requested tile by tile from NASA's GIBS service
+(<code>gibs.earthdata.nasa.gov</code>). NASA's server receives your IP address and the area you look at; when the map
+opens it shows the area from your place to the Kaaba, so this includes the region around you (even the finest tiles are
+about 150 km wide, so only an approximate region). No tiles are requested unless you open the Map screen. If you tap
+<b>Directions</b>, the chosen place's coordinates and the Kaaba's are opened as a Google Maps address in your browser or
+map app, only on your tap.</p>
+<p><b>Ads:</b> the app shows Google AdMob ads: a banner in its own strip at the bottom that never covers the content and,
+only after a completed place search or when you leave the map and at most every 4 minutes, a full-screen ad; never while
+the compass or the calibration is running. Ad content is limited to general audiences (G) and sensitive categories such as
+gambling, alcohol and dating are blocked. AdMob may process your advertising ID, IP address (and the approximate location
+derived from it), device and app information, ad interactions and diagnostics to serve, measure and (with your consent)
+personalise ads and to prevent fraud; the app never passes your location or chosen place to AdMob. In the EEA, the UK and
+Switzerland the app asks for consent with Google's form before requesting ads; change it in Settings › Ad privacy options,
+or reset your advertising ID in Android settings.</p>
+<p><b>Ad-free membership:</b> an optional monthly or yearly Google Play subscription removes the ads (AdMob is then never
+started). Google Play handles payment and management; we never see your payment details. Cancel any time in Google Play ›
+Payments &amp; subscriptions.</p>
+<p>We do not sell your data. The direction on screen is only as accurate as your phone's compass. The app is intended for
+users aged 13 and over. Contact: <a href="mailto:mahmuttari@gmail.com">mahmuttari@gmail.com</a></p>
+</main>
+</body>
+</html>

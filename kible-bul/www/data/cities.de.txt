@@ -1,0 +1,2115 @@
+9|Ho-Chi-Minh-Stadt
+13|Xi'an
+16|Mexiko-Stadt
+18|Karatschi
+20|Moskau
+24|Tokio
+26|Kairo
+39|Taipeh
+43|Hongkong
+44|Bagdad
+47|Teheran
+62|Singapur
+64|Daressalam
+65|Sankt Petersburg
+71|Kapstadt
+72|Peschawar
+74|Dschidda
+80|Huai’an
+87|Gizeh
+90|Riad
+93|Neu-Taipeh
+95|Chittagong
+96|Addis Abeba
+121|Pjöngjang
+133|Kyjiw
+134|Izmir
+145|Ōsaka
+164|Mogadischu
+177|Algier
+181|Rom
+198|Havanna
+218|Taschkent
+221|Khartum
+236|Bukarest
+245|Thane
+254|Schardscha
+257|Benin-Stadt
+260|Montreal
+272|Warschau
+276|Wien
+279|Mossul
+292|Nowosibirsk
+302|León
+303|Mekka
+307|Damaskus
+322|Kōbe
+327|München
+330|Jekaterinburg
+343|Kyōto
+349|Karadsch
+360|Täbris
+361|Charkiw
+371|Rajkot
+377|Mailand
+380|N’Djamena
+391|Basra
+399|Tripolis
+400|Medina
+409|Đà Nẵng
+412|Belgrad
+413|Bien Hoa
+420|Nischni Nowgorod
+427|Schiras
+430|Kasan
+440|Merath
+443|Kerbela
+452|Tscheljabinsk
+456|Schymkent
+458|Ghaziabad
+463|Fès
+474|Prag
+481|Kopenhagen
+484|Jerewan
+491|Rostow am Don
+509|Krasnojarsk
+517|Ciudad Nezahualcóyotl
+519|Allahabad
+527|Port Elizabeth
+528|Tiflis
+529|Woronesch
+534|Tanger
+544|Aschgabat
+546|Haora
+554|Brüssel
+559|Wolgograd
+560|Bahri
+562|Odessa
+575|San José
+576|Solapur
+577|Marrakesch
+578|Guatemala-Stadt
+602|Gauhati
+613|Kitakyūshū
+620|Naypyidaw
+624|Selam
+634|Neapel
+643|Donezk
+644|Abu Ghuraib
+645|Bischkek
+658|Sulaimaniyya
+681|Cheongju
+685|Thanh Hoa
+687|Al-Ain
+689|Saratow
+690|Ulaanbaatar
+703|Municipio Naucalpan de Juárez
+715|Krakau
+730|Maskat
+751|Tjumen
+761|Banghazi
+763|Aligarh
+787|Al Hudaydah
+799|Muzaffarabad
+809|Lwiw
+811|Saporischschja
+812|Sansibar-Stadt
+818|Toljatti
+823|Sues
+839|Ta'if
+846|Saragossa
+856|Duschanbe
+860|Ciudad Guadalupe
+861|Wroclaw
+875|Athen
+883|Acapulco
+886|Pondicherry
+900|Macao
+902|Ischewsk
+909|Oshogbo
+910|Funabashi
+921|Al Ahmadi
+923|Chişinău
+925|Jambi
+927|Kumilla
+939|Uljanowsk
+940|Dschibuti
+946|Al-Mansura
+947|Kermānschāh
+952|Chabarowsk
+962|Borivali
+964|Jaroslawl
+965|Göteborg
+969|Hail
+972|Wladiwostok
+973|Tuxtla Gutiérrez
+974|Krywyj Rih
+982|Boorama
+985|Machatschkala
+988|Samarqand
+991|Al-Mukalla
+992|Rascht
+1011|Genua
+1013|Malakka
+1016|Urmia
+1021|Calamba City
+1023|Herat
+1034|Kota Bahru
+1036|Meknès
+1052|Kemerowo
+1053|Nasiriya
+1080|Sewastopol
+1090|Gulbarga
+1101|Nowokusnezk
+1102|Rjasan
+1109|Posen
+1110|Aksu
+1115|Astrachan
+1119|Ar-Raqqah
+1120|Quebec
+1125|Antwerpen
+1127|Hamadan
+1140|Pensa
+1141|Kandahar
+1142|Masar-e Scharif
+1145|Irodu
+1152|Al-Fayyum
+1157|Lissabon
+1158|Rahimyar Khan
+1162|Shiliguri
+1163|Nürnberg
+1182|Nabereschnyje Tschelny
+1183|Lipezk
+1190|Kirow
+1191|Kaschgar
+1193|Najran
+1200|Asansol
+1201|Arak
+1203|Homel
+1204|Aqtöbe
+1216|Karaganda
+1223|Higashiōsaka
+1225|Tscheboksary
+1232|Adschman
+1235|Bur Sudan
+1239|Jeju
+1240|Danzig
+1246|Velur
+1254|Nadschaf
+1266|KuGompo City
+1269|Hargeisa
+1282|Den Haag
+1285|Iloilo City
+1306|Mandaluyong
+1312|Vung Tau
+1320|Hama
+1325|Rach Gia
+1329|Tartus
+1330|Mek’ele
+1334|Hilla
+1337|Nampo
+1339|Bacolod
+1354|Eslamschahr
+1361|Nam Dinh
+1381|Mawlamyaing
+1383|Palma de Mallorca
+1394|Buon Ma Thuot
+1395|Stawropol
+1406|Winnyzja
+1414|Ostjerusalem
+1415|Brjansk
+1417|Sumqayıt
+1426|Jalapa Enríquez
+1431|Al-Hasaka
+1434|Awassa
+1441|Twer
+1442|Thai Nguyen
+1463|Viet Tri
+1480|Ardabil
+1489|Hotan
+1492|Panama-Stadt
+1495|Iwanowo
+1499|Brünn
+1517|Westjerusalem
+1529|Al-Hoceima
+1530|Stettin
+1540|Al-Ubayyid
+1548|San-Pedro
+1555|Chamis Muschait
+1584|Assuan
+1609|EMalahleni
+1611|Thu Dau Mot
+1636|Nara
+1637|Florenz
+1659|Al-Qadarif
+1678|Ijebu-Ode
+1682|Wizebsk
+1684|Taras
+1687|San Jose del Monte City
+1690|Zandschan
+1693|Wladimir
+1701|Misrata
+1702|Kuito
+1704|Qysylorda
+1713|Mahiljou
+1717|Ra’s al-Chaima
+1724|Bahar Dar
+1731|Archangelsk
+1737|Sanandadsch
+1738|Tschita
+1750|Tschiföng
+1762|Kusti
+1775|Nizza
+1783|Dohuk
+1797|Tongi
+1812|Wad Madani
+1825|Gäncä
+1826|Chorramschahr
+1835|Xuzhou
+1837|Plowdiw
+1840|London Borough of Brent
+1841|Pawlodar
+1842|Chandrapur
+1845|Sotschi
+1849|Ch’ŏngjin
+1866|Amara
+1867|Wolschski
+1872|Uige
+1875|Osch
+1889|Ninh Binh
+1891|Öskemen
+1895|Diwaniyya
+1896|Warna
+1905|Konstanza
+1906|Neu-Delhi
+1907|Thessaloniki
+1917|Tscherepowez
+1918|Durán
+1919|Bezirk Hamburg-Nord
+1920|Kut
+1934|Wologda
+1943|Sariwŏn
+1945|Butuan City
+1952|Cabuyao City
+1963|Jinju
+1969|Wladikawkas
+1971|Damiette
+1984|Armenien
+1987|Orjol
+1998|Rosette
+2003|Bezirk Hamburg-Mitte
+2018|Biñan City
+2025|Lalitpur
+2026|Fargʻona
+2037|Grosny
+2053|Itajahy
+2061|Tambow
+2063|Aizol
+2066|Hofuf
+2067|Cholula de Rivadavia
+2069|Semei
+2070|Cau Giay
+2071|Dindukkal
+2103|Bac Ninh
+2105|Hamburg-Marienthal
+2108|Kattowitz
+2110|Klausenburg
+2116|Long Xuyen
+2117|Sabhar
+2144|Tschernihiw
+2163|Buchara
+2167|Poltawa
+2172|Petrosawodsk
+2176|Thành phố Quảng Ngãi
+2192|Komsomolsk am Amur
+2198|Straßburg
+2204|Chmelnyzkyj
+2212|Istarawschan
+2221|ar-Rayyan
+2224|Dschalalabad
+2225|Deir-es-Sor
+2230|Kakogawa
+2234|My Tho
+2237|Dese
+2241|Tscherkassy
+2242|Malolos City
+2254|Joschkar-Ola
+2274|Ha Thin
+2293|Ad-Du’ain
+2296|Kunsan
+2301|Porto Novo
+2302|Tschernowitz
+2315|Jiayi Shi
+2326|Schytomyr
+2347|Qoʻqon
+2355|Rischon LeZion
+2360|Da Lat
+2365|Vitoria
+2368|Saint Petersburg
+2370|Gdingen
+2387|Germinston
+2394|Oaxaca de Juárez
+2402|Muridike
+2411|Petach Tikwa
+2416|Kronstadt
+2424|Al-Faschir
+2433|Afyon
+2444|Temeswar
+2454|Sindscha
+2472|Czenstochau
+2487|Kumul
+2489|Stadt des 10. Ramadan
+2499|Syktywkar
+2500|Gorgan
+2501|Nischnewartowsk
+2518|Riwne
+2538|Noworossijsk
+2563|Chimki
+2564|Horliwka
+2568|Naltschik
+2581|Ngaoundere
+2592|Freiburg im Breisgau
+2595|Al-Dschubail
+2618|Jakutsk
+2626|Thanh Pho Ba Ria
+2629|Kismaayo
+2631|Elx
+2636|Nischnekamsk
+2646|Udagamandalam
+2648|Tagum City
+2649|Dserschinsk
+2663|Neuquen
+2671|Jose C. Paz
+2693|Phan Thiet
+2695|Netanja
+2697|Meycauayan City
+2711|Turkestan
+2714|Stary Oskol
+2719|Aschdod
+2729|Ca Mau
+2744|Blagoweschtschensk
+2748|Krementschuk
+2750|Nagarkovil
+2765|Valencia City
+2772|Weliki Nowgorod
+2791|Soc Trang
+2793|Schachty
+2800|Nischapur
+2816|Kropywnyzkyj
+2825|Prokopjewsk
+2838|Galatz
+2850|Santa Rosa City
+2860|Luzk
+2863|Selenograd
+2867|Bijsk
+2873|Tan An
+2886|Bnei Berak
+2904|Neumarkt am Mieresch
+2912|Lanus
+2918|Cao Lanh
+2927|Panabo City
+2937|Pleskau
+2939|Shunde
+2941|Beni-Mellal
+2943|Sidi bel Abbès
+2947|Qostanai
+2961|Shashemene
+2970|Phan Rang-Thap Cham
+2976|Bila Zerkwa
+3000|Jinghong
+3002|Babruisk
+3018|Triest
+3037|Provinz Bandundu
+3039|Babol
+3051|Al-Chums
+3054|Koronadal City
+3055|Genf
+3070|Petropawl
+3077|Nikosia
+3086|Lang Son
+3088|Az Zawiyah
+3105|Sirdschan
+3108|Balakowo
+3109|Armawir
+3114|Al-Arisch
+3118|Juschno-Sachalinsk
+3124|Gleiwitz
+3132|Tarent
+3156|Birdschand
+3157|Thorn
+3163|Izmit
+3169|El Aaiún
+3171|Cholon
+3194|Lüttich
+3201|Butwal
+3206|Tebessa
+3207|Kuala Kubu
+3211|Sewerodwinsk
+3251|Slatoust
+3257|Chudschand
+3267|Jhelam
+3272|Falludscha
+3277|Kōfu
+3284|Sysran
+3310|London Borough of Sutton
+3329|Be’er Scheva
+3341|Zamora
+3366|Qamischli
+3375|Castellón de la Plana
+3385|Großwardein
+3389|Sukaikida
+3391|Termiz
+3396|Kamensk-Uralski
+3398|Reggio di Calabria
+3419|Petropawlowsk-Kamtschatski
+3450|Obuasi
+3459|Dschizak
+3477|Ech Cheliff
+3495|Nimwegen
+3506|Muharraq
+3507|Bielitz-Biala
+3508|Marsa Matruh
+3516|Bejaia
+3547|Pathankot
+3562|Croydon, London
+3563|Mergui
+3568|Mülheim (Ruhr)
+3625|Baranawitschy
+3636|Hamburg-Harburg
+3644|Gurué
+3656|Ituzaingo
+3657|Mahabad
+3658|Piranschahr
+3667|Patras
+3669|Gjong Xoai
+3670|Jamalpur
+3671|Kushiro-shi
+3672|Beresniki
+3673|Avka
+3674|Wolgodonsk
+3687|Nowotscherkassk
+3705|Ocumare
+3713|Buschehr
+3717|Bechar
+3718|Tam Ky
+3723|Emamshahr
+3739|Dong Ha
+3741|Hawalli
+3744|Nasran
+3750|Piräus
+3766|Salala
+3768|Tralleis
+3771|Al-Dschunaina
+3783|Arnheim
+3794|Kundus
+3800|Badaun
+3802|Newport (Wales)
+3812|Rubzowsk
+3821|’s-Hertogenbosch
+3822|Szegedin
+3830|Mytischtschi
+3836|Thanh pho Tra Vinh
+3842|Dhamar
+3846|Salawat
+3869|San Fernando del Valle de Catamarca
+3907|Ussurijsk
+3938|Tuy Hoa
+3973|Ljuberzy
+3991|Kowrow
+3994|San Cristobal
+4005|Hazaribag
+4007|Souq Ahras
+4022|Samawa
+4029|Baquba
+4066|San Cristóbal de La Laguna
+4067|Kökschetau
+4084|Balaschicha
+4109|Rechovot
+4121|Kertsch
+4151|Delicias
+4171|Mestre bei Venedig
+4177|Aqtau
+4190|Nachodka
+4191|Debre Berhan
+4201|Communauté d’agglomération de Saint-Quentin-en-Yvelines
+4221|Medea
+4224|Fünfkirchen
+4259|Elektrostal
+4260|Baleswar
+4266|Navoi
+4270|Teshie
+4304|Ghardaia
+4306|Pjatigorsk
+4317|Saida
+4339|Maikop
+4397|Almetjewsk
+4415|Peristeri
+4429|Haldwani-Kathgodam
+4448|Qairawān
+4466|Naga City
+4474|Bizerta
+4489|Vinh Long
+4502|Bisho
+4507|Iraklio
+4512|Jagdaqi
+4514|Odinzowo
+4523|Tavoy
+4529|Phu Ly
+4571|Tay Ninh
+4573|Tyros
+4574|Kutaissi
+4583|Cap-Haitien
+4591|Newinnomyssk
+4595|Hermannstadt
+4613|İnegöl
+4621|Dong Hoi
+4623|Perwouralsk
+4652|Kislowodsk
+4654|Schaerbeek/Schaarbeek
+4674|Dimitrowgrad
+4697|Adschdabiya
+4720|Nowomoskowsk
+4729|Lao Cai
+4758|Sannar
+4770|Lerchenfeld
+4790|Al Bayda
+4801|Quibdo
+4812|Bat Jam
+4831|Kamyschin
+4837|Nowotscheboksarsk
+4843|Khénifra
+4845|Rustawi
+4850|Serpuchow
+4867|Newcastle-under-Lyme
+4868|Oppeln
+4870|Elbing
+4880|Waw
+4894|Sancti Spiritus
+4905|Chassawjurt
+4931|Rafah
+4952|Minuf
+4989|Bet Schemesch
+4995|San Francisco de Macoris
+5007|Ben Tre
+5009|Mirpur
+5025|Darjiling
+5027|Higüey
+5043|Dschalalabat
+5075|Tscherkessk
+5082|Burton-upon-Trent
+5108|Syrakus
+5110|Stara Sagora
+5115|Ekibastus
+5124|Russe
+5145|Trient
+5173|Nabatiye et Tahta
+5174|Orechowo-Sujewo
+5217|Offenbach am Main
+5222|Fudschaira
+5235|Hung Yen
+5240|Bandar Anzali
+5244|Brügge
+5251|Grünberg
+5275|Hoshangabad
+5296|Atschinsk
+5317|Guaymas
+5333|Kysyl
+5334|Cádiz
+5338|Tacurong City
+5360|Taldyqorghan
+5381|Digos City
+5402|Sri Jayawardenepura
+5410|Jelez
+5422|Riffa
+5423|Uschhorod
+5434|Vlora
+5445|Balch
+5455|Gjumri
+5465|Ariana
+5479|Plei Cu
+5514|Dumaguete City
+5520|Köln-Porz
+5534|Schtscholkowo
+5535|al-Faschn
+5555|Neftejugansk
+5563|Sathmar
+5599|Duma
+5601|Nowokuibyschewsk
+5622|Mülhausen
+5631|Montreuil-sous-Bois
+5634|Nabadwip
+5641|Namür
+5664|St. John’s
+5681|Tighina
+5687|Linqing
+5693|Nojabrsk
+5697|Bataisk
+5701|Royal Sutton Coldfield
+5705|Sewersk
+5708|Browary
+5724|Arsamas
+5731|Sergijew Possad
+5739|Leninsk-Kusnezki
+5752|Kalisch
+5755|Muaskar
+5767|Baglan
+5778|Suhar
+5781|Oktjabrski
+5787|An-Nahud
+5792|Catbalogan City
+5817|Bozen
+5823|Girardot
+5833|Mitrovica
+5834|Jewpatorija
+5867|Nowotroizk
+5871|Son La
+5872|Mingäçevir
+5873|Liegnitz
+5882|Mati City
+5921|Texcoco
+5924|Slowjansk
+5948|Parral
+5954|Tuyen Quang
+5961|Masyr
+5966|Schesqasghan
+5984|Kisseljowsk
+5989|Seguela
+6006|Malé
+6011|Schangaösen
+6040|Welikije Luki
+6057|Reichenberg
+6062|Santa Rosa de Toay
+6064|Puschkino
+6068|Kuqa
+6080|Darna
+6087|Concepción de la Vega
+6098|Berlin-Mitte
+6103|Artjom
+6110|Uchta
+6112|Nakhon Si Tammarat
+6138|Orscha
+6155|Chanty-Mansijsk
+6158|Mbacké
+6159|Pawlohrad
+6165|Ebolowa
+6191|Löwen
+6192|Meschduretschensk
+6214|Glasow
+6217|Kallithea
+6244|Ust-Ilimsk
+6272|Pyongsong
+6286|Jarmuk
+6287|Dscharamana
+6295|Bislig City
+6311|Selenodolsk
+6320|Manbidsch
+6321|Olmütz
+6322|Nowoschachtinsk
+6324|Kasganj
+6349|Sjewjerodonezk
+6359|Kapurthala
+6373|Wotkinsk
+6377|Stolp
+6385|Serow
+6407|Balaschow
+6417|Darʿa
+6422|Kamjanez-Podilskyj
+6423|Schelesnogorsk
+6449|Herzlia
+6458|Chadera
+6463|Thalassery
+6464|Nachitschewan
+6465|Schukowski
+6473|Escalante City
+6474|Molenbeek-Saint-Jean/Sint-Jans-Molenbeek
+6491|Yasudsch
+6509|Esteli
+6511|Salihorsk
+6527|Khost
+6535|Ramenskoje
+6554|Shkodra
+6565|Bariloche
+6568|Nawapolazk
+6589|Lee’s Summit
+6599|Frederiksberg Kommune
+6613|Parli
+6648|Nowy Urengoi
+6650|Ilan
+6652|Gjakova
+6667|Berlin-Gesundbrunnen
+6668|Nowouralsk
+6670|Schelesnogorsk
+6692|Mitschurinsk
+6697|Budweis
+6715|Sankt Lorenz-Sankt Emmerich
+6734|Noumea
+6741|Kineschma
+6748|Puschkin
+6769|Graudenz
+6772|Hamburg-Rahlstedt
+6785|Esslingen am Neckar
+6847|Makhanda
+6850|Kalamaria
+6856|Dorpat
+6887|Thakhek
+6889|'Amran
+6901|Königgrätz
+6915|Kusnezk
+6919|Gulistan
+6921|Aussig
+6929|Kirowo-Tschepezk
+6933|Plewen
+6973|Gattschina
+6992|Muradnagar
+7005|Lənkəran
+7035|Nisibis
+7061|Hanau
+7069|Stadtzentrum
+7114|Sarow
+7135|Jeisk
+7143|Busuluk
+7151|Kaduqli
+7161|Taroudannt
+7179|Maladsetschna
+7196|Hounde
+7227|Oduponkpehe
+7234|Tschaikowski
+7238|Ixelles/Elsene
+7250|Al Farwaniyah
+7259|Amsterdam Stadtzentrum
+7261|Tagbilaran
+7269|Neutra
+7274|Dünkirchen
+7309|Ussolje-Sibirskoje
+7312|Ponewiesch
+7334|Mukatschewo
+7366|Jegorjewsk
+7375|Gia Nghia
+7418|Thyatira
+7427|Tanjay City
+7428|St. Albans
+7442|Neusandez
+7460|Jurga
+7462|Woskresenka
+7485|Darchan
+7494|Sliwen
+7513|Kafr az-Zayyat
+7547|Mar del Tuyu
+7557|Uccle/Ukkel
+7600|San Martin
+7606|Anschero-Sudschensk
+7624|Lüshunkou
+7625|Troizk
+7626|Madaba
+7647|Asow
+7678|Kaspijsk
+7679|Tamanrasset
+7684|Ar-Rass
+7696|Irgalem
+7732|Reschitz
+7733|Sillein
+7740|Doğubeyazıt
+7746|Osjorsk
+7748|Berlin-Moabit
+7751|Jessentuki
+7777|Atakpame
+7798|Bachmut
+7807|Kairana
+7839|Workuta
+7847|Samzhubzê
+7855|Drobeta Turnu Severin
+7890|Schadrinsk
+7902|Polazk
+7940|Marburg
+7942|Bistritz
+7958|Gualeguaychu
+7961|Wyborg
+7984|Daltonganj
+7986|Reutow
+7989|Bandar-e Imam Chomeini
+8015|Dünaburg
+8021|Wanadsor
+8036|Pakxé
+8051|Hakkari
+8074|Lüben
+8075|Mecheln
+8082|Nazaret
+8103|San Miguel de Cozumel
+8114|Susa
+8121|Mahikeng
+8124|Woskressensk
+8134|Jalta
+8139|Mawana
+8157|St. Joseph
+8168|Luxemburg
+8186|Vatakara
+8220|Mineralnyje Wody
+8243|Oleksandrija
+8245|Scharbin
+8273|St. Gallen
+8276|Kamensk-Schachtinski
+8277|Belowo
+8290|Tschechow
+8403|Neusohl
+8454|Al-Qa'im
+8503|Buraimi
+8507|Birobidschan
+8520|Cao Bang
+8549|Fada N'Gourma
+8551|Schostka
+8561|Mayaguez
+8568|Berdytschiw
+8600|Minussinsk
+8609|Jelabuga
+8632|Schumen
+8656|Sagay City
+8663|Nizwa
+8674|Larnaka
+8697|Sunscha
+8724|Tschernogorsk
+8744|Borongan City
+8753|Selenogorsk
+8769|Tolanaro
+8794|Hamburg-Billstedt
+8811|Panaji
+8827|Ain Temouchent
+8833|Kopeisk
+8908|Sirvan
+8916|Alcalá de Guadaíra
+8918|Tschapajewsk
+8936|Striesau
+8948|Ismajil
+9000|Dobritsch
+9044|Ostende
+9057|Tunbridge Wells
+9070|Tuimasy
+9095|Borissoglebsk
+9098|Sosnowy Bor
+9099|Feodossija
+9101|Bouira
+9109|Tanauan City
+9120|Bisalpur
+9131|Dolgoprudny
+9196|Blagoewgrad
+9209|Ischim
+9211|Velsen
+9235|Banepa
+9239|Xacmaz
+9242|Kowel
+9269|Kostjantyniwka
+9283|Kstowo
+9293|Berlin-Köpenick
+9313|Nischyn
+9318|Tergowisch
+9327|Alexin
+9349|Bani
+9359|Focşani
+9402|Klinzy
+9409|London Borough of Hounslow
+9445|Sagunt
+9456|Calapan City
+9458|Cherson
+9465|Lessosibirsk
+9466|Dschabla
+9522|Ioannina
+9524|Bezirk Wufeng
+9537|Middletown Township
+9543|Sochumi
+9545|Ellesmere Port
+9561|Meleus
+9588|Lalamusa
+9602|Kalusch
+9615|Bazarak
+9654|Retschyza
+9719|Tscherwonohrad
+9726|Talokan
+9752|Alexandrow
+9763|Alt Phaleron
+9798|Schandi
+9817|Jambol
+9848|Madīnat Zāyid
+9849|Brüx
+9866|Pawlowo
+9881|Gorno-Altaisk
+9888|Hod haScharon
+9889|Sohrau
+9893|Lushnja
+9899|Balachna
+9900|Puerto Limón
+9901|Collado Villalba
+9915|Schodsina
+9928|Graaff-Reinet
+9955|Santa Lucia
+9957|Buinaksk
+9965|Belebei
+9985|Perwomajsk
+9993|Villeneuve-d’Ascq
+10005|Ra's Tanura
+10010|Rschew
+10011|Ödenburg
+10039|Tichwin
+10054|Engelsfeld
+10056|VII. Budapester Bezirk
+10085|Bamyan
+10092|Kirjat Gat
+10099|Rewda
+10102|Lobnja
+10123|Wyksa
+10125|Trikala
+10134|Dmitrow
+10136|Sibai
+10140|Beja
+10143|Alcoi
+10149|Malaybalay City
+10170|Stryj
+10171|Kempten
+10220|Nowoaltaisk
+10249|Tarnowitz
+10270|Kolomyja
+10293|Schuja
+10348|Schweidnitz
+10394|Pokrowsk
+10398|Laascanood
+10405|Kuwait-Stadt
+10408|Pawlowski Possad
+10427|Nema
+10471|Fountainbleau
+10492|Nag Hammadi
+10498|Köpenick
+10546|Michailowsk
+10553|Weliko Tarnowo
+10560|Chalkida
+10570|Umm al Qaywayn
+10582|Werchnjaja Pyschma
+10584|as-Suwaida
+10600|Sluzk
+10619|Michailowka
+10620|Solnetschnogorsk
+10671|Nga Nam
+10687|Ratibor
+10689|Uslowaja
+10700|Benevent
+10716|Serres
+10718|Trentschin
+10722|Korça
+10723|San Andres
+10728|Colon
+10750|Naharija
+10764|Tschornomorsk
+10787|Tabaco City
+10801|Lopburi
+10807|Stolberg, Rheinland
+10865|Halabdscha
+10870|Garowe
+10949|Wesprim
+10950|Berlin-Neu-Hohenschönhausen
+11000|Woluwe-Saint-Lambert/Sint-Lambrechts-Woluwe
+11003|Borowitschi
+11011|Obera
+11037|Hamburg-Winterhude
+11043|Pul-e Khumri
+11055|Kaedi
+11058|Forest/Vorst
+11070|Kirischi
+11075|Dunqula
+11084|Rhodos
+11089|St. Augustin
+11122|Swjahel
+11146|Lyck
+11163|Schibirgan
+11177|Snischne
+11199|Wjasma
+11204|Rîbnița
+11252|Ain Defla
+11254|Nasarowo
+11257|Rubischne
+11262|Pasardschik
+11263|Klimowsk
+11270|Zouerat
+11284|Biel
+11329|Troppau
+11337|San Jose de las Lajas
+11339|Mitau
+11364|Odienne
+11387|Beloretschensk
+11406|Agona Swedru
+11411|Narwa
+11429|Az Za'ayin
+11485|Kavala
+11486|Losowa
+11498|Druschkiwka
+11515|Seweromorsk
+11519|Chania
+11522|Domodedowo
+11525|Erlau
+11537|Wyschni Wolotschok
+11539|Ottappalam
+11559|Tscharikar
+11642|Katerini
+11653|Andoany
+11676|Cava de' Tirreni
+11695|Hamburg-Wilhelmsburg
+11699|Mediasch
+11709|Alexandroupolis
+11732|San Jose del Guaviare
+11751|Berlin-Mariendorf
+11754|Greifswald
+11765|Rio Grande
+11829|Al Aziziyah
+11876|Sarinsk
+11890|Antrazyt
+11896|Berlin-Lichtenrade
+11920|Lamia
+11922|Riga-Strand
+11943|Usulutan
+11951|Sa'da
+11981|Saint John's
+11984|Widnoje
+12040|Akkon
+12047|Nurafshon
+12071|Venedig
+12098|Leesburg (Virginia)
+12104|Kruja
+12125|Iwantejewka
+12131|Staines-upon-Thames
+12136|Palmyra
+12152|Leamington Spa
+12168|Teplitz
+12170|Donezk
+12174|Ayutthaya
+12184|Lahr/Schwarzwald
+12190|Gelendschik
+12217|Ibbenbüren
+12222|Kisljar
+12224|Abowjan
+12263|Taxco
+12274|Nes Ziona
+12294|Saint-Gilles/Sint-Gillis
+12297|Tschussowoi
+12322|Iglau
+12325|Sneschinsk
+12329|Sfantu Gheorghe
+12332|Berlin-Alt-Hohenschönhausen
+12357|Ghaziyeh
+12414|Kanasch
+12419|Montschegorsk
+12423|Horischni Plawni
+12424|Sarandsch
+12431|Yevla
+12437|Nowowolynsk
+12448|Ibiza-Stadt
+12470|Mashishing
+12474|Monroe (Louisiana)
+12481|Vratza
+12495|Hrasdan
+12516|Ösgön
+12527|Koupela
+12543|Libertador General San Martin
+12556|Salechard
+12560|Wanganui
+12573|Coeur d’Alene
+12587|Port-of-Spain
+12598|Werchnjaja Salda
+12602|Valladolid (Yucatán)
+12607|Peja
+12618|Ossinniki
+12639|Königliche Weinberge
+12676|Fryštát
+12696|Torschok
+12697|Vigan City
+12702|Nyaung U
+12710|East Brunswick Township
+12722|Tafi Viejo
+12725|Sammu
+12734|Asadabad
+12753|Kuibyschew
+12764|Štip
+12779|Wsewoloschsk
+12786|Palpala
+12799|Gabrowo
+12838|Etschmiadsin
+12855|Kasanlak
+12873|Aibak
+12898|Bilhorod-Dnistrowskyj
+12912|Raduschny
+12940|Jawne
+12972|Schelechow
+13019|Tschahbahar
+13033|Ramat haScharon
+13038|Ochtyrka
+13075|Jowhar
+13080|Nawa
+13110|Kilmarnock (Scotland)
+13130|Agrinio
+13138|Kjustendil
+13161|Stepnogor
+13201|Komotau
+13240|Tetschen
+13241|Berlin-Staaken
+13273|Gablonz
+13292|Petschora
+13298|King’s Lynn
+13327|Safonowo
+13335|Rasskasowo
+13348|Tinerhir
+13353|Isjum
+13355|Wenchi
+13405|Wolchow
+13417|Stade
+13420|Komotini
+13422|Tinduf
+13441|Dahra
+13446|Rowenky
+13449|Karlsbad
+13471|Centar Zupa
+13526|Schebekino
+13529|Insterburg
+13553|Sundargarh
+13576|Marhanez
+13620|Tschoibalsan
+13624|Drama
+13644|Brjanka
+13650|Sisaket
+13698|Achtubinsk
+13734|Nowa Kachowka
+13751|Kolberg
+13772|Diedenhofen
+13784|Villa Constitucion
+13812|Tulkarem
+13837|Ussinsk
+13838|Kardschali
+13853|Fastiw
+13889|Lashkargah
+13949|Netiwot
+13986|Sertolowo
+13997|Berlin-Lankwitz
+14005|Hajja
+14015|Island Garden City of Samal
+14016|Phattalung
+14020|Hyvinkää
+14024|Villa Angela
+14039|Tejerias
+14067|Thorenburg
+14076|Sowetsk
+14090|Prossnitz
+14107|Nogoya
+14120|Switlowodsk
+14157|Wyschnewe
+14160|Lai Chau
+14177|Nowodwinsk
+14186|Balyktschy
+14193|Berlin-Britz
+14196|Sébikotane
+14214|Scharypowo
+14224|Dunkwa-on-Offin
+14254|Berlin-Rudow
+14273|Nowosybkow
+14290|Lomonossow
+14291|Goeycay
+14295|Partisansk
+14298|Tikrit
+14305|Sawakin
+14347|Butscha
+14362|Konakowo
+14407|VI. Budapester Bezirk
+14428|Schowti Wody
+14429|Sainsk
+14439|Frankfurt-Gallus
+14441|Arqalyq
+14442|Pingyao
+14445|Warasch
+14467|Orange  (State of New South Wales)
+14506|Canuelas
+14515|Lessosawodsk
+14534|Dschankoj
+14552|Korenowsk
+14561|Cotui
+14573|Bərdə
+14589|Freistadt
+14623|Jatta
+14625|Istalif
+14654|Berlin-Westend
+14660|Selenokumsk
+14661|Shamkhor
+14687|Agdzhabedi
+14712|Sehwan Sharif
+14748|Meran
+14751|Waukawysk
+14793|Swinemünde
+14795|Bishop’s Stortford
+14800|Hamburg-Niendorf
+14810|Frolowo
+14837|Schepetiwka
+14874|Bunzlau
+14886|Rødovre Kommune
+14943|Berlin-Wilhelmstadt
+14945|Apscheronsk
+14967|St. Sulpice
+15023|Pernau
+15047|Berlin-Buckow
+15061|Berlin-Märkisches Viertel
+15072|Kaschira
+15081|Sugdidi
+15087|Korfu
+15107|Ballerup Kommune
+15146|Langreo
+15153|Chascomus
+15168|Kirjat Jam
+15179|Alexejewka
+15183|Altsohl
+15213|Bani Ṣāf
+15223|Swetlograd
+15312|Tawda
+15360|Kirow
+15424|Ghosi
+15425|Murawlenko
+15436|El Meghaier
+15451|Baniyas
+15453|As-Sāniyya
+15504|Polichni
+15526|Nikolai
+15539|Konitz
+15559|Nischneudinsk
+15560|Hagenau
+15582|Berlin-Falkenhagener Feld
+15609|Piwdennoukrajinsk
+15625|Neustettin
+15630|Portimao
+15631|Sharm el Sheikh
+15638|Bodhgaya
+15641|Kandalakscha
+15659|Furmanow
+15661|Tunuyan
+15662|Freiburg
+15689|Sindschar
+15746|Haltern in Westfalen
+15755|Mühlhausen/Thüringen
+15767|Madinat Isa
+15781|General Guemes
+15788|Dimitrowgrad
+15815|Cerrillos
+15820|Umm Hādschar
+15826|Wolodymyr
+15829|Hamburg-Horn
+15880|Taischet
+15885|Sansanné-Mango
+15889|Ilkenau
+15896|Uglitsch
+15912|Agdam
+15920|Berlin-Gropiusstadt
+15955|Marienwerder
+15959|Jassynuwata
+15960|Troizk
+15991|Braine-l’Alleud
+15994|Muang Phonsavan
+16004|Pokrow
+16038|Beit Hanun
+16048|Dongragarh
+16051|Progreso de Castro
+16070|Protwino
+16095|Sestrorezk
+16158|Wassylkiw
+16161|Taukar
+16176|Langadas
+16189|Tursunsoda
+16236|Pylea
+16246|Or Jehuda
+16257|Neuhäusel
+16263|Berlin-Tegel
+16281|Marienburg
+16310|Esch an der Alzette
+16343|Hamburg-Lurup
+16344|Tschuhujiw
+16349|Pehuajo
+16361|Netischyn
+16366|Kozani
+16401|Nowokubansk
+16404|Curuzu Cuatia
+16414|Böhmisch-Leipa
+16446|Howsan
+16476|Slanzy
+16493|Municipio Ameca
+16505|Kuneitra
+16527|Perwomajsk
+16570|Altstadt
+16575|Ramsar
+16581|Kachowka
+16606|Port Vila
+16614|Waluiki
+16618|Äiteke Bi
+16625|Großmichel
+16644|Awdijiwka
+16741|Teschen
+16758|Saint-Martin-d’Hères
+16784|Jaroslau
+16800|Pleebo
+16832|Kassimow
+16836|Braganza
+16854|Znaim
+16876|Sabechlitz
+16882|Schumerlja
+16915|Hamburg-Ottensen
+16932|Korsakow
+16936|Ypern
+16938|Pandschakent
+16946|Slawuta
+16950|Zalingi
+16987|Podujevo
+17046|Bernau
+17052|Neudorf
+17078|Atbassar
+17080|Widin
+17085|Targowischte
+17092|Rapperswil SG
+17110|Dschenin
+17113|al-Waqf
+17138|Baraily
+17155|Schalgau
+17159|Monroe (North Carolina)
+17168|San Jose de Metan
+17173|Kāne‘ohe
+17197|Pillau
+17199|Schäßburg
+17213|Kamysch-Burun
+17217|Schmerynka
+17223|Trebitsch-Stadt
+17239|Görz
+17243|Scharkent
+17256|Ostrogoschsk
+17262|Bojarka
+17314|Staraja Russa
+17330|Kočani
+17339|Blagoweschtschensk
+17344|Starokostjantyniw
+17384|Auschwitz
+17388|Reichenbach im Eulengebirge
+17405|Slawgorod
+17423|Ahuachapan
+17438|Kuschwa
+17472|Auderghem/Oudergem
+17501|Reo
+17532|Altofen
+17574|Berlin-Fennpfuhl
+17588|Stadt Schwedt/Oder
+17601|Krasnosnamensk
+17613|Mirafiori Süd
+17679|Fürstenwalde/Spree
+17689|Osterode
+17720|Neuenburg
+17721|Waitzen
+17736|Wosnessensk
+17745|Jablonowski
+17789|Sima
+17879|Wyschhorod
+17882|Primorsko-Achtarsk
+17897|Kotowsk
+17933|As-Sintan
+17934|Jessik
+17938|Goshen (Indiana)
+17961|Gengeß
+17962|Marx
+18037|Karditsa
+18057|Hội An
+18092|Piwdenne
+18097|Winsen (Luhe)
+18104|Selibaby
+18113|Nienburg/Weser
+18149|Deutsch Eylau
+18151|Baharak
+18160|Coronel Suarez
+18166|Agrigent
+18171|Jubileiny
+18176|Savner
+18193|Boryslaw
+18194|Mažeikiai
+18195|Rethymnon
+18226|Theben
+18238|Luchowizy
+18285|Komorn
+18297|Berlin-Marienfelde
+18402|Rumbik
+18415|Hamburg-Neugraben-Fischbek
+18421|St Paul's Bay
+18470|Castro Urdiales
+18474|Erfoud
+18476|Betschermen
+18478|Kimowsk
+18487|Ĳmuiden
+18490|Snamensk
+18551|Hluchiw
+18554|Gorodez
+18568|General Jose de San Martin
+18577|Thienen
+18580|Radolfzell am Bodensee
+18585|Feulegaß
+18591|Sachnin
+18603|Amecameca de Juárez
+18623|Sosnowoborsk
+18628|San Carlos de Bolivar
+18652|Moschaisk
+18653|Obuchiw
+18680|Sedhiou
+18694|Rahatschou
+18725|Eickau
+18748|Nowojaworiwsk
+18764|Berlin-Hakenfelde
+18796|Bani Suheila
+18823|Des Moines (Washington)
+18869|Kicevo
+18875|Cabadbaran City
+18886|Likino-Duljowo
+18899|Kuchova
+18915|Burgdorf (Region Hannover)
+18920|Rostow
+18955|Tanis
+18966|Famailla
+18971|Schoner
+18981|Bayanchongor
+19000|Torezk
+19038|Provinz Macerata
+19114|Morgantown (West Virginia)
+19122|Krasnoperekopsk
+19125|Lökbatan
+19126|Smoljan
+19171|Plainfield (Indiana)
+19172|Mohyliw-Podilskyj
+19186|Kirschatsch
+19187|General Villamil
+19191|Synelnykowe
+19225|Khorog
+19253|Homenau
+19281|Schönebeck (Elbe)
+19309|Wieselburg-Ungarisch Altenburg
+19320|Karlowo
+19330|Yeji
+19378|Bogorodizk
+19393|Balabanowo
+19399|Korinth
+19421|Kostomukscha
+19452|Nili
+19455|Kedougou
+19462|Ptolemaida
+19471|Fatehpur Sikri
+19474|Diwnogorsk
+19478|Kavaja
+19537|Lutherstadt Wittenberg
+19553|Lötzen
+19601|LaPlace
+19606|Sassowo
+19609|Faa’a
+19611|Jemanschelinsk
+19648|Villa General San Martin
+19701|Bergen (Nord-Holland)
+19708|Armawir
+19770|Dsjarschynsk
+19784|Aluschta
+19801|Salem (New Hampshire)
+19831|Silistria
+19851|Dassa-Zoume
+19925|Trautenau
+19951|Timaru-Distrikt
+19961|Morosowsk
+19971|Sernograd
+19973|Shindand
+20016|Municipio Tequila
+20098|Ipatowo
+20099|Kalgoorlie-Boulder
+20121|Schelek
+20138|Tandag City
+20157|Kochma
+20184|Rasgrad
+20264|Gran
+20306|Kuwandyk
+20319|Gumbinnen
+20336|Aenew
+20386|Karassuk
+20411|Mühlheim
+20424|Slatopil
+20439|Sakaeo
+20441|Meißen
+20443|Kotschubejewskoje
+20468|Nalut
+20470|Jawai
+20471|Chust
+20489|Tschortkiw
+20499|Hosdurga
+20518|Strassburg
+20536|Mytilini
+20544|Nowyj Rosdil
+20552|Pochwistnewo
+20558|Truskawez
+20603|Municipio Metepec
+20620|Monroeville (Pennsylvania)
+20624|Dobropillja
+20654|Beschezk
+20674|Catano
+20678|Lohne (Oldenburg)
+20708|Feuerbach
+20725|Xàbia
+20730|Kamyschlow
+20747|Berlin-Friedenau
+20790|Kremsier
+20798|Lowetsch
+20834|Termas de Rio Hondo
+20846|Solotonoscha
+20870|Sonderburg
+20872|Ehingen an der Donau
+20910|Chmilnyk
+20946|Dortmund-Hörde
+20948|Phuentsholing
+20970|Nawahradak
+20979|New Tehri
+20981|Nowoalexandrowsk
+21004|Schachtarske
+21039|Kalatsch am Don
+21040|Karansebesch
+21063|Rastenburg
+21080|Bachtschyssaraj
+21087|Jaßbring
+21136|Kirowske
+21139|Saint-Josse-ten-Noode/Sint-Joost-ten-Node
+21202|Zürich (Kreis 4)
+21217|Mühlbach
+21224|Ourossogui
+21257|Kupjansk
+21264|El Paso de Robles
+21295|Prager Neustadt
+21314|Lai
+21315|Ndele
+21316|Assino
+21332|Gerasa
+21336|Wangen im Allgäu
+21337|Frankfurt Niederrad
+21363|Alton (Illinois)
+21366|Dedowsk
+21401|Kotowo
+21416|Terniwka
+21420|Las Brenas
+21441|Kumlau
+21501|Bulkiza
+21517|La Union
+21538|Samokow
+21609|Kirowsk
+21619|El Guabo
+21633|Gubacha
+21663|Tripoli
+21803|Dudschail
+21820|Aplahoue
+21829|Balaklija
+21879|Herbertshöhe
+21881|Perejaslaw
+21939|Arel
+21991|Mühlhausen
+22030|Ortelsburg
+22042|Al-Fula
+22083|Deutsch Krone
+22166|Allerød Kommune
+22189|Krasnoarmeisk
+22220|Lundenburg
+22243|Masuri
+22248|Tschechisch Teschen
+22260|Hajssyn
+22267|Sagan
+22290|Berlin-Rummelsburg
+22295|Diebougou
+22296|Krasnoarmeisk
+22306|Sawodoukowsk
+22312|Migdal haEmek
+22318|Khajuraho
+22339|Rustaq
+22365|Khan Neshin
+22367|Jehud
+22408|Zhongxing Neudorf
+22419|Val-d’Or
+22442|Kirejewsk
+22481|Heppenheim (Bergstraße)
+22491|Salem (Virginia)
+22540|Kirjat Mal'achi
+22551|Nerechta
+22576|Wynohradiw
+22598|Pless
+22609|Ibra
+22612|Reinbek bei Hamburg
+22650|Wiljutschinsk
+22674|Gallipoli
+22685|Berchem-Sainte-Agathe/Sint-Agatha-Berchem
+22689|Watermael-Boitsfort/Watermaal-Bosvoorde
+22734|Fizuli
+22744|Wudersch
+22755|Hann. Münden
+22789|Oase Siwa
+22791|Bousse
+22820|Ruwais
+22825|Ir haKarmel
+22827|Djatkowo
+22833|Mainz-Gonsenheim
+22884|Swerewo
+22938|Naqura
+22950|Jangiabad
+22955|Whitehall (Pennsylvania)
+22959|Newport (England)
+22992|Ungarisch Hradisch
+23018|Perewalsk
+23065|Wetzikon ZH
+23074|Neurode
+23098|Berlin-Wittenau
+23137|Kirowsk
+23166|Oleschky
+23217|Lösch
+23235|Pathumthani
+23264|Sdolbuniw
+23271|Ostrow
+23283|Leitmeritz
+23286|Oberst Brandsen
+23292|Vi Thanh
+23299|Slawutytsch
+23300|gothische Viertel
+23313|Rudolfswerth
+23315|Saargemünd
+23317|Mährisch-Schönberg
+23318|Bösing
+23329|Hun
+23352|Nowopawlowsk
+23389|St. Austell
+23445|Al Jahra
+23492|Marcos Juarez
+23499|Königsfeld
+23501|Debalzewe
+23549|Nescher
+23562|Hamburg-Poppenbüttel
+23567|Korostyschiw
+23617|Topoltschan
+23638|Kalatschinsk
+23645|Mewasseret Zion
+23703|Caazapa
+23747|Wil SG
+23822|Jauer
+23859|Radautz
+23891|Hajduszoboszlo
+23907|Raitschichinsk
+23909|Palayan
+23911|Neuschloss
+23918|Besentschuk
+23922|Komanesti
+23936|Fort Washington (Maryland)
+24002|Bailey's Crossroads
+24060|Lyskowo
+24068|Bogo City
+24106|Agdas
+24131|Kaniw
+24149|Bartenstein
+24153|Hadjatsch
+24172|Megara
+24186|Gjirokastra
+24218|Metahara
+24237|Lahij
+24242|Lermontow
+24245|Canico
+24289|Berehowe
+24322|Ossa
+24365|Kosjatyn
+24368|Motul de Carrillo Puerto
+24409|Zichron Ja’akow
+24469|Glostrup Kommune
+24483|Hoheluft
+24492|Haciqabul
+24554|Oderberg
+24613|Saint-Ouen-l’Aumône
+24617|Krytschau
+24642|Picnic Point-Lynnwood
+24663|Klattau
+24668|Kilkis
+24669|Dankow
+24683|Sipoo
+24706|Edinet
+24736|Forst (Lausitz)
+24743|Dokutschajewsk
+24776|Artaschat
+24781|Bristol (Rhode Island)
+24790|Municipio Atlacomulco
+24821|Sükhbaatar
+24824|Neutitschein
+24828|Berlin-Schmargendorf
+24878|Kirowgrad
+24922|Santo Tome
+24943|Saranda
+24946|Solotschiw
+24952|Nischnjaja Tura
+24975|Wallachisch Meseritsch
+25001|Haren (Ems)
+25018|Reichenbach
+25031|Kirjat Schmona
+25035|Lutherstadt Eisleben
+25037|Nadwirna
+25081|Ladyschyn
+25097|Snamjanka
+25134|Nuku’alofa
+25137|Pyrgos
+25169|Nahrin
+25170|Leutkirch im Allgäu
+25180|San Lazzaro di Savena
+25197|Eislingen/Fils
+25222|Jägerndorf
+25223|Agsu
+25226|Kamala Beach
+25250|Strakonitz
+25261|Oberleutensdorf
+25278|Hamburg-Eilbek
+25283|Iznik
+25300|Argos
+25334|Lodeinoje Pole
+25354|Rotenburg an der Wümme
+25368|Swetly
+25397|Dhankuta
+25399|Somerset (New Jersey)
+25418|Tscharenzawan
+25448|Rjaschsk
+25464|Mondragón
+25500|Leesburg (Florida)
+25510|Oberlazisk
+25546|Andrychow
+25562|San Juan (bei Alicante)
+25565|Mira Loma
+25582|St. Pölten
+25584|Los Reyes Acozac
+25586|Falkenau an der Eger
+25599|Arta
+25625|Mbaiki
+25657|Lutschegorsk
+25682|Kisel
+25706|Kuttenberg
+25738|Beraun
+25787|Căușeni
+25791|Chadyschensk
+25898|Hura
+25927|Selydowe
+25934|Naples (Florida)
+25951|Punakha
+25960|Livadia
+25975|Waren (Müritz)
+25978|Schimanowsk
+25994|Berlin-Französisch Buchholz
+26000|Bogande
+26037|Kowylkino
+26103|Lichtenfels / Bayern
+26138|Telšiai
+26162|Nachod
+26181|Nesselsdorf
+26213|Tauroggen
+26272|San Jose de Ocoa
+26294|Zerbst/Anhalt
+26334|Kremenez
+26341|Salzwedel
+26362|Nowy Oskol
+26437|Ajtos
+26550|St. Louis
+26606|Montecchio Maggiore
+26620|Qazax
+26645|Groß-Karol
+26651|Subarnapur
+26659|Sortawala
+26668|Alibag
+26682|Schoham
+26740|Hamburg-Volksdorf
+26742|Stanley
+26751|Surowikino
+26895|Nytwa
+26897|Goze Deltschew
+26916|Fröndenberg/Ruhr
+26939|Tschernogolowka
+27021|Terter
+27067|Neuhaus
+27141|Saatli
+27146|Haldensleben
+27158|Welingrad
+27180|Anatuya
+27236|Tel Scheva
+27288|Dean Funes
+27305|Wilkomir
+27343|Tyrnyaus
+27360|Monroe (Michigan)
+27375|Puschtschino
+27439|Flörsheim am Main
+27472|Bischarri
+27479|Dinsor
+27493|Karatu
+27564|Nykobing Falster
+27565|Kratie
+27578|Sulya
+27619|Jenisseisk
+27648|Sainshand
+27650|Clifton (Colorado)
+27667|Zinjebar
+27673|Telawi
+27689|Hammonia
+27726|Kullu
+27760|Göygöl
+27776|Rosignano Solvay
+27835|Kiwschariwka
+27840|Insa
+27894|Schukowka
+27924|Sewan
+27996|Ostaschkow
+28019|Kilija
+28048|Kowdor
+28062|al-Qarara
+28064|Idschewan
+28134|Alton (England)
+28166|Şuşa
+28223|As-Samu
+28234|Orange (Texas)
+28247|Nowopokrowskaja
+28249|Baden AG
+28250|Kataw-Iwanowsk
+28260|Wetschesch
+28264|Neustadt an der Waag
+28288|Clayton (North Carolina)
+28375|Agidel
+28441|Kurowskoje
+28484|Alfeld (Leine)
+28497|Pirane
+28528|Marupe
+28564|Cosquin
+28606|Kafr-Qara
+28633|Likisa
+28657|Saaz
+28704|Schlettstadt
+28722|Belœil
+28728|Schimitz
+28753|Talmenka
+28774|Konstantinowsk
+28814|Cournon-d’Auvergne
+28852|Manturowo
+28863|Komorn
+28903|Schuschenskoje
+28914|Jembi
+28958|Bad Münder
+28978|Salka
+28986|Mohatsch
+29006|Lezha
+29034|Edessa
+29048|Neftcala
+29057|Balaklawa
+29059|Bronnizy
+29083|Wanino
+29099|Taliza
+29101|Agrys
+29104|Zeila
+29113|Galitsch
+29133|Tschongrad
+29135|Lask
+29162|Bhum
+29182|Waldai
+29183|Barysch
+29186|Phalawda
+29241|Corat
+29255|Kalyniwka
+29276|Wolotschysk
+29283|Deshnok
+29314|Pastawy
+29354|St Andrews
+29361|Kota
+29373|Flatow
+29412|Braunsberg/Ermland
+29507|Beloosjorski
+29543|Landshut
+29572|Al Hazm
+29604|Kurachowe
+29607|Studenicani
+29639|Kleinwardein
+29675|Somerset (Massachusetts)
+29708|Pjatychatky
+29741|Polohi
+29756|Berlin-Heiligensee
+29764|Abasa
+29770|Monroe (Washington)
+29772|Kaaden
+29778|Korntal-Münchingen
+29797|Laun
+29820|Narjan-Mar
+29847|Düdelingen
+29855|Amsterdam (New York, USA)
+29875|Islutschinsk
+29887|Batie
+29906|Pettau
+29922|Alt-Uppsala
+29942|Montecatini Terme
+29964|Kurtamysch
+29993|Skadowsk
+29999|Hranice na Moravě
+30008|al-Chasab
+30027|El Escorial
+30052|Suhres
+30053|Sowetsk
+30056|Priwolschsk
+30057|Chortiatis
+30096|Newel
+30102|Zémio
+30105|Kircholm
+30111|Wahiawa
+30117|Bohoduchiw
+30158|Aprelewka
+30162|Küstrin an der Oder
+30186|Korsun-Schewtschenkiwskyj
+30228|Kronberg im Taunus
+30257|Mezökövesd
+30270|Bereschany
+30280|Florina
+30303|Baybay City
+30317|Swobody
+30324|Garching bei München
+30371|Kozjubynske
+30403|Aschtarak
+30406|Qobu
+30408|Saissan
+30454|Großsalontha
+30455|Haar bei München
+30470|Pindaya
+30531|Aginskoje
+30538|Cholmskaja
+30565|Buale
+30596|Bethanien (Lazarus)
+30600|Skwyra
+30620|Cirié
+30651|Fellin
+30724|Mehtar Lam
+30783|Hökməli
+30794|Tiszaujvaros
+30814|Prevesa
+30883|Roznov pod Radhostem
+30911|Promyschlennaja
+30957|Kotschkor-Ata
+30972|Saslauje
+30996|Theben-Neudorf
+31013|Derhatschi
+31044|Rosenau
+31055|Hamburg-Rotherbaum
+31095|Koschnitz
+31100|Swaljawa
+31135|Gossau SG
+31246|L’Isle-sur-la-Sorgue
+31276|Kawalerowo
+31297|Nowousensk
+31322|Berlin-Dahlem
+31347|Hîncești
+31395|Menselinsk
+31414|Eltville am Rhein
+31425|Konark
+31437|Tutschkowo
+31462|Danilow
+31467|Aschmjany
+31472|Bet Sche’an
+31490|Mokka
+31496|Siders
+31512|Atschchoi-Martan
+31535|Florești
+31556|Mittelstadt
+31585|Berlin-Hermsdorf
+31597|Cham ZG
+31634|Vilshofen an der Donau
+31644|Berlin-Frohnau
+31678|Losheim am See
+31713|Guben
+31732|Balesino
+31785|Pekin
+31794|Popowo
+31829|Torre de Belém
+31832|Santa Maria
+31840|Heilsberg
+31903|Swenyhorodka
+31922|Berlin-Haselhorst
+32005|Apenrade
+32006|Tondern
+32014|St. Michael
+32016|Dajabon
+32050|Sulzbach/Saar
+32062|Berlin-Kladow
+32066|Saint-Cyr-l’École
+32095|Radviliškis
+32098|Wabing
+32160|Bychau
+32176|Ungarisch Brod
+32220|Penonome
+32222|Stolpmünde
+32235|Lakedaimon
+32283|Brach
+32354|Swatowe
+32366|Rio Colorado
+32406|Les Sables-d’Olonne
+32428|Manati
+32431|Pawlowsk
+32455|Zwittau
+32479|Golizyno
+32494|Hamburg-Rissen
+32530|Espenkrug
+32543|Hamburg-Othmarschen
+32560|Baucau
+32590|Gorodok
+32646|Corvera
+32693|Treuburg
+32708|Dilidschan
+32725|Piguee
+32740|Njaswisch
+32754|Clayton (Missouri)
+32776|Brixen
+32780|Pokrow
+32781|Petuschki
+32792|Escaldes-Engordany
+32802|Binjamina
+32825|Apostolowe
+32828|Sloboschanske
+32868|Neuenberg
+32892|Lübbenau
+32894|Benito Juarez
+32907|Bahatschewe
+32945|Swetogorsk
+32992|Asmar
+32994|Dunajiwzi
+33003|Wenjow
+33027|Rakonitz
+33036|Santa Cruz de La Palma
+33076|Zabbar
+33082|Cranz
+33087|Uschur
+33100|Karabasch
+33115|Rachiw
+33128|Karabanowo
+33129|Schlackenwerth
+33181|Singapur
+33208|Hude (Oldenburg)
+33210|Williamstown (New Jersey)
+33316|Plainfield (Connecticut)
+33338|Alexandrowsk
+33356|Schwarzenberg/Erzgeb.
+33364|Chainat
+33515|Susun
+33521|Nertschinsk
+33522|Bah
+33528|Newport (Kentucky)
+33551|Sarvar
+33580|Owrutsch
+33656|Adlerhügel
+33688|Kesmark
+33695|Aichal
+33696|Hansa
+33699|Udatschny
+33705|Tschernjanka
+33716|Rosenau
+33740|Köln-Deutz
+33763|Hamburg-Alsterdorf
+33777|Dubowka
+33812|Jaschkino
+33857|Nowhorod-Siwerskyj
+33861|Belen
+33862|Mamallapuram
+33864|Gayeri
+33868|Giaginskaja
+34068|Wilnjansk
+34101|Wenden
+34108|Qarqin
+34114|Tultschyn
+34132|Weißwasser/Oberlausitz
+34134|Nuuk (Godthåb)
+34145|St. George's
+34157|Port Stanley
+34168|Vatikanstadt

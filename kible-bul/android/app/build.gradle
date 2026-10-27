@@ -1,0 +1,82 @@
+apply plugin: 'com.android.application'
+
+// Google Play'e yüklenecek paketin imzası: android/keystore.properties (depoya EKLENMEZ; CI secret'tan yazar).
+// Dosya yoksa (yerel deneme) sürüm paketi hata ayıklama anahtarıyla imzalanır; Play bunu kabul etmez.
+def ksDosya = rootProject.file('keystore.properties')
+def ks = new Properties()
+if (ksDosya.exists()) ksDosya.withInputStream { ks.load(it) }
+
+// Google'ın test reklam uygulama kimliği: hata ayıklama derlemesi her zaman bunu kullanır (reklam birimleri de
+// test birimidir: www/js/reklam.js, KibleYerel.bilgi().hataAyiklama). Sürüm derlemesi gradle.properties › ADMOB_APP_ID.
+def TEST_ADMOB_APP_ID = 'ca-app-pub-3940256099942544~3347511713'
+
+android {
+    namespace = "com.poyrazworkshop.kiblebul"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.poyrazworkshop.kiblebul"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName '1.1.0'
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        if (ksDosya.exists()) {
+            upload {
+                storeFile rootProject.file(ks['storeFile'])
+                storePassword ks['storePassword']
+                keyAlias ks['keyAlias']
+                keyPassword ks['keyPassword']
+            }
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig ksDosya.exists() ? signingConfigs.upload : signingConfigs.debug
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [admobAppId: project.property('ADMOB_APP_ID')]
+        }
+        debug {
+            manifestPlaceholders = [admobAppId: TEST_ADMOB_APP_ID]
+        }
+    }
+    buildFeatures {
+        buildConfig true
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

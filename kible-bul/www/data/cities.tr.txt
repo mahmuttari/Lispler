@@ -1,0 +1,1067 @@
+0|Şanghay
+1|Çongçing
+2|Çengdu
+3|Pekin
+6|Kinşasa
+7|İstanbul
+11|Vuhan
+12|Lahor
+13|Xi'an
+15|Sao Paulo
+16|Ciudad de Mexico
+18|Karaçi
+20|Moskova
+21|Dakka
+22|Seul
+26|Kahire
+30|Nankin
+33|Londra
+34|New York
+41|Bogota
+44|Bağdat
+47|Tahran
+53|Çengçou
+59|Çangçun
+61|Sidney
+64|Darüsselam
+65|Sankt Peterburg
+67|İskenderiye
+72|Peşaver
+74|Cidde
+76|Kalküta
+84|Kâbil
+90|Riyad
+92|Urumçi
+93|Yeni Taipei
+106|Dâr-ül-Beydâ
+107|İbadan
+111|Huhhot
+114|Ravalpindi
+119|Pusan
+130|İncheon
+132|Karakas
+133|Kiev
+157|Şikago
+164|Mogadişu
+177|Cezayir
+179|Bakü
+181|Roma
+184|Meşhed
+208|Halep
+214|Medellin
+217|Brazavil
+218|Taşkent
+220|Almatı
+221|Hartum
+227|San'a
+231|Haydarabad
+232|Beyrut
+236|Bükreş
+245|Thane
+252|Abu Dabi
+254|Şarika
+260|Montreal
+266|Budapeşte
+272|Varşova
+276|Viyana
+277|Barselona
+279|Musul
+303|Mekke
+307|Şam
+308|Ketta
+313|İsfahan
+325|Ciudad Juarez
+326|Can Tho
+327|Münih
+335|Asuncion
+349|Kerec
+350|Katmandu
+360|Tebriz
+361|Kharkov
+376|Hué
+377|Milano
+388|Cemşidpur
+391|Basra
+399|Trablus
+400|Medine
+401|Yaunde
+412|Belgrad
+413|Bien Hoa
+420|Nijni Novgorod
+424|Ed Dammam
+427|Şiraz
+443|Kerbela
+452|Çelyabinsk
+453|Merida
+454|Hiroşima
+456|Çimkent
+465|Nuakşot
+474|Prag
+476|Ciuciang
+481|Kopenhag
+482|Sofya
+484|Erivan
+491|Rostov-na-Donu
+528|Tiflis
+534|Tanca
+539|Maceio
+543|Kerkük
+544|Aşkabat
+554|Brüksel
+562|Odessa
+569|Peşte
+577|Marakeş
+594|Kudüs
+598|Cebu Şehri
+622|Maisur
+625|Sao Luis
+634|Napoli
+645|Bişkek
+646|Kum
+653|Gurgaon
+658|Süleymaniye
+659|Marsilya
+685|Thanh Hoa
+686|Torino
+690|Ulan Batur
+705|Bouake
+710|Valensiya
+717|Barselona
+730|Maskat
+744|Cucuta
+745|Humus
+747|İbb
+751|Tümen
+761|Bingazi
+766|Vinnipeg
+768|Andican
+770|Burayda
+787|El Hudeyda
+799|Muzaffarabad
+810|Nemengan
+811|Zaporijjia
+814|Lazkiye
+823|Süveyş
+826|Ağadir
+828|Saraybosna
+834|Tunus
+839|Taif
+856|Duşanbe
+861|Wroclaw
+869|Tebük
+875|Atina
+883|Acapulco
+899|Frankfurt
+900|Makao
+902|İjevsk
+903|Kolombo
+904|Maturin
+921|El Ahmedi
+923|Kişinev
+940|Cibuti
+944|İrkutsk
+946|Mansura
+947|Kirmanşah
+952|Habarovsk
+965|Göteborg
+968|Jhang Sadar
+969|Hail
+976|İslamabad
+982|Boorama
+985|Mahçkale
+988|Semerkant
+992|Reşt
+996|Malaga
+1011|Cenova
+1013|Malakka
+1016|Urmiye
+1023|Herat
+1032|İrbid
+1051|Hamhung
+1072|Priştine
+1078|San Miguel de Tucuman
+1080|Akyar
+1093|Vilnüs
+1100|Ucda
+1102|Ryazan
+1109|Poznan
+1115|Astrahan
+1119|Rakka
+1120|Quebec
+1124|Ibague
+1141|Kandehar
+1142|Mezirek-i Şerif
+1144|Dehra Dun
+1157|Lizbon
+1168|Macapa
+1179|Budin
+1191|Kaşgar
+1193|Necran
+1203|Gomel
+1204|Aktöbe
+1216|Karaganda
+1225|Şupaşkar
+1228|Monteria
+1232|Acman
+1239|Jeju Şehri
+1240|Gdansk
+1254|Necef
+1269|Hargeisa
+1279|Üsküp
+1282|Lahey
+1293|Kenitre
+1306|Mandaluyong
+1320|Hama
+1325|Rach Gia
+1329|Tartus
+1334|El-Hille
+1337|Nampo
+1361|Nam Dinh
+1368|Elâzığ
+1383|Palma de Mallorca
+1394|Buon Ma Thuot
+1407|İsmailiye
+1414|Doğu Kudüs
+1417|Sumgayıt
+1422|El-Harc
+1426|Xalapa de Enriquez
+1431|Haseke
+1432|El-Uksur
+1442|Thai Nguyen
+1451|Tiran
+1460|Tetuan
+1461|Zürih
+1463|Viet Tri
+1471|Ciudad Bolivar
+1480|Erdebil
+1483|Gazze
+1495|İvanovo
+1496|Cumana
+1534|Bolonya
+1548|San-Pedro
+1555|Hamis Muşayt
+1584|Asvan
+1585|Yaş
+1605|Bhanawa
+1611|Thu Dau Mot
+1633|Kanberra
+1637|Floransa
+1659|El-Gadarif
+1660|Grodno
+1676|Ulan Ude
+1701|Misrata
+1702|Cuito
+1704|Kızılorda
+1713|Mogilev
+1714|Bender Abbas
+1717|Resü'l-Hayme
+1731|Arkhangelsk
+1737|Senendec
+1738|Çita
+1783|Duhok
+1796|Kaesong
+1799|Rendburg
+1801|Akmescit
+1812|Vad Medeni
+1822|Buleyde
+1825|Ganca
+1826|Hürremşehr
+1837|Filibe
+1839|Wonsan
+1842|Chandrapur
+1872|Uige
+1875|Oş
+1889|Ninh Binh
+1891|Öskemen
+1895|Ed-Divaniye
+1902|Popayan
+1905|Köstence
+1906|Yeni Delhi
+1907|Selânik
+1917|Çerepovets
+1920|Kut
+1943|Sariwon
+1971|Dimyat
+1984|Ermenistan
+1987|Orel
+1992|St. Paul
+1998|Reşid
+2017|Batıkent
+2020|Merida
+2027|Bahia Blanca
+2037|Grozni
+2044|Bialystok
+2051|Petropolis
+2066|Hüfuf
+2081|Atırav
+2085|San Cristobal
+2098|Sinuiju
+2103|Bac Ninh
+2110|Kaloşvar
+2116|Long Xuyen
+2125|Hayfa
+2129|Çunçeon
+2144|Çernigiv
+2148|Valparaiso
+2149|İca
+2159|Safakes
+2163|Buhara
+2176|Quang Ngai
+2177|Karşi
+2198|Strazburg
+2219|Guantanamo
+2221|Ar Rayyan
+2224|Celalabad
+2225|Deyrizor
+2234|My Tho
+2238|Ha Long
+2241|Çerkassi
+2255|Ruseyfa
+2265|Sevhac
+2274|Ha Tinh
+2279|Şimonoseki
+2302|Çernivtsi
+2360|Da Lat
+2365|Vitoria-Gasteiz
+2411|Petah Tikva
+2416|Brașov
+2429|Setif
+2444|Temeşvar
+2489|10 Ramazan Şehri
+2499|Sıktıvkar
+2501|Nijnevartovsk
+2521|Sebzevar
+2563|Himki
+2568|Nalçık
+2581|Ngaoundere
+2592|Freiburg im Breisgau
+2595|El-Cübeyl
+2626|Thanh Pho Ba Ria
+2636|Tübenkama
+2648|Tagum
+2649|Dzerjinsk
+2671|Jose C. Paz
+2684|Trablusşam
+2693|Phan Thiet
+2703|Muhammediye
+2711|Türkistan
+2719|Aşdod
+2729|Ca Mau
+2744|Blagoveşçensk
+2747|Kösice
+2748|Kremençug
+2767|Concepcion
+2772|Veliki Novgorod
+2791|Soc Trang
+2793|Şahti
+2798|Banya Luka
+2837|San Pedro de Macoris
+2838|Galați
+2849|Rıbinsk
+2873|Tan An
+2886|Bney Brak
+2904|Targu Mures
+2910|Bukit Mertarajam
+2912|Lanus
+2918|Cao Lanh
+2936|Burgaz
+2943|Sidi Belabbas
+2951|Yeni Belgrad
+2953|Çungcu
+2970|Phan Rang-Thap Cham
+2979|Hurgada
+2995|Segou
+3029|Bayamon
+3037|Bandundu Bölgesi
+3051|El Hums
+3055|Cenevre
+3065|Daşoğuz
+3070|Kızılyar
+3077|Lefkoşa
+3086|Lang Son
+3088|Ez Zaviye
+3105|Sircan
+3114|El Ariş
+3118|Yujno-Sahalinsk
+3129|Bülendşehr
+3139|Rzeszow
+3161|Huanuco
+3174|Hırdalan
+3201|Butwal
+3206|Tebessa
+3228|Bago
+3257|Hucand
+3259|Ashiaman
+3272|Felluce
+3320|Pinar del Rio
+3323|Batum
+3329|Beerşeba
+3343|Damazin
+3351|Bilbeys
+3391|Termez
+3419|Petropavlovsk-Kamçatski
+3435|Şulin
+3459|Cizzak
+3516|Bejaia
+3559|Tilimsan
+3568|Mülheim an der Ruhr
+3656|Ituzaingo
+3658|Piranşehr
+3667|Patras
+3669|Gjong Xoai
+3670|Jamalpur
+3673|Avka
+3687|Novoçerkassk
+3708|El Huber
+3716|Saggız
+3717|Bechar
+3718|Tam Ky
+3739|Dong Ha
+3741|Havalli
+3750|Pire
+3754|Sayda
+3766|Salalah
+3775|Çirçig
+3830|Mıytişçi
+3832|El Halil
+3836|Thanh pho Tra Vinh
+3842|Damar
+3911|Rio Cuarto
+3933|Örebro, İsveç
+3938|Tuy Hoa
+3972|Berâil
+3994|San Cristobal
+3996|Limasol
+4022|Semave
+4029|Bakuba
+4084|Balaşiha
+4111|Sebha
+4121|Kerç
+4151|Delicias
+4177|Aktav
+4189|Yenişehir
+4191|Debre Berhan
+4221|Medea
+4235|Ürgenç
+4250|Leon
+4266|Nevai
+4304|Gardaya
+4312|Şehr-i-Sebz
+4317|Saida
+4335|Ciego de Avila
+4372|Gazni
+4411|Chamartin
+4414|Abeche
+4420|Korolyov
+4445|Lozan
+4448|Kayravan
+4489|Vinh Long
+4507|Kandiye
+4529|Phu Ly
+4571|Tay Ninh
+4573|Sur
+4600|San Nicolas de los Arroyos
+4613|İnegöl
+4625|Hamad Town
+4634|Almalık
+4664|İnnsbruck
+4688|Isıdro Casanova
+4697|Ecdebiye
+4729|Lao Cai
+4757|Çaman
+4790|El Beyda
+4801|Quibdo
+4823|İdlip
+4838|Bezanson
+4867|Newcastle-under-Lyme
+4878|Evlak
+4894|Sancti Spiritus
+4919|Doğu Los Angeles
+4967|Los Angeles
+4984|Balti
+4989|Beyt Şemeş
+4995|San Francisco de Macoris
+5007|Ben Tre
+5027|Salvaleon de Higueey
+5035|Samandağı
+5037|Birigüi
+5043|Celal-Abad
+5048|Yatsuşiro
+5075|Çerkessk
+5108|Siraküza
+5110|Eski Zağra
+5124|Rusçuk
+5173|Nabatiye ve Tahta
+5174|Orehovo-Zuyevo
+5222|Füceyre
+5224|Reykjavik
+5235|Hung Yen
+5251|Zielona Gora
+5275|Huşengabad
+5284|Sokode
+5296|Açinsk
+5297|Pudukottai
+5333|Kızıl
+5334|Cádiz
+5360|Taldikorgan
+5422|Er Rifaa
+5423|Ujgorod
+5434|Vlora
+5445|Belh
+5455|Gümrü
+5460|Gorzow Wielkopolski
+5465|Aryana
+5563|Szatmárnémeti
+5599|Duma
+5685|Gabes
+5690|Kufe
+5755|Muaskar
+5767|Baghlan
+5770|Trinkomalee
+5778|Sahar
+5787|En Nahud
+5817|Bozen-Bolzano
+5833|Mitroviça
+5834|Evpatorya
+5867|Novotroytsk
+5871|Son La
+5920|Cızan
+5954|Tuyen Quang
+5966|Jezkazgan
+5989|Seguela
+5992|Ed Damir
+6002|Berberati
+6010|Gardiz
+6022|Buzau
+6080|Derne
+6155|Hantı-Mansiysk
+6165|Ebolowa
+6166|Darmouth
+6216|Eher
+6268|Yafa
+6272|Pyongsong
+6287|Ceramana
+6320|Münbiç
+6325|Şiauliai
+6351|Zarate
+6417|Dera
+6456|Lujan
+6464|Nahçıvan
+6491|Yasuc
+6509|Esteli
+6514|Cünye
+6527|Houst
+6547|Rio Gallegos
+6554|İşkodra
+6597|Akabe
+6620|Leskofça
+6697|Ceské Budéjovice
+6702|Munastır
+6713|WTA Boca Raton
+6723|Ramnicu Valcea
+6778|Villa Maria
+6850|Kalamarya
+6887|Thakhek
+6889|Amran
+6919|Gülistan
+6933|Plevne
+6973|Gatçina
+6978|Olavarria
+7014|Giessen
+7086|El Baha
+7092|Ben Arus
+7163|Junin
+7196|Hounde
+7250|El Farvaniye
+7254|Tulcan
+7300|Yenipazar
+7329|Adva
+7358|El Marj
+7371|Suvayr
+7375|Gia Nghia
+7445|Kassarin
+7452|Suçava
+7547|Mar del Tuyu
+7558|Presov
+7600|San Martin
+7647|Azak
+7668|Presidencia Roque Saenz Pena
+7677|Villingen Schwenningen
+7684|Er Ras
+7704|Paysandu
+7732|Resita
+7940|Marburg
+7942|Bistritza
+7958|Gualeguaychu
+7989|Bender İmam Humeyni
+8005|Valvettithurai
+8013|Zahle
+8027|Colon
+8051|Hakkari
+8082|Nasıra
+8168|Lüksemburg
+8261|Meymene
+8291|Bihaç
+8328|Alacahisar
+8333|İgbo-Ukwu
+8350|Kumanova
+8395|Harmanköj
+8432|Boosaaso
+8454|El Kaim
+8487|pirlepe
+8503|Buraymi
+8520|Cao Bang
+8521|Targu Jiu
+8550|Petergof
+8561|Mayaguez
+8568|Berdiçev
+8578|Zlin
+8632|Şumnu
+8651|Rades
+8663|Nizwa
+8674|Larnaka
+8746|Medenin
+8769|Tolanaro
+8822|Gvadar
+8827|Ain Temouchent
+8908|Sirvan
+8934|Baykonur
+8948|İzmail
+9000|Dobriç
+9017|Manastır
+9099|Feodosya
+9101|Bouira
+9115|Şeki
+9185|Concepcion del Uruguay
+9196|Yukarı Cuma
+9239|Haçmaz
+9257|Liepaja
+9318|Targovişte
+9324|Tatavin
+9349|Bani
+9353|Bakıhanov
+9359|Focsani
+9458|Herson
+9466|Ceble
+9514|Tulca
+9522|Yanya
+9543|Sohumi
+9615|Bazarak
+9705|Bandar Seri Begavan
+9726|Talukan
+9731|Belgrad-i Erdel
+9822|Dedougou
+9887|Kalkandelen
+9888|Hod HaŞaron
+9893|Lushnje
+9955|Santa Lucia
+10010|Rjev
+10062|Semendire
+10085|Bamyan
+10125|Tırhala
+10140|Bace
+10199|Galkayo
+10318|Tacuarembo
+10398|Laascanood
+10421|Coney Adası
+10427|Nema
+10553|Veliko Tırnovo
+10570|Umm Al Quwain
+10584|Süveyda
+10659|Hamelin
+10671|Nga Nam
+10716|Serez
+10722|Görice
+10723|San Andres
+10728|Colon
+10750|Nahariya
+10791|Kogalım
+10865|Halepçe
+10895|Çitral
+11003|Boroviçi
+11011|Obera
+11043|Pule Humri
+11055|Kaedi
+11122|Zviahel
+11145|Tsevie
+11156|Serove
+11163|Şibircân
+11223|Tonsberg
+11252|Ain Defla
+11262|Pazarcık
+11270|Zouerat
+11286|Böğürdelen
+11337|San Jose de las Lajas
+11364|Odienne
+11381|Yergöğü
+11429|Az Za'ayin
+11485|Kavala
+11519|Hanya
+11559|Çarikar
+11709|Dedeağaç
+11732|San Jose del Guaviare
+11765|Rio Grande
+11829|El Aziziye
+11837|Zalau
+11895|Sari Pul
+11920|Izdin
+11922|Jurmala
+11941|Gilan
+11943|Usulutan
+11948|Lewittown
+11951|Sa'da
+11966|Mehdiye
+11979|Leo
+12040|Akka
+12047|Nurafshon
+12071|Venedik
+12104|Kruje
+12394|Tebes
+12414|Kanaş
+12424|Zerenc
+12481|İvraca
+12495|Razdan
+12516|Özçent
+12527|Koupela
+12543|Libertador General San Martin
+12607|Peç
+12696|Torjok
+12722|Tafi Viejo
+12734|Esedabad
+12764|İştip
+12786|Palpala
+12838|Eçmiadzin
+12855|Kazanlık
+12873|Aybak
+12898|Turla, Akkerman
+12921|İshigaki
+12935|Sidi Bu Zeyd
+12977|Kutlu Viçe
+13002|Kanije
+13019|Çabahar
+13075|Cavcavcal
+13080|Neva
+13084|San Remo
+13138|Köstendil
+13420|Gümülcine
+13449|Karlsbad
+13471|Merkez Jupa
+13481|Liberya
+13506|Meiderich/Beeck
+13624|Drama
+13638|Tiberya
+13784|Villa Constitucion
+13812|Tulkarim
+13825|Koçhisar
+13836|Tomazak
+13838|Kırcaali
+13889|Laskargah
+13995|Ferah
+14005|Haccah
+14024|Villa Angela
+14069|Mecidiye
+14076|Sovyetsk
+14107|Nogoya
+14160|Lai Chau
+14186|Balıkçı
+14284|Gazimağusa
+14298|Tıkrit
+14305|Sevakin
+14428|Jovti Vodi
+14433|Ohri
+14468|Tromso
+14506|Canuelas
+14529|Pasarofça
+14561|Cotui
+14573|Berde
+14625|Istalif
+14661|Şamkır
+14687|Ağcabedi
+14697|Narın
+14829|Tureyf
+15002|Mirney
+15004|Şamahı
+15107|Ballerup Belediyesi
+15146|Langreo
+15153|Chascomus
+15257|Mankalya
+15332|Möron
+15390|Mantova
+15436|El Meghaier
+15451|Baniyas
+15631|Şarm eş-Şeyh
+15661|Tunuyan
+15681|Aktaş
+15689|Sincar
+15767|Medine İsa
+15781|General Guemes
+15815|Cerrillos
+15862|El Bayda
+15885|Sansanné-Mango
+15912|Ağdam
+15961|Beherden
+15994|Muang Phonsavan
+16038|Beyt Hanun
+16050|Tuzer
+16176|Langaza
+16349|Pehuajo
+16366|Kozani
+16404|Curuzu Cuatia
+16425|Jesus Maria
+16458|Calilaabad
+16505|Kuneytire
+16509|Kukes
+16517|Garyan
+16563|Guayaramerin
+16590|Baf
+16620|San Jose de Mayo
+16854|Znaym
+16939|La Asuncion
+16988|Ştimle
+16997|Marijampole
+17034|Pskent
+17072|Riştan
+17085|Eski Cuma
+17121|Sion
+17168|San Jose de Metan
+17274|Şerşel
+17330|Koçani
+17377|İmişli
+17423|Ahuachapan
+17501|Reo
+17507|Zuara
+17554|Santa Maria dos Olivais
+17679|Fürstenwalde/Spree
+17802|Ziniare
+17829|Atamurat
+17934|Isık
+17984|Warnambool
+18037|Kardiça
+18104|Selibaby
+18151|Baharak
+18160|Coronel Suarez
+18195|Resmo
+18264|Biberach
+18355|Zakatala
+18417|Bochum-Langendreer
+18421|San Pawl il-Bahar
+18442|Manuba
+18568|General Jose de San Martin
+18591|Sakhnin
+18628|San Carlos de Bolivar
+18680|Sedhiou
+18796|Bani Süheyla
+18869|Kırçova
+18874|Şibenik
+18899|Kuçova
+18966|Famailla
+19052|Tillaberi
+19100|Petriç
+19145|Vuçitërn
+19225|Khorog
+19282|Karabel
+19320|Karlıova
+19399|Korint
+19431|Mubarek
+19452|Nili
+19455|Kedougou
+19462|Kayılar
+19478|Kavalye
+19562|Batı Baka
+19610|Mitu
+19634|Wangratta
+19648|Villa General San Martin
+19784|Aluşta
+19831|Silistre
+19845|Abkayk
+19851|Dassa-Zoume
+19973|Shindand
+20037|Kamatero
+20130|Betlehem
+20165|Firdevs
+20222|Sarnı
+20223|İstasyonaltı
+20224|Obaköy
+20253|Sirderya
+20264|Estergon
+20336|Aenew
+20468|Nalut
+20536|Midilli
+20582|Berdesken
+20673|Güney Chicago
+20674|Catano
+20683|Po
+20740|Pap
+20798|Lofça
+20834|Termas de Rio Hondo
+20882|Kıbray
+21051|İsmayıllı
+21067|San CArlos
+21080|Bahçesaray
+21314|Lai
+21315|Ndele
+21420|Las Brenas
+21436|Baysun
+21501|Bulkize
+21507|‘Āmūdah
+21517|La Union
+21576|Girne
+21639|Kartago
+21672|Cebelitarık
+21751|Rezekne
+21820|Aplahoue
+22071|Montrö
+22227|Beçe
+22295|Diebougou
+22312|Migdal HaEmek
+22339|Rustaq
+22365|Khan Neshin
+22408|Zhongxing Yeni Köy
+22515|Utena ili
+22609|İbra
+22734|Fizuli
+22791|Bousse
+22816|Solebad
+22825|Kurmul City
+22897|Dereşehr
+22938|Nakura
+22950|Yangiabad
+23286|Korosel Brandsen
+23292|Vi Thanh
+23329|Hun
+23442|Gambpola
+23445|El Chra
+23492|Marcos Juarez
+23645|Mevaseret Zion
+23703|Caazapa
+23749|Sakız
+23909|Palayan
+23929|Sevr
+23955|Çinaz
+24002|Bailey's Crossroads
+24014|Yeni Zağra
+24186|Gjirokaster
+24237|Lahij
+24380|Aşağı Binatlı
+24460|Brodi
+24497|Massava
+24634|Idil
+24674|Komrat
+24706|Edinet
+24776|Artaşat
+24821|Sükhbaatar
+24922|Santo Tome
+24943|Saranda
+25031|Kiryat Şmona
+25125|Kuba
+25169|Nahrin
+25197|Eislingen/Fils
+25223|Ağsu
+25397|Dhankuta
+25418|Çarentsavan
+25599|Arta
+25625|Mbaiki
+25787|Căușeni
+25951|Punakha
+25966|Darbāsīyah
+26000|Bogande
+26138|Telşiai
+26213|Taurague
+26272|San Jose de Ocoa
+26294|Zerbst/Anhalt
+26385|Jekabpils
+26478|Puerto Carreno
+26620|Kazah
+26624|Zağvan
+26635|Biblos
+26682|Şoham
+26739|Kaysume
+26897|Nevrâkop
+26916|Fröndenberg/Ruhr
+27021|Terter
+27180|Anatuya
+27287|Zeyd
+27288|Dean Funes
+27472|Bişerri
+27565|Kratie
+27667|Zincibar
+27760|Xanlar
+27780|Eriha
+28019|Kili
+28030|Tadjourah
+28064|İcevan
+28166|Şuşa
+28497|Pirane
+28528|Marupe
+28541|Kürdemir
+28564|Cosquin
+28606|Kafr Kara
+28633|Likisa
+28903|Şuşenskoye
+28986|Mohaç
+29006|Leş
+29057|Balıklava
+29104|Zeyla
+29234|Boğazköy
+29428|Weißenburg
+29475|Llodio
+29572|El Hazm
+29607|Studenicani
+29655|Puşkino
+29787|Debre
+29887|Batie
+30008|Hasab
+30280|Florina
+30333|Gorajde
+30403|Aştarak
+30406|Qobu
+30542|Porto Riko
+30565|Buale
+30607|Ahıska
+30642|Delçevo
+30724|Mehtar Lam
+30752|Yermasoya
+30783|Hökmeli
+30814|Preveze
+30817|Moissala
+30957|Koçkor-Ata
+31202|Yenirabat
+31347|Hîncești
+31395|Minzele
+31472|Beyt Şe'an
+31490|Muha
+31535|Florești
+31785|Pekin
+31832|Santa Maria
+31961|Santa Lucia
+31972|Karasubazar
+32014|St. Michael
+32016|Dajabon
+32186|Abardeen
+32220|Penonome
+32366|Rio Colorado
+32428|Manati
+32527|Kusar
+32624|Şahrak
+32708|Dilican
+32725|Piguee
+32788|Kaukana
+32792|Escaldes-Engordany
+32887|Kılıçlı
+32894|Benito Juarez
+32937|Ucar
+32992|Asmar
+33076|Zabbar
+33150|Anadır
+33158|Beylaganlı
+33183|Abardeen
+33431|Obuk
+33506|Llundadno
+33762|Zimniçe
+33861|Belen
+33864|Gayeri
+34101|Cesis
+34108|Karkin
+34132|Weißwasser/Oberlausitz
+34135|Belmopán
+34154|San Marino şehri

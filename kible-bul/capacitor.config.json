@@ -1,0 +1,17 @@
+{
+	"appId": "com.poyrazworkshop.kiblebul",
+	"appName": "Kıble Bul",
+	"webDir": "www",
+	"backgroundColor": "#06281d",
+	"android": {
+		"allowMixedContent": false,
+		"zoomEnabled": false,
+		"minWebViewVersion": 100
+	},
+	"plugins": {
+		"SystemBars": {
+			"insetsHandling": "native",
+			"initialViewportFitValueHint": "cover"
+		}
+	}
+}

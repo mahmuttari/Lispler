@@ -1,0 +1,8 @@
+node_modules/
+android/keystore.properties
+android/local.properties
+*.jks
+*.keystore
+# araclar/tarayici-dene.mjs --ekran ve araclar/magaza-gorsel.mjs'nin yerel çıktıları (ekran görüntüleri, NASA karo önbelleği)
+.dene/
+.karo/

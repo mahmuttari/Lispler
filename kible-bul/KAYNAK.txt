@@ -1,0 +1,14 @@
+# Kıble Bul'un kaynağı: elimizdeki tek kopya olan APK (kaynak kodu yok). Web kodu, simgeler ve yerel pusula eklentisinin
+# mantığı buradan alındı; ayrıntı README.md › "Kaynak ve özgünden farklar".
+drive: KUCUK_UYGULAMALAR/KibleBul-1.0.1.apk
+drive-dosya-kimligi: 1KgBxebvUkKqAGoLYGh7pFkUMDRBKzeQ4
+apk-sha256: d411eb52129bcfb235d3db31b1b0a297632e29f153e7a8f2031d8edf1e8ef6ac
+apk-boyut: 3244226
+ozgun-paket: com.geoterva.kiblebul
+ozgun-surum: 1.0.1 (versionCode 1000001)
+ozgun-sdk: minSdk 24, targetSdk 36, compileSdk 36; Capacitor 8, Android Gradle Plugin 8.13.0
+ozgun-eklentiler: @capacitor/app, @capacitor/browser, @capacitor/geolocation, @capacitor/haptics, @capgo/native-purchases 8.9.6 (Play Billing 9.1.0), yerel CompassPlugin
+ozgun-sertifika: CN=Kible Bul, O=GeoTerva (RSA 4096, 2026-10-22 → 2126-09-28)
+ozgun-sertifika-sha256: C3:32:6A:97:60:EA:3C:8B:EB:D0:92:F6:7B:13:5B:9C:AE:49:BF:64:A8:65:87:88:6D:8A:D1:35:C9:B1:14:0B
+alinan: assets/public (cordova.js, cordova_plugins.js, img/ad-geoterva.jpg hariç) → www/; res/ (uyarlanabilir simge, açılış simgesi) → android/app/src/main/res/; classes.dex › com.geoterva.kiblebul.CompassPlugin ve MainActivity (androguard ile okundu) → Java'da yeniden yazıldı
+tarih: 2026-10-27

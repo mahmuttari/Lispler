@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Smart Measure — tarayıcıda deneme (yerel; Playwright + Chromium). Her dil (tr, en) iki görünümde: TR açık tema 390 px
+// Ölçü Kutusu (Measure Box) — tarayıcıda deneme (yerel; Playwright + Chromium). Her dil (tr, en) iki görünümde: TR açık tema 390 px
 // ve EN koyu tema 340 px; ayrıca tersleri. Her ekran iki ortamda açılır:
 //   yalın   eklentisiz masaüstü tarayıcı: sensör, kamera, mikrofon yok → "sensör yok / izin" durumları
 //   sahte   araclar/sahte-cihaz.mjs: sensörler, sahte kamera, mikrofon düzeyi

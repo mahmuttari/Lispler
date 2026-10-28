@@ -1,4 +1,4 @@
-# 📐 Smart Measure (Google Play sürümü)
+# 📐 Ölçü Kutusu / Measure Box (Google Play sürümü; özgün adı Smart Measure)
 
 Poyraz Workshop'un ölçüm araçları uygulaması: su terazisi, ekran cetveli ve açıölçer, kamerayla mesafe / yükseklik /
 genişlik, ses ölçer ve ışık ölçer. Kaynağı Drive'daki `KUCUK_UYGULAMALAR/SmartMeasure-0.1.0.apk`'dır (GeoTerva, yayınlanmamış
@@ -103,7 +103,11 @@ secret'ı varsa imzalı AAB (`SmartMeasure-aab` + `surum.txt`).
 - `node smart-measure/araclar/magaza-gorsel.mjs [--android]` — mağaza görselleri (sentetik veri, çizilmiş kamera
   sahnesi) ve simgeler.
 
-## Ad değişirse
+## Ad (28 Ekim 2026'da Ölçü Kutusu / Measure Box oldu)
+
+Aşağıdaki yerler yeni adla güncellendi; ad bir daha değişirse aynı liste geçerlidir. Klasör (`smart-measure/`),
+paket adı, `play.mjs` anahtarı (`smartmeasure`) ve artifact adları (`SmartMeasure-aab`) iç adlardır, değişmedi.
+
 
 Play'de aynı adda bir uygulama olduğu için ([`magaza/DEGERLENDIRME.md`](magaza/DEGERLENDIRME.md) §0) ad değişebilir.
 Değişecek yerler (paket adı kalır): `magaza/aciklamalar.md` ve `diller/en-US.md` (Uygulama adı, metin), `magaza/PLAY-YAYIN.md`,

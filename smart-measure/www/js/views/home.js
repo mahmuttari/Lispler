@@ -47,7 +47,7 @@ export function render({ go }) {
   const advice = h('p', { class: 'muted small', text: '' });
 
   const el = h('div', { class: 'screen' },
-    topbar({ title: 'Smart Measure', sub: t('hm_home_subtitle'), lead: logo, actions: [more] }),
+    topbar({ title: t('app_name'), sub: t('hm_home_subtitle'), lead: logo, actions: [more] }),
     h('div', { class: 'hero' }, icon('Sparkles', 24), h('p', { text: t('hm_home_banner') })),
     card('blue', 'Box', t('hm_ar_title'), t('hm_ar_subtitle'), () => go(`ar?mode=${S.ar.mode}`), modes),
     card('green', 'Level', t('hm_level_title'), t('hm_level_subtitle'), () => go('level'), h('div', { class: 'live' }, tiltVal, tiltSub)),

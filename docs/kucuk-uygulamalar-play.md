@@ -12,7 +12,7 @@ cevapları) kendi `magaza/PLAY-YAYIN.md` dosyasındadır:
 | Unitica | `unitica/` | `com.poyrazworkshop.unitica` | [`unitica/magaza/PLAY-YAYIN.md`](../unitica/magaza/PLAY-YAYIN.md) |
 | Calqora | `calqora/` | `com.poyrazworkshop.calqora` | [`calqora/magaza/PLAY-YAYIN.md`](../calqora/magaza/PLAY-YAYIN.md) |
 | Kıble Bul | `kible-bul/` | `com.poyrazworkshop.kiblebul` | [`kible-bul/magaza/PLAY-YAYIN.md`](../kible-bul/magaza/PLAY-YAYIN.md) |
-| Smart Measure | `smart-measure/` | `com.poyrazworkshop.smartmeasure` | [`smart-measure/magaza/PLAY-YAYIN.md`](../smart-measure/magaza/PLAY-YAYIN.md) |
+| Ölçü Kutusu (Measure Box; özgün adı Smart Measure) | `smart-measure/` | `com.poyrazworkshop.smartmeasure` | [`smart-measure/magaza/PLAY-YAYIN.md`](../smart-measure/magaza/PLAY-YAYIN.md) |
 
 - **Tarayıcı işleri** (AdMob uygulamaları ve reklam birimleri, Play'de uygulamaları oluşturma, ilk AAB'ler, Uygulama
   içeriği formları, abonelikler, hizmet hesabı izni) → bilgisayardaki **Claude Code** (`claude --chrome`).
@@ -29,7 +29,7 @@ kullanıcı bilgisayardaki oturuma yalnız şunu yazar:
 Metodolojinin D1 kuralı: geri dönüşü zor her kalem için kullanıcının **adıyla anan** bir onay satırı gerekir. Oturum
 başında aşağıdaki satır gösterilir; kullanıcı çıkarmak istediği kalemleri silip yazar. Onaylanmayan kalemde durulur.
 
-> ONAY: Unitica, Calqora, Kıble Bul ve Smart Measure için şu kutuları işaretlemene ve şu düğmelere basmana onay
+> ONAY: Unitica, Calqora, Kıble Bul ve Ölçü Kutusu için şu kutuları işaretlemene ve şu düğmelere basmana onay
 > veriyorum: 1. AdMob'da dört uygulamanın ve reklam birimlerinin oluşturulması; AB tüzüğü mesajının "Onayla" ve
 > "Yayınla"sı; 2. reklam kimliklerinin main'e push'u; 3. Play "Uygulama oluştur" formlarındaki beyan kutuları ve
 > "Uygulama oluştur" düğmesi (dört kez); 4. Play Uygulama İmzalama'nın Google'ın anahtarıyla kabulü ve ilk paketlerin
@@ -63,7 +63,7 @@ git checkout main && git pull
 
 ### 1. AdMob: dört uygulama, reklam birimleri, AB onay mesajı
 https://admob.google.com → **mahmuttari@gmail.com** hesabı (yayıncı kimliği `pub-2417242373034448` olmalı).
-Her uygulama için (sırayla Unitica, Calqora, Kıble Bul, Smart Measure):
+Her uygulama için (sırayla Unitica, Calqora, Kıble Bul, Ölçü Kutusu; AdMob'da `Smart Measure` adıyla açıldı):
 1. **Uygulamalar → Uygulama ekle** → Platform **Android** → "Uygulama desteklenen bir mağazada listeleniyor mu?"
    **Hayır** → uygulama adı (uygulamanın `PLAY-YAYIN.md` tablosundaki telefondaki ad) → ekle. Uygulama kimliğini not et
    (`ca-app-pub-2417242373034448~…`).
@@ -94,9 +94,11 @@ kimlikleriyle derlendi" uyarısı **olmamalı**). Her koşunun **Artifacts** bö
 `.aab`'yi çıkar (`Unitica.aab`, `Calqora.aab`, `KibleBul.aab`, `SmartMeasure.aab`).
 
 ### 2. Play Console: dört uygulamayı oluştur
-**Smart Measure'ın adı önce kesinleşmeli:** Play'de "Smart Measure" adında, aynı yöntemle çalışan, 10 milyondan fazla
-indirilmiş başka bir uygulama var (`smart-measure/magaza/DEGERLENDIRME.md` §0). Kullanıcının seçtiği ad depoya
-işlenmemişse Smart Measure'ı oluşturmadan dur ve sor; diğer üç uygulama bundan etkilenmez.
+**Smart Measure'ın mağaza adı Ölçü Kutusu oldu (28 Ekim 2026):** Play'de "Smart Measure" adında, aynı yöntemle
+çalışan, 10 milyondan fazla indirilmiş başka bir uygulama olduğu için (`smart-measure/magaza/DEGERLENDIRME.md` §0)
+Play'de **"Ölçü Kutusu – Terazi, Cetvel"** adıyla oluşturulur (en-US listesi "Measure Box – Level & Ruler"). Bu adla
+derlenmiş paket `Android (Smart Measure)` iş akışının bu değişiklikten sonraki koşusundan alınır (telefondaki ad
+"Ölçü Kutusu" / "Measure Box" görünmeli); "Smart Measure" adıyla Play'de uygulama oluşturma.
 
 https://play.google.com/console → **Poyraz Workshop** → her uygulama için "Uygulama oluştur": ad (mağaza adı, tablodan),
 varsayılan dil **Türkçe – tr-TR**, **Uygulama**, **Ücretsiz**. Beyan kutuları onay paketiyle işaretlenir; sonra
@@ -111,7 +113,7 @@ Her uygulama → Test ve yayınla → **Üretim** → Ülkeler/bölgeler: **tüm
 
 ### 4. Hizmet hesabına dört uygulamayı da ver
 Play Console ana menü → **Kullanıcılar ve izinler** → `notdefteri-play@handcalcbook.iam.gserviceaccount.com` →
-"Uygulama ekle" → **Unitica, Calqora, Kıble Bul, Smart Measure** → İz Haritası'ndaki izinlerin aynısı:
+"Uygulama ekle" → **Unitica, Calqora, Kıble Bul, Ölçü Kutusu** → İz Haritası'ndaki izinlerin aynısı:
 - Uygulama bilgilerini görüntüleme ve toplu raporları indirme
 - Mağaza girişini yönetme
 - Üretime sürüm yayınlama, cihaz hariç tutma ve Play Uygulama İmzalama'yı kullanma

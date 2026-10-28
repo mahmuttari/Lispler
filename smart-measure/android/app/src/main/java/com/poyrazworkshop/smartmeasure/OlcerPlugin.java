@@ -31,7 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Smart Measure'ın telefon tarafı ("Olcer"): WebView'in güvenilir veremediği sensörler (yerçekimi / ivmeölçer,
+ * Ölçü Kutusu'nun (Measure Box) telefon tarafı ("Olcer"): WebView'in güvenilir veremediği sensörler (yerçekimi / ivmeölçer,
  * dönme vektörü, ortam ışığı), mikrofonla ses düzeyi (SesOlcer), ekranın fiziksel piksel yoğunluğu (cetvel), kamera ve
  * mikrofon izinleri, pano, paylaşma, bağlantı açma, sistem çubukları ve ekranı açık tutma. Ağ kullanmaz.
  * Olaylar: "yercekimi" {x,y,z,t,kaynak}, "yonelim" {m: 9 sayı, t, kaynak}, "isik" {lux,t}, "ses" {hizli, blok, tepe,
@@ -377,7 +377,7 @@ public class OlcerPlugin extends Plugin {
         String metin = call.getString("metin", "");
         getBridge().executeOnMainThread(() -> {
             ClipboardManager cb = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-            if (cb != null) cb.setPrimaryClip(ClipData.newPlainText("Smart Measure", metin));
+            if (cb != null) cb.setPrimaryClip(ClipData.newPlainText(getContext().getString(R.string.app_name), metin));
             call.resolve();
         });
     }

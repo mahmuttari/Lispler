@@ -1,4 +1,4 @@
-# Smart Measure — Google Play API komutları (.github/workflows/play-smartmeasure.yml çalıştırır; ayrıntı magaza/PLAY-YAYIN.md).
+# Ölçü Kutusu (Measure Box) — Google Play API komutları (.github/workflows/play-smartmeasure.yml çalıştırır; ayrıntı magaza/PLAY-YAYIN.md).
 # Her satır bir komut; # ile başlayanlar yok sayılır. Önce Play Console'da uygulama oluşturulup ilk AAB elle yüklenmeli.
 #   durum                     salt okuma
 #   magaza uygula             iletişim + tr-TR ve en-US mağaza metni (magaza/aciklamalar.md, magaza/diller/en-US.md)

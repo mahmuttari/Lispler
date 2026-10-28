@@ -1,4 +1,4 @@
-// Smart Measure mağaza dosyalarının Play kurallarına uyduğunu denetler (node --test smart-measure/test/*.test.mjs).
+// Ölçü Kutusu (Measure Box) mağaza dosyalarının Play kurallarına uyduğunu denetler (node --test smart-measure/test/*.test.mjs).
 // play-smartmeasure.yml her Play komutundan önce çalıştırır: bozuk metin, eksik görsel ya da tabloyla ayrışmış Veri
 // güvenliği CSV'si Play'e gitmeden yakalanır.
 import assert from 'node:assert/strict';

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Smart Measure — Google Play görselleri ve simgeler (Playwright + Chromium; bağımlılıksız):
+// Ölçü Kutusu (Measure Box) — Google Play görselleri ve simgeler (Playwright + Chromium; bağımlılıksız):
 //   magaza/play/simge-512.png                     özgün simge (küp, #04070C zemin), tam kare, 32 bit RGBA
 //   app/smart-measure/icon-192.png                tanıtım sayfası simgesi
 //   magaza/play/telefon-1…6-*.png                 tr-TR, 1080×1920: uygulamanın kendi ekranları (www/), sahte telefonla
@@ -37,8 +37,8 @@ const sunucu = http.createServer((q, r) => {
 const ADRES = `http://127.0.0.1:${sunucu.address().port}/index.html`;
 
 const METIN = {
-  tr: { slogan: 'Telefonunla ölç: mesafe, eğim, uzunluk, açı, ses ve ışık.' },
-  en: { slogan: 'Measure with your phone: distance, level, length, angle, sound and light.' },
+  tr: { ad: 'Ölçü Kutusu', slogan: 'Telefonunla ölç: mesafe, eğim, uzunluk, açı, ses ve ışık.' },
+  en: { ad: 'Measure Box', slogan: 'Measure with your phone: distance, level, length, angle, sound and light.' },
 };
 
 const tarayici = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
@@ -128,7 +128,7 @@ try {
       h1{margin:0;font-size:64px;font-weight:800;letter-spacing:-1.5px} p{margin:0;font-size:25px;font-weight:600;color:#8E97A6;max-width:520px;line-height:1.35}
       .sag{display:grid;grid-template-columns:repeat(2,96px);gap:22px;padding-right:86px}
       .t{width:96px;height:96px;border-radius:26px;display:grid;place-items:center;background:#090C10;border:2px solid var(--c);box-shadow:0 0 28px color-mix(in srgb,var(--c) 45%,transparent)}
-    </style></head><body><div class="sol"><div class="logo"><svg viewBox="28 26 52 56" width="78" height="78">${KUP}</svg></div><h1>Smart Measure</h1><p>${METIN[dil].slogan}</p></div>
+    </style></head><body><div class="sol"><div class="logo"><svg viewBox="28 26 52 56" width="78" height="78">${KUP}</svg></div><h1>${METIN[dil].ad}</h1><p>${METIN[dil].slogan}</p></div>
     <div class="sag">${kutu('Box', '#0A95FF')}${kutu('Level', '#34F353')}${kutu('Ruler', '#FF9500')}${kutu('Protractor', '#FF9500')}${kutu('Activity', '#FFD60A')}${kutu('Sun', '#FFD60A')}</div></body></html>`);
     await p.evaluate(() => document.fonts.ready);
     const klasor = dil === 'tr' ? PLAY : path.join(PLAY, 'en-US');

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Smart Measure — Google Play Veri güvenliği formu CSV'si (bağımlılıksız, Node 22). İz Haritası'ndaki üreticinin uyarlaması.
+// Ölçü Kutusu (Measure Box) — Google Play Veri güvenliği formu CSV'si (bağımlılıksız, Node 22). İz Haritası'ndaki üreticinin uyarlaması.
 // Satırlar Google'ın şablonundan gelir (hayalet-avcilari/magaza/veri-guvenligi.csv yalnız YAPI olarak okunur: soru ve
 // yanıt kimlikleri, etiketler); "Response value" sütununun tamamı silinip aşağıdaki tabloyla yeniden doldurulur.
 // Hesap bölümü (hesap oluşturma yolu, hesap/veri silme adresi) yazılmaz: uygulamada hesap yoktur.

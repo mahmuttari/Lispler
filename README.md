@@ -92,7 +92,7 @@ metinleri, Veri güvenliği CSV'si, görseller ve Play'e yayın talimatı ([`iz-
 bulunur. Gizlilik sayfası `app/iz-haritasi/` altındadır. Paket CI'da derlenir (`iz-android.yml` → artifact
 `IzHaritasi-aab`); Play API işleri `play-iz.yml` ile yürür.
 
-## Küçük uygulamalar: Unitica, Calqora, Kıble Bul, Smart Measure
+## Küçük uygulamalar: Unitica, Calqora, Kıble Bul, Ölçü Kutusu
 
 Drive'daki `PROGRAM/KUCUK_UYGULAMALAR` klasöründe yalnız APK olarak duran dört GeoTerva uygulaması, Poyraz Workshop
 hesabından Google Play'e çıkmak için burada yeniden kuruldu (kaynak kodları yoktu). Her biri kendi klasöründedir:
@@ -106,7 +106,7 @@ kaldırıldı; GeoTerva yalnız Hakkında ekranında bir bağlantı olarak durur
 | Unitica (birim çevirici) | [`unitica/`](unitica/) | `com.poyrazworkshop.unitica` | `unitica-android.yml` → `Unitica-aab` | `play-unitica.yml` |
 | Calqora (bilimsel hesap makinesi) | [`calqora/`](calqora/) | `com.poyrazworkshop.calqora` | `calqora-android.yml` → `Calqora-aab` | `play-calqora.yml` |
 | Kıble Bul (kıble pusulası) | [`kible-bul/`](kible-bul/) | `com.poyrazworkshop.kiblebul` | `kiblebul-android.yml` → `KibleBul-aab` | `play-kiblebul.yml` |
-| Smart Measure (ölçüm araçları) | [`smart-measure/`](smart-measure/) | `com.poyrazworkshop.smartmeasure` | `smartmeasure-android.yml` → `SmartMeasure-aab` | `play-smartmeasure.yml` |
+| Ölçü Kutusu / Measure Box (ölçüm araçları; özgün adı Smart Measure) | [`smart-measure/`](smart-measure/) | `com.poyrazworkshop.smartmeasure` | `smartmeasure-android.yml` → `SmartMeasure-aab` | `play-smartmeasure.yml` |
 
 Dördünün tarayıcı işleri (AdMob, Play'de uygulama oluşturma, ilk AAB, formlar, abonelik) tek oturumda yapılır:
 [`docs/kucuk-uygulamalar-play.md`](docs/kucuk-uygulamalar-play.md). Gizlilik sayfaları `app/<klasör>/gizlilik.html`

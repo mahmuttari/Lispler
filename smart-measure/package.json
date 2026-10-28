@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Smart Measure — telefonun sensörleriyle ölçüm araçları (kamerayla mesafe/yükseklik, su terazisi, ekran cetveli, açıölçer, ses ve ışık ölçer), Capacitor ile Android uygulaması (Poyraz Workshop)",
+  "description": "Ölçü Kutusu (Measure Box) — telefonun sensörleriyle ölçüm araçları (kamerayla mesafe/yükseklik, su terazisi, ekran cetveli, açıölçer, ses ve ışık ölçer), Capacitor ile Android uygulaması (Poyraz Workshop)",
   "scripts": {
     "kimlik": "node araclar/kimlik.mjs",
     "sync": "node araclar/kimlik.mjs && cap sync android",

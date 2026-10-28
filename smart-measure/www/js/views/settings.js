@@ -81,7 +81,7 @@ export function render({ go, back, params }) {
   native.appInfo().then((i) => { version.textContent = i.versionName || ''; });
   const about = section('about', 'st_section_about',
     row('Crown', t('st_premium_title'), isPremium() ? t('pr_active') : null, () => go('premium')),
-    h('div', { class: 'row' }, icon('Info', 20), h('span', { class: 'row-text' }, h('span', { text: 'Smart Measure' })), version),
+    h('div', { class: 'row' }, icon('Info', 20), h('span', { class: 'row-text' }, h('span', { text: t('app_name') })), version),
     row('Sparkles', t('st_developer'), 'Poyraz Workshop'),
     row('ExternalLink', t('st_contact'), EMAIL, () => native.openUrl(`mailto:${EMAIL}`)),
     row('ExternalLink', 'GeoTerva', 'geoterva.com', () => native.openUrl('https://geoterva.com')),

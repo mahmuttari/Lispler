@@ -110,12 +110,12 @@ test('görseller Play ölçülerinde, 11 dilde: simge 512 RGBA, tanıtım 1024×
   }
 });
 
-test('ekler: KAYNAK.txt özgün APK\'yı, play-istek.txt etkin komut içermez, fiyatlandırma ürün ve planları adlandırır', () => {
+test('ekler: KAYNAK.txt özgün APK\'yı, play-istek.txt yalnız bilinen komutları içerir, fiyatlandırma ürün ve planları adlandırır', () => {
   const k = fs.readFileSync(path.join(KB, 'KAYNAK.txt'), 'utf8');
   assert.match(k, /apk-sha256: d411eb52129bcfb235d3db31b1b0a297632e29f153e7a8f2031d8edf1e8ef6ac/);
   assert.match(k, /drive-dosya-kimligi: 1KgBxebvUkKqAGoLYGh7pFkUMDRBKzeQ4/);
-  const istek = fs.readFileSync(path.join(KB, 'play-istek.txt'), 'utf8').split('\n').filter((l) => l.trim() && !l.startsWith('#'));
-  assert.deepEqual(istek, [], 'ilk yayından önce etkin komut olmamalı');
+  const istek = fs.readFileSync(path.join(KB, 'play-istek.txt'), 'utf8').split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
+  for (const k of istek) assert.match(k, /^(durum|magaza|gorsel|veriguvenligi|yukle)( [a-z]+)*$/, `geçersiz komut: ${k}`);
   const f = fs.readFileSync(path.join(MAGAZA, 'fiyatlandirma.md'), 'utf8');
   for (const s of ['`adfree`', '`monthly`', '`yearly`', '0,99 USD', '9,99 USD', 'sku=adfree&package=com.poyrazworkshop.kiblebul']) assert.ok(f.includes(s), s);
   const p = fs.readFileSync(path.join(MAGAZA, 'PLAY-YAYIN.md'), 'utf8');

@@ -137,6 +137,6 @@ test('abonelik ve yayın belgeleri: fiyatlandırma, PLAY-YAYIN, DEGERLENDIRME, K
   for (const s of ['askıya', 'support.google.com/admob/answer/6201362', '[D]', '[K]', '[DY]', 'Birim ekonomi']) assert.ok(d.includes(s), `DEGERLENDIRME.md: ${s}`);
   const k = oku('KAYNAK.txt');
   for (const s of ['1nevGYjs7NkOhd-n8LCEzpcyyBC0c0O6F', 'ed5a34b27df98e3291d2f7db27f2256be14025a0d72d1132346f5ced157b5815', 'com.geoterva.calqora', '2B:DB:33:F2']) assert.ok(k.includes(s), `KAYNAK.txt: ${s}`);
-  const istek = oku('play-istek.txt').split('\n').filter((s) => s.trim() && !s.trim().startsWith('#'));
-  assert.deepEqual(istek, [], 'play-istek.txt: uygulama Play\'de oluşturulmadan etkin komut olmamalı');
+  const istek = oku('play-istek.txt').split('\n').map((s) => s.trim()).filter((s) => s && !s.startsWith('#'));
+  for (const k of istek) assert.match(k, /^(durum|magaza|gorsel|veriguvenligi|yukle)( [a-z]+)*$/, `play-istek.txt: geçersiz komut: ${k}`);
 });

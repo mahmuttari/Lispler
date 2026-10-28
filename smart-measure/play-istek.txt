@@ -12,3 +12,4 @@
 # 2026-10-27 durum: Play'de uygulama henüz yok. Önce sahip adı karara bağlar (magaza/DEGERLENDIRME.md §0), PR birleştirilir,
 # sonra bilgisayardaki Claude Code docs/kucuk-uygulamalar-play.md "Talimat"ını yapar (AdMob kimlikleri main'e, abonelik,
 # ilk AAB elle taslak). Etkin komut yok.
+durum

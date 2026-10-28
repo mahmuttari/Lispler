@@ -17,3 +17,4 @@
 # (yapıldı 2026-10-28, f38cd3f) gorsel uygula
 # (yapıldı 2026-10-28, f38cd3f) durum
 # 2026-10-28: üretim sürümü Console'da "Önizle ve onayla" ile kaydedildi, 21 değişiklik incelemeye gönderildi. Etkin komut yok.
+durum

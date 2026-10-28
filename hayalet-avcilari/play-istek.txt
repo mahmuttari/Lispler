@@ -52,3 +52,6 @@
 
 # istek 2026-10-25T17:56:49Z: 3.14.1 (48) üretime yükle ve incelemeye gönder; 3.14.0 (47) incelemedeyse onun yerini alır (kullanıcının açık onayıyla: "gönder"); AAB: hayalet-android koşusu 40217723472 (bu dal, commit 84f7176, versionCode 48, Poyraz Workshop yükleme anahtarı); mağaza metni ve görseller değişmedi
 # (yapıldı 2026-10-25, koşu 40218892928: AAB 48 (koşu 40217723472, commit 84f7176) yüklendi, üretim 3.14.0 (47) → 3.14.1 (48) completed, incelemeye gönderildi) yukle yayinla uygula
+
+# istek 2026-10-28T18:05:10Z: 3.15.0 (49) üretime yükle ve incelemeye gönder (reklamla devam, timsahlar, ip köprüler, petler, çalı, çevrimiçi ekler); 3.14.1 (48)'in yerini alır (kullanıcının açık onayıyla: "Olur onaylıyorum gönder"); AAB: hayalet-android koşusu 40741003923 (bu dal, commit 6fa3d23, versionCode 49, Poyraz Workshop yükleme anahtarı); sürüm notu 7 dilde magaza/; mağaza metni ve görseller değişmedi
+yukle yayinla uygula

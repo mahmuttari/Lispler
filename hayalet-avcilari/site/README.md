@@ -27,14 +27,20 @@ Yerelde: `node hayalet-avcilari/site/yayin.mjs plan` (dosyalar ve özetleri) · 
 ## Kurulum (bir kez, kullanıcı)
 
 Kimlik, Play işlerinin anahtarsız Workload Identity hizmet hesabıdır (`android/play-kimlik.env`). Hesaba
-`hayalet-avcilari` projesinde iki rol verilir. Google Cloud Shell'de, projenin sahibi olarak:
+`hayalet-avcilari` projesinde iki rol verilir, projede Firebase Hosting API'si açılır (açıksa komut bir şey yapmaz).
+Google Cloud Shell'de, projenin sahibi olarak:
 
 ```sh
+gcloud services enable firebasehosting.googleapis.com --project=hayalet-avcilari
 gcloud projects add-iam-policy-binding hayalet-avcilari --role=roles/firebasehosting.admin \
   --member=serviceAccount:notdefteri-play@handcalcbook.iam.gserviceaccount.com
 gcloud projects add-iam-policy-binding hayalet-avcilari --role=roles/serviceusage.serviceUsageConsumer \
   --member=serviceAccount:notdefteri-play@handcalcbook.iam.gserviceaccount.com
 ```
+
+İlk `durum` (28 Ekim 2026, koşu 40775392211) rollerin henüz verilmediğini gösterdi: kota başlığı reddedildi, başlıksız
+istek hizmet hesabının projesine (`handcalcbook`, 711087488089) düştü ve orada Hosting API'si kapalı çıktı. Rol ve API
+yukarıdaki komutlarla `hayalet-avcilari`'de açılınca istekler o projeden gider.
 
 - `firebasehosting.admin`: siteyi okumak ve yeni sürüm yayınlamak. Hosting dışında yetki vermez (oyun verisine,
   kurallara, kimlik doğrulamaya dokunamaz).

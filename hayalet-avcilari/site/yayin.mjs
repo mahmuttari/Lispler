@@ -98,7 +98,11 @@ export async function durum(d) {
   let site;
   try { site = await sabirla(() => istek(`/projects/${PROJE}/sites/${SITE}`)); } catch (e) {
     if (!/→ (401|403):/.test(e.message)) throw e;
-    console.log(`YETKİ YOK: hizmet hesabının ${PROJE} projesinde Firebase Hosting rolü yok (site/README.md › Kurulum)\n  ${e.message.slice(0, 300)}`);
+    // Kota başlığı reddedildiyse istek hizmet hesabının projesine düşer; orada Hosting API'si kapalıysa hata onu söyler
+    const neden = istek.kotaProjesi === false && /has not been used in project|SERVICE_DISABLED/.test(e.message)
+      ? `${PROJE} projesinde serviceUsageConsumer rolü yok (kota başlığı reddedildi) ve hizmet hesabının projesinde Hosting API'si kapalı`
+      : `hizmet hesabının ${PROJE} projesinde Firebase Hosting rolü yok`;
+    console.log(`YETKİ YOK: ${neden} (site/README.md › Kurulum)\n  ${e.message.slice(0, 300)}`);
     return false;
   }
   console.log(`Site: ${site.name} · ${site.defaultUrl || ADRES} · tür ${site.type || '—'}`);

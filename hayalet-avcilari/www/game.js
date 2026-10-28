@@ -324,6 +324,7 @@ const UPDATE_NOTES = {
   // 3.14.1'den gelen Dünya Turu'nu biliyor; daha eskiden gelen için turun üç satırı da (mağaza notu aynı satırlar)
   "3.15.0": [
     t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
+    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
     t("🌍 Dünya Turu: en kalabalık 50 ülke ve Filistin, her ülke kendi görselleri ve geleneksel kıyafetli bossuyla."),
     t("🛂 Ülkeyi geç, pasaportuna damga bas; arkadaşlarınla birlikte gez."),
     t("🎵 Her ülkenin kendi kültüründen giriş ve fon müziği; Ses Ayarları'nda yeni Müzik kaydırıcısı."),
@@ -5229,6 +5230,7 @@ function update(dt, now) {
     damagePlayer();
     showFloat(t("🔥 Lav!"), game.player.x, game.player.y - 30);
   }
+  timsahGuncelle(dt); // sudan çıkan timsahlar: kıyıda duranı bazen ısırır (timsah.js)
 
   // ========== HOST-ONLY blok (spawn, AI, transition, AOE güç efektleri) ==========
   // Client modunda bu blok atlanır — state host'tan snapshot olarak gelir
@@ -6339,6 +6341,7 @@ function render() {
 
   // Engeller: su, diken, lav, duvar ve objeler — eğri hatlı, temaya özel, önbellekli (engeller.js)
   engelleriCiz(ctx);
+  timsahlariCiz(ctx); // sudaki timsahlar (timsah.js)
 
   // Toplanabilirler
   for (const p of game.pickups) drawPickup(ctx, p);

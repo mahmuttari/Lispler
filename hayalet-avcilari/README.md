@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.15.0 (versionCode 49) — Dünya Turu'nda reklamla devam (aşağıda "3.15.0: reklamla devam"); 27 Ekim 2026, henüz Play'e gönderilmedi. Önceki: 3.14.1 (versionCode 48) — son inceleme ve sınama düzeltmeleri (aşağıda "3.14.1: düzeltmeler"); 25 Ekim 2026'da kullanıcının onayıyla ("gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40218892928; 3.14.0 (47)'nin yerini aldı). Önceki: 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
+| Sürüm | 3.15.0 (versionCode 49) — Dünya Turu'nda reklamla devam ve sudaki timsahlar (aşağıda "3.15.0: reklamla devam", "3.15.0: timsahlar"); 27 Ekim 2026, henüz Play'e gönderilmedi. Önceki: 3.14.1 (versionCode 48) — son inceleme ve sınama düzeltmeleri (aşağıda "3.14.1: düzeltmeler"); 25 Ekim 2026'da kullanıcının onayıyla ("gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40218892928; 3.14.0 (47)'nin yerini aldı). Önceki: 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
@@ -400,6 +400,20 @@ Test: `test/reklam.test.mjs` (sahte AdMob eklentisi, 5 sınama: initialize bir k
 initialize'dan sonra, geçiş ve ödüllü reklam yine yüklenir, sayfa hatası yok); düzeltmeden önce derece sınaması düştü.
 Sürüm notu: 3.13.0 incelemedeyken gönderilebileceği için 3.13.0'ın satırlarını da taşır; mağaza notu İspanyolcada 500'ü
 aşmasın diye 👥 (3.12.2) satırı çıktı (tr 450, en 453, es 490, zh 179, hi 454, ar 404).
+
+## 3.15.0: timsahlar
+
+Kullanıcının isteği (28 Ekim 2026): *"Sulardan timsah çıksın suyun yanında duranı bazen ısırsın."* Kod `www/timsah.js`,
+sınama `test/timsah.test.mjs`; ayarlar `TIMSAH` nesnesinde.
+
+- Kıyıda (oyuncunun kenarı ile su arası 60 px'ten az) 1,2 sn duran oyuncuya saniyede %50 olasılıkla en yakın kıyıda bir
+  timsah çıkar. Önce 0,9 sn kabarcık ve sarı gözler (kaçma payı), sonra 0,35 sn ağzı açık atılış ve ısırık: oyuncu hâlâ
+  96 px içindeyse 1 can gider ("🐊 Timsah ısırdı!"), sonra batar. İki saldırı arası en az 5 sn.
+- Hayalet olan (çevrimiçi ölen), görünmez ya da hasar korumasındaki oyuncuyu ısırmaz; "Reklam izle, devam et" penceresi
+  açıkken saldırmaz. Suyun içinden geçen Beri de kıyıda sayılır.
+- Süs: 5–9 sn'de bir, ekranda görünen bir gölde timsah gözleri 2,4 sn su yüzüne çıkar (zarar vermez).
+- Durum oyun süresiyle ilerler (duraklatınca durur), yeni bölümde sıfırlanır. Her oyuncu kendi timsahlarını görür;
+  çevrimiçinde timsah yalnız kendi oyuncusunu ısırır. Maliyet: güncelleme kare başına ~0,001 ms, çizim ~0,03 ms.
 
 ## 3.15.0: reklamla devam
 

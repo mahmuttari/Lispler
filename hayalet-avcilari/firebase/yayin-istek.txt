@@ -20,5 +20,5 @@
 # (yapıldı 2026-10-24, koşu 40122381332: {"status":"ok"}; geri okunan kurallar depodakiyle AYNI) yayinla
 
 # istek 2026-10-28T18:05:10Z: 3.15.0 kuralları (players/$uid: pet, px, py, gz, tm — yalnız ekleme; commit 6fa3d23) — önce yayındakiyle karşılaştır, sonra yayınla (kullanıcının açık onayıyla: "Olur onaylıyorum gönder"); kurallar.test 32/32
-durum
-yayinla
+# (yapıldı 2026-10-28, koşu 40742252252: 5 fark, hepsi ekleme: players/$uid/pet, px, py, gz, tm) durum
+# (yapıldı 2026-10-28, koşu 40742252252: {"status":"ok"}; geri okunan kurallar depodakiyle AYNI) yayinla

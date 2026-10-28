@@ -20,7 +20,10 @@ const audio = {
       return;
     }
     try {
-      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      // Android'de varsayılan "interactive" tampon donanımınki kadar küçüktür (~4 ms): işlemci yüklüyken (tek oyunculu
+      // oyun ve oda kurucusu bütün benzetimi yürütür) tampon zamanında dolmazsa ses kesilir, sürekli müzikte cızırtı
+      // olur. "balanced" Android'de 20 ms; efektler ~16 ms geç duyulur, fark edilmez (3.14.2)
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: "balanced" });
       this.preloadSamples();
     } catch (e) {}
   },
@@ -331,6 +334,13 @@ const UPDATE_NOTES = {
   ],
   // 3.13.0'dan doğrudan gelen oyuncu 3.14.0'ı görmemiş olabilir: 3.14.0'ın satırları önce, 3.14.1'in düzeltmeleri sonda.
   // Mağaza notu (aynı satırlar) her dilde 500 karakterin altında kalsın diye sığmayan eski satırlar yok
+  "3.14.2": [
+    t("🌍 Dünya Turu: en kalabalık 50 ülke ve Filistin, her ülke kendi görselleri ve geleneksel kıyafetli bossuyla."),
+    t("🛂 Ülkeyi geç, pasaportuna damga bas; arkadaşlarınla birlikte gez."),
+    t("🎵 Her ülkenin kendi kültüründen giriş ve fon müziği; Ses Ayarları'nda yeni Müzik kaydırıcısı."),
+    t("✈️ Arkadaşlarla oynarken de damga ve uçak geçişi görünür."),
+    t("🛠️ Ses cızırtısına karşı düzeltmeler; müzik ve ülke geçişi düzeltildi; oyun sonu reklamı yeni oyunun üstüne gelmez."),
+  ],
   "3.14.1": [
     t("🌍 Dünya Turu: en kalabalık 50 ülke ve Filistin, her ülke kendi görselleri ve geleneksel kıyafetli bossuyla."),
     t("🛂 Ülkeyi geç, pasaportuna damga bas; arkadaşlarınla birlikte gez."),

@@ -253,6 +253,7 @@ I18N.ar = {
   "🛒 MAĞAZA": "🛒 المتجر",
   "🛠 <b>{ad}</b> için yükseltmeler": "🛠 ترقيات <b>{ad}</b>",
   "🛠️ Oda kurucusundaki cızırtı giderildi; müzik ve ülke geçişi düzeltildi; oyun sonu reklamı yeni oyunun üstüne gelmez.": "🛠️ إزالة الطقطقة في جهاز منشئ الغرفة؛ إصلاحات للموسيقى والانتقال بين الدول؛ إعلان نهاية اللعبة لم يعد يغطي اللعبة الجديدة.",
+  "🛠️ Ses cızırtısına karşı düzeltmeler; müzik ve ülke geçişi düzeltildi; oyun sonu reklamı yeni oyunun üstüne gelmez.": "🛠️ إصلاحات لطقطقة الصوت؛ إصلاحات للموسيقى والانتقال بين الدول؛ إعلان نهاية اللعبة لم يعد يغطي اللعبة الجديدة.",
   "🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir.": "🛡️ لن تظهر بعد الآن إلا إعلانات مناسبة لجميع الأعمار.",
   "🟢 Arkadaşın çevrimiçi mi, odada mı gör; istemediğin kişiyi engelle.": "🟢 اعرف إن كان أصدقاؤك متصلين أو في غرفة، واحظر من لا تريده.",
   "🟢 Çevrimiçi": "🟢 متصل",

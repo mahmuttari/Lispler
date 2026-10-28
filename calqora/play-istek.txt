@@ -13,6 +13,7 @@
 # magaza/PLAY-YAYIN.md "Talimat"ı yapar (AdMob kimlikleri main'e, abonelik, ilk AAB elle taslak). Etkin komut yok.
 
 # 2026-10-28: mağaza girişi API ile (Play Console kontrol panelinde yalnız "Mağaza girişinizi oluşturun" eksikti)
-magaza uygula
-gorsel uygula
-durum
+# (yapıldı 2026-10-28, f38cd3f) magaza uygula
+# (yapıldı 2026-10-28, f38cd3f) gorsel uygula
+# (yapıldı 2026-10-28, f38cd3f) durum
+# 2026-10-28: üretim sürümü Console'da "Önizle ve onayla" ile kaydedildi, 21 değişiklik incelemeye gönderildi. Etkin komut yok.

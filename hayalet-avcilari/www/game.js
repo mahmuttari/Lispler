@@ -321,13 +321,12 @@ const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 // ====== SÜRÜM NOTLARI ======
 const APP_VERSION = "3.15.0";
 const UPDATE_NOTES = {
-  // 3.14.1'den gelen Dünya Turu'nu biliyor; daha eskiden gelen için turun ilk satırı. Mağaza notu aynı satırlar, her
-  // dilde 500 karakterin altında kalsın diye turun 🛂 ve 🎵 satırları yok
+  // Mağaza notu aynı satırlar; her dilde 500 karakterin altında kalsın diye Dünya Turu'nun satırları (3.14.0) yok
   "3.15.0": [
     t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
     t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
     t("🌉 Göllerde sallanan ip köprüler: hızlı geç, ortada oyalanırsan suya düşersin!"),
-    t("🌍 Dünya Turu: en kalabalık 50 ülke ve Filistin, her ülke kendi görselleri ve geleneksel kıyafetli bossuyla."),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al, hayaletlere birlikte saldırın!"),
   ],
   // 3.13.0'dan doğrudan gelen oyuncu 3.14.0'ı görmemiş olabilir: 3.14.0'ın satırları önce, 3.14.1'in düzeltmeleri sonda.
   // Mağaza notu (aynı satırlar) her dilde 500 karakterin altında kalsın diye sığmayan eski satırlar yok
@@ -656,6 +655,9 @@ const defaultSave = {
   // Envanter silahları (bütün karakterler ortak): sahip olunanlar ve takılı olan ("" = karakterin kendi silahı)
   ownedGuns: {},
   equippedGun: "",
+  // Petler (pet.js): sahip olunanlar ve yanına alınan ("" = petsiz)
+  ownedPets: {},
+  pet: "",
   highestLevel: 1,
   // Reklam sıklığı sayaçları (reklam.js › reklamOyunBitti)
   reklam: { oyun: 0, toplam: 0, sure: 0, son: [] },
@@ -4428,7 +4430,7 @@ function showShopTab(tab) {
   currentShopTab = tab;
   const buttons = document.querySelectorAll(".tab-btn");
   buttons.forEach((b) => b.classList.remove("active"));
-  const idx = ({ upgrades: 0, costumes: 1, ammo: 2, guns: 3 })[tab] ?? 0;
+  const idx = ({ upgrades: 0, costumes: 1, ammo: 2, guns: 3, pets: 4 })[tab] ?? 0;
   if (buttons[idx]) buttons[idx].classList.add("active");
   refreshShop();
 }
@@ -4586,6 +4588,52 @@ function refreshShop() {
     };
     satir("", t("Normal silah"), t("Karakterin kendi silahı ve mermisi."), charIconUrl(save.selectedChar));
     Object.keys(GUNS).forEach((key) => satir(key, GUNS[key].name, GUNS[key].desc, gunIconUrl(key)));
+  } else if (currentShopTab === "pets") {
+    // Petler (pet.js): biri yanına alınır, oyunda hayaletlere saldırır
+    const header = document.createElement("div");
+    header.className = "upgrade-header";
+    header.innerHTML = t("🐾 <b>Petler</b> — yanında koşar, hayaletlere saldırır");
+    content.appendChild(header);
+    const secili = petSecili();
+    const satir = (key) => {
+      const item = document.createElement("div");
+      item.className = "shop-item";
+      const icon = document.createElement("div");
+      icon.className = "item-icon";
+      if (key) icon.appendChild(petSimgesi(key)); else icon.textContent = "🚫";
+      item.appendChild(icon);
+      const info = document.createElement("div");
+      info.className = "item-info";
+      const pt = PETLER[key];
+      info.innerHTML = key ? `<div class="item-name">${pt.simge} ${pt.ad}</div><div class="item-desc">${pt.desc}</div>`
+        : `<div class="item-name">${t("Petsiz")}</div><div class="item-desc">${t("Yalnız savaş.")}</div>`;
+      item.appendChild(info);
+      const btn = document.createElement("button");
+      if (key && !save.ownedPets[key]) {
+        btn.textContent = `💰 ${pt.cost}`;
+        btn.disabled = save.para < pt.cost;
+        btn.onclick = () => {
+          if (save.para < pt.cost) return;
+          save.para -= pt.cost;
+          save.ownedPets[key] = true;
+          save.pet = key;
+          persistSave();
+          refreshShop();
+          showToast(t("🐾 {ad} artık yanında!", { ad: pt.ad }));
+          audio.buy();
+        };
+      } else if (secili === key) {
+        btn.textContent = t("✓ Yanında");
+        btn.disabled = true;
+      } else {
+        btn.textContent = key ? t("Yanına al") : t("Bırak");
+        btn.onclick = () => { save.pet = key; persistSave(); refreshShop(); if (key) showToast(`${pt.simge} ${pt.ad}`); };
+      }
+      item.appendChild(btn);
+      content.appendChild(item);
+    };
+    satir("");
+    Object.keys(PETLER).forEach(satir);
   } else {
     // Kostümler
     Object.keys(COSTUMES).forEach((charKey) => {
@@ -4934,6 +4982,7 @@ function startGame(secenek) {
   // Oyuncu duvar/su içinde kalmasın
   ensurePlayerSafe();
   spawnBot();
+  petKur(); // yanına alınan pet (pet.js)
   closeInventory();
   refreshInventoryButton();
   // Dünya Turu'nda önce ülkenin tanıtım satırı; bot bildirimi okunabilsin diye sonra gelir
@@ -5583,6 +5632,7 @@ function update(dt, now) {
   if (firePower && firePower.type === "ponko") fireDelay = fireDelay / 3;
   if (GUNS[game.player.gun]) fireDelay *= GUNS[game.player.gun].delayMul;
   updateBot(dt, now);
+  petGuncelle(dt, now); // pet: oyuncuyu izler, yakındaki hayalete saldırır (pet.js)
   if (keys["b"] && game.bot) game.player.botTargetUntil = now + 300; // klavye: B'ye basılıyken Bot'a ateş
   let fireTarget = (!game.player.dead) ? nearestGhost(game.player.range) : null;
   const bot = game.bot;
@@ -5771,6 +5821,7 @@ function nextLevel() {
   buildHazards();
   ensurePlayerSafe();
   spawnBot();
+  petKur(); // yanına alınan pet (pet.js)
   if (online.mode) yenidenDog();
   showToast(bolumBildirimi());
   // Boss bölüm seviyesine göre belli bir süre sonra
@@ -6405,6 +6456,7 @@ function render() {
   }
 
   if (game.bot) drawBot(ctx, game.bot);
+  petCiz(ctx, false); // kedi, köpek (pet.js)
 
   // Oyuncu (yanıp sönme efekti yaralandığında, görünmez iken yarı saydam, ölü iken hayalet)
   const blink = !game.player.dead && game.player.invuln > 0 && Math.floor(game.player.invuln * 10) % 2 === 0;
@@ -6433,6 +6485,7 @@ function render() {
   }
   if (batma) ctx.restore();
   dususCiz(ctx);
+  petCiz(ctx, true); // kuş oyuncunun üstünde uçar (pet.js)
 
   // Parçacıklar
   for (const p of game.particles) {

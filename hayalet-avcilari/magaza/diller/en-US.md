@@ -47,4 +47,4 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 🎬 Out of lives on the World Tour? Watch an ad and carry on where you left off (3 times per game).
 🐊 Crocodiles now lurk in the water: linger on the shore and they may bite!
 🌉 Swaying rope bridges over the lakes: cross quickly, linger in the middle and you'll fall in!
-🌍 World Tour: the 50 most populous countries plus Palestine, each with its own sights and a boss in traditional dress.
+🐾 Pets are here: take a cat, dog or bird along and fight ghosts together!

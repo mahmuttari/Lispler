@@ -46,6 +46,5 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 🎬 ¿Sin vidas en la Gira mundial? Mira un anuncio y sigue donde lo dejaste (3 veces por partida).
 🐊 Ahora hay cocodrilos en el agua: ¡si te quedas en la orilla, pueden morderte!
+🌉 Puentes de cuerda colgantes sobre los lagos: cruza rápido, ¡si te entretienes en medio, te caes al agua!
 🌍 Gira mundial: los 50 países más poblados y Palestina, cada uno con sus paisajes y un jefe con traje tradicional.
-🛂 Supera un país y sella tu pasaporte; viaja junto a tus amigos.
-🎵 Música de entrada y de fondo de la cultura de cada país; nuevo control de Música en Ajustes de sonido.

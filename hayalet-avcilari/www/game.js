@@ -321,13 +321,13 @@ const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 // ====== SÜRÜM NOTLARI ======
 const APP_VERSION = "3.15.0";
 const UPDATE_NOTES = {
-  // 3.14.1'den gelen Dünya Turu'nu biliyor; daha eskiden gelen için turun üç satırı da (mağaza notu aynı satırlar)
+  // 3.14.1'den gelen Dünya Turu'nu biliyor; daha eskiden gelen için turun ilk satırı. Mağaza notu aynı satırlar, her
+  // dilde 500 karakterin altında kalsın diye turun 🛂 ve 🎵 satırları yok
   "3.15.0": [
     t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
     t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
+    t("🌉 Göllerde sallanan ip köprüler: hızlı geç, ortada oyalanırsan suya düşersin!"),
     t("🌍 Dünya Turu: en kalabalık 50 ülke ve Filistin, her ülke kendi görselleri ve geleneksel kıyafetli bossuyla."),
-    t("🛂 Ülkeyi geç, pasaportuna damga bas; arkadaşlarınla birlikte gez."),
-    t("🎵 Her ülkenin kendi kültüründen giriş ve fon müziği; Ses Ayarları'nda yeni Müzik kaydırıcısı."),
   ],
   // 3.13.0'dan doğrudan gelen oyuncu 3.14.0'ı görmemiş olabilir: 3.14.0'ın satırları önce, 3.14.1'in düzeltmeleri sonda.
   // Mağaza notu (aynı satırlar) her dilde 500 karakterin altında kalsın diye sığmayan eski satırlar yok
@@ -5181,7 +5181,7 @@ function update(dt, now) {
   if (kb) { dirX = kb.x; dirY = kb.y; }
   if (game.menude) { dirX = 0; dirY = 0; } // çevrimiçi menü açıkken oyun sürer, oyuncu durur
   const mag = Math.hypot(dirX, dirY);
-  const playerFrozen = (game.player.frozenUntil || 0) > now;
+  const playerFrozen = (game.player.frozenUntil || 0) > now || !!game.player.dusus; // dusus: köprüden suya düştü (kopru.js)
   const isSpectator = !!game.player.dead;
   let movedThisFrame = false;
   if (mag > 0.15 && (isSpectator || !playerFrozen)) {
@@ -5202,8 +5202,9 @@ function update(dt, now) {
       const nx = game.player.x + mx * game.player.speed * speedMul * dt;
       const ny = game.player.y + my * game.player.speed * speedMul * dt;
       const waterBlock = !game.player.waterImmune;
-      const engel = (x, y, r) => collidesWalls(x, y, r) || (waterBlock && collidesWaters(x, y, r));
-      const mesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), waterBlock ? engelMesafesi(game.waters, x, y, r) : Infinity);
+      // Köprünün şeridinde su engel değil (kopru.js)
+      const engel = (x, y, r) => collidesWalls(x, y, r) || (waterBlock && kopruluSuCarpar(x, y, r));
+      const mesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), waterBlock ? kopruluSuMesafesi(x, y, r) : Infinity);
       if (kayarakYuru(game.player, nx - game.player.x, ny - game.player.y, engel, mesafe)) movedThisFrame = true;
     }
   }
@@ -5230,6 +5231,7 @@ function update(dt, now) {
     damagePlayer();
     showFloat(t("🔥 Lav!"), game.player.x, game.player.y - 30);
   }
+  kopruGuncelle(dt, movedThisFrame); // sallanan ip köprü: suyun üstünde oyalanan düşer (kopru.js)
   timsahGuncelle(dt); // sudan çıkan timsahlar: kıyıda duranı bazen ısırır (timsah.js)
 
   // ========== HOST-ONLY blok (spawn, AI, transition, AOE güç efektleri) ==========
@@ -6341,6 +6343,7 @@ function render() {
 
   // Engeller: su, diken, lav, duvar ve objeler — eğri hatlı, temaya özel, önbellekli (engeller.js)
   engelleriCiz(ctx);
+  koprulerCiz(ctx);   // sallanan ip köprüler (kopru.js)
   timsahlariCiz(ctx); // sudaki timsahlar (timsah.js)
 
   // Toplanabilirler
@@ -6405,6 +6408,12 @@ function render() {
 
   // Oyuncu (yanıp sönme efekti yaralandığında, görünmez iken yarı saydam, ölü iken hayalet)
   const blink = !game.player.dead && game.player.invuln > 0 && Math.floor(game.player.invuln * 10) % 2 === 0;
+  const batma = kopruBatma(); // köprüden suya düşen: belinden aşağısı suda (kopru.js)
+  if (batma) {
+    ctx.save();
+    ctx.beginPath(); ctx.rect(game.player.x - 90, game.player.y - 160, 180, 168); ctx.clip();
+    ctx.translate(0, batma);
+  }
   if (!blink) {
     const isInvisible = (game.player.invisibleUntil || 0) > performance.now();
     const wp = game.player.walkTimer || 0;
@@ -6422,6 +6431,8 @@ function render() {
       drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun);
     }
   }
+  if (batma) ctx.restore();
+  dususCiz(ctx);
 
   // Parçacıklar
   for (const p of game.particles) {

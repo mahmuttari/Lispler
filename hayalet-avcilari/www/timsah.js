@@ -5,7 +5,8 @@
    - Saldırı: oyuncu suyun kıyısında (kenara TIMSAH.yakin px'ten yakın) TIMSAH.bekleme sn durursa, saniyede
      TIMSAH.olasilik olasılıkla en yakın kıyıda bir timsah belirir. Önce kabarcık ve gözler (TIMSAH.uyari sn: kaçmaya
      yeter), sonra atılıp ısırır: oyuncu hâlâ menzildeyse 1 can gider. İki saldırı arası en az TIMSAH.ara sn.
-   - Hayalet olan (çevrimiçi ölen), görünmez ya da hasar korumasındaki oyuncuyu ısırmaz.
+   - Hayalet olan (çevrimiçi ölen), görünmez ya da hasar korumasındaki oyuncuyu ısırmaz. Köprüdekine kıyıdan saldırmaz;
+     köprüden suya düşene yandan çıkar (kopru.js).
    - Durum oyun süresiyle ilerler (duraklatınca timsah da durur); game.waters değişince (yeni bölüm) sıfırlanır.
    Sınama: test/timsah.test.mjs.
    ============================================================ */
@@ -133,7 +134,8 @@ function timsahGuncelle(dt) {
   }
   // Kıyıda duran oyuncu
   game._timsahAra = Math.max(0, game._timsahAra - dt);
-  if (!p || p.dead || game.devamBekliyor) { game._timsahKiyi = 0; return; }
+  // Köprüdeki ya da köprüden düşmüş oyuncuya kıyı saldırısı yok: köprüde kural düşmedir (kopru.js)
+  if (!p || p.dead || game.devamBekliyor || p.dusus || koprudeMi(p.x, p.y)) { game._timsahKiyi = 0; return; }
   const { su, d } = enYakinSu(p.x, p.y);
   if (!su || d - p.r > TIMSAH.yakin) { game._timsahKiyi = 0; return; }
   game._timsahKiyi += dt;

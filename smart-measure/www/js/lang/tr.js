@@ -1,6 +1,6 @@
-// Smart Measure — Türkçe. Anahtarlar özgün uygulamanın dize kaynaklarının adlarıdır (en.js ile aynı). Yer tutucular {1}, {2}…
+// Ölçü Kutusu (İngilizcesi Measure Box; özgün adı "Smart Measure") — Türkçe. Anahtarlar özgün uygulamanın dize kaynaklarının adlarıdır (en.js ile aynı). Yer tutucular {1}, {2}…
 export default {
-  app_name: "Smart Measure",
+  app_name: "Ölçü Kutusu",
   cm_approx_note: "Yaklaşık değer: kameranın yönü ve telefonu tuttuğunuz yükseklikle hesaplanır. Tipik doğruluk %3–10; düz bir zemin ve aynı yükseklikte sabit tutulan bir telefon varsayılır.",
   cm_btn_base: "Taban Seç",
   cm_btn_edge: "Kenar Seç",
@@ -208,7 +208,7 @@ export default {
   nav_home: "Ana Sayfa",
   nav_tools: "Tüm Araçlar",
   pr_active: "Reklamsız sürüm açık",
-  pr_active_text: "Smart Measure'ı desteklediğiniz için teşekkürler. Reklam gösterilmiyor.",
+  pr_active_text: "Ölçü Kutusu'nu desteklediğiniz için teşekkürler. Reklam gösterilmiyor.",
   pr_failed: "Satın alma tamamlanamadı.",
   pr_feat_banner: "Altta reklam bandı yok",
   pr_feat_full: "Tam ekran reklam yok",
@@ -373,7 +373,7 @@ export default {
   sn_unit_dbfs: "dBFS(A)",
   st_acc_camera_text: "Mesafe, yükseklik ve genişlik, kameranın yönü ve telefonu tuttuğunuz yükseklikten trigonometriyle hesaplanır. Tipik doğruluk %3–10'dur, ufka yakın noktalarda daha kötüdür. Düz bir zemin ve aynı yükseklikte sabit tutulan bir telefon varsayılır. Her sonuç tahmini belirsizliğiyle gösterilir.",
   st_acc_camera_title: "Kamerayla ölçüm",
-  st_acc_intro: "Smart Measure telefonunuzun sensörleriyle ölçer. Bunlar iyidir ama laboratuvar aleti değildir. Ne bekleyeceğiniz ve her araçtan en iyi sonucu nasıl alacağınız burada.",
+  st_acc_intro: "Ölçü Kutusu telefonunuzun sensörleriyle ölçer. Bunlar iyidir ama laboratuvar aleti değildir. Ne bekleyeceğiniz ve her araçtan en iyi sonucu nasıl alacağınız burada.",
   st_acc_level_text: "Genellikle ±0,2° ile ±0,5°. Düz bir yüzeyde ters çevirme yöntemiyle kalibre edin (telefonu yerinde 180° döndürün); okurken telefonu sabit tutun.",
   st_acc_level_title: "Su terazisi",
   st_acc_light_text: "Ortam ışığı sensörleri telefonlar arasında yaklaşık %20–30 farklı olabilir ve ekran camının arkasındadır. Değeri bir alet okuması değil, bir gösterge olarak kullanın.",
@@ -422,7 +422,7 @@ export default {
   st_language_tr: "Türkçe",
   st_licenses: "Açık kaynak lisansları",
   st_licenses_text: "Manrope yazı tipi (SIL Open Font License 1.1). Lucide ikonları (ISC lisansı). Capacitor, @capacitor-community/admob (MIT lisansı) ve @capgo/native-purchases (Mozilla Public License 2.0). AndroidX (Apache License 2.0). Google Mobile Ads SDK, User Messaging Platform ve Google Play Faturalandırma (Google koşulları).",
-  st_premium_headline: "Reklamsız Smart Measure",
+  st_premium_headline: "Reklamsız Ölçü Kutusu",
   st_premium_text: "Tüm araçlar ücretsizdir. Ücretsiz sürüm altta küçük bir reklam bandı ve arada bir, bir duraklamada tam ekran reklam gösterir. Reklamsız abonelik ikisini de kaldırır. Hesap gerekmez.",
   st_premium_title: "Premium",
   st_privacy_policy: "Gizlilik politikası",

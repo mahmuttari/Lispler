@@ -1,9 +1,9 @@
-# Smart Measure — Google Play'e ilk yayın
+# Ölçü Kutusu (Measure Box) — Google Play'e ilk yayın
 
 Hesap: **Poyraz Workshop** (doğrudan **Üretim**). Reklam hesabı: **AdMob, mahmuttari@gmail.com** (yayıncı
 `pub-2417242373034448`). Paket: `com.poyrazworkshop.smartmeasure`. Dört küçük uygulama (Unitica, Calqora, Kıble Bul,
-Smart Measure) **tek tarayıcı oturumunda** sırayla yapılır: ortak akış
-[`../../docs/kucuk-uygulamalar-play.md`](../../docs/kucuk-uygulamalar-play.md); bu dosya yalnız Smart Measure'a özgü
+Ölçü Kutusu) **tek tarayıcı oturumunda** sırayla yapılır: ortak akış
+[`../../docs/kucuk-uygulamalar-play.md`](../../docs/kucuk-uygulamalar-play.md); bu dosya yalnız Ölçü Kutusu'na özgü
 bilgileri ve adımları verir. Düzen İz Haritası'nınkiyle aynıdır
 ([`../../iz-haritasi/magaza/PLAY-YAYIN.md`](../../iz-haritasi/magaza/PLAY-YAYIN.md)).
 
@@ -15,7 +15,7 @@ bilgileri ve adımları verir. Düzen İz Haritası'nınkiyle aynıdır
 
 | Alan | Değer |
 |---|---|
-| Uygulama adı (mağaza) | `Smart Measure – Ölçüm Araçları` (30 karakter); en-US `Smart Measure – Level & Ruler` (29); telefondaki ad `Smart Measure` |
+| Uygulama adı (mağaza) | `Ölçü Kutusu – Terazi, Cetvel` (28 karakter); en-US `Measure Box – Level & Ruler` (27); telefondaki ad `Ölçü Kutusu` (Türkçe telefonda) / `Measure Box`. Özgün ad "Smart Measure" Play'de başka bir uygulamanın adı olduğu için kullanılmaz ([`DEGERLENDIRME.md`](DEGERLENDIRME.md) §0) |
 | Paket adı | `com.poyrazworkshop.smartmeasure` |
 | Varsayılan dil | Türkçe – tr-TR; çeviri en-US |
 | Uygulama / oyun · fiyat | **Uygulama** · **Ücretsiz** (indirme ücretsiz; AdMob reklamı + uygulama içi abonelik) |
@@ -30,24 +30,24 @@ bilgileri ve adımları verir. Düzen İz Haritası'nınkiyle aynıdır
 | Görseller | [`play/`](play/) ve `play/en-US/`: `simge-512.png` (32 bit), `tanitim-gorseli-1024x500.png`, `telefon-1…6-*.png` (1080×1920). Üretici `../araclar/magaza-gorsel.mjs` |
 | Sürüm notu | [`surum-notu.txt`](surum-notu.txt) (tr-TR), en-US `diller/en-US.md` › Sürüm notu |
 | Abonelik | `adfree` · temel planlar `monthly` (0,99 $) ve `yearly` (9,99 $) — [`fiyatlandirma.md`](fiyatlandirma.md) |
-| AdMob birimleri | uyarlanabilir **banner** (`Smart Measure banner`) + **geçiş reklamı** (`Smart Measure geçiş`); ödüllü ve açılış reklamı yok |
+| AdMob birimleri | uyarlanabilir **banner** + **geçiş reklamı** (AdMob'da 28 Ekim 2026'da `Smart Measure` adıyla açıldı; AdMob'daki ad kullanıcıya görünmez, istenirse `Ölçü Kutusu` diye değiştirilir); ödüllü ve açılış reklamı yok |
 | İzinler | Kamera, mikrofon (ön planda, araç açılınca), titreşim, internet (reklam ve Play). Kısıtlı izin yok, ayrı beyan istenmez |
 | İlk paket | `1.0.0 (1)`: CI'ın (`smartmeasure-android.yml`) gerçek AdMob kimlikleriyle derlediği imzalı AAB, artifact `SmartMeasure-aab` |
 | Yükleme anahtarı | Poyraz Workshop'un ortak yükleme anahtarı (GitHub secret `HAYALET_KEYSTORE_*`; ayrı anahtar istenirse `SMARTMEASURE_KEYSTORE_*`). SHA-1 `D0:88:A0:75:77:D1:89:B0:15:D4:A5:88:74:9A:1A:8C:C2:EE:56:99` |
 
 ## Talimat (bilgisayardaki Claude Code, `claude --chrome`)
 
-Kurallar ve onay paketi ortak dosyadadır. Smart Measure'a özgü olanlar:
+Kurallar ve onay paketi ortak dosyadadır. Ölçü Kutusu'na özgü olanlar:
 
-1. **AdMob:** uygulama adı `Smart Measure` (ya da sahibin seçtiği ad), birimler `Smart Measure banner` ve
-   `Smart Measure geçiş` (sıklık sınırı gerekmez: uygulama oturumun ilk 3 dakikasında göstermez, en sık 4 dakikada bir,
-   saatte en çok 6). AB mesajında Smart Measure için Türkçe + İngilizce yeterlidir (ortak mesaj öbür dilleri de içerir).
+1. **AdMob:** (yapıldı, 28 Ekim 2026) uygulama `Smart Measure` adıyla açıldı, birimler banner ve geçiş reklamı;
+   kimlikler `android/gradle.properties`'te (sıklık sınırı gerekmez: uygulama oturumun ilk 3 dakikasında göstermez, en sık 4 dakikada bir,
+   saatte en çok 6). AB mesajında Ölçü Kutusu için Türkçe + İngilizce yeterlidir (ortak mesaj öbür dilleri de içerir).
    Kimlikler `smart-measure/android/gradle.properties`'e, sonra `node smart-measure/araclar/kimlik.mjs` ve
    `node --test smart-measure/test/*.test.mjs` yeşil.
 2. **Play'de oluştur:** ad (tablodan ya da sahibin seçtiği), tr-TR, Uygulama, Ücretsiz.
 3. **İlk paket:** `SmartMeasure.aab` → paket `com.poyrazworkshop.smartmeasure`, sürüm `1.0.0 (1)`; sürüm notu
    `surum-notu.txt`; yalnız **Kaydet**.
-4. **Hizmet hesabı:** Smart Measure'ı da ekle (ortak dosyadaki izinler).
+4. **Hizmet hesabı:** Ölçü Kutusu'nu da ekle (ortak dosyadaki izinler).
 5. **Mağaza ayarları ve Uygulama içeriği:** kategori **Araçlar**; [`aciklamalar.md`](aciklamalar.md) tablosu
    (Reklamlar: Evet; Hedef kitle 13+; Reklam kimliği: Evet; IARC'de dijital satın alma: Evet; sağlık özelliği: yok).
    Veri güvenliği: `smart-measure/magaza/veri-guvenligi.csv`; önizlemede toplanan ve paylaşılan: Konum, Uygulama

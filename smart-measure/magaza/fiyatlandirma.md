@@ -1,4 +1,4 @@
-# Smart Measure — reklamsız abonelik fiyatlandırması
+# Ölçü Kutusu (Measure Box) — reklamsız abonelik fiyatlandırması
 
 Özgün Smart Measure 0.1.0'da Premium ekranı "henüz sunulmuyor" diyordu; bu sürümde Premium **reklamsız abonelik**tir.
 Fiyatlar uygulamanın kodunda değil, **Google Play Console**'da ayarlanır. Uygulama mağazanın verdiği yerel fiyat metnini
@@ -19,7 +19,7 @@ Fiyatlar uygulamanın kodunda değil, **Google Play Console**'da ayarlanır. Uyg
 
 ## Google Play Console'da (uygulama oluşturulup ilk AAB yüklendikten sonra)
 
-1. Smart Measure → **Para kazanma › Ürünler › Abonelikler › Abonelik oluştur**: ürün kimliği `adfree`, ad
+1. Ölçü Kutusu → **Para kazanma › Ürünler › Abonelikler › Abonelik oluştur**: ürün kimliği `adfree`, ad
    "Reklamsız" (İngilizce "Ad-free").
 2. Avantajlar (isteğe bağlı, kısa): "Reklam yok" / "No ads".
 3. **Temel plan ekle**: kimlik `monthly`, tür **Otomatik yenilenen**, faturalandırma dönemi **1 ay**, ek süre ve

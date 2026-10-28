@@ -1,4 +1,4 @@
-# Smart Measure — yayın kararının uzman değerlendirmesi (27 Ekim 2026)
+# Ölçü Kutusu (Measure Box; özgün adı Smart Measure) — yayın kararının uzman değerlendirmesi (27 Ekim 2026)
 
 İstek: KUCUK_UYGULAMALAR'daki Smart Measure 0.1.0 APK'sını (GeoTerva, yerel Kotlin + Jetpack Compose + CameraX,
 yayınlanmamış ilk sürüm) **Poyraz Workshop** hesabından, **AdMob reklamlı + reklamsız abonelikli** olarak Google Play'de
@@ -7,7 +7,12 @@ AdMob + `adfree` aboneliği, bu turda yayınla, yarım kalanları bitir. Kaynak 
 akışlar ve metinlerle **Capacitor 8** ile yeniden yazıldı (README). Doğrulama işaretleri: **[D]** doğrulandı, **[K]**
 kısmen, **[DY]** doğrulanamadı.
 
-## 0. Önce karar gerektiren risk: ad çakışması (YÜKSEK)
+## 0. Ad çakışması (YÜKSEK) → karar: Ölçü Kutusu / Measure Box
+
+**Karar (28 Ekim 2026):** mağaza adı **"Ölçü Kutusu – Terazi, Cetvel"** (tr-TR) ve **"Measure Box – Level & Ruler"**
+(en-US), telefondaki ad Türkçe telefonda "Ölçü Kutusu", ötekilerde "Measure Box". Sahip uzman önerisiyle devam
+edilmesini istedi ("Devam et"); iki ad için de Play'de aynı adda uygulama bulunamadı [K] (web araması, 28 Ekim 2026).
+Paket adı `com.poyrazworkshop.smartmeasure` kullanıcıya görünmediği için değişmedi.
 
 Google Play'de aynı adda, aynı kategoride ve **aynı yöntemle** (kamera + trigonometri ile mesafe ve yükseklik) çalışan,
 10 milyondan fazla indirilmiş bir uygulama var: **"Smart Measure"**, geliştirici *Smart Tools co.*, paket
@@ -23,7 +28,7 @@ Hesapta daha önce askıya alınmış iki uygulama olduğu için bir ad şikâye
 **Uzman önerisi:** mağaza adı ve telefondaki ad **ayırt edici** olsun; "Smart Measure" ancak ikinci bir sözcükle bile
 riskli kalır. Öneriler (Play'de aynı adda uygulama olmadığı yayından önce bir kez daha aranmalı): **"Ölçü Kutusu –
 Terazi, Cetvel"** / İngilizce **"Measure Box – Level & Ruler"** ya da **"Poyraz Ölçer"** / **"Poyraz Measure"**. Bu
-sürümdeki dosyalar sahibin verdiği adla ("Smart Measure – Ölçüm Araçları", "Smart Measure – Level & Ruler") hazırdır;
+sürümdeki dosyalar ilk başta özgün adla ("Smart Measure – Ölçüm Araçları", "Smart Measure – Level & Ruler") hazırlanmıştı;
 ad değişirse değişecek yerler README'nin "Ad değişirse" bölümündedir (kod değişmez, yalnız metinler ve görseller).
 Paket adı (`com.poyrazworkshop.smartmeasure`) kullanıcıya görünmez, kalabilir.
 

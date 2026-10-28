@@ -102,11 +102,13 @@ if (darkQuery && darkQuery.addEventListener) darkQuery.addEventListener('change'
 
 export function applyLanguage() {
   setLang(S.settings.language);
+  document.title = t('app_name');
   render();
 }
 
 // ---- başlangıç
 setLang(S.settings.language);
+document.title = t('app_name');
 applyTheme();
 if (!window.history.state) window.history.replaceState({ d: 0 }, '', location.hash || '#/home');
 window.addEventListener('popstate', () => render());

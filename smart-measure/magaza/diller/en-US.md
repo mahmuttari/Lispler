@@ -1,6 +1,6 @@
-# Smart Measure — en-US
+# Measure Box — en-US
 
-- **Uygulama adı:** Smart Measure – Level & Ruler
+- **Uygulama adı:** Measure Box – Level & Ruler
 
 ## Kısa açıklama
 
@@ -8,7 +8,7 @@ Spirit level, screen ruler, protractor, camera distance, sound and light meter.
 
 ## Uzun açıklama
 
-Smart Measure is a multi-purpose toolkit that measures with your phone's sensors: a spirit level, a screen ruler, a protractor, distance and height by camera, a sound meter and a light meter in one app. Every tool says plainly how accurate it is, and the calibration centre lets you tune each one to your own phone.
+Measure Box is a multi-purpose toolkit that measures with your phone's sensors: a spirit level, a screen ruler, a protractor, distance and height by camera, a sound meter and a light meter in one app. Every tool says plainly how accurate it is, and the calibration centre lets you tune each one to your own phone.
 
 📐 SPIRIT LEVEL
 • Surface, line and vertical modes: level a shelf, a picture or a door frame.

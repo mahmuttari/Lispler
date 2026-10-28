@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Smart Measure — AdMob reklam birimi kimliklerini tek kaynaktan (android/gradle.properties) sayfaya yazar:
+// Ölçü Kutusu (Measure Box) — AdMob reklam birimi kimliklerini tek kaynaktan (android/gradle.properties) sayfaya yazar:
 //   ADMOB_BANNER_ID, ADMOB_INTERSTITIAL_ID → www/js/reklam-kimlik.js
 // Uygulama kimliği (ADMOB_APP_ID) sayfaya gitmez, Gradle manifeste yazar. CI (smartmeasure-android.yml) "cap sync"ten
 // önce çalıştırır; çıktı depoya da alınır, test/reklam.test.mjs ikisinin eşleştiğini denetler.

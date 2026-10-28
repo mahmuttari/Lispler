@@ -1,8 +1,8 @@
-// Smart Measure — English. Keys are the original app's string resource names (cm_ camera, hm_ home, lb_ library,
+// Measure Box (Turkish: Ölçü Kutusu; originally "Smart Measure") — English. Keys are the original app's string resource names (cm_ camera, hm_ home, lb_ library,
 // lv_ level, rl_ ruler/protractor, sn_ sensors, st_ settings) plus pr_ (ad-free subscription) and common_.
 // Placeholders: {1}, {2}… One key per line.
 export default {
-  app_name: "Smart Measure",
+  app_name: "Measure Box",
   cm_approx_note: "Approximate: worked out from the camera direction and the height the phone is held at. Typical accuracy is 3–10 %; a flat floor and a phone held still at the same height are assumed.",
   cm_btn_base: "Select base",
   cm_btn_edge: "Select edge",
@@ -210,7 +210,7 @@ export default {
   nav_home: "Home",
   nav_tools: "All tools",
   pr_active: "Ad-free is on",
-  pr_active_text: "Thank you for supporting Smart Measure. No ads are shown.",
+  pr_active_text: "Thank you for supporting Measure Box. No ads are shown.",
   pr_failed: "The purchase could not be completed.",
   pr_feat_banner: "No banner at the bottom",
   pr_feat_full: "No full-screen ads",
@@ -375,7 +375,7 @@ export default {
   sn_unit_dbfs: "dBFS(A)",
   st_acc_camera_text: "Distance, height and width are worked out by trigonometry from the camera direction and the height you hold the phone at. Typical accuracy is 3–10 %, worse for points close to the horizon. A flat floor and a phone held still at the same height are assumed. Every result is shown with its estimated uncertainty.",
   st_acc_camera_title: "Camera measurement",
-  st_acc_intro: "Smart Measure measures with the sensors of your phone. They are good, but they are not laboratory instruments. Here is what to expect and how to get the best from each tool.",
+  st_acc_intro: "Measure Box measures with the sensors of your phone. They are good, but they are not laboratory instruments. Here is what to expect and how to get the best from each tool.",
   st_acc_level_text: "Typically ±0.2° to ±0.5°. Calibrate on a flat surface with the flip method (turn the phone 180° on the spot); keep the phone still while reading.",
   st_acc_level_title: "Spirit level",
   st_acc_light_text: "Ambient light sensors differ by roughly 20–30 % between phones and sit behind the screen glass. Use the value as a guide, not as an instrument reading.",
@@ -424,7 +424,7 @@ export default {
   st_language_tr: "Türkçe",
   st_licenses: "Open-source licences",
   st_licenses_text: "Manrope typeface (SIL Open Font License 1.1). Lucide icons (ISC licence). Capacitor, @capacitor-community/admob (MIT licence) and @capgo/native-purchases (Mozilla Public License 2.0). AndroidX (Apache License 2.0). Google Mobile Ads SDK, User Messaging Platform and Google Play Billing (Google terms).",
-  st_premium_headline: "Smart Measure without ads",
+  st_premium_headline: "Measure Box without ads",
   st_premium_text: "Every tool is free. The free version shows a small banner at the bottom and, now and then at a pause, a full-screen ad. The ad-free subscription removes both. No account is needed.",
   st_premium_title: "Premium",
   st_privacy_policy: "Privacy policy",

@@ -1,4 +1,4 @@
-# Smart Measure — mağaza metinleri
+# Ölçü Kutusu (Measure Box) — mağaza metinleri
 
 `android/play.mjs magaza` (`PLAY_UYGULAMA=smartmeasure`) bu dosyadan "Uygulama adı", "Destek e-postası", "Gizlilik
 politikası" satırlarını ve "Kısa açıklama" / "Uzun açıklama" bölümlerini okur (ad ≤30, kısa ≤80, uzun ≤4000 karakter).
@@ -9,7 +9,7 @@ reklamlar açıkça anlatılır (`test/magaza.test.mjs` denetler).
 
 ## Ortak
 
-- **Uygulama adı:** Smart Measure – Ölçüm Araçları
+- **Uygulama adı:** Ölçü Kutusu – Terazi, Cetvel
 - **Geliştirici adı:** Poyraz Workshop
 - **Paket adı:** `com.poyrazworkshop.smartmeasure`
 - **Tür ve kategori:** Uygulama · Araçlar
@@ -25,7 +25,7 @@ Su terazisi, ekran cetveli, açıölçer, kamerayla mesafe, ses ve ışık ölç
 
 ## Uzun açıklama
 
-Smart Measure, telefonunun sensörleriyle ölçen çok amaçlı bir araç kutusudur: su terazisi, ekran cetveli, açıölçer, kamerayla mesafe ve yükseklik ölçümü, ses ölçer ve ışık ölçer tek uygulamada. Her aracın ne kadar doğru olduğu açıkça yazar; kalibrasyon merkezinde her birini kendi telefonuna göre ayarlarsın.
+Ölçü Kutusu, telefonunun sensörleriyle ölçen çok amaçlı bir araç takımıdır: su terazisi, ekran cetveli, açıölçer, kamerayla mesafe ve yükseklik ölçümü, ses ölçer ve ışık ölçer tek uygulamada. Her aracın ne kadar doğru olduğu açıkça yazar; kalibrasyon merkezinde her birini kendi telefonuna göre ayarlarsın.
 
 📐 SU TERAZİSİ
 • Yüzey, çizgi ve dikey kip: rafı, tabloyu, kapı kasasını hizala.

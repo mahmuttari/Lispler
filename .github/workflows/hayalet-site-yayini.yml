@@ -2,9 +2,9 @@
 # Play'e verilen adres, sahibinin adını içermez). Komutlar hayalet-avcilari/site/yayin-istek.txt'ye yazılır (play-istek.txt düzeni):
 #   durum    — yayındaki siteyi depodakiyle karşılaştırır; hiçbir şey yazmaz
 #   yayinla  — app/hayalet-avcilari/ + app/legal.css + app-ads.txt'yi yayınlar, geri okuyup depodakiyle aynı olduğunu denetler
-# Önce site ve reklam testleri çalışır (sayfalarda ve reklam metinlerinde sahibin adı yok, bağlantılar, Play adresleri);
-# biri kırmızıysa hiçbir şey yayınlanmaz. Kimlik anahtarsız: Play işleriyle aynı Workload Identity hizmet hesabı
-# (android/play-kimlik.env). Hesabın hayalet-avcilari projesindeki rolleri: hayalet-avcilari/site/README.md › Kurulum.
+# Önce site, reklam ve sosyal içerik testleri çalışır (sayfalarda, reklam ve paylaşım metinlerinde sahibin adı yok,
+# bağlantılar, Play adresleri); biri kırmızıysa hiçbir şey yayınlanmaz. Kimlik anahtarsız: Play işleriyle aynı Workload
+# Identity hizmet hesabı (android/play-kimlik.env). Hesabın hayalet-avcilari projesindeki rolleri: hayalet-avcilari/site/README.md › Kurulum.
 name: Firebase site yayını (Hayalet Avcıları)
 
 on:
@@ -36,8 +36,8 @@ jobs:
           echo "Komutlar:"; cat "$RUNNER_TEMP/komutlar"
           grep -E '^(PLAY_WIF_PROVIDER|PLAY_SERVICE_ACCOUNT)=' android/play-kimlik.env >> "$GITHUB_ENV"
           if [ -s "$RUNNER_TEMP/komutlar" ]; then echo "KOMUT_VAR=1" >> "$GITHUB_ENV"; fi
-      - name: Site ve reklam testleri
-        run: node --test hayalet-avcilari/site/*.test.mjs hayalet-avcilari/reklam/*.test.mjs
+      - name: Site, reklam ve sosyal içerik testleri
+        run: node --test hayalet-avcilari/site/*.test.mjs hayalet-avcilari/reklam/*.test.mjs hayalet-avcilari/sosyal/*.test.mjs
       - name: Yayın planı
         run: node hayalet-avcilari/site/yayin.mjs plan
       - id: auth

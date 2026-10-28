@@ -17,6 +17,9 @@ denetlemesi gerekiyor, **[DY]** doğrulanamadı (varsayım).
   - [`gorseller/`](gorseller/): 6 dil × 3 sahne × 3 boyut = 54 görsel; üretici [`gorsel.mjs`](gorsel.mjs).
   - [`reklam.test.mjs`](reklam.test.mjs): sınırlar, yazım kuralları ve sahibin adı taraması.
 - Bu klasörde Google Ads'te hiçbir şey kurulmadı; para harcayan hiçbir adım atılmadı.
+- **Karar (28 Ekim 2026):** §1'deki bulgu üzerine kullanıcı **"Ücretsiz kanallar"**ı (B) seçti.
+  - Google Ads hesabı açılmaz; plan [`../sosyal/SOSYAL-PLAN.md`](../sosyal/SOSYAL-PLAN.md)'dedir.
+  - Bu klasör, şirket kurulursa (A) ya da koşul değişirse (C) kullanılmak üzere saklanır.
 
 ## 1. Sahibin adı nerede görünebilir?
 

@@ -14,6 +14,7 @@ on:
       - '!hayalet-avcilari/firebase/**'
       - '!hayalet-avcilari/site/**'
       - '!hayalet-avcilari/reklam/**'
+      - '!hayalet-avcilari/sosyal/**'
       - '.github/workflows/hayalet-android.yml'
   workflow_dispatch:
 

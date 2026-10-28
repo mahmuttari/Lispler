@@ -392,3 +392,98 @@ function istemciDamgasi(u, yeniBolum) {
   damgaGoster(u);
   if (yeniBolum) setTimeout(() => { if (game.running && game.level === yeniBolum) showToast(bolumBildirimi()); }, TUR_DAMGA_MS);
 }
+
+// ====== REKLAMLA DEVAM (3.15.0) ======
+// Tek kişilik turda canlar bitince oyun hemen bitmez: "Reklam izle, devam et" penceresi açılır. Ödüllü reklamı sonuna
+// kadar izleyenin canları dolar, kaldığı ülkede kaldığı yerden sürdürür. Oyun başına en çok TUR_DEVAM_HAKKI kez; başka
+// devam yolu (zümrütle, parayla) yoktur. Çevrimiçi turda yok (orada ölen hayalet olur). Reklam yüklü değilse pencere
+// açılmaz, oyun her zamanki gibi biter. Çevrimiçi turda pencere yerine hayaletken "Reklam izle, diril" düğmesi
+// (turDirilTeklifi, aşağıda). Sınama: test/reklam.test.mjs.
+const TUR_DEVAM_HAKKI = 3;
+const TUR_DEVAM_KORUMA_SN = 3; // dönüşte hasar almama süresi (hayaletlerden uzaklaşmaya yetsin)
+
+// damagePlayer çağırır: true dönerse oyun bitmez, pencere açılmıştır
+function turDevamTeklifi() {
+  if (!game.dunyaTuru || online.mode || game.turBitti || !(game.turDevamKalan > 0) || !reklamDevamHazir()) return false;
+  game.devamBekliyor = true;
+  game.paused = true;
+  game.inputDir.x = 0; game.inputDir.y = 0;
+  muzikDuraklat(true);
+  turDevamEkrani();
+  return true;
+}
+
+function turDevamEkrani() {
+  document.getElementById("tur-devam-kalan").textContent =
+    t("Kalan hak: {n}/{toplam}", { n: game.turDevamKalan, toplam: TUR_DEVAM_HAKKI });
+  odulDugmesiniGuncelle();
+  document.getElementById("screen-tur-devam").classList.add("active");
+}
+
+function turDevamKapat() {
+  document.getElementById("screen-tur-devam").classList.remove("active");
+  game.devamBekliyor = false;
+}
+
+function turDevamIzle() {
+  if (!game.devamBekliyor) return;
+  reklamDevamIzle(turDevamSonucu);
+}
+
+// reklam.js çağırır: kazandi = reklam sonuna kadar izlendi
+function turDevamSonucu(kazandi) {
+  if (!game.devamBekliyor || !game.running) return;
+  if (!kazandi) { turDevamEkrani(); return; } // yarıda kapandı ya da gösterilemedi: pencere yeniden, karar oyuncunun
+  turDevamKapat();
+  game.turDevamKalan--;
+  game.player.hp = game.player.maxHp;
+  game.player.invuln = TUR_DEVAM_KORUMA_SN;
+  game.enemyProjectiles = [];
+  game.paused = false;
+  game.lastFrame = performance.now();
+  muzikDuraklat(false);
+  updateHUD();
+  showToast(t("❤️ Canların yenilendi! Kalan hak: {n}", { n: game.turDevamKalan }));
+}
+
+function turDevamVazgec() {
+  if (!game.devamBekliyor) return;
+  turDevamKapat();
+  game.paused = false;
+  muzikDuraklat(false);
+  endGame(false);
+}
+
+// Çevrimiçi turda oyun durmaz ve ölen hayalet olur: "Reklam izle, diril" düğmesi hayaletken görünür, aynı 3 hak.
+// Ödül gelince oyuncu bulunduğu yere en yakın boş noktada canları dolu dirilir (oda kaydına dead: 0 gider).
+function turDirilTeklifi() {
+  const btn = document.getElementById("btn-tur-diril");
+  if (!btn) return;
+  const p = game.player;
+  const uygun = !!(p && p.dead && online.mode && game.running && game.dunyaTuru && !game.turBitti && game.turDevamKalan > 0 && reklam.hazir);
+  btn.style.display = uygun ? "" : "none";
+  if (!uygun) return;
+  btn.textContent = t("🎬 Reklam izle, diril ({n}/{toplam})", { n: game.turDevamKalan, toplam: TUR_DEVAM_HAKKI });
+  btn.disabled = !reklamDevamHazir() || !!reklam.devamSonucu;
+}
+
+function turDirilIzle() {
+  if (!game.player || !game.player.dead || !online.mode) return;
+  reklamDevamIzle(turDirilSonucu);
+  turDirilTeklifi();
+}
+
+function turDirilSonucu(kazandi) {
+  const p = game.player;
+  if (!kazandi || !p || !p.dead || !online.mode || !game.running || game.turBitti) { turDirilTeklifi(); return; }
+  game.turDevamKalan--;
+  const yer = freeSpot(p.x, p.y, p.r, (x, y, r) => collidesWalls(x, y, r) || collidesWaters(x, y, r) || collidesLavas(x, y, r));
+  p.x = yer.x; p.y = yer.y;
+  p.dead = false;
+  p.hp = p.maxHp;
+  p.invuln = TUR_DEVAM_KORUMA_SN;
+  updateHUD();
+  turDirilTeklifi();
+  audio.heart();
+  showToast(t("❤️ Canların yenilendi! Kalan hak: {n}", { n: game.turDevamKalan }));
+}

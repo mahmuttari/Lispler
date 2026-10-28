@@ -20,7 +20,10 @@ const audio = {
       return;
     }
     try {
-      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      // Android'de varsayılan "interactive" tampon donanımınki kadar küçüktür (~4 ms): işlemci yüklüyken (tek oyunculu
+      // oyun ve oda kurucusu bütün benzetimi yürütür) tampon zamanında dolmazsa ses kesilir, sürekli müzikte cızırtı
+      // olur. "balanced" Android'de 20 ms; efektler ~16 ms geç duyulur, fark edilmez (3.14.2)
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: "balanced" });
       this.preloadSamples();
     } catch (e) {}
   },
@@ -319,10 +322,25 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.14.1";
+const APP_VERSION = "3.15.0";
 const UPDATE_NOTES = {
+  // Mağaza notu aynı satırlar; her dilde 500 karakterin altında kalsın diye Dünya Turu'nun satırları (3.14.0) yok
+  "3.15.0": [
+    t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
+    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
+    t("🌉 Göllerde sallanan ip köprüler: hızlı geç, ortada oyalanırsan suya düşersin!"),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al, hayaletlere birlikte saldırın!"),
+    t("🌿 Çalıya saklan, hayaletler seni göremez; hayaletler artık dibinde doğmaz."),
+  ],
   // 3.13.0'dan doğrudan gelen oyuncu 3.14.0'ı görmemiş olabilir: 3.14.0'ın satırları önce, 3.14.1'in düzeltmeleri sonda.
   // Mağaza notu (aynı satırlar) her dilde 500 karakterin altında kalsın diye sığmayan eski satırlar yok
+  "3.14.2": [
+    t("🌍 Dünya Turu: en kalabalık 50 ülke ve Filistin, her ülke kendi görselleri ve geleneksel kıyafetli bossuyla."),
+    t("🛂 Ülkeyi geç, pasaportuna damga bas; arkadaşlarınla birlikte gez."),
+    t("🎵 Her ülkenin kendi kültüründen giriş ve fon müziği; Ses Ayarları'nda yeni Müzik kaydırıcısı."),
+    t("✈️ Arkadaşlarla oynarken de damga ve uçak geçişi görünür."),
+    t("🛠️ Ses cızırtısına karşı düzeltmeler; müzik ve ülke geçişi düzeltildi; oyun sonu reklamı yeni oyunun üstüne gelmez."),
+  ],
   "3.14.1": [
     t("🌍 Dünya Turu: en kalabalık 50 ülke ve Filistin, her ülke kendi görselleri ve geleneksel kıyafetli bossuyla."),
     t("🛂 Ülkeyi geç, pasaportuna damga bas; arkadaşlarınla birlikte gez."),
@@ -648,6 +666,9 @@ const defaultSave = {
   // Envanter silahları (bütün karakterler ortak): sahip olunanlar ve takılı olan ("" = karakterin kendi silahı)
   ownedGuns: {},
   equippedGun: "",
+  // Petler (pet.js): sahip olunanlar ve yanına alınan ("" = petsiz)
+  ownedPets: {},
+  pet: "",
   highestLevel: 1,
   // Reklam sıklığı sayaçları (reklam.js › reklamOyunBitti)
   reklam: { oyun: 0, toplam: 0, sure: 0, son: [] },
@@ -3480,6 +3501,7 @@ function startMpGameClient() {
 function startMpSync() {
   stopMpSync();
   _sonOyuncuKaydi = {};
+  _sonEk = {}; _ekBeklet = 0;
   _sonTamKayit = 0;
   _sonAv = -1;
   _sonPickupImza = "";
@@ -3576,9 +3598,31 @@ async function kaydimiGonder() {
     _sonAv = game.totalCaught; _avZamani = simdi;
     rtdb.patch(`rooms/${online.roomId}/players/${online.uid}`, { av: _sonAv });
   }
+  ekleriGonder();
   if (!Object.keys(degisen).length) return;
   Object.assign(_sonOyuncuKaydi, degisen);
   await rtdb.patch(`rooms/${online.roomId}/players/${online.uid}`, degisen);
+}
+
+// 3.15.0: pet (tür ve konum), çalıda saklanma ve timsahlarım ayrı yazımla — kural yayınlanmamış bir veritabanında
+// reddedilirse konum yazımı bozulmasın; reddedilince 30 sn denenmez
+let _sonEk = {}, _ekBeklet = 0, _ekYolda = false;
+async function ekleriGonder() {
+  const simdi = performance.now();
+  if (_ekYolda || simdi < _ekBeklet || !online.roomId) return;
+  const p = game.player, pet = game.pet, tm = timsahDizisi();
+  const anlik = { pet: pet ? pet.tur : "", px: pet ? Math.round(pet.x) : 0, py: pet ? Math.round(pet.y) : 0, gz: p.gizli && !p.dead ? 1 : 0 };
+  const degisen = {};
+  for (const k of Object.keys(anlik)) if (_sonEk[k] !== anlik[k]) degisen[k] = anlik[k];
+  if (_sonEk.tmImza !== tm.imza) degisen.tm = tm.metin;
+  if (!Object.keys(degisen).length) return;
+  _ekYolda = true;
+  try {
+    if (await rtdb.patch(`rooms/${online.roomId}/players/${online.uid}`, degisen)) {
+      Object.assign(_sonEk, degisen);
+      if ("tm" in degisen) _sonEk.tmImza = tm.imza;
+    } else _ekBeklet = performance.now() + 30000;
+  } finally { _ekYolda = false; }
 }
 
 // Host: hayaletler, düşman mermileri ve bölüm bilgisi her seferinde; paralar yalnız değişince
@@ -3941,6 +3985,7 @@ function yenidenDog() {
   game.player.dead = false;
   game.player.hp = game.player.maxHp;
   game.player.invuln = 2;
+  turDirilTeklifi();
   showToast(t("💖 Yeniden doğdun!"));
   audio.heart();
 }
@@ -3984,6 +4029,11 @@ function uzakOyunculariGuncelle(players) {
     rp.maxHp = np.maxHp || 3;
     rp.dead = !!np.dead;
     rp.invisible = !!np.invisible;
+    // 3.15.0: pet, çalıda saklanma ve timsahlar (pet.js, cali.js, timsah.js)
+    rp.gizli = !!np.gz;
+    rp.pet = typeof np.pet === "string" && PETLER[np.pet] ? np.pet : "";
+    if (typeof np.px === "number" && typeof np.py === "number") { rp.petHx = np.px; rp.petHy = np.py; }
+    if (typeof np.tm === "string" && np.tm !== rp.tmMetin) { rp.tmMetin = np.tm; rp.timsahlar = uzakTimsahlariAl(np.tm); }
     if (typeof np.facing === "number") rp.facing = np.facing;
     if (typeof np.x === "number" && typeof np.y === "number" && (np.x !== rp.sx || np.y !== rp.sy || np.walk !== rp.sw)) {
       rp.sx = np.x; rp.sy = np.y; rp.sw = np.walk;
@@ -4420,7 +4470,7 @@ function showShopTab(tab) {
   currentShopTab = tab;
   const buttons = document.querySelectorAll(".tab-btn");
   buttons.forEach((b) => b.classList.remove("active"));
-  const idx = ({ upgrades: 0, costumes: 1, ammo: 2, guns: 3 })[tab] ?? 0;
+  const idx = ({ upgrades: 0, costumes: 1, ammo: 2, guns: 3, pets: 4 })[tab] ?? 0;
   if (buttons[idx]) buttons[idx].classList.add("active");
   refreshShop();
 }
@@ -4578,6 +4628,52 @@ function refreshShop() {
     };
     satir("", t("Normal silah"), t("Karakterin kendi silahı ve mermisi."), charIconUrl(save.selectedChar));
     Object.keys(GUNS).forEach((key) => satir(key, GUNS[key].name, GUNS[key].desc, gunIconUrl(key)));
+  } else if (currentShopTab === "pets") {
+    // Petler (pet.js): biri yanına alınır, oyunda hayaletlere saldırır
+    const header = document.createElement("div");
+    header.className = "upgrade-header";
+    header.innerHTML = t("🐾 <b>Petler</b> — yanında koşar, hayaletlere saldırır");
+    content.appendChild(header);
+    const secili = petSecili();
+    const satir = (key) => {
+      const item = document.createElement("div");
+      item.className = "shop-item";
+      const icon = document.createElement("div");
+      icon.className = "item-icon";
+      if (key) icon.appendChild(petSimgesi(key)); else icon.textContent = "🚫";
+      item.appendChild(icon);
+      const info = document.createElement("div");
+      info.className = "item-info";
+      const pt = PETLER[key];
+      info.innerHTML = key ? `<div class="item-name">${pt.simge} ${pt.ad}</div><div class="item-desc">${pt.desc}</div>`
+        : `<div class="item-name">${t("Petsiz")}</div><div class="item-desc">${t("Yalnız savaş.")}</div>`;
+      item.appendChild(info);
+      const btn = document.createElement("button");
+      if (key && !save.ownedPets[key]) {
+        btn.textContent = `💰 ${pt.cost}`;
+        btn.disabled = save.para < pt.cost;
+        btn.onclick = () => {
+          if (save.para < pt.cost) return;
+          save.para -= pt.cost;
+          save.ownedPets[key] = true;
+          save.pet = key;
+          persistSave();
+          refreshShop();
+          showToast(t("🐾 {ad} artık yanında!", { ad: pt.ad }));
+          audio.buy();
+        };
+      } else if (secili === key) {
+        btn.textContent = t("✓ Yanında");
+        btn.disabled = true;
+      } else {
+        btn.textContent = key ? t("Yanına al") : t("Bırak");
+        btn.onclick = () => { save.pet = key; persistSave(); refreshShop(); if (key) showToast(`${pt.simge} ${pt.ad}`); };
+      }
+      item.appendChild(btn);
+      content.appendChild(item);
+    };
+    satir("");
+    Object.keys(PETLER).forEach(satir);
   } else {
     // Kostümler
     Object.keys(COSTUMES).forEach((charKey) => {
@@ -4875,6 +4971,10 @@ function startGame(secenek) {
   game.turBaslangic = game.level; // Dünya Turu: tamamlanma ödülü bu oyunda geçilen ülkelerden
   game.turOrtadan = game.dunyaTuru && !!secenek.ortadan; // çevrimiçi turda ortadan katılan: tanıtım ve müzik ilk durumla
   game.turBitti = false;
+  game.turDevamKalan = game.dunyaTuru ? TUR_DEVAM_HAKKI : 0; // reklamla devam hakkı (dunya-turu.js)
+  game.devamBekliyor = false;
+  document.getElementById("screen-tur-devam").classList.remove("active");
+  document.getElementById("btn-tur-diril").style.display = "none";
   game._turGeciste = false;
   game._turSonraki = null;
   game._turJeton = null;          // önceki oyunun damga/uçak geçişi bu oyunu ilerletmez
@@ -4923,6 +5023,7 @@ function startGame(secenek) {
   // Oyuncu duvar/su içinde kalmasın
   ensurePlayerSafe();
   spawnBot();
+  petKur(); // yanına alınan pet (pet.js)
   closeInventory();
   refreshInventoryButton();
   // Dünya Turu'nda önce ülkenin tanıtım satırı; bot bildirimi okunabilsin diye sonra gelir
@@ -5170,7 +5271,7 @@ function update(dt, now) {
   if (kb) { dirX = kb.x; dirY = kb.y; }
   if (game.menude) { dirX = 0; dirY = 0; } // çevrimiçi menü açıkken oyun sürer, oyuncu durur
   const mag = Math.hypot(dirX, dirY);
-  const playerFrozen = (game.player.frozenUntil || 0) > now;
+  const playerFrozen = (game.player.frozenUntil || 0) > now || !!game.player.dusus; // dusus: köprüden suya düştü (kopru.js)
   const isSpectator = !!game.player.dead;
   let movedThisFrame = false;
   if (mag > 0.15 && (isSpectator || !playerFrozen)) {
@@ -5191,8 +5292,9 @@ function update(dt, now) {
       const nx = game.player.x + mx * game.player.speed * speedMul * dt;
       const ny = game.player.y + my * game.player.speed * speedMul * dt;
       const waterBlock = !game.player.waterImmune;
-      const engel = (x, y, r) => collidesWalls(x, y, r) || (waterBlock && collidesWaters(x, y, r));
-      const mesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), waterBlock ? engelMesafesi(game.waters, x, y, r) : Infinity);
+      // Köprünün şeridinde su engel değil (kopru.js)
+      const engel = (x, y, r) => collidesWalls(x, y, r) || (waterBlock && kopruluSuCarpar(x, y, r));
+      const mesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), waterBlock ? kopruluSuMesafesi(x, y, r) : Infinity);
       if (kayarakYuru(game.player, nx - game.player.x, ny - game.player.y, engel, mesafe)) movedThisFrame = true;
     }
   }
@@ -5219,6 +5321,9 @@ function update(dt, now) {
     damagePlayer();
     showFloat(t("🔥 Lav!"), game.player.x, game.player.y - 30);
   }
+  kopruGuncelle(dt, movedThisFrame);
+  caliGuncelle(dt); // çalıda saklanma (cali.js) // sallanan ip köprü: suyun üstünde oyalanan düşer (kopru.js)
+  timsahGuncelle(dt); // sudan çıkan timsahlar: kıyıda duranı bazen ısırır (timsah.js)
 
   // ========== HOST-ONLY blok (spawn, AI, transition, AOE güç efektleri) ==========
   // Client modunda bu blok atlanır — state host'tan snapshot olarak gelir
@@ -5265,7 +5370,7 @@ function update(dt, now) {
   // Hayaletler hareket eder (duvardan dolaşma mantığı ile)
   const power = getActivePower();
   const ghostMode = power && power.type === "kent"; // Kenit: hayaletler hasar veremez
-  const playerInvisible = (game.player.invisibleUntil || 0) > now;
+  const playerInvisible = (game.player.invisibleUntil || 0) > now || !!game.player.gizli; // gizli: çalıda (cali.js)
   const playerKasirga   = (game.player.kasirgaUntil   || 0) > now;
   // Boss minion durumu: kalan boss minion sayısı bir kere hesapla
   const bossMinionsAlive = game.ghosts.some(o => o.fromBoss);
@@ -5274,7 +5379,7 @@ function update(dt, now) {
   if (!game.player.dead && !playerInvisible) hedefler.push({ x: game.player.x, y: game.player.y, ben: true });
   if (online.mode === "host") {
     for (const rp of Object.values(online.remotePlayers)) {
-      if (rp && !rp.dead && !rp.invisible && Number.isFinite(rp.x) && Number.isFinite(rp.y)) hedefler.push({ x: rp.x, y: rp.y, ben: false });
+      if (rp && !rp.dead && !rp.invisible && !rp.gizli && Number.isFinite(rp.x) && Number.isFinite(rp.y)) hedefler.push({ x: rp.x, y: rp.y, ben: false });
     }
   }
 
@@ -5569,8 +5674,10 @@ function update(dt, now) {
   if (firePower && firePower.type === "ponko") fireDelay = fireDelay / 3;
   if (GUNS[game.player.gun]) fireDelay *= GUNS[game.player.gun].delayMul;
   updateBot(dt, now);
+  petGuncelle(dt, now); // pet: oyuncuyu izler, yakındaki hayalete saldırır (pet.js)
+  if (online.mode) uzakPetleriGuncelle(dt);
   if (keys["b"] && game.bot) game.player.botTargetUntil = now + 300; // klavye: B'ye basılıyken Bot'a ateş
-  let fireTarget = (!game.player.dead) ? nearestGhost(game.player.range) : null;
+  let fireTarget = (!game.player.dead && !game.player.gizli) ? nearestGhost(game.player.range) : null; // çalıda ateş yok
   const bot = game.bot;
   if (bot && !game.player.dead && game.player.botTargetUntil > now &&
       Math.hypot(bot.x - game.player.x, bot.y - game.player.y) < game.player.range * 1.5) {
@@ -5757,6 +5864,7 @@ function nextLevel() {
   buildHazards();
   ensurePlayerSafe();
   spawnBot();
+  petKur(); // yanına alınan pet (pet.js)
   if (online.mode) yenidenDog();
   showToast(bolumBildirimi());
   // Boss bölüm seviyesine göre belli bir süre sonra
@@ -5793,7 +5901,7 @@ function spawnBoss() {
   for (let attempts = 0; attempts < 30; attempts++) {
     const tx = 120 + Math.random() * (game.worldW - 240);
     const ty = 120 + Math.random() * (game.worldH - 240);
-    if (Math.hypot(tx - game.player.x, ty - game.player.y) < 380) continue;
+    if (oyunculardanUzaklik(tx, ty) < 380) continue;
     if (collidesWalls(tx, ty, 60)) continue;
     if (collidesWaters(tx, ty, 60)) continue;
     x = tx; y = ty; placed = true; break;
@@ -5840,16 +5948,36 @@ function spawnBossMinion(boss) {
   });
 }
 
-function spawnGhost() {
-  const side = Math.floor(Math.random() * 4);
-  let x, y;
-  const margin = 60;
-  if (side === 0) { x = margin; y = margin + Math.random() * (game.worldH - margin * 2); }
-  else if (side === 1) { x = game.worldW - margin; y = margin + Math.random() * (game.worldH - margin * 2); }
-  else if (side === 2) { x = margin + Math.random() * (game.worldW - margin * 2); y = margin; }
-  else { x = margin + Math.random() * (game.worldW - margin * 2); y = game.worldH - margin; }
+// Hayalet oyuncunun dibinde doğmasın (3.15.0, kullanıcı: "hayaletler üzerimize doğuyor, bir anda can gidiyor"):
+// doğduğu yer bütün canlı oyunculara (çevrimiçinde kurucu öbürlerini de bilir) en az bu kadar uzak
+const HAYALET_DOGUM_UZAKLIK = 320;
+function oyunculardanUzaklik(x, y) {
+  let m = Infinity;
+  if (game.player && !game.player.dead) m = Math.hypot(x - game.player.x, y - game.player.y);
+  if (online.mode === "host") {
+    for (const rp of Object.values(online.remotePlayers)) {
+      if (rp && !rp.dead && Number.isFinite(rp.x) && Number.isFinite(rp.y)) m = Math.min(m, Math.hypot(x - rp.x, y - rp.y));
+    }
+  }
+  return m;
+}
 
-  // Duvarın içinde doğmasın: en yakın boş noktaya al
+function spawnGhost() {
+  // Haritanın kenarlarından rastgele yerler denenir; oyunculara yeterince uzak ilk yer, yoksa en uzağı
+  const margin = 60;
+  let x = 0, y = 0, enIyi = -1;
+  for (let deneme = 0; deneme < 16; deneme++) {
+    const side = Math.floor(Math.random() * 4);
+    let ax, ay;
+    if (side === 0) { ax = margin; ay = margin + Math.random() * (game.worldH - margin * 2); }
+    else if (side === 1) { ax = game.worldW - margin; ay = margin + Math.random() * (game.worldH - margin * 2); }
+    else if (side === 2) { ax = margin + Math.random() * (game.worldW - margin * 2); ay = margin; }
+    else { ax = margin + Math.random() * (game.worldW - margin * 2); ay = game.worldH - margin; }
+    const d = oyunculardanUzaklik(ax, ay);
+    if (d > enIyi) { enIyi = d; x = ax; y = ay; }
+    if (d >= HAYALET_DOGUM_UZAKLIK) break;
+  }
+  // Duvarın içinde doğmasın: en yakın boş noktaya al (yalnız seçilen yer için; her denemede aramak kare hızını düşürür)
   ({ x, y } = freeSpot(x, y, 24));
 
   const tier = 1 + Math.floor(game.level / 3);
@@ -6274,7 +6402,7 @@ function drawBot(ctx, b) {
 }
 
 function damagePlayer() {
-  if (game.player.dead) return;
+  if (game.player.dead || game.devamBekliyor) return;
   game.player.hp--;
   game.player.invuln = 1.2;
   audio.damage();
@@ -6282,7 +6410,7 @@ function damagePlayer() {
   if (game.player.hp <= 0) {
     if (online.mode) {
       becomeSpectator();
-    } else {
+    } else if (!turDevamTeklifi()) { // Dünya Turu: "Reklam izle, devam et" (dunya-turu.js)
       endGame(false);
     }
   }
@@ -6294,6 +6422,7 @@ function becomeSpectator() {
   game.player.invuln = 999999; // hasar almasın
   showToast(t("👻 Hayalet oldun! Takımın bölümü bitirince yeniden doğarsın."));
   audio.damage();
+  turDirilTeklifi(); // Dünya Turu: "Reklam izle, diril" (dunya-turu.js)
 }
 
 function collidesWalls(x, y, r) {
@@ -6329,6 +6458,9 @@ function render() {
 
   // Engeller: su, diken, lav, duvar ve objeler — eğri hatlı, temaya özel, önbellekli (engeller.js)
   engelleriCiz(ctx);
+  koprulerCiz(ctx);   // sallanan ip köprüler (kopru.js)
+  timsahlariCiz(ctx); // sudaki timsahlar (timsah.js)
+  calilariCiz(ctx);   // saklanma çalıları (cali.js)
 
   // Toplanabilirler
   for (const p of game.pickups) drawPickup(ctx, p);
@@ -6356,6 +6488,7 @@ function render() {
     Object.keys(rps).forEach((uid) => {
       const rp = rps[uid];
       if (!rp || !Number.isFinite(rp.x) || !Number.isFinite(rp.y)) return;
+      if (rp.gizli && !rp.dead) { caliGozleri(ctx, rp.x, rp.y, performance.now() / 1000); return; } // çalıda saklanıyor
       if (rp.dead) {
         hayaletOyuncuCiz(ctx, rp.charKey || "kinkin", rp.costumeIdx || 0, rp.x, rp.y, 0.45); // mavi hayalet
       } else {
@@ -6389,10 +6522,19 @@ function render() {
   }
 
   if (game.bot) drawBot(ctx, game.bot);
+  petCiz(ctx, false); // kedi, köpek (pet.js)
+  uzakPetleriCiz(ctx, false); // çevrimiçi: öbür oyuncuların petleri
 
   // Oyuncu (yanıp sönme efekti yaralandığında, görünmez iken yarı saydam, ölü iken hayalet)
   const blink = !game.player.dead && game.player.invuln > 0 && Math.floor(game.player.invuln * 10) % 2 === 0;
-  if (!blink) {
+  const batma = kopruBatma(); // köprüden suya düşen: belinden aşağısı suda (kopru.js)
+  if (batma) {
+    ctx.save();
+    ctx.beginPath(); ctx.rect(game.player.x - 90, game.player.y - 160, 180, 168); ctx.clip();
+    ctx.translate(0, batma);
+  }
+  if (game.player.gizli && !game.player.dead) gizliCiz(ctx); // çalıda yalnız gözler (cali.js)
+  else if (!blink) {
     const isInvisible = (game.player.invisibleUntil || 0) > performance.now();
     const wp = game.player.walkTimer || 0;
     // Spectator iken silah indirilmiş kalsın
@@ -6409,6 +6551,10 @@ function render() {
       drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun);
     }
   }
+  if (batma) ctx.restore();
+  dususCiz(ctx);
+  petCiz(ctx, true); // kuş oyuncunun üstünde uçar (pet.js)
+  uzakPetleriCiz(ctx, true);
 
   // Parçacıklar
   for (const p of game.particles) {
@@ -6513,6 +6659,7 @@ function quitToMenu() {
   game.menude = false;
   turPerdeleriniKapat();
   turMuzigiSondur();
+  turDevamKapat();
   document.getElementById("screen-pause").classList.remove("active");
   document.getElementById("screen-gameover").classList.remove("active");
   const wb = document.getElementById("weapon-bar");

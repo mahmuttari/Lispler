@@ -44,8 +44,8 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 
 ## Sürüm notu
 
-🌍 World Tour: the 50 most populous countries plus Palestine, each with its own sights and a boss in traditional dress.
-🛂 Clear a country to stamp your passport; tour together with friends.
-🎵 Intro and background music from each country's own culture; new Music slider in Sound Settings.
-✈️ Stamps and the plane ride now also show when playing with friends.
-🛠️ Fixed the crackling sound on the room host; music and country-transition fixes; the end-of-game ad no longer covers a new game.
+🎬 Out of lives on the World Tour? Watch an ad and carry on where you left off (3 times per game).
+🐊 Crocodiles now lurk in the water: linger on the shore and they may bite!
+🌉 Swaying rope bridges over the lakes: cross quickly, linger in the middle and you'll fall in!
+🐾 Pets are here: take a cat, dog or bird along and fight ghosts together!
+🌿 Hide in bushes where ghosts can't see you; ghosts no longer spawn right next to you.

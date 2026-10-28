@@ -46,6 +46,11 @@
             "invisible":  { ".validate": "newData.isNumber()" },
             "dead":       { ".validate": "newData.isNumber()" },
             "av":         { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100000" },
+            "pet":        { ".validate": "newData.isString() && newData.val().length <= 10" },
+            "px":         { ".validate": "newData.isNumber()" },
+            "py":         { ".validate": "newData.isNumber()" },
+            "gz":         { ".validate": "newData.isNumber()" },
+            "tm":         { ".validate": "newData.isString() && newData.val().length <= 200" },
             "$other":     { ".validate": false }
           }
         },

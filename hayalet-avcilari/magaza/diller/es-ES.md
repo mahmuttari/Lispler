@@ -44,8 +44,8 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 ## Sürüm notu
 
-🌍 Gira mundial: los 50 países más poblados y Palestina, cada uno con sus paisajes y un jefe con traje tradicional.
-🛂 Supera un país y sella tu pasaporte; viaja junto a tus amigos.
-🎵 Música de entrada y de fondo de la cultura de cada país; nuevo control de Música en Ajustes de sonido.
-✈️ El sello y el viaje en avión también aparecen al jugar con amigos.
-🛠️ Sin chisporroteo en el anfitrión; correcciones de música y de cambio de país; el anuncio final ya no tapa la nueva partida.
+🎬 ¿Sin vidas en la Gira mundial? Mira un anuncio y sigue donde lo dejaste (3 veces por partida).
+🐊 Ahora hay cocodrilos en el agua: ¡si te quedas en la orilla, pueden morderte!
+🌉 Puentes de cuerda colgantes sobre los lagos: cruza rápido, ¡si te entretienes en medio, te caes al agua!
+🐾 ¡Llegan las mascotas: lleva un gato, un perro o un pájaro y atacad juntos a los fantasmas!
+🌿 Escóndete en los arbustos: los fantasmas no te ven; ya no aparecen a tu lado.

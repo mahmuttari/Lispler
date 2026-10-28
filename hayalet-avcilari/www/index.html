@@ -131,6 +131,7 @@
       <button class="tab-btn" onclick="showShopTab('costumes')">👗 Kostümler</button>
       <button class="tab-btn" onclick="showShopTab('ammo')">🎯 Cephane</button>
       <button class="tab-btn" onclick="showShopTab('guns')">🔫 Silahlar</button>
+      <button class="tab-btn" onclick="showShopTab('pets')">🐾 Petler</button>
     </div>
     <div id="shop-content" class="shop-content"></div>
     <button class="btn" onclick="goToMenu()">⬅ Geri</button>
@@ -159,6 +160,9 @@
 
   <button class="pause-btn" onclick="pauseGame()">⏸</button>
 
+  <!-- Çevrimiçi Dünya Turu: hayalet olan oyuncu reklam izleyip dirilir (dunya-turu.js › turDirilTeklifi) -->
+  <button id="btn-tur-diril" class="btn btn-play diril-btn" style="display:none" onclick="turDirilIzle()">🎬 Reklam izle, diril</button>
+
   <!-- Aktif güç barı -->
   <div id="power-bar" class="power-bar"></div>
 
@@ -185,6 +189,16 @@
     <button id="pause-davet" class="btn" style="display:none" onclick="openInviteModal()">📨 Davet et</button>
     <button class="btn" onclick="openSoundSettings()">🎚 Ses Ayarları</button>
     <button class="btn" onclick="quitToMenu()">🏠 Menüye Dön</button>
+  </div>
+</div>
+
+<!-- ========== DÜNYA TURU: REKLAMLA DEVAM (dunya-turu.js; oyun başına en çok 3 kez) ========== -->
+<div id="screen-tur-devam" class="screen modal">
+  <div class="modal-content">
+    <h2>💔 Canların bitti!</h2>
+    <p id="tur-devam-kalan" class="online-sub"></p>
+    <button id="btn-tur-devam" class="btn btn-big btn-play" onclick="turDevamIzle()">🎬 Reklam izle, devam et</button>
+    <button class="btn" onclick="turDevamVazgec()">🏁 Oyunu bitir</button>
   </div>
 </div>
 
@@ -509,6 +523,10 @@
 <script src="playgames.js"></script>
 <script src="engeller.js"></script>
 <script src="engel-temalari.js"></script>
+<script src="timsah.js"></script>
+<script src="kopru.js"></script>
+<script src="cali.js"></script>
+<script src="pet.js"></script>
 <script src="ulke-aileleri.js"></script>
 <script src="ulke-objeleri-avrupa.js"></script>
 <script src="ulke-objeleri-afrika.js"></script>

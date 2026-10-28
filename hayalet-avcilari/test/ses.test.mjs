@@ -1,8 +1,9 @@
-// Hayalet Avcıları: çevrimiçi oyunda ses (3.14.1) — çevrimdışı sınama.
+// Hayalet Avcıları: ses (3.14.1, 3.14.2) — çevrimdışı sınama.
 // Oda kurucusunda cızırtı vardı: kurucu öteki oyuncuların her vuruşu için de 220 Hz kare dalga çalıyordu (6 kişilik
 // Kenya odasında saniyede ~25 ses; istemcilerin olayları ~100 ms'lik paketlerle geldiği için 2–3'ü aynı anda başlayıp
 // genlikçe toplanıyordu). İstemci yalnız kendi vuruşunu duyar; kurucu da öteki oyuncuların vuruşlarını sessiz uygular.
-// Ölçüm yöntemi README › 3.14.1. Uçtan uca 6 kişilik ölçüm: alti.test.mjs.
+// 3.14.2: cızırtı tek oyunculu oyunda da duyuldu (kurucu gibi bütün benzetimi yürüten cihaz); ses bağlamı Android'de
+// 20 ms'lik tamponla ("balanced") kurulur. Ölçümler README › 3.14.1 ve 3.14.2. Uçtan uca 6 kişilik ölçüm: alti.test.mjs.
 // Çalıştırma: node hayalet-avcilari/test/ses.test.mjs   (Playwright + Chromium; ağ ve Firebase gerekmez)
 import http from 'node:http';
 import fs from 'node:fs';
@@ -31,7 +32,11 @@ const hatalar = [];
 try {
   const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
   p.on('pageerror', (e) => hatalar.push(e.message));
-  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+  await p.addInitScript(() => {
+    localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9');
+    const Asil = window.AudioContext;
+    window.AudioContext = class extends Asil { constructor(o) { super(o); window.__sesSecenek = o === undefined ? 'yok' : o; } };
+  });
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForTimeout(300);
@@ -41,6 +46,12 @@ try {
     save.playerName = 'Kiki'; persistSave(); audio.init();
     online.mode = 'host'; online.uid = 'ben';
     startGame(); game.player.invuln = 1e9; game.player.range = 0;
+  });
+  // 3.14.2: Android'de varsayılan "interactive" tampon donanımınki kadardır (Chromium media/base/audio_latency.cc,
+  // GetInteractiveBufferSize: ör. 192 kare ≈ 4 ms); "balanced" 20 ms (GetRtcBufferSize: 2 × 10 ms)
+  const secenek = await p.evaluate(() => window.__sesSecenek);
+  sina('ses bağlamı "balanced" gecikme ipucuyla kurulur (Android\'de 20 ms tampon)', () => {
+    assert.deepEqual(secenek, { latencyHint: 'balanced' }, JSON.stringify(secenek));
   });
   await p.waitForFunction(() => game.ghosts.some((g) => !g.isBoss), null, { timeout: 15000 });
   const sonuc = await p.evaluate(() => {

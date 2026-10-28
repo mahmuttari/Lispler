@@ -7,14 +7,14 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.14.1 (versionCode 48) — son inceleme ve sınama düzeltmeleri (aşağıda "3.14.1: düzeltmeler"); 25 Ekim 2026'da kullanıcının onayıyla ("gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40218892928; 3.14.0 (47)'nin yerini aldı). Önceki: 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
+| Sürüm | 3.15.0 (versionCode 50; 49 3.14.2'de kullanıldı, 3.14.2'nin ses tamponu düzeltmesini de taşır); 28 Ekim 2026'da kullanıcının onayıyla ("Olur onaylıyorum gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40743241084; AAB koşu 40742598740, commit 1a6f2fd); 3.15.0 kuralları aynı gün yayınlandı (koşu 40742252252) — Dünya Turu'nda reklamla devam, sudaki timsahlar, sallanan ip köprüler, petler, çalıda saklanma ve bunların çevrimiçi oyunu (aşağıda "3.15.0: reklamla devam", "3.15.0: timsahlar", "3.15.0: ip köprüler", "3.15.0: petler", "3.15.0: çalı, hayaletin doğduğu yer, çevrimiçi"); 27 Ekim 2026, henüz Play'e gönderilmedi. Önceki: 3.14.1 (versionCode 48) — son inceleme ve sınama düzeltmeleri (aşağıda "3.14.1: düzeltmeler"); 25 Ekim 2026'da kullanıcının onayıyla ("gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40218892928; 3.14.0 (47)'nin yerini aldı). Önceki: 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
 | Firebase kuralları | [`firebase/`](firebase/README.md) — RTDB + Firestore kuralları, yol yol gerekçe, emülatör testi. 3.10.2'den beri Firebase anonim giriş: oda, kodlu yedek ve skor `auth.uid`'e bağlı. 3.10.3 geçişi kapatır (girişsiz ve `u_` kimlikli yazım reddedilir) |
 | Reklam | AdMob, yalnız Android uygulaması — aşağıda "Reklamlar (AdMob)" |
 | Play Games | Play Oyun Hizmetleri v2 (3.10.4), yalnız Android — aşağıda "Google Play Oyun Hizmetleri" |
-| Play paketi | 3.10.1'den itibaren CI (`hayalet-android.yml`) derler; `dist/HayaletAvcilari-play.aab` 3.10.0 (36) olarak kaldı. Geçişi kapatan kurallar 20 Ekim 2026'da yayınlandı ([`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama)); 3.12.0 (42; çevrimiçi oyun yenilendi) 22 Ekim 2026'da kullanıcının isteğiyle ("Derle ve yayınla") `claude/beautiful-feynman-pxwdju` dalından derlendi (koşu 39836917452, Poyraz Workshop yükleme anahtarı) ve Play'e gönderildi (koşu 39837609373); 3.12.1 (43; biri ölünce donma düzeltmesi) 23 Ekim 2026'da aynı daldan derlendi (koşu 39944259051) ve incelemedeki 3.12.0'ın yerine Play'e gönderildi (koşu 39960541073); 3.12.2 (44; 6 kişilik oda) aynı gün aynı daldan derlendi (koşu 39971239015) ve incelemedeki 3.12.1'in yerine Play'e gönderildi (koşu 39975579074); 3.13.0 (45; arkadaşlar, engeller, tur sıralaması) aynı daldan son inceleme düzeltmeleriyle derlendi (koşu 40040731793, commit 950117c) ve 24 Ekim 2026'da 3.12.2'nin yerine Play'e gönderildi (koşu 40063254710); 3.14.0 (47; Dünya Turu, ülke müzikleri, reklam sıklığı ve içerik sınırı) aynı daldan son inceleme düzeltmeleriyle derlendi (koşu 40122349542, commit 20fbc66) ve aynı gün 3.13.0'ın yerine Play'e gönderildi (koşu 40122638806); 3.14.1 (48; son inceleme düzeltmeleri, oda kurucusundaki cızırtı) aynı daldan derlendi (koşu 40217723472, commit 84f7176) ve 25 Ekim 2026'da 3.14.0'ın yerine Play'e gönderildi (koşu 40218892928) |
+| Play paketi | 3.10.1'den itibaren CI (`hayalet-android.yml`) derler; `dist/HayaletAvcilari-play.aab` 3.10.0 (36) olarak kaldı. Geçişi kapatan kurallar 20 Ekim 2026'da yayınlandı ([`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama)); 3.12.0 (42; çevrimiçi oyun yenilendi) 22 Ekim 2026'da kullanıcının isteğiyle ("Derle ve yayınla") `claude/beautiful-feynman-pxwdju` dalından derlendi (koşu 39836917452, Poyraz Workshop yükleme anahtarı) ve Play'e gönderildi (koşu 39837609373); 3.12.1 (43; biri ölünce donma düzeltmesi) 23 Ekim 2026'da aynı daldan derlendi (koşu 39944259051) ve incelemedeki 3.12.0'ın yerine Play'e gönderildi (koşu 39960541073); 3.12.2 (44; 6 kişilik oda) aynı gün aynı daldan derlendi (koşu 39971239015) ve incelemedeki 3.12.1'in yerine Play'e gönderildi (koşu 39975579074); 3.13.0 (45; arkadaşlar, engeller, tur sıralaması) aynı daldan son inceleme düzeltmeleriyle derlendi (koşu 40040731793, commit 950117c) ve 24 Ekim 2026'da 3.12.2'nin yerine Play'e gönderildi (koşu 40063254710); 3.14.0 (47; Dünya Turu, ülke müzikleri, reklam sıklığı ve içerik sınırı) aynı daldan son inceleme düzeltmeleriyle derlendi (koşu 40122349542, commit 20fbc66) ve aynı gün 3.13.0'ın yerine Play'e gönderildi (koşu 40122638806); 3.14.1 (48; son inceleme düzeltmeleri, oda kurucusundaki cızırtı) aynı daldan derlendi (koşu 40217723472, commit 84f7176) ve 25 Ekim 2026'da 3.14.0'ın yerine Play'e gönderildi (koşu 40218892928); 3.14.2 (49; ses tamponu) aynı daldan derlendi (koşu 40277139526, commit 0a456dd) ve 26 Ekim 2026'da 3.14.1'in yerine Play'e gönderildi (koşu 40277498947) |
 | Denemelik APK | `dist/HayaletAvcilari.apk` (aynı anahtarla imzalı; Play sürümü üstüne kurulmaz, önce kaldırılır) |
 
 ## Reklamlar (AdMob)
@@ -26,7 +26,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | Uygulama kimliği | `ca-app-pub-2417242373034448~4177766696` (`AndroidManifest.xml` › `APPLICATION_ID`) |
 | Geçiş ("Oyun bitti gecis") | `ca-app-pub-2417242373034448/5331066264` — yalnız tek kişilik oyunun bitti ekranında, aşağıdaki "Sıklık" kurallarıyla |
 | Sıklık (3.14.0) | Kullanıcının isteği: *"Hiç sıkmayacak şekilde yapalım."* Geçiş reklamı oyun sırasında, çevrimiçi turdan sonra ve sevinç anında (yeni en yüksek bölüm, dünya turu bitişi) yok. Yeni oyuncuya ilk 5 oyun ve ilk 10 dk oyun süresi boyunca yok. 45 sn'den kısa oyundan sonra yok. İki reklam arası en az 6 dk **oyun** süresi (menüde beklemek sayılmaz); saatte en çok 4. Ödüllü reklamı izleyenin sayacı sıfırlanır. Sayaçlar `save.reklam`'da kalıcıdır (`reklam.js` › `gecisUygunMu`, `test/reklam.test.mjs`). Dayanak: AdMob geçiş reklamını doğal duraklarda ve aşırı sıklık olmadan önerir, sayı vermez ([AdMob: interstitial](https://developers.google.cn/admob/cpp/interstitial?hl=en), [AdMob yardım](https://support.google.com/admob/answer/7311435/)) |
-| Ödüllü ("Zumrut odullu") | `ca-app-pub-2417242373034448/6612358344` — oyun bitti ekranında "🎬 Reklam izle: +10 💚", oyun başına bir kez |
+| Ödüllü ("Zumrut odullu") | `ca-app-pub-2417242373034448/6612358344` — oyun bitti ekranında "🎬 Reklam izle: +10 💚", oyun başına bir kez; 3.15.0'dan beri Dünya Turu'nda "🎬 Reklam izle, devam et" de bu birimle (oyun başına en çok 3) |
 | AB onayı | AdMob › Gizlilik ve mesajlaşma › "Hayalet Avcıları AB tüzüğü mesajı" (en + tr + es); gerektiğinde menüde 🔒 Gizlilik |
 | İçerik derecesi | En çok **G** (genel izleyici): `initialize({ maxAdContentRating: "General" })`, 3.13.1'den beri — aşağıda "3.13.1: reklam içerik sınırı" |
 
@@ -400,6 +400,130 @@ Test: `test/reklam.test.mjs` (sahte AdMob eklentisi, 5 sınama: initialize bir k
 initialize'dan sonra, geçiş ve ödüllü reklam yine yüklenir, sayfa hatası yok); düzeltmeden önce derece sınaması düştü.
 Sürüm notu: 3.13.0 incelemedeyken gönderilebileceği için 3.13.0'ın satırlarını da taşır; mağaza notu İspanyolcada 500'ü
 aşmasın diye 👥 (3.12.2) satırı çıktı (tr 450, en 453, es 490, zh 179, hi 454, ar 404).
+
+## 3.15.0: çalı, hayaletin doğduğu yer, çevrimiçi
+
+Kullanıcının istekleri (28 Ekim 2026): *"Saklanma yeri"* (seçenekler sunuldu, "Çalı" seçildi), *"Hayaletler üzerimize
+doğuyor bir anda can gidiyor, hayalet belli bir mesafede doğabilsin"*, *"Timsahlar boşa da ısırık atsın"* ("isteğe
+bağlı" = rastgele), *"Online oyunda da çalışsın"* (petler görünsün, saklanma yeri, reklamla devam, timsah ve köprü ortak).
+
+- **Çalı** (`www/cali.js`, `test/cali.test.mjs`): her bölümde 3 çalı, yerleri bölüm tohumundan; duvar, su, lav, köprü ve
+  başka çalıya değmez. İçine giren saklanır ("🌿 Saklandın!"): hayaletler onu kovalamaz, değse de mermisi çarpsa da can
+  gitmez (görünmez gücüyle aynı yol), o da ateş etmez. En çok 5 sn; sonra 8 sn çalılar saklamaz. Erken çıkan saklandığı
+  sürenin oranında bekler (1 sn → 1,6 sn): girip çıkarak sınırsız saklanılmaz. Çalıda yalnız gözleri ve kalan süre
+  halkası görünür.
+- **Hayaletin doğduğu yer** (`spawnGhost`, `HAYALET_DOGUM_UZAKLIK`): kenarda 16 yer denenir; bütün canlı oyunculara (kurucu
+  öbürlerini de bilir) en az 320 px uzak ilk yer, yoksa en uzağı. Boss da bütün oyunculardan 380 px uzakta doğar.
+  Denemelerde `freeSpot` yalnız seçilen yere uygulanır (her denemede aramak altı kişilik odada kare hızını düşürdü).
+- **Boşa ısırık** (`timsah.js`): süs timsahı %45 olasılıkla gözlerden sonra ağzını açıp kapatır; kimseye zarar vermez.
+- **Çevrimiçi** (`test/cevrimici-ek.test.mjs`, emülatörde 9/9): oyuncu kaydına ayrı bir yazımla `pet`, `px`, `py`
+  (pet türü ve konumu), `gz` (çalıda saklanıyor) ve `tm` (timsahlarım, kısa metin) gider (`ekleriGonder`). Kural
+  yayınlanmamış bir veritabanı bu yazımı reddederse konum yazımı etkilenmez, 30 sn denenmez.
+  - Öbür oyuncuların petleri görünür (`uzakPetleriCiz`), saklanan oyuncu çalıda göz olarak görünür ve kurucunun
+    hayaletleri onu kovalamaz.
+  - Timsahlar ortak: her oyuncunun timsahı herkeste görünür, ısırık yalnız kendi oyuncusuna. Süs ve boşa ısırık yalnız
+    kurucuda doğar (kendinin ve öbürlerinin yakınındaki göllerde). Köprüler zaten herkeste aynı (bölüm tohumu).
+  - Dünya Turu odasında hayalet olan oyuncuda "🎬 Reklam izle, diril (n/3)" düğmesi; ödülde en yakın boş noktada canları
+    dolu dirilir, aynı 3 hak.
+- **Firebase kuralları**: `players/$uid` altına `pet` (≤ 10 harf), `px`, `py`, `gz` (sayı), `tm` (≤ 200 harf) eklendi
+  (`firebase/database.rules.json`, `kurallar.test` 32/32). Yalnız ekleme; eski sürümleri etkilemez. **Yayınlanması
+  gerekir** (`firebase/yayin-istek.txt` › `yayinla`); yayınlanmadan 3.15.0'ın çevrimiçi ekleri görünmez, oyun çalışır.
+
+## 3.15.0: petler
+
+Kullanıcının isteği (28 Ekim 2026): *"Saldırabilen pet ekleyelim karakterlerin yanına kedi köpek kuş gibi."* Kod
+`www/pet.js`, sınama `test/pet.test.mjs`; tanımlar `PETLER` nesnesinde.
+
+| Pet | Fiyat | Saldırı | Özelliği |
+|---|---|---|---|
+| 🐱 Kedi | 💰 300 | 1 hasar, 0,55 sn'de bir | çevik (oyuncu hızının 1,15 katı) |
+| 🐶 Köpek | 💰 600 | 2 hasar, 1 sn'de bir | hayaleti 0,6 sn sersemletir |
+| 🐦 Kuş | 💰 900 | 1 hasar, 0,7 sn'de bir | uçar: duvar ve su engel değil |
+
+- Mağaza › 🐾 Petler: alınan pet hemen yanına alınır; "Yanına al" / "Bırak" ile değiştirilir (`save.ownedPets`,
+  `save.pet`). Aynı anda bir pet.
+- Pet oyuncunun baktığı yönün 56 px gerisinden izler. Oyuncuya 260 px'ten yakın bir hayalet varsa ona koşar ve saldırır.
+  Hasar her 6 bölümde +1 artar. 650 px'ten uzakta kalan ya da 2 sn takılan pet oyuncunun yanına ışınlanır.
+- Hayaletler petlere zarar vermez, petler ölmez. Her bölümde pet oyuncunun yanında başlar (Bot gibi).
+- Çevrimiçinde de her oyuncunun peti kendi cihazında koşar; vuruşu mermi gibi kurucuya gider (`uzaktanVur`). Başka
+  oyuncuların peti görünmez (konumu odaya yazılmaz). Köpeğin sersemletmesi istemcide yok (hayaletin durumu kurucuda).
+- Sürüm notu ve mağaza notu: 500 karakter sınırı için 3.15.0 notundan Dünya Turu satırı da çıktı; notta yalnız 3.15.0'ın
+  dört yeniliği var.
+
+## 3.15.0: ip köprüler
+
+Kullanıcı dört seçenekten (Tarzan ipi, salıncak, sallanan ip köprü, sarmaşık) "Sallanan ip köprü"yü seçti (28 Ekim 2026).
+Kod `www/kopru.js`, sınama `test/kopru.test.mjs`; ayarlar `KOPRU` nesnesinde.
+
+- Her bölümde en çok 2 köprü; göl ve yön bölüm tohumundan seçilir (çevrimiçinde herkeste aynı; 20 bölümün en az 16'sında
+  köprü var). Köprü gölün ortasından geçer, iki ucu kıyıdan 30 px dışarıda karadadır; uçlar duvar, diken, lav ve başka
+  göle değmez.
+- Köprünün şeridinde (orta çizgiye 18 px'ten yakın) su engel sayılmaz, yürüyerek karşıya geçilir; şeritten çıkan suya
+  takılır. Köprü hep hafifçe sallanır, üstünde duranın altında daha çok.
+- Suyun üstünde hareketsiz kalan sayaç biriktirir (yürümek eritir): 1 sn'de "🌉 Köprü sallanıyor!", 2 sn'de "💦 Suya
+  düştün!". Yandan bir timsah çıkar; oyuncu 1,6 sn suda çırpınır (yürüyemez, belinden aşağısı suda çizilir), timsah
+  1,25 sn'de ısırır (1 can), sonra oyuncu en yakın köprü ucuna çıkar. Beri çırpınmaz, yüzüp kaçabilir.
+- Köprüdeki ve köprü ucundaki oyuncuya kıyı timsahı saldırmaz: köprüde kural düşmedir.
+- Mağaza notu 500 karakteri aşmasın diye 3.15.0 notundan Dünya Turu'nun 🛂 ve 🎵 satırları çıktı.
+
+## 3.15.0: timsahlar
+
+Kullanıcının isteği (28 Ekim 2026): *"Sulardan timsah çıksın suyun yanında duranı bazen ısırsın."* Kod `www/timsah.js`,
+sınama `test/timsah.test.mjs`; ayarlar `TIMSAH` nesnesinde.
+
+- Kıyıda (oyuncunun kenarı ile su arası 60 px'ten az) 1,2 sn duran oyuncuya saniyede %50 olasılıkla en yakın kıyıda bir
+  timsah çıkar. Önce 0,9 sn kabarcık ve sarı gözler (kaçma payı), sonra 0,35 sn ağzı açık atılış ve ısırık: oyuncu hâlâ
+  96 px içindeyse 1 can gider ("🐊 Timsah ısırdı!"), sonra batar. İki saldırı arası en az 5 sn.
+- Hayalet olan (çevrimiçi ölen), görünmez ya da hasar korumasındaki oyuncuyu ısırmaz; "Reklam izle, devam et" penceresi
+  açıkken saldırmaz. Suyun içinden geçen Beri de kıyıda sayılır.
+- Süs: 5–9 sn'de bir, ekranda görünen bir gölde timsah gözleri 2,4 sn su yüzüne çıkar (zarar vermez).
+- Durum oyun süresiyle ilerler (duraklatınca durur), yeni bölümde sıfırlanır. Her oyuncu kendi timsahlarını görür;
+  çevrimiçinde timsah yalnız kendi oyuncusunu ısırır. Maliyet: güncelleme kare başına ~0,001 ms, çizim ~0,03 ms.
+
+## 3.15.0: reklamla devam
+
+Kullanıcının isteği (27 Ekim 2026): *"Dünya turunda devam etmek için reklam izle koyalım 3 defa reklam izleyerek 3 can
+yenileme hakkı olsun başka olmasın."*
+
+- Tek kişilik Dünya Turu'nda canlar bitince oyun durur, "💔 Canların bitti!" penceresi açılır: "🎬 Reklam izle, devam et"
+  ya da "🏁 Oyunu bitir". Ödüllü reklamı sonuna kadar izleyenin canları dolar (3 ❤️), 3 sn hasar almaz, düşman mermileri
+  silinir; kaldığı ülkede, yakaladığı hayaletler ve boss sayacıyla sürdürür.
+- Oyun başına en çok 3 kez (`TUR_DEVAM_HAKKI`); "Kalan hak: n/3". Başka devam yolu (zümrütle, parayla) yok. Dördüncü
+  ölümde oyun her zamanki gibi biter. Yeni oyun ("Tekrar Oyna" dahil) 3 hakla başlar.
+- Reklam yarıda kapanırsa ya da gösterilemezse can gelmez, hak harcanmaz, pencere yeniden açılır; yeni reklam yüklenene
+  kadar düğme bekler. Reklam yüklü değilken (web, onay yok, ağ yok) pencere açılmaz, oyun biter.
+- Çevrimiçi turda ve normal oyunda yok (çevrimiçinde ölen hayalet olur). İzleme zümrüt vermez; geçiş reklamı sayacı
+  (`save.reklam.sure`) sıfırlanır.
+- Kod: `www/dunya-turu.js` › "Reklamla devam", `www/reklam.js` › `reklamDevamIzle`; sınama `test/reklam.test.mjs`
+  (pencere, yarıda kapanan reklam, can dolması, 3 hak sınırı, Oyunu bitir, reklamsız ve normal oyun).
+
+## 3.14.2: ses tamponu
+
+Kullanıcı bildirimi (26 Ekim 2026): cızırtı çevrimdışı oyunda da çıkıyor; "sürekli hışırtı", Samsung telefonda.
+3.14.1'in düzeltmesi yalnız kurucunun öteki oyuncular için çaldığı vuruş seslerini kaldırmıştı.
+
+- **Elenenler (ölçüm):** tek oyunculu oyunda çıkışa analizör (390 × 844, 4 kat işlemci yavaşlatması): normal 1. ve 15.
+  bölüm, Kenya ve Kenya bossu; tepe en çok 0,51, 1'e ulaşan örnek yok, saniyede 5–25 ses. Müzik dosyalarında (102)
+  en yüksek tepe 0,728; efekt örnekleri −6,2 / −11,1 dB. Kırpılma yok. Sürekli çalan tek kaynak müzik döngüsü.
+- **Ayırt eden gözlem:** çevrimiçi odada aynı müziği çalan istemcide cızırtı yoktu, kurucuda vardı; tek oyunculu oyun da
+  kurucu gibi bütün benzetimi yürütür. Sorun müzik dosyasını değil cihazın yükünü izliyor.
+- **Neden (Chromium kaynağından):** Android'de varsayılan "interactive" ipucu ses tamponunu donanımınki kadar küçük
+  kurar (`media/base/audio_latency.cc` › `GetInteractiveBufferSize`; ör. 192 kare ≈ 4 ms). İşleyici bu sürede tamponu
+  dolduramazsa çıkış kesilir; sürekli müzikte bu bir cızırtı olarak duyulur. "balanced" ipucu Android'de 2 × 10 ms
+  = 20 ms kurar (`GetRtcBufferSize`); efektler ~16 ms geç duyulur. "playback" Android'de güç tasarruflu yola geçer, atış
+  sesleri için fazla gecikir.
+- **Düzeltme:** `audio.init` ses bağlamını `{ latencyHint: "balanced" }` ile kurar. Sınama: `ses.test` (önce seçeneksiz
+  kurulduğu görüldü, kırmızı).
+- **Doğrulanamayan:** kesilme bu kapsayıcıda üretilemedi. Linux'ta iki ipucu da 10 ms kurar; ses iş parçacığı gerçek
+  zaman önceliğiyle (SCHED_RR) çalışır. Öncelik kaldırılıp tek çekirdekte 2 işlemci yükü ve kare başına 12 ms ana iş
+  parçacığı yüküyle de `playoutStats` hiç kesilme saymadı. Sonucu Samsung'da kullanıcı duyacak.
+- **Tam takım:** 17 adımın 16'sı ilk koşuda geçti; `alti --tur`un "istemcide hayalet sıçramaz" sınaması takımın yükü
+  altında (kurucu 44 fps, %95 kare 50 ms) 33 px'le düştü, tek başına yeniden koşunca 12 px'le geçti (bilinen ortam
+  duyarlılığı; 3.14.1'de düzeltme olmadan da düşmüştü).
+- **Ayrıca ölçülen (değişmedi):** Opus 48 kb/sn kodlaması özgün Suno parçasında olmayan 18–20 kHz enerjisi ekliyor
+  (özgüne göre +18…+22 dB; TR, KE, JP) ve 10–20 kHz'i gürültüyle dolduruyor (özgünün en sessiz karelerinde +1,8…+3 dB).
+  96 kb/sn'de bu +0,4…+0,7 dB'ye iner ama müzik klasörü ~21 MB olur (sınır 14 MB). Müzikler yeniden elden geçirilirken
+  bit hızı yeniden düşünülecek.
 
 ## 3.14.1: düzeltmeler
 

@@ -2,6 +2,6 @@
 // AdMob reklam birimi kimlikleri. Hata ayıklama derlemesinde (Capacitor.DEBUG) reklam.js bunların yerine Google'ın
 // test birimlerini ister (isTesting).
 export const REKLAM_KIMLIK = {
-  banner: 'ca-app-pub-3940256099942544/9214589741',
-  gecis: 'ca-app-pub-3940256099942544/1033173712',
+  banner: 'ca-app-pub-2417242373034448/8355882522',
+  gecis: 'ca-app-pub-2417242373034448/7042800854',
 };

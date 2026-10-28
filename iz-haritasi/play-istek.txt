@@ -17,3 +17,6 @@
 
 # 2026-10-26: bilgisayar oturumunun "Talimat 1-6 bitti" bildirimi üzerine yeniden denetim.
 # (yapıldı 2026-10-26, koşu 40406149164: yine 404 Package not found; main'de AdMob kimlikleri hâlâ test) durum
+
+# 2026-10-28: Play kurulumu sonrası denetim.
+durum

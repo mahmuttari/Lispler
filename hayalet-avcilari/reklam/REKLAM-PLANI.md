@@ -20,6 +20,10 @@ denetlemesi gerekiyor, **[DY]** doğrulanamadı (varsayım).
 - **Karar (28 Ekim 2026):** §1'deki bulgu üzerine kullanıcı **"Ücretsiz kanallar"**ı (B) seçti.
   - Google Ads hesabı açılmaz; plan [`../sosyal/SOSYAL-PLAN.md`](../sosyal/SOSYAL-PLAN.md)'dedir.
   - Bu klasör, şirket kurulursa (A) ya da koşul değişirse (C) kullanılmak üzere saklanır.
+- **Karar (28 Ekim 2026, ikinci):** kullanıcı, öteki oyun reklamlarında da firma adının reklamın üzerinde değil yalnız
+  ⓘ sayfasında göründüğünü öğrenince **Google reklamını da verme** kararı aldı (C, B ile birlikte).
+  - Kurulum talimatı: [`GOOGLE-ADS-KURULUM.md`](GOOGLE-ADS-KURULUM.md).
+  - Kampanyalar ileri tarihle ve duraklatılmış kurulur; açık "ONAY" gelmeden para harcanmaz.
 
 ## 1. Sahibin adı nerede görünebilir?
 
@@ -114,7 +118,7 @@ Kaynaklar birbirini tutmuyor; yalnız mertebe için kullanılmalı:
 - Son üçünün kaynağı: [gamegrowthadvisor](https://gamegrowthadvisor.com/blog/2026-03-17-user-acquisition-cpi-benchmarks-2026/).
 - Türkiye ve Mısır için kaynak bulunamadı **[DY]**.
 
-## 3. Kampanya önerisi (karar A ya da C olursa)
+## 3. Kampanya önerisi (C seçildi)
 
 Kampanyalar pazar grubuna göre kurulur, her dil kendi reklam grubunda olur **[K]**
 ([RocketShip HQ](https://www.rocketshiphq.com/google-app-campaigns-multiple-markets/)). Toplam günde 10 $:
@@ -165,17 +169,20 @@ Kampanyalar pazar grubuna göre kurulur, her dil kendi reklam grubunda olur **[K
      değişir.
 4. **Kullanıcı:** §1'deki üç **[K]** denetimini yapar: Play "Geliştirici hakkında", AdMob satıcı bilgisi, OAuth destek
    e-postası.
-5. **Kullanıcı:** reklamveren yolunu seçer (A, B ya da C).
-6. **A ya da C seçildiyse, kullanıcı:**
+5. **Kullanıcı:** reklamveren yolunu seçti: C ve B (§0).
+6. **Kullanıcı:**
    - `poyrazworkshop@gmail.com` ile Google Ads hesabı açar: uzman modu, kampanya oluşturmadan.
    - Ödeme profilini kurar. Para birimi sonradan değişmez; Türk kartıyla TRY önerilir ve bütçe 10 $ karşılığı TL
      yazılır **[K]**.
+   - **Bireysel** profilde ⓘ sayfasında yalnız ad ve soyad, **işletme** profilinde unvan (MARFEN dahil) görünür
+     ([`GOOGLE-ADS-KURULUM.md`](GOOGLE-ADS-KURULUM.md) §1).
    - Ödeme ve kimlik bilgilerini kendisi girer.
 7. **Kullanıcı:** Google Ads › Araçlar › Veri yöneticisi › Google Play'den Play Console bağlantısını ister, Play
    Console'da onaylar **[K]**.
 8. **Kampanyalar:**
    - Bağlı araç (adplane) Uygulama kampanyası kuramıyor; kampanyalar tarayıcıda kurulur.
-   - Bilgisayardaki Claude Code (`claude --chrome`) §3'teki değerlerle kurar.
+   - Bilgisayardaki Claude Code (`claude --chrome`) §3'teki değerlerle kurar
+     ([`GOOGLE-ADS-KURULUM.md`](GOOGLE-ADS-KURULUM.md)).
    - Başlangıç tarihi ileri bir gün seçilir ve kampanya **duraklatılmış** bırakılır.
 9. **Kullanıcı:** açık onay verir, örneğin "ONAY: Hayalet Google Ads, günde 10 $, 14 gün". Kampanyalar ancak bundan
    sonra açılır.

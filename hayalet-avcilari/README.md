@@ -11,7 +11,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → https://hayalet-avcilari.web.app (Firebase Hosting, [`site/`](site/README.md); Play'e verilen adres) ve GitHub Pages kopyası |
-| Google Ads reklamı | [`reklam/REKLAM-PLANI.md`](reklam/REKLAM-PLANI.md) — 6 dilde metin ve görsel, sahibin adının görünmemesi koşulu; 28 Ekim 2026'da ücretli reklam yerine ücretsiz kanallar seçildi |
+| Google Ads reklamı | [`reklam/REKLAM-PLANI.md`](reklam/REKLAM-PLANI.md) — 6 dilde metin ve görsel, sahibin adının görünmemesi koşulu; 28 Ekim 2026'da önce ücretsiz kanallar seçildi, sonra Google reklamı da verilmesine karar verildi (ad yalnız ⓘ sayfasında); kurulum [`reklam/GOOGLE-ADS-KURULUM.md`](reklam/GOOGLE-ADS-KURULUM.md) |
 | Tanıtım (ücretsiz kanallar) | [`sosyal/SOSYAL-PLAN.md`](sosyal/SOSYAL-PLAN.md) — YouTube Shorts, TikTok, Reels: dikey tanıtım videosu (tr, en), Poyraz Workshop profil görselleri, paylaşım metinleri |
 | Firebase kuralları | [`firebase/`](firebase/README.md) — RTDB + Firestore kuralları, yol yol gerekçe, emülatör testi. 3.10.2'den beri Firebase anonim giriş: oda, kodlu yedek ve skor `auth.uid`'e bağlı. 3.10.3 geçişi kapatır (girişsiz ve `u_` kimlikli yazım reddedilir) |
 | Reklam | AdMob, yalnız Android uygulaması — aşağıda "Reklamlar (AdMob)" |

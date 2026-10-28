@@ -8,8 +8,10 @@ denetlemesi gerekiyor, **[DY]** doğrulanamadı.
 - 28 Ekim 2026'da kullanıcı reklamveren yolu olarak **"Ücretsiz kanallar"**ı seçti.
   - Gerekçe: ücretli reklamda Google'ın bilgi panelinde yasal ad görünür ([`../reklam/REKLAM-PLANI.md`](../reklam/REKLAM-PLANI.md) §1).
   - Google Ads hesabı açılmaz.
-- Reklam metinleri ve görselleri (`../reklam/`) şirket kurulursa ya da koşul değişirse kullanılmak üzere saklanır.
-  Görseller bu planda gönderi olarak da kullanılır.
+- Reklam metinleri ve görselleri (`../reklam/`) bu planda gönderi olarak da kullanılır.
+- Aynı gün kullanıcı **Google reklamını da** verme kararı aldı: reklamın kendisinde ad görünmez, yalnız ⓘ sayfasında
+  görünür ([`../reklam/GOOGLE-ADS-KURULUM.md`](../reklam/GOOGLE-ADS-KURULUM.md)). Bu plan onunla birlikte sürer.
+  - §1'deki "öne çıkarma kullanılmaz" kuralı sürer: ödeyen adı sosyal hesaplarda da görünmesin.
 
 ## 1. Adın görünmemesi için kurallar
 

@@ -154,12 +154,12 @@ try {
     game.camera.x = o.x + o.w / 2 - game.W / 2; game.camera.y = o.y + o.h / 2 - game.H / 2;
     game._timsahAra = 1e9;
     const tm = timsahSusle();
-    r.cikti = !!tm && tm.tur === 'sus';
+    r.cikti = !!tm && (tm.tur === 'sus' || tm.tur === 'bos'); // süs ya da boşa ısırık
     __oyuncuyaKoy({ x: tm.x, y: tm.y }); // gölün içinde, gözlerin üstünde (Beri gibi)
     __ilerlet(TIMSAH.susSure / 2);
     r.ortada = game.timsahlar.length;
     __ilerlet(TIMSAH.susSure);
-    r.can = game.player.hp; r.sonra = game.timsahlar.filter((x) => x.tur === 'sus').length;
+    r.can = game.player.hp; r.sonra = game.timsahlar.filter((x) => x.tur !== 'saldiri').length;
     timsahSaldirt(o, o.x + o.w / 2, o.y - 100);
     game.waters = game.waters.slice(); // yeni bölüm: buildWaters yeni dizi kurar
     timsahGuncelle(0.01);
@@ -169,6 +169,44 @@ try {
   sina('süs gözleri görünen gölde çıkar', () => { assert.equal(sus.cikti, true); assert.equal(sus.ortada, 1); });
   sina('süs gözleri ısırmaz ve süre sonunda kaybolur', () => { assert.equal(sus.can, 3); assert.equal(sus.sonra, 0); });
   sina('yeni bölümde timsahlar sıfırlanır', () => { assert.equal(sus.yeniBolum, 0); });
+
+  // Boşa ısırık: süs timsahı kimi zaman ağzını açıp kapatır, kimseye zarar vermez; çevrimiçi biçim gidip geri gelir
+  const bos = await p.evaluate(() => {
+    const r = {};
+    const o = __kur();
+    game.camera.x = o.x + o.w / 2 - game.W / 2; game.camera.y = o.y + o.h / 2 - game.H / 2;
+    // Süs timsahı %45 olasılıkla boşa ısırır: biri çıkana kadar denenir; ikisi de çıkmalı
+    let tm = null; const turler = new Set();
+    for (let i = 0; i < 60; i++) { game.timsahlar = []; const x = timsahSusle(); if (x) { turler.add(x.tur); if (x.tur === 'bos' && !tm) tm = x; } }
+    game.timsahlar = tm ? [tm] : [];
+    r.turler = [...turler].sort().join(',');
+    r.tur = tm && tm.tur;
+    __oyuncuyaKoy({ x: tm.x, y: tm.y });
+    __ilerlet(TIMSAH.uyari + TIMSAH.atilma + 0.1);
+    r.isirdi = tm.isirdi; r.can = game.player.hp;
+    __ilerlet(1);
+    r.kayboldu = !game.timsahlar.includes(tm);
+    // Çevrimiçi biçim
+    game.timsahlar = [
+      { id: 1, tur: 'saldiri', x: 512.4, y: 300, a: 1.57, t: 0.35 },
+      { id: 2, tur: 'bos', x: 700, y: 820, a: -2.1, t: 1.2 },
+      { id: 3, tur: 'sus', x: 90, y: 40, a: 0, t: 0 },
+    ];
+    const d = timsahDizisi();
+    r.metin = d.metin; r.imza = d.imza;
+    r.geri = uzakTimsahlariAl(d.metin).map((x) => [x.tur, x.x, x.y, x.a, x.t0]);
+    r.bozuk = uzakTimsahlariAl('z1,2,3,4;a1,2;abc').length;
+    return r;
+  });
+  sina('süs timsahı kimi zaman boşa ısırık atar, kimseye zarar vermez, sonra batar', () => {
+    assert.equal(bos.turler, 'bos,sus'); assert.equal(bos.tur, 'bos'); assert.equal(bos.isirdi, true); assert.equal(bos.can, 3); assert.equal(bos.kayboldu, true);
+  });
+  sina('çevrimiçi biçim: kısa metin, imza kimliklerden, geri okununca aynı; bozuk parça atlanır', () => {
+    assert.equal(bos.metin, 'a512,300,157,350;b700,820,-210,1200;s90,40,0,0');
+    assert.equal(bos.imza, '1,2,3');
+    assert.deepEqual(bos.geri, [['saldiri', 512, 300, 1.57, 0.35], ['bos', 700, 820, -2.1, 1.2], ['sus', 90, 40, 0, 0]]);
+    assert.equal(bos.bozuk, 0);
+  });
 
   // Oyun döngüsüyle: duraklatınca timsah durur; her evre çizilir, sayfa hatası yok
   const dongu = await p.evaluate(async () => {

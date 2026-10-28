@@ -151,7 +151,10 @@ function kopruBatma() {
 // render() sulardan sonra, timsahlardan önce çağırır
 function koprulerCiz(ctx) {
   const zaman = performance.now() / 1000, p = game.player;
+  const cam = game.camera || { x: 0, y: 0 }, W = game.W || 1e9, H = game.H || 1e9;
   for (const k of koprulerHazir()) {
+    const [x0, y0] = k.yatay ? [k.a, k.c] : [k.c, k.a], [x1, y1] = k.yatay ? [k.b, k.c] : [k.c, k.b], pay = KOPRU.kalin;
+    if (x1 + pay < cam.x || x0 - pay > cam.x + W || y1 + pay < cam.y || y0 - pay > cam.y + H) continue; // ekran dışı
     const boy = k.b - k.a, yari = KOPRU.kalin / 2;
     const ustunde = p && !p.dead && koprudeki(p.x, p.y) === k;
     const genlik = 1.5 + (ustunde ? 1.5 + (game._kopruDurma || 0) * 3 : 0);

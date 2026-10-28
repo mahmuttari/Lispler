@@ -1495,3 +1495,18 @@ details.arkadas-bolum > summary::-webkit-details-marker { display: none; }
   .tur-damga-kutu, .tur-kart.salla { animation: none; }
   .tur-ucak { animation: none; inset-inline-start: calc(50% - 14px); }
 }
+
+/* Çevrimiçi Dünya Turu: hayalet olan oyuncunun "Reklam izle, diril" düğmesi (3.15.0) */
+.diril-btn {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  max-width: calc(100% - 32px);
+  min-height: 44px;
+  padding: 10px 18px;
+  font-size: 16px;
+  z-index: 20;
+  white-space: nowrap;
+}

@@ -6,8 +6,8 @@
      oyuncuya döner, çok geride kalırsa yanına ışınlanır. Hayaletler petlere zarar vermez, petler ölmez.
    - Kedi: çevik, sık pençe. Köpek: güçlü ısırık, hayaleti bir an sersemletir. Kuş: uçar (duvar ve su engel değil),
      tepeden gagalar. Hasar bölümle biraz artar (her 6 bölümde +1).
-   - Çevrimiçinde de her oyuncunun peti kendi cihazında koşar; vuruşu mermi gibi kurucuya gider (uzaktanVur). Başka
-     oyuncuların peti görünmez.
+   - Çevrimiçinde de her oyuncunun peti kendi cihazında koşar; vuruşu mermi gibi kurucuya gider (uzaktanVur). Türü ve
+     konumu oda kaydına yazılır (players/$uid/pet, px, py): ötekiler onu görür (uzakPetleriCiz).
    Sınama: test/pet.test.mjs.
    ============================================================ */
 
@@ -193,4 +193,37 @@ function petSimgesi(tur) {
   ctx.translate(30, 32);
   petResmi(ctx, tur, 1.15, { kanat: 0.05 });
   return cv;
+}
+
+// ---------- çevrimiçi: öbür oyuncuların petleri (yalnız görüntü) ----------
+// Konum oda kaydından gelir (players/$uid/px, py); arası yumuşak izlenir, yürüme ve yön hareketten çıkarılır
+function uzakPetleriGuncelle(dt) {
+  for (const rp of Object.values(online.remotePlayers)) {
+    if (!rp || !rp.pet || !Number.isFinite(rp.petHx)) continue;
+    if (!Number.isFinite(rp.petX) || Math.hypot(rp.petHx - rp.petX, rp.petHy - rp.petY) > 400) {
+      rp.petX = rp.petHx; rp.petY = rp.petHy; rp.petYurume = 0; rp.petYon = 1;
+      continue;
+    }
+    const dx = rp.petHx - rp.petX, dy = rp.petHy - rp.petY, k = Math.min(1, dt * 10);
+    rp.petX += dx * k; rp.petY += dy * k;
+    if (Math.abs(dx) > 1.5) rp.petYon = dx > 0 ? 1 : -1;
+    rp.petYurume = Math.hypot(dx, dy) > 2 ? (rp.petYurume || 0) + dt : 0;
+    rp.petKanat = (rp.petKanat || 0) + dt;
+  }
+}
+
+function uzakPetleriCiz(ctx, ucanlar) {
+  if (!online.mode) return;
+  const zaman = performance.now() / 1000;
+  for (const rp of Object.values(online.remotePlayers)) {
+    if (!rp || !rp.pet || !Number.isFinite(rp.petX) || !!PETLER[rp.pet].ucar !== !!ucanlar) continue;
+    const yuk = ucanlar ? 24 + Math.sin(zaman * 3) * 3 : Math.abs(Math.sin((rp.petYurume || 0) * 16)) * 2;
+    ctx.save();
+    ctx.fillStyle = "rgba(0,0,0,0.25)";
+    ctx.beginPath(); ctx.ellipse(rp.petX, rp.petY + 10, ucanlar ? 9 : 15, ucanlar ? 4 : 5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.translate(rp.petX, rp.petY - yuk);
+    ctx.scale(rp.petYon || 1, 1);
+    petResmi(ctx, rp.pet, 1, { yurume: rp.petYurume || 0, kanat: rp.petKanat || 0, zaman });
+    ctx.restore();
+  }
 }

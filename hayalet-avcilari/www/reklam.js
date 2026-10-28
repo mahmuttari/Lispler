@@ -12,7 +12,8 @@
      reklamını doğal duraklarda ve aşırı sıklık olmadan önerir (sayı vermez). Sınama: test/reklam.test.mjs.
    - Ödüllü reklam: oyun bitti ekranındaki "Reklam izle" düğmesi, izleyene 10 💚 zümrüt (oyun başına bir kez).
    - Ödüllü reklamla devam (3.15.0): tek kişilik Dünya Turu'nda canlar bitince "Reklam izle, devam et"; sonuna kadar
-     izleyenin canları dolar. Oyun başına en çok 3 kez (dunya-turu.js, TUR_DEVAM_HAKKI).
+     izleyenin canları dolar. Oyun başına en çok 3 kez (dunya-turu.js, TUR_DEVAM_HAKKI). Çevrimiçi turda hayalet olan
+     oyuncu "Reklam izle, diril" ile aynı haklardan dirilir.
    ============================================================ */
 
 const REKLAM = {
@@ -194,6 +195,7 @@ function odulDugmesiniGuncelle() {
   btn.style.display = reklam.hazir && reklam.odulluYuklu && !reklam.odulKullanildi ? "" : "none";
   const devam = document.getElementById("btn-tur-devam");
   if (devam) devam.disabled = !(reklam.hazir && reklam.odulluYuklu) || !!reklam.devamSonucu; // yüklenene kadar bekler
+  if (typeof turDirilTeklifi === "function" && typeof game !== "undefined" && game.player) turDirilTeklifi(); // çevrimiçi tur
 }
 
 // AB kullanıcıları onay tercihini her zaman değiştirebilmeli (UMP "privacy options" girişi)

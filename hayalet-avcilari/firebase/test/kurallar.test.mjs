@@ -370,6 +370,17 @@ describe("rooms — Dünya Turu odası (3.14.0)", () => {
     for (const n of [0, 1001, "12"]) await assertFails(h.ref(`rooms/${ODA}/level`).set(n));
     await assertFails(h.ref(`rooms/${ODA}/tur`).set(true));                         // kip kurulduktan sonra değişmez
   });
+  test("3.15.0: pet, çalıda saklanma ve timsahlar (ekleriGonder) yalnız kendi kaydına; bozuk biçim ret", async () => {
+    await odaKur(HOST, [KONUK]);
+    const h = anonim(HOST), k = anonim(KONUK);
+    const ek = { pet: "kedi", px: 640, py: 410, gz: 1, tm: "a512,300,157,350;b700,820,-210,1200" };
+    await assertSucceeds(k.ref(`rooms/${ODA}/players/${KONUK}`).update(ek));
+    await assertSucceeds(h.ref(`rooms/${ODA}/players/${HOST}`).update({ pet: "", px: 0, py: 0, gz: 0, tm: "" }));
+    await assertFails(h.ref(`rooms/${ODA}/players/${KONUK}`).update({ gz: 0 }));   // başkasının kaydı
+    for (const bozuk of [{ pet: 5 }, { pet: "uzun-bir-pet-adi" }, { px: "640" }, { gz: true }, { tm: 3 }, { tm: "x".repeat(201) }]) {
+      await assertFails(k.ref(`rooms/${ODA}/players/${KONUK}`).update(bozuk));
+    }
+  });
   test("eski oda (tur alanı yok) bugünkü gibi çalışır", async () => {
     await odaAkisi(anonim(HOST), anonim(KONUK), HOST, KONUK);
     await odaKur(HOST, [KONUK]);

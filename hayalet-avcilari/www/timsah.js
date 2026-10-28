@@ -1,13 +1,17 @@
 /* ============================================================
    HAYALET AVCILARI — SUDAKİ TİMSAHLAR (3.15.0)
    Kullanıcının isteği: "Sulardan timsah çıksın, suyun yanında duranı bazen ısırsın."
-   - Süs: arada bir görünen bir gölde timsah gözleri su yüzüne çıkar, bakınır, batar (zarar vermez).
+   - Süs: arada bir görünen bir gölde timsah gözleri su yüzüne çıkar, bakınır, batar (zarar vermez). Kimi zaman
+     (TIMSAH.bosOlasilik) gözlerden sonra boşa ısırık atar: ağzını açıp kapatır, kimseye zarar vermez.
    - Saldırı: oyuncu suyun kıyısında (kenara TIMSAH.yakin px'ten yakın) TIMSAH.bekleme sn durursa, saniyede
      TIMSAH.olasilik olasılıkla en yakın kıyıda bir timsah belirir. Önce kabarcık ve gözler (TIMSAH.uyari sn: kaçmaya
      yeter), sonra atılıp ısırır: oyuncu hâlâ menzildeyse 1 can gider. İki saldırı arası en az TIMSAH.ara sn.
    - Hayalet olan (çevrimiçi ölen), görünmez ya da hasar korumasındaki oyuncuyu ısırmaz. Köprüdekine kıyıdan saldırmaz;
      köprüden suya düşene yandan çıkar (kopru.js).
    - Durum oyun süresiyle ilerler (duraklatınca timsah da durur); game.waters değişince (yeni bölüm) sıfırlanır.
+   - Çevrimiçi (ortak timsahlar): her oyuncu kendi timsahlarını oda kaydına yazar (players/$uid/tm, timsahDizisi),
+     ötekiler onları görür (uzakTimsahlariAl); ısırık yalnız kendi oyuncusuna. Süs ve boşa ısırık yalnız kurucuda
+     doğar (kendinin ve öbür oyuncuların yakınındaki göllerde), herkes aynısını görür.
    Sınama: test/timsah.test.mjs.
    ============================================================ */
 
@@ -23,7 +27,10 @@ const TIMSAH = {
   susSure: 2.4,     // süs gözlerinin su üstünde kaldığı süre (sn)
   susAra: [5, 9],   // iki süs arası (sn)
   icPay: 18,        // timsahın çıktığı nokta kıyıdan bu kadar içeride (px)
+  bosOlasilik: 0.45, // süs timsahının boşa ısırık atma olasılığı
 };
+let _timsahNo = 0;   // her timsahın kimliği (çevrimiçi değişiklik imzası)
+const timsahOmru = (tur) => (tur === "sus" ? TIMSAH.susSure : TIMSAH.uyari + TIMSAH.atilma + TIMSAH.batis);
 
 // Bir göle göre işaretli uzaklık: içeride eksi
 function suUzakligi(o, x, y) {
@@ -76,7 +83,7 @@ function timsahSifirla() {
 function timsahSaldirt(o, x, y) {
   const n = kiyidaNokta(o, x, y);
   if (!n) return null;
-  const tm = { tur: "saldiri", x: n.x, y: n.y, a: Math.atan2(y - n.y, x - n.x), t: 0, isirdi: false };
+  const tm = { id: ++_timsahNo, tur: "saldiri", x: n.x, y: n.y, a: Math.atan2(y - n.y, x - n.x), t: 0, isirdi: false };
   game.timsahlar.push(tm);
   game._timsahAra = TIMSAH.ara;
   game._timsahKiyi = 0;
@@ -84,16 +91,20 @@ function timsahSaldirt(o, x, y) {
   return tm;
 }
 
-// Süs: görünen bir gölün içinde bakınan gözler
+// Süs: görünen bir gölün içinde bakınan gözler (kimi zaman boşa ısırık). Çevrimiçi kurucu öbür oyuncuların yakınındaki
+// gölleri de seçer: süsler ortaktır
 function timsahSusle() {
   const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0;
-  const gorunen = (game.waters || []).filter((o) => o.x < cam.x + W && o.x + o.w > cam.x && o.y < cam.y + H && o.y + o.h > cam.y);
+  const uzaklar = online.mode === "host" ? Object.values(online.remotePlayers).filter((rp) => rp && Number.isFinite(rp.x)) : [];
+  const gorunen = (game.waters || []).filter((o) => (o.x < cam.x + W && o.x + o.w > cam.x && o.y < cam.y + H && o.y + o.h > cam.y) ||
+    uzaklar.some((rp) => Math.abs(rp.x - (o.x + o.w / 2)) < 500 && Math.abs(rp.y - (o.y + o.h / 2)) < 700));
   if (!gorunen.length) return null;
   const o = gorunen[Math.floor(Math.random() * gorunen.length)];
   for (let i = 0; i < 40; i++) {
     const x = o.x + Math.random() * o.w, y = o.y + Math.random() * o.h;
     if (suUzakligi(o, x, y) < -22) {
-      const tm = { tur: "sus", x, y, a: Math.random() * Math.PI * 2, t: 0 };
+      const tur = Math.random() < TIMSAH.bosOlasilik ? "bos" : "sus";
+      const tm = { id: ++_timsahNo, tur, x, y, a: Math.random() * Math.PI * 2, t: 0 };
       game.timsahlar.push(tm);
       return tm;
     }
@@ -115,21 +126,21 @@ function timsahGuncelle(dt) {
   // Var olanlar
   for (const tm of game.timsahlar) {
     tm.t += dt;
-    if (tm.tur === "saldiri" && !tm.isirdi && tm.t >= TIMSAH.uyari + TIMSAH.atilma) {
+    if (tm.tur !== "sus" && !tm.isirdi && tm.t >= TIMSAH.uyari + TIMSAH.atilma) {
       tm.isirdi = true;
       timsahSesi("isir");
-      if (timsahIsirir(tm)) {
+      if (tm.tur === "saldiri" && timsahIsirir(tm)) { // "bos": boşa ısırık, zarar yok
         showFloat(t("🐊 Timsah ısırdı!"), p.x, p.y - 30);
         navigator.vibrate?.(80);
         damagePlayer();
       }
     }
   }
-  game.timsahlar = game.timsahlar.filter((tm) => tm.t < (tm.tur === "sus" ? TIMSAH.susSure : TIMSAH.uyari + TIMSAH.atilma + TIMSAH.batis));
-  // Süs gözleri
+  game.timsahlar = game.timsahlar.filter((tm) => tm.t < timsahOmru(tm.tur));
+  // Süs gözleri ve boşa ısırık (çevrimiçinde yalnız kurucu doğurur, herkes onunkini görür)
   game._timsahSus -= dt;
   if (game._timsahSus <= 0) {
-    if (!game.timsahlar.some((tm) => tm.tur === "sus")) timsahSusle();
+    if (online.mode !== "client" && !game.timsahlar.some((tm) => tm.tur !== "saldiri")) timsahSusle();
     game._timsahSus = TIMSAH.susAra[0] + Math.random() * (TIMSAH.susAra[1] - TIMSAH.susAra[0]);
   }
   // Kıyıda duran oyuncu
@@ -187,9 +198,42 @@ function timsahKafa(ctx, uzanma, agiz) {
   ctx.save(); ctx.translate(-8, 0); timsahGozleri(ctx, 9, 1); ctx.restore();
 }
 
-// render() engellerden sonra çağırır
+// render() engellerden sonra çağırır: kendi timsahlarım ve çevrimiçinde öbür oyuncularınki
 function timsahlariCiz(ctx) {
-  for (const tm of game.timsahlar || []) {
+  for (const tm of game.timsahlar || []) timsahCiz(ctx, tm);
+  if (online.mode) {
+    const simdi = performance.now();
+    for (const rp of Object.values(online.remotePlayers)) {
+      for (const tm of (rp && rp.timsahlar) || []) {
+        const t1 = tm.t0 + (simdi - tm.alindi) / 1000;
+        if (t1 < timsahOmru(tm.tur)) timsahCiz(ctx, { ...tm, t: t1 });
+      }
+    }
+  }
+}
+
+// ---------- çevrimiçi ----------
+// Oda kaydına giden biçim: "<s|a|b>x,y,açı×100,yaş ms;…" (s süs, a saldırı, b boşa ısırık). İmza: kimlikler (yeni ya da
+// biten timsahta değişir; yaş karşıda yerel saatle ilerletilir)
+function timsahDizisi() {
+  const liste = (game.timsahlar || []).slice(-4);
+  return {
+    imza: liste.map((tm) => tm.id).join(","),
+    metin: liste.map((tm) => `${tm.tur === "saldiri" ? "a" : tm.tur === "bos" ? "b" : "s"}${Math.round(tm.x)},${Math.round(tm.y)},${Math.round(tm.a * 100)},${Math.round(tm.t * 1000)}`).join(";"),
+  };
+}
+function uzakTimsahlariAl(metin) {
+  const simdi = performance.now(), turu = { a: "saldiri", b: "bos", s: "sus" };
+  const out = [];
+  for (const parca of String(metin || "").split(";")) {
+    const m = /^([abs])(-?\d+),(-?\d+),(-?\d+),(\d+)$/.exec(parca);
+    if (m) out.push({ tur: turu[m[1]], x: +m[2], y: +m[3], a: +m[4] / 100, t0: +m[5] / 1000, alindi: simdi });
+  }
+  return out;
+}
+
+function timsahCiz(ctx, tm) {
+  {
     ctx.save();
     ctx.translate(tm.x, tm.y);
     if (tm.tur === "sus") {

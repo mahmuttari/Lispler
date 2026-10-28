@@ -397,7 +397,8 @@ function istemciDamgasi(u, yeniBolum) {
 // Tek kişilik turda canlar bitince oyun hemen bitmez: "Reklam izle, devam et" penceresi açılır. Ödüllü reklamı sonuna
 // kadar izleyenin canları dolar, kaldığı ülkede kaldığı yerden sürdürür. Oyun başına en çok TUR_DEVAM_HAKKI kez; başka
 // devam yolu (zümrütle, parayla) yoktur. Çevrimiçi turda yok (orada ölen hayalet olur). Reklam yüklü değilse pencere
-// açılmaz, oyun her zamanki gibi biter. Sınama: test/reklam.test.mjs.
+// açılmaz, oyun her zamanki gibi biter. Çevrimiçi turda pencere yerine hayaletken "Reklam izle, diril" düğmesi
+// (turDirilTeklifi, aşağıda). Sınama: test/reklam.test.mjs.
 const TUR_DEVAM_HAKKI = 3;
 const TUR_DEVAM_KORUMA_SN = 3; // dönüşte hasar almama süresi (hayaletlerden uzaklaşmaya yetsin)
 
@@ -451,4 +452,38 @@ function turDevamVazgec() {
   game.paused = false;
   muzikDuraklat(false);
   endGame(false);
+}
+
+// Çevrimiçi turda oyun durmaz ve ölen hayalet olur: "Reklam izle, diril" düğmesi hayaletken görünür, aynı 3 hak.
+// Ödül gelince oyuncu bulunduğu yere en yakın boş noktada canları dolu dirilir (oda kaydına dead: 0 gider).
+function turDirilTeklifi() {
+  const btn = document.getElementById("btn-tur-diril");
+  if (!btn) return;
+  const p = game.player;
+  const uygun = !!(p && p.dead && online.mode && game.running && game.dunyaTuru && !game.turBitti && game.turDevamKalan > 0 && reklam.hazir);
+  btn.style.display = uygun ? "" : "none";
+  if (!uygun) return;
+  btn.textContent = t("🎬 Reklam izle, diril ({n}/{toplam})", { n: game.turDevamKalan, toplam: TUR_DEVAM_HAKKI });
+  btn.disabled = !reklamDevamHazir() || !!reklam.devamSonucu;
+}
+
+function turDirilIzle() {
+  if (!game.player || !game.player.dead || !online.mode) return;
+  reklamDevamIzle(turDirilSonucu);
+  turDirilTeklifi();
+}
+
+function turDirilSonucu(kazandi) {
+  const p = game.player;
+  if (!kazandi || !p || !p.dead || !online.mode || !game.running || game.turBitti) { turDirilTeklifi(); return; }
+  game.turDevamKalan--;
+  const yer = freeSpot(p.x, p.y, p.r, (x, y, r) => collidesWalls(x, y, r) || collidesWaters(x, y, r) || collidesLavas(x, y, r));
+  p.x = yer.x; p.y = yer.y;
+  p.dead = false;
+  p.hp = p.maxHp;
+  p.invuln = TUR_DEVAM_KORUMA_SN;
+  updateHUD();
+  turDirilTeklifi();
+  audio.heart();
+  showToast(t("❤️ Canların yenilendi! Kalan hak: {n}", { n: game.turDevamKalan }));
 }

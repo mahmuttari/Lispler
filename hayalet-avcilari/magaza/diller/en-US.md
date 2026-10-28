@@ -48,3 +48,4 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 🐊 Crocodiles now lurk in the water: linger on the shore and they may bite!
 🌉 Swaying rope bridges over the lakes: cross quickly, linger in the middle and you'll fall in!
 🐾 Pets are here: take a cat, dog or bird along and fight ghosts together!
+🌿 Hide in bushes where ghosts can't see you; ghosts no longer spawn right next to you.

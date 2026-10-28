@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.15.0 (versionCode 49) — Dünya Turu'nda reklamla devam, sudaki timsahlar, sallanan ip köprüler ve petler (aşağıda "3.15.0: reklamla devam", "3.15.0: timsahlar", "3.15.0: ip köprüler", "3.15.0: petler"); 27 Ekim 2026, henüz Play'e gönderilmedi. Önceki: 3.14.1 (versionCode 48) — son inceleme ve sınama düzeltmeleri (aşağıda "3.14.1: düzeltmeler"); 25 Ekim 2026'da kullanıcının onayıyla ("gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40218892928; 3.14.0 (47)'nin yerini aldı). Önceki: 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
+| Sürüm | 3.15.0 (versionCode 49) — Dünya Turu'nda reklamla devam, sudaki timsahlar, sallanan ip köprüler, petler, çalıda saklanma ve bunların çevrimiçi oyunu (aşağıda "3.15.0: reklamla devam", "3.15.0: timsahlar", "3.15.0: ip köprüler", "3.15.0: petler", "3.15.0: çalı, hayaletin doğduğu yer, çevrimiçi"); 27 Ekim 2026, henüz Play'e gönderilmedi. Önceki: 3.14.1 (versionCode 48) — son inceleme ve sınama düzeltmeleri (aşağıda "3.14.1: düzeltmeler"); 25 Ekim 2026'da kullanıcının onayıyla ("gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40218892928; 3.14.0 (47)'nin yerini aldı). Önceki: 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → GitHub Pages |
@@ -400,6 +400,34 @@ Test: `test/reklam.test.mjs` (sahte AdMob eklentisi, 5 sınama: initialize bir k
 initialize'dan sonra, geçiş ve ödüllü reklam yine yüklenir, sayfa hatası yok); düzeltmeden önce derece sınaması düştü.
 Sürüm notu: 3.13.0 incelemedeyken gönderilebileceği için 3.13.0'ın satırlarını da taşır; mağaza notu İspanyolcada 500'ü
 aşmasın diye 👥 (3.12.2) satırı çıktı (tr 450, en 453, es 490, zh 179, hi 454, ar 404).
+
+## 3.15.0: çalı, hayaletin doğduğu yer, çevrimiçi
+
+Kullanıcının istekleri (28 Ekim 2026): *"Saklanma yeri"* (seçenekler sunuldu, "Çalı" seçildi), *"Hayaletler üzerimize
+doğuyor bir anda can gidiyor, hayalet belli bir mesafede doğabilsin"*, *"Timsahlar boşa da ısırık atsın"* ("isteğe
+bağlı" = rastgele), *"Online oyunda da çalışsın"* (petler görünsün, saklanma yeri, reklamla devam, timsah ve köprü ortak).
+
+- **Çalı** (`www/cali.js`, `test/cali.test.mjs`): her bölümde 3 çalı, yerleri bölüm tohumundan; duvar, su, lav, köprü ve
+  başka çalıya değmez. İçine giren saklanır ("🌿 Saklandın!"): hayaletler onu kovalamaz, değse de mermisi çarpsa da can
+  gitmez (görünmez gücüyle aynı yol), o da ateş etmez. En çok 5 sn; sonra 8 sn çalılar saklamaz. Erken çıkan saklandığı
+  sürenin oranında bekler (1 sn → 1,6 sn): girip çıkarak sınırsız saklanılmaz. Çalıda yalnız gözleri ve kalan süre
+  halkası görünür.
+- **Hayaletin doğduğu yer** (`spawnGhost`, `HAYALET_DOGUM_UZAKLIK`): kenarda 16 yer denenir; bütün canlı oyunculara (kurucu
+  öbürlerini de bilir) en az 320 px uzak ilk yer, yoksa en uzağı. Boss da bütün oyunculardan 380 px uzakta doğar.
+  Denemelerde `freeSpot` yalnız seçilen yere uygulanır (her denemede aramak altı kişilik odada kare hızını düşürdü).
+- **Boşa ısırık** (`timsah.js`): süs timsahı %45 olasılıkla gözlerden sonra ağzını açıp kapatır; kimseye zarar vermez.
+- **Çevrimiçi** (`test/cevrimici-ek.test.mjs`, emülatörde 9/9): oyuncu kaydına ayrı bir yazımla `pet`, `px`, `py`
+  (pet türü ve konumu), `gz` (çalıda saklanıyor) ve `tm` (timsahlarım, kısa metin) gider (`ekleriGonder`). Kural
+  yayınlanmamış bir veritabanı bu yazımı reddederse konum yazımı etkilenmez, 30 sn denenmez.
+  - Öbür oyuncuların petleri görünür (`uzakPetleriCiz`), saklanan oyuncu çalıda göz olarak görünür ve kurucunun
+    hayaletleri onu kovalamaz.
+  - Timsahlar ortak: her oyuncunun timsahı herkeste görünür, ısırık yalnız kendi oyuncusuna. Süs ve boşa ısırık yalnız
+    kurucuda doğar (kendinin ve öbürlerinin yakınındaki göllerde). Köprüler zaten herkeste aynı (bölüm tohumu).
+  - Dünya Turu odasında hayalet olan oyuncuda "🎬 Reklam izle, diril (n/3)" düğmesi; ödülde en yakın boş noktada canları
+    dolu dirilir, aynı 3 hak.
+- **Firebase kuralları**: `players/$uid` altına `pet` (≤ 10 harf), `px`, `py`, `gz` (sayı), `tm` (≤ 200 harf) eklendi
+  (`firebase/database.rules.json`, `kurallar.test` 32/32). Yalnız ekleme; eski sürümleri etkilemez. **Yayınlanması
+  gerekir** (`firebase/yayin-istek.txt` › `yayinla`); yayınlanmadan 3.15.0'ın çevrimiçi ekleri görünmez, oyun çalışır.
 
 ## 3.15.0: petler
 

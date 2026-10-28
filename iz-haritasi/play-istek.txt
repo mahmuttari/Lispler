@@ -19,4 +19,4 @@
 # (yapıldı 2026-10-26, koşu 40406149164: yine 404 Package not found; main'de AdMob kimlikleri hâlâ test) durum
 
 # 2026-10-28: Play kurulumu sonrası denetim.
-durum
+# (yapıldı 2026-10-28, koşu 40646527141: üretim 1.1.0 (1) completed, tr-TR giriş + simge, tanıtım, 6 ekran) durum

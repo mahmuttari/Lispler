@@ -26,6 +26,7 @@ const sunucu = http.createServer(async (q, r) => {
     r.writeHead(200); return r.end(icerik);
   }
   if (q.headers.authorization !== 'Bearer deneme') return json(401, { error: { message: 'kimlik yok' } });
+  if (kayit.yetkisiz) return json(403, { error: { status: 'PERMISSION_DENIED', message: 'firebasehosting.sites.get izni yok' } });
   const V = '/sites/hayalet-avcilari/versions/v1';
   if (q.method === 'GET' && u.pathname === '/projects/hayalet-avcilari/sites/hayalet-avcilari') return json(200, { name: 'projects/1/sites/hayalet-avcilari', defaultUrl: 'https://hayalet-avcilari.web.app', type: 'DEFAULT_SITE' });
   if (q.method === 'GET' && u.pathname === '/sites/hayalet-avcilari/channels/live/releases') return json(200, {});
@@ -106,6 +107,15 @@ test('Play adresleri ve e-posta siteyle aynı', () => {
     if (!yol.endsWith('.html')) continue;
     for (const [adres] of metin(icerik).matchAll(/[\w.+-]+@[\w-]+\.[\w.]+/g)) assert.equal(adres, destek, yol);
   }
+});
+
+test('rol verilmemişse durum hata vermez, false döner; yayinla hata verir', async () => {
+  kayit.yetkisiz = true;
+  try {
+    assert.equal(await site.durum(site.dosyalar()), false);
+    await assert.rejects(site.yayinla(site.dosyalar()), /→ 403:/);
+  } finally { kayit.yetkisiz = false; }
+  kayit.istekler.length = 0;
 });
 
 test('durum yayından önce farkı bildirir, yayinla sürümü kapatıp yayınlar, sonra site aynıdır', async () => {

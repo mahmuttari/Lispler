@@ -93,8 +93,14 @@ export async function karsilastir(d) {
   return fark === 0;
 }
 
+// Rol verilmemişse durum hata vermez, bunu söyler: durum bir yoklamadır (iş akışı yeşil kalır, günlükte YETKİ YOK)
 export async function durum(d) {
-  const site = await sabirla(() => istek(`/projects/${PROJE}/sites/${SITE}`));
+  let site;
+  try { site = await sabirla(() => istek(`/projects/${PROJE}/sites/${SITE}`)); } catch (e) {
+    if (!/→ (401|403):/.test(e.message)) throw e;
+    console.log(`YETKİ YOK: hizmet hesabının ${PROJE} projesinde Firebase Hosting rolü yok (site/README.md › Kurulum)\n  ${e.message.slice(0, 300)}`);
+    return false;
+  }
   console.log(`Site: ${site.name} · ${site.defaultUrl || ADRES} · tür ${site.type || '—'}`);
   const { releases = [] } = await istek(`/sites/${SITE}/channels/live/releases?pageSize=1`);
   const son = releases[0];

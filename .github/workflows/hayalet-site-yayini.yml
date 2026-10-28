@@ -1,0 +1,59 @@
+# Hayalet Avcıları — tanıtım, gizlilik ve hesap silme sayfalarını Firebase Hosting'e yayınlar (https://hayalet-avcilari.web.app;
+# Play'e verilen adres, sahibinin adını içermez). Komutlar hayalet-avcilari/site/yayin-istek.txt'ye yazılır (play-istek.txt düzeni):
+#   durum    — yayındaki siteyi depodakiyle karşılaştırır; hiçbir şey yazmaz
+#   yayinla  — app/hayalet-avcilari/ + app/legal.css + app-ads.txt'yi yayınlar, geri okuyup depodakiyle aynı olduğunu denetler
+# Önce site ve reklam testleri çalışır (sayfalarda ve reklam metinlerinde sahibin adı yok, bağlantılar, Play adresleri);
+# biri kırmızıysa hiçbir şey yayınlanmaz. Kimlik anahtarsız: Play işleriyle aynı Workload Identity hizmet hesabı
+# (android/play-kimlik.env). Hesabın hayalet-avcilari projesindeki rolleri: hayalet-avcilari/site/README.md › Kurulum.
+name: Firebase site yayını (Hayalet Avcıları)
+
+on:
+  push:
+    paths: ['hayalet-avcilari/site/yayin-istek.txt']
+  workflow_dispatch:
+
+concurrency:
+  group: hayalet-site-yayini
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  yayin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Komutlar ve kimlik
+        run: |
+          grep -v '^[[:space:]]*#' hayalet-avcilari/site/yayin-istek.txt | tr -d '\r' | sed '/^[[:space:]]*$/d' > "$RUNNER_TEMP/komutlar"
+          while IFS= read -r K; do case "$K" in durum|yayinla) ;; *) echo "::error::geçersiz komut: $K"; exit 1;; esac; done < "$RUNNER_TEMP/komutlar"
+          echo "Komutlar:"; cat "$RUNNER_TEMP/komutlar"
+          grep -E '^(PLAY_WIF_PROVIDER|PLAY_SERVICE_ACCOUNT)=' android/play-kimlik.env >> "$GITHUB_ENV"
+          if [ -s "$RUNNER_TEMP/komutlar" ]; then echo "KOMUT_VAR=1" >> "$GITHUB_ENV"; fi
+      - name: Site ve reklam testleri
+        run: node --test hayalet-avcilari/site/*.test.mjs hayalet-avcilari/reklam/*.test.mjs
+      - name: Yayın planı
+        run: node hayalet-avcilari/site/yayin.mjs plan
+      - id: auth
+        if: env.KOMUT_VAR == '1'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.PLAY_WIF_PROVIDER }}
+          service_account: ${{ env.PLAY_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/firebase
+      - name: Komutları çalıştır
+        if: env.KOMUT_VAR == '1'
+        env:
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          for K in $(cat "$RUNNER_TEMP/komutlar"); do
+            echo; echo "════ $K ════"
+            node hayalet-avcilari/site/yayin.mjs "$K"
+          done

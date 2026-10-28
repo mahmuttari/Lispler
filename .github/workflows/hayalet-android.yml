@@ -12,6 +12,8 @@ on:
       - '!hayalet-avcilari/play-istek.txt'
       - '!hayalet-avcilari/magaza/**'
       - '!hayalet-avcilari/firebase/**'
+      - '!hayalet-avcilari/site/**'
+      - '!hayalet-avcilari/reklam/**'
       - '.github/workflows/hayalet-android.yml'
   workflow_dispatch:
 

@@ -1,0 +1,75 @@
+{
+  "_aciklama": "Google Ads Uygulama kampanyası metin varlıkları (dil başına 5 başlık ≤30, 5 açıklama ≤90 karakter; Çince gibi çift genişlikli karakterler 2 sayılır). sahne: görsellerin alt yazısı (gorsel.mjs). Kurallar ve sınırlar reklam.test.mjs'de; gerekçe REKLAM-PLANI.md.",
+  "tr": {
+    "ad": "Hayalet Avcıları",
+    "basliklar": ["Hayaletleri yakala", "Boss'u yen, bölümü geç", "Arkadaşınla birlikte avla", "51 ülkede dünya turu", "Avcını seç, kostüm topla"],
+    "aciklamalar": [
+      "Joystick ile dolaş, avcın en yakın hayalete kendiliğinden ateş etsin.",
+      "Süre dolunca boss gelir. Onu ve minik hayaletlerini yen, sonraki bölüme geç.",
+      "Türkiye'den başla, ülke ülke gezerek Arjantin'e kadar git. Pasaportuna damga bas.",
+      "Oda kur, arkadaşlarını arkadaş kodunla çağır ve hayaletleri birlikte avla.",
+      "Her avcının kendine özel gücü ve silahı var. Topladığın paralarla onu güçlendir."
+    ],
+    "sahne": { "oyun": "👻 Hayaletleri yakala", "boss": "👑 Boss'u yen", "tur": "🌍 51 ülkede dünya turu" }
+  },
+  "en": {
+    "ad": "Ghost Hunters",
+    "basliklar": ["Catch every ghost", "Beat the boss, level up", "Hunt ghosts with friends", "A world tour of 51 countries", "Pick a hunter, get costumes"],
+    "aciklamalar": [
+      "Move with the joystick while your hunter fires at the nearest ghost automatically.",
+      "When the timer runs out, the boss shows up. Beat it and its little ghosts to move on.",
+      "Start in Türkiye and travel country by country all the way to Argentina.",
+      "Open a room, invite friends with your friend code and hunt ghosts together.",
+      "Every hunter has a special power and weapon. Upgrade with the coins you collect."
+    ],
+    "sahne": { "oyun": "👻 Catch the ghosts", "boss": "👑 Beat the boss", "tur": "🌍 Tour 51 countries" }
+  },
+  "es": {
+    "ad": "Cazadores de Fantasmas",
+    "basliklar": ["Atrapa a los fantasmas", "Vence al jefe y avanza", "Caza fantasmas con amigos", "Gira mundial por 51 países", "Elige cazador y disfraces"],
+    "aciklamalar": [
+      "Muévete con el joystick y tu cazador dispara solo al fantasma más cercano.",
+      "Al acabar el tiempo llega el jefe. Derrótalo con sus fantasmitas y pasa de nivel.",
+      "Empieza en Turquía y viaja país por país hasta Argentina. Sella tu pasaporte.",
+      "Crea una sala, invita a tus amigos con tu código y cacen fantasmas juntos.",
+      "Cada cazador tiene su propio poder y arma. Mejóralo con las monedas que reúnas."
+    ],
+    "sahne": { "oyun": "👻 Atrapa fantasmas", "boss": "👑 Vence al jefe", "tur": "🌍 Gira por 51 países" }
+  },
+  "ar": {
+    "ad": "صيادو الأشباح",
+    "basliklar": ["اصطد كل الأشباح", "اهزم الزعيم وتقدّم", "اصطد الأشباح مع أصدقائك", "جولة حول 51 دولة", "اختر صيادك واجمع الأزياء"],
+    "aciklamalar": [
+      "تحرّك بعصا التحكم، وصيادك يطلق النار تلقائيًا على أقرب شبح.",
+      "عندما ينتهي الوقت يظهر الزعيم. اهزمه مع أشباحه الصغيرة وانتقل إلى المرحلة التالية.",
+      "ابدأ من تركيا وتنقّل دولةً بعد دولة حتى الأرجنتين، واختم جواز سفرك.",
+      "أنشئ غرفة، وادعُ أصدقاءك برمز الصداقة، واصطادوا الأشباح معًا.",
+      "لكل صياد قوته الخاصة وسلاحه. طوّره بالعملات التي تجمعها."
+    ],
+    "sahne": { "oyun": "👻 اصطد الأشباح", "boss": "👑 اهزم الزعيم", "tur": "🌍 جولة حول 51 دولة" }
+  },
+  "hi": {
+    "ad": "भूत शिकारी",
+    "basliklar": ["भूतों को पकड़ो", "बॉस को हराओ, आगे बढ़ो", "दोस्तों के साथ भूत पकड़ो", "51 देशों की विश्व यात्रा", "शिकारी चुनो, पोशाकें पाओ"],
+    "aciklamalar": [
+      "जॉयस्टिक से घूमो, तुम्हारा शिकारी सबसे पास वाले भूत पर खुद फ़ायर करेगा।",
+      "टाइम खत्म होते ही बॉस आता है। उसे और उसके छोटे भूतों को हराकर अगले लेवल पर जाओ।",
+      "तुर्किये से शुरू करो और देश-दर-देश अर्जेंटीना तक जाओ। पासपोर्ट पर मुहर लगाओ।",
+      "रूम बनाओ, फ्रेंड कोड से दोस्तों को बुलाओ और साथ मिलकर भूत पकड़ो।",
+      "हर शिकारी की अपनी खास पावर और हथियार है। सिक्कों से उसे अपग्रेड करो।"
+    ],
+    "sahne": { "oyun": "👻 भूत पकड़ो", "boss": "👑 बॉस को हराओ", "tur": "🌍 51 देशों की यात्रा" }
+  },
+  "zh": {
+    "ad": "幽灵猎人",
+    "basliklar": ["抓住所有幽灵", "打败首领，进入下一关", "和朋友一起抓幽灵", "环游51个国家", "选好猎人，收集服装"],
+    "aciklamalar": [
+      "用摇杆移动，你的猎人会自动向最近的幽灵开火。",
+      "时间一到首领就会登场。打败它和小幽灵们，进入下一关。",
+      "从土耳其出发，一国一国地一路走到阿根廷，在护照上盖章。",
+      "创建房间，用好友码邀请朋友，一起抓幽灵。",
+      "每个猎人都有专属技能和武器，用金币升级你的猎人。"
+    ],
+    "sahne": { "oyun": "👻 抓幽灵", "boss": "👑 打败首领", "tur": "🌍 环游51个国家" }
+  }
+}

@@ -11,9 +11,9 @@
 - **Paket adı:** `com.poyrazworkshop.hayaletavcilari`
 - **Tür ve kategori:** Oyun · Arcade
 - **Hedef kitle:** 13-15, 16-17, 18 ve üzeri (13 altı seçilmez)
-- **Gizlilik politikası:** https://mahmuttari.github.io/Lispler/hayalet-avcilari/gizlilik.html
-- **Hesap silme adresi:** https://mahmuttari.github.io/Lispler/hayalet-avcilari/hesap-silme.html
-- **Destek e-postası:** mahmuttari@gmail.com
+- **Gizlilik politikası:** https://hayalet-avcilari.web.app/gizlilik.html
+- **Hesap silme adresi:** https://hayalet-avcilari.web.app/hesap-silme.html
+- **Destek e-postası:** poyrazworkshop@gmail.com
 - **Mağaza dilleri:** tr-TR (varsayılan), en-US, es-ES, es-419, zh-CN, hi-IN, ar — çeviriler `diller/` klasöründe
 
 ## Kısa açıklama

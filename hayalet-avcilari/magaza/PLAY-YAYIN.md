@@ -21,10 +21,10 @@ Kullanıcı bilgisayardaki oturuma yalnız şunu yazar:
 | Varsayılan dil | Türkçe – tr-TR |
 | Uygulama / oyun · fiyat | **Oyun** · **Ücretsiz** (AdMob reklamı var, satın alma yok; README › "Reklamlar (AdMob)") |
 | Kategori · etiketler | **Arcade** · Aksiyon, Gündelik (bulunanlar) |
-| İletişim e-postası | `mahmuttari@gmail.com` |
-| Web sitesi | `https://mahmuttari.github.io/Lispler/hayalet-avcilari/` |
-| Gizlilik politikası | `https://mahmuttari.github.io/Lispler/hayalet-avcilari/gizlilik.html` |
-| Hesap silme adresi | `https://mahmuttari.github.io/Lispler/hayalet-avcilari/hesap-silme.html` |
+| İletişim e-postası | `poyrazworkshop@gmail.com` |
+| Web sitesi | `https://hayalet-avcilari.web.app/` |
+| Gizlilik politikası | `https://hayalet-avcilari.web.app/gizlilik.html` |
+| Hesap silme adresi | `https://hayalet-avcilari.web.app/hesap-silme.html` |
 | Metinler ve form cevapları | [`aciklamalar.md`](aciklamalar.md); çeviriler [`diller/`](diller/) (en-US, es-ES, es-419, zh-CN, hi-IN, ar) |
 | Görseller | [`play/`](play/): `simge-512.png`, `tanitim-gorseli-1024x500.png`, `telefon-1…6-*.png` (sırayla; 3.13.0'dan beri oyun Yeşil Orman'da, boss Mor Şato'da yeni engellerle, 6. kare Arkadaşlar); her dil için `play/<dil>/`. Üretici `araclar/magaza-gorsel.mjs` |
 | Sürüm notu | [`surum-notu.txt`](surum-notu.txt) |
@@ -32,8 +32,11 @@ Kullanıcı bilgisayardaki oturuma yalnız şunu yazar:
 | Yükleme anahtarı SHA-1 | `D0:88:A0:75:77:D1:89:B0:15:D4:A5:88:74:9A:1A:8C:C2:EE:56:99` |
 | Yükleme anahtarı SHA-256 | `13:8C:5B:39:EA:0B:63:AC:CA:04:81:68:A5:BF:D9:F7:06:12:5A:E9:32:B9:5F:F6:C4:E1:04:D3:49:E4:80:C7` |
 
-Gizlilik ve hesap silme sayfaları `app/hayalet-avcilari/` altındadır; GitHub Pages yalnız **main** dalından yayınlar.
-Bu sayfalar açılmadan (main'e birleştirilmeden) Play formları tamamlanamaz.
+Gizlilik ve hesap silme sayfaları `app/hayalet-avcilari/` altındadır. 28 Ekim 2026'dan beri Play'e verilen adres
+oyunun Firebase Hosting sitesidir (`https://hayalet-avcilari.web.app/`; sahibinin adını içermez, reklam kampanyası
+için: [`reklam/REKLAM-PLANI.md`](../reklam/REKLAM-PLANI.md)). Site `site/yayin-istek.txt` › `yayinla` ile GitHub'dan
+yayınlanır ([`site/README.md`](../site/README.md)). Aynı sayfaların GitHub Pages kopyası (main dalından) kanonik adresi
+web.app gösterir. Site yayınlanmadan Play formları tamamlanamaz.
 
 ## Talimat (bilgisayardaki Claude Code, `claude --chrome`)
 
@@ -48,7 +51,7 @@ Kurallar:
 ```
 git checkout main && git pull
 ```
-`https://mahmuttari.github.io/Lispler/hayalet-avcilari/gizlilik.html` açılmalı. Açılmıyorsa dur, kullanıcıya söyle.
+`https://hayalet-avcilari.web.app/gizlilik.html` açılmalı. Açılmıyorsa dur, kullanıcıya söyle.
 
 ### 1. Uygulamayı oluştur
 https://play.google.com/console → **Poyraz Workshop** → "Uygulama oluştur": ad, dil, **Oyun**, **Ücretsiz** (tablodan).

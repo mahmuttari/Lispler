@@ -16,6 +16,8 @@ Hazırlandı: 28 Ekim 2026.
 1. `poyrazworkshop7@gmail.com` hesabı "Poyraz Workshop" adıyla açıldı.
 2. Site (`https://hayalet-avcilari.web.app`) yayında. Play'deki e-posta, web sitesi ve hesap silme adresi güncellendi
    ([`../site/README.md`](../site/README.md) › Sıra). Reklam Play sayfasına götürür; orada yeni adresler görünmeli.
+3. Play Console › Hayalet Avcıları › Politika › Uygulama içeriği › **Gizlilik politikası** alanı
+   `https://hayalet-avcilari.web.app/gizlilik.html` yapıldı. API bu alanı değiştiremez; tarayıcıda yapılır.
 
 ## Kurallar (Claude için)
 

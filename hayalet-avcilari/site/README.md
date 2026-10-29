@@ -55,9 +55,14 @@ Roller kaldırılınca bu yol kapanır.
 
 1. Kullanıcı `poyrazworkshop7@gmail.com` hesabını 29 Ekim 2026'da açtı. Sayfalar bu
    adresi gösterir.
-2. Kullanıcı yukarıdaki iki rolü verir.
+2. Kullanıcı yukarıdaki iki rolü verir ve API'yi açar. 29 Ekim 2026'daki ikinci `durum` (koşu 40820968407) da
+   "YETKİ YOK" dedi; komutlar henüz çalıştırılmamıştı.
 3. Bulut oturumu `durum` çalıştırır: rol ve site denetlenir. Site daha önce yayınlanmadıysa bütün dosyalar "yok" görünür.
 4. `yayinla`. Sonra `play-istek.txt` › `magaza uygula` (Play'deki iletişim e-postası ve web sitesi `aciklamalar.md`'den)
    ve `veriguvenligi uygula` (hesap silme adresi `veri-guvenligi.csv`'den).
+5. **Tarayıcıda:** Play Console › Hayalet Avcıları › Politika › Uygulama içeriği › **Gizlilik politikası** →
+   `https://hayalet-avcilari.web.app/gizlilik.html`. Play Developer API bu alanı değiştiremez (`edits.details` yalnız
+   e-posta, telefon ve web sitesi alır); değiştirilmezse Play sayfasındaki gizlilik bağlantısı eski
+   `mahmuttari.github.io/...` adresinde kalır. Bunu kullanıcı ya da bilgisayardaki Claude yapar.
 
 Firebase'in ayrılmış yolları (`/__/auth/…`, `/__/firebase/…`) bu yayından etkilenmez; Google ile Giriş aynı çalışır.

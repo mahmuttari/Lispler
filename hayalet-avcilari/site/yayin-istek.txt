@@ -1,0 +1,6 @@
+# Firebase Hosting yayın isteği (.github/workflows/hayalet-site-yayini.yml). Her satıra bir komut; # ile başlayan satır yorumdur.
+#   durum    — yayındaki siteyi (https://hayalet-avcilari.web.app) depodakiyle karşılaştırır; hiçbir şey yazmaz
+#   yayinla  — sayfaları yayınlar, geri okuyup denetler
+# Rol verilmemişse durum "YETKİ YOK" der (iş akışı yeşil kalır); yayinla hata verir (site/README.md › Kurulum).
+# 29 Ekim 2026: e-posta açıldı (poyrazworkshop7@gmail.com), rol denetimi
+durum

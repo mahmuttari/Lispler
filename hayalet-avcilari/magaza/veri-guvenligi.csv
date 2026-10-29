@@ -4,8 +4,8 @@ PSL_DATA_COLLECTION_ENCRYPTED_IN_TRANSIT,,TRUE,MAYBE_REQUIRED,Is all of the user
 PSL_DATA_COLLECTION_USER_REQUEST_DELETE,,TRUE,MAYBE_REQUIRED,Do you provide a way for users to request that their data is deleted?
 PSL_SUPPORTED_ACCOUNT_CREATION_METHODS,PSL_ACM_OAUTH,TRUE,MULTIPLE_CHOICE,"Account creation
 OAuth (Google Sign-In)"
-PSL_ACCOUNT_DELETION_URL,,https://mahmuttari.github.io/Lispler/hayalet-avcilari/hesap-silme.html,MAYBE_REQUIRED,Delete account URL
-PSL_DATA_DELETION_URL,,https://mahmuttari.github.io/Lispler/hayalet-avcilari/hesap-silme.html,MAYBE_REQUIRED,Delete data URL
+PSL_ACCOUNT_DELETION_URL,,https://hayalet-avcilari.web.app/hesap-silme.html,MAYBE_REQUIRED,Delete account URL
+PSL_DATA_DELETION_URL,,https://hayalet-avcilari.web.app/hesap-silme.html,MAYBE_REQUIRED,Delete data URL
 PSL_DATA_TYPES_PERSONAL,PSL_NAME,TRUE,MULTIPLE_CHOICE,"Personal info
 Name"
 PSL_DATA_TYPES_PERSONAL,PSL_EMAIL,TRUE,MULTIPLE_CHOICE,"Personal info

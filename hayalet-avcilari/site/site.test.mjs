@@ -135,3 +135,13 @@ test('durum yayından önce farkı bildirir, yayinla sürümü kapatıp yayınla
   assert.ok(api.every((i) => i.yetki === 'Bearer deneme' || i.yol.startsWith('/upload/')));
   assert.equal(await site.karsilastir(d), true);
 });
+
+test('Play betiği: yeni site açılmıyorsa web sitesi yazılmaz (android/play.mjs › siteAcik)', async () => {
+  const { siteAcik } = await import('../../android/play.mjs');
+  const istenen = [];
+  const getir = (kod) => async (url) => { istenen.push(url); if (kod instanceof Error) throw kod; return { status: kod }; };
+  assert.equal(await siteAcik('https://hayalet-avcilari.web.app/', getir(200)), true);
+  assert.equal(await siteAcik('https://hayalet-avcilari.web.app/', getir(404)), false);
+  assert.equal(await siteAcik('https://hayalet-avcilari.web.app/', getir(new Error('ağ yok'))), false);
+  assert.deepEqual([...new Set(istenen)], ['https://hayalet-avcilari.web.app/gizlilik.html']);
+});

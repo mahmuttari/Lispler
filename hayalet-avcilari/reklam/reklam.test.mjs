@@ -93,7 +93,7 @@ test('sahibin adı reklamda, oyunda, Play metinlerinde ve web sayfalarında yok'
   for (const f of dosyalar) {
     const s = fs.readFileSync(f, 'utf8');
     assert.doesNotMatch(s, SAHIP, path.relative(DEPO, f));
-    assert.doesNotMatch(s, /mahmuttari\.github\.io|@gmail\.com(?<!poyrazworkshop@gmail\.com)/, path.relative(DEPO, f));
+    assert.doesNotMatch(s, /mahmuttari\.github\.io|@gmail\.com(?<!poyrazworkshop7@gmail\.com)/, path.relative(DEPO, f));
   }
   // aciklamalar.md'nin Play'e giden satırları
   const md = fs.readFileSync(path.join(KOK, 'magaza', 'aciklamalar.md'), 'utf8');

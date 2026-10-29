@@ -21,7 +21,7 @@ Kullanıcı bilgisayardaki oturuma yalnız şunu yazar:
 | Varsayılan dil | Türkçe – tr-TR |
 | Uygulama / oyun · fiyat | **Oyun** · **Ücretsiz** (AdMob reklamı var, satın alma yok; README › "Reklamlar (AdMob)") |
 | Kategori · etiketler | **Arcade** · Aksiyon, Gündelik (bulunanlar) |
-| İletişim e-postası | `poyrazworkshop@gmail.com` |
+| İletişim e-postası | `poyrazworkshop7@gmail.com` |
 | Web sitesi | `https://hayalet-avcilari.web.app/` |
 | Gizlilik politikası | `https://hayalet-avcilari.web.app/gizlilik.html` |
 | Hesap silme adresi | `https://hayalet-avcilari.web.app/hesap-silme.html` |

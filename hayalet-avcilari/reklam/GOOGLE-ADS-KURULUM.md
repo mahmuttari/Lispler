@@ -13,7 +13,7 @@ Hazırlandı: 28 Ekim 2026.
 
 ## Önce bitmiş olması gerekenler
 
-1. `poyrazworkshop@gmail.com` hesabı "Poyraz Workshop" adıyla açıldı.
+1. `poyrazworkshop7@gmail.com` hesabı "Poyraz Workshop" adıyla açıldı.
 2. Site (`https://hayalet-avcilari.web.app`) yayında. Play'deki e-posta, web sitesi ve hesap silme adresi güncellendi
    ([`../site/README.md`](../site/README.md) › Sıra). Reklam Play sayfasına götürür; orada yeni adresler görünmeli.
 
@@ -41,7 +41,7 @@ PR #12 henüz birleşmediyse `main` yerine `claude/hayalet-google-reklam` dalı 
 
 ## 1. Google Ads hesabı (kullanıcı)
 
-https://ads.google.com → **`poyrazworkshop@gmail.com` ile** giriş:
+https://ads.google.com → **`poyrazworkshop7@gmail.com` ile** giriş:
 
 1. "Uzman moduna geç" → **"Kampanya oluşturmadan hesap oluştur"**. Kampanya sihirbazına girilmez.
 2. Hesap bilgileri:

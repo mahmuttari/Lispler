@@ -18,7 +18,7 @@ denetlemesi gerekiyor, **[DY]** doğrulanamadı.
 - **Öne çıkarma kullanılmaz:** YouTube "Tanıt", TikTok "Promote", Instagram "Öne çıkar" ücretlidir, yani reklamdır.
   AB'de ödeyenin adı gösterilir **[D]** (DSA m.26). Platform da ödeme profilindeki adı ister **[K]**.
 - **Hesap kimliği:**
-  - Hesaplar `poyrazworkshop@gmail.com` ile açılır.
+  - Hesaplar `poyrazworkshop7@gmail.com` ile açılır.
   - Google hesabının adı **"Poyraz Workshop"** yazılır. Gmail'den giden e-postada ve YouTube kanalında bu ad görünür
     **[K]**.
 - **Bağlantılar:**
@@ -70,7 +70,7 @@ denetlemesi gerekiyor, **[DY]** doğrulanamadı.
 
 | Platform | Hesap türü | Ad | Kullanıcı adı önerisi | Profil | Bağlantı |
 |---|---|---|---|---|---|
-| YouTube | `poyrazworkshop@gmail.com` Google hesabının kanalı | Poyraz Workshop | `@poyrazworkshop` | `profil/profil-800.png`, kapak `profil/youtube-kapak-2560x1440.png` | Kanal açıklamasında Play bağlantısı (`utm_source=youtube`) |
+| YouTube | `poyrazworkshop7@gmail.com` Google hesabının kanalı | Poyraz Workshop | `@poyrazworkshop` | `profil/profil-800.png`, kapak `profil/youtube-kapak-2560x1440.png` | Kanal açıklamasında Play bağlantısı (`utm_source=youtube`) |
 | TikTok | İşletme hesabı | Poyraz Workshop | `@poyrazworkshop` | `profil-800.png`, profil yazısı `metinler.json` › tr › profil | Profil bağlantısı (`utm_source=tiktok`); işletme hesabında takipçi şartı olmayabilir **[K]** |
 | Instagram | Profesyonel hesap | Poyraz Workshop | `@poyrazworkshop` | `profil-800.png`, aynı yazı | Profil bağlantısı (`utm_source=instagram`) |
 
@@ -115,7 +115,7 @@ Notlar:
 
 ## 6. Sıra
 
-1. **Kullanıcı:** `poyrazworkshop@gmail.com` hesabını "Poyraz Workshop" adıyla açar; 2 adımlı doğrulama açık olur.
+1. **Kullanıcı:** `poyrazworkshop7@gmail.com` hesabını "Poyraz Workshop" adıyla açar; 2 adımlı doğrulama açık olur.
 2. **Kullanıcı:** iki IAM rolünü verir ([`../site/README.md`](../site/README.md) › Kurulum).
 3. **Bulut oturumu:** siteyi yayınlar ve Play'deki adresleri günceller.
 4. **Kullanıcı:**

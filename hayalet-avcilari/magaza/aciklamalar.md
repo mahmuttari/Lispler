@@ -13,7 +13,7 @@
 - **Hedef kitle:** 13-15, 16-17, 18 ve üzeri (13 altı seçilmez)
 - **Gizlilik politikası:** https://hayalet-avcilari.web.app/gizlilik.html
 - **Hesap silme adresi:** https://hayalet-avcilari.web.app/hesap-silme.html
-- **Destek e-postası:** poyrazworkshop@gmail.com
+- **Destek e-postası:** poyrazworkshop7@gmail.com
 - **Mağaza dilleri:** tr-TR (varsayılan), en-US, es-ES, es-419, zh-CN, hi-IN, ar — çeviriler `diller/` klasöründe
 
 ## Kısa açıklama

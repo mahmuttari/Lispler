@@ -53,8 +53,8 @@ Roller kaldırılınca bu yol kapanır.
 
 ## Sıra (28 Ekim 2026'da hazırlandı)
 
-1. Kullanıcı `poyrazworkshop@gmail.com` hesabını açar. Sayfalar bu adresi gösterir; adres açılmadan site yayınlanmaz ve
-   bu dal main'e birleştirilmez (GitHub Pages kopyası da aynı adresi gösterir).
+1. Kullanıcı `poyrazworkshop7@gmail.com` hesabını 29 Ekim 2026'da açtı. Sayfalar bu
+   adresi gösterir.
 2. Kullanıcı yukarıdaki iki rolü verir.
 3. Bulut oturumu `durum` çalıştırır: rol ve site denetlenir. Site daha önce yayınlanmadıysa bütün dosyalar "yok" görünür.
 4. `yayinla`. Sonra `play-istek.txt` › `magaza uygula` (Play'deki iletişim e-postası ve web sitesi `aciklamalar.md`'den)

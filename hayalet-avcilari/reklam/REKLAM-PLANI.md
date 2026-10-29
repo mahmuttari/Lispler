@@ -9,7 +9,7 @@ denetlemesi gerekiyor, **[DY]** doğrulanamadı (varsayım).
 - Kullanıcının seçimleri (28 Ekim 2026):
   - Reklam, Poyraz Workshop adına **yeni bir Google Ads hesabıyla** verilir.
   - Play sayfasındaki iletişim adresleri **nötr adreslere** taşınır:
-    - e-posta `poyrazworkshop@gmail.com` (hesabı kullanıcı açacak);
+    - e-posta `poyrazworkshop7@gmail.com` (kullanıcı 29 Ekim 2026'da açtı);
     - site `https://hayalet-avcilari.web.app` ([`../site/`](../site/README.md)).
   - Bütçe **günde 10 $**, hedef **oyunun 6 dili**.
 - Hazırlananlar:
@@ -31,13 +31,13 @@ denetlemesi gerekiyor, **[DY]** doğrulanamadı (varsayım).
 |---|---|---|
 | Reklam metni ve görseli | Yalnız oyunun adı ve sahneler | Hazır. Test her yayından önce tarar **[D]** |
 | Play sayfası: geliştirici adı | Poyraz Workshop | Var **[D]** |
-| Play sayfası: e-posta, web sitesi, gizlilik ve hesap silme bağlantıları | `poyrazworkshop@gmail.com`, `hayalet-avcilari.web.app` | Hazır; e-posta açılınca yayınlanır |
+| Play sayfası: e-posta, web sitesi, gizlilik ve hesap silme bağlantıları | `poyrazworkshop7@gmail.com`, `hayalet-avcilari.web.app` | Hazır; e-posta açılınca yayınlanır |
 | Oyunun içi (ekranlar, çeviriler) | Ad yok | Test tarar **[D]** |
 | Play "Geliştirici hakkında" (hesap düzeyi bilgiler) | Geliştirici hesabının herkese açık bilgileri. AB'de tacir beyanı varsa yasal ad ve adres de görünür | **[K]** Kullanıcı Play Console › Ayarlar › Geliştirici hesabı'nda denetler |
 | Reklamın "Bu reklamveren hakkında" paneli ve Google Reklam Şeffaflık Merkezi | **Doğrulanmış reklamveren:** yasal ad ya da marka adı ve konum. Ödeme profilinin adı bundan farklıysa "ödeyen" olarak o da gösterilir. **Doğrulanmamış hesap:** ödeme profilinin adı ve konumu, "doğrulanmamış" etiketiyle | **[D]** [Google: Ads transparency](https://support.google.com/adspolicy/answer/13733850) |
 | AB'de (İspanya) gösterilen her reklam | Reklamın kimin adına gösterildiği ve, farklıysa, parayı kimin ödediği. Bu bir yasal zorunluluktur | **[D]** DSA m.26/1-b, c ([metin](https://www.eu-digital-services-act.com/Digital_Services_Act_Article_26.html)) |
 | AdMob `sellers.json` (oyunun içindeki reklamların satıcı listesi) | Yayıncı hesabının adı, "gizli" seçilmemişse | **[K]** AdMob › Ayarlar › Hesap bilgileri › satıcı bilgisi "Gizli" olmalı |
-| Google ile Giriş onay ekranı | Firebase projesinin "kullanıcı destek e-postası" | **[K]** Google Cloud › `hayalet-avcilari` › Google Auth Platform › Marka. `poyrazworkshop@gmail.com` projeye eklenince seçilebilir |
+| Google ile Giriş onay ekranı | Firebase projesinin "kullanıcı destek e-postası" | **[K]** Google Cloud › `hayalet-avcilari` › Google Auth Platform › Marka. `poyrazworkshop7@gmail.com` projeye eklenince seçilebilir |
 
 ### Belirleyici bulgu: reklamveren adı
 
@@ -62,7 +62,7 @@ Koşulu sağlayan yollar:
 | Yol | Ne olur | Bedeli |
 |---|---|---|
 | **A. Poyraz Workshop adına sermaye şirketi** (Ltd. ya da A.Ş.) | Unvan kişi adı içermek zorunda değil. Unvan, işletme konusu ve şirket türü yazılmak şartıyla serbestçe seçilir; TTK m.43 **[K]** ([minvalhukuk](https://minvalhukuk.com/sirketler-ve-ticaret-hukuku/ticaret-unvani-nedir/), [muhasebetr](https://www.muhasebetr.com/yazarlarimiz/enginmalay/014/)). Örnek: "Poyraz Workshop Yazılım Limited Şirketi". Google Ads bu şirket adına doğrulanır ve şirket kartıyla ödenir; panelde yalnız şirket adı görünür. Şirket ileride bütün Poyraz uygulamalarının Play kuruluş hesabı da olabilir | Kuruluş masrafı ve aylık muhasebe; haftalar sürer. Tutar için mali müşavire danışılmalı **[DY]** |
-| **B. Ücretli reklam yerine ücretsiz kanallar** | `poyrazworkshop@gmail.com` ile "Poyraz Workshop" YouTube, TikTok ve Instagram hesapları açılır; oynanış videoları ve buradaki görseller paylaşılır; mağaza sayfası iyileştirilir. Para ödenmediği için "ödeyen" bilgisi oluşmaz | Yavaş; düzenli paylaşım ister |
+| **B. Ücretli reklam yerine ücretsiz kanallar** | `poyrazworkshop7@gmail.com` ile "Poyraz Workshop" YouTube, TikTok ve Instagram hesapları açılır; oynanış videoları ve buradaki görseller paylaşılır; mağaza sayfası iyileştirilir. Para ödenmediği için "ödeyen" bilgisi oluşmaz | Yavaş; düzenli paylaşım ister |
 | **C. Koşulu yalnız panel için gevşetmek** | Reklam metni, görseli ve Play sayfası adsız kalır. Kullanıcı reklamın ⓘ simgesine dokunursa "Bu reklamveren hakkında"da yasal adı görür | Hemen başlanabilir |
 | Yalnız marka tescili | **Yetmez:** Google marka adını gösterebilir, ama ödeme profilinin adı farklıysa ödeyen olarak onu da gösterir **[D]** | — |
 
@@ -138,7 +138,7 @@ Kampanyalar pazar grubuna göre kurulur, her dil kendi reklam grubunda olur **[K
 - Uygulama: `com.poyrazworkshop.hayaletavcilari`.
 - Her reklam grubuna o dilin 5 başlığı, 5 açıklaması ve 9 görseli (`gorseller/<dil>/`) yüklenir.
 - Video eklenmez. Google varlıklardan otomatik video üretebilir **[K]**. Kendi videomuz yüklenecekse
-  `poyrazworkshop@gmail.com` ile açılmış "Poyraz Workshop" YouTube kanalı kullanılmalı; MARFEN ya da kişisel kanal
+  `poyrazworkshop7@gmail.com` ile açılmış "Poyraz Workshop" YouTube kanalı kullanılmalı; MARFEN ya da kişisel kanal
   kullanılmaz.
 
 **Takvim ve kurallar**
@@ -160,7 +160,7 @@ Kampanyalar pazar grubuna göre kurulur, her dil kendi reklam grubunda olur **[K
 
 ## 4. Sıra ve kimin işi
 
-1. **Kullanıcı:** `poyrazworkshop@gmail.com` hesabını açar (2 adımlı doğrulama açık).
+1. **Kullanıcı:** `poyrazworkshop7@gmail.com` hesabını açtı (29 Ekim 2026).
 2. **Kullanıcı:** Cloud Shell'de iki rolü verir ([`../site/README.md`](../site/README.md) › Kurulum).
 3. **Bulut oturumu:**
    - `site/yayin-istek.txt` › `durum`, sonra `yayinla`.
@@ -171,7 +171,7 @@ Kampanyalar pazar grubuna göre kurulur, her dil kendi reklam grubunda olur **[K
    e-postası.
 5. **Kullanıcı:** reklamveren yolunu seçti: C ve B (§0).
 6. **Kullanıcı:**
-   - `poyrazworkshop@gmail.com` ile Google Ads hesabı açar: uzman modu, kampanya oluşturmadan.
+   - `poyrazworkshop7@gmail.com` ile Google Ads hesabı açar: uzman modu, kampanya oluşturmadan.
    - Ödeme profilini kurar. Para birimi sonradan değişmez; Türk kartıyla TRY önerilir ve bütçe 10 $ karşılığı TL
      yazılır **[K]**.
    - **Bireysel** profilde ⓘ sayfasında yalnız ad ve soyad, **işletme** profilinde unvan (MARFEN dahil) görünür

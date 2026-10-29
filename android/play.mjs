@@ -83,6 +83,12 @@ export function magazaMetinleri(md, ceviriler = {}) {
   };
 }
 
+/** Web sitesi açılıyor mu (gizlilik sayfası 200 döner mi)? Yeni adrese taşınırken site henüz yayınlanmadıysa Play'e
+ *  kırık bağlantı yazılmasın diye magaza bunu sorar. getir test içindir. */
+export async function siteAcik(site, getir = fetch) {
+  try { return (await getir(site + 'gizlilik.html', { redirect: 'follow' })).status === 200; } catch { return false; }
+}
+
 /** Sürüm notları: tr-TR surum-notu.txt, çeviriler diller/<dil>.md "Sürüm notu" bölümü (Play sınırı 500 karakter). */
 export function surumNotlari(trNot, ceviriler = {}) {
   const notlar = [{ language: 'tr-TR', text: trNot.trim() }];
@@ -219,8 +225,15 @@ async function durum() {
 async function magaza() {
   const m = magazaMetinleri(fs.readFileSync(path.join(MAGAZA, 'aciklamalar.md'), 'utf8'), dilDosyalari());
   await duzenle(async (id) => {
-    if (UYGULA) await api('PUT', `${API}/edits/${id}/details`, m.details);
-    console.log(`  ${UYGULA ? '[tamam]' : '[plan]'} ayrıntılar: ${m.details.defaultLanguage} · ${m.details.contactEmail} · ${m.details.contactWebsite || '—'}`);
+    // Yeni web sitesi açılmıyorsa Play'deki mevcut site korunur; e-posta ve metinler yine yazılır
+    const ayrinti = { ...m.details };
+    if (ayrinti.contactWebsite && !(await siteAcik(ayrinti.contactWebsite))) {
+      const simdiki = await api('GET', `${API}/edits/${id}/details`);
+      console.log(`  [korundu] ${ayrinti.contactWebsite}gizlilik.html açılmıyor: Play'deki web sitesi değişmez (${simdiki.contactWebsite || '—'})`);
+      if (simdiki.contactWebsite) ayrinti.contactWebsite = simdiki.contactWebsite; else delete ayrinti.contactWebsite;
+    }
+    if (UYGULA) await api('PUT', `${API}/edits/${id}/details`, ayrinti);
+    console.log(`  ${UYGULA ? '[tamam]' : '[plan]'} ayrıntılar: ${ayrinti.defaultLanguage} · ${ayrinti.contactEmail} · ${ayrinti.contactWebsite || '—'}`);
     for (const [dil, l] of Object.entries(m.listings)) {
       if (UYGULA) await api('PUT', `${API}/edits/${id}/listings/${dil}`, { language: dil, ...l });
       console.log(`  ${UYGULA ? '[tamam]' : '[plan]'} ${dil}: "${l.title}" · kısa ${l.shortDescription.length} · tam ${l.fullDescription.length} karakter`);

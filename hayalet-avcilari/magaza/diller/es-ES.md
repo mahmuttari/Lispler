@@ -49,3 +49,4 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 🌉 Puentes de cuerda colgantes sobre los lagos: cruza rápido, ¡si te entretienes en medio, te caes al agua!
 🐾 ¡Llegan las mascotas: lleva un gato, un perro o un pájaro y atacad juntos a los fantasmas!
 🌿 Escóndete en los arbustos: los fantasmas no te ven; ya no aparecen a tu lado.
+🛠️ Ajustes ya no detiene el juego.

@@ -322,9 +322,18 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.15.0";
+const APP_VERSION = "3.15.1";
 const UPDATE_NOTES = {
   // Mağaza notu aynı satırlar; her dilde 500 karakterin altında kalsın diye Dünya Turu'nun satırları (3.14.0) yok
+  // 3.15.0 incelemedeyken 3.15.1 gelebilir: 3.15.0'ın satırları ve düzeltme (mağaza notu aynı satırlar, ≤ 500)
+  "3.15.1": [
+    t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
+    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
+    t("🌉 Göllerde sallanan ip köprüler: hızlı geç, ortada oyalanırsan suya düşersin!"),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al, hayaletlere birlikte saldırın!"),
+    t("🌿 Çalıya saklan, hayaletler seni göremez; hayaletler artık dibinde doğmaz."),
+    t("🛠️ Ayarlardan dönünce oyun artık durmuyor."),
+  ],
   "3.15.0": [
     t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
     t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
@@ -7138,18 +7147,21 @@ function refreshSoundButtons() {
   });
 }
 
-let _soundReturnScreen = "screen-menu";
+// Açılırken açık olan bütün ekranlar hatırlanır, kapanınca hepsine dönülür. Oyun içinde iki ekran açıktır (oyun +
+// üstünde ⏸ menüsü); 3.15.0'a kadar yalnız ilki hatırlanıyordu: ⏸ menüsü kayboluyor, oyun duraklatılmış kalıyor,
+// "Devam" görünmüyordu (3.15.1, test/ayarlar.test.mjs)
+let _soundReturnScreens = ["screen-menu"];
 function openSoundSettings() {
-  // Hangi ekrandan açıldığını hatırla; kapanınca oraya dönelim
-  const active = document.querySelector(".screen.active");
-  _soundReturnScreen = (active && active.id) || "screen-menu";
+  const acik = [...document.querySelectorAll(".screen.active")].map((s) => s.id).filter((id) => id && id !== "screen-sound");
+  _soundReturnScreens = acik.length ? acik : ["screen-menu"];
   refreshSoundButtons();
   refreshSoundSliders();
   showScreen("screen-sound");
 }
 
 function closeSoundSettings() {
-  showScreen(_soundReturnScreen || "screen-menu");
+  showScreen(_soundReturnScreens[0]);
+  for (const id of _soundReturnScreens.slice(1)) document.getElementById(id).classList.add("active");
 }
 
 function setVolume(cat, valStr) {

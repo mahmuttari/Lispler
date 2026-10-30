@@ -22,4 +22,4 @@
 # (yapıldı 2026-10-28, koşu 40646527141: üretim 1.1.0 (1) completed, tr-TR giriş + simge, tanıtım, 6 ekran) durum
 
 # 2026-10-30: "incelemeye gönderildi" bildirimi sonrası denetim.
-durum
+# (yapıldı 2026-10-30, koşu 41018523007: üretim 1.1.0 (1) completed, incelemede; mağaza sayfası henüz 404) durum

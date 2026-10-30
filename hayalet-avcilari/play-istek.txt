@@ -62,3 +62,7 @@
 
 # istek 2026-10-29T05:09:05Z: Play'deki iletişim e-postası poyrazworkshop7@gmail.com (kullanıcının isteği: reklamda ve reklamın götürdüğü yerlerde sahibin adı görünmesin; "Hepsini sen yap"); web sitesi hayalet-avcilari.web.app henüz yayında değil, play.mjs › siteAcik onu yazmaz, Play'deki site korunur; mağaza metinleri değişmedi (aynısı yeniden yazılır)
 # (yapıldı 2026-10-29, koşu 40821721848: önce e-posta mahmuttari@gmail.com · site mahmuttari.github.io/…; sonra e-posta poyrazworkshop7@gmail.com, web.app açılmadığı için site korundu, 7 dilde metin aynısıyla yazıldı, düzenleme onaylandı) durum, magaza uygula
+
+# istek 2026-10-30T21:39:42Z: site yayında (koşu 41132544198); Play'deki web sitesi hayalet-avcilari.web.app ve hesap silme adresi web.app'e (kullanıcı: "reklam sürecini tamamlayalım", "senin yapabileceğin her şeyi sen yap"); mağaza metinleri değişmedi (aynısı yazılır)
+magaza uygula
+veriguvenligi uygula

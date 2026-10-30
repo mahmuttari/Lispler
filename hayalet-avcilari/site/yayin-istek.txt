@@ -8,5 +8,5 @@
 # (yapıldı 2026-10-30, koşu 41116956487: YETKİ YOK — roller hâlâ verilmemiş; Cloud Shell komutları bekleniyor) durum
 
 # istek 2026-10-30T21:38:26Z: rol verildi (kullanıcı: "rol verildi"; "reklam sürecini tamamlayalım") — önce denetle, sonra siteyi yayınla (https://hayalet-avcilari.web.app: tanıtım, gizlilik, hesap silme, app-ads.txt)
-durum
-yayinla
+# (yapıldı 2026-10-30, koşu 41132544198: site daha önce hiç yayınlanmamıştı; 6 dosya farklı) durum
+# (yapıldı 2026-10-30, koşu 41132544198: sürüm fd3431e746f73a70 yayınlandı; geri okunan 6 dosya depodakiyle AYNI) yayinla

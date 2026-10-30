@@ -1,12 +1,15 @@
-// Dikey tanıtım videosu (1080×1920, 30 kare/sn, 26 sn): açılış kartı → Yeşil Orman → Mor Şato bossu → Dünya Turu'nun
-// ilk durağı Türkiye (Efe hayalet, peri bacaları) → kapanış kartı. YouTube Shorts, TikTok ve Instagram Reels içindir.
+// Tanıtım videosu (30 kare/sn, 30 sn): açılış kartı → Yeşil Orman → köpek pet ve göldeki timsahlar (3.15.0) → Mor Şato
+// bossu → Dünya Turu'nun ilk durağı Türkiye (Efe hayalet, peri bacaları) → kapanış kartı. Üç biçim: dikey 1080×1920
+// (YouTube Shorts, TikTok, Reels; Google Ads), yatay 1920×1080 ve kare 1080×1080 (Google Ads Uygulama kampanyası; Google
+// üçünü birden önerir).
 // Oyun sanal saatle oynatılır: requestAnimationFrame ve performance.now betikten adım adım ilerletilir, her adımda tam
 // çözünürlüklü kare alınır (gerçek zamanlı kayıttaki takılma ve düşük kalite olmaz). Oyuncu çember çizerek dolaşır,
 // silah en yakın hayalete kendiliğinden ateş eder; can düşmez. Göstergeler oyunun dilindedir.
 // Ses yok: oyunun müzikleri sunoapi.org'dan üretildi ve ticari kullanım hakkı yok (../README.md › 3.14.0 › Hak notu);
 // müziği paylaşırken platformun kendi kütüphanesinden ekleyin (SOSYAL-PLAN.md). Dosyada sessiz bir ses izi bulunur.
-// Kullanım: node hayalet-avcilari/sosyal/video.mjs [dil…]   (varsayılan tr en; Playwright, Chromium ve ffmpeg gerekir)
-// Çıktı: sosyal/videolar/hayalet-avcilari-<dil>.mp4
+// Kullanım: node hayalet-avcilari/sosyal/video.mjs [dil…] [--bicim=dikey,yatay,kare]
+//   (varsayılan tr en, üç biçim; Playwright, Chromium ve ffmpeg gerekir)
+// Çıktı: sosyal/videolar/hayalet-avcilari-<dil>.mp4 (dikey), hayalet-avcilari-<dil>-yatay.mp4, hayalet-avcilari-<dil>-kare.mp4
 import http from 'node:http';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -22,14 +25,26 @@ export const FPS = 30;
 // Bölümler ve süreleri (sn)
 export const KURGU = [
   { tur: 'kart', ad: 'acilis', sure: 2 },
-  { tur: 'oyun', sahne: 'oyun', sure: 7 },
-  { tur: 'oyun', sahne: 'boss', sure: 7 },
+  { tur: 'oyun', sahne: 'oyun', sure: 6 },
+  { tur: 'oyun', sahne: 'pet', sure: 6 },
+  { tur: 'oyun', sahne: 'boss', sure: 6 },
   { tur: 'oyun', sahne: 'tur', sure: 7 },
   { tur: 'kart', ad: 'kapanis', sure: 3 },
 ];
+// Biçimler: çıktı ölçüsü (w×h) ve oyunun açıldığı pencere (vw×vh, ölçek dpr; vw·dpr = w)
+export const BICIMLER = {
+  dikey: { w: 1080, h: 1920, vw: 360, vh: 640, dpr: 3, ek: '' },
+  yatay: { w: 1920, h: 1080, vw: 640, vh: 360, dpr: 3, ek: '-yatay' },
+  kare: { w: 1080, h: 1080, vw: 480, vh: 480, dpr: 2.25, ek: '-kare' },
+};
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const secim = process.argv.slice(2).length ? process.argv.slice(2) : ['tr', 'en'];
+  const argv = process.argv.slice(2);
+  const bArg = argv.find((a) => a.startsWith('--bicim='));
+  const bicimler = bArg ? bArg.slice(8).split(',') : Object.keys(BICIMLER);
+  for (const bc of bicimler) if (!BICIMLER[bc]) throw new Error(`bilinmeyen biçim: ${bc}`);
+  const diller = argv.filter((a) => !a.startsWith('--'));
+  const secim = diller.length ? diller : ['tr', 'en'];
   for (const d of secim) if (!SOSYAL[d]?.video || !REKLAM[d]) throw new Error(`bilinmeyen dil: ${d}`);
   const PW = process.env.PLAYWRIGHT_MODULE || '/opt/node22/lib/node_modules/playwright/index.mjs';
   const { chromium } = await import(pathToFileURL(PW).href);
@@ -57,19 +72,20 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 
   // Sahneler: Yeşil Orman'da oyuncu çember çizerek dolaşır. Boss sahnelerinde boss ekranın üst kısmında sabit durur
   // (yapay zekâsı kadrajdan çıkıp oyuncunun üstüne biniyor), oyuncu altında sağa sola kayarak ateş eder.
-  async function oyunCek(dil, sahne, sure, klasor) {
-    const bossSahnesi = sahne !== 'oyun';
-    const p = await b.newPage({ viewport: { width: 360, height: 640 }, deviceScaleFactor: 3 });
+  async function oyunCek(dil, sahne, sure, klasor, bc) {
+    const bossSahnesi = sahne === 'boss' || sahne === 'tur';
+    const p = await b.newPage({ viewport: { width: bc.vw, height: bc.vh }, deviceScaleFactor: bc.dpr });
     await p.addInitScript((d) => { localStorage.setItem('hayaletAvcilariDil', d); }, dil);
     await p.addInitScript(SAAT);
     await p.route(/gstatic\.com|googleapis|firebase/, (r) => r.abort());
     await p.goto(adres, { waitUntil: 'load' });
     await p.addStyleTag({ content: '#joystick,#inv-btn,#inv-panel,.pause-btn,#weapon-bar{display:none!important}' });
     await p.waitForTimeout(800);
-    await p.evaluate(() => {
-      save.playerName = 'Kiki'; save.highestLevel = 7; persistSave();
+    await p.evaluate((pet) => {
+      save.playerName = 'Kiki'; save.highestLevel = 7;
+      save.ownedPets = pet ? { kopek: true } : {}; save.pet = pet ? 'kopek' : ''; persistSave();
       try { localStorage.setItem(VERSION_KEY, APP_VERSION); } catch (_) {}
-    });
+    }, sahne === 'pet');
     await p.evaluate(([bolum, ulke, bossSahnesi]) => {
       if (ulke) startGame({ tur: true, ulke: ulkeKodla(ulke).sira });
       else { startGame(); game.level = bolum; buildWalls(); buildWaters(); buildHazards(); }
@@ -94,6 +110,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         if (!en || puan > en.puan) en = { x, y, puan };
       }
       if (en) { game.player.x = en.x; game.player.y = en.y; }
+      petKur(); // pet sahnesinde köpek oyuncunun yanında başlar (öteki sahnelerde pet yok)
       damagePlayer = () => {};
       game.player.invuln = 0;
       // Yükseltmeleri açılmış bir avcı (oyunda paralarla hasar, atış hızı ve menzil yükseltilir): hayaletler oyuncuya
@@ -102,8 +119,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       game.player.menzil = Math.max(game.player.range, 320);
       game.player.range = 1; // hazırlıkta ateş yok: hayaletler toplansın
       game.bossSpawnTimer = bossSahnesi ? 0.05 : 40; // boss sahnelerinde boss hemen gelir
-    }, sahne === 'oyun' ? [8, null, false] : sahne === 'boss' ? [7, null, true] : [0, 'TR', true]);
-    await p.waitForTimeout(sahne === 'oyun' ? 3000 : 1200);
+    }, sahne === 'oyun' ? [8, null, false] : sahne === 'pet' ? [3, null, false] : sahne === 'boss' ? [7, null, true] : [0, 'TR', true]);
+    await p.waitForTimeout(sahne === 'oyun' || sahne === 'pet' ? 3000 : 1200);
     await p.evaluate((sahne) => {
       const P = game.player, bs = game.ghosts.find((g) => g.isBoss);
       if (bs) {
@@ -121,7 +138,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     }, sahne);
     const kare = Math.round(sure * FPS);
     for (let i = 0; i < kare; i++) {
-      await p.evaluate(([t, bossSahnesi]) => {
+      await p.evaluate(([t, bossSahnesi, petSahnesi]) => {
+        // Pet sahnesinde görünen göllerden 2 sn'de bir timsah gözleri çıkar (kimi zaman boşa ısırır)
+        if (petSahnesi && Math.round(t * 30) % 60 === 5 && !game.timsahlar.some((x) => x.tur !== 'saldiri')) timsahSusle();
         const a = (t / (bossSahnesi ? 4 : 5)) * 2 * Math.PI;
         // Yön vektörü oyunun joystick girdisiyle aynı biçimde: Yeşil Orman'da 5 sn'de bir tam çember, boss sahnesinde
         // 4 sn'de bir sağa sola gidip gelme
@@ -130,36 +149,38 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         const bs = game.ghosts.find((g) => g.isBoss);
         if (bs && window.__bossYeri) { bs.x = window.__bossYeri.x; bs.y = window.__bossYeri.y; }
         window.__adim(1000 / 30);
-      }, [i / FPS, bossSahnesi]);
+      }, [i / FPS, bossSahnesi, sahne === 'pet']);
       await p.screenshot({ path: path.join(klasor, `k${String(i).padStart(4, '0')}.jpg`), type: 'jpeg', quality: 92 });
     }
     await p.close();
   }
 
-  // Kart ve alt yazı katmanları (1080×1920 PNG)
-  async function katman(html, dosya, saydam) {
-    const t = await b.newPage({ viewport: { width: 1080, height: 1920 } });
+  // Kart ve alt yazı katmanları (biçimin ölçüsünde PNG)
+  async function katman(html, dosya, saydam, bc) {
+    const t = await b.newPage({ viewport: { width: bc.w, height: bc.h } });
     await t.setContent(html);
     await t.waitForTimeout(150);
     await t.screenshot({ path: dosya, omitBackground: saydam });
     await t.close();
   }
-  const stil = (dil) => `<style>html,body{margin:0;width:1080px;height:1920px;overflow:hidden;font-family:system-ui,sans-serif;color:#fff}
-    .kart{width:1080px;height:1920px;background:radial-gradient(circle at 50% 38%,#5b2a9e 0,#2a1150 50%,#1a0b2e 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:56px;text-align:center}
-    .kart img{width:440px;height:440px;border-radius:22%;box-shadow:0 24px 70px rgba(0,0,0,.6)}
-    h1{margin:0;font-size:${REKLAM[dil].ad.length > 14 ? 92 : 118}px;font-weight:900;line-height:1.05;padding:0 60px;text-shadow:0 8px 0 #3b0764,0 12px 36px rgba(0,0,0,.6)}
-    p{margin:0;font-size:62px;font-weight:800;color:#fde047;text-shadow:0 4px 0 #3b0764}
-    .ara{font-size:46px;color:#e9d5ff;font-weight:700}
-    .yazi{position:absolute;left:60px;right:60px;bottom:230px;text-align:center}
-    .yazi span{display:inline-block;padding:22px 44px;border-radius:999px;background:rgba(26,11,46,.82);border:4px solid #fde047;font-size:64px;font-weight:900}</style>`;
+  // Ölçüler dikey biçimde (1080×1920) eskisiyle aynı; öteki biçimlerde kısa kenara göre ölçeklenir
+  const stil = (dil, bc) => { const k = (n) => Math.round(n * (bc.w === 1080 && bc.h === 1920 ? 1 : Math.min(bc.w, bc.h) / 1200)); return `<style>html,body{margin:0;width:${bc.w}px;height:${bc.h}px;overflow:hidden;font-family:system-ui,sans-serif;color:#fff}
+    .kart{width:${bc.w}px;height:${bc.h}px;background:radial-gradient(circle at 50% 38%,#5b2a9e 0,#2a1150 50%,#1a0b2e 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${k(56)}px;text-align:center}
+    .kart img{width:${k(440)}px;height:${k(440)}px;border-radius:22%;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+    h1{margin:0;font-size:${k(REKLAM[dil].ad.length > 14 ? 92 : 118)}px;font-weight:900;line-height:1.05;padding:0 60px;text-shadow:0 8px 0 #3b0764,0 12px 36px rgba(0,0,0,.6)}
+    p{margin:0;font-size:${k(62)}px;font-weight:800;color:#fde047;text-shadow:0 4px 0 #3b0764}
+    .ara{font-size:${k(46)}px;color:#e9d5ff;font-weight:700}
+    .yazi{position:absolute;left:60px;right:60px;bottom:${Math.round(bc.h * 0.12)}px;text-align:center}
+    .yazi span{display:inline-block;padding:${k(22)}px ${k(44)}px;border-radius:999px;background:rgba(26,11,46,.82);border:${Math.max(3, k(4))}px solid #fde047;font-size:${k(64)}px;font-weight:900}</style>`; };
 
   try {
-    for (const dil of secim) {
+    for (const bcAd of bicimler) for (const dil of secim) {
+      const bc = BICIMLER[bcAd];
       const yon = dil === 'ar' ? 'rtl' : 'ltr';
       const m = REKLAM[dil], v = SOSYAL[dil].video;
-      const klasor = fs.mkdtempSync(path.join(gecici, dil + '-'));
-      await katman(`<!doctype html><html dir="${yon}"><head><meta charset="utf-8">${stil(dil)}</head><body><div class="kart"><img src="${ikon}"><h1>${m.ad}</h1></div></body></html>`, path.join(klasor, 'acilis.png'));
-      await katman(`<!doctype html><html dir="${yon}"><head><meta charset="utf-8">${stil(dil)}</head><body><div class="kart"><img src="${ikon}"><h1>${m.ad}</h1><p>${v.son}</p><div class="ara">${v.ara}</div></div></body></html>`, path.join(klasor, 'kapanis.png'));
+      const klasor = fs.mkdtempSync(path.join(gecici, `${dil}-${bcAd}-`));
+      await katman(`<!doctype html><html dir="${yon}"><head><meta charset="utf-8">${stil(dil, bc)}</head><body><div class="kart"><img src="${ikon}"><h1>${m.ad}</h1></div></body></html>`, path.join(klasor, 'acilis.png'), false, bc);
+      await katman(`<!doctype html><html dir="${yon}"><head><meta charset="utf-8">${stil(dil, bc)}</head><body><div class="kart"><img src="${ikon}"><h1>${m.ad}</h1><p>${v.son}</p><div class="ara">${v.ara}</div></div></body></html>`, path.join(klasor, 'kapanis.png'), false, bc);
       const parcalar = [];
       for (const [i, k] of KURGU.entries()) {
         const cikis = path.join(klasor, `parca${i}.mp4`);
@@ -167,22 +188,24 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         if (k.tur === 'kart') {
           // Kart hafifçe yakınlaşır (hareketsiz kare platformlarda donmuş görünür)
           const n = k.sure * FPS;
-          ff('-loop', '1', '-i', path.join(klasor, k.ad + '.png'), '-vf', `scale=2160:3840,zoompan=z='1+0.04*on/${n}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=${n}:s=1080x1920:fps=${FPS}`, '-frames:v', String(n), ...kod, cikis);
+          ff('-loop', '1', '-i', path.join(klasor, k.ad + '.png'), '-vf', `scale=${bc.w * 2}:${bc.h * 2},zoompan=z='1+0.04*on/${n}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=${n}:s=${bc.w}x${bc.h}:fps=${FPS}`, '-frames:v', String(n), ...kod, cikis);
         } else {
           const kareler = path.join(klasor, k.sahne);
           fs.mkdirSync(kareler);
-          await oyunCek(dil, k.sahne, k.sure, kareler);
+          await oyunCek(dil, k.sahne, k.sure, kareler, bc);
           const yazi = path.join(klasor, k.sahne + '-yazi.png');
-          await katman(`<!doctype html><html dir="${yon}"><head><meta charset="utf-8">${stil(dil)}</head><body style="background:transparent"><div class="yazi"><span>${m.sahne[k.sahne]}</span></div></body></html>`, yazi, true);
-          ff('-framerate', String(FPS), '-i', path.join(kareler, 'k%04d.jpg'), '-i', yazi, '-filter_complex', '[0][1]overlay=0:0', ...kod, cikis);
+          const altYazi = k.sahne === 'pet' ? v.pet : m.sahne[k.sahne];
+          await katman(`<!doctype html><html dir="${yon}"><head><meta charset="utf-8">${stil(dil, bc)}</head><body style="background:transparent"><div class="yazi"><span>${altYazi}</span></div></body></html>`, yazi, true, bc);
+          // Ekran görüntüsü ölçüsü kesirli ölçekte (kare: 480 × 2,25) bir piksel sapabilir: biçimin ölçüsüne getirilir
+          ff('-framerate', String(FPS), '-i', path.join(kareler, 'k%04d.jpg'), '-i', yazi, '-filter_complex', `[0]scale=${bc.w}:${bc.h}[o];[o][1]overlay=0:0`, ...kod, cikis);
           fs.rmSync(kareler, { recursive: true });
         }
         parcalar.push(cikis);
-        console.log(`${dil}: ${k.tur === 'kart' ? k.ad : k.sahne} (${k.sure} sn)`);
+        console.log(`${dil} ${bcAd}: ${k.tur === 'kart' ? k.ad : k.sahne} (${k.sure} sn)`);
       }
       const liste = path.join(klasor, 'liste.txt');
       fs.writeFileSync(liste, parcalar.map((p) => `file '${p}'`).join('\n'));
-      const hedef = path.join(KOK, 'sosyal', 'videolar', `hayalet-avcilari-${dil}.mp4`);
+      const hedef = path.join(KOK, 'sosyal', 'videolar', `hayalet-avcilari-${dil}${bc.ek}.mp4`);
       fs.mkdirSync(path.dirname(hedef), { recursive: true });
       // Sessiz ses izi: bazı platformlar sessiz izi olmayan videoda müzik eklemeyi sorunlu yapıyor
       ff('-f', 'concat', '-safe', '0', '-i', liste, '-f', 'lavfi', '-i', 'anullsrc=channel_layout=stereo:sample_rate=44100',

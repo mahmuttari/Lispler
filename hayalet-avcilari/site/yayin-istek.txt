@@ -3,4 +3,6 @@
 #   yayinla  — sayfaları yayınlar, geri okuyup denetler
 # Rol verilmemişse durum "YETKİ YOK" der (iş akışı yeşil kalır); yayinla hata verir (site/README.md › Kurulum).
 # 29 Ekim 2026: e-posta açıldı (poyrazworkshop7@gmail.com), rol denetimi
+# (yapıldı 2026-10-29, koşu 40830563588: YETKİ YOK — serviceUsageConsumer rolü yok, hizmet hesabının projesinde Hosting API'si kapalı) durum
+# 30 Ekim 2026: rol denetimi (kullanıcı: "reklam sürecini tamamlayalım")
 durum

@@ -11,3 +11,15 @@
 
 # 2026-10-24 durum: Play'de uygulama henüz yok. Önce PR birleştirilir, sonra bilgisayardaki Claude Code
 # magaza/PLAY-YAYIN.md "Talimat" 0-5'i yapar (AdMob kimlikleri main'e, ilk AAB elle taslak). Etkin komut yok.
+
+# 2026-10-26: kullanıcı "Play kurulumu tamam" dedi; Play'deki durum salt okuma ile denetleniyor.
+# (yapıldı 2026-10-26 21:25, koşu 40404232457: 404 Package not found) durum
+
+# 2026-10-26: bilgisayar oturumunun "Talimat 1-6 bitti" bildirimi üzerine yeniden denetim.
+# (yapıldı 2026-10-26, koşu 40406149164: yine 404 Package not found; main'de AdMob kimlikleri hâlâ test) durum
+
+# 2026-10-28: Play kurulumu sonrası denetim.
+# (yapıldı 2026-10-28, koşu 40646527141: üretim 1.1.0 (1) completed, tr-TR giriş + simge, tanıtım, 6 ekran) durum
+
+# 2026-10-30: "incelemeye gönderildi" bildirimi sonrası denetim.
+# (yapıldı 2026-10-30, koşu 41018523007: üretim 1.1.0 (1) completed, incelemede; mağaza sayfası henüz 404) durum

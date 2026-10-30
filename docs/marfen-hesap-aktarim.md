@@ -7,8 +7,10 @@ denetlemesi gerekiyor.
 
 - D-U-N-S numarası 29 Ekim 2026'da geldi. Kullanıcı: *"Bu uygulamaları Marifen geliştirici hesabına kaydırabilir misin?"*
 - Kullanıcının seçimleri (30 Ekim 2026):
-  - **"Hayalet hariç hepsi"** taşınır. Hayalet Avcıları Poyraz Workshop'ta kalır, reklamı için kurulan adsız düzen
-    bozulmaz ([`../hayalet-avcilari/reklam/REKLAM-PLANI.md`](../hayalet-avcilari/reklam/REKLAM-PLANI.md)).
+  - Önce **"Hayalet hariç hepsi"** seçildi. Aynı gün kullanıcı: *"Hayalet avcıları ve kıble uygulaması kalabilir"*.
+    Bu yüzden **Hayalet Avcıları ve Kıble Bul Poyraz Workshop'ta kalır**; Not Defteri, İz Haritası, Unitica ve Calqora
+    taşınır. Hayalet'in reklamı için kurulan adsız düzen bozulmaz
+    ([`../hayalet-avcilari/reklam/REKLAM-PLANI.md`](../hayalet-avcilari/reklam/REKLAM-PLANI.md)).
   - MARFEN hesabı **önce kuruluşa çevrilir**; talimatı bu dosyadır.
 - Aktarma ve hesap türü değişikliği Play Console'da hesap sahibinin işidir; Google'ın bunlar için API'si yok. Talimatı
   kullanıcı ya da bilgisayardaki Claude (Claude uygulamasının yerleşik tarayıcı paneli) izler. Her geri dönüşü zor
@@ -25,10 +27,9 @@ denetlemesi gerekiyor.
 | İz Haritası | `com.poyrazworkshop.izharitasi` | yok | yok |
 | Unitica | `com.poyrazworkshop.unitica` | `adfree` | yok |
 | Calqora | `com.poyrazworkshop.calqora` | `adfree` | yok |
-| Kıble Bul | `com.poyrazworkshop.kiblebul` | `adfree` | yok |
 | Ölçü Kutusu | `com.poyrazworkshop.smartmeasure` | `adfree` | yok. Play'de **henüz oluşturulmadı**: aktarılmaz, doğrudan MARFEN'de oluşturulur (§5) |
 
-Hayalet Avcıları (`com.poyrazworkshop.hayaletavcilari`) **taşınmaz**.
+Hayalet Avcıları (`com.poyrazworkshop.hayaletavcilari`) ve Kıble Bul (`com.poyrazworkshop.kiblebul`) **taşınmaz**.
 
 ## 1. Kuruluş hesabında Play'de ne görünür?
 
@@ -73,7 +74,7 @@ Kaynak: Drive › `DUNS_BASVURUSU_OZETI_2026-10-19.md` §2, §5, §6. Geri alın
 
 ## 3. Aktarımdan önce
 
-- **İnceleme:** Unitica, Calqora ve Kıble Bul 28 Ekim 2026'da incelemeye gönderildi. İnceleme bitmeden aktarım
+- **İnceleme:** Unitica ve Calqora 28 Ekim 2026'da incelemeye gönderildi. İnceleme bitmeden aktarım
   istenmez **[K]** (Google sayfası bu durumu yazmıyor; ihtiyat).
 - **Raporlar:** Poyraz Workshop'un kazanç, ödeme ve toplu dışa aktarma raporları indirilir; bunlar aktarılmaz **[D]**.
 - **Politika uyumu:** kaynak hesap ve aktarılan her uygulama politikaya uygun olmalı **[D]**. Poyraz Workshop'un
@@ -86,7 +87,7 @@ Kaynak: Drive › `DUNS_BASVURUSU_OZETI_2026-10-19.md` §2, §5, §6. Geri alın
 ## 4. Aktarım isteği
 
 1. Poyraz Workshop hesabının sahibi https://play.google.com/console/developers/app-transfer açar. Taşınacakları seçer:
-   Not Defteri, İz Haritası, Unitica, Calqora, Kıble Bul. Hayalet Avcıları **seçilmez**. Hedef: MARFEN. İki işlem
+   Not Defteri, İz Haritası, Unitica, Calqora. Hayalet Avcıları ve Kıble Bul **seçilmez**. Hedef: MARFEN. İki işlem
    kimliği girilir **[D]**.
 2. MARFEN hesabının sahibi isteği **onaylar** **[D]**.
 3. Google desteği **2 iş günü** içinde yanıt verir **[D]**. Bu sürede kullanıcılar uygulamayı kullanmaya ve yeniden
@@ -119,8 +120,8 @@ Kaynak: Drive › `DUNS_BASVURUSU_OZETI_2026-10-19.md` §2, §5, §6. Geri alın
    - `docs/kucuk-uygulamalar-play.md` adım 2–6, **MARFEN** hesabında ve kuruluşa geçişten en az 72 saat sonra yapılır.
    - Kuruluş hesapları kapalı test (12 testçi × 14 gün) şartından muaftır **[K]** (D-U-N-S özeti §2).
    - Ardından `play-istek.txt` adımları uygulanır.
-5. **Hayalet Avcıları:**
-   - Poyraz Workshop'ta kalır.
+5. **Hayalet Avcıları ve Kıble Bul:**
+   - Poyraz Workshop'ta kalır; GitHub iş akışları ve hizmet hesabı izinleri değişmez.
    - Poyraz Workshop **kişisel** hesap olduğu için Google, yasal adı, ülkeyi ve geliştirici e-postasını gösterir
      **[D]** (13628312).
    - Kullanıcı Play Console › **Geliştirici profili** sayfasında ne göründüğüne bakar. Geliştirici e-postası kişisel

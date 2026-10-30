@@ -58,7 +58,8 @@ test('Veri güvenliği CSV\'si tabloyla aynı ve beklenen beyanı taşıyor', ()
   assert.deepEqual(Object.keys(o.turler).sort(), Object.keys(vg.TURLER).sort());
   assert.equal(o.genel.PSL_DATA_COLLECTION_ENCRYPTED_IN_TRANSIT, 'TRUE');
   assert.equal(o.genel.PSL_DATA_COLLECTION_USER_REQUEST_DELETE, 'FALSE');
-  assert.ok(!Object.keys(o.genel).some((k) => /ACCOUNT|ACM/.test(k)), 'hesap bölümü yazılmamalı');
+  assert.equal(o.genel['PSL_SUPPORTED_ACCOUNT_CREATION_METHODS/PSL_ACM_NONE'], 'TRUE', 'hesap oluşturulamaz (Play zorunlu tutar)');
+  assert.ok(!Object.keys(o.genel).some((k) => /DELETION_URL|ACM_(?!NONE)/.test(k)), 'silme adresi ya da başka hesap yolu yazılmamalı');
   for (const [tur, t] of Object.entries(o.turler)) {
     assert.ok(t.toplanan && t.paylasilan, `${tur}: toplanıyor ve paylaşılıyor`);
     assert.equal(t.gecici, false, `${tur}: geçici değil`);

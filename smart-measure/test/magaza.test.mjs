@@ -80,7 +80,8 @@ test('Veri güvenliği CSV\'si tabloyla aynı: yalnız AdMob\'un dört türü, s
   for (const yok of ['PSL_AUDIO', 'PSL_PHOTOS', 'PSL_VIDEOS', 'PSL_PRECISE_LOCATION', 'PSL_PURCHASE_HISTORY']) assert.ok(!(yok in o.turler), yok);
   assert.equal(o.genel.PSL_DATA_COLLECTION_ENCRYPTED_IN_TRANSIT, 'TRUE');
   assert.equal(o.genel.PSL_DATA_COLLECTION_USER_REQUEST_DELETE, 'FALSE');
-  assert.ok(!Object.keys(o.genel).some((k) => /ACCOUNT|ACM/.test(k)), 'hesap bölümü yazılmamalı');
+  assert.equal(o.genel['PSL_SUPPORTED_ACCOUNT_CREATION_METHODS/PSL_ACM_NONE'], 'TRUE', 'hesap oluşturulamaz (Play zorunlu tutar)');
+  assert.ok(!Object.keys(o.genel).some((k) => /DELETION_URL|ACM_(?!NONE)/.test(k)), 'silme adresi ya da başka hesap yolu yazılmamalı');
   for (const [tur, t] of Object.entries(o.turler)) {
     assert.ok(t.toplanan && t.paylasilan, `${tur}: toplanıyor ve paylaşılıyor`);
     assert.equal(t.gecici, false); assert.equal(t.istege, false);

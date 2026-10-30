@@ -2,6 +2,8 @@ Question ID (machine readable),Response ID (machine readable),Response value,Ans
 PSL_DATA_COLLECTION_COLLECTS_PERSONAL_DATA,,TRUE,REQUIRED,Does your app collect or share any of the required user data types?
 PSL_DATA_COLLECTION_ENCRYPTED_IN_TRANSIT,,TRUE,MAYBE_REQUIRED,Is all of the user data collected by your app encrypted in transit?
 PSL_DATA_COLLECTION_USER_REQUEST_DELETE,,FALSE,MAYBE_REQUIRED,Do you provide a way for users to request that their data is deleted?
+PSL_SUPPORTED_ACCOUNT_CREATION_METHODS,PSL_ACM_NONE,TRUE,MULTIPLE_CHOICE,"Account creation
+My app does not allow users to create an account"
 PSL_DATA_TYPES_PERSONAL,PSL_NAME,,MULTIPLE_CHOICE,"Personal info
 Name"
 PSL_DATA_TYPES_PERSONAL,PSL_EMAIL,,MULTIPLE_CHOICE,"Personal info

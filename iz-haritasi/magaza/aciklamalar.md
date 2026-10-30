@@ -110,6 +110,7 @@ sunucusu Poyraz Workshop'un sözleşmeli hizmet sağlayıcısı olmadığından 
 
 **CSV:** form [`veri-guvenligi.csv`](veri-guvenligi.csv) ile de yazılabilir (Console'da "CSV'den içe aktar" ya da
 `play-istek.txt` › `veriguvenligi uygula`). CSV'yi elle düzenleme: [`../araclar/veri-guvenligi.mjs`](../araclar/veri-guvenligi.mjs)
-bu tabloyla üretir (`--denetle` farkı yakalar). Hesap bölümü CSV'ye yazılmaz, çünkü Google bu satırların kimliğini
-belgelemiyor: "hesap oluşturma yok" yanıtı Console'da bir kez işaretlenir. API ile yazım formun tamamını değiştirdiği
-için o yanıt sonradan boşalırsa Console'da yeniden işaretlenir.
+bu tabloyla üretir (`--denetle` farkı yakalar). Hesap oluşturma sorusu CSV'de "Uygulamam kullanıcıların hesap
+oluşturmasına izin vermiyor" (`PSL_ACM_NONE`) diye yanıtlanır; Play bu satır olmadan CSV'yi reddeder. Console'un
+şablonda olmayan iki sorusu (uygulama dışında açılmış hesapla giriş, veri silme isteği yolu) Console'da "Hayır" diye
+işaretlenir; API ile yazım formun tamamını değiştirdiği için boşalırlarsa Console'da yeniden işaretlenir.

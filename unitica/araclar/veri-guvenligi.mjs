@@ -2,7 +2,8 @@
 // Unitica — Google Play Veri güvenliği formu CSV'si (bağımlılıksız, Node 22). İz Haritası'ndaki üreticinin aynısı.
 // Satırlar Google'ın şablonundan gelir (hayalet-avcilari/magaza/veri-guvenligi.csv yalnız YAPI olarak okunur: soru ve
 // yanıt kimlikleri, etiketler); "Response value" sütununun tamamı silinip aşağıdaki tabloyla yeniden doldurulur.
-// Hesap bölümü (hesap oluşturma yolu, hesap/veri silme adresi) yazılmaz: uygulamada hesap yoktur.
+// Uygulamada hesap yoktur: hesap oluşturma sorusu "hesap oluşturulamaz" (PSL_ACM_NONE) diye yanıtlanır, Play bu soruyu
+// zorunlu tutar; hesap/veri silme adresi yazılmaz.
 // Tablo magaza/aciklamalar.md › "Veri güvenliği formu" ile aynıdır; biri değişince öbürü de değişir.
 //
 //   node unitica/araclar/veri-guvenligi.mjs           → unitica/magaza/veri-guvenligi.csv
@@ -39,7 +40,10 @@ export const GENEL = {
   PSL_DATA_COLLECTION_USER_REQUEST_DELETE: 'FALSE',
 };
 
-const HESAP = /^PSL_(SUPPORTED_ACCOUNT_CREATION_METHODS|ACCOUNT_DELETION_URL|DATA_DELETION_URL)$/;
+// Şablonda yalnız OAuth seçeneği var; satır Play'in kendi dışa aktarımındaki "hesap yok" seçeneğiyle yazılır
+const HESAP_YOK = ['PSL_SUPPORTED_ACCOUNT_CREATION_METHODS', 'PSL_ACM_NONE', 'TRUE', 'MULTIPLE_CHOICE',
+  'Account creation\nMy app does not allow users to create an account'];
+const SILME = /^PSL_(ACCOUNT_DELETION_URL|DATA_DELETION_URL)$/;
 
 /** Şablon satırları + tablo → yeni satırlar (başlık dahil). */
 export function uret(sablon) {
@@ -47,7 +51,8 @@ export function uret(sablon) {
   const cikti = [baslik];
   for (const r of satirlar) {
     const [soru, yanit] = r;
-    if (HESAP.test(soru)) continue;
+    if (soru === HESAP_YOK[0]) { cikti.push(HESAP_YOK); continue; }
+    if (SILME.test(soru)) continue;
     let deger = '';
     if (soru in GENEL) deger = GENEL[soru];
     else if (soru.startsWith('PSL_DATA_TYPES_')) deger = yanit in TURLER ? 'TRUE' : '';

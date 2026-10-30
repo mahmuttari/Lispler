@@ -1,6 +1,6 @@
 # Hayalet Avcıları — Google Ads kurulum talimatı (tarayıcı)
 
-Hazırlandı: 28 Ekim 2026.
+Hazırlandı: 28 Ekim 2026. Güncellendi: 30 Ekim 2026 (oyun demosu videoları, YouTube adımı).
 
 - **Kararlar:** kullanıcı reklamı **C** yoluyla vermeyi seçti; ücretsiz kanallar da sürer
   ([`REKLAM-PLANI.md`](REKLAM-PLANI.md) §0, §1).
@@ -40,6 +40,9 @@ PR #12 henüz birleşmediyse `main` yerine `claude/hayalet-google-reklam` dalı 
 - Metinler: `hayalet-avcilari/reklam/metinler.json` (dil başına 5 başlık, 5 açıklama).
 - Görseller: `hayalet-avcilari/reklam/gorseller/<dil>/`. Her dilde 9 dosya: `oyun`, `boss`, `tur` × `1200x628`,
   `1200x1200`, `1200x1500`.
+- Videolar: `hayalet-avcilari/sosyal/videolar/`. Her dilde (`tr`, `en`, `es`, `ar`, `hi`) üç biçim, 30 sn, sessiz:
+  `hayalet-avcilari-<dil>.mp4` (dikey 1080×1920), `-yatay.mp4` (1920×1080), `-kare.mp4` (1080×1080). Oyunun
+  kendisinden kaydedilir: `node hayalet-avcilari/sosyal/video.mjs`.
 
 ## 1. Google Ads hesabı (kullanıcı)
 
@@ -67,6 +70,18 @@ https://ads.google.com → **`poyrazworkshop7@gmail.com` ile** giriş:
 3. Google Ads › **Hedefler** › **Dönüşümler**: Android yüklemeleri (Google Play) dönüşümü listede görünmeli. Görünmezse
    "Yeni dönüşüm işlemi" › Uygulama › Google Play › **Yüklemeler** **[K]**.
 
+## 2a. Videoları YouTube'a yükleme
+
+1. https://studio.youtube.com → `poyrazworkshop7@gmail.com` hesabının **Poyraz Workshop** kanalı. Kanal yoksa
+   "Kanal oluştur" ile açılır; ad "Poyraz Workshop", tutamaç `@poyrazworkshop`
+   ([`../sosyal/SOSYAL-PLAN.md`](../sosyal/SOSYAL-PLAN.md) §3).
+2. 15 video tek tek yüklenir. Her videoda:
+   - Başlık: `Hayalet Avcıları · <dil> · <biçim>` (ör. `Hayalet Avcıları · tr · yatay`).
+   - "Çocuklar için yapıldı mı?": **Hayır, çocuklar için yapılmadı**. Oyun 13+ için yayımlandı.
+   - Görünürlük: **Liste dışı**. Reklam liste dışı videoyla çalışır; kanal sayfasında görünmez.
+3. Her videonun bağlantısını (`https://youtu.be/…`) dil ve biçimle birlikte not et; §3'te reklam grubuna eklenir.
+4. Kanal sayfasında sahibin adı görünmemeli: kanal adı ve açıklamada yalnız "Poyraz Workshop".
+
 ## 3. Kampanyalar (dördü de aynı biçimde)
 
 **Yeni kampanya:**
@@ -85,15 +100,15 @@ https://ads.google.com → **`poyrazworkshop7@gmail.com` ile** giriş:
 - Reklam grubu: tablodaki dil.
   - Başlıklar ve açıklamalar `metinler.json` › `<dil>`'den **aynen** girilir.
   - Görsellerin 9'u da `gorseller/<dil>/`'den yüklenir.
-  - Video eklenmez. Google otomatik video önerirse kabul edilebilir **[K]**.
-  - YouTube kanalı bağlanmaz.
+  - Videolar: o dilin üç videosu (dikey, yatay, kare) eklenir. Uygulama kampanyası videoyu YouTube bağlantısıyla
+    alır **[K]**; videolar önce §2a'daki gibi YouTube'a yüklenir.
 
 | Kampanya adı | Ülkeler | Diller | Günlük | Reklam grupları |
 |---|---|---|---|---|
 | HA-TR | Türkiye | Türkçe | 3 $ | `tr` |
 | HA-ES | Meksika, Kolombiya, Arjantin, Peru, Şili, Ekvador | İspanyolca | 2,5 $ | `es` |
 | HA-AR | Mısır, Fas, Cezayir, Irak, Ürdün, Tunus | Arapça | 2 $ | `ar` |
-| HA-IN | Hindistan | Hintçe, İngilizce | 2,5 $ | `hi` ve `en` (iki grup; `en` görselleri `gorseller/en/`) |
+| HA-IN | Hindistan | Hintçe, İngilizce | 2,5 $ | `hi` ve `en` (iki grup; `en` görselleri `gorseller/en/`, videoları `-en`) |
 
 Çince (`zh`) kampanyası kurulmaz; metin ve görsel hazırdır (Google Play Çin anakarasında yok).
 

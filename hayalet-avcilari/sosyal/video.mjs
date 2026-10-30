@@ -86,7 +86,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       save.ownedPets = pet ? { kopek: true } : {}; save.pet = pet ? 'kopek' : ''; persistSave();
       try { localStorage.setItem(VERSION_KEY, APP_VERSION); } catch (_) {}
     }, sahne === 'pet');
-    await p.evaluate(([bolum, ulke, bossSahnesi]) => {
+    await p.evaluate(([bolum, ulke, bossSahnesi, petSahnesi]) => {
       if (ulke) startGame({ tur: true, ulke: ulkeKodla(ulke).sira });
       else { startGame(); game.level = bolum; buildWalls(); buildWaters(); buildHazards(); }
       game.bot = null;
@@ -106,21 +106,31 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         if (bossSahnesi && collidesWalls(x, y - 120, 70)) continue;
         const tam = (k) => k.x > x - W / 2 && k.x + k.w < x + W / 2 && k.y > y - H / 2 && k.y + k.h < y + H / 2;
         const duvar = game.walls.slice(4).filter(tam).reduce((s, k) => s + (ulke && /^obje/.test(k.tur) ? 8 : 3), 0);
-        const puan = duvar + game.waters.filter(tam).length * 3 + game.spikes.concat(game.lavas).filter(tam).length * 2;
+        // Pet sahnesinde göl görünmeli (timsahlar orada çıkar)
+        const puan = duvar + game.waters.filter(tam).length * (petSahnesi ? 30 : 3) + game.spikes.concat(game.lavas).filter(tam).length * 2;
         if (!en || puan > en.puan) en = { x, y, puan };
       }
       if (en) { game.player.x = en.x; game.player.y = en.y; }
       petKur(); // pet sahnesinde köpek oyuncunun yanında başlar (öteki sahnelerde pet yok)
+      if (petSahnesi) {
+        // Köpeğin hemen saldıracağı hayaletler: oyuncunun çevresinde, ekranın içinde
+        for (let i = 0; i < 4; i++) {
+          spawnGhost();
+          const g = game.ghosts[game.ghosts.length - 1], a = i * Math.PI / 2 + 0.6;
+          const yer = freeSpot(game.player.x + Math.cos(a) * 170, game.player.y + Math.sin(a) * 120, 24);
+          g.x = yer.x; g.y = yer.y; g.hp = g.maxHp = 6; g.speed *= 0.6; g.canShoot = false;
+        }
+      }
       damagePlayer = () => {};
       game.player.invuln = 0;
       // Yükseltmeleri açılmış bir avcı (oyunda paralarla hasar, atış hızı ve menzil yükseltilir): hayaletler oyuncuya
       // ulaşmadan yakalanır, sayaç ve paralar artar
-      game.player.damage *= 3; game.player.fireDelay *= 0.5;
+      if (!petSahnesi) { game.player.damage *= 3; game.player.fireDelay *= 0.5; } // pet sahnesinde işi köpek görsün
       game.player.menzil = Math.max(game.player.range, 320);
       game.player.range = 1; // hazırlıkta ateş yok: hayaletler toplansın
       game.bossSpawnTimer = bossSahnesi ? 0.05 : 40; // boss sahnelerinde boss hemen gelir
-    }, sahne === 'oyun' ? [8, null, false] : sahne === 'pet' ? [3, null, false] : sahne === 'boss' ? [7, null, true] : [0, 'TR', true]);
-    await p.waitForTimeout(sahne === 'oyun' || sahne === 'pet' ? 3000 : 1200);
+    }, sahne === 'oyun' ? [8, null, false, false] : sahne === 'pet' ? [5, null, false, true] : sahne === 'boss' ? [7, null, true, false] : [0, 'TR', true, false]);
+    await p.waitForTimeout(sahne === 'oyun' ? 3000 : sahne === 'pet' ? 600 : 1200);
     await p.evaluate((sahne) => {
       const P = game.player, bs = game.ghosts.find((g) => g.isBoss);
       if (bs) {

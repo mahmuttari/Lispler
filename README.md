@@ -70,9 +70,10 @@ Sonra her push'ta **Actions › Android** çalışır, imzalı AAB'yi **Artifact
 - [ ] **Agreements, Tax, and Banking** › Paid Apps sözleşmesi (abonelik satmak için şart).
 - [ ] `ios/project.yml` içindeki `Release` bölümündeki `ADMOB_*` kimliklerini iOS kimliklerinizle değiştirin.
 - [ ] App Store Connect › Users and Access › Integrations › **App Store Connect API** › anahtar oluşturun
-      (rol: **Admin**). GitHub secret'ları: `APPLE_TEAM_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID`,
-      `ASC_KEY_P8` (.p8 dosyasının içeriği).
-- [ ] GitHub › **Actions › iOS › Run workflow** (upload işaretli): uygulama imzalanıp TestFlight'a yüklenir.
+      (rol: **Admin**). GitHub secret'ları: `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_PRIVATE_KEY` (.p8 dosyasının içeriği);
+      küçük uygulamalarla aynı ([`docs/ios-yayin.md`](docs/ios-yayin.md)).
+- [ ] `ios-ortak/asc-istek.txt` dosyasına `yukle notdefteri` yazıp push edin (ya da **Actions › iOS App Store Connect ›
+      Run workflow**): uygulama imzalanıp TestFlight'a yüklenir.
 - [ ] Abonelik grubu ve `notdefteri.pro.aylik` aboneliği ([fiyatlar](magaza/fiyatlandirma.md)), ekran görüntüleri,
       **App Privacy** formu ([cevaplar](magaza/aciklamalar.md)), sonra **Submit for Review**.
       İlk sürümde abonelik, uygulamayla birlikte incelemeye gönderilmelidir.

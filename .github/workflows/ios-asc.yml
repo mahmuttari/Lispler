@@ -1,0 +1,163 @@
+# App Store Connect işleri: küçük uygulamalar (Unitica, Calqora, Ölçü Kutusu) ve Not Defteri.
+# Tetik: ios-ortak/asc-istek.txt değişince (ilk yorum olmayan satır) ya da elle (Run workflow, "komut").
+#   durum [uygulama…]   salt okunur rapor (ios-ortak/asc.mjs durum)
+#   paket [uygula]      eksik paket kimliklerini (bundle ID) kaydeder; "uygula" yoksa yalnız plan
+#   yukle <uygulama>    unitica | calqora | smart-measure | notdefteri: önkontrol (Linux) → derle, imzala, yükle (macOS) →
+#                       Apple'ın işlemesini bekle (Linux). Yapı TestFlight'a gider; incelemeye gönderme burada YOK.
+# İmza: Apple'ın bulut imzası (xcodebuild -allowProvisioningUpdates + App Store Connect API anahtarı). Sertifika ve profil
+# depoda ya da makinede tutulmaz; anahtarın rolü Admin olmalı (bulut dağıtım sertifikası için).
+# Secrets: ASC_KEY_ID, ASC_ISSUER_ID, ASC_PRIVATE_KEY (.p8 içeriği). Depo herkese açık: macOS dakikası ücretsizdir.
+name: iOS App Store Connect
+
+on:
+  push:
+    paths:
+      - 'ios-ortak/asc-istek.txt'
+  workflow_dispatch:
+    inputs:
+      komut:
+        description: 'durum | paket uygula | yukle <uygulama>'
+        default: durum
+
+concurrency:
+  group: ios-asc
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  asc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      yukle: ${{ steps.komut.outputs.yukle }}
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Sınamalar
+        run: node --test ios-ortak/asc.test.mjs ios-ortak/ios.test.mjs
+      - name: Komut
+        id: komut
+        env:
+          GIRDI: ${{ inputs.komut }}
+        run: |
+          set -f
+          K="$GIRDI"
+          [ -n "$K" ] || K="$(grep -v '^[[:space:]]*#' ios-ortak/asc-istek.txt | grep -m1 -v '^[[:space:]]*$' || true)"
+          echo "komut: $K"
+          set -- $K
+          eksik=""; for v in ASC_KEY_ID ASC_ISSUER_ID ASC_PRIVATE_KEY; do [ -n "${!v}" ] || eksik="$eksik $v"; done
+          if [ -n "$eksik" ]; then
+            echo "::warning::GitHub Secrets'ta eksik:$eksik (docs/ios-yayin.md §1 adım 1). App Store Connect'e bağlanılmadı."
+            [ "${1:-}" = durum ] && exit 0 || exit 1
+          fi
+          case "${1:-}" in
+            durum) node ios-ortak/asc.mjs durum "${@:2}" ;;
+            paket) node ios-ortak/asc.mjs paket "${@:2}" ;;
+            yukle)
+              node ios-ortak/asc.mjs onkontrol "${2:-}"
+              echo "yukle=$2" >> "$GITHUB_OUTPUT" ;;
+            *) echo "::error::bilinmeyen komut: ${1:-boş} (durum | paket uygula | yukle <uygulama>)"; exit 1 ;;
+          esac
+
+  yukle:
+    needs: asc
+    if: needs.asc.outputs.yukle != ''
+    runs-on: macos-15
+    timeout-minutes: 45
+    outputs:
+      yapi: ${{ steps.hazirla.outputs.yapi }}
+    env:
+      U: ${{ needs.asc.outputs.yukle }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      # En yeni kararlı Xcode (App Store yüklemelerde güncel SDK ister)
+      - name: Xcode
+        run: |
+          X="$(ls -d /Applications/Xcode_*.app | grep -vi beta | sort -V | tail -1)"
+          sudo xcode-select -s "$X/Contents/Developer"
+          xcodebuild -version
+      - name: Takım kimliği ve yapı numarası
+        id: hazirla
+        run: node ios-ortak/asc.mjs hazirla "$U"
+      - name: Web dosyaları ve eklentiler (Capacitor)
+        if: env.U != 'notdefteri'
+        run: |
+          cd "$U"
+          npm ci
+          node araclar/kimlik.mjs
+          npx cap sync ios
+      - name: Xcode projesi (Not Defteri, XcodeGen)
+        if: env.U == 'notdefteri'
+        run: brew install xcodegen && cd ios && xcodegen generate
+      - name: Arşivle, imzala, App Store Connect'e yükle
+        env:
+          TAKIM: ${{ steps.hazirla.outputs.takim }}
+          YAPI: ${{ steps.hazirla.outputs.yapi }}
+        run: |
+          if [ "$U" = notdefteri ]; then P=ios/NotDefteri.xcodeproj; S=NotDefteri; else P="$U/ios/App/App.xcodeproj"; S=App; fi
+          K="$RUNNER_TEMP/AuthKey.p8"; printf '%s\n' "$ASC_PRIVATE_KEY" > "$K"; chmod 600 "$K"
+          AUTH=(-allowProvisioningUpdates -authenticationKeyPath "$K" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID")
+          A="$RUNNER_TEMP/uygulama.xcarchive"; L="$RUNNER_TEMP/arsiv.log"
+          if xcodebuild archive -project "$P" -scheme "$S" -configuration Release -destination 'generic/platform=iOS' \
+               -archivePath "$A" DEVELOPMENT_TEAM="$TAKIM" CURRENT_PROJECT_VERSION="$YAPI" CODE_SIGN_STYLE=Automatic \
+               "${AUTH[@]}" > "$L" 2>&1; then
+            grep -E "ARCHIVE SUCCEEDED" "$L"
+          else
+            grep -E "error:|ARCHIVE FAILED" "$L" | head -60 || true
+            echo "──── son satırlar"; tail -80 "$L"; exit 1
+          fi
+          cat > "$RUNNER_TEMP/disa.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$TAKIM</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict></plist>
+          EOF
+          L="$RUNNER_TEMP/yukle.log"
+          if xcodebuild -exportArchive -archivePath "$A" -exportOptionsPlist "$RUNNER_TEMP/disa.plist" \
+               -exportPath "$RUNNER_TEMP/disari" "${AUTH[@]}" > "$L" 2>&1; then
+            tail -20 "$L"
+            echo "YÜKLENDİ: $U yapı $YAPI"
+          else
+            grep -iE "error|failed" "$L" | head -60 || true
+            echo "──── son satırlar"; tail -80 "$L"; exit 1
+          fi
+      - name: Temizlik
+        if: always()
+        run: rm -f "$RUNNER_TEMP/AuthKey.p8" "$RUNNER_TEMP/disa.plist"
+
+  isleme:
+    needs: [asc, yukle]
+    if: needs.yukle.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Apple'ın işlemesini bekle
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+        run: node ios-ortak/asc.mjs bekle "${{ needs.asc.outputs.yukle }}" "${{ needs.yukle.outputs.yapi }}"

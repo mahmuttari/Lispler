@@ -1,0 +1,5 @@
+# App Store Connect isteği: bu dosya değişince .github/workflows/ios-asc.yml ilk yorum olmayan satırı çalıştırır.
+#   durum [uygulama…]   salt okunur rapor
+#   paket [uygula]      eksik paket kimliklerini kaydeder ("uygula" yoksa yalnız plan)
+#   yukle <uygulama>    unitica | calqora | smart-measure | notdefteri → TestFlight (incelemeye gönderme yok)
+durum

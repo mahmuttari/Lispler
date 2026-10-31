@@ -14,7 +14,7 @@ denetlemesi gerekiyor.
 | Not Defteri | Swift projesi hazır (`ios/`), hiç yüklenmedi | `com.poyrazworkshop.notdefteri` |
 | Unitica | Capacitor iOS kabuğu eklendi | `com.poyrazworkshop.unitica` |
 | Calqora | Capacitor iOS kabuğu eklendi | `com.poyrazworkshop.calqora` |
-| Ölçü Kutusu | Kabuk eklendi. Sensör eklentisi Swift'le yazılacak; ışık ölçer iOS'ta yok (ortam ışığı sensörüne açık API yok) **[K]** | `com.poyrazworkshop.smartmeasure` |
+| Ölçü Kutusu | Kabuk ve Swift sensör eklentisi hazır; ışık ölçer iOS'ta gösterilmez (ortam ışığı sensörüne açık API yok) **[K]** | `com.poyrazworkshop.smartmeasure` |
 | İz Haritası | **Alınmadı:** iOS, AirTag'in "Bul" yayınlarını başka uygulamalara göstermiyor; ana işlev çalışmaz ve inceleme reddeder **[K]** | — |
 
 - Apple hesabı **bireysel**: Team "MAHMUT TARI". Apple, şahıs işletmesini kuruluş olarak kaydetmiyor; App Store'da
@@ -25,6 +25,9 @@ denetlemesi gerekiyor.
 1. **App Store Connect API anahtarı → GitHub Secrets** (Lispler › Settings › Secrets and variables › Actions):
    - `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_PRIVATE_KEY` (`.p8` dosyasının içeriği).
    - Bu üçü NetcadDevelop'taki (DWG OfficeZip) ile aynı ad ve değerdir; aynı anahtar kullanılabilir.
+   - Anahtarın rolü **Admin** olmalı: yükleme Apple'ın bulut imzasını kullanır, bulut dağıtım sertifikası Admin ister **[K]**.
+   - Not Defteri'nin eski `APPLE_TEAM_ID` ve `ASC_KEY_P8` secret'ları artık kullanılmıyor (takım kimliği API'den okunur);
+     silinebilir.
    - `.p8` dosyası elde yoksa: App Store Connect › Users and Access › Integrations › App Store Connect API › Team Keys
      › "+" (erişim **Admin**). Dosya yalnız bir kez indirilir.
    - Değerler sohbete yazılmaz; doğrudan GitHub'a girilir.
@@ -57,15 +60,23 @@ denetlemesi gerekiyor.
 
 | Adım | Durum |
 |---|---|
-| Capacitor iOS kabuğu, Info.plist, simge, açılış, simülatör derlemesi (`ios-ortak/`, `ios-kucuk.yml`) | Yapıldı (PR #17) |
-| Reklam: platforma göre AdMob kimlikleri, ATT izni (UMP'den sonra), test kimliğiyle yükleme reddi | Sırada |
-| Abonelik: iOS ürünleri (`<paket>.adfree.monthly` / `.yearly`), satın alımları geri yükleme, Apple'ın istediği abonelik açıklamaları ve Kullanım Koşulları bağlantısı, iOS'ta "Google Play" sözcüğü yok | Sırada |
-| Ölçü Kutusu sensör eklentisi (Swift): su terazisi, pusula, ses ölçer; ışık ölçer iOS'ta gizli | Sırada |
-| App Store Connect betiği (NetcadDevelop › `DwgViewer/tools/asc.mjs`'den): paket kimliği kaydı, bulut imzasıyla arşiv ve yükleme, metinler, yaş, abonelikler, incelemeye gönderme | Sırada; anahtar gerekir |
-| Not Defteri: `ios.yml`'deki gizli değer adları NetcadDevelop'takilerle birleştirilir | Sırada |
-| Mağaza metinleri (Play metinlerinden; App Store sınırları: ad 30, alt başlık 30, anahtar sözcük 100, açıklama 4000) ve iPhone ekran görüntüleri (6,9″ 1320×2868) | Sırada |
+| Capacitor iOS kabuğu, Info.plist, simge, açılış, simülatör derlemesi (`ios-ortak/`, `ios-kucuk.yml`) | Yapıldı |
+| Reklam: platforma göre AdMob kimlikleri (`<klasör>/ios/admob.properties`), ATT izni (UMP'den sonra, initialize'dan önce) | Yapıldı |
+| Abonelik: iOS ürünleri (`<paket>.adfree.monthly` / `.yearly`, tek grupta), yalnız bu Apple hesabının geçerli hakları, geri yükleme, Apple'ın abonelik açıklaması, gizlilik ve Kullanım Koşulları (EULA) bağlantıları; iPhone'da "Google Play" sözcüğü yok (`.ios` / `_ios` metin ikizleri) | Yapıldı |
+| Ölçü Kutusu sensör eklentisi (Swift, `smart-measure/ios/App/App/OlcerPlugin.swift`): su terazisi, kamerayla ölçüm, ses ölçer, cetvel; ışık ölçer iPhone'da gizli | Yapıldı |
+| App Store Connect betiği (`ios-ortak/asc.mjs`) ve yükleme iş akışı (`ios-asc.yml`): durum, paket kimliği kaydı, önkontrol (test AdMob kimliğiyle yüklenmez), bulut imzasıyla arşiv ve TestFlight'a yükleme, işlenmeyi bekleme | Yapıldı; anahtar gerekir |
+| Not Defteri: yükleme `ios-asc.yml`'e taşındı, secret adları birleştirildi | Yapıldı |
+| Mağaza metinleri (Play metinlerinden; App Store sınırları: ad 30, alt başlık 30, anahtar sözcük 100, açıklama 4000), iPhone ekran görüntüleri (6,9″ 1320×2868), abonelik ürünleri ve yaş derecesi API ile | Sırada |
 
-İncelemeye gönderme ve satışa açma yalnız kullanıcının açık onayıyla yapılır.
+**Komutlar** (`ios-ortak/asc-istek.txt`'e yazılıp push edilir; ya da Actions › iOS App Store Connect › Run workflow):
+
+| Komut | Ne yapar |
+|---|---|
+| `durum` | Salt okunur rapor: paket kimliği, uygulama kaydı, sürümler, yapılar, abonelikler |
+| `paket uygula` | Eksik paket kimliklerini kaydeder (`uygula` yoksa yalnız plan) |
+| `yukle <uygulama>` | `unitica`, `calqora`, `smart-measure`, `notdefteri`: derler, imzalar, TestFlight'a yükler |
+
+İncelemeye gönderme ve satışa açma yalnız kullanıcının açık onayıyla yapılır; `asc.mjs`'te bunun komutu henüz yoktur.
 
 ## 3. İnceleme riskleri **[K]**
 
@@ -75,3 +86,7 @@ denetlemesi gerekiyor.
 - **3.1.2:** abonelik ekranında fiyat, dönem, otomatik yenileme, gizlilik ve Kullanım Koşulları bağlantıları olmalı;
   geri yükleme düğmesi bulunmalı.
 - **5.1.2:** kişiselleştirilmiş reklam için ATT izni istenmeli; izin verilmezse kişiselleştirilmemiş reklam gösterilir.
+- **2.1 / 4.2 (Ölçü Kutusu):** iPhone'da çalışmayan özellik (ışık ölçer) gösterilmez. Kamera ve mikrofon izin metinleri
+  Info.plist'te İngilizcedir (`smart-measure/ios/plist-ek.json`); Türkçe karşılık isteğe bağlıdır.
+- **Cetvel (Ölçü Kutusu):** iOS ekran yoğunluğunu (ppi) bildirmez; eklenti model kimliğinden Apple'ın yayımladığı değeri
+  kullanır, bilinmeyen modelde ölçeğe göre tahmin eder. Kullanıcı banka kartıyla kalibre edebilir.

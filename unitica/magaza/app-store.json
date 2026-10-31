@@ -1,0 +1,62 @@
+{
+  "_": "App Store metinleri (ios-ortak/app-store.mjs). Açıklama Play'deki uzun açıklamadan; burada alt başlık (≤30), anahtar sözcükler (≤100, virgülle, boşluksuz), tanıtım metni (≤170). Ad verilmezse Play'deki ad.",
+  "destek": "https://mahmuttari.github.io/Lispler/unitica/gizlilik.html",
+  "gizlilik": "https://mahmuttari.github.io/Lispler/unitica/gizlilik.html",
+  "yerel": {
+    "tr": {
+      "altBaslik": "Mühendislik için 251 birim",
+      "anahtar": "çevirici,mühendislik,basınç,gerilme,debi,inşaat,geoteknik,hidrolik,viskozite,kN,psi,kgf,metrik,inç",
+      "tanitim": "26 kategori, 251 birim: basınç, debi, birim hacim ağırlık, geçirgenlik ve daha fazlası. İnternet gerekmez; geçmiş ve favoriler telefonunda kalır."
+    },
+    "en-US": {
+      "altBaslik": "251 engineering units, offline",
+      "anahtar": "engineering,pressure,stress,flow,civil,geotechnical,hydraulic,viscosity,kPa,psi,ksf,metric,imperial",
+      "tanitim": "26 categories, 251 units: pressure, flow, unit weight, hydraulic conductivity and more. No internet needed; your history and favorites stay on your phone."
+    },
+    "de-DE": {
+      "altBaslik": "Technische Einheiten, offline",
+      "anahtar": "Umrechner,Ingenieur,Druck,Spannung,Durchfluss,Bau,Geotechnik,Hydraulik,Viskosität,kPa,psi,metrisch",
+      "tanitim": "26 Kategorien, 251 Einheiten: Druck, Durchfluss, Wichte, Durchlässigkeit und mehr. Ohne Internet; Verlauf und Favoriten bleiben auf dem Telefon."
+    },
+    "fr-FR": {
+      "altBaslik": "251 unités d’ingénierie",
+      "anahtar": "convertisseur,ingénierie,pression,contrainte,débit,génie civil,géotechnique,hydraulique,kPa,psi",
+      "tanitim": "26 catégories, 251 unités : pression, débit, poids volumique, perméabilité et plus. Sans internet ; l’historique et les favoris restent sur votre téléphone."
+    },
+    "es-ES": {
+      "altBaslik": "251 unidades de ingeniería",
+      "anahtar": "unidad,ingeniería,presión,tensión,caudal,obra civil,geotecnia,hidráulica,kPa,psi,métrico",
+      "tanitim": "26 categorías, 251 unidades: presión, caudal, peso específico, permeabilidad y más. Sin internet; el historial y los favoritos se quedan en tu teléfono."
+    },
+    "it": {
+      "altBaslik": "251 unità di ingegneria",
+      "anahtar": "conversione,ingegneria,pressione,tensione,portata,edilizia,geotecnica,idraulica,kPa,psi,metrico",
+      "tanitim": "26 categorie, 251 unità: pressione, portata, peso specifico, permeabilità e altro. Senza internet; cronologia e preferiti restano sul tuo telefono."
+    },
+    "pt-BR": {
+      "altBaslik": "251 unidades de engenharia",
+      "anahtar": "unidade,engenharia,pressão,tensão,vazão,construção,geotecnia,hidráulica,kPa,psi,métrico",
+      "tanitim": "26 categorias, 251 unidades: pressão, vazão, peso específico, permeabilidade e mais. Sem internet; o histórico e os favoritos ficam no seu celular."
+    },
+    "ru": {
+      "altBaslik": "251 инженерная единица",
+      "anahtar": "перевод,единицы,инженер,давление,напряжение,расход,строительство,геотехника,гидравлика,кПа",
+      "tanitim": "26 категорий, 251 единица: давление, расход, удельный вес, коэффициент фильтрации и другие. Без интернета; история и избранное остаются на телефоне."
+    },
+    "ar-SA": {
+      "altBaslik": "251 وحدة هندسية دون إنترنت",
+      "anahtar": "تحويل,وحدات,هندسة,ضغط,إجهاد,تدفق,إنشاءات,جيوتقنية,هيدروليك,kPa,psi,متري",
+      "tanitim": "26 فئة و251 وحدة: الضغط والتدفق ووزن وحدة الحجم والنفاذية وغيرها. دون إنترنت؛ يبقى السجل والمفضلة على هاتفك."
+    },
+    "ja": {
+      "altBaslik": "251の工学単位をオフラインで",
+      "anahtar": "単位,変換,換算,工学,圧力,応力,流量,土木,地盤,水理,kPa,psi,メートル法",
+      "tanitim": "26カテゴリー、251単位：圧力、流量、単位体積重量、透水係数など。インターネット不要。履歴とお気に入りは端末内に保存されます。"
+    },
+    "ko": {
+      "altBaslik": "공학 단위 251개, 오프라인",
+      "anahtar": "계산기,변환,환산,공학,압력,응력,유량,토목,지반,수리,kPa,psi,미터법",
+      "tanitim": "26개 카테고리, 251개 단위: 압력, 유량, 단위중량, 투수계수 등. 인터넷이 필요 없고 기록과 즐겨찾기는 휴대폰에만 저장됩니다."
+    }
+  }
+}

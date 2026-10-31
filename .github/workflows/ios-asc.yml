@@ -42,7 +42,7 @@ jobs:
         with:
           node-version: 22
       - name: Sınamalar
-        run: node --test ios-ortak/asc.test.mjs ios-ortak/ios.test.mjs
+        run: node --test ios-ortak/asc.test.mjs ios-ortak/ios.test.mjs ios-ortak/app-store.test.mjs
       - name: Komut
         id: komut
         env:

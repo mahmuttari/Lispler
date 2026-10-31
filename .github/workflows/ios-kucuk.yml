@@ -12,6 +12,7 @@ on:
       - 'smart-measure/ios/**'
       - 'smart-measure/test/ses-swift.test.mjs'
       - 'ios-ortak/**'
+      - '*/magaza/app-store.json'
       - '.github/workflows/ios-kucuk.yml'
   workflow_dispatch:
 
@@ -28,7 +29,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - run: node --test ios-ortak/ios.test.mjs ios-ortak/asc.test.mjs
+      - run: node --test ios-ortak/ios.test.mjs ios-ortak/asc.test.mjs ios-ortak/app-store.test.mjs
 
   derle:
     needs: denetim

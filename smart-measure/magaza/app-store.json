@@ -1,0 +1,79 @@
+{
+  "_": "App Store metinleri (ios-ortak/app-store.mjs). iPhone'da ışık ölçer yok (iOS ortam ışığı sensörünü açmaz): Play açıklamasındaki ışık ölçer bölümü ve sözleri çıkarılır; Google Play yerine App Store.",
+  "destek": "https://mahmuttari.github.io/Lispler/smart-measure/",
+  "gizlilik": "https://mahmuttari.github.io/Lispler/smart-measure/gizlilik.html",
+  "degistir": {
+    "tr": [
+      [
+        ", ses ölçer ve ışık ölçer tek uygulamada",
+        " ve ses ölçer tek uygulamada"
+      ],
+      [
+        "💡 IŞIK ÖLÇER\n• Ortam ışığı lux olarak; ortalama ve en yüksek değer.\n• Çalışma masası (300–500 lux önerilir) ve iç mekân bitkileri için yorum.\n\n",
+        ""
+      ],
+      [
+        "reklam ve Google Play aboneliği için çıkar.",
+        "reklam ve App Store aboneliği için çıkar."
+      ],
+      [
+        "Ses ve ışık değerlerini",
+        "Ses değerlerini"
+      ],
+      [
+        "• Işık sensörleri telefonlar arasında yaklaşık %20–30 farklı ölçebilir.\n",
+        ""
+      ],
+      [
+        " (ör. ışık sensörü)",
+        ""
+      ],
+      [
+        " ve Google Play'den istediğin zaman iptal edilebilir.",
+        " ve istediğin zaman iptal edilebilir."
+      ]
+    ],
+    "en-US": [
+      [
+        ", a sound meter and a light meter in one app",
+        " and a sound meter in one app"
+      ],
+      [
+        "💡 LIGHT METER\n• Ambient light in lux, with average and maximum.\n• Advice for a desk (300–500 lux recommended) and for indoor plants.\n\n",
+        ""
+      ],
+      [
+        "ads and the Google Play subscription.",
+        "ads and the App Store subscription."
+      ],
+      [
+        "Do not use sound or light readings",
+        "Do not use sound readings"
+      ],
+      [
+        "• Light sensors can differ by roughly 20–30 % between phones.\n",
+        ""
+      ],
+      [
+        " (for example a light sensor)",
+        ""
+      ],
+      [
+        " and can be cancelled in Google Play at any time.",
+        " and can be cancelled at any time."
+      ]
+    ]
+  },
+  "yerel": {
+    "tr": {
+      "altBaslik": "Su terazisi, açı, ses ölçer",
+      "anahtar": "su terazisi,açıölçer,eğim,mesafe,yükseklik,desibel,ses,kamera,ölçüm,metre,iletki,hizalama",
+      "tanitim": "Su terazisi, ekran cetveli, açıölçer, kamerayla mesafe ve yükseklik, ses ölçer. Her aracın doğruluğu açıkça yazar; her birini kalibre edebilirsin."
+    },
+    "en-US": {
+      "altBaslik": "Spirit level, ruler, dB meter",
+      "anahtar": "bubble level,grade,protractor,angle,tilt,distance,height,decibel,sound,camera,dB,inclinometer,tape",
+      "tanitim": "Spirit level, screen ruler, protractor, distance and height by camera, and a sound meter. Every tool says how accurate it is, and you can calibrate each one."
+    }
+  }
+}

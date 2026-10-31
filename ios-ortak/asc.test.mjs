@@ -38,7 +38,7 @@ const sunucu = http.createServer((q, r) => {
       }
       return yanit(200, { data: veri.builds });
     }
-    if (u.pathname === '/v1/appScreenshots' && q.method === 'POST') {
+    if ((u.pathname === '/v1/appScreenshots' || u.pathname === '/v1/subscriptionAppStoreReviewScreenshots') && q.method === 'POST') {
       const n = JSON.parse(govde).data.attributes.fileSize;
       return yanit(201, { data: { id: `SS${istekler.length}`, attributes: { uploadOperations: [
         { method: 'PUT', url: `${process.env.ASC_API}/yukle/${istekler.length}`, offset: 0, length: Math.ceil(n / 2), requestHeaders: [{ name: 'Content-Type', value: 'image/jpeg' }] },
@@ -50,7 +50,8 @@ const sunucu = http.createServer((q, r) => {
     if (u.pathname === '/v1/appInfos/I1/appInfoLocalizations') return yanit(200, { data: [{ id: 'L-tr', attributes: { locale: 'tr', name: 'Unitica – Birim Dönüştürücü', subtitle: 'eski', privacyPolicyUrl: '' } }] });
     if (u.pathname === '/v1/appStoreVersions/V1/appStoreVersionLocalizations') return yanit(200, { data: veri.vl });
     if (/\/appScreenshotSets$/.test(u.pathname)) return yanit(200, { data: [] });
-    if (/^\/v1\/appScreenshots\/[\w-]+$/.test(u.pathname)) return yanit(200, { data: { attributes: { assetDeliveryState: { state: 'COMPLETE' } } } });
+    if (/^\/v1\/(appScreenshots|subscriptionAppStoreReviewScreenshots)\/[\w-]+$/.test(u.pathname)) return yanit(200, { data: { attributes: { assetDeliveryState: { state: 'COMPLETE' } } } });
+    if (/\/appStoreReviewScreenshot$/.test(u.pathname)) return yanit(200, { data: null });
     if (/\/appScreenshotSets\/[\w-]+\/appScreenshots$/.test(u.pathname)) return yanit(200, { data: [] });
     if (u.pathname === '/v1/appInfos/I1/ageRatingDeclaration') return yanit(200, { data: { id: 'Y1', attributes: { advertising: false, violenceRealistic: 'NONE', kidsAgeBand: null } } });
     if (/\/subscriptionGroups$/.test(u.pathname)) return yanit(200, { data: [{ id: 'G1', attributes: { referenceName: 'Reklamsız' } }] });
@@ -201,6 +202,9 @@ test('abonelik: plan kipinde yazmaz; aylık ürün açılır, adlar 11 dilde, Ç
   const fiyat = yaz.filter((x) => x.yol === '/v1/subscriptionPrices').map((x) => [x.govde.data.relationships.territory.data.id, x.govde.data.relationships.subscriptionPricePoint.data.id]);
   assert.ok(fiyat.some(([t, n]) => t === 'USA' && n === 'P999'), 'yıllık ABD 9,99 $');
   assert.ok(fiyat.some(([t, n]) => t === 'TUR' && n === 'E-TUR'), 'Türkiye ABD eşdeğeri');
+  const inceleme = yaz.filter((x) => x.yol === '/v1/subscriptionAppStoreReviewScreenshots').map((x) => x.govde.data);
+  assert.equal(inceleme.length, 2, 'iki ürünün ikisine de inceleme görseli');
+  assert.ok(inceleme.every((d) => d.attributes.fileName === 'inceleme-abonelik.jpg' && d.relationships.subscription.data.type === 'subscriptions'));
   const adlar = yaz.filter((x) => x.yol === '/v1/subscriptionLocalizations').map((x) => x.govde.data.attributes);
   assert.ok(adlar.some((a) => a.locale === 'tr' && a.name === 'Reklamsız – yıllık' && a.description === 'Bütün reklamları kaldırır'));
 });

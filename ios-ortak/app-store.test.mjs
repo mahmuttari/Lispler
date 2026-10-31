@@ -83,6 +83,12 @@ test('iPhone 6,9″ ekran görüntüleri: her App Store dilinde en az 3, 1320×2
   }
 });
 
+test('abonelik inceleme görseli: her uygulamada 1320×2868 JPEG (node ios-ortak/inceleme-gorsel.mjs)', () => {
+  for (const k of Object.values(KLASOR)) {
+    assert.deepEqual(jpegBoyut(fs.readFileSync(new URL(`../${k}/magaza/app-store/inceleme-abonelik.jpg`, import.meta.url))), [1320, 2868], k);
+  }
+});
+
 test('APP-STORE.md dosyaları güncel (node ios-ortak/app-store.mjs --md)', () => {
   for (const [u, k] of Object.entries(KLASOR)) {
     assert.equal(fs.readFileSync(new URL(`../${k}/magaza/APP-STORE.md`, import.meta.url), 'utf8'), md(u), `${k}/magaza/APP-STORE.md eski`);

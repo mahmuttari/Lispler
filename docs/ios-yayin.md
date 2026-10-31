@@ -69,7 +69,8 @@ denetlemesi gerekiyor.
 | Mağaza metinleri (`ios-ortak/app-store.mjs`, `<klasör>/magaza/APP-STORE.md`): Play metinlerinden, iPhone'a uyarlanmış; Apple'ın abonelik açıklaması, EULA ve gizlilik bağlantıları | Yapıldı; yayından önce kullanıcıya tam gösterilir |
 | `asc.mjs metin / yas / abonelik`: metinleri, yaş derecesini (reklam var → 4+), abonelik grubunu ve ürünlerini (aylık 0,99 $, yıllık 9,99 $, deneme yok, Çin anakarası hariç) yazar | Yapıldı; uygulama kaydı gerekir |
 | iPhone 6,9″ ekran görüntüleri (1320×2868 JPEG; `IOS=1 node <klasör>/araclar/magaza-gorsel.mjs` → `<klasör>/magaza/app-store/<dil>/`) ve `asc.mjs gorsel` | Yapıldı (Unitica ve Calqora 11 dil × 6, Ölçü Kutusu 2 dil × 5; ışık ölçer ekranı yok) |
-| Abonelik inceleme ekran görüntüsü (her ürün için, App Review ister) | Sırada |
+| Abonelik inceleme ekran görüntüsü (`ios-ortak/inceleme-gorsel.mjs` → `<klasör>/magaza/app-store/inceleme-abonelik.jpg`; `abonelik … uygula` iki ürüne yükler) | Yapıldı |
+| App Review iletişim bilgisi (ad, e-posta, **telefon**) ve App Privacy (gizlilik etiketleri) | Kullanıcı, App Store Connect'te tarayıcıdan; telefon depoya yazılmaz, yanıtlar `<klasör>/magaza/veri-guvenligi.csv`'de |
 
 **Komutlar** (`ios-ortak/asc-istek.txt`'e yazılıp push edilir; ya da Actions › iOS App Store Connect › Run workflow):
 

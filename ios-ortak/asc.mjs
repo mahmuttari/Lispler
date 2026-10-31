@@ -14,7 +14,8 @@
  *                                                   gizlilik adresi, kategori, içerik hakları; sürüm (numara, telif, elle
  *                                                   yayın), açıklama, anahtar sözcükler, tanıtım metni, destek adresi
  *   node ios-ortak/asc.mjs yas <uygulama> [uygula]       yaş derecesi anketi: reklam var, öbür bütün sorular Yok / Hayır (4+)
- *   node ios-ortak/asc.mjs abonelik <uygulama> [uygula]  reklamsız abonelik: grup, aylık ve yıllık ürün, adlar, inceleme notu,
+ *   node ios-ortak/asc.mjs abonelik <uygulama> [uygula]  reklamsız abonelik: grup, aylık ve yıllık ürün, adlar, inceleme notu ve
+ *                                                   inceleme görseli (ios-ortak/inceleme-gorsel.mjs),
  *                                                   ülke erişimi (Çin anakarası hariç), fiyat (ABD 0,99 / 9,99 $, öbür
  *                                                   ülkeler Apple'ın eşdeğeri; var olan fiyata dokunulmaz)
  *   node ios-ortak/asc.mjs gorsel <uygulama> [uygula]    iPhone 6,9″ ekran görüntüleri (<klasör>/magaza/app-store/<dil>/*.jpg,
@@ -443,6 +444,18 @@ export async function abonelik(u, uygula = false) {
           `fiyat ${t}${t === 'USA' ? ` ${F.usd} $` : ' (ABD eşdeğeri)'}`);
       }
     } else console.log(`  fiyat: ${fiyatli.size} ülkede var`);
+    // inceleme görseli (App Review ister): node ios-ortak/inceleme-gorsel.mjs üretir
+    const gorselDosya = path.join(KOK, UYGULAMALAR[u].klasor, 'magaza', 'app-store', 'inceleme-abonelik.jpg');
+    if (!fs.existsSync(gorselDosya)) throw new Error(`${gorselDosya} yok: node ios-ortak/inceleme-gorsel.mjs ${u}`);
+    let eski = null;
+    try { eski = (await get(`/v1/subscriptions/${s.id}/appStoreReviewScreenshot`))?.data || null; } catch { /* yok */ }
+    const ayni = eski && eski.attributes?.sourceFileChecksum === md5(fs.readFileSync(gorselDosya)) && eski.attributes?.assetDeliveryState?.state === 'COMPLETE';
+    if (!ayni) {
+      if (eski) await yaz(uygula, 'DELETE', `/v1/subscriptionAppStoreReviewScreenshots/${eski.id}`, null, 'eski inceleme görselini sil');
+      plan.push(`inceleme görseli ${pid}`);
+      if (uygula) console.log(`  [tamam] inceleme görseli: ${await dosyaYukle('subscriptionAppStoreReviewScreenshots', rel, gorselDosya)}`);
+      else console.log('  [plan] inceleme görseli yükle (inceleme-abonelik.jpg)');
+    }
   }
   return bitir(uygula);
 }
@@ -451,20 +464,20 @@ export async function abonelik(u, uygula = false) {
 export const EKRAN_TURU = 'APP_IPHONE_67';
 const md5 = (b) => crypto.createHash('md5').update(b).digest('hex');
 
-/** Bir görseli yükler: kayıt → parça parça PUT → "yüklendi" + md5 → Apple'ın işlemesini bekler */
-async function gorselYukle(setId, dosya) {
+/** Bir görseli yükler: kayıt → parça parça PUT → "yüklendi" + md5 → Apple'ın işlemesini bekler.
+ *  tur: appScreenshots | subscriptionAppStoreReviewScreenshots; iliski: kaydın bağlandığı yer (relationships) */
+async function dosyaYukle(tur, iliski, dosya) {
   const veri = fs.readFileSync(dosya), ad = path.basename(dosya);
-  const r = await api('POST', '/v1/appScreenshots', { data: { type: 'appScreenshots', attributes: { fileName: ad, fileSize: veri.length },
-    relationships: { appScreenshotSet: { data: { type: 'appScreenshotSets', id: setId } } } } });
+  const r = await api('POST', `/v1/${tur}`, { data: { type: tur, attributes: { fileName: ad, fileSize: veri.length }, relationships: iliski } });
   const id = r.data.id;
   for (const op of r.data.attributes.uploadOperations || []) {
     const h = Object.fromEntries((op.requestHeaders || []).map((x) => [x.name, x.value]));
     const y = await fetch(op.url, { method: op.method, headers: h, body: veri.subarray(op.offset, op.offset + op.length) });
     if (!y.ok) throw new Error(`${ad}: yükleme parçası ${y.status}`);
   }
-  await api('PATCH', `/v1/appScreenshots/${id}`, { data: { type: 'appScreenshots', id, attributes: { uploaded: true, sourceFileChecksum: md5(veri) } } });
+  await api('PATCH', `/v1/${tur}/${id}`, { data: { type: tur, id, attributes: { uploaded: true, sourceFileChecksum: md5(veri) } } });
   for (let i = 0; i < 30; i++) {
-    const s = (await get(`/v1/appScreenshots/${id}`)).data.attributes.assetDeliveryState || {};
+    const s = (await get(`/v1/${tur}/${id}`)).data.attributes.assetDeliveryState || {};
     if (s.state === 'COMPLETE') return 'COMPLETE';
     if (s.state === 'FAILED') throw new Error(`${ad}: Apple reddetti: ${(s.errors || []).map((e) => e.description || e.code).join('; ')}`);
     await uyu(BEKLE_MS / 20);
@@ -504,7 +517,7 @@ export async function gorsel(u, uygula = false) {
       if (tamam.has(ad)) continue;
       plan.push(`yükle ${y}/${ad}`);
       if (!uygula || !set) { console.log(`  [plan] yükle ${ad} (${Math.round(fs.statSync(d).size / 1024)} KB)`); continue; }
-      console.log(`  [tamam] ${ad}: ${await gorselYukle(set.id, d)}`);
+      console.log(`  [tamam] ${ad}: ${await dosyaYukle('appScreenshots', { appScreenshotSet: { data: { type: 'appScreenshotSets', id: set.id } } }, d)}`);
     }
     if (set && uygula) {
       const simdi = await hepsi(`/v1/appScreenshotSets/${set.id}/appScreenshots`);

@@ -110,6 +110,7 @@ export default {
     "p.b1": "すべての画面で広告を非表示",
     "p.b2": "今後の開発を支援",
     "p.b3": "Google Play でいつでも解約できます",
+    "p.b3.ios": "App Store の設定でいつでも解約できます",
     "p.monthly": "月額",
     "p.yearly": "年額",
     "p.perMonth": "{0} / 月",
@@ -123,7 +124,10 @@ export default {
     "p.thanks": "ご支援ありがとうございます！",
     "p.loading": "価格を読み込み中…",
     "p.unavailable": "この端末では Google Play を利用できないため、ここから定期購入を開始できません。",
+    "p.unavailable.ios": "この端末では App Store を利用できないため、ここから定期購入を開始できません。",
     "p.terms": "お支払いは Google Play アカウントに請求されます。定期購入は、Google Play で解約するまで、表示されている価格で自動的に更新されます。解約はいつでも可能です。",
+    "p.terms.ios": "お支払いは購入の確定時に Apple アカウントに請求されます。現在の期間が終了する 24 時間前までに解約しない限り、定期購入は表示されている価格で自動的に更新され、更新料金は期間終了前の 24 時間以内に請求されます。購入後は App Store のアカウント設定から管理・解約できます。",
+    "p.eula": "利用規約（EULA）",
     "p.cancelled": "購入がキャンセルされました",
     "p.failed": "購入を完了できませんでした",
     "p.restored": "メンバーシップを復元しました",
@@ -141,6 +145,7 @@ export default {
     "s.privacy": "プライバシーポリシー",
     "s.privacyOpen": "表示",
     "p.noPrices": "Google Play から価格を読み込めませんでした。接続を確認して、もう一度お試しください。",
+    "p.noPrices.ios": "App Store から価格を読み込めませんでした。接続を確認して、もう一度お試しください。",
   },
   // category names
   cats: {

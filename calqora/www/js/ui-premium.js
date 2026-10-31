@@ -1,12 +1,13 @@
 // The membership screen: what it gives, the two plans with the store's own prices, subscribe / restore / manage.
+// iPhone (App Review 3.1.2): the renewal terms of the App Store (p.terms.ios) and links to the privacy policy and the licence agreement (EULA).
 import { h, icon } from './dom.js';
 import { t } from './i18n.js';
-import { SUBSCRIPTION } from './config.js';
+import { SUBSCRIPTION, APP, IOS } from './config.js';
 import * as billing from './billing.js';
 import { isPremium, subscribe, restore, manage, onChange, savePercent } from './premium.js';
 import { S } from './state.js';
 import { openSheet, toast } from './sheet.js';
-import { isNative } from './native.js';
+import { isNative, isIOS, openUrl } from './native.js';
 
 export function openMembership() {
   const body = h('div', { class: 'prem' });
@@ -61,7 +62,10 @@ export function openMembership() {
           !loading && available && !priceOf(selected) ? h('div', { class: 'merr center', text: t('p.noPrices') }) : null,
           h('button', { class: 'bigbtn', disabled: loading || !available || busy || !priceOf(selected), onclick: onSubscribe, text: perText(selected) ? t('p.subscribe') + ' · ' + perText(selected) : t('p.subscribe') }),
           h('div', { class: 'center', style: 'margin-top:6px' }, h('button', { class: 'pill', text: t('p.restore'), disabled: busy, onclick: onRestore })),
-          h('p', { class: 'terms', text: t('p.terms') })));
+          h('p', { class: 'terms', text: t('p.terms') }),
+          isIOS ? h('div', { class: 'legal center' },
+            h('button', { class: 'pill link', text: t('s.privacy'), onclick: () => openUrl(APP.privacyUrl) }),
+            h('button', { class: 'pill link', text: t('p.eula'), onclick: () => openUrl(IOS.eulaUrl) })) : null));
   }
 
   render();

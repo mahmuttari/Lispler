@@ -8,6 +8,9 @@
 //    sahte saatiyle: UMP → initialize sırası, G derecesi, banner şeridi (hiçbir düğmenin üstüne binmez), klavyede gizlenme,
 //    doğal durak kuralları (ilk 3 dk yok, 4 dk ara, saatte 6, yazarken yok, sayfa açıkken yok), üye için SDK'nın hiç
 //    başlatılmaması, oturumda üye olunca banner'ın kalkması, mağaza fiyatları, aboneliği yönet adresi, UMP gizlilik satırı.
+// C) iPhone (sahte eklentiler, platform 'ios'), TR açık 390 px ve AR koyu 340 px: UMP → izleme izni (ATT) → initialize, iPhone
+//    reklam kimlikleri, App Store ürünü (…adfree.yearly), üyelik sayfasında Apple'ın yenileme koşulları, gizlilik ve EULA
+//    bağlantıları, "Yönet" Apple'ın sayfası; ekranda Google Play yok, taşma ve çevrilmemiş anahtar yok.
 // Çıkış kodu: hata varsa 1.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -94,16 +97,21 @@ for (const [i, dil] of DILLER.filter((d) => d !== 'tr' && d !== 'ar').entries())
 
 // ---------------------------------------------------------------- B) reklam ve abonelik (sahte eklentiler)
 
-/** Sahte Capacitor: o = { uye, izin, gizlilik, urunYok } → window.__cagri'ya her eklenti çağrısı yazılır */
+/** Sahte Capacitor: o = { uye, izin, gizlilik, urunYok, platform: 'ios', dil, tema } → window.__cagri'ya her eklenti çağrısı yazılır */
 async function yerelSayfa(o = {}, viewport = { width: 390, height: 844 }) {
-  const p = await tarayici.newPage({ viewport });
+  const p = await tarayici.newPage({ viewport, colorScheme: o.tema || 'light' });
   const konsol = [];
   p.on('pageerror', (e) => konsol.push('pageerror ' + e.message));
   p.on('console', (m) => { if (m.type() === 'error') konsol.push(m.text()); });
   await p.clock.install({ time: new Date('2026-10-27T10:00:00Z') });
   await p.addInitScript(({ o, sku }) => {
     if (!/^https?:$/.test(location.protocol)) return;
-    if (!localStorage.getItem('calqora.v1')) localStorage.setItem('calqora.v1', JSON.stringify({ settings: { lang: 'tr', theme: 'light' } }));
+    if (!localStorage.getItem('calqora.v1')) localStorage.setItem('calqora.v1', JSON.stringify({ settings: { lang: o.dil || 'tr', theme: o.tema || 'light' } }));
+    const ios = o.platform === 'ios';
+    const IOS = 'com.poyrazworkshop.calqora.adfree.';
+    let att = 'notDetermined';
+    const islem = () => (ios ? { productIdentifier: IOS + 'yearly', isActive: true, expirationDate: '2027-10-31T10:00:00Z', subscriptionState: 'subscribed' }
+      : { productIdentifier: sku, purchaseState: '1', isAcknowledged: true });
     const cagri = window.__cagri = [];
     const dinleyici = {};
     const kaydet = (ek, ad, sonuc) => async (arg) => { cagri.push({ ek, ad, arg: arg === undefined ? null : JSON.parse(JSON.stringify(arg)) }); return typeof sonuc === 'function' ? sonuc(arg) : sonuc; };
@@ -114,6 +122,7 @@ async function yerelSayfa(o = {}, viewport = { width: 390, height: 844 }) {
     window.Capacitor = {
       DEBUG: false,
       isNativePlatform: () => true,
+      getPlatform: () => (ios ? 'ios' : 'android'),
       registerPlugin: (ad) => window.Capacitor.Plugins[ad],
       Plugins: {
         App: { addListener: (ad) => { cagri.push({ ek: 'App', ad: 'addListener', arg: ad }); return { remove() {} }; }, exitApp: kaydet('App', 'exitApp') },
@@ -121,11 +130,12 @@ async function yerelSayfa(o = {}, viewport = { width: 390, height: 844 }) {
         Browser: { open: kaydet('Browser', 'open') },
         NativePurchases: {
           isBillingSupported: kaydet('NP', 'isBillingSupported', { isBillingSupported: true }),
-          getProducts: kaydet('NP', 'getProducts', o.urunYok ? { products: [] } : { products: [
-            { identifier: 'monthly', planIdentifier: 'adfree', priceString: '₺49,99', price: 49.99, offerToken: 'ay' },
-            { identifier: 'yearly', planIdentifier: 'adfree', priceString: '₺449,99', price: 449.99, offerToken: 'yil' }] }),
-          getPurchases: kaydet('NP', 'getPurchases', () => ({ purchases: uye ? [{ productIdentifier: sku, purchaseState: '1', isAcknowledged: true }] : [] })),
-          purchaseProduct: kaydet('NP', 'purchaseProduct', () => { uye = true; sessionStorage.setItem('sahte-uye', '1'); return { productIdentifier: sku, purchaseState: '1' }; }),
+          getProducts: kaydet('NP', 'getProducts', o.urunYok ? { products: [] } : { products: ios
+            ? [{ identifier: IOS + 'monthly', priceString: '₺49,99', price: 49.99 }, { identifier: IOS + 'yearly', priceString: '₺449,99', price: 449.99 }]
+            : [{ identifier: 'monthly', planIdentifier: 'adfree', priceString: '₺49,99', price: 49.99, offerToken: 'ay' },
+              { identifier: 'yearly', planIdentifier: 'adfree', priceString: '₺449,99', price: 449.99, offerToken: 'yil' }] }),
+          getPurchases: kaydet('NP', 'getPurchases', () => ({ purchases: uye ? [islem()] : [] })),
+          purchaseProduct: kaydet('NP', 'purchaseProduct', () => { uye = true; sessionStorage.setItem('sahte-uye', '1'); return islem(); }),
           restorePurchases: kaydet('NP', 'restorePurchases', {}),
           manageSubscriptions: kaydet('NP', 'manageSubscriptions', {}),
         },
@@ -141,6 +151,8 @@ async function yerelSayfa(o = {}, viewport = { width: 390, height: 844 }) {
           removeBanner: kaydet('AdMob', 'removeBanner', () => { setTimeout(() => yay('bannerAdSizeChanged', { width: 0, height: 0 }), 10); }),
           prepareInterstitial: kaydet('AdMob', 'prepareInterstitial', { adUnitId: 'x' }),
           showInterstitial: kaydet('AdMob', 'showInterstitial', () => { setTimeout(() => yay('interstitialAdDismissed', {}), 20); }),
+          trackingAuthorizationStatus: kaydet('AdMob', 'trackingAuthorizationStatus', () => ({ status: att })),
+          requestTrackingAuthorization: kaydet('AdMob', 'requestTrackingAuthorization', () => { att = 'denied'; }),
         },
       },
     };
@@ -163,9 +175,10 @@ async function yerelSayfa(o = {}, viewport = { width: 390, height: 844 }) {
   const ilk = c.find((x) => x.ad === 'initialize');
   sina('reklam: initialize bir kez, en yüksek içerik derecesi G ("General")', a.filter((x) => x === 'initialize').length === 1 && ilk.arg.maxAdContentRating === 'General');
   const banner = c.find((x) => x.ad === 'showBanner');
-  sina('reklam: uyarlanabilir banner altta, kimlik reklam-kimlik.js\'ten', banner && banner.arg.adSize === 'ADAPTIVE_BANNER' && banner.arg.position === 'BOTTOM_CENTER' && banner.arg.adId === REKLAM_KIMLIK.banner, JSON.stringify(banner?.arg));
+  sina('reklam: uyarlanabilir banner altta, kimlik reklam-kimlik.js\'ten', banner && banner.arg.adSize === 'ADAPTIVE_BANNER' && banner.arg.position === 'BOTTOM_CENTER' && banner.arg.adId === REKLAM_KIMLIK.android.banner, JSON.stringify(banner?.arg));
   const gecis = c.find((x) => x.ad === 'prepareInterstitial');
-  sina('reklam: geçiş reklamı initialize\'dan sonra hazırlanır, kimlik reklam-kimlik.js\'ten', gecis && gecis.arg.adId === REKLAM_KIMLIK.gecis && a.indexOf('prepareInterstitial') > a.indexOf('initialize'));
+  sina('reklam: geçiş reklamı initialize\'dan sonra hazırlanır, kimlik reklam-kimlik.js\'ten', gecis && gecis.arg.adId === REKLAM_KIMLIK.android.gecis && a.indexOf('prepareInterstitial') > a.indexOf('initialize'));
+  sina('reklam: Android\'de izleme izni (ATT) sorulmaz', !a.includes('requestTrackingAuthorization'));
   sina('reklam: açılış ve ödüllü reklam yok', !a.some((x) => /AppOpen|Reward/.test(x)));
   const yer = await s.p.evaluate(() => ({ h: innerHeight, bar: document.querySelector('#tabbar').getBoundingClientRect().bottom, serit: !document.getElementById('reklam-seridi').hidden, adh: getComputedStyle(document.documentElement).getPropertyValue('--ad-h').trim(), sinif: document.documentElement.classList.contains('reklamli') }));
   sina('reklam: banner kendi şeridinde, sekme çubuğu banner\'ın üstünde biter', yer.serit && yer.sinif && yer.adh === '56px' && yer.bar <= yer.h - 56 + 0.5, JSON.stringify(yer));
@@ -284,6 +297,33 @@ async function yerelSayfa(o = {}, viewport = { width: 390, height: 844 }) {
   await s.p.click('#btn-noads'); await s.p.waitForTimeout(500);
   const d = await s.p.evaluate(() => ({ metin: document.querySelector('.sheet').innerText, kapali: document.querySelector('.sheet .bigbtn').disabled }));
   sina('abonelik: fiyat gelmezse yedek fiyat gösterilmez, düğme kapalı, açıklama var', !/\$|0[.,]99/.test(d.metin) && d.kapali && /Fiyatlar Google Play/.test(d.metin), d.metin.slice(0, 160));
+  await s.p.close();
+}
+
+// ---------------------------------------------------------------- C) iPhone
+for (const [dil, tema, en] of [['tr', 'light', 390], ['ar', 'dark', 340]]) {
+  const s = await yerelSayfa({ platform: 'ios', dil, tema }, { width: en, height: 844 });
+  const yer = `iPhone ${dil} ${tema} ${en}px`;
+  const c = await s.cagrilar();
+  const a = c.map((x) => x.ad);
+  sina(`${yer}: mağaza → UMP → ATT → initialize`, a.indexOf('getPurchases') < a.indexOf('requestConsentInfo') && a.indexOf('requestConsentInfo') < a.indexOf('trackingAuthorizationStatus')
+    && a.indexOf('trackingAuthorizationStatus') < a.indexOf('requestTrackingAuthorization') && a.indexOf('requestTrackingAuthorization') < a.indexOf('initialize'), a.join(','));
+  sina(`${yer}: iPhone reklam kimlikleri`, c.find((x) => x.ad === 'showBanner')?.arg.adId === REKLAM_KIMLIK.ios.banner && c.find((x) => x.ad === 'prepareInterstitial')?.arg.adId === REKLAM_KIMLIK.ios.gecis);
+  sina(`${yer}: yalnız bu Apple hesabının geçerli hakları`, c.find((x) => x.ad === 'getPurchases')?.arg.onlyCurrentEntitlements === true);
+  await s.p.click('#btn-noads'); await s.p.waitForTimeout(600);
+  const sorun = await denetle(s.p, `${yer} üyelik`);
+  const metin = await s.p.evaluate(() => document.querySelector('.sheet').innerText);
+  sina(`${yer}: üyelik sayfası taşmasız, anahtarsız; Google Play yok; Apple koşulları (24 saat), gizlilik ve EULA`,
+    !sorun.length && !/Google[ -]?Play/.test(metin) && /Apple/.test(metin) && /24/.test(metin) && await s.p.locator('.prem .legal .pill').count() === 2, [...sorun, metin.slice(0, 200)].join(' | '));
+  await s.p.locator('.prem .legal .pill').nth(1).click(); await s.p.waitForTimeout(200);
+  sina(`${yer}: EULA bağlantısı Apple'ın standart sözleşmesi`, (await s.cagrilar()).some((x) => x.ad === 'open' && x.arg.url === 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'));
+  await s.p.click('.sheet .bigbtn'); await s.p.waitForTimeout(400);
+  const al = (await s.cagrilar()).find((x) => x.ad === 'purchaseProduct');
+  sina(`${yer}: satın alma App Store ürünüyle (temel plan yok)`, al && al.arg.productIdentifier === 'com.poyrazworkshop.calqora.adfree.yearly' && al.arg.planIdentifier === undefined, JSON.stringify(al?.arg));
+  await s.p.click('.sheet .okcard .pill'); await s.p.waitForTimeout(300);
+  sina(`${yer}: "Aboneliği yönet" Apple'ın sayfasını açar`, (await s.adlar('NP')).includes('manageSubscriptions'));
+  await s.p.screenshot({ path: path.join(process.env.EKRAN || '/tmp', `calqora-ios-${dil}.png`) }).catch(() => {});
+  sina(`${yer}: konsol hatası yok`, !s.konsol.length, s.konsol.join(' | '));
   await s.p.close();
 }
 

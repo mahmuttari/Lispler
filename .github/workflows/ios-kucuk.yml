@@ -1,0 +1,63 @@
+# Küçük uygulamaların (Unitica, Calqora, Ölçü Kutusu) iOS kabuklarını GitHub'ın macOS sunucusunda imzasız derler: kod ve
+# Swift paketleri derleniyor mu? İmzalama ve App Store Connect'e yükleme ayrı iş akışındadır (ios-ortak/README.md).
+# Önce Linux'ta ios-ortak/ios.test.mjs (Info.plist, proje, simge ayarları); kırmızıysa macOS işi başlamaz.
+# Depo herkese açık olduğu için macOS dakikası ücretsizdir.
+name: iOS (küçük uygulamalar)
+
+on:
+  push:
+    paths:
+      - 'unitica/ios/**'
+      - 'calqora/ios/**'
+      - 'smart-measure/ios/**'
+      - 'ios-ortak/**'
+      - '.github/workflows/ios-kucuk.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ios-kucuk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  denetim:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: node --test ios-ortak/ios.test.mjs
+
+  derle:
+    needs: denetim
+    runs-on: macos-15
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        uygulama: [unitica, calqora, smart-measure]
+    defaults:
+      run:
+        working-directory: ${{ matrix.uygulama }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Xcode
+        run: |
+          X="$(ls -d /Applications/Xcode_*.app | grep -vi beta | sort -V | tail -1)"
+          sudo xcode-select -s "$X/Contents/Developer"
+          xcodebuild -version
+      - run: npm ci
+      - name: Web dosyaları ve eklentiler
+        run: |
+          node araclar/kimlik.mjs
+          npx cap sync ios
+      - name: Simülatör için derle (imzasız)
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath "$RUNNER_TEMP/dd" \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | grep -E "error:|warning: .*/${{ matrix.uygulama }}/ios/|BUILD (SUCCEEDED|FAILED)" | head -80

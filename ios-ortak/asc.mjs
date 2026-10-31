@@ -17,7 +17,10 @@
  *   node ios-ortak/asc.mjs abonelik <uygulama> [uygula]  reklamsız abonelik: grup, aylık ve yıllık ürün, adlar, inceleme notu,
  *                                                   ülke erişimi (Çin anakarası hariç), fiyat (ABD 0,99 / 9,99 $, öbür
  *                                                   ülkeler Apple'ın eşdeğeri; var olan fiyata dokunulmaz)
- *   "uygula" yoksa metin / yas / abonelik yalnız plan yazdırır; hiçbir şey değişmez.
+ *   node ios-ortak/asc.mjs gorsel <uygulama> [uygula]    iPhone 6,9″ ekran görüntüleri (<klasör>/magaza/app-store/<dil>/*.jpg,
+ *                                                   araclar/magaza-gorsel.mjs IOS=1 üretir): eksik olan yüklenir, içeriği
+ *                                                   değişen yeniden yüklenir, listede olmayan silinir; sıra dosya adına göre
+ *   "uygula" yoksa metin / yas / abonelik / gorsel yalnız plan yazdırır; hiçbir şey değişmez.
  *
  * <uygulama>: unitica | calqora | smart-measure | notdefteri. İncelemeye gönderme ve satışa açma bu betikte yoktur; ancak
  * kullanıcının açık onayıyla, ayrı komutla yapılır (docs/ios-yayin.md).
@@ -444,6 +447,76 @@ export async function abonelik(u, uygula = false) {
   return bitir(uygula);
 }
 
+/** iPhone 6,9″ (1320×2868) ekran görüntüleri App Store Connect'te APP_IPHONE_67 kümesine gider */
+export const EKRAN_TURU = 'APP_IPHONE_67';
+const md5 = (b) => crypto.createHash('md5').update(b).digest('hex');
+
+/** Bir görseli yükler: kayıt → parça parça PUT → "yüklendi" + md5 → Apple'ın işlemesini bekler */
+async function gorselYukle(setId, dosya) {
+  const veri = fs.readFileSync(dosya), ad = path.basename(dosya);
+  const r = await api('POST', '/v1/appScreenshots', { data: { type: 'appScreenshots', attributes: { fileName: ad, fileSize: veri.length },
+    relationships: { appScreenshotSet: { data: { type: 'appScreenshotSets', id: setId } } } } });
+  const id = r.data.id;
+  for (const op of r.data.attributes.uploadOperations || []) {
+    const h = Object.fromEntries((op.requestHeaders || []).map((x) => [x.name, x.value]));
+    const y = await fetch(op.url, { method: op.method, headers: h, body: veri.subarray(op.offset, op.offset + op.length) });
+    if (!y.ok) throw new Error(`${ad}: yükleme parçası ${y.status}`);
+  }
+  await api('PATCH', `/v1/appScreenshots/${id}`, { data: { type: 'appScreenshots', id, attributes: { uploaded: true, sourceFileChecksum: md5(veri) } } });
+  for (let i = 0; i < 30; i++) {
+    const s = (await get(`/v1/appScreenshots/${id}`)).data.attributes.assetDeliveryState || {};
+    if (s.state === 'COMPLETE') return 'COMPLETE';
+    if (s.state === 'FAILED') throw new Error(`${ad}: Apple reddetti: ${(s.errors || []).map((e) => e.description || e.code).join('; ')}`);
+    await uyu(BEKLE_MS / 20);
+  }
+  return 'İŞLENİYOR';
+}
+
+export async function gorsel(u, uygula = false) {
+  const app = await kayitli(u);
+  const surumler = await hepsi(`/v1/apps/${app.id}/appStoreVersions?filter[platform]=IOS`);
+  const v = surumler.find((x) => DUZENLENIR.test(x.attributes.appStoreState || x.attributes.appVersionState || ''));
+  if (!v) throw new Error(`${u}: düzenlenebilir iOS sürümü yok (önce "metin ${u} uygula")`);
+  const vl = Object.fromEntries((await hepsi(`/v1/appStoreVersions/${v.id}/appStoreVersionLocalizations`)).map((x) => [x.attributes.locale, x]));
+  for (const y of Object.keys(metinler(u))) {
+    const dizin = path.join(KOK, UYGULAMALAR[u].klasor, 'magaza', 'app-store', y);
+    const dosyalar = fs.existsSync(dizin) ? fs.readdirSync(dizin).filter((f) => /^iphone-.*\.jpg$/.test(f)).sort().map((f) => path.join(dizin, f)) : [];
+    const loc = vl[y];
+    console.log(`\n${y}: ${dosyalar.length} görsel`);
+    if (!dosyalar.length) throw new Error(`${dizin}: görsel yok (IOS=1 node ${UYGULAMALAR[u].klasor}/araclar/magaza-gorsel.mjs)`);
+    if (!loc) { console.log(`  sürüm metni yok: önce "metin ${u} uygula"`); continue; }
+    let set = (await hepsi(`/v1/appStoreVersionLocalizations/${loc.id}/appScreenshotSets`)).find((x) => x.attributes.screenshotDisplayType === EKRAN_TURU);
+    if (!set) {
+      const r = await yaz(uygula, 'POST', '/v1/appScreenshotSets', { data: { type: 'appScreenshotSets', attributes: { screenshotDisplayType: EKRAN_TURU },
+        relationships: { appStoreVersionLocalization: { data: { type: 'appStoreVersionLocalizations', id: loc.id } } } } }, `görsel kümesi ${y} (${EKRAN_TURU})`);
+      set = r?.data || null;
+    }
+    const mevcut = set ? await hepsi(`/v1/appScreenshotSets/${set.id}/appScreenshots`) : [];
+    const yerel = new Map(dosyalar.map((d) => [path.basename(d), md5(fs.readFileSync(d))]));
+    const tamam = new Set();
+    for (const x of mevcut) {
+      const ad = x.attributes.fileName, d = x.attributes.assetDeliveryState?.state;
+      if (yerel.has(ad) && d === 'COMPLETE' && x.attributes.sourceFileChecksum === yerel.get(ad)) { tamam.add(ad); continue; }
+      await yaz(uygula, 'DELETE', `/v1/appScreenshots/${x.id}`, null, `${yerel.has(ad) ? 'içeriği değişen' : 'listede olmayan'} görseli sil: ${ad}`);
+    }
+    for (const d of dosyalar) {
+      const ad = path.basename(d);
+      if (tamam.has(ad)) continue;
+      plan.push(`yükle ${y}/${ad}`);
+      if (!uygula || !set) { console.log(`  [plan] yükle ${ad} (${Math.round(fs.statSync(d).size / 1024)} KB)`); continue; }
+      console.log(`  [tamam] ${ad}: ${await gorselYukle(set.id, d)}`);
+    }
+    if (set && uygula) {
+      const simdi = await hepsi(`/v1/appScreenshotSets/${set.id}/appScreenshots`);
+      const sirali = dosyalar.map((d) => simdi.find((x) => x.attributes.fileName === path.basename(d))).filter(Boolean);
+      if (sirali.length === dosyalar.length && simdi.map((x) => x.id).join() !== sirali.map((x) => x.id).join()) {
+        await yaz(true, 'PATCH', `/v1/appScreenshotSets/${set.id}/relationships/appScreenshots`, { data: sirali.map((x) => ({ type: 'appScreenshots', id: x.id })) }, `sıra ${y}`);
+      }
+    }
+  }
+  return bitir(uygula);
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [komut = 'durum', ...arg] = process.argv.slice(2);
   const eksik = ['ASC_KEY_ID', 'ASC_ISSUER_ID', 'ASC_PRIVATE_KEY'].filter((v) => !process.env[v]);
@@ -456,9 +529,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     metin: () => metin(arg[0], arg.includes('uygula')),
     yas: () => yas(arg[0], arg.includes('uygula')),
     abonelik: () => abonelik(arg[0], arg.includes('uygula')),
+    gorsel: () => gorsel(arg[0], arg.includes('uygula')),
   }[komut];
   if (!is) {
-    console.error('kullanım: asc.mjs durum [u…] | paket [uygula] | onkontrol <u> | hazirla <u> | bekle <u> <yapı> | metin|yas|abonelik <u> [uygula]');
+    console.error('kullanım: asc.mjs durum [u…] | paket [uygula] | onkontrol <u> | hazirla <u> | bekle <u> <yapı> | metin|yas|abonelik|gorsel <u> [uygula]');
     process.exit(2);
   }
   if (eksik.length) { console.error(`HATA: GitHub Secrets'ta eksik: ${eksik.join(', ')} (docs/ios-yayin.md §1 adım 1)`); process.exit(2); }

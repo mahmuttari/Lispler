@@ -61,6 +61,28 @@ test('Calqora: iPhone yalnız dikey; yatay tuş takımı sözü yok', () => {
   }
 });
 
+/** JPEG genişlik ve yükseklik (SOF işaretinden) */
+function jpegBoyut(b) {
+  assert.equal(b.readUInt16BE(0), 0xffd8, 'JPEG değil');
+  for (let i = 2; i < b.length;) {
+    const m = b.readUInt16BE(i), n = b.readUInt16BE(i + 2);
+    if (m >= 0xffc0 && m <= 0xffc3) return [b.readUInt16BE(i + 7), b.readUInt16BE(i + 5)];
+    i += 2 + n;
+  }
+  throw new Error('SOF yok');
+}
+
+test('iPhone 6,9″ ekran görüntüleri: her App Store dilinde en az 3, 1320×2868 JPEG (IOS=1 node <klasör>/araclar/magaza-gorsel.mjs)', () => {
+  for (const [u, k] of Object.entries(KLASOR)) {
+    for (const y of Object.keys(metinler(u))) {
+      const d = new URL(`../${k}/magaza/app-store/${y}/`, import.meta.url);
+      const f = fs.existsSync(d) ? fs.readdirSync(d).filter((x) => /^iphone-.*\.jpg$/.test(x)) : [];
+      assert.ok(f.length >= 3 && f.length <= 10, `${k} ${y}: ${f.length} görsel`);
+      for (const x of f) assert.deepEqual(jpegBoyut(fs.readFileSync(new URL(x, d))), [1320, 2868], `${k} ${y} ${x}`);
+    }
+  }
+});
+
 test('APP-STORE.md dosyaları güncel (node ios-ortak/app-store.mjs --md)', () => {
   for (const [u, k] of Object.entries(KLASOR)) {
     assert.equal(fs.readFileSync(new URL(`../${k}/magaza/APP-STORE.md`, import.meta.url), 'utf8'), md(u), `${k}/magaza/APP-STORE.md eski`);

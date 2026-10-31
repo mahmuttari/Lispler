@@ -68,7 +68,8 @@ denetlemesi gerekiyor.
 | Not Defteri: yükleme `ios-asc.yml`'e taşındı, secret adları birleştirildi | Yapıldı |
 | Mağaza metinleri (`ios-ortak/app-store.mjs`, `<klasör>/magaza/APP-STORE.md`): Play metinlerinden, iPhone'a uyarlanmış; Apple'ın abonelik açıklaması, EULA ve gizlilik bağlantıları | Yapıldı; yayından önce kullanıcıya tam gösterilir |
 | `asc.mjs metin / yas / abonelik`: metinleri, yaş derecesini (reklam var → 4+), abonelik grubunu ve ürünlerini (aylık 0,99 $, yıllık 9,99 $, deneme yok, Çin anakarası hariç) yazar | Yapıldı; uygulama kaydı gerekir |
-| iPhone ekran görüntüleri (6,9″ 1320×2868) ve abonelik inceleme ekran görüntüsü | Sırada |
+| iPhone 6,9″ ekran görüntüleri (1320×2868 JPEG; `IOS=1 node <klasör>/araclar/magaza-gorsel.mjs` → `<klasör>/magaza/app-store/<dil>/`) ve `asc.mjs gorsel` | Yapıldı (Unitica ve Calqora 11 dil × 6, Ölçü Kutusu 2 dil × 5; ışık ölçer ekranı yok) |
+| Abonelik inceleme ekran görüntüsü (her ürün için, App Review ister) | Sırada |
 
 **Komutlar** (`ios-ortak/asc-istek.txt`'e yazılıp push edilir; ya da Actions › iOS App Store Connect › Run workflow):
 
@@ -80,6 +81,7 @@ denetlemesi gerekiyor.
 | `metin <uygulama> [uygula]` | App Store metinleri, kategori (Araçlar; Calqora'da ikinci kategori Eğitim), içerik hakları, sürüm (telif "2026 Mahmut Tarı", elle yayın) |
 | `yas <uygulama> [uygula]` | Yaş derecesi anketi: reklam Evet, öbür sorular Yok / Hayır |
 | `abonelik <uygulama> [uygula]` | Abonelik grubu "Reklamsız", aylık ve yıllık ürün, 11 dilde adlar, inceleme notu, ülke erişimi, fiyat |
+| `gorsel <uygulama> [uygula]` | iPhone 6,9″ ekran görüntüleri: eksik olanı yükler, içeriği değişeni yeniler, sırayı dosya adına göre düzenler |
 
 İncelemeye gönderme ve satışa açma yalnız kullanıcının açık onayıyla yapılır; `asc.mjs`'te bunun komutu henüz yoktur.
 

@@ -15,13 +15,14 @@ const veri = {
   apps: [{ id: 'A1', type: 'apps', attributes: { bundleId: 'com.poyrazworkshop.unitica', name: 'Unitica – Birim Dönüştürücü' } }],
   builds: [{ id: 'Y1', attributes: { version: '3', processingState: 'VALID' } }, { id: 'Y2', attributes: { version: '7', processingState: 'VALID' } }],
   bekleyen: 2,   // bekle: iki sorguda PROCESSING, sonra VALID
+  vl: [],        // sürüm metinleri (gorsel sınamasında doldurulur)
 };
 const sunucu = http.createServer((q, r) => {
   let govde = '';
   q.on('data', (c) => { govde += c; });
   q.on('end', () => {
     const u = new URL(q.url, 'http://x');
-    istekler.push({ yontem: q.method, yol: u.pathname, arama: Object.fromEntries(u.searchParams), auth: q.headers.authorization, govde: govde ? JSON.parse(govde) : null });
+    istekler.push({ yontem: q.method, yol: u.pathname, arama: Object.fromEntries(u.searchParams), auth: q.headers.authorization, govde: (() => { try { return govde ? JSON.parse(govde) : null; } catch { return { ikili: govde.length }; } })() });
     const yanit = (kod, j) => { r.writeHead(kod, { 'content-type': 'application/json' }); r.end(JSON.stringify(j)); };
     if (u.pathname === '/v1/bundleIds' && q.method === 'GET') {
       return yanit(200, { data: veri.bundleIds.filter((b) => b.attributes.identifier === u.searchParams.get('filter[identifier]')) });
@@ -37,11 +38,20 @@ const sunucu = http.createServer((q, r) => {
       }
       return yanit(200, { data: veri.builds });
     }
+    if (u.pathname === '/v1/appScreenshots' && q.method === 'POST') {
+      const n = JSON.parse(govde).data.attributes.fileSize;
+      return yanit(201, { data: { id: `SS${istekler.length}`, attributes: { uploadOperations: [
+        { method: 'PUT', url: `${process.env.ASC_API}/yukle/${istekler.length}`, offset: 0, length: Math.ceil(n / 2), requestHeaders: [{ name: 'Content-Type', value: 'image/jpeg' }] },
+        { method: 'PUT', url: `${process.env.ASC_API}/yukle/${istekler.length}b`, offset: Math.ceil(n / 2), length: n - Math.ceil(n / 2), requestHeaders: [] }] } } });
+    }
     if (q.method !== 'GET') return yanit(q.method === 'POST' ? 201 : 200, { data: { id: `YENI-${istekler.length}`, type: 'x', attributes: {} } });
     if (/\/apps\/A1\/appStoreVersions$/.test(u.pathname)) return yanit(200, { data: [{ id: 'V1', attributes: { versionString: '1.4.0', appStoreState: 'PREPARE_FOR_SUBMISSION', copyright: '2026 Mahmut Tarı', releaseType: 'MANUAL' } }] });
     if (u.pathname === '/v1/apps/A1/appInfos') return yanit(200, { data: [{ id: 'I1', attributes: { state: 'PREPARE_FOR_SUBMISSION' }, relationships: { primaryCategory: { data: null } } }] });
     if (u.pathname === '/v1/appInfos/I1/appInfoLocalizations') return yanit(200, { data: [{ id: 'L-tr', attributes: { locale: 'tr', name: 'Unitica – Birim Dönüştürücü', subtitle: 'eski', privacyPolicyUrl: '' } }] });
-    if (u.pathname === '/v1/appStoreVersions/V1/appStoreVersionLocalizations') return yanit(200, { data: [] });
+    if (u.pathname === '/v1/appStoreVersions/V1/appStoreVersionLocalizations') return yanit(200, { data: veri.vl });
+    if (/\/appScreenshotSets$/.test(u.pathname)) return yanit(200, { data: [] });
+    if (/^\/v1\/appScreenshots\/[\w-]+$/.test(u.pathname)) return yanit(200, { data: { attributes: { assetDeliveryState: { state: 'COMPLETE' } } } });
+    if (/\/appScreenshotSets\/[\w-]+\/appScreenshots$/.test(u.pathname)) return yanit(200, { data: [] });
     if (u.pathname === '/v1/appInfos/I1/ageRatingDeclaration') return yanit(200, { data: { id: 'Y1', attributes: { advertising: false, violenceRealistic: 'NONE', kidsAgeBand: null } } });
     if (/\/subscriptionGroups$/.test(u.pathname)) return yanit(200, { data: [{ id: 'G1', attributes: { referenceName: 'Reklamsız' } }] });
     if (/\/subscriptionGroupLocalizations$/.test(u.pathname)) return yanit(200, { data: [{ attributes: { locale: 'tr' } }] });
@@ -202,4 +212,23 @@ test('abonelik adları App Store sınırlarında (ad ≤30, açıklama ≤45) ve
     for (const s of [g, a, yil]) assert.ok([...s].length <= 30, `${y} ${s}`);
     assert.ok([...d].length <= 45, `${y} ${d}`);
   }
+});
+
+test('gorsel: plan kipinde yazmaz; uygulayınca 6,9″ kümesi açılır, her görsel iki parçada yüklenir, md5 bildirilir', async () => {
+  veri.vl = [{ id: 'VL-tr', attributes: { locale: 'tr' } }];
+  try {
+    istekler.length = 0;
+    const p = await asc.gorsel('unitica', false);
+    assert.ok(istekler.every((x) => x.yontem === 'GET'));
+    assert.ok(p.some((x) => /görsel kümesi tr \(APP_IPHONE_67\)/.test(x)));
+    assert.equal(p.filter((x) => /^yükle tr\/iphone-/.test(x)).length, 6);
+    istekler.length = 0;
+    await asc.gorsel('unitica', true);
+    const kayit = istekler.filter((x) => x.yol === '/v1/appScreenshots' && x.yontem === 'POST').map((x) => x.govde.data.attributes.fileName);
+    assert.deepEqual(kayit, ['iphone-1-ana.jpg', 'iphone-2-donusum.jpg', 'iphone-3-kategoriler.jpg', 'iphone-4-gecmis.jpg', 'iphone-5-favoriler.jpg', 'iphone-6-koyu-tema.jpg']);
+    assert.equal(istekler.filter((x) => x.yol.startsWith('/yukle/') && x.yontem === 'PUT').length, 12, 'her görsel iki parça');
+    const bitti = istekler.filter((x) => /^\/v1\/appScreenshots\/SS/.test(x.yol) && x.yontem === 'PATCH').map((x) => x.govde.data.attributes);
+    assert.equal(bitti.length, 6);
+    assert.ok(bitti.every((a) => a.uploaded === true && /^[0-9a-f]{32}$/.test(a.sourceFileChecksum)));
+  } finally { veri.vl = []; }
 });

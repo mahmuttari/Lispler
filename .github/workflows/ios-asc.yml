@@ -4,8 +4,8 @@
 #   paket [uygula]      eksik paket kimliklerini (bundle ID) kaydeder; "uygula" yoksa yalnız plan
 #   yukle <uygulama>    unitica | calqora | smart-measure | notdefteri: önkontrol (Linux) → derle, imzala, yükle (macOS) →
 #                       Apple'ın işlemesini bekle (Linux). Yapı TestFlight'a gider; incelemeye gönderme burada YOK.
-#   metin | yas | abonelik <uygulama> [uygula]   App Store metinleri, yaş derecesi, reklamsız abonelik (unitica, calqora,
-#                       smart-measure); "uygula" yoksa yalnız plan.
+#   metin | yas | abonelik | gorsel <uygulama> [uygula]   App Store metinleri, yaş derecesi, reklamsız abonelik, iPhone ekran
+#                       görüntüleri (unitica, calqora, smart-measure); "uygula" yoksa yalnız plan.
 # İmza: Apple'ın bulut imzası (xcodebuild -allowProvisioningUpdates + App Store Connect API anahtarı). Sertifika ve profil
 # depoda ya da makinede tutulmaz; anahtarın rolü Admin olmalı (bulut dağıtım sertifikası için).
 # Secrets: ASC_KEY_ID, ASC_ISSUER_ID, ASC_PRIVATE_KEY (.p8 içeriği). Depo herkese açık: macOS dakikası ücretsizdir.
@@ -63,11 +63,11 @@ jobs:
           case "${1:-}" in
             durum) node ios-ortak/asc.mjs durum "${@:2}" ;;
             paket) node ios-ortak/asc.mjs paket "${@:2}" ;;
-            metin|yas|abonelik) node ios-ortak/asc.mjs "$1" "${@:2}" ;;
+            metin|yas|abonelik|gorsel) node ios-ortak/asc.mjs "$1" "${@:2}" ;;
             yukle)
               node ios-ortak/asc.mjs onkontrol "${2:-}"
               echo "yukle=$2" >> "$GITHUB_OUTPUT" ;;
-            *) echo "::error::bilinmeyen komut: ${1:-boş} (durum | paket uygula | yukle <u> | metin|yas|abonelik <u> [uygula])"; exit 1 ;;
+            *) echo "::error::bilinmeyen komut: ${1:-boş} (durum | paket uygula | yukle <u> | metin|yas|abonelik|gorsel <u> [uygula])"; exit 1 ;;
           esac
 
   yukle:

@@ -22,6 +22,9 @@ import { rgbaYap } from './png.mjs';
 const KOK = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const WWW = path.join(KOK, 'www');
 const PLAY = path.join(KOK, 'magaza', 'play');
+// IOS=1: App Store (iPhone 6,9″) 1320×2868 (440×956, 3×) → magaza/app-store/{tr,en-US}/iphone-*.jpg (JPEG); sahte cihaz iPhone kipinde
+// (ışık ölçer yok, onun ekranı çekilmez); simge ve tanıtım görseli üretilmez
+const IOS = process.env.IOS === '1';
 const PW = process.env.PLAYWRIGHT_MODULE || '/opt/node22/lib/node_modules/playwright/index.mjs';
 const { chromium } = await import(pathToFileURL(PW).href);
 
@@ -57,8 +60,8 @@ try {
     console.log(`  ${path.relative(KOK, dosya)}`);
   };
   fs.mkdirSync(PLAY, { recursive: true });
-  await simge(path.join(PLAY, 'simge-512.png'), 512, 'kare');
-  await simge(path.join(KOK, '..', 'app', 'smart-measure', 'icon-192.png'), 192, 'kose');
+  if (!IOS) await simge(path.join(PLAY, 'simge-512.png'), 512, 'kare');
+  if (!IOS) await simge(path.join(KOK, '..', 'app', 'smart-measure', 'icon-192.png'), 192, 'kose');
   if (process.argv.includes('--android')) {
     for (const [d, px] of [['mdpi', 48], ['hdpi', 72], ['xhdpi', 96], ['xxhdpi', 144], ['xxxhdpi', 192]]) {
       const res = path.join(KOK, 'android', 'app', 'src', 'main', 'res', `mipmap-${d}`);
@@ -69,8 +72,8 @@ try {
 
   // ---- ekran görüntüleri
   const ekran = async (dil, tema, ad, rota, hazirla, ayar = {}) => {
-    const b = await tarayici.newContext({ viewport: { width: 360, height: 640 }, deviceScaleFactor: 3, colorScheme: tema, locale: dil === 'tr' ? 'tr-TR' : 'en-US' });
-    await b.addInitScript(sahteCihaz, ayar);
+    const b = await tarayici.newContext({ viewport: IOS ? { width: 440, height: 956 } : { width: 360, height: 640 }, deviceScaleFactor: 3, colorScheme: tema, locale: dil === 'tr' ? 'tr-TR' : 'en-US' });
+    await b.addInitScript(sahteCihaz, IOS ? { ...ayar, platform: 'ios' } : ayar);
     const depo = ornekDepo(dil, tema);
     await b.addInitScript((d) => { localStorage.setItem('smartmeasure.v1', d); }, JSON.stringify(depo));
     const p = await b.newPage();
@@ -81,9 +84,10 @@ try {
     await p.evaluate(() => document.fonts.ready);
     await p.waitForTimeout(700);
     if (hazirla) await hazirla(p);
-    const klasor = dil === 'tr' ? PLAY : path.join(PLAY, 'en-US');
+    const klasor = IOS ? path.join(KOK, 'magaza', 'app-store', dil === 'tr' ? 'tr' : 'en-US') : dil === 'tr' ? PLAY : path.join(PLAY, 'en-US');
     fs.mkdirSync(klasor, { recursive: true });
-    await p.screenshot({ path: path.join(klasor, ad) });
+    if (IOS) ad = ad.replace('telefon-', 'iphone-').replace(/\.png$/, '.jpg');
+    await p.screenshot({ path: path.join(klasor, ad), ...(IOS ? { type: 'jpeg', quality: 82 } : {}) });
     if (hatalar.length) throw new Error(`${dil} ${ad}: ${hatalar.join(' | ')}`);
     console.log(`  ${path.relative(KOK, path.join(klasor, ad))}`);
     await b.close();
@@ -110,11 +114,11 @@ try {
       await p.getByRole('button', { name: dil === 'tr' ? 'Mikrofonu aç' : 'Turn on the microphone' }).click();
       await p.waitForTimeout(6500);
     });
-    await ekran(dil, 'light', 'telefon-6-isik-olcer.png', 'sensors?tab=light', async (p) => { await p.waitForTimeout(2500); });
+    if (!IOS) await ekran(dil, 'light', 'telefon-6-isik-olcer.png', 'sensors?tab=light', async (p) => { await p.waitForTimeout(2500); });
   }
 
-  // ---- tanıtım görseli 1024×500 (24 bit, saydamlık yok)
-  for (const dil of ['tr', 'en']) {
+  // ---- tanıtım görseli 1024×500 (24 bit, saydamlık yok); App Store'da yok
+  for (const dil of IOS ? [] : ['tr', 'en']) {
     const p = await tarayici.newPage({ viewport: { width: 1024, height: 500 }, deviceScaleFactor: 1 });
     const font = (w) => `url(data:font/ttf;base64,${fs.readFileSync(path.join(WWW, 'fonts', `manrope-${w}.ttf`)).toString('base64')})`;
     const ic = await import(pathToFileURL(path.join(WWW, 'js', 'icons.js')).href).catch(() => null);

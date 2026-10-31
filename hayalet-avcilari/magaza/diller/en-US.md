@@ -49,3 +49,4 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 🌉 Swaying rope bridges over the lakes: cross quickly, linger in the middle and you'll fall in!
 🐾 Pets are here: take a cat, dog or bird along and fight ghosts together!
 🌿 Hide in bushes where ghosts can't see you; ghosts no longer spawn right next to you.
+🛠️ Settings no longer freeze the game.

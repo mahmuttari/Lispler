@@ -252,6 +252,7 @@ I18N.hi = {
   "🛒 Mağaza": "🛒 दुकान",
   "🛒 MAĞAZA": "🛒 दुकान",
   "🛠 <b>{ad}</b> için yükseltmeler": "🛠 <b>{ad}</b> के लिए अपग्रेड",
+  "🛠️ Ayarlardan dönünce oyun artık durmuyor.": "🛠️ सेटिंग्स से लौटने पर खेल अब नहीं रुकता।",
   "🛠️ Oda kurucusundaki cızırtı giderildi; müzik ve ülke geçişi düzeltildi; oyun sonu reklamı yeni oyunun üstüne gelmez.": "🛠️ रूम होस्ट पर चटचटाहट ठीक हुई; संगीत और देश बदलने की खामियाँ ठीक हुईं; खेल के अंत का विज्ञापन अब नए खेल पर नहीं आता।",
   "🛠️ Ses cızırtısına karşı düzeltmeler; müzik ve ülke geçişi düzeltildi; oyun sonu reklamı yeni oyunun üstüne gelmez.": "🛠️ आवाज़ की चटचटाहट के लिए सुधार; संगीत और देश बदलने की खामियाँ ठीक हुईं; खेल के अंत का विज्ञापन अब नए खेल पर नहीं आता।",
   "🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir.": "🛡️ अब केवल हर उम्र के लिए उपयुक्त विज्ञापन दिखेंगे।",

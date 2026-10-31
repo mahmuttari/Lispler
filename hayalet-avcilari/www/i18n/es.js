@@ -252,6 +252,7 @@ I18N.es = {
   "🛒 Mağaza": "🛒 Tienda",
   "🛒 MAĞAZA": "🛒 TIENDA",
   "🛠 <b>{ad}</b> için yükseltmeler": "🛠 Mejoras para <b>{ad}</b>",
+  "🛠️ Ayarlardan dönünce oyun artık durmuyor.": "🛠️ Ajustes ya no detiene el juego.",
   "🛠️ Oda kurucusundaki cızırtı giderildi; müzik ve ülke geçişi düzeltildi; oyun sonu reklamı yeni oyunun üstüne gelmez.": "🛠️ Sin chisporroteo en el anfitrión; correcciones de música y de cambio de país; el anuncio final ya no tapa la nueva partida.",
   "🛠️ Ses cızırtısına karşı düzeltmeler; müzik ve ülke geçişi düzeltildi; oyun sonu reklamı yeni oyunun üstüne gelmez.": "🛠️ Arreglos contra el chisporroteo; correcciones de música y de cambio de país; el anuncio final ya no tapa la nueva partida.",
   "🛡️ Artık yalnızca her yaşa uygun reklamlar gösterilir.": "🛡️ Solo verás anuncios aptos para todos.",

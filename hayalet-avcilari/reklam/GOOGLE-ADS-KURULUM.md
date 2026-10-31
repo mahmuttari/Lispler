@@ -122,6 +122,11 @@ https://ads.google.com → **`poyrazworkshop7@gmail.com` ile** giriş:
 
 Kullanıcı "ONAY: Hayalet Google Ads, günde 10 $, 14 gün" gibi açık bir onay verince:
 
+> **Onay 31 Ekim 2026'da verildi.** Başlangıç 31 Ekim 2026, bitiş 13 Kasım 2026. Açmadan önce denetlenir:
+> dört kampanya var ve duraklatılmış; günlük bütçelerin toplamı 10 $'ın TL karşılığını aşmıyor; reklamlar
+> "Uygun" ya da "Sınırlı"; Play'deki gizlilik politikası adresi `hayalet-avcilari.web.app` (§0, önce bitmiş olması
+> gerekenler 3). Biri eksikse o kampanya açılmaz, kullanıcıya bildirilir.
+
 1. Dört kampanyanın başlangıç tarihi bugüne, bitiş tarihi 14 gün sonrasına alınır.
 2. Kampanyalar **Etkinleştir**ilir.
 3. 7. günde [`REKLAM-PLANI.md`](REKLAM-PLANI.md) §3'teki kurala bakılır: CPI'ı 0,50 $'ı aşan kampanya durdurulur,

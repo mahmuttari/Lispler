@@ -2,6 +2,11 @@
   "_": "App Store metinleri (ios-ortak/app-store.mjs). Açıklama Play'deki uzun açıklamadan; burada alt başlık (≤30), anahtar sözcükler (≤100, virgülle, boşluksuz), tanıtım metni (≤170). Ad verilmezse Play'deki ad.",
   "destek": "https://mahmuttari.github.io/Lispler/unitica/gizlilik.html",
   "gizlilik": "https://mahmuttari.github.io/Lispler/unitica/gizlilik.html",
+  "kategori": [
+    "UTILITIES",
+    null
+  ],
+  "incelemeNotu": "Optional ad-free subscription (monthly or yearly, auto-renewable): open the More tab and tap \"Ad-free membership\". The same sheet has \"Restore purchases\", the renewal terms and links to the privacy policy and the Terms of Use (EULA). The app works fully without a subscription; the subscription only removes the ads.",
   "yerel": {
     "tr": {
       "altBaslik": "Mühendislik için 251 birim",

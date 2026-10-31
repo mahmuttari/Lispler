@@ -2,6 +2,11 @@
   "_": "App Store metinleri (ios-ortak/app-store.mjs). iPhone sürümü yalnız dikey: Play açıklamasındaki 'yatay ekranda geniş tuş takımı' çıkarılır.",
   "destek": "https://mahmuttari.github.io/Lispler/calqora/",
   "gizlilik": "https://mahmuttari.github.io/Lispler/calqora/gizlilik.html",
+  "kategori": [
+    "UTILITIES",
+    "EDUCATION"
+  ],
+  "incelemeNotu": "Optional ad-free subscription (monthly or yearly, auto-renewable): tap the \"Remove ads\" icon in the top bar of the calculator, or Settings (gear) > Ad-free membership. The same sheet has \"Restore purchases\", the renewal terms and links to the privacy policy and the Terms of Use (EULA). The app works fully without a subscription; the subscription only removes the ads.",
   "degistir": {
     "tr": [
       [

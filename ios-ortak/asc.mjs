@@ -10,6 +10,14 @@
  *   node ios-ortak/asc.mjs hazirla <uygulama>       yükleme işinde (macOS): takım kimliği ve yeni yapı numarası →
  *                                                   GITHUB_OUTPUT (takim maskelenir, yapi)
  *   node ios-ortak/asc.mjs bekle <uygulama> <yapı>  yüklenen yapının Apple'da işlenmesini bekler (en çok 25 dk)
+ *   node ios-ortak/asc.mjs metin <uygulama> [uygula]     App Store metinleri (ios-ortak/app-store.mjs): ad, alt başlık,
+ *                                                   gizlilik adresi, kategori, içerik hakları; sürüm (numara, telif, elle
+ *                                                   yayın), açıklama, anahtar sözcükler, tanıtım metni, destek adresi
+ *   node ios-ortak/asc.mjs yas <uygulama> [uygula]       yaş derecesi anketi: reklam var, öbür bütün sorular Yok / Hayır (4+)
+ *   node ios-ortak/asc.mjs abonelik <uygulama> [uygula]  reklamsız abonelik: grup, aylık ve yıllık ürün, adlar, inceleme notu,
+ *                                                   ülke erişimi (Çin anakarası hariç), fiyat (ABD 0,99 / 9,99 $, öbür
+ *                                                   ülkeler Apple'ın eşdeğeri; var olan fiyata dokunulmaz)
+ *   "uygula" yoksa metin / yas / abonelik yalnız plan yazdırır; hiçbir şey değişmez.
  *
  * <uygulama>: unitica | calqora | smart-measure | notdefteri. İncelemeye gönderme ve satışa açma bu betikte yoktur; ancak
  * kullanıcının açık onayıyla, ayrı komutla yapılır (docs/ios-yayin.md).
@@ -23,6 +31,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { admobOku, surumOku } from './kur.mjs';
+import { metinler, ayar } from './app-store.mjs';
 
 const KOK = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const API = process.env.ASC_API || 'https://api.appstoreconnect.apple.com';
@@ -232,6 +241,209 @@ export async function bekle(u, yapi) {
   return d;
 }
 
+// ---------------------------------------------------------------- yazan komutlar (planla ya da uygula)
+const TELIF = '2026 Mahmut Tarı';   // Apple'da satıcı bireysel hesap sahibidir (NetcadDevelop'taki uygulamayla aynı)
+const farkli = (mevcut, hedef) => Object.keys(hedef).filter((k) => (mevcut[k] ?? '') !== (hedef[k] ?? ''));
+const DUZENLENIR = /PREPARE_FOR_SUBMISSION|DEVELOPER_REJECTED|METADATA_REJECTED|REJECTED|INVALID_BINARY/;
+let plan = [];
+/** "uygula" yoksa yalnız plana yazar */
+async function yaz(uygula, yontem, yol, govde, aciklama) {
+  plan.push(aciklama);
+  if (!uygula) { console.log(`  [plan] ${aciklama}`); return null; }
+  const r = await api(yontem, yol, govde);
+  console.log(`  [tamam] ${aciklama}`);
+  return r;
+}
+function bitir(uygula) {
+  console.log(`\n${uygula ? 'YAZILDI' : 'PLAN'}: ${plan.length} işlem${uygula ? '' : ' (uygulamak için komutun sonuna "uygula")'}`);
+  const p = plan; plan = []; return p;
+}
+async function kayitli(u) {
+  uygulamaAdi(u);
+  if (!UYGULAMALAR[u].abonelik) throw new Error(`${u}: bu komut yalnız Unitica, Calqora ve Ölçü Kutusu için (Not Defteri ayrı)`);
+  const app = await uygulamaBul(u);
+  if (!app) throw new Error(`${u}: App Store Connect'te uygulama kaydı yok (docs/ios-yayin.md §1 adım 3)`);
+  return app;
+}
+async function duzenlenenBilgi(app) {
+  const infos = await hepsi(`/v1/apps/${app.id}/appInfos?include=primaryCategory,secondaryCategory`);
+  return infos.find((i) => !/READY_FOR_(SALE|DISTRIBUTION)/.test(i.attributes.state || i.attributes.appStoreState || '')) || infos[0];
+}
+
+/** App Store metinleri: uygulama bilgisi (dil başına), kategori, içerik hakları; sürüm ve sürüm metinleri */
+export async function metin(u, uygula = false) {
+  const app = await kayitli(u), M = metinler(u), A = ayar(u), s = surum(u);
+  console.log(`${u}: ${Object.keys(M).length} dil, sürüm ${s} · ${uygula ? 'UYGULA' : 'PLAN'}`);
+  if (app.attributes.contentRightsDeclaration !== 'DOES_NOT_USE_THIRD_PARTY_CONTENT') {
+    await yaz(uygula, 'PATCH', `/v1/apps/${app.id}`, { data: { type: 'apps', id: app.id, attributes: { contentRightsDeclaration: 'DOES_NOT_USE_THIRD_PARTY_CONTENT' } } },
+      'içerik hakları: üçüncü taraf içerik yok');
+  }
+  const info = await duzenlenenBilgi(app);
+  if (!info) throw new Error('uygulama bilgisi (appInfo) yok');
+  const [k1, k2] = A.kategori;
+  const pc = info.relationships?.primaryCategory?.data?.id, sc = info.relationships?.secondaryCategory?.data?.id;
+  if (pc !== k1 || (sc || null) !== (k2 || null)) {
+    await yaz(uygula, 'PATCH', `/v1/appInfos/${info.id}`, { data: { type: 'appInfos', id: info.id, relationships: {
+      primaryCategory: { data: { type: 'appCategories', id: k1 } }, secondaryCategory: { data: k2 ? { type: 'appCategories', id: k2 } : null } } } },
+      `kategori: ${pc || '—'} / ${sc || '—'} → ${k1} / ${k2 || '—'}`);
+  }
+  const il = Object.fromEntries((await hepsi(`/v1/appInfos/${info.id}/appInfoLocalizations`)).map((x) => [x.attributes.locale, x]));
+  for (const [y, m] of Object.entries(M)) {
+    const hedef = { name: m.ad, subtitle: m.altBaslik, privacyPolicyUrl: m.gizlilik }, v = il[y];
+    if (!v) {
+      await yaz(uygula, 'POST', '/v1/appInfoLocalizations', { data: { type: 'appInfoLocalizations', attributes: { locale: y, ...hedef },
+        relationships: { appInfo: { data: { type: 'appInfos', id: info.id } } } } }, `uygulama bilgisi ${y}: "${m.ad}" · "${m.altBaslik}"`);
+    } else {
+      const f = farkli(v.attributes, hedef);
+      if (f.length) await yaz(uygula, 'PATCH', `/v1/appInfoLocalizations/${v.id}`, { data: { type: 'appInfoLocalizations', id: v.id, attributes: hedef } }, `uygulama bilgisi ${y} (${f.join(', ')})`);
+    }
+  }
+  const surumler = await hepsi(`/v1/apps/${app.id}/appStoreVersions?filter[platform]=IOS`);
+  let v = surumler.find((x) => DUZENLENIR.test(x.attributes.appStoreState || x.attributes.appVersionState || ''));
+  if (!v) {
+    if (surumler.some((x) => x.attributes.versionString === s)) throw new Error(`düzenlenebilir iOS sürümü yok (${s} incelemede ya da yayında)`);
+    const r = await yaz(uygula, 'POST', '/v1/appStoreVersions', { data: { type: 'appStoreVersions', attributes: { platform: 'IOS', versionString: s, copyright: TELIF, releaseType: 'MANUAL' },
+      relationships: { app: { data: { type: 'apps', id: app.id } } } } }, `yeni App Store sürümü ${s}`);
+    if (!r) { for (const y of Object.keys(M)) await yaz(false, 'POST', '', null, `sürüm metni ${y}`); return bitir(uygula); }
+    v = r.data;
+  }
+  const hedefS = { versionString: s, copyright: TELIF, releaseType: 'MANUAL' };
+  const fS = farkli(v.attributes, hedefS);
+  if (fS.length) await yaz(uygula, 'PATCH', `/v1/appStoreVersions/${v.id}`, { data: { type: 'appStoreVersions', id: v.id, attributes: hedefS } }, `sürüm (${fS.join(', ')})`);
+  const vl = Object.fromEntries((await hepsi(`/v1/appStoreVersions/${v.id}/appStoreVersionLocalizations`)).map((x) => [x.attributes.locale, x]));
+  for (const [y, m] of Object.entries(M)) {
+    const hedef = { description: m.aciklama, keywords: m.anahtar, promotionalText: m.tanitim, supportUrl: m.destek }, x = vl[y];
+    if (!x) {
+      await yaz(uygula, 'POST', '/v1/appStoreVersionLocalizations', { data: { type: 'appStoreVersionLocalizations', attributes: { locale: y, ...hedef },
+        relationships: { appStoreVersion: { data: { type: 'appStoreVersions', id: v.id } } } } }, `sürüm metni ${y}: açıklama ${[...m.aciklama].length} karakter`);
+    } else {
+      const f = farkli(x.attributes, hedef);
+      if (f.length) await yaz(uygula, 'PATCH', `/v1/appStoreVersionLocalizations/${x.id}`, { data: { type: 'appStoreVersionLocalizations', id: x.id, attributes: hedef } }, `sürüm metni ${y} (${f.join(', ')})`);
+    }
+  }
+  return bitir(uygula);
+}
+
+// Yaş derecesi anketi (Apple'ın 2025 sonrası soruları). Uygulamalarda reklam var; başka hiçbir içerik yok → 4+.
+export const YAS_SIKLIK = ['alcoholTobaccoOrDrugUseOrReferences', 'contests', 'gamblingSimulated', 'gunsOrOtherWeapons',
+  'horrorOrFearThemes', 'matureOrSuggestiveThemes', 'medicalOrTreatmentInformation', 'profanityOrCrudeHumor',
+  'sexualContentGraphicAndNudity', 'sexualContentOrNudity', 'violenceCartoonOrFantasy', 'violenceRealistic',
+  'violenceRealisticProlongedGraphicOrSadistic'];
+export const YAS_EVETHAYIR = { advertising: true, ageAssurance: false, gambling: false, healthOrWellnessTopics: false, lootBox: false,
+  messagingAndChat: false, parentalControls: false, socialMedia: false, socialMediaAgeRestricted: false, unrestrictedWebAccess: false,
+  userGeneratedContent: false };
+const YAS_DOKUNMA = new Set(['kidsAgeBand', 'ageRatingOverride', 'ageRatingOverrideV2', 'koreaAgeRatingOverride', 'seventeenPlus',
+  'developerAgeRatingInfoUrl', 'gracRatingClassificationNumber']);
+
+export async function yas(u, uygula = false) {
+  const app = await kayitli(u);
+  const info = await duzenlenenBilgi(app);
+  const d = (await get(`/v1/appInfos/${info.id}/ageRatingDeclaration`)).data;
+  const a = d.attributes || {};
+  const hedef = { ...Object.fromEntries(YAS_SIKLIK.map((k) => [k, 'NONE'])), ...YAS_EVETHAYIR };
+  const bilinmeyen = Object.keys(a).filter((k) => !(k in hedef) && !YAS_DOKUNMA.has(k));
+  if (bilinmeyen.length) console.log(`  not: listede olmayan sorular (dokunulmadı): ${bilinmeyen.join(', ')}`);
+  const fark = Object.keys(hedef).filter((k) => a[k] !== hedef[k]);
+  if (fark.length) {
+    await yaz(uygula, 'PATCH', `/v1/ageRatingDeclarations/${d.id}`, { data: { type: 'ageRatingDeclarations', id: d.id, attributes: hedef } },
+      `yaş derecesi: ${fark.length} soru (reklam: Evet; öbürleri Yok / Hayır)`);
+  } else console.log('  yaş derecesi: değişiklik yok');
+  return bitir(uygula);
+}
+
+/** Abonelik grubu ve ürün adları, dil başına (ad ≤30, açıklama ≤45) */
+export const ABONELIK_METIN = {
+  tr: ['Reklamsız', 'Reklamsız – aylık', 'Reklamsız – yıllık', 'Bütün reklamları kaldırır'],
+  'en-US': ['Ad-free', 'Ad-free – monthly', 'Ad-free – yearly', 'Removes all ads'],
+  'de-DE': ['Werbefrei', 'Werbefrei – monatlich', 'Werbefrei – jährlich', 'Entfernt alle Werbung'],
+  'fr-FR': ['Sans publicité', 'Sans pub – mensuel', 'Sans pub – annuel', 'Supprime toutes les publicités'],
+  'es-ES': ['Sin anuncios', 'Sin anuncios – mensual', 'Sin anuncios – anual', 'Quita todos los anuncios'],
+  it: ['Senza pubblicità', 'Senza pubblicità – mensile', 'Senza pubblicità – annuale', 'Rimuove tutta la pubblicità'],
+  'pt-BR': ['Sem anúncios', 'Sem anúncios – mensal', 'Sem anúncios – anual', 'Remove todos os anúncios'],
+  ru: ['Без рекламы', 'Без рекламы – на месяц', 'Без рекламы – на год', 'Убирает всю рекламу'],
+  'ar-SA': ['بلا إعلانات', 'بلا إعلانات – شهري', 'بلا إعلانات – سنوي', 'يزيل كل الإعلانات'],
+  ja: ['広告なし', '広告なし（月額）', '広告なし（年額）', 'すべての広告を非表示にします'],
+  ko: ['광고 없음', '광고 없음 – 월간', '광고 없음 – 연간', '모든 광고를 제거합니다'],
+};
+/** Fiyat: Play'deki gibi (uygulamaların magaza/fiyatlandirma.md'si); deneme yok */
+export const FIYAT = { monthly: { donem: 'ONE_MONTH', usd: 0.99 }, yearly: { donem: 'ONE_YEAR', usd: 9.99 } };
+const HARIC = new Set(['CHN']);
+
+export async function abonelik(u, uygula = false) {
+  const app = await kayitli(u), A = ayar(u), diller = Object.keys(metinler(u));
+  console.log(`${u}: reklamsız abonelik · ${uygula ? 'UYGULA' : 'PLAN'}`);
+  let [grup] = await hepsi(`/v1/apps/${app.id}/subscriptionGroups`);
+  if (!grup) {
+    const r = await yaz(uygula, 'POST', '/v1/subscriptionGroups', { data: { type: 'subscriptionGroups', attributes: { referenceName: 'Reklamsız' },
+      relationships: { app: { data: { type: 'apps', id: app.id } } } } }, 'abonelik grubu "Reklamsız"');
+    if (!r) {
+      for (const p of ['monthly', 'yearly']) await yaz(false, 'POST', '', null, `abonelik ${UYGULAMALAR[u].paket}.adfree.${p} (${FIYAT[p].usd} $, adlar ${diller.length} dilde, Çin hariç bütün ülkeler)`);
+      return bitir(uygula);
+    }
+    grup = r.data;
+  }
+  const gl = new Set((await hepsi(`/v1/subscriptionGroups/${grup.id}/subscriptionGroupLocalizations`)).map((x) => x.attributes.locale));
+  for (const y of diller) {
+    if (!gl.has(y)) await yaz(uygula, 'POST', '/v1/subscriptionGroupLocalizations', { data: { type: 'subscriptionGroupLocalizations',
+      attributes: { locale: y, name: ABONELIK_METIN[y][0] }, relationships: { subscriptionGroup: { data: { type: 'subscriptionGroups', id: grup.id } } } } }, `grup adı ${y}`);
+  }
+  const var_ = Object.fromEntries((await hepsi(`/v1/subscriptionGroups/${grup.id}/subscriptions`)).map((x) => [x.attributes.productId, x]));
+  const ulkeler = (await hepsi('/v1/territories?limit=200')).map((t) => t.id);
+  for (const p of ['monthly', 'yearly']) {
+    const pid = `${UYGULAMALAR[u].paket}.adfree.${p}`, F = FIYAT[p], i = p === 'monthly' ? 1 : 2;
+    let s = var_[pid];
+    console.log(`\n${pid}`);
+    if (!s) {
+      const r = await yaz(uygula, 'POST', '/v1/subscriptions', { data: { type: 'subscriptions', attributes: { name: `Ad-free ${p}`, productId: pid,
+        subscriptionPeriod: F.donem, groupLevel: 1, reviewNote: A.incelemeNotu, familySharable: false },
+        relationships: { group: { data: { type: 'subscriptionGroups', id: grup.id } } } } }, `abonelik ${pid} (${F.donem})`);
+      if (!r) { await yaz(false, 'POST', '', null, `${pid}: adlar ${diller.length} dilde, Çin hariç ${ulkeler.length - 1} ülke, ABD ${F.usd} $ ve eşdeğerleri`); continue; }
+      s = r.data;
+    } else if (s.attributes.reviewNote !== A.incelemeNotu) {
+      await yaz(uygula, 'PATCH', `/v1/subscriptions/${s.id}`, { data: { type: 'subscriptions', id: s.id, attributes: { reviewNote: A.incelemeNotu } } }, 'inceleme notu');
+    }
+    const rel = { subscription: { data: { type: 'subscriptions', id: s.id } } };
+    const sl = Object.fromEntries((await hepsi(`/v1/subscriptions/${s.id}/subscriptionLocalizations`)).map((x) => [x.attributes.locale, x]));
+    for (const y of diller) {
+      const name = ABONELIK_METIN[y][i], description = ABONELIK_METIN[y][3], v = sl[y];
+      if (!v) await yaz(uygula, 'POST', '/v1/subscriptionLocalizations', { data: { type: 'subscriptionLocalizations', attributes: { locale: y, name, description }, relationships: rel } }, `ad ${y} "${name}"`);
+      else if (v.attributes.name !== name || v.attributes.description !== description) {
+        await yaz(uygula, 'PATCH', `/v1/subscriptionLocalizations/${v.id}`, { data: { type: 'subscriptionLocalizations', id: v.id, attributes: { name, description } } }, `ad ${y} güncelle`);
+      }
+    }
+    let erisim = null;
+    try {
+      const av = await get(`/v1/subscriptions/${s.id}/subscriptionAvailability`);
+      if (av?.data) erisim = new Set((await hepsi(`/v1/subscriptionAvailabilities/${av.data.id}/availableTerritories?limit=200`)).map((t) => t.id));
+    } catch { /* henüz yok */ }
+    const satis = ulkeler.filter((t) => !HARIC.has(t));
+    if (!erisim || !satis.every((t) => erisim.has(t)) || [...HARIC].some((t) => erisim.has(t))) {
+      await yaz(uygula, 'POST', '/v1/subscriptionAvailabilities', { data: { type: 'subscriptionAvailabilities', attributes: { availableInNewTerritories: true },
+        relationships: { ...rel, availableTerritories: { data: satis.map((id) => ({ type: 'territories', id })) } } } }, `ülke erişimi: ${satis.length} ülke (Çin anakarası hariç)`);
+    }
+    // Fiyat bütün ülkelere girilir (Apple fiyatsız ülkeyi eksik bilgi sayar); var olan fiyata dokunulmaz
+    const fiyatli = new Set((await hepsi(`/v1/subscriptions/${s.id}/prices?include=territory&limit=200`)).map((f) => f.relationships?.territory?.data?.id).filter(Boolean));
+    const eksik = ulkeler.filter((t) => !fiyatli.has(t));
+    if (eksik.length) {
+      const pp = await hepsi(`/v1/subscriptions/${s.id}/pricePoints?filter[territory]=USA&limit=200`);
+      const abd = pp.find((x) => Number(x.attributes.customerPrice) === F.usd);
+      if (!abd) throw new Error(`ABD için ${F.usd} $ fiyat noktası yok`);
+      const nokta = { USA: abd.id };
+      for (const e of await hepsi(`/v1/subscriptionPricePoints/${abd.id}/equalizations?include=territory&limit=200`)) {
+        const t = e.relationships?.territory?.data?.id;
+        if (t && !nokta[t]) nokta[t] = e.id;
+      }
+      const hedef = eksik.filter((t) => nokta[t]);
+      for (const t of hedef) {
+        await yaz(uygula, 'POST', '/v1/subscriptionPrices', { data: { type: 'subscriptionPrices', attributes: { preserveCurrentPrice: false },
+          relationships: { ...rel, subscriptionPricePoint: { data: { type: 'subscriptionPricePoints', id: nokta[t] } }, territory: { data: { type: 'territories', id: t } } } } },
+          `fiyat ${t}${t === 'USA' ? ` ${F.usd} $` : ' (ABD eşdeğeri)'}`);
+      }
+    } else console.log(`  fiyat: ${fiyatli.size} ülkede var`);
+  }
+  return bitir(uygula);
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [komut = 'durum', ...arg] = process.argv.slice(2);
   const eksik = ['ASC_KEY_ID', 'ASC_ISSUER_ID', 'ASC_PRIVATE_KEY'].filter((v) => !process.env[v]);
@@ -241,8 +453,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     onkontrol: () => onkontrol(arg[0]),
     hazirla: () => hazirla(arg[0]),
     bekle: () => bekle(arg[0], arg[1]),
+    metin: () => metin(arg[0], arg.includes('uygula')),
+    yas: () => yas(arg[0], arg.includes('uygula')),
+    abonelik: () => abonelik(arg[0], arg.includes('uygula')),
   }[komut];
-  if (!is) { console.error('kullanım: asc.mjs durum [uygulama…] | paket [uygula] | onkontrol <u> | hazirla <u> | bekle <u> <yapı>'); process.exit(2); }
+  if (!is) {
+    console.error('kullanım: asc.mjs durum [u…] | paket [uygula] | onkontrol <u> | hazirla <u> | bekle <u> <yapı> | metin|yas|abonelik <u> [uygula]');
+    process.exit(2);
+  }
   if (eksik.length) { console.error(`HATA: GitHub Secrets'ta eksik: ${eksik.join(', ')} (docs/ios-yayin.md §1 adım 1)`); process.exit(2); }
   is().catch((e) => { console.error(`HATA: ${e.message}`); process.exit(1); });
 }

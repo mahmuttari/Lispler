@@ -66,7 +66,9 @@ denetlemesi gerekiyor.
 | Ölçü Kutusu sensör eklentisi (Swift, `smart-measure/ios/App/App/OlcerPlugin.swift`): su terazisi, kamerayla ölçüm, ses ölçer, cetvel; ışık ölçer iPhone'da gizli | Yapıldı |
 | App Store Connect betiği (`ios-ortak/asc.mjs`) ve yükleme iş akışı (`ios-asc.yml`): durum, paket kimliği kaydı, önkontrol (test AdMob kimliğiyle yüklenmez), bulut imzasıyla arşiv ve TestFlight'a yükleme, işlenmeyi bekleme | Yapıldı; anahtar gerekir |
 | Not Defteri: yükleme `ios-asc.yml`'e taşındı, secret adları birleştirildi | Yapıldı |
-| Mağaza metinleri (Play metinlerinden; App Store sınırları: ad 30, alt başlık 30, anahtar sözcük 100, açıklama 4000), iPhone ekran görüntüleri (6,9″ 1320×2868), abonelik ürünleri ve yaş derecesi API ile | Sırada |
+| Mağaza metinleri (`ios-ortak/app-store.mjs`, `<klasör>/magaza/APP-STORE.md`): Play metinlerinden, iPhone'a uyarlanmış; Apple'ın abonelik açıklaması, EULA ve gizlilik bağlantıları | Yapıldı; yayından önce kullanıcıya tam gösterilir |
+| `asc.mjs metin / yas / abonelik`: metinleri, yaş derecesini (reklam var → 4+), abonelik grubunu ve ürünlerini (aylık 0,99 $, yıllık 9,99 $, deneme yok, Çin anakarası hariç) yazar | Yapıldı; uygulama kaydı gerekir |
+| iPhone ekran görüntüleri (6,9″ 1320×2868) ve abonelik inceleme ekran görüntüsü | Sırada |
 
 **Komutlar** (`ios-ortak/asc-istek.txt`'e yazılıp push edilir; ya da Actions › iOS App Store Connect › Run workflow):
 
@@ -75,6 +77,9 @@ denetlemesi gerekiyor.
 | `durum` | Salt okunur rapor: paket kimliği, uygulama kaydı, sürümler, yapılar, abonelikler |
 | `paket uygula` | Eksik paket kimliklerini kaydeder (`uygula` yoksa yalnız plan) |
 | `yukle <uygulama>` | `unitica`, `calqora`, `smart-measure`, `notdefteri`: derler, imzalar, TestFlight'a yükler |
+| `metin <uygulama> [uygula]` | App Store metinleri, kategori (Araçlar; Calqora'da ikinci kategori Eğitim), içerik hakları, sürüm (telif "2026 Mahmut Tarı", elle yayın) |
+| `yas <uygulama> [uygula]` | Yaş derecesi anketi: reklam Evet, öbür sorular Yok / Hayır |
+| `abonelik <uygulama> [uygula]` | Abonelik grubu "Reklamsız", aylık ve yıllık ürün, 11 dilde adlar, inceleme notu, ülke erişimi, fiyat |
 
 İncelemeye gönderme ve satışa açma yalnız kullanıcının açık onayıyla yapılır; `asc.mjs`'te bunun komutu henüz yoktur.
 

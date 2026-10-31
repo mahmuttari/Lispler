@@ -2,6 +2,11 @@
   "_": "App Store metinleri (ios-ortak/app-store.mjs). iPhone'da ışık ölçer yok (iOS ortam ışığı sensörünü açmaz): Play açıklamasındaki ışık ölçer bölümü ve sözleri çıkarılır; Google Play yerine App Store.",
   "destek": "https://mahmuttari.github.io/Lispler/smart-measure/",
   "gizlilik": "https://mahmuttari.github.io/Lispler/smart-measure/gizlilik.html",
+  "kategori": [
+    "UTILITIES",
+    null
+  ],
+  "incelemeNotu": "Optional ad-free subscription (monthly or yearly, auto-renewable): on the home screen tap the ... menu (top right) > Premium. The same screen has \"Restore purchases\", the renewal terms and links to the privacy policy and the Terms of Use (EULA). The app works fully without a subscription; the subscription only removes the ads. The light meter of the Android version is not offered on iPhone because iOS has no public ambient light sensor API.",
   "degistir": {
     "tr": [
       [

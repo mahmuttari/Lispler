@@ -59,7 +59,7 @@ export function render({ go, back, params }) {
       row('Mic', t('st_dev_microphone'), yn(c.microphone)),
       row('Camera', t('st_dev_camera'), yn(c.rearCamera)),
       row('Flashlight', t('st_dev_flash'), yn(c.flash)),
-      row('Box', t('st_dev_arcore'), yn(c.arcore)),
+      native.isIOS ? null : row('Box', t('st_dev_arcore'), yn(c.arcore)),   // Google Play Hizmetleri; iPhone'da yok
       row('Smartphone', t('st_dev_display'), null, null, d.widthPx ? t('st_dev_display_value', d.widthPx, d.heightPx, num(d.xdpi, 0), num(d.ydpi, 0), mm(d.widthPx, d.xdpi), mm(d.heightPx, d.ydpi)) : '—'));
   });
 

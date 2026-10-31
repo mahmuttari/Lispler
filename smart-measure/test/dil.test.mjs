@@ -28,6 +28,21 @@ test('özgün 404 dize korunur (st_theme_note bilerek kaldırıldı), Türkçe k
   assert.match(tr.lv_level_title, /Su Terazisi/);
 });
 
+test('iPhone ikizleri (_ios): Google Play yerine App Store, Apple\'ın yenileme koşulları; ikizi olmayan Google Play metni yok', () => {
+  for (const d of [en, tr]) {
+    for (const k of Object.keys(d).filter((x) => x.endsWith('_ios'))) {
+      assert.ok(k.slice(0, -4) in d, `${k}: ikizi yok`);
+      assert.doesNotMatch(d[k], /Google[ -]?Play|Android|ARCore/, k);
+      if (k.startsWith('pr_')) assert.match(d[k], /App Store|Apple/, k);
+    }
+    assert.match(d.pr_terms_ios, /24/, 'Apple: yenilemeden en az 24 saat önce iptal (3.1.2)');
+  }
+  assert.deepEqual(Object.keys(en).filter((x) => x.endsWith('_ios')).sort(), ['pr_loading_ios', 'pr_none_ios', 'pr_pending_ios', 'pr_terms_ios', 'pr_unavailable_ios', 'st_dev_note_ios', 'st_licenses_text_ios']);
+  // st_dev_arcore iPhone'da gösterilmez (views/settings.js); geri kalan her Google Play metninin ikizi var
+  for (const [k, v] of Object.entries(en)) if (/Google[ -]?Play/.test(v) && k !== 'st_dev_arcore') assert.ok(`${k}_ios` in en, `${k}: iPhone karşılığı yok`);
+  assert.match(fs.readFileSync(path.join(JS, 'views', 'settings.js'), 'utf8'), /native\.isIOS \? null : row\('Box', t\('st_dev_arcore'\)/);
+});
+
 test('gizlilik metni reklamdan sonra doğru: "reklam yok / internet yok" demiyor, AdMob\'u söylüyor', () => {
   assert.ok(!/no ads|no internet/i.test(en.st_privacy_text));
   assert.ok(!/reklam yok|internet erişimi yok/i.test(tr.st_privacy_text));

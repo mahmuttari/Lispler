@@ -2,7 +2,8 @@
 // Haptics ve NativePurchases eklentilerinin taklidi. Değerler sentetiktir; kamera görüntüsü çizilmiş bir sahnedir
 // (gerçek kamera yok). AdMob taklidi yoktur: görsellerde reklam olmaz. Sayfaya addInitScript ile verilir:
 //   await baglam.addInitScript(sahteCihaz, { lux: 420, ... })
-// window.__sahte üzerinden canlı değiştirilir (ör. kameranın bakış açısı).
+// window.__sahte üzerinden canlı değiştirilir (ör. kameranın bakış açısı). { platform: 'ios' }: iPhone (App Store ürünleri,
+// getPlatform 'ios'); Olcer'in iPhone karşılığı Swift eklentisidir, burada aynı taklit kullanılır.
 
 /** Tarayıcıda çalışır (dışarıdan değişken almaz; ayarlar tek argüman). */
 export function sahteCihaz(ayar = {}) {
@@ -63,11 +64,15 @@ export function sahteCihaz(ayar = {}) {
   });
   const App = eklenti({ exitApp: async () => ({}) });
   const Haptics = eklenti({});
+  const ios = A.platform === 'ios';
+  const IOS = 'com.poyrazworkshop.smartmeasure.adfree.';
   const NativePurchases = eklenti({
     getPurchases: async () => ({ purchases: [] }),
-    getProducts: async () => ({ products: [] }),
+    getProducts: async () => ({ products: ios
+      ? [{ identifier: IOS + 'monthly', priceString: '₺24,99', price: 24.99 }, { identifier: IOS + 'yearly', priceString: '₺249,99', price: 249.99 }]
+      : [] }),
   });
-  window.Capacitor = { isNativePlatform: () => true, getPlatform: () => 'android', Plugins: { Olcer, App, Haptics, NativePurchases } };
+  window.Capacitor = { isNativePlatform: () => true, getPlatform: () => (ios ? 'ios' : 'android'), Plugins: { Olcer, App, Haptics, NativePurchases } };
 
   // Kamera: çizilmiş sahne (zemin, duvar, kapı ve bir dolap) — gerçek kamera görüntüsü değildir
   if (A.kamera) {

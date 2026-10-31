@@ -76,10 +76,11 @@ test('başlatma sırası: önce UMP onayı, sonra G dereceli initialize, banner 
   assert.equal(kayit[i].arg.maxAdContentRating, 'General');
   const banner = kayit.find((c) => c.ad === 'showBanner');
   assert.ok(adlar.indexOf('showBanner') > i);
-  assert.deepEqual(banner.arg, { adId: REKLAM_KIMLIK.banner, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0 });
+  assert.deepEqual(banner.arg, { adId: REKLAM_KIMLIK.android.banner, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0 });
   await new Promise((r) => setTimeout(r, 10));
-  assert.equal(kayit.find((c) => c.ad === 'prepareInterstitial').arg.adId, REKLAM_KIMLIK.gecis);
+  assert.equal(kayit.find((c) => c.ad === 'prepareInterstitial').arg.adId, REKLAM_KIMLIK.android.gecis);
   assert.ok(!adlar.includes('showInterstitial'), 'açılışta geçiş reklamı yok');
+  assert.ok(!adlar.includes('trackingAuthorizationStatus'), 'Android\'de izleme izni (ATT) yok');
 });
 
 test('doğal durak: ilk 3 dakikada reklam yok; sonra bir kez, hemen ardından yine yok; meşgulken yok', async () => {
@@ -129,10 +130,16 @@ test('UMP onay formu gerekiyorsa gösterilir; izin yoksa initialize çağrılmaz
   assert.ok(!kayit.some((c) => c.ad === 'initialize'));
 });
 
-test('AdMob kimlikleri: gradle.properties tek kaynak, reklam-kimlik.js onunla aynı', () => {
+test('AdMob kimlikleri: kaynak gradle.properties ve ios/admob.properties, reklam-kimlik.js onlarla aynı', () => {
   const props = fs.readFileSync(path.join(KOK, 'android', 'gradle.properties'), 'utf8');
   const k = kimlik.oku(props);
-  assert.equal(fs.readFileSync(path.join(KOK, 'www', 'js', 'reklam-kimlik.js'), 'utf8'), kimlik.uret(k), 'node smart-measure/araclar/kimlik.mjs');
+  const i = kimlik.oku(fs.readFileSync(path.join(KOK, 'ios', 'admob.properties'), 'utf8'));
+  assert.equal(fs.readFileSync(path.join(KOK, 'www', 'js', 'reklam-kimlik.js'), 'utf8'), kimlik.uret(k, i), 'node smart-measure/araclar/kimlik.mjs');
+  assert.notEqual(i.app, k.app, 'iPhone ve Android aynı AdMob uygulaması olamaz');
+  const iy = new Set(Object.values(i).map((v) => /^ca-app-pub-(\d+)[~/]\d+$/.exec(v)[1]));
+  assert.equal(iy.size, 1);
+  if ([...iy][0] === '3940256099942544') assert.deepEqual(i, kimlik.TEST_IOS, 'iOS test kimlikleri karışık olmamalı');
+  else assert.equal([...iy][0], '2417242373034448');
   const yayinci = /^ca-app-pub-(\d+)[~/]\d+$/;
   const no = new Set(Object.values(k).map((v) => yayinci.exec(v)[1]));
   assert.equal(no.size, 1, 'üç kimlik aynı yayıncıdan');

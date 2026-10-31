@@ -3,7 +3,8 @@
 // ve EN koyu tema 340 px; ayrıca tersleri. Her ekran iki ortamda açılır:
 //   yalın   eklentisiz masaüstü tarayıcı: sensör, kamera, mikrofon yok → "sensör yok / izin" durumları
 //   sahte   araclar/sahte-cihaz.mjs: sensörler, sahte kamera, mikrofon düzeyi
-//   iphone  aynı sahte cihaz, platform 'ios' (yalnız TR açık 390 ve EN koyu 340): ekranda Google Play / ARCore / AndroidX yok;
+//   iphone  aynı sahte cihaz, platform 'ios' (yalnız TR açık 390 ve EN koyu 340): ekranda Google Play / ARCore / AndroidX ve
+//           ışık ölçer yok (iOS ortam ışığı sensörünü açmaz);
 //           abonelik sayfasında App Store fiyatları, Apple'ın yenileme koşulları (24 saat), gizlilik ve EULA bağlantıları
 // Her ekranda alt sayfalar ve menüler de açılır. Aranan: sayfa hatası, konsol hatası/uyarısı, yatay taşma, ekranda
 // çevrilmemiş anahtar (ör. "lv_state_level"), "undefined" / "null" / "NaN" metni.
@@ -81,7 +82,8 @@ try {
         if (r.bos.length) sorunlar.push(`${ad}: ${[...new Set(r.bos)].join(', ')} metni`);
         if (ortam === 'iphone') {
           const m = await p.evaluate(() => document.body.innerText);
-          if (/Google[ -]?Play|ARCore|AndroidX/.test(m)) sorunlar.push(`${ad}: iPhone'da Android'e özgü metin: ${m.match(/Google[ -]?Play|ARCore|AndroidX/)[0]}`);
+          const yasak = /Google[ -]?Play|ARCore|AndroidX|Light meter|Light sensor|Illuminance|Işık [Öö]lçer|Işık sensörü|Aydınlanma|\blux\b|\blüks\b/;
+          if (yasak.test(m)) sorunlar.push(`${ad}: iPhone'da gösterilmemesi gereken metin: ${m.match(yasak)[0]}`);
         }
       };
       for (const [rota, katmanlar] of ROTALAR) {

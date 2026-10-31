@@ -10,6 +10,7 @@ on:
       - 'unitica/ios/**'
       - 'calqora/ios/**'
       - 'smart-measure/ios/**'
+      - 'smart-measure/test/ses-swift.test.mjs'
       - 'ios-ortak/**'
       - '.github/workflows/ios-kucuk.yml'
   workflow_dispatch:
@@ -55,6 +56,9 @@ jobs:
         run: |
           node araclar/kimlik.mjs
           npx cap sync ios
+      - name: Ses işleme Swift'te sayfayla aynı (SesIsleyici.swift)
+        if: matrix.uygulama == 'smart-measure'
+        run: node --test test/ses-swift.test.mjs
       - name: Simülatör için derle (imzasız)
         run: |
           set -o pipefail

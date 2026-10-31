@@ -70,5 +70,9 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>The camera shows the scene while you aim at what you measure. The picture is processed on this phone only and is never recorded, stored or sent.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>The sound meter measures the sound level with the microphone. Sound is processed on this phone only and is never recorded, stored or sent.</string>
 </dict>
 </plist>

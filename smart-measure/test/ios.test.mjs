@@ -38,6 +38,7 @@ const B = await import('../www/js/billing.js');
 const P = await import('../www/js/premium.js');
 const i18n = await import('../www/js/i18n.js');
 const { REKLAM_KIMLIK } = await import('../www/js/reklam-kimlik.js');
+const { TOOLS, toolById } = await import('../www/js/tools.js');
 
 test('platform iOS', () => { assert.equal(native.platform, 'ios'); assert.equal(native.isIOS, true); });
 
@@ -79,4 +80,12 @@ test('metinler: iPhone\'da App Store ve Apple\'ın koşulları (tr ve en)', () =
   }
   assert.equal(i18n.t('pr_monthly'), 'Monthly', 'ikizi olmayan anahtar olduğu gibi');
   assert.doesNotMatch(i18n.t('st_licenses_text'), /AndroidX|Google Play/, 'lisanslar: iPhone\'da AndroidX ve Play Faturalandırma yok');
+});
+
+test('ışık ölçer iPhone\'da yok: araç listesinde değil; sensör alt yazısı yalnız ses', () => {
+  assert.deepEqual(TOOLS.map((x) => x.id), ['level', 'ar', 'ruler', 'protractor', 'sound']);
+  assert.equal(toolById('light'), undefined);
+  i18n.setLang('en');
+  assert.equal(i18n.t('sn_sensors_subtitle'), 'Measure ambient sound');
+  assert.equal(i18n.t('hm_sensors_subtitle'), 'Measure ambient sound');
 });

@@ -1,15 +1,20 @@
 // Capacitor iOS kabuğunu ("npx cap add ios" çıktısı) App Store'a hazır hâle getirir. Bir kez çalışır, çıktısı depoya
 // alınır; "cap sync ios" bu dosyalara dokunmaz (yalnız web dosyalarını ve Package.swift'i yeniler).
-// Kullanım: node ios-ortak/kur.mjs <klasör>   (ör. unitica; Playwright + Chromium gerekir: simge ve açılış görseli)
+// Kullanım: node ios-ortak/kur.mjs <klasör> [--yalniz-proje]   (ör. unitica; görseller için Playwright + Chromium gerekir;
+//           --yalniz-proje görselleri yeniden üretmez)
 // Yaptıkları (ayrıntı ve gerekçe: ios-ortak/README.md):
 //   Info.plist: AdMob uygulama kimliği (<klasör>/ios/admob.properties), SKAdNetwork, izleme izni metni (ATT),
-//               şifreleme beyanı (ITSAppUsesNonExemptEncryption = false), arm64, yalnız dikey ekran
-//   proje:      yalnız iPhone (TARGETED_DEVICE_FAMILY = 1), sürüm Android versionName'den
+//               şifreleme beyanı (ITSAppUsesNonExemptEncryption = false), arm64, yalnız dikey ekran; uygulamaya özgü
+//               metin anahtarları <klasör>/ios/plist-ek.json'dan (ör. kamera ve mikrofon izin metinleri)
+//   proje:      yalnız iPhone (TARGETED_DEVICE_FAMILY = 1), sürüm Android versionName'den; ios/App/App'teki, projede
+//               olmayan .swift dosyaları App hedefine eklenir (uygulamanın kendi eklentisi); ViewController.swift varsa
+//               Main.storyboard Capacitor'ın denetleyicisi yerine onu kullanır (eklentiyi köprüye kaydeder)
 //   görseller:  1024 px simge (saydamlıksız; Android uyarlanabilir simgesinden ya da <klasör>/www/img/icon.svg),
 //               açılış ekranı: uygulamanın zemin rengi (Capacitor'ın beyaz açılışı yerine)
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
+import crypto from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const KOK = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -37,10 +42,11 @@ export function plistSil(plist, anahtar) {
   return plist.replace(new RegExp(`\\s*<key>${k}</key>\\s*(<string>[^<]*</string>|<true/>|<false/>|<array>[\\s\\S]*?</array>)`), '');
 }
 
-/** Capacitor'ın Info.plist şablonuna App Store ayarlarını yazar; tekrar çalıştırılınca aynı sonucu verir. */
-export function plistAyarla(plist, { admobApp, ad }) {
+/** Capacitor'ın Info.plist şablonuna App Store ayarlarını yazar; tekrar çalıştırılınca aynı sonucu verir. metinler: { anahtar: metin } */
+export function plistAyarla(plist, { admobApp, ad, metinler = {} }) {
   for (const a of ['GADApplicationIdentifier', 'SKAdNetworkItems', 'NSUserTrackingUsageDescription', 'ITSAppUsesNonExemptEncryption',
-    'UIRequiredDeviceCapabilities', 'UISupportedInterfaceOrientations', 'UISupportedInterfaceOrientations~ipad', 'CFBundleDisplayName']) {
+    'UIRequiredDeviceCapabilities', 'UISupportedInterfaceOrientations', 'UISupportedInterfaceOrientations~ipad', 'CFBundleDisplayName',
+    ...Object.keys(metinler)]) {
     plist = plistSil(plist, a);
   }
   const ek = [
@@ -51,6 +57,7 @@ export function plistAyarla(plist, { admobApp, ad }) {
     `\t<key>ITSAppUsesNonExemptEncryption</key>\n\t<false/>`,
     `\t<key>UIRequiredDeviceCapabilities</key>\n\t<array>\n\t\t<string>arm64</string>\n\t</array>`,
     `\t<key>UISupportedInterfaceOrientations</key>\n\t<array>\n\t\t<string>UIInterfaceOrientationPortrait</string>\n\t</array>`,
+    ...Object.entries(metinler).map(([k, v]) => `\t<key>${k}</key>\n\t<string>${kacis(v)}</string>`),
   ].join('\n');
   const son = plist.lastIndexOf('</dict>');
   return plist.slice(0, son).replace(/\s*$/, '\n') + ek + '\n' + plist.slice(son);
@@ -60,6 +67,30 @@ export function plistAyarla(plist, { admobApp, ad }) {
 export function projeAyarla(pbx, surum) {
   return pbx.replace(/TARGETED_DEVICE_FAMILY = "?[0-9,]+"?;/g, 'TARGETED_DEVICE_FAMILY = 1;')
     .replace(/MARKETING_VERSION = [^;]+;/g, `MARKETING_VERSION = ${surum};`);
+}
+
+const pbxKimlik = (s) => crypto.createHash('sha1').update(s).digest('hex').slice(0, 24).toUpperCase();
+
+/** .swift dosyalarını App hedefine ekler: dosya başvurusu, App grubu, derleme dosyası, Sources evresi. Ekli olana dokunmaz. */
+export function kaynakEkle(pbx, adlar) {
+  for (const ad of adlar) {
+    if (pbx.includes(`path = ${ad};`)) continue;
+    const ref = pbxKimlik(`ref:${ad}`), bf = pbxKimlik(`bf:${ad}`);
+    pbx = pbx.replace('/* End PBXBuildFile section */',
+      `\t\t${bf} /* ${ad} in Sources */ = {isa = PBXBuildFile; fileRef = ${ref} /* ${ad} */; };\n/* End PBXBuildFile section */`);
+    pbx = pbx.replace('/* End PBXFileReference section */',
+      `\t\t${ref} /* ${ad} */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ${ad}; sourceTree = "<group>"; };\n/* End PBXFileReference section */`);
+    // App grubu ve Sources evresi: AppDelegate.swift'in yanına
+    pbx = pbx.replace(/(\t+)\w{24} \/\* AppDelegate\.swift \*\/,\n/, (m, sek) => `${m}${sek}${ref} /* ${ad} */,\n`);
+    pbx = pbx.replace(/(\t+)\w{24} \/\* AppDelegate\.swift in Sources \*\/,\n/, (m, sek) => `${m}${sek}${bf} /* ${ad} in Sources */,\n`);
+  }
+  return pbx;
+}
+
+/** Main.storyboard: Capacitor'ın denetleyicisi yerine uygulamanın ViewController'ı (App modülü) */
+export function storyboardAyarla(sb) {
+  return sb.replace('customClass="CAPBridgeViewController" customModule="Capacitor"',
+    'customClass="ViewController" customModule="App" customModuleProvider="target"');
 }
 
 /** <klasör>/android/app/build.gradle → versionName */
@@ -149,10 +180,19 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const cap = JSON.parse(fs.readFileSync(path.join(KOK, klasor, 'capacitor.config.json'), 'utf8'));
   const admob = admobOku(fs.readFileSync(path.join(KOK, klasor, 'ios', 'admob.properties'), 'utf8'));
   const surum = surumOku(klasor);
-  const pl = path.join(KOK, klasor, 'ios', 'App', 'App', 'Info.plist');
-  fs.writeFileSync(pl, plistAyarla(fs.readFileSync(pl, 'utf8'), { admobApp: admob.app, ad: cap.appName }));
+  const app = path.join(KOK, klasor, 'ios', 'App', 'App');
+  const ekDosya = path.join(KOK, klasor, 'ios', 'plist-ek.json');
+  const ek = fs.existsSync(ekDosya) ? JSON.parse(fs.readFileSync(ekDosya, 'utf8')) : {};
+  const pl = path.join(app, 'Info.plist');
+  fs.writeFileSync(pl, plistAyarla(fs.readFileSync(pl, 'utf8'), { admobApp: admob.app, ad: cap.appName, metinler: ek }));
   const pb = path.join(KOK, klasor, 'ios', 'App', 'App.xcodeproj', 'project.pbxproj');
-  fs.writeFileSync(pb, projeAyarla(fs.readFileSync(pb, 'utf8'), surum));
-  await gorseller(klasor, cap.backgroundColor || '#000000');
-  console.log(`${klasor}: Info.plist, proje (sürüm ${surum}, yalnız iPhone), simge ve açılış görseli yazıldı`);
+  const swift = fs.readdirSync(app).filter((f) => f.endsWith('.swift')).sort();
+  fs.writeFileSync(pb, kaynakEkle(projeAyarla(fs.readFileSync(pb, 'utf8'), surum), swift));
+  if (swift.includes('ViewController.swift')) {
+    const sb = path.join(app, 'Base.lproj', 'Main.storyboard');
+    fs.writeFileSync(sb, storyboardAyarla(fs.readFileSync(sb, 'utf8')));
+  }
+  if (!process.argv.includes('--yalniz-proje')) await gorseller(klasor, cap.backgroundColor || '#000000');
+  console.log(`${klasor}: Info.plist${Object.keys(ek).length ? ` (+${Object.keys(ek).join(', ')})` : ''}, proje (sürüm ${surum}, yalnız iPhone, `
+    + `${swift.length} Swift dosyası)${process.argv.includes('--yalniz-proje') ? '' : ', simge ve açılış görseli'} yazıldı`);
 }

@@ -37,7 +37,7 @@ test('iPhone ikizleri (_ios): Google Play yerine App Store, Apple\'ın yenileme 
     }
     assert.match(d.pr_terms_ios, /24/, 'Apple: yenilemeden en az 24 saat önce iptal (3.1.2)');
   }
-  assert.deepEqual(Object.keys(en).filter((x) => x.endsWith('_ios')).sort(), ['pr_loading_ios', 'pr_none_ios', 'pr_pending_ios', 'pr_terms_ios', 'pr_unavailable_ios', 'st_dev_note_ios', 'st_licenses_text_ios']);
+  assert.deepEqual(Object.keys(en).filter((x) => x.endsWith('_ios')).sort(), ['hm_sensors_subtitle_ios', 'pr_loading_ios', 'pr_none_ios', 'pr_pending_ios', 'pr_terms_ios', 'pr_unavailable_ios', 'sn_sensors_subtitle_ios', 'st_dev_note_ios', 'st_licenses_text_ios']);
   // st_dev_arcore iPhone'da gösterilmez (views/settings.js); geri kalan her Google Play metninin ikizi var
   for (const [k, v] of Object.entries(en)) if (/Google[ -]?Play/.test(v) && k !== 'st_dev_arcore') assert.ok(`${k}_ios` in en, `${k}: iPhone karşılığı yok`);
   assert.match(fs.readFileSync(path.join(JS, 'views', 'settings.js'), 'utf8'), /native\.isIOS \? null : row\('Box', t\('st_dev_arcore'\)/);

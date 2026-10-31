@@ -55,7 +55,7 @@ export function render({ go, back, params }) {
       row('Level', t('st_dev_gravity'), yn(s.gravity)),
       row('RotateCw', t('st_dev_gyroscope'), yn(s.gyroscope)),
       row('Crosshair', t('st_dev_rotation'), yn(s.rotationVector || s.gameRotationVector)),
-      row('Sun', t('st_dev_light'), yn(s.light)),
+      native.isIOS ? null : row('Sun', t('st_dev_light'), yn(s.light)),   // iPhone'da ışık ölçer yok
       row('Mic', t('st_dev_microphone'), yn(c.microphone)),
       row('Camera', t('st_dev_camera'), yn(c.rearCamera)),
       row('Flashlight', t('st_dev_flash'), yn(c.flash)),

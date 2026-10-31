@@ -2,6 +2,7 @@
 import { h } from '../dom.js';
 import { t } from '../i18n.js';
 import { topbar, tileIcon } from './common.js';
+import { isIOS } from '../native.js';
 
 const ITEMS = [
   ['Box', 'blue', 'st_acc_camera_title', 'st_acc_camera_text'],
@@ -10,7 +11,7 @@ const ITEMS = [
   ['Protractor', 'orange', 'st_acc_protractor_title', 'st_acc_protractor_text'],
   ['Activity', 'yellow', 'st_acc_sound_title', 'st_acc_sound_text'],
   ['Sun', 'yellow', 'st_acc_light_title', 'st_acc_light_text'],
-];
+].filter(([ic]) => !(isIOS && ic === 'Sun'));   // iPhone'da ışık ölçer yok
 
 export function render({ go, back }) {
   const el = h('div', { class: 'screen' },

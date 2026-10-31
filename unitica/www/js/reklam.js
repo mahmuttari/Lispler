@@ -1,5 +1,5 @@
 /* ============================================================
-   UNITICA — REKLAMLAR (AdMob, yalnız Android uygulaması)
+   UNITICA — REKLAMLAR (AdMob, Android ve iPhone uygulaması)
    @capacitor-community/admob eklentisi Capacitor.Plugins.AdMob olarak gelir; masaüstü tarayıcıda eklenti yoktur ve
    bu dosyadaki her şey sessizce devre dışı kalır. NE ZAMAN sorusunun yanıtı ve gerekçesi reklam-kural.js'in
    başındadır; burada yalnız eklentiyle konuşulur:
@@ -7,16 +7,20 @@
       banner'ı kaldırır, geçiş reklamı bir daha istenmez.
    2. UMP: requestConsentInfo → onay gerekliyse showConsentForm → canRequestAds değilse dur. Ancak ondan sonra
       initialize({ maxAdContentRating: 'General' }) (derece ondan sonraki her isteğe uygulanır).
+      iPhone: UMP'den sonra, initialize'dan önce izleme izni (ATT). AdMob'da IDFA açıklama mesajı yayındaysa UMP onu
+      ve Apple'ın iznini kendisi gösterir; değilse ve izin hiç sorulmadıysa burada sorulur. Verilmezse reklam yine
+      gösterilir, yalnız kişiselleştirilmez (SDK reklam kimliğini okuyamaz).
    3. Banner: ADAPTIVE_BANNER, BOTTOM_CENTER. Yüksekliği (bannerAdSizeChanged, dp = CSS px) --ad-h değişkenine yazılır;
       css/app.css sayfayı o kadar yukarı çeker. Klavye açılınca hideBanner, kapanınca resumeBanner. Yüklenemezse
       (doluluk yok, ağ yok) 1, 2, 4 … en çok 8 dakika sonra yeniden denenir.
    4. Geçiş reklamı önceden yüklenir; yalnız sekme değişiminde reklam-kural.js "uygun" derse gösterilir.
    5. Hata ayıklama derlemesinde (Capacitor.DEBUG) her istek isTesting: Google'ın test birimleri.
+   6. Kimlikler platforma göre (reklam-kimlik.js: android / ios); AdMob'da iki platform ayrı uygulamadır.
    Sınama: test/reklam.test.mjs (kurallar, kimlikler) ve araclar/tarayici-dene.mjs (sahte eklentiyle çağrı sırası).
    ============================================================ */
 import { gecisUygunMu, gosterildi, kayitTemizle, yeniOturumMu } from './reklam-kural.js';
 import { REKLAM_KIMLIK } from './reklam-kimlik.js';
-import { plugin, isDebugBuild, onAppState } from './native.js';
+import { plugin, isDebugBuild, isIOS, onAppState } from './native.js';
 import { isAdFree } from './state.js';
 
 const KAYIT = 'unitica.reklam';
@@ -41,6 +45,7 @@ const izleyiciler = new Set();
 const haberVer = () => izleyiciler.forEach(f => { try { f(); } catch (e) { /* ekran yenilenemedi */ } });
 
 const admob = () => plugin('AdMob');
+const KIMLIK = REKLAM_KIMLIK[isIOS ? 'ios' : 'android'];
 const test = () => (isDebugBuild ? { isTesting: true } : {});
 
 function kayitOku() {
@@ -101,7 +106,7 @@ async function bannerGoster() {
   if (r.klavye) { clearTimeout(r.bannerZaman); r.bannerZaman = setTimeout(bannerGoster, 3000); return; }
   r.bannerVar = true;
   try {
-    await ad.showBanner({ adId: REKLAM_KIMLIK.banner, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0, ...test() });
+    await ad.showBanner({ adId: KIMLIK.banner, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0, ...test() });
   } catch (e) { r.bannerVar = false; }
 }
 
@@ -110,10 +115,18 @@ async function gecisYukle() {
   if (!ad || r.durum !== 'hazir' || r.gecisYuklu || r.gecisYukleniyor || isAdFree()) return;
   r.gecisYukleniyor = true;
   try {
-    await ad.prepareInterstitial({ adId: REKLAM_KIMLIK.gecis, ...test() });
+    await ad.prepareInterstitial({ adId: KIMLIK.gecis, ...test() });
     r.gecisYuklu = true;
   } catch (e) { r.gecisYuklu = false; }
   r.gecisYukleniyor = false;
+}
+
+/** iPhone: Apple'ın izleme izni (ATT) hiç sorulmadıysa sorar; yanıt ne olursa olsun reklam sürer */
+async function izlemeIzni(ad) {
+  try {
+    const { status } = await ad.trackingAuthorizationStatus();
+    if (status === 'notDetermined') await ad.requestTrackingAuthorization();
+  } catch (e) { /* iOS 14 öncesi ya da eklenti yanıt vermedi: izin sorulmadan devam */ }
 }
 
 let baslatma = null;
@@ -130,6 +143,7 @@ export function reklamBaslat() {
       r.gizlilikGerekli = bilgi.privacyOptionsRequirementStatus === 'REQUIRED';
       haberVer();
       if (!bilgi.canRequestAds || isAdFree()) { r.durum = 'kapali'; return; }
+      if (isIOS) await izlemeIzni(ad);
       await ad.initialize({ maxAdContentRating: 'General' });
       if (isAdFree()) { r.durum = 'durdu'; return; }   // bu arada üye oldu
       dinleyicileriKur(ad);

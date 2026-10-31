@@ -1,20 +1,38 @@
 // The ad-free membership: who has it, buying it, restoring it, and the plans with the store's own prices.
-// Google Play is the source of truth; its last answer is kept in state.member so the app also knows offline, and only a real answer from the store
+// The store (Google Play or the App Store) is the source of truth; its last answer is kept in state.member so the app also knows offline, and only a real answer from the store
 // switches the membership off again. The store side is billing.js, the screen is membership.js; the rest of the app only asks isAdFree() (state.js).
 import { t, locale } from './i18n.js';
 import { state, setMember, isAdFree } from './state.js';
-import { SUBSCRIPTION } from './config.js';
+import { SUBSCRIPTION, IOS_PRODUCTS } from './config.js';
 import * as billing from './billing.js';
 import { reklamBaslat, reklamDurdur } from './reklam.js';
 import { onAppState } from './native.js';
 
 export { isAdFree };
 
-/** do the store's purchases contain our subscription in the purchased state ("1" on Android)? */
+/** the plan of an App Store product id (monthly / yearly), else null. A Play purchase does not name its base plan. */
+export const iosPlan = id => SUBSCRIPTION.plans.find(k => IOS_PRODUCTS[k] === id) || null;
+/** a purchase of our subscription: the Play product, or one of the App Store products */
+export const ours = p => !!p && (p.productIdentifier === SUBSCRIPTION.productId || !!iosPlan(p.productIdentifier));
+
+/**
+ * does this purchase give the membership? Android: the purchased state ("1"). iPhone: not refunded (revocationDate) and the period not over
+ * (isActive), except in Apple's billing grace period, when the user keeps the membership while Apple retries the payment.
+ */
+const gives = p => ours(p)
+  && (p.purchaseState === undefined || p.purchaseState === null || String(p.purchaseState) === '1')
+  && !p.revocationDate
+  && (p.isActive !== false || p.subscriptionState === 'inGracePeriod');
+
+/** do the store's purchases contain our subscription in a state that gives the membership? */
 export function entitled(purchases) {
-  return (purchases || []).some(p => p && p.productIdentifier === SUBSCRIPTION.productId
-    && (p.purchaseState === undefined || p.purchaseState === null || String(p.purchaseState) === '1')
-    && p.isActive !== false);
+  return (purchases || []).some(gives);
+}
+
+/** the plan of the purchase that gives the membership, when the store tells it (App Store only) */
+export function activePlan(purchases) {
+  const p = (purchases || []).find(gives);
+  return p ? iosPlan(p.productIdentifier) : null;
 }
 
 /** how much cheaper the yearly plan is than twelve monthly ones (0.159 = 16 %), from the store's amounts */
@@ -36,9 +54,9 @@ function setAdFree(active, plan) {
 export async function refresh() {
   const r = await billing.ownedPurchases();
   if (!r.ok) { if (!isAdFree()) reklamBaslat(); return; }
-  const mine = r.purchases.filter(p => p && p.productIdentifier === SUBSCRIPTION.productId);
-  if (mine.some(p => String(p.purchaseState) === '1' && p.isAcknowledged === false)) billing.restore();   // a pending purchase that went through later
-  setAdFree(entitled(mine), null);
+  const mine = r.purchases.filter(ours);
+  if (mine.some(p => String(p.purchaseState) === '1' && p.isAcknowledged === false)) billing.restore();   // Play: a pending purchase that went through later
+  setAdFree(entitled(mine), activePlan(mine));
 }
 
 /** -> 'ok' | 'pending' | 'cancelled' | 'owned' | 'failed' */
@@ -55,7 +73,7 @@ export async function restore() {
   const r = await billing.ownedPurchases();
   if (!r.ok) return 'failed';
   const e = entitled(r.purchases);
-  setAdFree(e, null);
+  setAdFree(e, activePlan(r.purchases));
   return e ? 'restored' : 'none';
 }
 
@@ -86,5 +104,5 @@ export function startMembership() {
   let done = false;
   const fallback = setTimeout(() => { if (!done && !isAdFree()) reklamBaslat(); }, 6000);   // a store that does not answer must not keep the ads off for ever
   refresh().finally(() => { done = true; clearTimeout(fallback); });
-  onAppState(() => {}, () => { refresh(); });   // back from the Play subscription page (subscribed, cancelled ...)
+  onAppState(() => {}, () => { refresh(); });   // back from the store's subscription page (subscribed, cancelled ...)
 }

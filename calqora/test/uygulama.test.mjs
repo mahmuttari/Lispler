@@ -41,9 +41,10 @@ test('sürüm 1.1.0 (versionCode 1) ve paket adı her yerde aynı', () => {
   assert.match(v, /targetSdkVersion = 36/);
 });
 
-test('eklentiler: özgündekiler + AdMob, sürümler sabit', () => {
+test('eklentiler: özgündekiler + AdMob + iOS, sürümler sabit', () => {
   const p = JSON.parse(oku('package.json'));
-  assert.deepEqual(Object.keys(p.dependencies).sort(), ['@capacitor-community/admob', '@capacitor/android', '@capacitor/app', '@capacitor/browser', '@capacitor/core', '@capgo/native-purchases']);
+  assert.deepEqual(Object.keys(p.dependencies).sort(), ['@capacitor-community/admob', '@capacitor/android', '@capacitor/app', '@capacitor/browser', '@capacitor/core', '@capacitor/ios', '@capgo/native-purchases']);
+  assert.equal(p.dependencies['@capacitor/ios'], p.dependencies['@capacitor/core'], 'Capacitor çekirdeği ve iOS aynı sürüm');
   for (const [ad, s] of Object.entries({ ...p.dependencies, ...p.devDependencies })) assert.match(s, /^\d+\.\d+\.\d+$/, `${ad} sürümü sabit değil: ${s}`);
   assert.equal(p.dependencies['@capacitor-community/admob'].split('.')[0], '8', 'Hayalet Avcıları ile aynı ana sürüm');
   const kilit = JSON.parse(oku('package-lock.json'));
@@ -111,7 +112,16 @@ test('11 dil: aynı arayüz anahtarları, aynı yer tutucular; birim/sabit adlar
     assert.match(L.ui['s.aboutText'], /AdMob/, `${d}: Hakkında metni reklamları doğru anlatmalı`);
     assert.doesNotMatch(L.ui['s.aboutText'], /\b3\b/, `${d}: eski "3 dakikada bir" iddiası`);
     assert.doesNotMatch(fs.readFileSync(path.join(KOK, 'www', 'js', 'lang', d + '.js'), 'utf8'), /\\u0[0-9a-f]{3}/i, `${d}: \\u kaçışına dönmüş karakter`);
+    // iPhone karşılıkları (t() iPhone'da ".ios" ikizini seçer): App Store, Google Play değil (App Review 2.3.10)
+    for (const k of Object.keys(L.ui).filter((x) => x.endsWith('.ios'))) {
+      assert.ok(k.slice(0, -4) in L.ui, `${d} ${k}: ikizi yok`);
+      assert.doesNotMatch(L.ui[k], /Google[ -]?Play|Android/, `${d} ${k}`);
+      assert.match(L.ui[k], /App[ -]Store|Apple/, `${d} ${k}`);
+    }
+    assert.match(L.ui['p.terms.ios'], /24/, `${d}: Apple, yenilemeden en az 24 saat önce iptal koşulunu ister (3.1.2)`);
   }
+  assert.deepEqual(Object.keys(en.ui).filter((x) => x.endsWith('.ios')).sort(), ['p.b3.ios', 'p.noPrices.ios', 'p.terms.ios', 'p.unavailable.ios']);
+  for (const [k, v] of Object.entries(en.ui)) if (/Google[ -]?Play/.test(v)) assert.ok(`${k}.ios` in en.ui, `${k}: iPhone karşılığı yok`);
 });
 
 test('hesap motoru: temel sonuçlar (özgün davranış korunuyor)', async () => {

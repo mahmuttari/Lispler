@@ -110,6 +110,7 @@ export default {
     "p.b1": "Aucune publicité, sur tous les écrans",
     "p.b2": "Soutient le développement",
     "p.b3": "Résiliable à tout moment dans Google Play",
+    "p.b3.ios": "Résiliable à tout moment dans les réglages de l’App Store",
     "p.monthly": "Mensuel",
     "p.yearly": "Annuel",
     "p.perMonth": "{0} / mois",
@@ -123,7 +124,10 @@ export default {
     "p.thanks": "Merci pour votre soutien !",
     "p.loading": "Chargement des prix…",
     "p.unavailable": "Google Play n’est pas disponible sur cet appareil ; il est donc impossible de souscrire un abonnement ici.",
+    "p.unavailable.ios": "L’App Store n’est pas disponible sur cet appareil ; il est donc impossible de souscrire un abonnement ici.",
     "p.terms": "Le paiement est prélevé sur votre compte Google Play. L’abonnement est renouvelé automatiquement au prix affiché jusqu’à ce que vous le résiliiez dans Google Play. Vous pouvez résilier à tout moment.",
+    "p.terms.ios": "Le paiement est débité de votre compte Apple à la confirmation de l’achat. L’abonnement est renouvelé automatiquement au prix affiché sauf s’il est résilié au moins 24 heures avant la fin de la période en cours ; le renouvellement est facturé dans les 24 dernières heures de la période. Vous pouvez gérer ou résilier l’abonnement dans les réglages de votre compte App Store après l’achat.",
+    "p.eula": "Conditions d’utilisation (CLUF)",
     "p.cancelled": "Achat annulé",
     "p.failed": "L’achat n’a pas pu être finalisé",
     "p.restored": "Abonnement restauré",
@@ -141,6 +145,7 @@ export default {
     "s.privacy": "Politique de confidentialité",
     "s.privacyOpen": "Afficher",
     "p.noPrices": "Impossible de charger les prix depuis Google Play. Vérifiez votre connexion et réessayez.",
+    "p.noPrices.ios": "Impossible de charger les prix depuis l’App Store. Vérifiez votre connexion et réessayez.",
   },
   // category names
   cats: {

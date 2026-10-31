@@ -1,4 +1,5 @@
 // Ana sayfa: dört araç kartı (kamerayla ölçüm, su terazisi, cetvel ve açı, sensörler) ve canlı eğim / ışık değerleri.
+// iPhone'da ışık ölçer yok (ortam ışığı sensörüne açık API yok): Sensörler kartında yalnız ses.
 import { h } from '../dom.js';
 import { icon } from '../icons.js';
 import { t, num } from '../i18n.js';
@@ -55,8 +56,8 @@ export function render({ go }) {
     card('yellow', 'Activity', t('hm_sensors_title'), t('hm_sensors_subtitle'), () => go(`sensors?tab=${S.sensors.tab}`),
       h('div', { class: 'mini2' },
         h('div', { class: 'mini' }, h('small', null, icon('Volume2', 14), t('hm_sound_label')), soundVal, soundSub),
-        h('div', { class: 'mini' }, h('small', null, icon('Sun', 14), t('hm_light_label')), luxVal, luxSub)),
-      advice));
+        native.isIOS ? null : h('div', { class: 'mini' }, h('small', null, icon('Sun', 14), t('hm_light_label')), luxVal, luxSub)),
+      native.isIOS ? null : advice));
 
   // Canlı akışlar: yalnız ekran görünürken
   let stops = [];
@@ -72,7 +73,7 @@ export function render({ go }) {
       tiltVal.textContent = `${num(total, 1)}°`;
       tiltSub.textContent = `X ${num(x, 1)}° · Y ${num(y, 1)}°`;
     }));
-    stops.push(native.light((s) => {
+    if (!native.isIOS) stops.push(native.light((s) => {
       if (!s) {
         luxVal.textContent = '—'; luxSub.textContent = t('hm_light_unavailable'); advice.textContent = t('hm_advice_unavailable');
         return;

@@ -174,7 +174,7 @@ try {
     assert.ok(saldiri.istemci.olay >= 2); assert.equal(saldiri.istemci.can, 100);
   });
 
-  // 3.15.1: hayaletler petlere vurur; köpeğin 5, kedi ve kuşun 3 canı var; can bitince bayılır, sonra döner
+  // 3.15.1: hayaletler petlere vurur; her petin 5 canı var; can bitince bayılır, sonra döner
   const can = await p.evaluate(() => {
     const r = {};
     r.canlar = ['kedi', 'kopek', 'kus'].map((tur) => { const pt = __kur(tur); return [pt.can, pt.maxCan]; });
@@ -205,7 +205,7 @@ try {
     } finally { online.mode = null; online.pendingEvents = []; game.enemyProjectiles = []; }
     // Can biter: bayılır, saldırmaz, çizilmez; PET_DIRILME sn sonra tam canla döner
     game.ghosts = []; __kur('kedi');
-    for (let i = 0; i < 3; i++) { game.pet.koruma = 0; petHasar(1); }
+    for (let i = 0; i < 5; i++) { game.pet.koruma = 0; petHasar(1); }
     r.baygin = { can: game.pet.can, baygin: game.pet.baygin > 0 };
     const h = __hayalet(game.pet.x + 30, game.pet.y, 100); h.frozenUntil = 1e12;
     __pet(2); r.bayginVurmaz = h.hp;
@@ -218,17 +218,17 @@ try {
     __kur('kopek'); game.pet.can = 2; game.pet.koruma = 0; hata = null; try { render(); } catch (e) { hata = e.message; } r.kalp = hata;
     return r;
   });
-  sina('köpeğin 5, kedi ve kuşun 3 canı var', () => { assert.deepEqual(can.canlar, [[3, 3], [5, 5], [3, 3]]); });
+  sina('bütün petlerin 5 canı var', () => { assert.deepEqual(can.canlar, [[5, 5], [5, 5], [5, 5]]); });
   sina('değen hayalet petin 1 canını alır; korumada ikinci darbe yok, sonra yine alır', () => {
     assert.equal(can.ilk, 4); assert.equal(can.korumada, 4); assert.equal(can.korumaSonra, 3);
   });
   sina('sersemlemiş hayalet ısırmaz; boss 2 can alır', () => { assert.equal(can.sersem, 5); assert.equal(can.boss, 3); });
-  sina('düşman mermisi pete çarpınca can gider ve mermi silinir', () => { assert.deepEqual(can.mermi, { can: 2, kalan: 0 }); });
+  sina('düşman mermisi pete çarpınca can gider ve mermi silinir', () => { assert.deepEqual(can.mermi, { can: 4, kalan: 0 }); });
   sina('istemcide pete çarpan mermi kurucuya bildirilir', () => { assert.equal(can.istemciMermi, 1); });
   sina('canı biten pet bayılır, saldırmaz, çizimde hata yok', () => {
     assert.deepEqual(can.baygin, { can: 0, baygin: true }); assert.equal(can.bayginVurmaz, 100); assert.equal(can.bayginCizim, null);
   });
-  sina('bayılan pet PET_DIRILME sn sonra oyuncunun yanında tam canla döner', () => { assert.deepEqual(can.donus, { can: 3, baygin: 0, yakin: true }); });
+  sina('bayılan pet PET_DIRILME sn sonra oyuncunun yanında tam canla döner', () => { assert.deepEqual(can.donus, { can: 5, baygin: 0, yakin: true }); });
   sina('yeni bölümde pet tam canla başlar; eksik can kalplerle çizilir', () => { assert.equal(can.yeniBolum, 5); assert.equal(can.kalp, null); });
 
   // Çizim: üç pet her durumda hatasız; ekran görüntüleri

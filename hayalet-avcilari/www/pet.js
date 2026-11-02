@@ -6,8 +6,9 @@
      oyuncuya döner, çok geride kalırsa yanına ışınlanır.
    - Kedi: çevik, sık pençe. Köpek: güçlü ısırık, hayaleti bir an sersemletir. Kuş: uçar (duvar ve su engel değil),
      tepeden gagalar. Hasar bölümle biraz artar (her 6 bölümde +1).
-   - 3.15.1, kullanıcının isteği: "Hayaletler petlere de vursun, köpeklerin 5 canı olsun." Petin canı var (köpek 5,
-     kedi ve kuş 3). Hayalete değince ve düşman mermisi çarpınca 1 can (boss 2) gider; sonra PET_KORUMA sn dokunulmaz.
+   - 3.15.1, kullanıcının istekleri: "Hayaletler petlere de vursun, köpeklerin 5 canı olsun.", "Bütün petlerin 5 canı
+     olsun." Her petin 5 canı var. Hayalete değince ve düşman mermisi çarpınca 1 can (boss 2) gider; sonra PET_KORUMA
+     sn dokunulmaz.
      Sersemlemiş hayalet ısırmaz. Can bitince pet bayılır, PET_DIRILME sn sonra oyuncunun yanında tam canla döner.
      Her bölümde tam canla başlar. Canı eksikken başının üstünde kalpler görünür.
    - Çevrimiçinde de her oyuncunun peti kendi cihazında koşar; vuruşu mermi gibi kurucuya gider (uzaktanVur). Türü ve
@@ -16,9 +17,9 @@
    ============================================================ */
 
 const PETLER = {
-  kedi:  { ad: t("Kedi"),  simge: "🐱", cost: 300, desc: t("Çevik: hayalete atlayıp pençeler."), hiz: 1.15, hasar: 1, ara: 0.55, uzanma: 16, can: 3 },
+  kedi:  { ad: t("Kedi"),  simge: "🐱", cost: 300, desc: t("Çevik: hayalete atlayıp pençeler."), hiz: 1.15, hasar: 1, ara: 0.55, uzanma: 16, can: 5 },
   kopek: { ad: t("Köpek"), simge: "🐶", cost: 600, desc: t("Güçlü ısırık: hayaleti bir an sersemletir."), hiz: 1.0, hasar: 2, ara: 1.0, uzanma: 18, sersem: 0.6, can: 5 },
-  kus:   { ad: t("Kuş"),   simge: "🐦", cost: 900, desc: t("Uçar: duvar ve suyun üstünden geçip tepeden gagalar."), hiz: 1.25, hasar: 1, ara: 0.7, uzanma: 12, ucar: true, can: 3 },
+  kus:   { ad: t("Kuş"),   simge: "🐦", cost: 900, desc: t("Uçar: duvar ve suyun üstünden geçip tepeden gagalar."), hiz: 1.25, hasar: 1, ara: 0.7, uzanma: 12, ucar: true, can: 5 },
 };
 const PET_TASMA = 260;   // oyuncudan bu kadar uzaktaki hayaletle uğraşmaz (px)
 const PET_IZ = 56;       // takipte oyuncunun bu kadar gerisinde durur (px)

@@ -47,6 +47,6 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 🎬 Out of lives on the World Tour? Watch an ad and carry on where you left off (3 times per game).
 🐊 Crocodiles now lurk in the water: linger on the shore and they may bite!
 🌉 Swaying rope bridges over the lakes: cross quickly, linger in the middle and you'll fall in!
-🐾 Pets are here: take a cat, dog or bird along! Ghosts hit them too; the dog has 5 lives.
+🐾 Pets are here: take a cat, dog or bird along! Ghosts hit them too; each pet has 5 lives.
 🌿 Hide in bushes where ghosts can't see you; ghosts no longer spawn right next to you.
 🛠️ Settings no longer freeze the game.

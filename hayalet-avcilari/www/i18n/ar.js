@@ -152,7 +152,7 @@ I18N.ar = {
   "🐾 <b>Petler</b> — yanında koşar, hayaletlere saldırır": "🐾 <b>الحيوانات الأليفة</b> — تركض بجانبك وتهاجم الأشباح",
   "🐾 Petler": "🐾 حيوانات أليفة",
   "🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al, hayaletlere birlikte saldırın!": "🐾 وصلت الحيوانات الأليفة: خذ قطة أو كلبًا أو طائرًا وهاجموا الأشباح معًا!",
-  "🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; köpeğin 5 canı var.": "🐾 وصلت الحيوانات الأليفة: خذ قطة أو كلبًا أو طائرًا! الأشباح تضربها أيضًا، وللكلب 5 أرواح.",
+  "🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var.": "🐾 وصلت الحيوانات الأليفة: خذ قطة أو كلبًا أو طائرًا! الأشباح تضربها أيضًا، ولكل حيوان أليف 5 أرواح.",
   "👋 {ad} ayrıldı": "👋 غادر {ad}",
   "👋 {ad} geldi": "👋 انضم {ad}",
   "👑 Artık sen Host'sun!": "👑 أنت المضيف الآن!",

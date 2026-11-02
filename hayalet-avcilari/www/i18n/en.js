@@ -152,7 +152,7 @@ I18N.en = {
   "🐾 <b>Petler</b> — yanında koşar, hayaletlere saldırır": "🐾 <b>Pets</b> — run beside you and attack ghosts",
   "🐾 Petler": "🐾 Pets",
   "🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al, hayaletlere birlikte saldırın!": "🐾 Pets are here: take a cat, dog or bird along and fight ghosts together!",
-  "🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; köpeğin 5 canı var.": "🐾 Pets are here: take a cat, dog or bird along! Ghosts hit them too; the dog has 5 lives.",
+  "🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var.": "🐾 Pets are here: take a cat, dog or bird along! Ghosts hit them too; each pet has 5 lives.",
   "👋 {ad} ayrıldı": "👋 {ad} left",
   "👋 {ad} geldi": "👋 {ad} joined",
   "👑 Artık sen Host'sun!": "👑 You're the host now!",

@@ -152,7 +152,7 @@ I18N.hi = {
   "🐾 <b>Petler</b> — yanında koşar, hayaletlere saldırır": "🐾 <b>पालतू</b> — साथ दौड़ते हैं, भूतों पर हमला करते हैं",
   "🐾 Petler": "🐾 पालतू",
   "🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al, hayaletlere birlikte saldırın!": "🐾 पालतू आ गए: बिल्ली, कुत्ता या चिड़िया साथ लो और मिलकर भूतों पर हमला करो!",
-  "🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; köpeğin 5 canı var.": "🐾 पालतू आ गए: बिल्ली, कुत्ता या चिड़िया साथ लो! भूत भी उन पर वार करते हैं; कुत्ते की 5 जानें हैं।",
+  "🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var.": "🐾 पालतू आ गए: बिल्ली, कुत्ता या चिड़िया साथ लो! भूत भी उन पर वार करते हैं; हर पालतू की 5 जानें हैं।",
   "👋 {ad} ayrıldı": "👋 {ad} रूम से चले गए",
   "👋 {ad} geldi": "👋 {ad} रूम में आए",
   "👑 Artık sen Host'sun!": "👑 अब तुम होस्ट हो!",

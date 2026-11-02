@@ -152,7 +152,7 @@ I18N.zh = {
   "🐾 <b>Petler</b> — yanında koşar, hayaletlere saldırır": "🐾 <b>宠物</b> — 跟着你跑，攻击幽灵",
   "🐾 Petler": "🐾 宠物",
   "🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al, hayaletlere birlikte saldırın!": "🐾 宠物来了：带上猫、狗或鸟，一起攻击幽灵！",
-  "🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; köpeğin 5 canı var.": "🐾 宠物来了：带上猫、狗或鸟！幽灵也会攻击它们；狗有5条命。",
+  "🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var.": "🐾 宠物来了：带上猫、狗或鸟！幽灵也会攻击它们；每只宠物有5条命。",
   "👋 {ad} ayrıldı": "👋 {ad} 离开了",
   "👋 {ad} geldi": "👋 {ad} 来了",
   "👑 Artık sen Host'sun!": "👑 你现在是房主了！",

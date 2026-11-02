@@ -330,7 +330,7 @@ const UPDATE_NOTES = {
     t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
     t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
     t("🌉 Göllerde sallanan ip köprüler: hızlı geç, ortada oyalanırsan suya düşersin!"),
-    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al, hayaletlere birlikte saldırın!"),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; köpeğin 5 canı var."),
     t("🌿 Çalıya saklan, hayaletler seni göremez; hayaletler artık dibinde doğmaz."),
     t("🛠️ Ayarlardan dönünce oyun artık durmuyor."),
   ],
@@ -3620,7 +3620,7 @@ async function ekleriGonder() {
   const simdi = performance.now();
   if (_ekYolda || simdi < _ekBeklet || !online.roomId) return;
   const p = game.player, pet = game.pet, tm = timsahDizisi();
-  const anlik = { pet: pet ? pet.tur : "", px: pet ? Math.round(pet.x) : 0, py: pet ? Math.round(pet.y) : 0, gz: p.gizli && !p.dead ? 1 : 0 };
+  const anlik = { pet: pet && !pet.baygin ? pet.tur : "", px: pet ? Math.round(pet.x) : 0, py: pet ? Math.round(pet.y) : 0, gz: p.gizli && !p.dead ? 1 : 0 };
   const degisen = {};
   for (const k of Object.keys(anlik)) if (_sonEk[k] !== anlik[k]) degisen[k] = anlik[k];
   if (_sonEk.tmImza !== tm.imza) degisen.tm = tm.metin;
@@ -4654,7 +4654,7 @@ function refreshShop() {
       const info = document.createElement("div");
       info.className = "item-info";
       const pt = PETLER[key];
-      info.innerHTML = key ? `<div class="item-name">${pt.simge} ${pt.ad}</div><div class="item-desc">${pt.desc}</div>`
+      info.innerHTML = key ? `<div class="item-name">${pt.simge} ${pt.ad} · ❤️ ${pt.can}</div><div class="item-desc">${pt.desc}</div>`
         : `<div class="item-name">${t("Petsiz")}</div><div class="item-desc">${t("Yalnız savaş.")}</div>`;
       item.appendChild(info);
       const btn = document.createElement("button");

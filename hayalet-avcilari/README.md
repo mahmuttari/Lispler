@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.15.1 (versionCode 51) — oyun içinden Ses Ayarları'na girip çıkınca oyun duraklatılmış kalıyordu (aşağıda "3.15.1: ayarlardan dönüş"); 29 Ekim 2026, henüz Play'e gönderilmedi. Önceki: 3.15.0 (versionCode 50; 49 3.14.2'de kullanıldı, 3.14.2'nin ses tamponu düzeltmesini de taşır); 28 Ekim 2026'da kullanıcının onayıyla ("Olur onaylıyorum gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40743241084; AAB koşu 40742598740, commit 1a6f2fd); 3.15.0 kuralları aynı gün yayınlandı (koşu 40742252252) — Dünya Turu'nda reklamla devam, sudaki timsahlar, sallanan ip köprüler, petler, çalıda saklanma ve bunların çevrimiçi oyunu (aşağıda "3.15.0: reklamla devam", "3.15.0: timsahlar", "3.15.0: ip köprüler", "3.15.0: petler", "3.15.0: çalı, hayaletin doğduğu yer, çevrimiçi"); 27 Ekim 2026, henüz Play'e gönderilmedi. Önceki: 3.14.1 (versionCode 48) — son inceleme ve sınama düzeltmeleri (aşağıda "3.14.1: düzeltmeler"); 25 Ekim 2026'da kullanıcının onayıyla ("gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40218892928; 3.14.0 (47)'nin yerini aldı). Önceki: 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
+| Sürüm | 3.15.1 (versionCode 51) — oyun içinden Ses Ayarları'na girip çıkınca oyun duraklatılmış kalıyordu (aşağıda "3.15.1: ayarlardan dönüş"); hayaletler petlere de vurur, köpeğin 5 canı var (aşağıda "3.15.1: petlerin canı", 2 Kasım 2026); 29 Ekim 2026, henüz Play'e gönderilmedi. Önceki: 3.15.0 (versionCode 50; 49 3.14.2'de kullanıldı, 3.14.2'nin ses tamponu düzeltmesini de taşır); 28 Ekim 2026'da kullanıcının onayıyla ("Olur onaylıyorum gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40743241084; AAB koşu 40742598740, commit 1a6f2fd); 3.15.0 kuralları aynı gün yayınlandı (koşu 40742252252) — Dünya Turu'nda reklamla devam, sudaki timsahlar, sallanan ip köprüler, petler, çalıda saklanma ve bunların çevrimiçi oyunu (aşağıda "3.15.0: reklamla devam", "3.15.0: timsahlar", "3.15.0: ip köprüler", "3.15.0: petler", "3.15.0: çalı, hayaletin doğduğu yer, çevrimiçi"); 27 Ekim 2026, henüz Play'e gönderilmedi. Önceki: 3.14.1 (versionCode 48) — son inceleme ve sınama düzeltmeleri (aşağıda "3.14.1: düzeltmeler"); 25 Ekim 2026'da kullanıcının onayıyla ("gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40218892928; 3.14.0 (47)'nin yerini aldı). Önceki: 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → https://hayalet-avcilari.web.app (Firebase Hosting, [`site/`](site/README.md); Play'e verilen adres) ve GitHub Pages kopyası |
@@ -413,6 +413,19 @@ hatırlanır, kapanınca hepsine dönülür. Sınama `test/ayarlar.test.mjs` (d�
 Ayarları → TAMAM → ⏸ menüsü görünür → bir kez Devam → oyun akar; art arda iki kez; ana menüden açılınca ana menüye dönüş.
 Sürüm notuna "🛠️ Ayarlardan dönünce oyun artık durmuyor." satırı eklendi (3.15.0'ın satırlarıyla; en uzun es 491/500).
 
+## 3.15.1: petlerin canı
+
+Kullanıcının isteği (2 Kasım 2026): *"Hayaletler petlere de vursun, köpeklerin 5 canı olsun."*
+- Petin canı var: köpek 5, kedi ve kuş 3 (`PETLER.<tür>.can`; mağaza kartında ❤️ ile yazar).
+- Hayalete değince ve düşman mermisi çarpınca 1 can gider, boss 2. Sonra 1,2 sn dokunulmaz (`PET_KORUMA`), yanıp söner.
+  Köpeğin sersemlettiği hayalet ısırmaz. Canı eksik petin başında kalpler görünür.
+- Can bitince pet bayılır: görünmez, saldırmaz, 15 sn sonra (`PET_DIRILME`) oyuncunun yanında tam canla döner. Her
+  bölümde tam canla başlar.
+- Çevrimiçinde petin canı kendi cihazında sayılır; istemcide pete çarpan mermi kurucuya `mermi` olayıyla bildirilir.
+  Bayılan pet odaya `pet: ""` yazılır, ötekiler onu görmez.
+- Sürüm notunda pet satırı: "Hayaletler de onlara vurur; köpeğin 5 canı var." (es'de köprü satırı kısaldı, 479/500).
+- Sınama `test/pet.test.mjs` (26 sınama; 8'i yeni).
+
 ## 3.15.0: çalı, hayaletin doğduğu yer, çevrimiçi
 
 Kullanıcının istekleri (28 Ekim 2026): *"Saklanma yeri"* (seçenekler sunuldu, "Çalı" seçildi), *"Hayaletler üzerimize
@@ -456,7 +469,8 @@ Kullanıcının isteği (28 Ekim 2026): *"Saldırabilen pet ekleyelim karakterle
   `save.pet`). Aynı anda bir pet.
 - Pet oyuncunun baktığı yönün 56 px gerisinden izler. Oyuncuya 260 px'ten yakın bir hayalet varsa ona koşar ve saldırır.
   Hasar her 6 bölümde +1 artar. 650 px'ten uzakta kalan ya da 2 sn takılan pet oyuncunun yanına ışınlanır.
-- Hayaletler petlere zarar vermez, petler ölmez. Her bölümde pet oyuncunun yanında başlar (Bot gibi).
+- Hayaletler petlere zarar vermez, petler ölmez (3.15.1'de değişti: aşağıda "3.15.1: petlerin canı"). Her bölümde pet
+  oyuncunun yanında başlar (Bot gibi).
 - Çevrimiçinde de her oyuncunun peti kendi cihazında koşar; vuruşu mermi gibi kurucuya gider (`uzaktanVur`). Başka
   oyuncuların peti görünmez (konumu odaya yazılmaz). Köpeğin sersemletmesi istemcide yok (hayaletin durumu kurucuda).
 - Sürüm notu ve mağaza notu: 500 karakter sınırı için 3.15.0 notundan Dünya Turu satırı da çıktı; notta yalnız 3.15.0'ın

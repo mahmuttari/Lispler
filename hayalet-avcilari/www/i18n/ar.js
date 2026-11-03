@@ -113,6 +113,7 @@ I18N.ar = {
   "🎖 Başarımlar": "🎖 الإنجازات",
   "🎚 Ses": "🎚 الصوت",
   "🎚 Ses Ayarları": "🎚 إعدادات الصوت",
+  "🎨 Yeni görünüm: düğmeler, kontroller ve göstergeler yenilendi.": "🎨 مظهر جديد: أزرار وأدوات تحكم ومؤشرات أوضح.",
   "🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez).": "🎬 نفدت أرواحك في جولة حول العالم؟ شاهد إعلانًا وتابع من حيث توقفت (3 مرات في كل لعبة).",
   "🎬 Oyun bitti ekranında reklam izleyerek +10 💚 zümrüt kazanabilirsin.": "🎬 شاهد إعلانًا في شاشة نهاية اللعبة لتربح +10 💚 زمرد.",
   "🎬 Reklam izle, devam et": "🎬 شاهد إعلانًا وتابع",

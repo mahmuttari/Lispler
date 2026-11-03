@@ -322,10 +322,20 @@ const LEADERBOARD_MAX = 10;
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.15.1";
+const APP_VERSION = "3.16.0";
 const UPDATE_NOTES = {
   // Mağaza notu aynı satırlar; her dilde 500 karakterin altında kalsın diye Dünya Turu'nun satırları (3.14.0) yok
   // 3.15.0 incelemedeyken 3.15.1 gelebilir: 3.15.0'ın satırları ve düzeltme (mağaza notu aynı satırlar, ≤ 500)
+  // 3.16.0 (kullanıcı: "Oyun arayüzünü, kontrolleri, tuşları, tüm arayüzü daha profesyonel hale getir"): yeni görünüm;
+  // 3.15.1 Play incelemesindeyken yerini aldı, onun satırları da var (🛠️ satırı 500 karakter sınırı için çıktı)
+  "3.16.0": [
+    t("🎨 Yeni görünüm: düğmeler, kontroller ve göstergeler yenilendi."),
+    t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
+    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
+    t("🌉 Göllerde sallanan ip köprüler: hızlı geç, ortada oyalanırsan suya düşersin!"),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var."),
+    t("🌿 Çalıya saklan, hayaletler seni göremez; hayaletler artık dibinde doğmaz."),
+  ],
   "3.15.1": [
     t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
     t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
@@ -2845,7 +2855,7 @@ function drawPickup(ctx, p) {
     // İçinde aktif karakterin ikonu
     ctx.shadowBlur = 0;
     ctx.fillStyle = "#7c2d12";
-    ctx.font = "bold 14px sans-serif";
+    ctx.font = "800 14px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const ikon = (CHAR_POWERS[game.player && game.player.charKey] || CHAR_POWERS.kinkin).icon;
@@ -2859,7 +2869,7 @@ function drawPickup(ctx, p) {
     ctx.fill();
     ctx.shadowBlur = 0;
     ctx.fillStyle = "#a16207";
-    ctx.font = "bold 11px sans-serif";
+    ctx.font = "800 11px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("$", 0, 1);
@@ -2894,6 +2904,7 @@ function drawPickup(ctx, p) {
 function showScreen(id) {
   document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
+  eskiToastuKapat();
 }
 
 function goToMenu() {
@@ -4766,14 +4777,23 @@ function computeStats(charKey) {
 }
 
 // ====== TOAST ======
-let toastTimer;
+let toastTimer, toastZamani = 0;
 function showToast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg;
   t.classList.add("show");
+  toastZamani = performance.now();
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove("show"), 1800);
   audio.toast();
+}
+
+// 3.16.0: ekran ya da pencere değişince önceki ekranın bildirimi yeni ekranın üstünde kalmasın. Ekran değişmeden hemen
+// önce gösterilen bildirim (ör. "kopyalandı", sonra geri dönüş) yeni ekranda kalır.
+function eskiToastuKapat() {
+  if (performance.now() - toastZamani < 300) return;
+  const el = document.getElementById("toast");
+  if (el) el.classList.remove("show");
 }
 
 // ====== OYUN MOTORU ======
@@ -5128,6 +5148,7 @@ function setupJoystick() {
     const rect = stick.getBoundingClientRect();
     centerX = rect.left + rect.width / 2;
     centerY = rect.top + rect.height / 2;
+    stick.classList.add("aktif");
     move(e);
   }
 
@@ -5165,6 +5186,7 @@ function setupJoystick() {
       if (!found) return;
     }
     touchId = null;
+    stick.classList.remove("aktif");
     knob.style.transform = "translate(-50%, -50%)";
     game.inputDir.x = 0;
     game.inputDir.y = 0;
@@ -6390,7 +6412,7 @@ function drawBot(ctx, b) {
   ctx.restore();
   // İsim, can çubuğu ve hedef işareti
   ctx.save();
-  ctx.font = "bold 12px sans-serif";
+  ctx.font = "800 12px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
   ctx.textAlign = "center";
   ctx.lineWidth = 3;
   ctx.strokeStyle = "#000";
@@ -6513,7 +6535,7 @@ function render() {
       ctx.fillStyle = "#fde047";
       ctx.strokeStyle = "#000";
       ctx.lineWidth = 3;
-      ctx.font = "bold 12px sans-serif";
+      ctx.font = "800 12px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
       ctx.textAlign = "center";
       ctx.strokeText(etiket, rp.x, rp.y - 50);
       ctx.fillText(etiket, rp.x, rp.y - 50);
@@ -6570,7 +6592,7 @@ function render() {
     ctx.save();
     if (p.text) {
       ctx.fillStyle = p.color;
-      ctx.font = "bold 14px sans-serif";
+      ctx.font = "800 14px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
       ctx.textAlign = "center";
       ctx.globalAlpha = Math.max(0, p.life);
       ctx.fillText(p.text, p.x, p.y);
@@ -6650,6 +6672,7 @@ function pauseGame() {
   davet.style.display = (cevrimici && online.roomId) ? "" : "none";
   davet.disabled = odaDolu();
   document.getElementById("screen-pause").classList.add("active");
+  eskiToastuKapat();
   if (!cevrimici) muzikDuraklat(true); // çevrimiçi menü oyunu durdurmaz, müzik de sürer
 }
 

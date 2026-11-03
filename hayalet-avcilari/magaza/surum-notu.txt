@@ -1,6 +1,6 @@
+🎨 Yeni görünüm: düğmeler, kontroller ve göstergeler yenilendi.
 🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez).
 🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!
 🌉 Göllerde sallanan ip köprüler: hızlı geç, ortada oyalanırsan suya düşersin!
 🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var.
 🌿 Çalıya saklan, hayaletler seni göremez; hayaletler artık dibinde doğmaz.
-🛠️ Ayarlardan dönünce oyun artık durmuyor.

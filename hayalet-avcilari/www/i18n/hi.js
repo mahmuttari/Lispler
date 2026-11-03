@@ -113,6 +113,7 @@ I18N.hi = {
   "🎖 Başarımlar": "🎖 उपलब्धियाँ",
   "🎚 Ses": "🎚 आवाज़",
   "🎚 Ses Ayarları": "🎚 आवाज़ सेटिंग्स",
+  "🎨 Yeni görünüm: düğmeler, kontroller ve göstergeler yenilendi.": "🎨 नया रूप: बटन, कंट्रोल और संकेतक नए हुए।",
   "🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez).": "🎬 विश्व यात्रा में जानें खत्म? विज्ञापन देखो और वहीं से जारी रखो (हर खेल में 3 बार)।",
   "🎬 Oyun bitti ekranında reklam izleyerek +10 💚 zümrüt kazanabilirsin.": "🎬 गेम ओवर स्क्रीन पर विज्ञापन देखकर +10 💚 पन्ने कमाओ।",
   "🎬 Reklam izle, devam et": "🎬 विज्ञापन देखें, जारी रखें",

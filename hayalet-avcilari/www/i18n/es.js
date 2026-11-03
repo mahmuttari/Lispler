@@ -113,6 +113,7 @@ I18N.es = {
   "🎖 Başarımlar": "🎖 Logros",
   "🎚 Ses": "🎚 Sonido",
   "🎚 Ses Ayarları": "🎚 Ajustes de sonido",
+  "🎨 Yeni görünüm: düğmeler, kontroller ve göstergeler yenilendi.": "🎨 Nuevo diseño: botones y controles renovados.",
   "🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez).": "🎬 ¿Sin vidas en la Gira mundial? Mira un anuncio y sigue donde lo dejaste (3 veces por partida).",
   "🎬 Oyun bitti ekranında reklam izleyerek +10 💚 zümrüt kazanabilirsin.": "🎬 Mira un anuncio en la pantalla de fin de partida y gana +10 💚 esmeraldas.",
   "🎬 Reklam izle, devam et": "🎬 Mira un anuncio y sigue",

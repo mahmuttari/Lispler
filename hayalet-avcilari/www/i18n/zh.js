@@ -113,6 +113,7 @@ I18N.zh = {
   "🎖 Başarımlar": "🎖 成就",
   "🎚 Ses": "🎚 音效",
   "🎚 Ses Ayarları": "🎚 声音设置",
+  "🎨 Yeni görünüm: düğmeler, kontroller ve göstergeler yenilendi.": "🎨 全新外观：按钮、操控和界面指示焕然一新。",
   "🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez).": "🎬 环游世界中生命耗尽？看一段广告即可从原处继续（每局3次）。",
   "🎬 Oyun bitti ekranında reklam izleyerek +10 💚 zümrüt kazanabilirsin.": "🎬 在游戏结束画面观看广告，可获得 +10 💚 绿宝石。",
   "🎬 Reklam izle, devam et": "🎬 看广告继续",

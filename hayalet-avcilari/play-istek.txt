@@ -68,3 +68,6 @@
 
 # istek 2026-11-03: 3.15.1 (51) üretime yükle, %100 yayın (kademeli değil: status completed), incelemeye gönder; 3.15.0 (50) incelemedeyse onun yerini alır (kullanıcının açık onayıyla: "Gönder yayın %100 olsun kademeli yayın yapma"); AAB: hayalet-android koşusu 41506791514 (bu dal, commit 2c12b57, versionCode 51, Poyraz Workshop yükleme anahtarı); ayarlardan dönüş düzeltmesi, hayaletler petlere vurur, bütün petlerin 5 canı; sürüm notu 7 dilde magaza/
 # (yapıldı 2026-11-03, koşu 41600441361: AAB 51 (koşu 41506791514, commit 2c12b57) yüklendi, üretim 3.15.0 (50) → 3.15.1 (51) completed (%100, kademeli değil), düzenleme onaylandı, incelemeye gönderildi) yukle yayinla uygula
+
+# istek 2026-11-03: 3.16.0 (52) üretime yükle, %100 yayın (status completed, kademeli değil), incelemeye gönder; incelemedeki 3.15.1 (51)'in yerini alır (kullanıcının açık isteğiyle: "hemen de yayına al sormadan"; önceki talimat: "yayın %100 olsun kademeli yayın yapma"); AAB: hayalet-android koşusu 41611581593 (bu dal, commit af83cea, versionCode 52, Poyraz Workshop yükleme anahtarı); yeni arayüz; sürüm notu 7 dilde magaza/
+yukle yayinla uygula

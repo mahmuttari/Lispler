@@ -65,3 +65,6 @@
 
 # istek 2026-10-30T21:39:42Z: site yayında (koşu 41132544198); Play'deki web sitesi hayalet-avcilari.web.app ve hesap silme adresi web.app'e (kullanıcı: "reklam sürecini tamamlayalım", "senin yapabileceğin her şeyi sen yap"); mağaza metinleri değişmedi (aynısı yazılır)
 # (yapıldı 2026-10-30, koşu 41132684210: 7 dilde mağaza bilgileri yeni web sitesiyle yazıldı, düzenleme onaylandı; veri güvenliği formunda hesap ve veri silme adresi https://hayalet-avcilari.web.app/hesap-silme.html) magaza uygula, veriguvenligi uygula
+
+# istek 2026-11-03: 3.15.1 (51) üretime yükle, %100 yayın (kademeli değil: status completed), incelemeye gönder; 3.15.0 (50) incelemedeyse onun yerini alır (kullanıcının açık onayıyla: "Gönder yayın %100 olsun kademeli yayın yapma"); AAB: hayalet-android koşusu 41506791514 (bu dal, commit 2c12b57, versionCode 51, Poyraz Workshop yükleme anahtarı); ayarlardan dönüş düzeltmesi, hayaletler petlere vurur, bütün petlerin 5 canı; sürüm notu 7 dilde magaza/
+yukle yayinla uygula

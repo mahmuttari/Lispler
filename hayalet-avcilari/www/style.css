@@ -1465,6 +1465,7 @@ body.is-tablet .name-input { font-size: 26px; max-width: 400px; }
   background: linear-gradient(180deg, rgba(205, 127, 50, 0.25), rgba(150, 80, 30, 0.08));
   border-color: #cd7f32;
 }
+.lb-ben { align-self: center; position: sticky; top: 0; z-index: 1; background: var(--yuzey); }
 .leaderboard-row.is-me {
   outline: 3px solid #06d6a0;
   outline-offset: -3px;

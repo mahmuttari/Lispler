@@ -44,7 +44,7 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 
 ## Sürüm notu
 
-🎨 New look: cleaner buttons, controls and HUD.
+🎨 New look and 🏆 a Top 500 champions list.
 🎬 Out of lives on the World Tour? Watch an ad and carry on where you left off (3 times per game).
 🐊 Crocodiles now lurk in the water: linger on the shore and they may bite!
 🌉 Swaying rope bridges over the lakes: cross quickly, linger in the middle and you'll fall in!

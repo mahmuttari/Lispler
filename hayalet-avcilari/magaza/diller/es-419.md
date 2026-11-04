@@ -44,7 +44,7 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 ## Sürüm notu
 
-🎨 Nuevo diseño de botones y controles.
+🎨 Nuevo diseño y 🏆 top 500 de campeones.
 🎬 ¿Sin vidas en la Gira mundial? Mira un anuncio y sigue donde lo dejaste (3 veces por partida).
 🐊 Ahora hay cocodrilos en el agua: ¡si te quedas en la orilla, pueden morderte!
 🌉 Puentes de cuerda sobre los lagos: ¡cruza rápido o te caes al agua!

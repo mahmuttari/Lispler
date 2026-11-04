@@ -318,14 +318,24 @@ let _sonAv = -1, _avZamani = 0;
 // ====== KAYIT SİSTEMİ ======
 const SAVE_KEY = "hayaletAvcilariSave_v1";
 const LEADERBOARD_KEY = "hayaletAvcilariLeaderboard_v1";
-const LEADERBOARD_MAX = 10;
+const LEADERBOARD_MAX = 500; // 3.16.1, kullanıcı: "Şampiyon listesi ilk 500 göstersin" (eskiden 10)
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.16.0";
+const APP_VERSION = "3.16.1";
 const UPDATE_NOTES = {
   // Mağaza notu aynı satırlar; her dilde 500 karakterin altında kalsın diye Dünya Turu'nun satırları (3.14.0) yok
   // 3.15.0 incelemedeyken 3.15.1 gelebilir: 3.15.0'ın satırları ve düzeltme (mağaza notu aynı satırlar, ≤ 500)
+  // 3.16.1 (kullanıcı: "Şampiyon listesi ilk 500 göstersin"): 3.16.0 incelemedeyken yerini alabilir; 🎨 satırı ikisini birlikte
+  // söyler (500 karakter sınırı)
+  "3.16.1": [
+    t("🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi."),
+    t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
+    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
+    t("🌉 Göllerde sallanan ip köprüler: hızlı geç, ortada oyalanırsan suya düşersin!"),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var."),
+    t("🌿 Çalıya saklan, hayaletler seni göremez; hayaletler artık dibinde doğmaz."),
+  ],
   // 3.16.0 (kullanıcı: "Oyun arayüzünü, kontrolleri, tuşları, tüm arayüzü daha profesyonel hale getir"): yeni görünüm;
   // 3.15.1 Play incelemesindeyken yerini aldı, onun satırları da var (🛠️ satırı 500 karakter sınırı için çıktı)
   "3.16.0": [
@@ -596,50 +606,58 @@ async function submitOnlineScore(entry) {
   }
 }
 
+// 3.16.1: tüm zamanların en iyileri. Eskiden son 200 kayıt (tarihe göre) alınıp içinden ilk 10 seçiliyordu; eski yüksek
+// skorlar listeye giremiyordu. Artık skora göre azalan sırayla sayfa sayfa okunur, her isimden en yüksek skor kalır;
+// `limit` farklı avcıya ulaşınca ya da kayıt bitince durur. Okuma sınırı: en çok SAMPIYON_SAYFA_SAYISI × SAMPIYON_SAYFA belge.
+const SAMPIYON_SAYFA = 300, SAMPIYON_SAYFA_SAYISI = 6;
 async function fetchOnlineLeaderboard(limit) {
   limit = limit || LEADERBOARD_MAX;
-  // Önce tarihe göre azalan sırayla çek, JS tarafında isme göre tekilleştirip skora göre sırala
-  const query = {
-    structuredQuery: {
-      from: [{ collectionId: FIREBASE.collection }],
-      orderBy: [{ field: { fieldPath: "date" }, direction: "DESCENDING" }],
-      limit: 200,
-    }
-  };
+  const tam = (f, ad, varsayilan) => (f[ad] ? parseInt(f[ad].integerValue) : varsayilan);
+  const seen = new Set();
+  const unique = [];
+  let imlec = null;
   try {
-    const res = await fetch(`${FIRESTORE_BASE}:runQuery?key=${FIREBASE.apiKey}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(query),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    const all = data
-      .filter((d) => d.document)
-      .map((d) => {
-        const f = d.document.fields || {};
-        return {
-          name:   f.name   ? f.name.stringValue                : t("Avcı"),
-          level:  f.level  ? parseInt(f.level.integerValue)    : 1,
-          ghosts: f.ghosts ? parseInt(f.ghosts.integerValue)   : 0,
-          para:   f.para   ? parseInt(f.para.integerValue)     : 0,
-          score:  f.score  ? parseInt(f.score.integerValue)    : 0,
-          date:   f.date   ? parseInt(f.date.integerValue)     : 0,
-        };
+    for (let sayfa = 0; sayfa < SAMPIYON_SAYFA_SAYISI && unique.length < limit; sayfa++) {
+      const query = {
+        structuredQuery: {
+          from: [{ collectionId: FIREBASE.collection }],
+          orderBy: [
+            { field: { fieldPath: "score" }, direction: "DESCENDING" },
+            { field: { fieldPath: "__name__" }, direction: "DESCENDING" },
+          ],
+          limit: SAMPIYON_SAYFA,
+        },
+      };
+      if (imlec) query.structuredQuery.startAt = { values: imlec, before: false };
+      const res = await fetch(`${FIRESTORE_BASE}:runQuery?key=${FIREBASE.apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(query),
       });
-    // Aynı isimden tek (en son) kayıt kalsın — tarih sıralı geldiği için ilk görüleni tut
-    const seen = new Set();
-    const unique = [];
-    for (const e of all) {
-      if (!e.name || seen.has(e.name)) continue;
-      seen.add(e.name);
-      unique.push(e);
+      if (!res.ok) return sayfa === 0 ? null : unique.slice(0, limit);
+      const belgeler = (await res.json()).filter((d) => d.document).map((d) => d.document);
+      for (const b of belgeler) {
+        const f = b.fields || {};
+        const e = {
+          name:   f.name ? f.name.stringValue : t("Avcı"),
+          level:  tam(f, "level", 1),
+          ghosts: tam(f, "ghosts", 0),
+          para:   tam(f, "para", 0),
+          score:  tam(f, "score", 0),
+          date:   tam(f, "date", 0),
+        };
+        // Skor sıralı geldiği için bir ismin ilk görülen kaydı en yükseğidir
+        if (!e.name || seen.has(e.name)) continue;
+        seen.add(e.name);
+        unique.push(e);
+      }
+      if (belgeler.length < SAMPIYON_SAYFA) break;
+      const son = belgeler[belgeler.length - 1];
+      imlec = [son.fields.score || { integerValue: "0" }, { referenceValue: son.name }];
     }
-    // Skora göre sırala, ilk N'i döndür
-    unique.sort((a, b) => b.score - a.score);
     return unique.slice(0, limit);
   } catch (e) {
-    return null;
+    return unique.length ? unique.slice(0, limit) : null;
   }
 }
 
@@ -4355,17 +4373,29 @@ function renderLeaderboard(list, sourceLabel) {
 
     container.appendChild(row);
   });
+  // Uzun listede kendi satırına git (ilk 10'da değilse)
+  const ben = list.findIndex((e) => e.name === save.playerName);
+  if (ben >= 10) {
+    const git = document.createElement("button");
+    git.className = "btn-tiny lb-ben";
+    git.textContent = t("📍 Senin sıran: {n}", { n: ben + 1 });
+    git.onclick = () => container.querySelectorAll(".leaderboard-row")[ben].scrollIntoView({ block: "center", behavior: "smooth" });
+    container.prepend(git);
+  }
 }
 
+let sampiyonIstegi = 0; // yalnız en son istenen liste çizilir (yüklenirken sekme değişirse eski yanıt yazmasın)
 async function refreshLeaderboard() {
   const container = document.getElementById("leaderboard-list");
+  const istek = ++sampiyonIstegi;
   if (leaderboardSource === "online") {
     container.innerHTML = `<div class="leaderboard-empty">${t("🌐 Yükleniyor...")}</div>`;
     const online = await fetchOnlineLeaderboard(LEADERBOARD_MAX);
+    if (istek !== sampiyonIstegi) return;
     if (online === null) {
       // İnternet yok ya da hata — yerele düş
       container.innerHTML = `<div class="leaderboard-empty">${t("⚠ İnternete bağlanılamadı, yerel liste gösteriliyor.")}</div>`;
-      setTimeout(() => renderLeaderboard(loadLeaderboard(), "local"), 600);
+      setTimeout(() => { if (istek === sampiyonIstegi) renderLeaderboard(loadLeaderboard(), "local"); }, 600);
       return;
     }
     renderLeaderboard(online, "online");

@@ -426,6 +426,11 @@ Yeni dosya `www/hava.js`; yalnız görsel ve ses, oyunu değiştirmez.
   çevresine iner. Boss yenilince bulut çekip gider.
 - "Hareketi azalt" tercihinde ekran parlaması yok. Çevrimiçinde her cihaz kendi gökyüzünü çizer; boss herkeste aynı
   yerde olduğu için bulut da aynı yerde.
+- **Çevrimiçinde reklam:** kullanıcı sordu: *"Online oyunda reklam çıkmaması gerek… İnsanlar reklam çıktı diye sıkıntı
+  yaşamasın."* Kendiliğinden çıkan geçiş reklamı çevrimiçinde zaten yoktu (`gecisUygunMu`). Sunulan üç seçenekten
+  kullanıcı **B**'yi seçti: çevrimiçi turun sonuç ekranında ödüllü düğmeler (+10 💚, 2× 💰) gizlenir, basılsa da reklam
+  açılmaz (`reklam.cevrimiciSonuc`). Böylece reklam izleyen biri yeni turu kaçırmaz, arkadaşları beklemez. Çevrimiçi
+  Dünya Turu'nda "Reklam izle, diril" kalır: oyuncu zaten ölü, izleyici konumunda. `test/reklam.test.mjs` 30 sınama.
 - Sürüm notu: 🦇 satırı başa; 3.15.0'dan beri yayında olan 🌉 ve 🌿 satırları 500 sınırı için çıktı.
 - Sınama `test/hava.test.mjs` (10): orman / şato / uzay, boss'un tepesi ve izleme, şimşek sıklığı ve yeri, boss sonrası,
   zarar yok, çizim, hareketi azalt.

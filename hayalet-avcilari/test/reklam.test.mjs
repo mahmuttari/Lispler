@@ -203,6 +203,27 @@ try {
   });
   sina('para kazanılmayan oyunda 2× düğmesi yok', () => { assert.equal(ikiKat.sifir, false); });
 
+  // 3.17.0 (kullanıcının seçimi "B") — çevrimiçi turun sonuç ekranında ödüllü düğme yok; ardından tek kişilik oyunda yine var
+  const cevrimiciSonuc = await p.evaluate(async () => {
+    const bekle = (ms) => new Promise((r) => setTimeout(r, ms));
+    const gorunur = (id) => document.getElementById(id).style.display !== 'none';
+    const izlenen = () => window.__admob.filter((c) => c.ad === 'showRewardVideoAd').length;
+    startGame(); game.player.invuln = 1e9; game.level = 3; game.runPara = 40; game.oynananSure = 50;
+    oyunSonu(false, true); await bekle(50);
+    const once = izlenen();
+    odulluIzle('para'); odulluIzle(); await bekle(20);
+    const r = { zumrut: gorunur('btn-reklam-odul'), ikiKat: gorunur('btn-reklam-ikikat'), izlendi: izlenen() - once };
+    startGame(); game.player.invuln = 1e9; game.level = 3; save.highestLevel = 99; game.runPara = 40; game.oynananSure = 50;
+    save.reklam = { oyun: 1, toplam: 0, sure: 0, son: [] };
+    endGame(false); await bekle(50);
+    r.tekKisi = { zumrut: gorunur('btn-reklam-odul'), ikiKat: gorunur('btn-reklam-ikikat') };
+    return r;
+  });
+  sina('çevrimiçi tur sonunda ödüllü düğme yok, basılsa da reklam açılmaz', () => {
+    assert.equal(cevrimiciSonuc.zumrut, false); assert.equal(cevrimiciSonuc.ikiKat, false); assert.equal(cevrimiciSonuc.izlendi, 0);
+  });
+  sina('sonraki tek kişilik oyunda ödüllü düğmeler yine var', () => { assert.deepEqual(cevrimiciSonuc.tekKisi, { zumrut: true, ikiKat: true }); });
+
   // 3.15.0 — Dünya Turu'nda reklamla devam: canlar bitince pencere; sonuna kadar izleyenin canları dolar, oyun başına 3 kez
   const devam = await p.evaluate(async () => {
     const bekle = (ms) => new Promise((r) => setTimeout(r, ms));

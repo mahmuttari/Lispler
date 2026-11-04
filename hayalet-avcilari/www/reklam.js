@@ -12,6 +12,9 @@
      reklamını doğal duraklarda ve aşırı sıklık olmadan önerir (sayı vermez). Sınama: test/reklam.test.mjs.
      3.16.2, kullanıcının seçimi ("2 ve 3"): ilk 5 oyun → 3, iki reklam arası 6 dk → 4 dk (gelir az olduğu için).
    - Ödüllü reklam: oyun bitti ekranındaki "Reklam izle" düğmesi, izleyene 10 💚 zümrüt (oyun başına bir kez).
+   - Çevrimiçi (3.17.0, kullanıcının seçimi "B"): çevrimiçi turun sonuç ekranında ödüllü düğmeler (+10 💚, 2× 💰) yok;
+     reklam izleyen oyuncu yeni turu kaçırmasın, arkadaşlar beklemesin. Çevrimiçi Dünya Turu'nda "Reklam izle, diril"
+     kalır (oyuncu zaten ölü, izleyici konumunda).
    - Ödüllü reklamla 2× para (3.16.2): oyun bitti ekranında "Reklam izle: 2× 💰"; sonuna kadar izleyene o oyunda kazanılan
      para (bölüm bonusu dahil) bir kez daha verilir; oyun başına bir kez, para kazanılmadıysa düğme yok.
    - Ödüllü reklamla devam (3.15.0): tek kişilik Dünya Turu'nda canlar bitince "Reklam izle, devam et"; sonuna kadar
@@ -39,6 +42,7 @@ const reklam = {
   paraKullanildi: false, // bu oyun bitti ekranında 2× para alındı mı
   oyunPara: 0,           // son oyunda kazanılan para (2× ödülün miktarı)
   odulTuru: "zumrut",    // izlenen ödüllü reklamın ödülü: "zumrut" | "para"
+  cevrimiciSonuc: false, // son oyun çevrimiçi turdu: sonuç ekranında ödüllü düğme yok
   devamSonucu: null,     // reklamla devam bekleniyor: sonuç bu işleve gider (zümrüt ödülü verilmez)
   gizlilikGerekli: false,
 };
@@ -115,6 +119,7 @@ function reklamOyunBitti(bilgi = {}) {
   reklam.odulKullanildi = false;
   reklam.paraKullanildi = false;
   reklam.oyunPara = Math.max(0, Math.floor(Number(bilgi.para) || 0));
+  reklam.cevrimiciSonuc = !!bilgi.cevrimici;
   odulDugmesiniGuncelle();
   const k = save.reklam = reklamKaydiniTemizle(save.reklam);
   const simdi = Date.now(), sn = Math.max(0, Number(bilgi.sureSn) || 0);
@@ -139,7 +144,7 @@ function reklamOyunBitti(bilgi = {}) {
 async function odulluIzle(tur = "zumrut") {
   const ad = admobPlugin();
   const kullanildi = tur === "para" ? reklam.paraKullanildi || !reklam.oyunPara : reklam.odulKullanildi;
-  if (!ad || !reklam.odulluYuklu || kullanildi || reklam.devamSonucu) return;
+  if (!ad || !reklam.odulluYuklu || kullanildi || reklam.devamSonucu || reklam.cevrimiciSonuc) return;
   reklam.odulTuru = tur;
   reklam.odulKazanildi = false;
   reklam.odulluYuklu = false;
@@ -216,9 +221,10 @@ function odulluKapandi() {
 function odulDugmesiniGuncelle() {
   const btn = document.getElementById("btn-reklam-odul");
   if (!btn) return;
-  btn.style.display = reklam.hazir && reklam.odulluYuklu && !reklam.odulKullanildi ? "" : "none";
+  const sunulur = reklam.hazir && reklam.odulluYuklu && !reklam.cevrimiciSonuc;
+  btn.style.display = sunulur && !reklam.odulKullanildi ? "" : "none";
   const ikiKat = document.getElementById("btn-reklam-ikikat");
-  if (ikiKat) ikiKat.style.display = reklam.hazir && reklam.odulluYuklu && !reklam.paraKullanildi && reklam.oyunPara > 0 ? "" : "none";
+  if (ikiKat) ikiKat.style.display = sunulur && !reklam.paraKullanildi && reklam.oyunPara > 0 ? "" : "none";
   const devam = document.getElementById("btn-tur-devam");
   if (devam) devam.disabled = !(reklam.hazir && reklam.odulluYuklu) || !!reklam.devamSonucu; // yüklenene kadar bekler
   if (typeof turDirilTeklifi === "function" && typeof game !== "undefined" && game.player) turDirilTeklifi(); // çevrimiçi tur

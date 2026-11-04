@@ -12,4 +12,4 @@
 # etkin satırları çalıştırır).
 
 # istek 2026-11-04T15:17:07Z: Play'de uygulama var mı (salt okuma; kullanıcı: "hepsini sen yap")
-durum
+# (yapıldı 2026-11-04, koşu 41856130864: 404 — uygulama Play Console'da henüz yok) durum

@@ -10,3 +10,6 @@
 #   imza                        Play uygulama imzalama anahtarının SHA-256'sı ve SHA-1'i (Firebase'e eklenir)
 # Yeni istek: yalnız çalıştırılacak komutları yazın; eski satırları "# (yapıldı …)" ile kapatın (her push dosyadaki bütün
 # etkin satırları çalıştırır).
+
+# istek 2026-11-04T15:17:07Z: Play'de uygulama var mı (salt okuma; kullanıcı: "hepsini sen yap")
+# (yapıldı 2026-11-04, koşu 41856130864: 404 — uygulama Play Console'da henüz yok) durum

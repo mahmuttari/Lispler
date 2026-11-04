@@ -6,8 +6,10 @@
 //   node tavla/araclar/veri-guvenligi.mjs           → tavla/magaza/veri-guvenligi.csv
 //   node tavla/araclar/veri-guvenligi.mjs --denetle → dosya tabloyla aynı değilse çıkış 1
 //
-// Tavla'da reklam, analiz ya da çökme raporu SDK'sı yoktur; veri yalnız Firebase'de (Authentication + Firestore) oyunun
-// işleyişi için tutulur ve üçüncü kişiyle paylaşılmaz (Google, Firebase'de "hizmet sağlayıcı"dır: paylaşım sayılmaz).
+// Oyun verisi yalnız Firebase'de (Authentication + Firestore) oyunun işleyişi için tutulur ve paylaşılmaz (Google,
+// Firebase'de "hizmet sağlayıcı"dır). Reklamlar Google AdMob'dur: AdMob SDK'sının kendi beyanına göre (developers.google.com/
+// admob/android/privacy/play-data-disclosure) IP'den yaklaşık konum, uygulama etkileşimleri, teşhis bilgisi ve cihaz/reklam
+// kimliği reklam, analiz ve dolandırıcılığı önleme için toplanır VE paylaşılır.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -19,7 +21,10 @@ const SABLON = join(KOK, 'hayalet-avcilari', 'magaza', 'veri-guvenligi.csv');
 const HEDEF = join(KOK, 'tavla', 'magaza', 'veri-guvenligi.csv');
 export const HESAP_SILME = 'https://mahmuttari.github.io/Lispler/tavla/hesap-silme.html';
 
-/** Beyan edilen türler: yalnız toplanır (paylaşılmaz). istege: kullanıcı vermeyebilir; gecici: kaydedilmeden işlenir. */
+const ADMOB = ['PSL_ADVERTISING', 'PSL_ANALYTICS', 'PSL_FRAUD_PREVENTION_SECURITY'];
+
+/** Beyan edilen türler. istege: kullanıcı vermeyebilir; gecici: kaydedilmeden işlenir; paylas: üçüncü kişiyle (AdMob)
+ *  paylaşılır, paylaşım amacı toplama amacıyla aynı. */
 export const TURLER = {
   // Rumuz (takma ad): yazılmazsa "Misafir"
   PSL_NAME: { amac: ['PSL_APP_FUNCTIONALITY', 'PSL_ACCOUNT_MANAGEMENT'], istege: true },
@@ -33,6 +38,11 @@ export const TURLER = {
   PSL_OTHER_APP_ACTIVITY: { amac: ['PSL_APP_FUNCTIONALITY'], istege: false },
   // Sesli sohbet: iki oyuncu da onaylarsa WebRTC ile doğrudan (uçtan uca şifreli) iletilir, hiçbir yerde kaydedilmez
   PSL_AUDIO: { amac: ['PSL_APP_FUNCTIONALITY'], istege: true, gecici: true },
+  // AdMob: IP adresinden yaklaşık konum; uygulama açılışı, dokunma, reklam izleme; SDK başarımı; reklam kimliği
+  PSL_APPROX_LOCATION: { amac: ADMOB, istege: false, paylas: true },
+  PSL_USER_INTERACTION: { amac: ADMOB, istege: false, paylas: true },
+  PSL_PERFORMANCE_DIAGNOSTICS: { amac: ADMOB, istege: false, paylas: true },
+  PSL_DEVICE_ID: { amac: ADMOB, istege: false, paylas: true },
 };
 
 export const GENEL = {
@@ -59,12 +69,14 @@ export function uret(sablon) {
       if (!p) throw new Error(`şablonda bilinmeyen soru: ${soru}`);
       const t = TURLER[p[1]];
       if (t) {
-        if (p[2] === 'PSL_DATA_USAGE_COLLECTION_AND_SHARING') deger = yanit === 'PSL_DATA_USAGE_ONLY_COLLECTED' ? 'TRUE' : '';
+        if (p[2] === 'PSL_DATA_USAGE_COLLECTION_AND_SHARING') {
+          deger = yanit === 'PSL_DATA_USAGE_ONLY_COLLECTED' || (t.paylas && yanit === 'PSL_DATA_USAGE_ONLY_SHARED') ? 'TRUE' : '';
+        }
         else if (p[2] === 'PSL_DATA_USAGE_EPHEMERAL') deger = t.gecici ? 'TRUE' : 'FALSE';
         else if (p[2] === 'DATA_USAGE_USER_CONTROL') {
           deger = yanit === (t.istege ? 'PSL_DATA_USAGE_USER_CONTROL_OPTIONAL' : 'PSL_DATA_USAGE_USER_CONTROL_REQUIRED') ? 'TRUE' : '';
         } else if (p[2] === 'DATA_USAGE_COLLECTION_PURPOSE') deger = t.amac.includes(yanit) ? 'TRUE' : '';
-        else if (p[2] === 'DATA_USAGE_SHARING_PURPOSE') deger = '';
+        else if (p[2] === 'DATA_USAGE_SHARING_PURPOSE') deger = t.paylas && t.amac.includes(yanit) ? 'TRUE' : '';
         else throw new Error(`şablonda bilinmeyen soru: ${soru}`);
       }
     }

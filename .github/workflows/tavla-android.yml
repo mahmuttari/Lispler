@@ -5,6 +5,8 @@
 # - Yükleme anahtarının SHA-1/SHA-256 parmak izi günlüğe yazılır: Firebase'e eklenir (firebase/uygulama-istek.txt › sha ekle).
 # - android/app/google-services.json yoksa (Firebase'e com.poyrazworkshop.tavla henüz eklenmedi) uyarır ve surum.txt'ye
 #   firebase=yok yazar: yerel Google girişi o pakette çalışmaz, play-tavla.yml böyle bir paketi yüklemez.
+# - AdMob uygulama kimliği hâlâ Google'ın örnek kimliğiyse ya da www/reklam.js'te BEKLIYOR varsa surum.txt'ye admob=ornek
+#   yazar; play-tavla.yml böyle bir paketi de yüklemez.
 name: Android (Tavla)
 
 on:
@@ -54,6 +56,15 @@ jobs:
             echo "::warning::android/app/google-services.json yok: Firebase'e com.poyrazworkshop.tavla eklenip 'yapilandirma' çalıştırılmalı (firebase/uygulama-istek.txt). Bu paket Play'e yüklenmez."
             echo "durum=yok" >> "$GITHUB_OUTPUT"
           fi
+      - name: AdMob kimlikleri
+        id: admob
+        run: |
+          if grep -q 'ca-app-pub-3940256099942544' android/app/src/main/AndroidManifest.xml || grep -q 'BEKLIYOR' www/reklam.js; then
+            echo "::warning::AdMob uygulama ya da reklam birimi kimliği henüz girilmedi (örnek kimlik): bu paket Play'e yüklenmez"
+            echo "durum=ornek" >> "$GITHUB_OUTPUT"
+          else
+            echo "durum=gercek" >> "$GITHUB_OUTPUT"
+          fi
       - name: Yükleme anahtarını secret'tan yaz
         id: imza
         env:
@@ -82,7 +93,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/cikti"
           VC=$(sed -nE 's/^ *versionCode +([0-9]+).*/\1/p' app/build.gradle | head -1)
           VN=$(sed -nE "s/^ *versionName +'([^']+)'.*/\1/p" app/build.gradle | head -1)
-          printf 'versionCode=%s\nversionName=%s\ncommit=%s\nfirebase=%s\n' "$VC" "$VN" "$GITHUB_SHA" "${{ steps.firebase.outputs.durum }}" > "$RUNNER_TEMP/cikti/surum.txt"
+          printf 'versionCode=%s\nversionName=%s\ncommit=%s\nfirebase=%s\nadmob=%s\n' "$VC" "$VN" "$GITHUB_SHA" "${{ steps.firebase.outputs.durum }}" "${{ steps.admob.outputs.durum }}" > "$RUNNER_TEMP/cikti/surum.txt"
           cp app/build/outputs/apk/release/*.apk "$RUNNER_TEMP/cikti/"
           if [ -f app/build/outputs/bundle/release/app-release.aab ]; then
             cp app/build/outputs/bundle/release/app-release.aab "$RUNNER_TEMP/cikti/Tavla.aab"

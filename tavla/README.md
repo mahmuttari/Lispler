@@ -3,7 +3,7 @@
 Sesli yorumculu klasik Türk tavlası: bilgisayara karşı (Pala Dayı, Genç Mert, Selim Bey; 480+ seslendirilmiş replik),
 aynı telefonda iki kişi ya da çevrimiçi (hızlı eşleşme, oda kodu, arkadaş daveti, yazılı ve sesli sohbet). Capacitor 8
 ile Android (`com.poyrazworkshop.tavla`, yatay ekran), Firebase (`tavla-online-oyundar`: Authentication + Firestore).
-Reklamsız, ücretsiz. Sürüm **1.0.0 (1)**.
+Ücretsiz, AdMob reklamlı (oyun sırasında reklam yok; `www/reklam.js`). Sürüm **1.0.0 (1)**.
 
 Kaynak: kullanıcının `app-debug.apk`'sı (`com.korfe.tavla`); kaynak kodu olmadığı için web paketi APK'dan çıkarılıp
 okunur biçime getirildi. Elden geçirme ve bulgular: [`DENETIM.md`](DENETIM.md).

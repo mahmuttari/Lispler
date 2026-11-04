@@ -9,8 +9,12 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Tavla</title>
+    <!-- AdMob (yalnız Android uygulamasında çalışır; web'de hiçbir şey yapmaz) -->
+    <script src="/reklam.js"></script>
     <script type="module" crossorigin src="/assets/index-BLMBGPAE.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-nqMpL4T3.css">
+    <!-- AdMob banner menünün altına binmesin (yüksekliği reklam.js --banner-h olarak yazar) -->
+    <style>html.banner-var .menu-screen{padding-bottom:calc(clamp(10px,1.6vmin,18px) + var(--banner-h,0px)) !important;overflow-y:auto !important}html.banner-var .menu-screen>*{flex-shrink:0}</style>
   </head>
   <body>
     <div id="root"></div>

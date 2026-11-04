@@ -10,7 +10,7 @@ satırlarını ve "Kısa açıklama" / "Uzun açıklama" bölümlerini okur (ad 
 - **Geliştirici adı:** Poyraz Workshop
 - **Paket adı:** `com.poyrazworkshop.tavla`
 - **Tür ve kategori:** Oyun · Masa oyunu
-- **Fiyat:** Ücretsiz · Reklam yok · Uygulama içi satın alma yok
+- **Fiyat:** Ücretsiz · **Reklam içerir** (Google AdMob) · Uygulama içi satın alma yok
 - **Hedef kitle:** 13-15, 16-17, 18 ve üzeri (13 altı seçilmez: yabancılarla yazılı ve sesli sohbet var)
 - **Gizlilik politikası:** https://mahmuttari.github.io/Lispler/tavla/gizlilik.html
 - **Hesap silme adresi:** https://mahmuttari.github.io/Lispler/tavla/hesap-silme.html
@@ -52,7 +52,7 @@ Sohbette argo filtresi var. Rahatsız eden oyuncuyu tek dokunuşla şikâyet ede
 🔒 GİZLİLİK
 Kayıt zorunlu değil; misafir olarak hemen oynarsın. Puanlarını korumak istersen hesabını e-posta ya da Google ile yedeklersin. E-postan diğer oyunculara gösterilmez. Hesabını oyunun içinden tek dokunuşla silebilirsin.
 
-Tamamen ücretsiz: reklam yok, uygulama içi satın alma yok. Para ya da ödül için oynanmaz.
+Ücretsiz; uygulama içi satın alma yok. Reklam yalnız ana menünün altında ve maç bittikten sonra gösterilir, oyun sırasında asla. Para ya da ödül için oynanmaz.
 
 ## Uygulama içeriği (Play Console › Politika › Uygulama içeriği)
 
@@ -60,17 +60,18 @@ Tamamen ücretsiz: reklam yok, uygulama içi satın alma yok. Para ya da ödül 
 |---|---|
 | Gizlilik politikası | yukarıdaki adres |
 | Uygulama erişimi | Tüm işlevler özel erişim olmadan kullanılabilir (misafir girişi) |
-| Reklamlar | **Hayır, reklam içermiyor** |
-| İçerik derecelendirmesi (IARC) | Kategori: Oyun. Şiddet, korku, cinsellik, uyuşturucu: Hayır. Küfür: Hayır (karakter replikleri argosuz; sohbette argo filtresi). **Kumar:** Hayır — gerçek ya da sanal para, bahis, jeton yok; zar şans unsurudur ama ödül yoktur. Kullanıcılar birbiriyle etkileşim kurar: **Evet** (yazılı ve sesli sohbet, kullanıcı adları). Konum paylaşımı: Hayır. Dijital ürün satın alma: Hayır |
+| Reklamlar | **Evet, reklam içeriyor** (AdMob) |
+| İçerik derecelendirmesi (IARC) | Kategori: Oyun. Reklam: Evet (yalnız genel izleyiciye uygun, `maxAdContentRating: General`). Şiddet, korku, cinsellik, uyuşturucu: Hayır. Küfür: Hayır (karakter replikleri argosuz; sohbette argo filtresi). **Kumar:** Hayır — gerçek ya da sanal para, bahis, jeton yok; zar şans unsurudur ama ödül yoktur. Kullanıcılar birbiriyle etkileşim kurar: **Evet** (yazılı ve sesli sohbet, kullanıcı adları). Konum paylaşımı: Hayır. Dijital ürün satın alma: Hayır |
 | Hedef kitle | **13-15, 16-17, 18 ve üzeri** · Çocuklara hitap etmiyor |
 | Haber uygulaması | Hayır |
 | Veri güvenliği | aşağıdaki tablo (`veri-guvenligi.csv`, `play-istek.txt` › `veriguvenligi uygula`) |
-| Reklam kimliği | **Hayır** (AD_ID izni manifestten kaldırıldı) |
+| Reklam kimliği | **Evet** → amaç: **Reklam veya pazarlama** (+ Analiz, Dolandırıcılığı önleme: AdMob SDK) |
 | Kamu uygulaması · Finansal özellikler · Sağlık | Hayır · Yok · Yok |
 
 ## Veri güvenliği formu
 
-`araclar/veri-guvenligi.mjs` bu tabloyla `veri-guvenligi.csv`'yi üretir. Veri **toplanır, paylaşılmaz**; aktarımda
+`araclar/veri-guvenligi.mjs` bu tabloyla `veri-guvenligi.csv`'yi üretir. Oyun verisi **toplanır, paylaşılmaz**; AdMob'un
+verisi **toplanır ve paylaşılır** (son dört satır); aktarımda
 şifrelenir; kullanıcı silme isteyebilir (uygulama içi + hesap silme adresi). Hesap oluşturma: **OAuth (Google)** ve
 **kullanıcı adı + şifre** (e-posta ile yedekleme) — şablonda yalnız OAuth seçeneği olduğu için ikincisi Console'da elle
 işaretlenir (PLAY-YAYIN.md › 6).
@@ -83,7 +84,11 @@ işaretlenir (PLAY-YAYIN.md › 6).
 | Diğer kullanıcı içeriği | Sohbet mesajları, şikâyetler | İsteğe bağlı | Uygulama işlevi, kötüye kullanımı önleme |
 | Diğer uygulama etkinliği | Puan, galibiyet/mağlubiyet, arkadaş listesi, son görülme, oda durumu | Zorunlu | Uygulama işlevi |
 | Ses kayıtları | Sesli sohbet (iki taraf onaylarsa; kaydedilmez, geçici işlenir) | İsteğe bağlı | Uygulama işlevi |
+| Yaklaşık konum | AdMob: IP adresinden | Zorunlu | Reklam, analiz, dolandırıcılığı önleme (paylaşılır) |
+| Uygulama etkileşimleri | AdMob: açılış, dokunma, reklam izleme | Zorunlu | aynı (paylaşılır) |
+| Tanılama | AdMob: SDK başarımı | Zorunlu | aynı (paylaşılır) |
+| Cihaz veya diğer kimlikler | AdMob: reklam kimliği | Zorunlu | aynı (paylaşılır) |
 
-Toplanmayanlar: konum, cihaz kimliği, reklam kimliği, çökme ve başarım verisi (analiz SDK'sı yok). Avatar görseli
+Toplanmayanlar: kesin konum, rehber, fotoğraf; analiz ya da çökme raporu SDK'sı yok. Avatar görseli
 api.dicebear.com'dan kullanıcı kimliğinin tek yönlü özetiyle istenir (kimlik ve rumuz gönderilmez; hizmet yalnız IP
 adresini görür); Play'in tanımında bu bir paylaşım sayılmaz, gizlilik politikasında yazılıdır.

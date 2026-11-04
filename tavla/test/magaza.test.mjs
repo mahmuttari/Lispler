@@ -22,7 +22,7 @@ test('mağaza metinleri Play sınırları içinde', () => {
   assert.ok(uzun.length > 200 && uzun.length <= 4000, `uzun açıklama ${uzun.length}`);
   assert.ok(oku('magaza/surum-notu.txt').trim().length <= 500);
   assert.equal(satir('Destek e-postası'), 'poyrazworkshop7@gmail.com');
-  assert.doesNotMatch(uzun, /reklam içerir|garanti|en iyi|#1|bedava jeton/i);
+  assert.doesNotMatch(uzun, /garanti|en iyi|#1|bedava jeton/i);
 });
 
 test('görseller Play ölçülerinde', () => {
@@ -55,13 +55,15 @@ test('sürüm numarası uygulamada, package.json\'da ve Gradle\'da aynı', () =>
   assert.ok(oku('www/assets/index-BLMBGPAE.js').includes(`TV_SURUM = \`${vn}\``));
 });
 
-test('yayın derlemesi: paket adı, hata ayıklama kapalı, reklam kimliği izni yok, yatay ekran', () => {
+test('yayın derlemesi: paket adı, hata ayıklama kapalı, reklam kimliği bildirili, yatay ekran', () => {
   const cfg = JSON.parse(oku('capacitor.config.json'));
   assert.equal(cfg.appId, 'com.poyrazworkshop.tavla');
   assert.equal(cfg.android.webContentsDebuggingEnabled, false);
   assert.match(oku('android/app/build.gradle'), /applicationId "com\.poyrazworkshop\.tavla"/);
   const man = oku('android/app/src/main/AndroidManifest.xml');
-  assert.match(man, /AD_ID" tools:node="remove"/);
+  assert.match(man, /permission\.AD_ID" \/>/);
+  assert.match(oku('magaza/aciklamalar.md'), /\*\*Reklam içerir\*\*/);
+  assert.match(readFileSync(new URL('../../app/tavla/gizlilik.html', import.meta.url), 'utf8'), /AdMob/);
   assert.match(man, /screenOrientation="sensorLandscape"/);
   assert.doesNotMatch(man, /debuggable="true"/);
 });

@@ -61,6 +61,9 @@ jobs:
               if ! grep -qx "firebase=var" "$RUNNER_TEMP/aab/surum.txt"; then
                 echo "::error::koşu $RUN: google-services.json yokken derlenmiş (surum.txt firebase≠var); önce firebase/uygulama-istek.txt › yapilandirma"; exit 1
               fi
+              if ! grep -qx "admob=gercek" "$RUNNER_TEMP/aab/surum.txt"; then
+                echo "::error::koşu $RUN: AdMob kimlikleri örnek (surum.txt admob≠gercek); önce gerçek kimlikleri girip yeniden derleyin"; exit 1
+              fi
               cp "$RUNNER_TEMP/aab/Tavla.aab" dist/Tavla-play.aab
               echo "AAB: derleme koşusu $RUN"; cat "$RUNNER_TEMP/aab/surum.txt"; exit 0
             fi

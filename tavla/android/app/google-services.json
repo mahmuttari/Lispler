@@ -1,0 +1,84 @@
+{
+  "project_info": {
+    "project_number": "238721373618",
+    "project_id": "tavla-online-oyundar",
+    "storage_bucket": "tavla-online-oyundar.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:238721373618:android:aa3082bbf53ad770a1c0ab",
+        "android_client_info": {
+          "package_name": "com.korfe.tavla"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "238721373618-f7ju04c3i6fsprdrvpoq98os590huq5a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.korfe.tavla",
+            "certificate_hash": "638e444892948cec9927fc16179877170f0b74b8"
+          }
+        },
+        {
+          "client_id": "238721373618-tpajg3j7l2s8pr2qbc365a7083gprpg8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYdl92Vdmo8yTgeFFe8hzlmBRSHbCzBKQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "238721373618-tpajg3j7l2s8pr2qbc365a7083gprpg8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:238721373618:android:735556bed06277fba1c0ab",
+        "android_client_info": {
+          "package_name": "com.poyrazworkshop.tavla"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "238721373618-4lm7gn65vb4d0f4ipu78v9p19ah44acr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.poyrazworkshop.tavla",
+            "certificate_hash": "d088a07577d189b015d4a588749a1a8cc2ee5699"
+          }
+        },
+        {
+          "client_id": "238721373618-tpajg3j7l2s8pr2qbc365a7083gprpg8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYdl92Vdmo8yTgeFFe8hzlmBRSHbCzBKQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "238721373618-tpajg3j7l2s8pr2qbc365a7083gprpg8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

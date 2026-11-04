@@ -49,6 +49,7 @@ jobs:
         with:
           name: KelimeBilcek-lighthouse
           path: kelime-bilcek/.lighthouseci/
+          include-hidden-files: true
           retention-days: 14
 
   android-lint:

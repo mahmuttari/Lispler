@@ -67,7 +67,14 @@ async function shaEkle(girdi) {
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop())) {
   const [k1, k2, k3] = process.argv.slice(2);
   if (!process.env.TOKEN) { console.error('TOKEN yok: yalnız kelime-firebase-uygulama.yml içinde çalışır'); process.exit(2); }
-  if (k1 === 'durum') await durum();
+  if (k1 === 'durum') {
+    // Rol yoksa durum hata vermez, bunu söyler (yoklama): iş akışı yeşil kalır
+    try { await durum(); } catch (e) {
+      if (!/→ (401|403):/.test(e.message)) throw e;
+      console.log(`::notice::YETKİ YOK: hizmet hesabının ${PROJE} projesinde roles/firebase.admin rolü yok (firebase/README.md › Kurulum)`);
+      console.log(e.message.slice(0, 400));
+    }
+  }
   else if (k1 === 'android' && k2 === 'ekle') await androidEkle();
   else if (k1 === 'sha' && k2 === 'ekle') await shaEkle(k3);
   else { console.error(`geçersiz komut: ${process.argv.slice(2).join(' ')}`); process.exit(1); }

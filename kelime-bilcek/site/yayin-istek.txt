@@ -6,4 +6,4 @@
 # Etkin satırlar her push'ta yeniden çalışır; işi biten satır "# (yapıldı …)" ile kapatılır.
 
 # istek 2026-11-04: yetki denemesi (salt okuma)
-durum
+# (yapıldı 2026-11-04, koşu 41827897553: yeşil; rol henüz verilmediği için YETKİ YOK beklenir) durum

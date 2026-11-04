@@ -15,9 +15,11 @@ yayınlanmadı) → yeni paket `com.poyrazworkshop.kelimebilcek` (Poyraz Worksho
 | Firebase emülatörü + Playwright | Gerçek oyun kodu iki tarayıcıda, sıkı kurallarla: ad, arkadaş, hızlı eşleşme, Zincir, terk, Şampiyonlar, oda silme, hesap silme; konsolda `permission_denied` yok | `kelime-firebase-kurallar.yml` | 5/5 |
 | axe-core 4.11 | giriş, lobi, Şampiyonlar, kategoriler, arkadaşlar, oda kodu, sonuç ekranı, profil menüsü | `test/arayuz.test.mjs` | "serious/critical" ihlal yok |
 | Lighthouse CI 0.16 (`lighthouserc.json`) | performans, erişilebilirlik, iyi uygulamalar, SEO | `kelime-denetim.yml` | 1,00 / 1,00 / 1,00 / 1,00 (v4.11: 1,00 / 0,89 / 0,96 / 0,91) |
-| Android lint (`lintRelease`) | Android projesi | `kelime-denetim.yml` (rapor artifact `KelimeBilcek-android-lint`) | CI koşusunda; sonuç aşağıya eklenecek |
+| Android lint (`lintRelease`) | Android projesi | `kelime-denetim.yml` (rapor artifact `KelimeBilcek-android-lint`) | 0 hata, 21 uyarı (aşağıda) |
 
 Yerelde (bulut oturumu, 4 Kasım 2026) hepsi koşturuldu; Android lint için yerelde Android SDK yok, yalnız CI'da çalışır.
+CI'da ilk koşular (commit b6dbe16): Denetim 41827897508 ✓, Firebase kuralları 41827897735 ✓ (24 + 5), Android
+41827897537 ✓ (imzalı AAB, yükleme anahtarı SHA-1 `D0:88:…:56:99`, `admob=ornek`).
 
 ## Bulgular ve düzeltmeler
 
@@ -62,5 +64,11 @@ Yerelde (bulut oturumu, 4 Kasım 2026) hepsi koşturuldu; Android lint için yer
 
 ## Android lint
 
-`kelime-denetim.yml` › `android-lint` işi `lintRelease` raporunu artifact olarak yükler ve günlüğe hata/uyarı
-sayılarını yazar. İlk koşunun sonucu buraya işlenecek.
+İlk koşu (41827897508): **0 hata, 21 uyarı**. Hiçbiri derlemeyi ya da Play incelemesini etkilemez:
+
+| Uyarı | Adet | Not |
+|---|---|---|
+| UnusedResources | 7 | Capacitor şablonunun kullanılmayan kaynakları |
+| IconLauncherShape, IconDipSize, IconDuplicatesConfig, IconLocation | 5 + 1 + 1 + 1 | Eski (Android 7 öncesi) simgeler kare tam resim; uyarlanabilir simge (Android 8+) doğru |
+| MonochromeLauncherIcon | 2 | Android 13 temalı simge katmanı yok (isteğe bağlı) |
+| ObsoleteSdkInt, ManifestOrder, GradleDependency, AndroidGradlePluginVersion | 1'er | Capacitor 8 şablonunun sürümleri; Capacitor güncellenince kalkar |

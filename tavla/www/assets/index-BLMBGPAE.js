@@ -29409,7 +29409,7 @@ function Ey(e) {
 var TV_SURUM = `1.0.0`,
   TV_GIZLILIK = `https://mahmuttari.github.io/Lispler/tavla/gizlilik.html`,
   TV_HESAP_SILME = `https://mahmuttari.github.io/Lispler/tavla/hesap-silme.html`,
-  TV_ILETISIM = `mahmuttari@gmail.com`,
+  TV_ILETISIM = `poyrazworkshop7@gmail.com`,
   TV_NEDENLER = [
     { id: `kufur`, ad: `Küfür / hakaret` },
     { id: `taciz`, ad: `Taciz / tehdit` },
@@ -29607,7 +29607,7 @@ function tvSikayetPenceresi({ hedefAd: e, onGonder: t, onKapat: n }) {
         }),
         (0, Z.jsx)(`p`, {
           style: tvStil.ipucu,
-          children: `Şikâyetle birlikte bu oyuncunun bu odadaki son mesajları da gider. Şikâyetler 24 saat içinde incelenir.`,
+          children: `Şikâyetle birlikte bu oyuncunun bu odadaki son mesajları da gider. Şikâyetler en kısa sürede incelenir.`,
         }),
         d && (0, Z.jsx)(`p`, { style: tvStil.hata, role: `alert`, children: d }),
         (0, Z.jsxs)(`div`, {
@@ -32544,9 +32544,19 @@ var Kb = [
   ],
   qb = `avataaars`,
   Jb = `tavla_avatar`;
+// T-06: tohum (çoğu zaman Firebase kullanıcı kimliği) api.dicebear.com'a olduğu gibi gitmez; tek yönlü özet gider.
+function tvAvatarTohumu(e) {
+  let t = 2166136261,
+    n = 5381;
+  for (let r of String(e || `misafir`)) {
+    let e = r.codePointAt(0);
+    ((t = Math.imul(t ^ e, 16777619) >>> 0), (n = (Math.imul(n, 33) ^ e) >>> 0));
+  }
+  return t.toString(36) + n.toString(36);
+}
 function Yb(e, t) {
   let n = Kb.find((t) => t.id === e) || Kb.find((e) => e.id === qb),
-    r = encodeURIComponent(t || `misafir`),
+    r = encodeURIComponent(tvAvatarTohumu(t)),
     i = n.params || ``;
   return `https://api.dicebear.com/9.x/${n.id}/svg?seed=${r}&backgroundColor=transparent,b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf${i}`;
 }

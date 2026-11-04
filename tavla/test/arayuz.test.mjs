@@ -55,7 +55,7 @@ test('hesap penceresinde gizlilik, iletişim, engellenenler ve hesap silme var',
   await s.getByText('Gizlilik ve hesap').waitFor();
   const gizlilik = s.getByRole('link', { name: /Gizlilik/ });
   assert.equal(await gizlilik.getAttribute('href'), 'https://mahmuttari.github.io/Lispler/tavla/gizlilik.html');
-  assert.equal(await s.getByRole('link', { name: /İletişim/ }).getAttribute('href'), 'mailto:mahmuttari@gmail.com');
+  assert.equal(await s.getByRole('link', { name: /İletişim/ }).getAttribute('href'), 'mailto:poyrazworkshop7@gmail.com');
   await s.getByText('Engellenenler').waitFor();
   await s.getByRole('button', { name: /Hesabı sil/ }).waitFor();
   assert.deepEqual(hatalar, []);

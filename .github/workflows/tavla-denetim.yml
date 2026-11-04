@@ -1,0 +1,45 @@
+# Tavla: arayüz testleri (Playwright), Firestore kuralları (emülatör, 13 senaryo), uçtan uca akış (iki tarayıcı, gerçek
+# oyun kodu, sıkı kurallar), mağaza dosyaları ve Veri güvenliği CSV'sinin tabloyla aynılığı. Kural YAYINLAMAZ.
+name: Denetim (Tavla)
+
+on:
+  push:
+    paths:
+      - 'tavla/**'
+      - '!tavla/play-istek.txt'
+      - '!tavla/firebase/yayin-istek.txt'
+      - '!tavla/firebase/uygulama-istek.txt'
+      - 'app/tavla/**'
+      - '.github/workflows/tavla-denetim.yml'
+  pull_request:
+    paths: ['tavla/**', 'app/tavla/**', '.github/workflows/tavla-denetim.yml']
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Bağımlılıklar
+        run: |
+          (cd tavla && npm ci && npx playwright install --with-deps chromium)
+          (cd tavla/firebase && npm ci && npx playwright install chromium)
+      - name: Arayüz ve mağaza testleri
+        working-directory: tavla
+        run: npm test
+      - name: Veri güvenliği CSV'si tabloyla aynı mı
+        run: node tavla/araclar/veri-guvenligi.mjs --denetle
+      - name: Firestore kuralları (emülatör)
+        working-directory: tavla/firebase
+        run: npm test
+      - name: Uçtan uca akış (emülatör, iki tarayıcı)
+        working-directory: tavla/firebase
+        run: npm run test:akis

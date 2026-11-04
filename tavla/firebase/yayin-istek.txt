@@ -1,0 +1,5 @@
+# Cloud Firestore kural yayını — .github/workflows/tavla-kural-yayini.yml bu dosya push edilince çalışır.
+# Her satır bir komut (sırayla); etkin satırlar her push'ta yeniden çalışır, işi biten satır "# (yapıldı …)" ile kapatılır.
+#   durum     yayındaki kuralları depodaki firestore.rules ile karşılaştırır (yazmaz)
+#   yayinla   önce emülatör testleri (kurallar + uçtan uca akış); geçerse firestore.rules'u yayınlar ve geri okuyup denetler
+# Hizmet hesabının (android/play-kimlik.env) tavla-online-oyundar projesinde roles/firebaserules.admin rolü olmalı.

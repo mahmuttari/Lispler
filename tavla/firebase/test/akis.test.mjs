@@ -19,7 +19,7 @@ let sunucu, adres, tarayici, ortam;
 before(async () => {
   sunucu = createServer(async (i, y) => {
     const yol = decodeURIComponent(new URL(i.url, 'http://x').pathname);
-    try { y.writeHead(200, { 'content-type': TUR[extname(yol)] || 'text/html' }).end(await readFile(join(KOK, yol === '/' ? 'index.html' : yol))); }
+    try { const veri = await readFile(join(KOK, yol === '/' ? 'index.html' : yol)); y.writeHead(200, { 'content-type': TUR[extname(yol)] || 'text/html' }).end(veri); }
     catch { y.writeHead(404).end(); }
   }).listen(0, '127.0.0.1');
   await new Promise((r) => sunucu.once('listening', r));

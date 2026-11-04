@@ -9,3 +9,6 @@
 
 # istek 2026-11-04T14:58:57Z: roller verildi; yayındaki kuralları depodakiyle karşılaştır (salt okuma)
 # (yapıldı 2026-11-04, koşu 41853021245: okuma 200; yayındaki kurallar FARKLI — reports ve engellenen kuralı yok, sohbet herkese açık) durum
+
+# istek 2026-11-04T15:12:01Z: sıkı kuralları yayınla (kullanıcının açık onayı: "evet, birleştir"); önce kurallar.test + akis.test
+yayinla

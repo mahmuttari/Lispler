@@ -15,8 +15,8 @@
 
 const REKLAM = {
   // AdMob › Kelime Bilcek (Android). Biçim ca-app-pub-<16 rakam>/<10 rakam>; kimlik girilmemişse reklam istenmez.
-  gecisId: "ca-app-pub-2417242373034448/BEKLIYOR01",
-  bannerId: "ca-app-pub-2417242373034448/BEKLIYOR02",
+  gecisId: "ca-app-pub-2417242373034448/1638028950",
+  bannerId: "ca-app-pub-2417242373034448/4024731172",
   ilkMaclar: 3,           // ilk N maçta geçiş reklamı yok
   araMs: 5 * 60 * 1000,   // iki geçiş reklamı arasında en az
   saatlikEnCok: 4,

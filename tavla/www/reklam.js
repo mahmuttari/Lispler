@@ -14,8 +14,8 @@
 
 const REKLAM = {
   // AdMob › Tavla (Android). Biçim ca-app-pub-<16 rakam>/<10 rakam>; kimlik girilmemişse reklam istenmez.
-  gecisId: "ca-app-pub-2417242373034448/BEKLIYOR01",
-  bannerId: "ca-app-pub-2417242373034448/BEKLIYOR02",
+  gecisId: "ca-app-pub-2417242373034448/3470819523",
+  bannerId: "ca-app-pub-2417242373034448/4041665164",
   ilkMaclar: 3,           // ilk N maçta geçiş reklamı yok
   araMs: 5 * 60 * 1000,   // iki geçiş reklamı arasında en az
   saatlikEnCok: 4,

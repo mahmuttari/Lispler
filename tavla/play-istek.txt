@@ -15,7 +15,7 @@
 # (yapıldı 2026-11-04, koşu 41856130864: 404 — uygulama Play Console'da henüz yok) durum
 
 # istek 2026-11-04: mağaza metni, görseller, Veri güvenliği, imza (kullanıcı: "ONAY: Mağaza yükle"; uygulama Play'de oluşturuldu, 1.0.0 (1) taslak, hizmet hesabı 8 izinle eklendi)
-magaza uygula
-gorsel uygula
-veriguvenligi uygula
-imza
+# (yapıldı 2026-11-04, koşu 41885402482: ayrıntılar + tr-TR metin, kısa 79 / tam 1921) magaza uygula
+# (yapıldı 2026-11-04, koşu 41885402482: icon 1, featureGraphic 1, phoneScreenshots 6) gorsel uygula
+# (yapıldı 2026-11-04, koşu 41885402482: form yazıldı; Console'da "Kullanıcı adı ve şifre" elle eklenecek) veriguvenligi uygula
+# (yapıldı 2026-11-04, koşu 41885402482: V3.0 SHA-1 3202e7316763f3c9ec26bfabe2e57de0cc506397, V3.2 SHA-1 e7d22325af82b9bccddacb104ccce04c948f0df7) imza

@@ -6,7 +6,7 @@ import path from 'node:path';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
-import { KURGU } from './video.mjs';
+import { KURGU, BICIMLER } from './video.mjs';
 
 const KLASOR = path.dirname(fileURLToPath(import.meta.url));
 const METIN = JSON.parse(fs.readFileSync(path.join(KLASOR, 'metinler.json'), 'utf8'));
@@ -14,7 +14,7 @@ const SAHIP = /mahmut|marfen|mafren|tar[ıi]\s*m[üu]hendis/i;
 
 test('metinler: altı dilde video kartı; tr ve en profil ve paylaşımları platform sınırlarında', () => {
   for (const dil of ['tr', 'en', 'es', 'ar', 'hi', 'zh']) {
-    assert.ok(METIN[dil]?.video?.son && METIN[dil].video.ara, dil);
+    assert.ok(METIN[dil]?.video?.son && METIN[dil].video.ara && METIN[dil].video.pet, dil);
   }
   for (const dil of ['tr', 'en']) {
     const m = METIN[dil];
@@ -63,15 +63,17 @@ function mp4(dosya) {
   return { ...o, boyut: b.length };
 }
 
-test('videolar: tr ve en, dikey 1080×1920, kurgunun süresi, 50 MB altı', () => {
+// Google Ads Uygulama kampanyasının beş dili, her biri üç biçimde (dikey, yatay, kare); kampanya en az 10 sn ister
+test('videolar: 5 dil × 3 biçim (dikey 1080×1920, yatay 1920×1080, kare 1080×1080), kurgunun süresi, 50 MB altı', () => {
   const sure = KURGU.reduce((t, k) => t + k.sure, 0);
-  for (const dil of ['tr', 'en']) {
-    const f = path.join(KLASOR, 'videolar', `hayalet-avcilari-${dil}.mp4`);
-    assert.ok(fs.existsSync(f), `${f} yok: node hayalet-avcilari/sosyal/video.mjs ${dil}`);
+  assert.ok(sure >= 10 && sure <= 60, `kurgu ${sure} sn`);
+  for (const dil of ['tr', 'en', 'es', 'ar', 'hi']) for (const [ad, bc] of Object.entries(BICIMLER)) {
+    const f = path.join(KLASOR, 'videolar', `hayalet-avcilari-${dil}${bc.ek}.mp4`);
+    assert.ok(fs.existsSync(f), `${f} yok: node hayalet-avcilari/sosyal/video.mjs ${dil} --bicim=${ad}`);
     const v = mp4(f);
-    assert.equal(v.w, 1080, dil); assert.equal(v.h, 1920, dil);
-    assert.ok(Math.abs(v.sure - sure) < 0.5, `${dil}: süre ${v.sure} (beklenen ${sure})`);
-    assert.ok(v.boyut < 50 * 1048576, dil);
+    assert.equal(v.w, bc.w, `${dil} ${ad}`); assert.equal(v.h, bc.h, `${dil} ${ad}`);
+    assert.ok(Math.abs(v.sure - sure) < 0.5, `${dil} ${ad}: süre ${v.sure} (beklenen ${sure})`);
+    assert.ok(v.boyut < 50 * 1048576, `${dil} ${ad}`);
   }
 });
 

@@ -7,7 +7,7 @@ giriş `@codetrix-studio/capacitor-google-auth`, reklamlar `@capacitor-community
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.hayaletavcilari` |
-| Sürüm | 3.15.0 (versionCode 50; 49 3.14.2'de kullanıldı, 3.14.2'nin ses tamponu düzeltmesini de taşır); 28 Ekim 2026'da kullanıcının onayıyla ("Olur onaylıyorum gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40743241084; AAB koşu 40742598740, commit 1a6f2fd); 3.15.0 kuralları aynı gün yayınlandı (koşu 40742252252) — Dünya Turu'nda reklamla devam, sudaki timsahlar, sallanan ip köprüler, petler, çalıda saklanma ve bunların çevrimiçi oyunu (aşağıda "3.15.0: reklamla devam", "3.15.0: timsahlar", "3.15.0: ip köprüler", "3.15.0: petler", "3.15.0: çalı, hayaletin doğduğu yer, çevrimiçi"); 27 Ekim 2026, henüz Play'e gönderilmedi. Önceki: 3.14.1 (versionCode 48) — son inceleme ve sınama düzeltmeleri (aşağıda "3.14.1: düzeltmeler"); 25 Ekim 2026'da kullanıcının onayıyla ("gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40218892928; 3.14.0 (47)'nin yerini aldı). Önceki: 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
+| Sürüm | 3.17.0 (versionCode 55) — ormanda yarasalar, boss'un tepesinde şimşekli fırtına bulutu (aşağıda "3.17.0: yarasalar ve fırtına bulutu"); 3.16.2'nin ödüllü 2× parasını da taşır (3.16.2 gönderilmedi); 4 Kasım 2026'da kullanıcının onayıyla ("gönder") üretime %100 yüklendi ve incelemeye gönderildi (koşu 41870132061; AAB koşu 41869190255, commit 6d2181a; yayındaki 3.16.1 (53)'ün yerini aldı). Önceki: 3.16.2 (versionCode 54) — ödüllü "2× para" ve biraz daha sık geçiş reklamı (aşağıda "3.16.2: reklam geliri"); 4 Kasım 2026, henüz Play'e gönderilmedi. Önceki: 3.16.1 (versionCode 53) — Şampiyonlar listesi ilk 500 (aşağıda "3.16.1: ilk 500 şampiyon"); 4 Kasım 2026'da kullanıcının onayıyla ("Gönder") üretime %100 yüklendi ve incelemeye gönderildi (koşu 41761530427; AAB koşu 41760721364, commit 2b3b741; incelemedeki 3.16.0 (52)'nin yerini aldı). Önceki: 3.16.0 (versionCode 52) — yeni arayüz: düğmeler, kontroller, göstergeler, pencereler ve yazı tipleri (aşağıda "3.16.0: yeni arayüz"); 3 Kasım 2026'da kullanıcının isteğiyle ("hemen de yayına al sormadan") üretime %100 yüklendi ve incelemeye gönderildi (koşu 41612662626; AAB koşu 41612222942, commit 51ef12c; incelemedeki 3.15.1 (51)'in yerini aldı). Önceki: 3.15.1 (versionCode 51) — oyun içinden Ses Ayarları'na girip çıkınca oyun duraklatılmış kalıyordu (aşağıda "3.15.1: ayarlardan dönüş"); hayaletler petlere de vurur, her petin 5 canı var (aşağıda "3.15.1: petlerin canı", 2 Kasım 2026); 3 Kasım 2026'da kullanıcının onayıyla ("Gönder yayın %100 olsun kademeli yayın yapma") üretime %100 yüklendi ve incelemeye gönderildi (koşu 41600441361; AAB koşu 41506791514, commit 2c12b57; üretimdeki 3.15.0 (50)'nin yerini aldı). Önceki: 3.15.0 (versionCode 50; 49 3.14.2'de kullanıldı, 3.14.2'nin ses tamponu düzeltmesini de taşır); 28 Ekim 2026'da kullanıcının onayıyla ("Olur onaylıyorum gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40743241084; AAB koşu 40742598740, commit 1a6f2fd); 3.15.0 kuralları aynı gün yayınlandı (koşu 40742252252) — Dünya Turu'nda reklamla devam, sudaki timsahlar, sallanan ip köprüler, petler, çalıda saklanma ve bunların çevrimiçi oyunu (aşağıda "3.15.0: reklamla devam", "3.15.0: timsahlar", "3.15.0: ip köprüler", "3.15.0: petler", "3.15.0: çalı, hayaletin doğduğu yer, çevrimiçi"); 27 Ekim 2026, henüz Play'e gönderilmedi. Önceki: 3.14.1 (versionCode 48) — son inceleme ve sınama düzeltmeleri (aşağıda "3.14.1: düzeltmeler"); 25 Ekim 2026'da kullanıcının onayıyla ("gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40218892928; 3.14.0 (47)'nin yerini aldı). Önceki: 3.14.0 (versionCode 47) — Dünya Turu (51 ülke, geleneksel kıyafetli bosslar, pasaport), ülke müzikleri, hiç sıkmayan reklam sıklığı (aşağıda "3.14.0: Dünya Turu" ve "3.14.0: ülke müzikleri"); 3.13.1'in reklam içerik sınırını da taşır (3.13.1 (46) Play'e gönderilmedi). 24 Ekim 2026'da kullanıcının onayıyla ("Kalan işleri de yap") üretime yüklendi ve incelemeye gönderildi (koşu 40122638806; üretimdeki 3.13.0 (45)'in yerini aldı); mağaza metni ve görseller 7 dilde 3.14.0'a göre (7 kare, yedincisi Dünya Turu; tanıtım görselinin alt yazısında "🌍 Dünyayı gez", koşu 40125211194). Dünya Turu odasının kuralları aynı gün yayınlandı (koşu 40122381332). Önceki: 3.13.0 (versionCode 45) — arkadaşlar ve oyuna davet, yeni engeller, online tur sıralaması ve kupa; 24 Ekim 2026'da kullanıcının onayıyla ("Evet, gönder") üretime yüklendi ve incelemeye gönderildi (koşu 40063254710; üretimdeki 3.12.2 (44)'ün yerini aldı); mağaza görselleri de 3.13.0'a göre yenilendi (7 dil, 6 kare: yeni engeller, kupa, Arkadaşlar; koşu 40064955789). Kurallar (arkadaş düğümleri, `av`, 3.12.2'nin `maxPlayers` 2–6'sı, 3.12.0 dizini) 24 Ekim 2026'da GitHub'dan yayınlandı (koşu 40066828973): [`firebase/README.md` › Yayınlama](firebase/README.md#yayınlama) |
 | Diller | Türkçe, English, Español, 简体中文, हिन्दी, العربية (sağdan sola) |
 | Play'e yayın | [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
 | Gizlilik / hesap silme | `app/hayalet-avcilari/` → https://hayalet-avcilari.web.app (Firebase Hosting, [`site/`](site/README.md); Play'e verilen adres) ve GitHub Pages kopyası |
@@ -403,6 +403,112 @@ initialize'dan sonra, geçiş ve ödüllü reklam yine yüklenir, sayfa hatası 
 Sürüm notu: 3.13.0 incelemedeyken gönderilebileceği için 3.13.0'ın satırlarını da taşır; mağaza notu İspanyolcada 500'ü
 aşmasın diye 👥 (3.12.2) satırı çıktı (tr 450, en 453, es 490, zh 179, hi 454, ar 404).
 
+## 3.15.1: ayarlardan dönüş
+
+Kullanıcı bildirimi (29 Ekim 2026): *"Ayarlara girip çıktığında oyun duruyor. İkinci defa ayarlara girip çıkman
+gerekiyor."* Duraklatınca iki ekran açıktır: oyun ekranı ve üstünde ⏸ menüsü. `openSoundSettings` dönülecek ekran olarak
+yalnız ilk açık ekranı (oyun ekranı) hatırlıyordu; "✓ TAMAM"da ⏸ menüsü kayboluyor, `game.paused` açık kalıyor, "▶ Devam"
+görünmüyordu (çevrimiçinde `game.menude` açık kalıp oyuncu yürüyemiyordu). Artık açılırken açık olan bütün ekranlar
+hatırlanır, kapanınca hepsine dönülür. Sınama `test/ayarlar.test.mjs` (düzeltmeden önce 4 sınama kırmızıydı): ⏸ → Ses
+Ayarları → TAMAM → ⏸ menüsü görünür → bir kez Devam → oyun akar; art arda iki kez; ana menüden açılınca ana menüye dönüş.
+Sürüm notuna "🛠️ Ayarlardan dönünce oyun artık durmuyor." satırı eklendi (3.15.0'ın satırlarıyla; en uzun es 491/500).
+
+## 3.17.0: yarasalar ve fırtına bulutu
+
+Kullanıcının isteği (4 Kasım 2026): *"Oyuna mantıklı bir şeyler ekleyelim. Güncellemenin bir bahanesi olsun. Yani eğlence
+amaçlı bir şeyler ekleyelim. Mesela yarasalar uçuşsun ormanda. Arada şimşek çakan bulutlar gezinsin. Bosun üzerinde."*
+Yeni dosya `www/hava.js`; yalnız görsel ve ses, oyunu değiştirmez.
+- **Yarasalar:** Yeşil Orman bölümlerinde 6–12 sn'de bir 5–9 yarasalık sürü, görüşün bir yanından öbürüne dalgalanarak
+  uçar (kanat çırpar, kırmızı gözler). Çıkarken kısa cıvıltı.
+- **Fırtına bulutu:** Uzay dışındaki bölümlerde ve Dünya Turu'nda 22–38 sn'de bir görüşte süzülür, 2,6–5,5 sn'de bir
+  şimşek çakar. Şimşek dallı çizgi, hafif ekran parlaması (en çok %16) ve gecikmeli gök gürültüsüdür (`audio.noise`).
+- **Boss gelince:** bulut hemen çıkar, boss'un tepesine yerleşir ve onu izler. 1,6–3,2 sn'de bir şimşek boss'un
+  çevresine iner. Boss yenilince bulut çekip gider.
+- "Hareketi azalt" tercihinde ekran parlaması yok. Çevrimiçinde her cihaz kendi gökyüzünü çizer; boss herkeste aynı
+  yerde olduğu için bulut da aynı yerde.
+- **Çevrimiçinde reklam:** kullanıcı sordu: *"Online oyunda reklam çıkmaması gerek… İnsanlar reklam çıktı diye sıkıntı
+  yaşamasın."* Kendiliğinden çıkan geçiş reklamı çevrimiçinde zaten yoktu (`gecisUygunMu`). Sunulan üç seçenekten
+  kullanıcı **B**'yi seçti: çevrimiçi turun sonuç ekranında ödüllü düğmeler (+10 💚, 2× 💰) gizlenir, basılsa da reklam
+  açılmaz (`reklam.cevrimiciSonuc`). Böylece reklam izleyen biri yeni turu kaçırmaz, arkadaşları beklemez. Çevrimiçi
+  Dünya Turu'nda "Reklam izle, diril" kalır: oyuncu zaten ölü, izleyici konumunda. `test/reklam.test.mjs` 30 sınama.
+- Sürüm notu: 🦇 satırı başa; 3.15.0'dan beri yayında olan 🌉 ve 🌿 satırları 500 sınırı için çıktı.
+- Sınama `test/hava.test.mjs` (10): orman / şato / uzay, boss'un tepesi ve izleme, şimşek sıklığı ve yeri, boss sonrası,
+  zarar yok, çizim, hareketi azalt.
+
+## 3.16.2: reklam geliri
+
+Kullanıcı AdMob'da son 7 günün düşük olduğunu gösterdi (80 istek, 5 gösterim, ₺0,72). Neden: az oyuncu ve 3.14.0'dan
+beri bilerek seyrek geçiş reklamı. Sunulan dört seçenekten kullanıcı *"2 ve 3"* dedi:
+- **2 — "🎬 Reklam izle: 2× 💰"** (oyun bitti ekranı, `btn-reklam-ikikat`, `odulluIzle('para')`). Sonuna kadar izleyene
+  o oyunda kazanılan para (bölüm bonusu dahil) bir kez daha verilir; ekrandaki "Kazanılan para" iki katına çıkar.
+  - Oyun başına bir kez. Zümrüt düğmesi ayrı durur; aynı yüklü ödüllü reklamı paylaşırlar, biri izlenince öteki reklam
+    yeniden yüklenince çıkar.
+  - Para kazanılmayan oyunda düğme yok. Yarıda kapatılan reklam ödül vermez.
+- **3 — geçiş reklamı biraz daha sık:** yeni oyuncuya ilk 5 oyun → 3; iki reklam arası 6 dk → 4 dk oyun süresi. Öteki
+  kurallar aynı: yalnız tek kişilik oyun sonunda, en az 45 sn'lik oyun, ilk 10 dk yok, saatte en çok 4, rekor ve tur
+  bitişinde yok.
+- Sürüm notunda 🎬 satırı reklamla devamı ve 2× parayı birlikte söyler (500 sınırı; en uzun es 497/500).
+- Sınama `test/reklam.test.mjs` (28): sıklık sınırları yeni değerlerle; 2× düğmesi, yarıda kapatma, tam izleme, oyun başına
+  bir kez, parasız oyun.
+
+## 3.16.1: ilk 500 şampiyon
+
+Kullanıcının isteği (4 Kasım 2026): *"Şampiyon listesi ilk 500 göstersin."*
+- `LEADERBOARD_MAX` 10 → 500 (çevrimiçi ve bu cihazdaki liste).
+- **Çevrimiçi sorgu değişti.** Eskiden son 200 kayıt tarihe göre alınıp içinden ilk 10 seçiliyordu. Bu yüzden eski
+  yüksek skorlar listeye giremiyordu ve aynı isimden en son kayıt kalıyordu. Artık Firestore'dan skora göre azalan
+  (eşitlikte belge adına göre) sayfa sayfa okunur; her isimden en yüksek skor kalır.
+  - Sayfa 300 belge, en çok 6 sayfa (1800 okuma); 500 farklı avcıya ulaşınca ya da kayıt bitince durur.
+  - 4 Kasım'da 226 kayıt vardı, yani bir açılış 1 sayfa okuyor. Firestore'un otomatik tek alan dizini yetiyor; imleçli
+    sayfalama canlı veritabanında denendi.
+  - Ara sayfada hata olursa o ana kadar bulunanlar gösterilir.
+- Kendi satırı ilk 10'da değilse listenin başında "📍 Senin sıran: N" düğmesi çıkar, dokununca satırına kaydırır.
+- Liste yüklenirken "📱 Bu Cihaz" seçilirse geç gelen çevrimiçi yanıt artık yerel listenin üstüne yazmaz
+  (`sampiyonIstegi`).
+- Sürüm notunda 🎨 satırı "Yeni görünüm ve 🏆 ilk 500 şampiyon listesi" oldu (500 sınırı; en uzun es 496/500).
+- Sınama `test/sampiyon.test.mjs` (9): sahte Firestore'da 700 avcı × 2 kayıt; sıralama, tekilleştirme, imleç, 500 satır,
+  "Senin sıran", sekme yarışı, yerel liste 500.
+
+## 3.16.0: yeni arayüz
+
+Kullanıcının isteği (3 Kasım 2026): *"Oyun arayüzünü, kontrolleri, tuşları, tüm arayüzü daha profesyonel hale getir, çok
+gelişigüzel; hemen de yayına al sormadan."* Oyunun kendisi (çizim, kurallar) değişmedi; yalnız arayüz katmanı.
+- **Tasarım belirteçleri** (`style.css` başı, `:root`): zemin, yüzey, çizgi, metin, altın, mor, yeşil renkleri; köşe ve
+  gölge. Bütün ekranlar aynı değerleri kullanır.
+- **Yazı tipleri** `www/fonts/` (SIL OFL 1.1, lisans dosyaları yanında; GENEL-KONULAR/Takasla'daki kopyalar): başlık ve
+  düğmede Baloo 2, metinde Nunito, Arapçada Baloo Bhaijaan 2; Hintçe ve Çince sistem yazı tipi. Oyun içi ad etiketleri
+  de Nunito. Toplam 174 KB.
+- **Düğmeler:** tek yükseklik ölçeği (48 / 58 px), ortalı simge ve yazı. Birincil mor, ana eylem yeşil, ikincil cam
+  (`.btn-geri`: Geri, Ses Ayarları, Menüye Dön, Oyunu bitir, Odadan Ayrıl). Pencerelerde ve alt ekranlarda alt alta,
+  eşit genişlikte. Ana menüde kısayollar iki eşit sütun; yatay telefonda menü iki sütun (solda avcı, sağda düğmeler) ve
+  kaymadan sığar.
+- **Oyun içi:** göstergeler aynı yükseklikte hap, çentik ve yuvarlak köşelerden içeride (`env(safe-area-inset-*)`).
+  Duraklat düğmesi çizilmiş simge. Joystick halka, iç çember ve yön çentikleri; dokununca altın renge döner (`.aktif`).
+  Cephane ve 🎒 düğmeleri cam kare, sayaç altın rozet.
+- **Arka plan:** kayan emoji deseni yerine durağan seyrek yıldızlar. Başlık düz altın, gölgeli (emojiler boyanmaz).
+- **Bildirim (toast):** sol üst göstergelerin altında. Ekran ya da duraklat açılınca kapanır (`eskiToastuKapat`);
+  eskiden "Bot seninle savaşıyor" yazısı duraklat ve ayar pencerelerinin üstünde kalıyordu.
+- **Mağaza sekmeleri** tek kutuda; sığmazsa satırlar eşit genişlikte dolar.
+- **Sürüm notu:** "🎨 Yeni görünüm…" satırı başa; 500 karakter sınırı için 🛠️ (ayarlardan dönüş) satırı çıktı (en uzun
+  es 495/500).
+- Sınama `test/arayuz.test.mjs` (9): yazı tipleri, menü düzeni, bildirim, joystick, duraklat düğmesi ve penceresi, yatay
+  menü (tr 844×390, ar 740×360). `test/dil.test.mjs` bütün ekranlarda taşma ve çeviri denetimini sürdürür. Çizim hızı
+  (`cizim.test.mjs`) eski ve yeni arayüzde aynı ölçüldü.
+
+## 3.15.1: petlerin canı
+
+Kullanıcının istekleri (2 Kasım 2026): *"Hayaletler petlere de vursun, köpeklerin 5 canı olsun."*, ardından *"Bütün
+petlerin 5 canı olsun."*
+- Her petin 5 canı var (`PETLER.<tür>.can`; mağaza kartında ❤️ ile yazar).
+- Hayalete değince ve düşman mermisi çarpınca 1 can gider, boss 2. Sonra 1,2 sn dokunulmaz (`PET_KORUMA`), yanıp söner.
+  Köpeğin sersemlettiği hayalet ısırmaz. Canı eksik petin başında kalpler görünür.
+- Can bitince pet bayılır: görünmez, saldırmaz, 15 sn sonra (`PET_DIRILME`) oyuncunun yanında tam canla döner. Her
+  bölümde tam canla başlar.
+- Çevrimiçinde petin canı kendi cihazında sayılır; istemcide pete çarpan mermi kurucuya `mermi` olayıyla bildirilir.
+  Bayılan pet odaya `pet: ""` yazılır, ötekiler onu görmez.
+- Sürüm notunda pet satırı: "Hayaletler de onlara vurur; her petin 5 canı var." (es'de köprü satırı kısaldı, 479/500).
+- Sınama `test/pet.test.mjs` (26 sınama; 8'i yeni).
+
 ## 3.15.0: çalı, hayaletin doğduğu yer, çevrimiçi
 
 Kullanıcının istekleri (28 Ekim 2026): *"Saklanma yeri"* (seçenekler sunuldu, "Çalı" seçildi), *"Hayaletler üzerimize
@@ -446,7 +552,8 @@ Kullanıcının isteği (28 Ekim 2026): *"Saldırabilen pet ekleyelim karakterle
   `save.pet`). Aynı anda bir pet.
 - Pet oyuncunun baktığı yönün 56 px gerisinden izler. Oyuncuya 260 px'ten yakın bir hayalet varsa ona koşar ve saldırır.
   Hasar her 6 bölümde +1 artar. 650 px'ten uzakta kalan ya da 2 sn takılan pet oyuncunun yanına ışınlanır.
-- Hayaletler petlere zarar vermez, petler ölmez. Her bölümde pet oyuncunun yanında başlar (Bot gibi).
+- Hayaletler petlere zarar vermez, petler ölmez (3.15.1'de değişti: aşağıda "3.15.1: petlerin canı"). Her bölümde pet
+  oyuncunun yanında başlar (Bot gibi).
 - Çevrimiçinde de her oyuncunun peti kendi cihazında koşar; vuruşu mermi gibi kurucuya gider (`uzaktanVur`). Başka
   oyuncuların peti görünmez (konumu odaya yazılmaz). Köpeğin sersemletmesi istemcide yok (hayaletin durumu kurucuda).
 - Sürüm notu ve mağaza notu: 500 karakter sınırı için 3.15.0 notundan Dünya Turu satırı da çıktı; notta yalnız 3.15.0'ın

@@ -16,10 +16,16 @@ on:
       - '!tavla/firebase/**'
       - '!tavla/*.md'
       - '.github/workflows/tavla-android.yml'
+  # google-services.json'u iş akışı (GITHUB_TOKEN) commit eder; o push başka iş akışı başlatmaz. Firebase uygulaması
+  # iş akışı başarıyla bitince derleme onun commit'iyle yeniden çalışır.
+  workflow_run:
+    workflows: ['Firebase uygulaması (Tavla)']
+    types: [completed]
   workflow_dispatch:
 
 jobs:
   build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
@@ -27,6 +33,9 @@ jobs:
         working-directory: tavla
     steps:
       - uses: actions/checkout@v5
+        with:
+          # workflow_run'da Firebase iş akışının dalının son hâli (google-services.json commit'i dahil)
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || github.ref }}
       - uses: actions/setup-node@v5
         with:
           node-version: 22

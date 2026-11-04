@@ -6,3 +6,6 @@
 #   sha ekle <parmak izi>    SHA-1 ya da SHA-256: yükleme anahtarı (tavla-android.yml çıktısı) ve Play uygulama imzası
 #   yapilandirma             google-services.json'u tavla/android/app/'e yazar; iş akışı dala commit eder
 # Hizmet hesabının tavla-online-oyundar projesinde roles/firebase.admin rolü olmalı (firebase/README.md › Kurulum).
+
+# istek 2026-11-04T14:48:32Z: yetki yoklaması (salt okuma; kullanıcı: "tamam hepsini hallet")
+durum

@@ -3,3 +3,6 @@
 #   durum     yayındaki kuralları depodaki firestore.rules ile karşılaştırır (yazmaz)
 #   yayinla   önce emülatör testleri (kurallar + uçtan uca akış); geçerse firestore.rules'u yayınlar ve geri okuyup denetler
 # Hizmet hesabının (android/play-kimlik.env) tavla-online-oyundar projesinde roles/firebaserules.admin rolü olmalı.
+
+# istek 2026-11-04T14:48:32Z: yayındaki kurallara bakış (salt okuma; kullanıcı: "tamam hepsini hallet")
+durum

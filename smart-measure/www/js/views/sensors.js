@@ -65,7 +65,8 @@ function spark() {
 
 export function render({ params, back }) {
   const SN = S.sensors;
-  let tab = params.tab === 'light' ? 'light' : params.tab === 'sound' ? 'sound' : SN.tab;
+  // iPhone'da ışık ölçer yok (ortam ışığı sensörüne açık API yok): yalnız ses ölçer, sekme çubuğu da yok
+  let tab = native.isIOS ? 'sound' : params.tab === 'light' ? 'light' : params.tab === 'sound' ? 'sound' : SN.tab;
   const calibrated = () => Number.isFinite(SN.offsetDb);
   const unit = () => (calibrated() ? t('sn_unit_db') : t('sn_unit_dbfs'));
   const lvl = (dbfs) => (calibrated() ? dbfs + SN.offsetDb : dbfs);
@@ -82,13 +83,13 @@ export function render({ params, back }) {
       tab = v; SN.tab = v; changed('sensors'); build();
     });
   const body = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '14px' } });
-  const help = iconButton('CircleHelp', t('sn_help_title'), () => sheet(t('sn_help_title'), paras('sn_help_sound', 'sn_help_light', 'sn_safe_note'), { cls: 'acc-yellow' }));
+  const help = iconButton('CircleHelp', t('sn_help_title'), () => sheet(t('sn_help_title'), native.isIOS ? paras('sn_help_sound', 'sn_safe_note') : paras('sn_help_sound', 'sn_help_light', 'sn_safe_note'), { cls: 'acc-yellow' }));
   const more = moreButton(() => [
     { label: t('sn_menu_reset_stats'), icon: 'RotateCcw', onclick: resetStats },
     { label: t('sn_calibrate'), icon: 'SlidersHorizontal', onclick: calibrationSheet, hidden: tab !== 'sound' },
   ]);
   const el = h('div', { class: 'screen tool acc-yellow' },
-    topbar({ title: t('sn_sensors_title'), sub: t('sn_sensors_subtitle'), onBack: back, actions: [help, more] }), tabs, body);
+    topbar({ title: t('sn_sensors_title'), sub: t('sn_sensors_subtitle'), onBack: back, actions: [help, more] }), native.isIOS ? null : tabs, body);
 
   function resetStats() {
     leq = SES.leqStart(); hist = []; luxStats = { sum: 0, n: 0, max: -Infinity }; luxHist = [];

@@ -1,6 +1,8 @@
 // Languages. Every language is one module, lang/<code>.js:  { name, dir, ui: {key: text}, cats, units, groups, consts }.
 // The chosen language is loaded on demand (loadLang); English is always loaded as the fallback for a missing key.
 // t('key', arg0, arg1...) replaces {0}, {1}...
+// On the iPhone a key with an ".ios" twin (p.terms.ios ...) shows the twin: the App Store texts instead of the Google Play ones.
+import { isIOS } from './native.js';
 
 // code, name in its own language, direction, and whether the decimal separator is a comma by default
 export const LANGS = [
@@ -39,8 +41,9 @@ export async function loadLang(code) {
 export const lang = () => cur;
 export const dir = () => langInfo(cur).dir;
 
+const text = key => (dict && dict.ui[key]) ?? (fallback && fallback.ui[key]);
 export function t(key, ...args) {
-  const s = (dict && dict.ui[key]) ?? (fallback && fallback.ui[key]);
+  const s = (isIOS ? text(key + '.ios') : undefined) ?? text(key);
   if (s === undefined) return key;
   return s.replace(/\{(\d+)\}/g, (_, i) => (args[+i] === undefined || args[+i] === null) ? '' : String(args[+i]));
 }

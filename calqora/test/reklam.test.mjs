@@ -20,12 +20,20 @@ const reklam = await import('../www/js/reklam.js');
 const { REKLAM_KIMLIK, TEST_KIMLIK } = await import('../www/js/reklam-kimlik.js');
 const { KURAL, gecisUygunMu, kayitTemizle } = reklam;
 
-test('reklam-kimlik.js gradle.properties ile aynı (node araclar/kimlik.mjs)', () => {
-  const props = oku('android', 'gradle.properties');
-  assert.equal(oku('www', 'js', 'reklam-kimlik.js'), kimlikAraci.uret(props), 'reklam-kimlik.js eski: node calqora/araclar/kimlik.mjs');
-  const k = kimlikAraci.kimlikler(props);
-  assert.deepEqual(REKLAM_KIMLIK, k);
-  assert.deepEqual(TEST_KIMLIK, kimlikAraci.TEST);
+test('reklam-kimlik.js gradle.properties ve ios/admob.properties ile aynı (node araclar/kimlik.mjs)', () => {
+  const props = oku('android', 'gradle.properties'), ios = oku('ios', 'admob.properties');
+  assert.equal(oku('www', 'js', 'reklam-kimlik.js'), kimlikAraci.uret(props, ios), 'reklam-kimlik.js eski: node calqora/araclar/kimlik.mjs');
+  assert.deepEqual(REKLAM_KIMLIK, { android: kimlikAraci.kimlikler(props), ios: kimlikAraci.kimlikler(ios) });
+  assert.deepEqual(TEST_KIMLIK, { android: kimlikAraci.TEST, ios: kimlikAraci.TEST_IOS });
+});
+
+test('iPhone AdMob kimlikleri: ayrı uygulama; ya Google\'ın iOS test kimlikleri ya da aynı hesabın', () => {
+  const i = kimlikAraci.kimlikler(oku('ios', 'admob.properties'));
+  const yayinci = new Set(Object.values(i).map((x) => /^ca-app-pub-(\d+)[~/]\d+$/.exec(x)[1]));
+  assert.equal(yayinci.size, 1);
+  assert.ok(['3940256099942544', '2417242373034448'].includes([...yayinci][0]));
+  assert.notEqual(i.uygulama, kimlikAraci.kimlikler(oku('android', 'gradle.properties')).uygulama, 'iPhone ve Android aynı AdMob uygulaması olamaz');
+  if ([...yayinci][0] === '3940256099942544') assert.deepEqual(i, kimlikAraci.TEST_IOS, 'test kimlikleri karışık olmamalı');
 });
 
 test('AdMob kimlikleri ya Google test kimliği ya da mahmuttari@gmail.com hesabının (pub-2417242373034448)', () => {
@@ -102,8 +110,9 @@ test('akış: mağaza → UMP → initialize (G) → banner + geçiş; doğal du
   assert.ok(sira.indexOf('requestConsentInfo') < sira.indexOf('initialize'), 'önce UMP');
   assert.equal(ortam.cagri.find((c) => c.ad === 'initialize').arg.maxAdContentRating, 'General');
   const banner = ortam.cagri.find((c) => c.ad === 'showBanner').arg;
-  assert.deepEqual([banner.adSize, banner.position, banner.adId], ['ADAPTIVE_BANNER', 'BOTTOM_CENTER', REKLAM_KIMLIK.banner]);
-  assert.equal(ortam.cagri.find((c) => c.ad === 'prepareInterstitial').arg.adId, REKLAM_KIMLIK.gecis);
+  assert.deepEqual([banner.adSize, banner.position, banner.adId], ['ADAPTIVE_BANNER', 'BOTTOM_CENTER', REKLAM_KIMLIK.android.banner]);
+  assert.equal(ortam.cagri.find((c) => c.ad === 'prepareInterstitial').arg.adId, REKLAM_KIMLIK.android.gecis);
+  assert.ok(!sira.includes('trackingAuthorizationStatus') && !sira.includes('requestTrackingAuthorization'), 'Android\'de izleme izni yok');
   assert.ok(reklam.reklamHazir());
 
   ortam.durum = { gorunur: true, yaziliyor: false, sayfaAcik: false };

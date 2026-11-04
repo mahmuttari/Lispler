@@ -57,7 +57,9 @@ export function ornekDurum(lang, theme = 'light', simdi = Date.now()) {
 
 /**
  * Sahte Capacitor (page.addInitScript ile, sayfanın kodundan önce). secenek:
- *   uye        Google Play'de etkin adfree aboneliği var mı
+ *   uye        mağazada etkin abonelik var mı (Google Play: adfree; App Store: <paket>.adfree.yearly)
+ *   platform   'android' (varsayılan) | 'ios': iPhone'da ürünler dönem başına ayrıdır, satın alımda purchaseState yoktur
+ *   att        iPhone izleme izninin durumu: 'notDetermined' (varsayılan) | 'authorized' | 'denied'
  *   onay       'tamam' (reklam istenebilir) | 'form' (AB: form gösterilir, kullanıcı reddeder → istenemez)
  *   gizlilik   UMP gizlilik seçenekleri girişi gerekli mi
  * Çağrılar window.__kayit'e sırasıyla yazılır.
@@ -89,18 +91,31 @@ export function sahteYerel(secenek = {}) {
       removeBanner: cagri('removeBanner', () => { yay('bannerAdSizeChanged', { width: 0, height: 0 }); }),
       prepareInterstitial: cagri('prepareInterstitial', (a) => ({ adUnitId: a.adId })),
       showInterstitial: cagri('showInterstitial', () => { setTimeout(() => yay('interstitialAdDismissed', {}), 30); }),
+      trackingAuthorizationStatus: cagri('trackingAuthorizationStatus', () => ({ status: att })),
+      requestTrackingAuthorization: cagri('requestTrackingAuthorization', () => { att = 'denied'; }),
       addListener: dinle('AdMob'),
     };
-    const urun = (plan, fiyat, tutar) => ({ identifier: plan, planIdentifier: 'adfree', priceString: fiyat, price: tutar, currencyCode: 'TRY', offerToken: `tok-${plan}`, offerId: null });
+    const ios = s.platform === 'ios';
+    let att = s.att || 'notDetermined';
+    const IOS = 'com.poyrazworkshop.unitica.adfree.';
+    const urun = (plan, fiyat, tutar) => (ios
+      ? { identifier: IOS + plan, priceString: fiyat, price: tutar, currencyCode: 'TRY', subscriptionGroupIdentifier: '21000000' }
+      : { identifier: plan, planIdentifier: 'adfree', priceString: fiyat, price: tutar, currencyCode: 'TRY', offerToken: `tok-${plan}`, offerId: null });
+    // StoreKit 2 işlemi (eklentinin TransactionHelpers.swift'i): isActive, expirationDate, subscriptionState; purchaseState yok
+    const islem = () => (ios
+      ? { productIdentifier: IOS + 'yearly', transactionId: '2000000123', isActive: true, expirationDate: '2027-10-31T10:00:00Z', subscriptionState: 'subscribed', willCancel: false }
+      : { productIdentifier: 'adfree', purchaseState: '1', isAcknowledged: true });
     const NativePurchases = {
       isBillingSupported: cagri('isBillingSupported', { isBillingSupported: true }),
       getProducts: cagri('getProducts', { products: [urun('monthly', '₺39,99', 39.99), urun('yearly', '₺399,99', 399.99)] }),
-      getPurchases: cagri('getPurchases', () => ({ purchases: uye ? [{ productIdentifier: 'adfree', purchaseState: '1', isAcknowledged: true }] : [] })),
-      purchaseProduct: cagri('purchaseProduct', () => { uye = true; return { productIdentifier: 'adfree', purchaseState: '1', isAcknowledged: true }; }),
+      getPurchases: cagri('getPurchases', () => ({ purchases: uye ? [islem()] : [] })),
+      purchaseProduct: cagri('purchaseProduct', () => { uye = true; return islem(); }),
       restorePurchases: cagri('restorePurchases'),
+      manageSubscriptions: cagri('manageSubscriptions'),
     };
     const App = { addListener: dinle('App'), exitApp: cagri('exitApp') };
     const SystemBars = { setStyle: async () => {} };
-    window.Capacitor = { DEBUG: false, isNativePlatform: () => true, Plugins: { AdMob, NativePurchases, App, SystemBars } };
+    window.Capacitor = { DEBUG: false, isNativePlatform: () => true, getPlatform: () => (ios ? 'ios' : 'android'),
+      Plugins: { AdMob, NativePurchases, App, SystemBars } };
   };
 }

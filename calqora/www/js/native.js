@@ -1,6 +1,9 @@
-// The only file that knows about Capacitor / Android, apart from the ads (reklam.js). In a desktop browser (araclar/tarayici-dene.mjs) every call is a harmless no-op.
+// The only file that knows about Capacitor / Android / iPhone, apart from the ads (reklam.js). In a desktop browser (araclar/tarayici-dene.mjs) every call is a harmless no-op.
 const cap = typeof window !== 'undefined' ? window.Capacitor : undefined;
 export const isNative = !!(cap && cap.isNativePlatform && cap.isNativePlatform());
+// 'android' | 'ios' | 'web' (desktop browser)
+export const platform = isNative && cap.getPlatform ? cap.getPlatform() : 'web';
+export const isIOS = platform === 'ios';
 // plugin calls return a promise, or a plain handle (addListener): either way a failure must not break the page
 const safe = f => { try { Promise.resolve(f()).catch(() => {}); } catch (e) { /* plugin missing */ } };
 const plug = name => (cap.Plugins && cap.Plugins[name]) || cap.registerPlugin(name);
@@ -17,13 +20,13 @@ export function setBars(dark) {
   safe(() => plug('SystemBars').setStyle({ style: dark ? 'DARK' : 'LIGHT' }));
 }
 
-// the app comes back to the front (for example from the Play subscription page): cb()
+// the app comes back to the front (for example from the store's subscription page): cb()
 export function onResume(cb) {
   if (!isNative) return;
   safe(() => plug('App').addListener('resume', cb));
 }
 
-// a web page in the phone's browser (a Chrome Custom Tab on Android)
+// a web page in the phone's browser (a Chrome Custom Tab on Android, Safari's in-app view on the iPhone)
 export function openUrl(url) {
   if (!/^https:\/\//.test(url)) return;
   if (isNative) safe(() => plug('Browser').open({ url }));
@@ -31,7 +34,8 @@ export function openUrl(url) {
 }
 
 // a link handed to Android itself (an ACTION_VIEW intent): Capacitor's WebView client sends every navigation away from the app's own origin to
-// Android instead of loading it (Bridge.launchIntent), so Google Play opens its own page and mailto: the mail app. -> true when it was handed over
+// Android instead of loading it (Bridge.launchIntent), so Google Play opens its own page and mailto: the mail app. On the iPhone Capacitor hands such a
+// navigation to iOS the same way (Safari, Mail). -> true when it was handed over
 export function openExternal(url) {
   if (!/^(https:\/\/|mailto:)/.test(url)) return false;
   try {
@@ -41,5 +45,5 @@ export function openExternal(url) {
   } catch (e) { return false; }
 }
 
-// a native plugin by name (NativePurchases): null outside the Android app
+// a native plugin by name (NativePurchases): null outside the Android / iPhone app
 export const plugin = name => (isNative ? plug(name) : null);

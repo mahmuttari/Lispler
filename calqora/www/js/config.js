@@ -23,3 +23,13 @@ export const SUBSCRIPTION = {
   // Google Play's page for this one subscription (cancel, change the plan, update the payment method)
   manageUrl: 'https://play.google.com/store/account/subscriptions?sku=adfree&package=com.poyrazworkshop.calqora',
 };
+
+// App Store (iPhone): Apple has no base plans, every period is its own auto-renewable subscription. Both sit in ONE subscription group
+// (App Store Connect > Subscriptions), so a user holds only one of them and switches between them there.
+export const IOS = {
+  products: { monthly: 'com.poyrazworkshop.calqora.adfree.monthly', yearly: 'com.poyrazworkshop.calqora.adfree.yearly' },
+  // the App Store's subscription list; the app opens Apple's own in-app page first (billing.js > manage)
+  manageUrl: 'https://apps.apple.com/account/subscriptions',
+  // Apple's standard licence agreement: App Review (3.1.2) wants it linked next to the subscription, with the privacy policy
+  eulaUrl: 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/',
+};

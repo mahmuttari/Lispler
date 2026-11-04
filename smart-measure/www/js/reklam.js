@@ -1,5 +1,5 @@
 /* ============================================================
-   SMART MEASURE — REKLAMLAR (Google AdMob, yalnız Android uygulaması)
+   SMART MEASURE — REKLAMLAR (Google AdMob, Android ve iPhone uygulaması)
    @capacitor-community/admob eklentisi window.Capacitor.Plugins.AdMob olarak gelir; masaüstü tarayıcıda eklenti yoktur
    ve bu dosyadaki her şey sessizce devre dışı kalır. Kurallar (uzman kararı; Poyraz Workshop'un daha önce askıya
    alınmış iki uygulaması olduğu için sınırda hiçbir davranış yok). Sınama: test/reklam.test.mjs.
@@ -15,11 +15,15 @@
      açıkken, ölçüm ya da giriş sürerken, kamera ya da mikrofon açıkken asla. Oturumun ilk 3 dakikasında yok (açılışta
      da yok), iki geçiş reklamı arası en az 4 dakika, saatte en çok 6. Sayaçlar kalıcıdır (SYS.reklam). 30 dakikadan
      uzun arka plandan dönüş yeni oturum sayılır. Açılış reklamı ve ödüllü reklam yok.
+   - iPhone: UMP'den sonra, initialize'dan önce izleme izni (ATT). AdMob'da IDFA açıklama mesajı yayındaysa UMP onu ve
+     Apple'ın iznini kendisi gösterir; değilse ve izin hiç sorulmadıysa burada sorulur. Verilmezse reklam yine gösterilir,
+     yalnız kişiselleştirilmez.
+   - Kimlikler platforma göre (reklam-kimlik.js: android / ios; AdMob'da iki platform ayrı uygulamadır).
    - Hata ayıklama derlemesi her zaman Google'ın test kimliklerini kullanır.
    ============================================================ */
 import { REKLAM_KIMLIK, TEST_KIMLIK } from './reklam-kimlik.js';
 import { SYS, saveSys } from './store.js';
-import { plugin, listen, appInfo } from './native.js';
+import { plugin, listen, appInfo, isIOS } from './native.js';
 import { isPremium, onChange as onPremiumChange } from './premium.js';
 
 export const KURAL = {
@@ -48,7 +52,7 @@ export function gecisUygunMu(d, kayit, simdi) {
 
 const durum = {
   hazir: false, yuklu: false, banner: false, bannerAcik: false, gizlilikGerekli: false,
-  oturumBasi: Date.now(), arkaPlan: null, mesgul: new Set(), gizle: new Set(), kimlik: REKLAM_KIMLIK, bannerH: 0,
+  oturumBasi: Date.now(), arkaPlan: null, mesgul: new Set(), gizle: new Set(), kimlik: REKLAM_KIMLIK[isIOS ? 'ios' : 'android'], bannerH: 0,
 };
 export const _durum = durum; // sınama için
 
@@ -59,17 +63,26 @@ function bannerPayi(px) {
   document.documentElement.style.setProperty('--banner-h', `${Math.max(0, Math.round(px))}px`);
 }
 
+/** iPhone: Apple'ın izleme izni (ATT) hiç sorulmadıysa sorar; yanıt ne olursa olsun reklam sürer */
+async function izlemeIzni(ad) {
+  try {
+    const { status } = await ad.trackingAuthorizationStatus();
+    if (status === 'notDetermined') await ad.requestTrackingAuthorization();
+  } catch (e) { /* eklenti yanıt vermedi: izin sorulmadan devam */ }
+}
+
 export async function baslat() {
   const ad = admob();
   if (!ad || durum.hazir || isPremium()) return;
   try {
     const bilgi = await appInfo();
-    if (bilgi.debug) durum.kimlik = TEST_KIMLIK;
+    if (bilgi.debug) durum.kimlik = TEST_KIMLIK[isIOS ? 'ios' : 'android'];
     let onay = await ad.requestConsentInfo();
     if (!onay.canRequestAds && onay.isConsentFormAvailable && onay.status === 'REQUIRED') onay = await ad.showConsentForm();
     durum.gizlilikGerekli = onay.privacyOptionsRequirementStatus === 'REQUIRED';
     document.dispatchEvent(new CustomEvent('reklam-gizlilik'));
     if (!onay.canRequestAds || isPremium()) return;
+    if (isIOS) await izlemeIzni(ad);
     await ad.initialize({ maxAdContentRating: 'General' });
     durum.hazir = true;
     listen(ad, 'bannerAdSizeChanged', (s) => bannerPayi(durum.bannerAcik ? (s && s.height) || 0 : 0));

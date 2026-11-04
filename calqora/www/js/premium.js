@@ -1,19 +1,34 @@
-// The ad-free membership: who has it, buying it, restoring it. The store (Google Play) is the source of truth; the last answer is kept so the app also knows
+// The ad-free membership: who has it, buying it, restoring it. The store (Google Play or the App Store) is the source of truth; the last answer is kept so the app also knows
 // offline, and only a real answer from the store can switch the membership off again.
 // The ads (reklam.js) start only after the store said "not a member" (or could not be asked and the last answer was "not a member"): a member's
 // phone never initialises the AdMob SDK.
 import { S, save } from './state.js';
-import { SUBSCRIPTION } from './config.js';
+import { SUBSCRIPTION, IOS } from './config.js';
 import * as billing from './billing.js';
 import { reklamlariBaslat, reklamlariDurdur } from './reklam.js';
 
 export const isPremium = () => !!(S.premium && S.premium.active);
 
-// do the store's purchases contain our subscription in the purchased state?
+// the plan of an App Store product id (monthly / yearly), else null. A Play purchase does not name its base plan.
+export const iosPlan = id => SUBSCRIPTION.plans.find(k => IOS.products[k] === id) || null;
+const ours = p => !!p && (p.productIdentifier === SUBSCRIPTION.productId || !!iosPlan(p.productIdentifier));
+
+// does this purchase give the membership? Android: the purchased state ("1"). iPhone: not refunded (revocationDate) and the period not over
+// (isActive), except in Apple's billing grace period, when the user keeps the membership while Apple retries the payment.
+const gives = p => ours(p)
+  && (p.purchaseState === undefined || p.purchaseState === null || String(p.purchaseState) === '1')
+  && !p.revocationDate
+  && (p.isActive !== false || p.subscriptionState === 'inGracePeriod');
+
+// do the store's purchases contain our subscription in a state that gives the membership?
 export function entitled(purchases) {
-  return (purchases || []).some(p => p.productIdentifier === SUBSCRIPTION.productId
-    && (p.purchaseState === undefined || p.purchaseState === null || String(p.purchaseState) === '1')
-    && p.isActive !== false);
+  return (purchases || []).some(gives);
+}
+
+// the plan of the purchase that gives the membership, when the store tells it (App Store only)
+export function activePlan(purchases) {
+  const p = (purchases || []).find(gives);
+  return p ? iosPlan(p.productIdentifier) : null;
 }
 
 export function unacknowledged(purchases) {
@@ -43,7 +58,7 @@ function setPremium(active, plan) {
 export async function refresh() {
   let r = await billing.ownedPurchases();
   if (r.ok && unacknowledged(r.purchases)) { await billing.restore(); r = await billing.ownedPurchases(); }
-  if (r.ok) setPremium(entitled(r.purchases), null);
+  if (r.ok) setPremium(entitled(r.purchases), activePlan(r.purchases));
   else if (!isPremium()) reklamlariBaslat();
 }
 
@@ -62,7 +77,7 @@ export async function restore() {
   const r = await billing.ownedPurchases();
   if (!r.ok) return 'failed';
   const e = entitled(r.purchases);
-  setPremium(e, null);
+  setPremium(e, activePlan(r.purchases));
   return e ? 'restored' : 'none';
 }
 

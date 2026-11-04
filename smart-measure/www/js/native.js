@@ -7,6 +7,9 @@ import { rotationFromEuler } from './olcum/ar.js';
 
 const cap = typeof window !== 'undefined' ? window.Capacitor : undefined;
 export const isNative = !!(cap && cap.isNativePlatform && cap.isNativePlatform());
+/** 'android' | 'ios' | 'web' (masaüstü tarayıcı) */
+export const platform = isNative && cap.getPlatform ? cap.getPlatform() : 'web';
+export const isIOS = platform === 'ios';
 const plug = (name) => (cap && cap.Plugins && cap.Plugins[name]) || (cap && cap.registerPlugin ? cap.registerPlugin(name) : null);
 export const plugin = (name) => (isNative ? plug(name) : null);
 const O = () => plugin('Olcer');

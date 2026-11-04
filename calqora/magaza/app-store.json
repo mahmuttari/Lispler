@@ -1,0 +1,135 @@
+{
+  "_": "App Store metinleri (ios-ortak/app-store.mjs). iPhone sürümü yalnız dikey: Play açıklamasındaki 'yatay ekranda geniş tuş takımı' çıkarılır.",
+  "destek": "https://mahmuttari.github.io/Lispler/calqora/",
+  "gizlilik": "https://mahmuttari.github.io/Lispler/calqora/gizlilik.html",
+  "kategori": [
+    "UTILITIES",
+    "EDUCATION"
+  ],
+  "incelemeNotu": "Optional ad-free subscription (monthly or yearly, auto-renewable): tap the \"Remove ads\" icon in the top bar of the calculator, or Settings (gear) > Ad-free membership. The same sheet has \"Restore purchases\", the renewal terms and links to the privacy policy and the Terms of Use (EULA). The app works fully without a subscription; the subscription only removes the ads.",
+  "degistir": {
+    "tr": [
+      [
+        "; yatay ekranda geniş tuş takımı.",
+        "."
+      ]
+    ],
+    "en-US": [
+      [
+        "; a wide keypad in landscape.",
+        "."
+      ]
+    ],
+    "de-DE": [
+      [
+        "; breites Tastenfeld im Querformat.",
+        "."
+      ]
+    ],
+    "fr-FR": [
+      [
+        " ; grand clavier en mode paysage.",
+        "."
+      ]
+    ],
+    "es-ES": [
+      [
+        "; teclado amplio en horizontal.",
+        "."
+      ]
+    ],
+    "it": [
+      [
+        "; tastiera ampia in orizzontale.",
+        "."
+      ]
+    ],
+    "pt-BR": [
+      [
+        "; teclado amplo na horizontal.",
+        "."
+      ]
+    ],
+    "ru": [
+      [
+        "; широкая клавиатура в горизонтальном положении.",
+        "."
+      ]
+    ],
+    "ar-SA": [
+      [
+        "؛ ولوحة مفاتيح عريضة في الوضع الأفقي.",
+        "."
+      ]
+    ],
+    "ja": [
+      [
+        "、横画面ではワイドなキー配列。",
+        "。"
+      ]
+    ],
+    "ko": [
+      [
+        ", 가로 화면에서는 넓은 키패드.",
+        "."
+      ]
+    ]
+  },
+  "yerel": {
+    "tr": {
+      "altBaslik": "Grafik, matris, karmaşık sayı",
+      "anahtar": "hesap makinesi,kök,grafik,matris,karmaşık,türev,integral,denklem,trigonometri,logaritma,kesir",
+      "tanitim": "Kâğıda yazar gibi yaz, sonucu yazarken gör. Grafik, karmaşık sayılar, matrisler, 140 birim ve 46 sabit tek hesap makinesinde."
+    },
+    "en-US": {
+      "altBaslik": "Graphs, matrices, complex math",
+      "anahtar": "math,graphing,matrix,complex,derivative,integral,equation,trigonometry,logarithm,fraction",
+      "tanitim": "Type it the way you write it on paper and see the result as you type. Graphs, complex numbers, matrices, 140 units and 46 constants in one calculator."
+    },
+    "de-DE": {
+      "altBaslik": "Graphen, Matrizen, komplex",
+      "anahtar": "Taschenrechner,Rechner,Graph,Matrix,komplex,Ableitung,Integral,Gleichung,Trigonometrie,Bruch",
+      "tanitim": "Eingeben wie auf Papier, das Ergebnis erscheint schon beim Tippen. Graphen, komplexe Zahlen, Matrizen, 140 Einheiten und 46 Konstanten in einem Rechner."
+    },
+    "fr-FR": {
+      "altBaslik": "Graphes, matrices, complexes",
+      "anahtar": "calculatrice,graphique,matrice,complexe,dérivée,intégrale,équation,trigonométrie,fraction",
+      "tanitim": "Saisissez comme sur papier, le résultat s’affiche pendant la saisie. Graphes, nombres complexes, matrices, 140 unités et 46 constantes en une calculatrice."
+    },
+    "es-ES": {
+      "altBaslik": "Gráficas, matrices, complejos",
+      "anahtar": "matemáticas,logaritmo,gráfica,matriz,complejo,derivada,integral,ecuación,trigonometría,fracción",
+      "tanitim": "Escribe como en papel y ve el resultado mientras escribes. Gráficas, números complejos, matrices, 140 unidades y 46 constantes en una calculadora."
+    },
+    "it": {
+      "altBaslik": "Grafici, matrici, complessi",
+      "anahtar": "calcolatrice,scientifica,grafico,matrice,complessi,derivata,integrale,equazione,frazione",
+      "tanitim": "Scrivi come su carta e vedi il risultato mentre digiti. Grafici, numeri complessi, matrici, 140 unità e 46 costanti in una sola calcolatrice."
+    },
+    "pt-BR": {
+      "altBaslik": "Gráficos, matrizes, complexos",
+      "anahtar": "matemática,logaritmo,gráfico,matriz,complexo,derivada,integral,equação,trigonometria,fração",
+      "tanitim": "Digite como no papel e veja o resultado enquanto digita. Gráficos, números complexos, matrizes, 140 unidades e 46 constantes em uma calculadora."
+    },
+    "ru": {
+      "altBaslik": "Графики, матрицы, комплексные",
+      "anahtar": "математика,логарифм,графики,матрица,комплексные,производная,интеграл,уравнение,дроби",
+      "tanitim": "Вводите выражение как на бумаге: результат появляется сразу. Графики, комплексные числа, матрицы, 140 единиц и 46 констант в одном калькуляторе."
+    },
+    "ar-SA": {
+      "altBaslik": "رسوم ومصفوفات وأعداد مركبة",
+      "anahtar": "آلة حاسبة,رياضيات,رسم بياني,مصفوفة,أعداد مركبة,مشتقة,تكامل,معادلة,مثلثات,لوغاريتم",
+      "tanitim": "اكتب كما تكتب على الورق وشاهد النتيجة أثناء الكتابة. رسوم بيانية وأعداد مركبة ومصفوفات و140 وحدة و46 ثابتًا في آلة حاسبة واحدة."
+    },
+    "ja": {
+      "altBaslik": "グラフ・行列・複素数に対応",
+      "anahtar": "電卓,関数電卓,計算機,グラフ,行列,複素数,微分,積分,方程式,三角関数,対数,分数,単位換算",
+      "tanitim": "紙に書くように入力し、入力中に結果を表示。グラフ、複素数、行列、140の単位と46の定数をひとつの電卓に。"
+    },
+    "ko": {
+      "altBaslik": "그래프·행렬·복소수 지원",
+      "anahtar": "수학,공학용계산기,그래프,행렬,복소수,미분,적분,방정식,삼각함수,로그,분수,단위변환",
+      "tanitim": "종이에 쓰듯 입력하고 입력하는 동안 결과를 확인하세요. 그래프, 복소수, 행렬, 140개 단위와 46개 상수를 하나의 계산기에."
+    }
+  }
+}

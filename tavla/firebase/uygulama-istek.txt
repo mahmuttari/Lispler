@@ -8,4 +8,4 @@
 # Hizmet hesabının tavla-online-oyundar projesinde roles/firebase.admin rolü olmalı (firebase/README.md › Kurulum).
 
 # istek 2026-11-04T14:48:32Z: yetki yoklaması (salt okuma; kullanıcı: "tamam hepsini hallet")
-durum
+# (yapıldı 2026-11-04, koşu 41851273025: YETKİ YOK — 403, roller henüz verilmedi) durum

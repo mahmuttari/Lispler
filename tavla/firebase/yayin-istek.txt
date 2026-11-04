@@ -5,4 +5,4 @@
 # Hizmet hesabının (android/play-kimlik.env) tavla-online-oyundar projesinde roles/firebaserules.admin rolü olmalı.
 
 # istek 2026-11-04T14:48:32Z: yayındaki kurallara bakış (salt okuma; kullanıcı: "tamam hepsini hallet")
-durum
+# (yapıldı 2026-11-04, koşu 41851273035: YETKİ YOK — 403, roller henüz verilmedi) durum

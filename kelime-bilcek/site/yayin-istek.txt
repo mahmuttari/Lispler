@@ -7,3 +7,7 @@
 
 # istek 2026-11-04: yetki denemesi (salt okuma)
 # (yapıldı 2026-11-04, koşu 41827897553: yeşil; rol henüz verilmediği için YETKİ YOK beklenir) durum
+
+# istek 2026-11-04T12:45:21Z: roller verildi; Hosting sitesini kur ve yayınla (kullanıcının önceden onayı: "Hosting sitesini kur")
+kur
+yayinla

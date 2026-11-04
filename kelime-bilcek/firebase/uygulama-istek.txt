@@ -10,4 +10,10 @@
 # (yapıldı 2026-11-04, koşu 41827897612: yetkisiz — rol henüz verilmedi) durum
 
 # istek 2026-11-04T12:31:18Z: yetki yoklaması, hata iletisi not olarak (salt okuma; kullanıcı: "sen yap herşeyi")
+# (yapıldı 2026-11-04, koşu 41829994331: YETKİ YOK — roles/firebase.admin yok) durum
+
+# istek 2026-11-04T12:45:21Z: roller verildi (kullanıcı: "verildi"); Android uygulamasını ve yükleme anahtarının SHA-1'ini ekle (kullanıcının önceden onayı: "yeni Android uygulamasını ve SHA-1'leri ekle")
+durum
+android ekle
+sha ekle d088a07577d189b015d4a588749a1a8cc2ee5699
 durum

@@ -83,23 +83,23 @@ try {
     assert.equal(kayit.find((c) => c.ad === 'prepareRewardVideoAd').arg.adId, kimlik.odullu);
   });
 
-  // 3.14.0 — hiç sıkmayan sıklık. gecisUygunMu saf işlevdir; kayıt bu oyunun sayaçları eklenmiş hâlidir.
+  // 3.14.0 — hiç sıkmayan sıklık; 3.16.2'de ilk 3 oyun ve 4 dk ara. gecisUygunMu saf işlevdir; kayıt bu oyunun sayaçları eklenmiş hâlidir.
   // Zaman damgaları ms; "son bir saat" 3600 sn.
   const birim = await p.evaluate(() => {
     const T = 1e12;
     const iyi = { cevrimici: false, sureSn: 45, kutlama: false };
-    const k = (o) => Object.assign({ oyun: 6, toplam: 600, sure: 360, son: [] }, o);
+    const k = (o) => Object.assign({ oyun: 4, toplam: 600, sure: 240, son: [] }, o);
     return {
       cevrimici: gecisUygunMu({ cevrimici: true, sureSn: 300, kutlama: false }, { oyun: 20, toplam: 9999, sure: 9999, son: [] }, T),
       kutlama: gecisUygunMu({ ...iyi, kutlama: true }, k({}), T),
       kisa44: gecisUygunMu({ ...iyi, sureSn: 44 }, k({}), T),
       uygun: gecisUygunMu(iyi, k({}), T),
-      oyun5: gecisUygunMu(iyi, k({ oyun: 5 }), T),
-      oyun6: gecisUygunMu(iyi, k({ oyun: 6 }), T),
+      oyun3: gecisUygunMu(iyi, k({ oyun: 3 }), T),
+      oyun4: gecisUygunMu(iyi, k({ oyun: 4 }), T),
       toplam599: gecisUygunMu(iyi, k({ toplam: 599 }), T),
       toplam600: gecisUygunMu(iyi, k({ toplam: 600 }), T),
-      ara359: gecisUygunMu(iyi, k({ sure: 359 }), T),
-      ara360: gecisUygunMu(iyi, k({ sure: 360 }), T),
+      ara239: gecisUygunMu(iyi, k({ sure: 239 }), T),
+      ara240: gecisUygunMu(iyi, k({ sure: 240 }), T),
       saatte4: gecisUygunMu(iyi, k({ son: [T - 10e3, T - 20e3, T - 30e3, T - 40e3] }), T),
       biriEski: gecisUygunMu(iyi, k({ son: [T - 10e3, T - 20e3, T - 30e3, T - 3601e3] }), T),
     };
@@ -107,9 +107,9 @@ try {
   sina('çevrimiçi turdan sonra geçiş reklamı yok', () => { assert.equal(birim.cevrimici, false); });
   sina('sevinç anında (rekor, dünya turu bitti) yok', () => { assert.equal(birim.kutlama, false); });
   sina('45 sn\'den kısa oyundan sonra yok, 45 sn\'de var', () => { assert.equal(birim.kisa44, false); assert.equal(birim.uygun, true); });
-  sina('ilk 5 oyun hoş geldin süresi', () => { assert.equal(birim.oyun5, false); assert.equal(birim.oyun6, true); });
+  sina('ilk 3 oyun hoş geldin süresi', () => { assert.equal(birim.oyun3, false); assert.equal(birim.oyun4, true); });
   sina('ilk 10 dk oyun süresi boyunca yok', () => { assert.equal(birim.toplam599, false); assert.equal(birim.toplam600, true); });
-  sina('iki reklam arası en az 6 dk oyun süresi', () => { assert.equal(birim.ara359, false); assert.equal(birim.ara360, true); });
+  sina('iki reklam arası en az 4 dk oyun süresi', () => { assert.equal(birim.ara239, false); assert.equal(birim.ara240, true); });
   sina('saatte en çok 4', () => { assert.equal(birim.saatte4, false); assert.equal(birim.biriEski, true); });
 
   // Bütünleşik: oyunSonu sayaçları günceller, uygunsa 800 ms sonra bir geçiş reklamı gösterir
@@ -164,6 +164,44 @@ try {
     return save.reklam.sure;
   });
   sina('ödüllü reklamı izleyenin sayacı sıfırlanır', () => { assert.equal(odul, 0); });
+
+  // 3.16.2 — "Reklam izle: 2× 💰": sonuna kadar izleyene o oyunun parası bir kez daha; oyun başına bir kez
+  const ikiKat = await p.evaluate(async () => {
+    const bekle = (ms) => new Promise((r) => setTimeout(r, ms));
+    const gorunur = (id) => document.getElementById(id).style.display !== 'none';
+    const r = {};
+    save.reklam = { oyun: 1, toplam: 0, sure: 0, son: [] }; // geçiş reklamı araya girmesin
+    startGame(); game.player.invuln = 1e9;
+    game.level = 3; save.highestLevel = 99; game.runPara = 40; game.oynananSure = 50;
+    endGame(false); await bekle(50);
+    const kazanc = Number(document.getElementById('final-para').textContent);
+    r.ilk = { dugme: gorunur('btn-reklam-ikikat'), zumrut: gorunur('btn-reklam-odul'), kazanc, oyunPara: reklam.oyunPara };
+    const once = save.para;
+    // Yarıda kapatılan reklam ödül vermez, düğme reklam yeniden yüklenince yine çıkar
+    odulluIzle('para'); await bekle(20); window.__olay('onRewardedVideoAdDismissed'); await bekle(50);
+    r.yarida = { para: save.para - once, dugme: gorunur('btn-reklam-ikikat') };
+    odulluIzle('para'); await bekle(20); window.__olay('onRewardedVideoAdReward'); window.__olay('onRewardedVideoAdDismissed'); await bekle(50);
+    r.tam = { para: save.para - once, ekran: Number(document.getElementById('final-para').textContent), dugme: gorunur('btn-reklam-ikikat'),
+      zumrutDugme: gorunur('btn-reklam-odul'), kalici: JSON.parse(localStorage.getItem(SAVE_KEY)).para === save.para };
+    // Para kazanılmayan oyunda düğme yok
+    startGame(); game.player.invuln = 1e9; game.level = 1; game.runPara = 0; game.oynananSure = 50;
+    endGame(false); await bekle(50);
+    r.sifir = gorunur('btn-reklam-ikikat');
+    return r;
+  });
+  sina('oyun bitti ekranında 2× para düğmesi; zümrüt düğmesi de duruyor', () => {
+    assert.equal(ikiKat.ilk.dugme, true); assert.equal(ikiKat.ilk.zumrut, true);
+    assert.ok(ikiKat.ilk.kazanc > 0); assert.equal(ikiKat.ilk.oyunPara, ikiKat.ilk.kazanc);
+  });
+  sina('yarıda kapatılan reklam para vermez', () => { assert.equal(ikiKat.yarida.para, 0); assert.equal(ikiKat.yarida.dugme, true); });
+  sina('sonuna kadar izleyene oyunun parası bir kez daha; ekranda iki katı; kalıcı', () => {
+    assert.equal(ikiKat.tam.para, ikiKat.ilk.kazanc); assert.equal(ikiKat.tam.ekran, 2 * ikiKat.ilk.kazanc);
+    assert.equal(ikiKat.tam.kalici, true);
+  });
+  sina('2× para oyun başına bir kez; sonra yalnız zümrüt düğmesi kalır', () => {
+    assert.equal(ikiKat.tam.dugme, false); assert.equal(ikiKat.tam.zumrutDugme, true);
+  });
+  sina('para kazanılmayan oyunda 2× düğmesi yok', () => { assert.equal(ikiKat.sifir, false); });
 
   // 3.15.0 — Dünya Turu'nda reklamla devam: canlar bitince pencere; sonuna kadar izleyenin canları dolar, oyun başına 3 kez
   const devam = await p.evaluate(async () => {

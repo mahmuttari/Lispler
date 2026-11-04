@@ -6,11 +6,14 @@
    - Reklam içerik derecesi en çok G (genel izleyici, 3.13.1): PG, T ve MA dereceli reklamlar (müstehcen, kumar, alkol…)
      istenmez. Sınama: test/reklam.test.mjs.
    - Geçiş reklamı (3.14.0, "hiç sıkmayacak şekilde"): yalnız tek kişilik oyunun sonunda; oyun sırasında, çevrimiçi
-     turdan sonra ve sevinç anında (yeni en yüksek bölüm, dünya turu bitişi) yok. Yeni oyuncuya ilk 5 oyun ve ilk
-     10 dk oyun süresi boyunca yok; 45 sn'den kısa oyundan sonra yok; iki reklam arası en az 6 dk oyun süresi
+     turdan sonra ve sevinç anında (yeni en yüksek bölüm, dünya turu bitişi) yok. Yeni oyuncuya ilk 3 oyun ve ilk
+     10 dk oyun süresi boyunca yok; 45 sn'den kısa oyundan sonra yok; iki reklam arası en az 4 dk oyun süresi
      (menüde beklemek sayılmaz); saatte en çok 4. Sayaçlar save.reklam'da kalıcıdır. Dayanak: AdMob, geçiş
      reklamını doğal duraklarda ve aşırı sıklık olmadan önerir (sayı vermez). Sınama: test/reklam.test.mjs.
+     3.16.2, kullanıcının seçimi ("2 ve 3"): ilk 5 oyun → 3, iki reklam arası 6 dk → 4 dk (gelir az olduğu için).
    - Ödüllü reklam: oyun bitti ekranındaki "Reklam izle" düğmesi, izleyene 10 💚 zümrüt (oyun başına bir kez).
+   - Ödüllü reklamla 2× para (3.16.2): oyun bitti ekranında "Reklam izle: 2× 💰"; sonuna kadar izleyene o oyunda kazanılan
+     para (bölüm bonusu dahil) bir kez daha verilir; oyun başına bir kez, para kazanılmadıysa düğme yok.
    - Ödüllü reklamla devam (3.15.0): tek kişilik Dünya Turu'nda canlar bitince "Reklam izle, devam et"; sonuna kadar
      izleyenin canları dolar. Oyun başına en çok 3 kez (dunya-turu.js, TUR_DEVAM_HAKKI). Çevrimiçi turda hayalet olan
      oyuncu "Reklam izle, diril" ile aynı haklardan dirilir.
@@ -19,9 +22,9 @@
 const REKLAM = {
   gecisId: "ca-app-pub-2417242373034448/5331066264",
   odulluId: "ca-app-pub-2417242373034448/6612358344",
-  ilkOyunlar: 5,       // hoş geldin: ilk N oyunda geçiş reklamı yok
+  ilkOyunlar: 3,       // hoş geldin: ilk N oyunda geçiş reklamı yok (3.16.2'ye kadar 5)
   ilkSureSn: 600,      // hoş geldin: toplam oyun süresi bu kadar olmadan yok
-  araSureSn: 360,      // iki geçiş reklamı arasında en az bu kadar oyun süresi
+  araSureSn: 240,      // iki geçiş reklamı arasında en az bu kadar oyun süresi (3.16.2'ye kadar 360)
   enKisaOyunSn: 45,    // bundan kısa oyundan sonra yok (çabuk yenilen hemen yeniden oynamak ister)
   saatlikEnCok: 4,
   odulZumrut: 10,
@@ -32,7 +35,10 @@ const reklam = {
   gecisYuklu: false,
   odulluYuklu: false,
   odulKazanildi: false,
-  odulKullanildi: false, // bu oyun bitti ekranında ödül alındı mı
+  odulKullanildi: false, // bu oyun bitti ekranında zümrüt ödülü alındı mı
+  paraKullanildi: false, // bu oyun bitti ekranında 2× para alındı mı
+  oyunPara: 0,           // son oyunda kazanılan para (2× ödülün miktarı)
+  odulTuru: "zumrut",    // izlenen ödüllü reklamın ödülü: "zumrut" | "para"
   devamSonucu: null,     // reklamla devam bekleniyor: sonuç bu işleve gider (zümrüt ödülü verilmez)
   gizlilikGerekli: false,
 };
@@ -107,6 +113,8 @@ function gecisUygunMu(bilgi, kayit, simdi) {
 // oyunSonu() çağırır: ödül düğmesini sıfırlar, sayaçları günceller, uygunsa geçiş reklamını gösterir
 function reklamOyunBitti(bilgi = {}) {
   reklam.odulKullanildi = false;
+  reklam.paraKullanildi = false;
+  reklam.oyunPara = Math.max(0, Math.floor(Number(bilgi.para) || 0));
   odulDugmesiniGuncelle();
   const k = save.reklam = reklamKaydiniTemizle(save.reklam);
   const simdi = Date.now(), sn = Math.max(0, Number(bilgi.sureSn) || 0);
@@ -127,9 +135,12 @@ function reklamOyunBitti(bilgi = {}) {
   persistSave();
 }
 
-async function odulluIzle() {
+// tur: "zumrut" (+10 💚) ya da "para" (bu oyunun parası bir kez daha)
+async function odulluIzle(tur = "zumrut") {
   const ad = admobPlugin();
-  if (!ad || !reklam.odulluYuklu || reklam.odulKullanildi) return;
+  const kullanildi = tur === "para" ? reklam.paraKullanildi || !reklam.oyunPara : reklam.odulKullanildi;
+  if (!ad || !reklam.odulluYuklu || kullanildi || reklam.devamSonucu) return;
+  reklam.odulTuru = tur;
   reklam.odulKazanildi = false;
   reklam.odulluYuklu = false;
   odulDugmesiniGuncelle();
@@ -166,7 +177,7 @@ function odulluKapandi() {
     reklam.odulKazanildi = false;
     if (kazandi) {
       save.reklam = reklamKaydiniTemizle(save.reklam);
-      save.reklam.sure = 0; // kendi isteğiyle reklam izleyene bir sonraki geçiş reklamı için yeniden 6 dk
+      save.reklam.sure = 0; // kendi isteğiyle reklam izleyene bir sonraki geçiş reklamı için süre yeniden başlar
       persistSave();
     }
     sonuc(kazandi);
@@ -174,17 +185,30 @@ function odulluKapandi() {
     odulluYukle();
     return;
   }
-  if (reklam.odulKazanildi && !reklam.odulKullanildi) {
+  const paraOdulu = reklam.odulTuru === "para";
+  reklam.odulTuru = "zumrut";
+  if (reklam.odulKazanildi && paraOdulu && !reklam.paraKullanildi && reklam.oyunPara > 0) {
+    reklam.odulKazanildi = false;
+    reklam.paraKullanildi = true;
+    save.para = (save.para || 0) + reklam.oyunPara;
+    save.reklam = reklamKaydiniTemizle(save.reklam);
+    save.reklam.sure = 0; // kendi isteğiyle reklam izleyene bir sonraki geçiş reklamı için süre yeniden başlar
+    persistSave();
+    const el = document.getElementById("final-para");
+    if (el) el.textContent = String(Number(el.textContent || 0) + reklam.oyunPara);
+    showToast(t("💰 +{n} para kazandın!", { n: reklam.oyunPara }));
+  } else if (reklam.odulKazanildi && !paraOdulu && !reklam.odulKullanildi) {
     reklam.odulKazanildi = false;
     reklam.odulKullanildi = true;
     save.zumrut = (save.zumrut || 0) + REKLAM.odulZumrut;
     save.reklam = reklamKaydiniTemizle(save.reklam);
-    save.reklam.sure = 0; // kendi isteğiyle reklam izleyene bir sonraki geçiş reklamı için yeniden 6 dk
+    save.reklam.sure = 0; // kendi isteğiyle reklam izleyene bir sonraki geçiş reklamı için süre yeniden başlar
     persistSave();
     const el = document.getElementById("final-zumrut");
     if (el) el.textContent = String(Number(el.textContent || 0) + REKLAM.odulZumrut);
     showToast(t("💚 +{n} zümrüt kazandın!", { n: REKLAM.odulZumrut }));
   }
+  reklam.odulKazanildi = false;
   odulDugmesiniGuncelle();
   odulluYukle();
 }
@@ -193,6 +217,8 @@ function odulDugmesiniGuncelle() {
   const btn = document.getElementById("btn-reklam-odul");
   if (!btn) return;
   btn.style.display = reklam.hazir && reklam.odulluYuklu && !reklam.odulKullanildi ? "" : "none";
+  const ikiKat = document.getElementById("btn-reklam-ikikat");
+  if (ikiKat) ikiKat.style.display = reklam.hazir && reklam.odulluYuklu && !reklam.paraKullanildi && reklam.oyunPara > 0 ? "" : "none";
   const devam = document.getElementById("btn-tur-devam");
   if (devam) devam.disabled = !(reklam.hazir && reklam.odulluYuklu) || !!reklam.devamSonucu; // yüklenene kadar bekler
   if (typeof turDirilTeklifi === "function" && typeof game !== "undefined" && game.player) turDirilTeklifi(); // çevrimiçi tur

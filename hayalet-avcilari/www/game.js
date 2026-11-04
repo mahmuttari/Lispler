@@ -322,10 +322,20 @@ const LEADERBOARD_MAX = 500; // 3.16.1, kullanıcı: "Şampiyon listesi ilk 500 
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.16.1";
+const APP_VERSION = "3.16.2";
 const UPDATE_NOTES = {
   // Mağaza notu aynı satırlar; her dilde 500 karakterin altında kalsın diye Dünya Turu'nun satırları (3.14.0) yok
   // 3.15.0 incelemedeyken 3.15.1 gelebilir: 3.15.0'ın satırları ve düzeltme (mağaza notu aynı satırlar, ≤ 500)
+  // 3.16.2 (kullanıcının seçimi "2 ve 3"): ödüllü 2× para ve biraz daha sık geçiş reklamı; 🎬 satırı reklamla devamı ve
+  // 2× parayı birlikte söyler (500 karakter sınırı)
+  "3.16.2": [
+    t("🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi."),
+    t("🎬 Reklam izle: Dünya Turu'nda kaldığın yerden devam et (3 kez) ya da oyun sonunda paranı 2 katına çıkar."),
+    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
+    t("🌉 Göllerde sallanan ip köprüler: hızlı geç, ortada oyalanırsan suya düşersin!"),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var."),
+    t("🌿 Çalıya saklan, hayaletler seni göremez; hayaletler artık dibinde doğmaz."),
+  ],
   // 3.16.1 (kullanıcı: "Şampiyon listesi ilk 500 göstersin"): 3.16.0 incelemedeyken yerini alabilir; 🎨 satırı ikisini birlikte
   // söyler (500 karakter sınırı)
   "3.16.1": [
@@ -6806,7 +6816,8 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   document.getElementById("btn-lobiye-don").style.display = cevrimici ? "" : "none";
   document.getElementById("screen-gameover").classList.add("active");
   if (won) audio.win(); else audio.lose();
-  if (!reklamsiz) reklamOyunBitti({ cevrimici, sureSn: game.oynananSure || 0, kutlama: !cevrimici && (yeniRekor || turBitti) });
+  if (!reklamsiz) reklamOyunBitti({ cevrimici, sureSn: game.oynananSure || 0, kutlama: !cevrimici && (yeniRekor || turBitti), para: finalPara });
+  else { reklam.oyunPara = 0; odulDugmesiniGuncelle(); } // önceki oyunun 2× parası bu ekranda sunulmasın
 }
 
 // ====== BAŞLAT ======

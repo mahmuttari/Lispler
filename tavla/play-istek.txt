@@ -13,3 +13,9 @@
 
 # istek 2026-11-04T15:17:07Z: Play'de uygulama var mı (salt okuma; kullanıcı: "hepsini sen yap")
 # (yapıldı 2026-11-04, koşu 41856130864: 404 — uygulama Play Console'da henüz yok) durum
+
+# istek 2026-11-04: mağaza metni, görseller, Veri güvenliği, imza (kullanıcı: "ONAY: Mağaza yükle"; uygulama Play'de oluşturuldu, 1.0.0 (1) taslak, hizmet hesabı 8 izinle eklendi)
+magaza uygula
+gorsel uygula
+veriguvenligi uygula
+imza

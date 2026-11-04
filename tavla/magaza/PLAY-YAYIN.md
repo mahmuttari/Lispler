@@ -3,8 +3,9 @@
 Kaynak: kullanıcının `app-debug.apk`'sı (`com.korfe.tavla` 1.0 (1), Capacitor + React, Firebase `tavla-online-oyundar`;
 eski adres `D:\mahmuttari\OYUNDAR\app-debug.apk`). Kaynak kodu bulunmadığı için web paketi APK'dan çıkarıldı, okunur
 biçime getirildi ve üzerinde düzeltildi ([`../DENETIM.md`](../DENETIM.md)). Yeni paket `com.poyrazworkshop.tavla`.
-**Reklam yok** (1.0.0: kullanıcı reklam sorusunu yanıtlamadı; reklamsız başlamak AdMob kurulumunu ve "Reklam içerir"
-beyanını gerektirmez, sonraki sürümde eklenebilir).
+**Reklamlı** (kullanıcı, 4 Kasım 2026: "tavla da da reklam olacak"): Google AdMob, Kelime Bilcek'in kuralları
+([`../www/reklam.js`](../www/reklam.js)): oyun sırasında hiç reklam yok; banner yalnız ana menünün altında; geçiş reklamı
+yalnız maç bitince, ilk 3 maçta yok, en az 5 dk ara, saatte en çok 4; AB onayı (UMP).
 
 | Alan | Değer |
 |---|---|
@@ -17,7 +18,7 @@ beyanını gerektirmez, sonraki sürümde eklenebilir).
 | Hesap silme | https://mahmuttari.github.io/Lispler/tavla/hesap-silme.html |
 | Metinler · görseller | [`aciklamalar.md`](aciklamalar.md) · [`play/`](play/) (simge 512, tanıtım 1024×500, 6 yatay telefon karesi 1920×1080; üretici `../araclar/magaza-gorsel.mjs`) |
 | Veri güvenliği | [`veri-guvenligi.csv`](veri-guvenligi.csv) (`../araclar/veri-guvenligi.mjs`; API ile `play-istek.txt` › `veriguvenligi uygula`) |
-| İlk paket | `1.0.0 (1)`: `tavla-android.yml`'in google-services.json ile derlediği imzalı AAB (artifact `Tavla-aab`, `surum.txt` › `firebase=var`) |
+| İlk paket | `1.0.0 (1)`: `tavla-android.yml`'in google-services.json ve gerçek AdMob kimlikleriyle derlediği imzalı AAB (artifact `Tavla-aab`, `surum.txt` › `firebase=var`, `admob=gercek`) |
 | Yükleme anahtarı | Poyraz Workshop (secret `HAYALET_KEYSTORE_*`), SHA-1 `D0:88:A0:75:77:D1:89:B0:15:D4:A5:88:74:9A:1A:8C:C2:EE:56:99` |
 
 > Site sayfaları (`app/tavla/`) GitHub Pages'e yalnız **main** dalından çıkar (`pages.yml`): Play'e gizlilik adresi
@@ -47,6 +48,15 @@ Kurallar: şifre, kart, kimlik bilgisi girilmez; "Uygulama oluştur", izinler, P
 gönderme ve silme gibi geri dönüşü zor adımlardan önce kullanıcının açık onayı alınır; beklenmedik bir engelde durulur
 ve sorulur. Her adımdan sonra neyin kaydedildiği kısaca Türkçe özetlenir.
 
+### 0. AdMob (`pub-2417242373034448`, Poyraz Workshop)
+1. https://admob.google.com → **Uygulamalar → Uygulama ekle** → Android → "Desteklenen bir mağazada listeleniyor mu?"
+   **Hayır** → ad `Tavla` → uygulama kimliği `ca-app-pub-2417242373034448~…`.
+2. **Reklam birimleri**: **Geçiş** `Tavla geçiş` ve **Banner** `Tavla banner` (ayarlar varsayılan; sıklığı uygulama sınırlar).
+3. **Gizlilik ve mesajlaşma → Avrupa tüzükleri**: mevcut mesaja Tavla'yı ekle ya da yeni mesaj (Türkçe + İngilizce,
+   gizlilik politikası tablodaki adres) → kullanıcının onayıyla **Yayınla**.
+4. Üç kimliği bulut oturumuna ver: uygulama kimliği `android/app/src/main/AndroidManifest.xml`'e, birim kimlikleri
+   `www/reklam.js` (`gecisId`, `bannerId`) dosyasına yazılır; CI `admob=gercek` ile imzalı AAB üretir. İlk paket bu AAB olmalı.
+
 ### 1. Uygulamayı oluştur
 https://play.google.com/console → **Poyraz Workshop** → "Uygulama oluştur": ad `Tavla – Sesli Kahvehane`, Türkçe – tr-TR,
 **Oyun**, **Ücretsiz**. Beyan kutularını **kullanıcı** işaretler; onayından sonra "Uygulama oluştur".
@@ -71,7 +81,7 @@ Kategori **Masa oyunu**, etiketler (bulunanlar: Tavla, Masa oyunu, Zar), e-posta
 
 ### 5. Uygulama içeriği
 [`aciklamalar.md`](aciklamalar.md) › "Uygulama içeriği" tablosu. Özellikle:
-- **Reklamlar: Hayır.** **Reklam kimliği: Hayır** (manifestte AD_ID izni kaldırıldı).
+- **Reklamlar: Evet.** **Reklam kimliği: Evet** → Reklam veya pazarlama (+ Analiz, Dolandırıcılığı önleme).
 - **Uygulama erişimi:** tüm işlevler özel erişim olmadan (misafir girişi). İnceleme notu: "Giriş gerekmez. Çevrimiçi
   oyun için iki cihazda Çevrimiçi › Oda Kur (kod ile) / Kodla Katıl; sohbet penceresinde ⚠️ Şikâyet ve 🚫 Engelle,
   ana menüde yeşil bulut düğmesi › Gizlilik ve hesap › 🗑️ Hesabı sil."
@@ -90,6 +100,11 @@ Gerekmez: `com.korfe.tavla` hiçbir Play hesabında yayında ya da taslak değil
 Play, sohbetli uygulamada şikâyet ve engellemenin yanında şikâyetlerin **incelenmesini** ister. Şikâyetler Firestore
 `reports` koleksiyonuna düşer (istemci okuyamaz); inceleme ve yaptırım [`../firebase/README.md`](../firebase/README.md) ›
 Moderasyon. En az haftada bir, tercihen her gün bakılmalı.
+
+## Yayından sonra
+- AdMob → Uygulamalar → Tavla → **Mağaza ekle** (Play girişi). `app-ads.txt` isteğe bağlıdır: AdMob onu geliştirici sitesinin
+  kök alanında arar (`https://mahmuttari.github.io/app-ads.txt`), bu depo oraya yayın yapamaz (İz Haritası'ndaki not). Eksikliği
+  reklamı durdurmaz; AdMob panelde uyarı gösterir.
 
 ## Sonraki sürümler
 `android/app/build.gradle`'da `versionCode` +1 ve `versionName`; `www/…` içindeki `TV_SURUM`; `package.json` `version`

@@ -32,7 +32,7 @@ içinde ("Poyraz Workshop 1.0.0 — güvenlik bölümü").
 | T-09 | Düşük | Uyarı metinlerinde Türkçe karakter yok ("yasagin", "kaldi", "gun"). | Düzeltildi. |
 | T-10 | Düşük (görünüş) | APK simgesinin sağ alt köşesinde görsel üretici filigranı (✦). | `araclar/filigran-temizle.py` ile simge katmanlarından silindi. |
 | T-11 | Bilgi | Uygulama yatay ekrana kilitliydi (`sensorLandscape`); şablonda yoktu. | Manifeste eklendi. |
-| T-12 | Bilgi | Reklam kimliği izni (Play hizmetlerinden gelir) reklamsız uygulamada gereksiz. | `tools:node="remove"`. |
+| T-12 | Bilgi | Reklam yoktu. | Kullanıcı kararıyla AdMob eklendi (`www/reklam.js`, Kelime Bilcek kuralları; `test/reklam.test.mjs` 9/9). Gerçek kimlikler AdMob'da oluşturulunca girilir; o zamana kadar `admob=ornek`, Play'e yüklenmez. |
 
 ## Açık kalanlar (bilinçli olarak bırakılan ya da kullanıcıda olan)
 

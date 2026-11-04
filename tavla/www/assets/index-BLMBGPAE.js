@@ -29691,6 +29691,13 @@ function tvHesapBolumu({ onSilindi: e }) {
             children: `🔒 Gizlilik`,
           }),
           (0, Z.jsx)(`a`, { href: `mailto:${TV_ILETISIM}`, style: tvStil.bag, children: `✉️ İletişim` }),
+          window.TavlaReklam?.gizlilikGerekli &&
+            (0, Z.jsx)(`button`, {
+              type: `button`,
+              style: tvStil.kucuk,
+              onClick: () => window.TavlaReklam.gizlilikSecenekleri(),
+              children: `📢 Reklam tercihleri`,
+            }),
         ],
       }),
       a &&
@@ -34414,6 +34421,8 @@ function NC({
 }) {
   let [ne, re] = (0, _.useState)(!1),
     [ie, ae] = (0, _.useState)(0);
+  // Reklam: banner yalnız ana menüdeyken (www/reklam.js)
+  (0, _.useEffect)(() => (window.TavlaReklam?.ekran(`menu`), () => window.TavlaReklam?.ekran(null)), []);
   (0, _.useEffect)(() => {
     let e = ix((e) => ae(e.length));
     return () => e();
@@ -36730,12 +36739,13 @@ function BC({
                     children: [
                       (0, Z.jsx)(`button`, {
                         className: `match-end-btn primary`,
-                        onClick: k,
+                        // Reklam: maç bitti, sonuç penceresinden ayrılırken (kurallar www/reklam.js)
+                        onClick: (...e) => (window.TavlaReklam?.macSonu(), k(...e)),
                         children: E ? `🔁 Tekrar Oyna` : `🎲 Yeni Maç`,
                       }),
                       (0, Z.jsx)(`button`, {
                         className: `match-end-btn secondary`,
-                        onClick: p,
+                        onClick: (...e) => (window.TavlaReklam?.macSonu(), p(...e)),
                         children: E ? `🚪 Ayrıl` : `↩ Ana Menü`,
                       }),
                     ],

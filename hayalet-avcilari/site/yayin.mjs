@@ -25,6 +25,10 @@ export function dosyalar() {
   const d = new Map();
   const klasor = path.join(KOK, 'app', 'hayalet-avcilari');
   for (const ad of fs.readdirSync(klasor).sort()) d.set('/' + ad, fs.readFileSync(path.join(klasor, ad)));
+  // Poyraz Workshop'un öteki uygulaması Dilek'in Bilgi Adaları'nın tanıtım ve gizlilik sayfaları /bilgi-adalari/ altında
+  // (Play'deki web sitesi https://hayalet-avcilari.web.app/bilgi-adalari/; AdMob app-ads.txt'yi bu alan adının kökünde bulur)
+  const bilgi = path.join(KOK, 'app', 'bilgi-adalari');
+  for (const ad of fs.readdirSync(bilgi).sort()) d.set('/bilgi-adalari/' + ad, fs.readFileSync(path.join(bilgi, ad)));
   d.set('/legal.css', fs.readFileSync(path.join(KOK, 'app', 'legal.css')));
   const manifest = fs.readFileSync(path.join(KOK, 'hayalet-avcilari', 'android', 'app', 'src', 'main', 'AndroidManifest.xml'), 'utf8');
   const pub = /ca-app-pub-(\d{16})~\d+/.exec(manifest)?.[1];

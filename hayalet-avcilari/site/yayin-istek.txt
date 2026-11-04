@@ -4,3 +4,6 @@
 # Rol verilmemişse durum "YETKİ YOK" der (iş akışı yeşil kalır); yayinla hata verir (site/README.md › Kurulum).
 # 29 Ekim 2026: e-posta açıldı (poyrazworkshop7@gmail.com), rol denetimi
 durum
+
+# 4 Kasım 2026: Dilek'in Bilgi Adaları sayfaları eklendi (/bilgi-adalari/), Hayalet sayfaları değişmedi (canlı = depo)
+yayinla

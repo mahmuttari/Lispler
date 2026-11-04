@@ -28765,6 +28765,12 @@ var Mv = `modulepreload`,
   X = od(Iv),
   Lv = Av(Iv),
   Rv = null;
+// Yalnız testler (test/akis.test.mjs): Playwright sayfaya window.__TAVLA_EMULATOR__ koyarsa Auth ve Firestore
+// emülatöre bağlanır. Uygulamada bu değişken hiç tanımlanmaz.
+typeof window < `u` &&
+  window.__TAVLA_EMULATOR__ &&
+  (xm(Lv, window.__TAVLA_EMULATOR__.auth, { disableWarnings: !0 }),
+  Zu(X, window.__TAVLA_EMULATOR__.firestoreHost, window.__TAVLA_EMULATOR__.firestorePort));
 function zv() {
   return Lv.currentUser
     ? Promise.resolve(Lv.currentUser)

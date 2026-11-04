@@ -75,4 +75,4 @@
 # (yapıldı 2026-11-03, koşu 41612662626: AAB 52 (koşu 41612222942, commit 51ef12c) yüklendi, üretim 3.15.1 (51) → 3.16.0 (52) completed (%100, kademeli değil), düzenleme onaylandı, incelemeye gönderildi) yukle yayinla uygula
 
 # istek 2026-11-04: 3.16.1 (53) üretime yükle, %100 yayın (status completed, kademeli değil), incelemeye gönder; incelemedeki 3.16.0 (52)'nin yerini alır (kullanıcının açık onayıyla: "Gönder"; önceki talimat: "yayın %100 olsun kademeli yayın yapma"); AAB: hayalet-android koşusu 41760721364 (bu dal, commit 2b3b741, versionCode 53, Poyraz Workshop yükleme anahtarı); ilk 500 şampiyon; sürüm notu 7 dilde magaza/ (en uzun es 496/500 UTF-16)
-yukle yayinla uygula
+# (yapıldı 2026-11-04, koşu 41761530427: AAB 53 (koşu 41760721364, commit 2b3b741) yüklendi, üretim 3.16.0 (52) → 3.16.1 (53) completed (%100), düzenleme onaylandı, incelemeye gönderildi) yukle yayinla uygula

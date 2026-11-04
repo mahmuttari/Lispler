@@ -19,6 +19,6 @@
 # (koşu 41853021083: durum geçti, android ekle 403 — yeni rol henüz yayılmamıştı; aynı komutlarla yeniden)
 
 # istek 2026-11-04: Play uygulama imzalama anahtarı (play-tavla koşu 41885402482; kullanıcı: "ONAY: Veri güvenliği + SHA"). V3.0 bugünkü cihazlar, V3.2 hibrit SDK 37+ için; ikisi de eklenir
-sha ekle 3202e7316763f3c9ec26bfabe2e57de0cc506397
-sha ekle e7d22325af82b9bccddacb104ccce04c948f0df7
-durum
+# (yapıldı 2026-11-04, koşu 41885941275: eklendi) sha ekle 3202e7316763f3c9ec26bfabe2e57de0cc506397
+# (yapıldı 2026-11-04, koşu 41885941275: eklendi) sha ekle e7d22325af82b9bccddacb104ccce04c948f0df7
+# (yapıldı 2026-11-04, koşu 41885941275: 3 SHA-1 listede) durum

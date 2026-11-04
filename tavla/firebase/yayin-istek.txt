@@ -11,4 +11,4 @@
 # (yapıldı 2026-11-04, koşu 41853021245: okuma 200; yayındaki kurallar FARKLI — reports ve engellenen kuralı yok, sohbet herkese açık) durum
 
 # istek 2026-11-04T15:12:01Z: sıkı kuralları yayınla (kullanıcının açık onayı: "evet, birleştir"); önce kurallar.test + akis.test
-yayinla
+# (yapıldı 2026-11-04, koşu 41855249826: kurallar.test 13/13, akis.test 1/1; yayınlandı → rulesets/7e575c6f…, geri okunan AYNI) yayinla

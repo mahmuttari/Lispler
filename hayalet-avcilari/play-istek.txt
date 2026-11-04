@@ -73,3 +73,6 @@
 # (yapılmadı 2026-11-03, koşu 41612055857: play.mjs es-419 sürüm notunu 501/500 saydı (emoji UTF-16'da 2), Play'e hiçbir şey yazılmadı; es satırı kısaltıldı, istek yeniden yazılacak) yukle yayinla uygula
 # istek 2026-11-03 (yeniden): 3.16.0 (52) üretime %100 (completed), incelemeye gönder; 3.15.1 (51)'in yerini alır (kullanıcı: "hemen de yayına al sormadan"); AAB: hayalet-android koşusu 41612222942 (bu dal, commit 51ef12c, versionCode 52); sürüm notu 7 dilde magaza/ (en uzun en-US 498/500 UTF-16)
 # (yapıldı 2026-11-03, koşu 41612662626: AAB 52 (koşu 41612222942, commit 51ef12c) yüklendi, üretim 3.15.1 (51) → 3.16.0 (52) completed (%100, kademeli değil), düzenleme onaylandı, incelemeye gönderildi) yukle yayinla uygula
+
+# istek 2026-11-04: 3.16.1 (53) üretime yükle, %100 yayın (status completed, kademeli değil), incelemeye gönder; incelemedeki 3.16.0 (52)'nin yerini alır (kullanıcının açık onayıyla: "Gönder"; önceki talimat: "yayın %100 olsun kademeli yayın yapma"); AAB: hayalet-android koşusu 41760721364 (bu dal, commit 2b3b741, versionCode 53, Poyraz Workshop yükleme anahtarı); ilk 500 şampiyon; sürüm notu 7 dilde magaza/ (en uzun es 496/500 UTF-16)
+yukle yayinla uygula

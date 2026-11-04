@@ -9,5 +9,5 @@
 # (yapıldı 2026-11-04, koşu 41827897553: yeşil; rol henüz verilmediği için YETKİ YOK beklenir) durum
 
 # istek 2026-11-04T12:45:21Z: roller verildi; Hosting sitesini kur ve yayınla (kullanıcının önceden onayı: "Hosting sitesini kur")
-kur
-yayinla
+# (yapıldı 2026-11-04, koşu 41832016690: site hazır) kur
+# (yapıldı 2026-11-04, koşu 41832016690: yayınlandı; https://kelime-bilcek.web.app sayfaları ve app-ads.txt 200, gizlilik.html depodakiyle aynı) yayinla

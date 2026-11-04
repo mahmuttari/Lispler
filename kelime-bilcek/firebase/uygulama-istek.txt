@@ -13,7 +13,7 @@
 # (yapıldı 2026-11-04, koşu 41829994331: YETKİ YOK — roles/firebase.admin yok) durum
 
 # istek 2026-11-04T12:45:21Z: roller verildi (kullanıcı: "verildi"); Android uygulamasını ve yükleme anahtarının SHA-1'ini ekle (kullanıcının önceden onayı: "yeni Android uygulamasını ve SHA-1'leri ekle")
-durum
-android ekle
-sha ekle d088a07577d189b015d4a588749a1a8cc2ee5699
-durum
+# (yapıldı 2026-11-04, koşu 41832016647: önce yalnız mevcut uygulamalar) durum
+# (yapıldı 2026-11-04, koşu 41832016647: com.poyrazworkshop.kelimebilcek oluşturuldu) android ekle
+# (yapıldı 2026-11-04, koşu 41832016647: yükleme anahtarı SHA-1 eklendi) sha ekle d088a07577d189b015d4a588749a1a8cc2ee5699
+# (yapıldı 2026-11-04, koşu 41832016647: yeni uygulama ve SHA-1 listede) durum

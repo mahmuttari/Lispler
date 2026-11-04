@@ -19,6 +19,6 @@
 # (yapıldı 2026-11-04, koşu 41832016647: yeni uygulama ve SHA-1 listede) durum
 
 # istek 2026-11-04: Play uygulama imzalama anahtarı (play-kelime koşu 41868509396). V3.0 imzacı bugünkü cihazlar, V3.2 hibrit SDK 37+ için; ikisi de eklenir
-sha ekle c111f874a25841aa3fcdbf6646a0b42ce641a411
-sha ekle 5f7247c9153a8587c7d7b593b3ad10f41503d41a
-durum
+# (yapıldı 2026-11-04, koşu 41868946738: eklendi) sha ekle c111f874a25841aa3fcdbf6646a0b42ce641a411
+# (yapıldı 2026-11-04, koşu 41868946738: eklendi) sha ekle 5f7247c9153a8587c7d7b593b3ad10f41503d41a
+# (yapıldı 2026-11-04, koşu 41868946738: 3 SHA-1 listede) durum

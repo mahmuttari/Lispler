@@ -29716,7 +29716,9 @@ function tvHesapBolumu({ onSilindi: e }) {
                       metin: `✓ Verilerin silindi. Giriş hesabını da silmek için yeniden giriş yapıp "Hesabı sil"e bir kez daha bas.`,
                     },
               ),
-                e?.());
+                e?.(),
+                // eski hesabın dinleyicileri kapansın: yeni (anonim) oturumla temiz açılış
+                setTimeout(() => window.location.reload(), 3e3));
             } catch (e) {
               o({ tamam: !1, metin: `✗ Silinemedi: ${e?.message || e}` });
             } finally {

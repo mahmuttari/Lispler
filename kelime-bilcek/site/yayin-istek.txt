@@ -1,0 +1,9 @@
+# Firebase Hosting yayın isteği (.github/workflows/kelime-site-yayini.yml). Her satıra bir komut; # ile başlayan satır yorumdur.
+#   durum    — yayındaki siteyi (https://kelime-bilcek.web.app) depodakiyle karşılaştırır; hiçbir şey yazmaz
+#   kur      — varsayılan Hosting sitesi (kelime-bilcek) yoksa oluşturur
+#   yayinla  — sayfaları yayınlar, geri okuyup denetler
+# Rol verilmemişse durum "YETKİ YOK" der (iş akışı yeşil kalır); kur ve yayinla hata verir (site/README.md › Kurulum).
+# Etkin satırlar her push'ta yeniden çalışır; işi biten satır "# (yapıldı …)" ile kapatılır.
+
+# istek 2026-11-04: yetki denemesi (salt okuma)
+durum

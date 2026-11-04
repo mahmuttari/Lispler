@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e0a1f">
+<meta name="description" content="Kelime Bilcek: arkadaşınla ya da rastgele bir rakiple çevrimiçi Türkçe kelime düellosu.">
+<title>Kelime Bilcek</title>
+<link rel="icon" href="icon.jpg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <img class="logo" src="icon.jpg" alt="logo">
+  <h1>Kelime Bilcek</h1>
+  <button type="button" class="me hidden" id="meBar" aria-label="Profil menüsü">👤 <b id="meBarName">—</b></button>
+</header>
+<main>
+
+  <!-- LOADING -->
+  <section id="loadingScreen" class="card">
+    <div style="text-align:center;padding:30px">
+      <div class="searching-anim">⏳</div>
+      <h3 style="margin:14px 0 4px">Bağlanıyor...</h3>
+      <p style="color:var(--muted);margin:0">Sunucuya ulaşılıyor</p>
+    </div>
+  </section>
+
+  <!-- AUTH (Google sign-in) -->
+  <section id="authScreen" class="card hidden">
+    <div class="auth-hero">
+      <img class="big-logo" src="icon.jpg" alt="logo">
+      <h2>Kelime Bilcek</h2>
+      <p>Hesabınla giriş yap — istatistiklerin ve arkadaşların güvenle saklanır.</p>
+    </div>
+    <button type="button" id="googleSignInBtn" class="google-btn">
+      <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.997 8.997 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.167 6.656 3.58 9 3.58z"/></svg>
+      <span>Google ile Giriş Yap</span>
+    </button>
+    <p class="auth-note">İlk girişte Google hesabınız (e-posta ve adınız) okunur. Bu bilgiler oyun içinde paylaşılmaz; sadece hesabınızı tanımlamak için kullanılır.</p>
+    <div id="authError" class="auth-note" style="color:var(--danger);margin-top:8px"></div>
+  </section>
+
+  <!-- USERNAME PICKER -->
+  <section id="usernameScreen" class="card hidden">
+    <button type="button" class="back-btn hidden" id="usernameBack" data-back="lobby">← Geri</button>
+    <h3 style="margin:0 0 6px" id="usernameTitle">Kullanıcı adı seç</h3>
+    <p style="color:var(--muted);font-size:13px;margin:0 0 14px">Arkadaşların seni bu adla bulacak. 3-14 karakter, sadece harf/rakam.</p>
+    <input id="usernameInput" type="text" maxlength="14" placeholder="Örn: korfe07" autocomplete="off" autocapitalize="off">
+    <div style="height:14px"></div>
+    <button type="button" id="usernameBtn" class="btn">Kaydet ve Devam Et</button>
+  </section>
+
+  <!-- LOBBY -->
+  <section id="lobbyScreen" class="hidden" style="display:flex;flex-direction:column;gap:12px">
+    <div class="mode-toggle">
+      <button type="button" class="mode-pill active" data-mode="sim">⚡ Hızlı<small>10R simültane</small></button>
+      <button type="button" class="mode-pill" data-mode="duel">⏳ Sıra Beklicek<small>3R sıralı</small></button>
+      <button type="button" class="mode-pill" data-mode="chain">🔗 Zincir<small>son harf</small></button>
+    </div>
+    <button type="button" class="lobby-btn primary" id="quickMatchBtn">
+      <span class="ico">⚡</span>
+      <span class="body">
+        <span class="title">Hızlı Eşleşme</span>
+        <span class="sub">Anında rastgele rakip bul</span>
+      </span>
+    </button>
+    <button type="button" class="lobby-btn" id="friendsBtn">
+      <span class="ico">👥</span>
+      <span class="body">
+        <span class="title">Arkadaşlarım <span class="badge hidden" id="friendsCount">0</span></span>
+        <span class="sub">Davet gönder, ekle, çıkar</span>
+      </span>
+    </button>
+    <button type="button" class="lobby-btn" id="roomCodeBtn">
+      <span class="ico">🚪</span>
+      <span class="body">
+        <span class="title">Oda Kodu ile Oyna</span>
+        <span class="sub">Aynı kodu yazan rakiple eşleş</span>
+      </span>
+    </button>
+    <button type="button" class="lobby-btn" id="categoriesBtn">
+      <span class="ico">🎯</span>
+      <span class="body">
+        <span class="title">Kategoriler <span class="badge" id="catCountBadge">25/25</span></span>
+        <span class="sub">Hangi kategorilerde oynamak istersin?</span>
+      </span>
+    </button>
+    <button type="button" class="lobby-btn" id="leaderboardBtn">
+      <span class="ico">🏆</span>
+      <span class="body">
+        <span class="title">Şampiyonlar</span>
+        <span class="sub">En çok kazanan oyuncular</span>
+      </span>
+    </button>
+  </section>
+
+  <!-- CATEGORY PICKER -->
+  <section id="categoriesScreen" class="card hidden">
+    <button type="button" class="back-btn" data-back="lobby">← Geri</button>
+    <h3 style="margin:0 0 6px">Kategorileri Seç</h3>
+    <p style="color:var(--muted);font-size:12px;margin:0 0 12px">Eşleşmede sen ve rakibinin seçtiği kategorilerin <b>birleşimi</b> kullanılır. Hiçbir şey seçmezsen otomatik olarak <b>tümü</b> kabul edilir.</p>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button type="button" id="catSelectAllBtn" class="btn small secondary">✓ Tümünü Seç</button>
+      <button type="button" id="catClearAllBtn" class="btn small secondary">✗ Tümünü Kaldır</button>
+    </div>
+    <div id="categoriesList"></div>
+    <div style="height:14px"></div>
+    <button type="button" id="catSaveBtn" class="btn">Kaydet ve Devam Et</button>
+  </section>
+
+  <!-- LEADERBOARD -->
+  <section id="leaderboardScreen" class="card hidden">
+    <button type="button" class="back-btn" data-back="lobby">← Geri</button>
+    <h3 style="margin:0 0 12px">🏆 Şampiyonlar</h3>
+    <div id="leaderboardList"><div class="empty">Yükleniyor...</div></div>
+  </section>
+
+  <!-- ROOM CODE ENTRY -->
+  <section id="roomCodeScreen" class="card hidden">
+    <button type="button" class="back-btn" data-back="lobby">← Geri</button>
+    <label for="roomInput">Oda Kodu</label>
+    <input id="roomInput" type="text" maxlength="12" placeholder="Örn: kebap42" autocomplete="off">
+    <div style="height:14px"></div>
+    <button type="button" id="joinRoomBtn" class="btn">🚪 Odaya Katıl / Oluştur</button>
+    <p style="color:var(--muted);font-size:12px;text-align:center;margin:12px 0 0">İki oyuncu da aynı oda kodunu yazınca eşleşir.</p>
+  </section>
+
+  <!-- FRIENDS -->
+  <section id="friendsScreen" class="card hidden">
+    <button type="button" class="back-btn" data-back="lobby">← Geri</button>
+    <h3 style="margin:0 0 12px">Arkadaşlarım</h3>
+    <button type="button" id="addFriendOpenBtn" class="btn secondary" style="margin-bottom:14px">+ Arkadaş Ekle</button>
+    <div id="friendsList"></div>
+  </section>
+
+  <!-- ADD FRIEND -->
+  <section id="addFriendScreen" class="card hidden">
+    <button type="button" class="back-btn" data-back="friends">← Geri</button>
+    <label for="addFriendInput">Arkadaşının kullanıcı adı</label>
+    <input id="addFriendInput" type="text" maxlength="14" placeholder="Örn: ahmet42" autocomplete="off" autocapitalize="off">
+    <div style="height:14px"></div>
+    <button type="button" id="addFriendBtn" class="btn">Ekle</button>
+  </section>
+
+  <!-- SEARCHING (quick match) -->
+  <section id="searchingScreen" class="card hidden">
+    <div style="text-align:center;padding:20px">
+      <div class="searching-anim">🔍</div>
+      <h3 style="margin:14px 0 4px">Rakip aranıyor...</h3>
+      <p style="color:var(--muted);margin:0 0 18px" id="searchSub">Kuyrukta bekliyorsun</p>
+      <button type="button" id="cancelSearchBtn" class="btn secondary">İptal</button>
+    </div>
+  </section>
+
+  <!-- INVITE SENT (waiting for friend) -->
+  <section id="inviteSentScreen" class="card hidden">
+    <div style="text-align:center;padding:20px">
+      <div class="searching-anim">📨</div>
+      <h3 style="margin:14px 0 4px">Davet gönderildi</h3>
+      <p style="color:var(--muted);margin:0 0 18px"><b id="invitedName">—</b> kabul etmesi bekleniyor (60 sn)</p>
+      <button type="button" id="cancelInviteBtn" class="btn secondary">İptal</button>
+    </div>
+  </section>
+
+  <!-- WAITING (room code) -->
+  <section id="waitingScreen" class="card hidden">
+    <div style="text-align:center">
+      <div class="searching-anim">⏳</div>
+      <h3 style="margin:14px 0 4px">Rakip bekleniyor...</h3>
+      <p style="color:var(--muted);margin:0">Oda: <b id="waitRoom"></b></p>
+      <div style="height:14px"></div>
+      <button type="button" id="leaveWaitBtn" class="btn secondary">Çık</button>
+    </div>
+  </section>
+
+  <!-- GAME (Round-based) -->
+  <section id="gameScreen" class="card hidden">
+    <div class="match-header">
+      <span class="match-round">Round <b id="roundNum">1</b>/<span id="roundTotal">10</span></span>
+      <div class="match-score">
+        <span class="ms-me" id="msMeChip">—: <b id="msMeWins">0</b></span>
+        <span class="ms-sep">VS</span>
+        <span class="ms-opp" id="msOppChip">—: <b id="msOppWins">0</b></span>
+      </div>
+    </div>
+    <div class="category">
+      <small>Kategori</small>
+      <strong id="catLabel">—</strong>
+    </div>
+    <details class="rules-card" id="rulesCard" open>
+      <summary>📋 Kurallar</summary>
+      <ul>
+        <li>Önce <b>10 sn düşünme</b> süresi (giriş kapalı)</li>
+        <li>Sonra <b>30 sn</b> boyunca iki taraf da kelime yazar</li>
+        <li>Doğru kelime → 🟢 <b>yeşil</b>, hatalı → 🔴 <b>kırmızı çizgili</b></li>
+        <li>Aynı kelimeyi rakipten önce yazana puan, geç kalan ⚪ <b>gri</b></li>
+        <li>Listede yoksa TDK sözlüğüne sorulur (arka planda)</li>
+        <li>Round sonunda çok bilen <b>roundu kazanır</b></li>
+        <li><b>10 round</b> sonunda en çok round bilen <b>maçı kazanır</b></li>
+      </ul>
+    </details>
+    <div id="phaseBanner" class="phase-banner thinking">
+      <div class="phase-text" id="phaseText">⏰ Hazırlan...</div>
+      <div class="phase-timer" id="phaseTimer">10</div>
+    </div>
+    <div class="live-scores hidden" id="liveScores">
+      <span class="ls-me">Sen: <b id="lsMeCount">0</b></span>
+      <span class="ls-opp">Rakip: <b id="lsOppCount">0</b></span>
+    </div>
+    <div class="chat-list" id="wordsChat"></div>
+    <div class="row" id="inputRow" style="display:none">
+      <input id="wordInput" type="text" maxlength="30" placeholder="Kelimeyi yaz, Enter ile gönder..." autocomplete="off" autocapitalize="off">
+      <button type="button" id="sendBtn" class="btn" style="flex:0 0 auto;width:auto;padding:14px 20px">Gönder</button>
+    </div>
+    <button type="button" id="leaveBtn" class="btn danger" style="margin-top:10px">Maçı Terk Et</button>
+  </section>
+
+  <!-- END (Match summary) -->
+  <section id="endScreen" class="card hidden">
+    <div class="end">
+      <div id="endIcon" style="font-size:56px">🏆</div>
+      <h2 id="endTitle">—</h2>
+      <p id="endSubtitle" style="color:var(--muted);margin:6px 0;font-size:16px">—</p>
+      <div class="match-final-score">
+        <div class="me-final"><b id="endMeWins">0</b><small id="endMeName">Sen</small></div>
+        <div style="font-size:32px;color:var(--muted)">-</div>
+        <div class="opp-final"><b id="endOppWins">0</b><small id="endOppName">Rakip</small></div>
+      </div>
+      <h4 style="margin:14px 0 6px">Round Sonuçları</h4>
+      <div id="roundSummary" class="round-summary"></div>
+      <button type="button" id="againBtn" class="btn" style="margin-top:14px">Lobby'e Dön</button>
+    </div>
+  </section>
+</main>
+<footer>Kelime Bilcek 1.0.0 · <a href="https://kelime-bilcek.web.app/gizlilik.html" target="_blank" rel="noopener">Gizlilik</a> · <a href="https://kelime-bilcek.web.app/hesap-silme.html" target="_blank" rel="noopener">Hesap silme</a></footer>
+
+<div id="toast" class="toast"></div>
+
+<!-- INVITE POPUP (overlay) -->
+<div id="invitePopup" class="overlay hidden">
+  <div class="modal">
+    <div style="font-size:48px">🎮</div>
+    <h3><b id="inviteFromName">—</b> seni oyuna davet ediyor!</h3>
+    <p>Kelime düellosu için davet aldın</p>
+    <div class="row">
+      <button type="button" id="declineInviteBtn" class="btn danger">Reddet</button>
+      <button type="button" id="acceptInviteBtn" class="btn success">Kabul Et</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE MENU (overlay) -->
+<div id="profileMenu" class="overlay hidden">
+  <div class="modal" style="text-align:left">
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="font-size:48px">👤</div>
+      <h3 style="margin:8px 0 2px"><b id="pmName">—</b></h3>
+      <p style="margin:0;font-size:13px;color:var(--muted);word-break:break-all" id="pmEmail">—</p>
+    </div>
+    <button type="button" id="changeNameBtn" class="btn secondary" style="margin-bottom:10px">✏️ Kullanıcı Adını Değiştir</button>
+    <button type="button" id="soundToggleBtn" class="btn secondary" style="margin-bottom:10px">🔊 Sesler: Açık</button>
+    <button type="button" id="adPrivacyBtn" class="btn secondary hidden" style="margin-bottom:10px">🔒 Reklam gizlilik seçenekleri</button>
+    <button type="button" id="logoutBtn" class="btn danger" style="margin-bottom:10px">🚪 Çıkış Yap</button>
+    <button type="button" id="deleteAccountBtn" class="btn danger" style="margin-bottom:10px">🗑️ Hesabı Sil</button>
+    <button type="button" id="closeProfileBtn" class="btn" style="background:var(--panel2);color:var(--text);border:1px solid var(--border);box-shadow:none">Kapat</button>
+  </div>
+</div>
+
+<!-- Firebase compat 10.12.0 — CDN yerine paketten (npm run vendor: node_modules/firebase → www/vendor) -->
+<script src="vendor/firebase-app-compat.js"></script>
+<script src="vendor/firebase-auth-compat.js"></script>
+<script src="vendor/firebase-database-compat.js"></script>
+<script src="kelime.js"></script>
+<script src="reklam.js"></script>
+<script src="oyun.js"></script>
+</body>
+</html>

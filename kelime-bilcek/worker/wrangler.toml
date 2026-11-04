@@ -1,0 +1,7 @@
+# İsteğe bağlı: npx wrangler deploy (CLOUDFLARE_API_TOKEN ve CLOUDFLARE_ACCOUNT_ID gerekir; README.md)
+name = "floral-wave-f116"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+[ai]
+binding = "AI"

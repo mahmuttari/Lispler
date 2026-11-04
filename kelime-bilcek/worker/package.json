@@ -1,0 +1,1 @@
+{ "type": "module", "private": true, "description": "Cloudflare Worker floral-wave-f116 (ES modülü; node --test worker/worker.test.mjs)" }

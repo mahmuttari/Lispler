@@ -1,0 +1,10 @@
+# Firebase Android uygulaması ve imza parmak izleri (.github/workflows/kelime-firebase-uygulama.yml, firebase/uygulama.mjs).
+# Her satır bir komut; etkin satırlar her push'ta yeniden çalışır (hepsi tekrar çalıştırılınca zararsızdır), işi biten
+# satır "# (yapıldı …)" ile kapatılır.
+#   durum                    Android uygulamaları ve parmak izleri (salt okuma)
+#   android ekle             com.poyrazworkshop.kelimebilcek yoksa oluşturur
+#   sha ekle <parmak izi>    SHA-1 ya da SHA-256: yükleme anahtarı (kelime-android.yml çıktısı) ve Play uygulama imzası
+# Hizmet hesabının kelime-bilcek projesinde roles/firebase.admin rolü olmalı (firebase/README.md › Kurulum).
+
+# istek 2026-11-04: yetki denemesi (salt okuma)
+durum

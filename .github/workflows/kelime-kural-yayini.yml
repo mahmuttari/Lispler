@@ -1,0 +1,112 @@
+# Kelime Bilcek — Realtime Database kurallarını yayınlar (Firebase konsolundaki "Yayınla" ile aynı iş: REST
+# /.settings/rules.json). Komutlar kelime-bilcek/firebase/yayin-istek.txt'ye yazılır (play-istek.txt düzeni):
+#   durum    — yayındaki kuralları okur, depodaki database.rules.json ile karşılaştırır; hiçbir şey yazmaz
+#   yayinla  — önce emülatör testleri (kurallar.test.mjs) koşar; geçerse database.rules.json'u yayınlar, geri okuyup
+#              depodakiyle aynı olduğunu denetler (kullanıcı kararı: "testler geçince sıkı kuralları yayınla")
+# Kimlik anahtarsız: Play işleriyle aynı Workload Identity hizmet hesabı (android/play-kimlik.env). Hesabın
+# kelime-bilcek projesinde roles/firebasedatabase.admin rolü olmalı (firebase/README.md › Yayınlama).
+name: Firebase kural yayını (Kelime Bilcek)
+
+on:
+  push:
+    paths: ['kelime-bilcek/firebase/yayin-istek.txt']
+  workflow_dispatch:
+
+concurrency:
+  group: kelime-kural-yayini
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  yayin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Komutlar ve kimlik
+        run: |
+          grep -v '^[[:space:]]*#' kelime-bilcek/firebase/yayin-istek.txt | tr -d '\r' | sed '/^[[:space:]]*$/d' > "$RUNNER_TEMP/komutlar"
+          while IFS= read -r K; do case "$K" in durum|yayinla) ;; *) echo "::error::geçersiz komut: $K"; exit 1;; esac; done < "$RUNNER_TEMP/komutlar"
+          echo "Komutlar:"; cat "$RUNNER_TEMP/komutlar"
+          grep -E '^(PLAY_WIF_PROVIDER|PLAY_SERVICE_ACCOUNT)=' android/play-kimlik.env >> "$GITHUB_ENV"
+          if [ -s "$RUNNER_TEMP/komutlar" ]; then echo "KOMUT_VAR=1" >> "$GITHUB_ENV"; fi
+      - name: Yayından önce emülatör testleri (yalnız "yayinla" varsa)
+        if: env.KOMUT_VAR == '1'
+        run: grep -qx 'yayinla' "$RUNNER_TEMP/komutlar" && echo "YAYIN_VAR=1" >> "$GITHUB_ENV" || true
+      - uses: actions/setup-node@v5
+        if: env.YAYIN_VAR == '1'
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v5
+        if: env.YAYIN_VAR == '1'
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Kural testleri (kırmızıysa hiçbir şey yayınlanmaz)
+        if: env.YAYIN_VAR == '1'
+        working-directory: kelime-bilcek/firebase
+        run: npm ci && npm test
+      - id: auth
+        if: env.KOMUT_VAR == '1'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.PLAY_WIF_PROVIDER }}
+          service_account: ${{ env.PLAY_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/firebase.database,https://www.googleapis.com/auth/userinfo.email
+      - name: Kurallar
+        if: env.KOMUT_VAR == '1'
+        env:
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+          URL: https://kelime-bilcek-default-rtdb.europe-west1.firebasedatabase.app/.settings/rules.json
+          KURAL: kelime-bilcek/firebase/database.rules.json
+        run: |
+          # Yeni verilen IAM rolü birkaç dakikada yayılır: 401/403'te 30 sn arayla 8 kez denenir
+          oku() {
+            for d in 1 2 3 4 5 6 7 8; do
+              kod=$(curl -sS -o "$RUNNER_TEMP/yayinda.json" -w '%{http_code}' -H "Authorization: Bearer $TOKEN" "$URL")
+              [ "$kod" = 200 ] && return 0
+              echo "okuma $kod (deneme $d): $(head -c 200 "$RUNNER_TEMP/yayinda.json")"
+              case "$kod" in 401|403) sleep 30 ;; *) return 1 ;; esac
+            done
+            return 1
+          }
+          # Anlamca karşılaştırma (anahtar sırası ve boşluk önemsiz) ve yol yol fark: "+" yalnız depoda (yayınla eklenir),
+          # "-" yalnız yayında (yayınla silinir), "~" değeri farklı. Yayındaki metin yorum içeriyorsa okunamadığı söylenir.
+          ayni() { node -e '
+            const fs = require("fs");
+            const sirali = (o) => JSON.stringify(o, (k, v) => v && typeof v === "object" && !Array.isArray(v) ? Object.fromEntries(Object.entries(v).sort()) : v);
+            let yayinda;
+            try { yayinda = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); }
+            catch { console.log("Yayındaki kurallar düz JSON değil (yorum içeriyor olabilir); karşılaştırılamadı"); process.exit(3); }
+            const depoda = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
+            const fark = [], kisa = (v) => JSON.stringify(v).slice(0, 160);
+            const nesne = (v) => v && typeof v === "object" && !Array.isArray(v);
+            const gez = (a, b, yol) => {
+              if (nesne(a) && nesne(b)) {
+                for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) {
+                  if (!(k in a)) fark.push("+ " + yol + "/" + k + " = " + kisa(b[k]));
+                  else if (!(k in b)) fark.push("- " + yol + "/" + k + " = " + kisa(a[k]));
+                  else gez(a[k], b[k], yol + "/" + k);
+                }
+              } else if (sirali(a) !== sirali(b)) fark.push("~ " + yol + ": " + kisa(a) + " → " + kisa(b));
+            };
+            gez(yayinda, depoda, "");
+            for (const f of fark.slice(0, 60)) console.log("  " + f);
+            if (fark.length > 60) console.log("  … " + (fark.length - 60) + " fark daha");
+            const esit = sirali(yayinda) === sirali(depoda);
+            console.log(esit ? "AYNI: yayındaki kurallar depodakiyle aynı" : "FARKLI: " + fark.length + " fark (+ yalnız depoda, - yalnız yayında, ~ değişen)");
+            process.exit(esit ? 0 : 3);
+          ' "$RUNNER_TEMP/yayinda.json" "$KURAL"; }
+          while IFS= read -r K; do
+            echo; echo "════ $K ════"
+            case "$K" in
+              durum) oku; ayni || true ;;
+              yayinla)
+                curl -sS --fail-with-body -X PUT -H "Authorization: Bearer $TOKEN" -H 'content-type: application/json' --data-binary @"$KURAL" "$URL"; echo
+                oku; ayni ;;
+            esac
+          done < "$RUNNER_TEMP/komutlar"

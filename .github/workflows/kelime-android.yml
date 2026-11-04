@@ -1,0 +1,104 @@
+# Kelime Bilcek: Android derlemesi (hayalet-android.yml düzeni).
+# - Her değişiklikte APK derlenir (Artifacts).
+# - HAYALET_KEYSTORE_BASE64 / HAYALET_KEYSTORE_PASSWORD (Poyraz Workshop yükleme anahtarı, Hayalet Avcıları ve İz Haritası
+#   ile aynı) varsa İMZALI APK + AAB derlenir; AAB "KelimeBilcek-aab" artifact'ı olarak surum.txt ile kalır.
+#   play-kelime.yml'deki "yukle" komutu AAB'yi buradan alır (versionCode build.gradle ile eşleşen son başarılı koşu).
+# - Yükleme anahtarının SHA-1 ve SHA-256 parmak izi günlüğe yazılır (keytool -printcert): Firebase'e eklenir
+#   (kelime-bilcek/firebase/uygulama-istek.txt › sha ekle).
+# - AdMob uygulama kimliği hâlâ Google'ın örnek kimliğiyse uyarır ve surum.txt'ye admob=ornek yazar; play-kelime.yml
+#   böyle bir paketi yüklemez.
+name: Android (Kelime Bilcek)
+
+on:
+  push:
+    paths:
+      - 'kelime-bilcek/**'
+      - '!kelime-bilcek/play-istek.txt'
+      - '!kelime-bilcek/magaza/**'
+      - '!kelime-bilcek/firebase/**'
+      - '!kelime-bilcek/site/**'
+      - '!kelime-bilcek/worker/**'
+      - '!kelime-bilcek/*.md'
+      - '.github/workflows/kelime-android.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: kelime-bilcek
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: npm ci
+      - name: Testler (reklam kuralları ve kelime işlevleri)
+        run: node --test test/kelime.test.mjs test/reklam.test.mjs
+      - run: npm run sync
+      - name: AdMob kimlikleri
+        id: admob
+        run: |
+          if grep -q 'ca-app-pub-3940256099942544' android/app/src/main/AndroidManifest.xml || grep -q 'BEKLIYOR' www/reklam.js; then
+            echo "::warning::AdMob uygulama ya da reklam birimi kimliği henüz girilmedi (örnek kimlik): bu paket Play'e yüklenmez"
+            echo "durum=ornek" >> "$GITHUB_OUTPUT"
+          else
+            echo "durum=gercek" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Yükleme anahtarını secret'tan yaz
+        id: imza
+        env:
+          KS_B64: ${{ secrets.HAYALET_KEYSTORE_BASE64 }}
+          KS_PAROLA: ${{ secrets.HAYALET_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KS_B64" ] || [ -z "$KS_PAROLA" ]; then
+            echo "::warning::HAYALET_KEYSTORE_BASE64 / HAYALET_KEYSTORE_PASSWORD secret'ı yok — derleme İMZASIZ, Play'e yüklenemez"
+            echo "imzali=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          printf '%s' "$KS_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=upload\nkeyPassword=%s\n' "$RUNNER_TEMP/upload.jks" "$KS_PAROLA" "$KS_PAROLA" > android/keystore.properties
+          echo "imzali=true" >> "$GITHUB_OUTPUT"
+      - name: Derle
+        working-directory: kelime-bilcek/android
+        run: |
+          if [ "${{ steps.imza.outputs.imzali }}" = "true" ]; then
+            ./gradlew assembleRelease bundleRelease --no-daemon --console=plain
+          else
+            ./gradlew assembleRelease --no-daemon --console=plain
+          fi
+          rm -f keystore.properties "$RUNNER_TEMP/upload.jks"
+      - name: Çıktılar, parmak izleri ve surum.txt
+        working-directory: kelime-bilcek/android
+        run: |
+          mkdir -p "$RUNNER_TEMP/cikti"
+          VC=$(sed -nE 's/^ *versionCode +([0-9]+).*/\1/p' app/build.gradle | head -1)
+          VN=$(sed -nE "s/^ *versionName +'([^']+)'.*/\1/p" app/build.gradle | head -1)
+          printf 'versionCode=%s\nversionName=%s\ncommit=%s\nadmob=%s\n' "$VC" "$VN" "$GITHUB_SHA" "${{ steps.admob.outputs.durum }}" > "$RUNNER_TEMP/cikti/surum.txt"
+          cp app/build/outputs/apk/release/*.apk "$RUNNER_TEMP/cikti/"
+          if [ -f app/build/outputs/bundle/release/app-release.aab ]; then
+            cp app/build/outputs/bundle/release/app-release.aab "$RUNNER_TEMP/cikti/KelimeBilcek.aab"
+            echo "Yükleme anahtarı (Firebase'e eklenecek parmak izleri):"
+            keytool -printcert -jarfile "$RUNNER_TEMP/cikti/KelimeBilcek.aab" | grep -E "Owner|SHA1:|SHA256:" || true
+            SHA1=$(keytool -printcert -jarfile "$RUNNER_TEMP/cikti/KelimeBilcek.aab" | sed -nE 's/^[[:space:]]*SHA1: (.*)$/\1/p' | head -1)
+            echo "::notice::Yükleme anahtarı SHA-1: $SHA1 (versionCode $VC, admob=${{ steps.admob.outputs.durum }})"
+          fi
+          ls -la "$RUNNER_TEMP/cikti"; cat "$RUNNER_TEMP/cikti/surum.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: KelimeBilcek-apk
+          path: ${{ runner.temp }}/cikti/*.apk
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: steps.imza.outputs.imzali == 'true'
+        with:
+          name: KelimeBilcek-aab
+          path: |
+            ${{ runner.temp }}/cikti/KelimeBilcek.aab
+            ${{ runner.temp }}/cikti/surum.txt
+          retention-days: 30

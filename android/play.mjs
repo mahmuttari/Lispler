@@ -18,7 +18,8 @@
 // PLAY_UYGULAMA ortam değişkeni hangi uygulamanın işleneceğini seçer: boş ya da "notdefteri" (varsayılan),
 // "hayalet" (Hayalet Avcıları: hayalet-avcilari/ klasörü, .github/workflows/play-hayalet.yml),
 // "iz" (İz Haritası: iz-haritasi/ klasörü, .github/workflows/play-iz.yml); KUCUK_UYGULAMALAR'dan gelen dört uygulama
-// "unitica", "calqora", "kiblebul" (Kıble Bul) ve "smartmeasure" (Smart Measure): kendi klasörleri ve play-<anahtar>.yml.
+// "unitica", "calqora", "kiblebul" (Kıble Bul) ve "smartmeasure" (Smart Measure): kendi klasörleri ve play-<anahtar>.yml;
+// "kelime" (Kelime Bilcek: kelime-bilcek/ klasörü, .github/workflows/play-kelime.yml).
 //
 // "uygula" yoksa hiçbir şey yazılmaz: düzenleme (edit) açılır, plan yazılır, düzenleme silinir. Uygulamayı oluşturmak
 // ve ilk AAB'yi yüklemek Play Console'dan elle yapılır (taslak uygulamada API paketi bulamaz); API ondan sonra çalışır.
@@ -35,6 +36,7 @@ export const UYGULAMALAR = {
   calqora: { paket: 'com.poyrazworkshop.calqora', magaza: 'calqora/magaza', aab: 'dist/Calqora-play.aab', gradle: 'calqora/android/app/build.gradle' },
   kiblebul: { paket: 'com.poyrazworkshop.kiblebul', magaza: 'kible-bul/magaza', aab: 'dist/KibleBul-play.aab', gradle: 'kible-bul/android/app/build.gradle' },
   smartmeasure: { paket: 'com.poyrazworkshop.smartmeasure', magaza: 'smart-measure/magaza', aab: 'dist/SmartMeasure-play.aab', gradle: 'smart-measure/android/app/build.gradle' },
+  kelime: { paket: 'com.poyrazworkshop.kelimebilcek', magaza: 'kelime-bilcek/magaza', aab: 'dist/KelimeBilcek-play.aab', gradle: 'kelime-bilcek/android/app/build.gradle' },
 };
 const SECIM = UYGULAMALAR[process.env.PLAY_UYGULAMA || 'notdefteri'];
 if (!SECIM) throw new Error(`PLAY_UYGULAMA bilinmiyor: ${process.env.PLAY_UYGULAMA} (${Object.keys(UYGULAMALAR).join(', ')})`);
@@ -289,6 +291,16 @@ async function imza() {
   const vc = Math.max(...b);
   for (const k of (await api('GET', `${API}/generatedApks/${vc}`)).generatedApks || []) {
     console.log(`::notice::Play uygulama imzalama anahtarı SHA-256 (versionCode ${vc}): ${parmakIzi(k.certificateSha256Hash)}`);
+    // SHA-1 (Firebase'de Google ile Giriş için gerekir) API'de yok: IMZA_APK verilmişse Play'in bu anahtarla imzaladığı
+    // evrensel APK indirilir; iş akışı onu apksigner ile okur (play-kelime.yml)
+    const indir = k.generatedUniversalApk?.downloadId;
+    if (process.env.IMZA_APK && indir && !fs.existsSync(process.env.IMZA_APK)) {
+      const r = await fetch(`${API}/generatedApks/${vc}/downloads/${encodeURIComponent(indir)}:download?alt=media`,
+        { headers: { Authorization: `Bearer ${process.env.PLAY_ACCESS_TOKEN}` } });
+      if (!r.ok) throw new Error(`evrensel APK indirilemedi: ${r.status} ${(await r.text()).slice(0, 300)}`);
+      fs.writeFileSync(process.env.IMZA_APK, Buffer.from(await r.arrayBuffer()));
+      console.log(`  Play'in imzaladığı evrensel APK: ${process.env.IMZA_APK}`);
+    }
   }
 }
 

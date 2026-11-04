@@ -250,6 +250,7 @@ I18N.hi = {
   "🥈 Turu 2. bitirdin!": "🥈 तुमने राउंड दूसरे स्थान पर खत्म किया!",
   "🥉 3. sıraya girdin!": "🥉 तुम नंबर 3 पर पहुँचे!",
   "🥉 Turu 3. bitirdin!": "🥉 तुमने राउंड तीसरे स्थान पर खत्म किया!",
+  "🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!": "🦇 जंगल में चमगादड़ उड़ते हैं और बॉस के ऊपर बिजली कड़काता तूफ़ानी बादल घूमता है!",
   "🧹 Kalan: {n}": "🧹 बचे: {n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 विज्ञापन कम हुए: नए खिलाड़ियों को और छोटे खेलों के बाद कोई विज्ञापन नहीं।",
   "🚀 ODA KUR": "🚀 रूम बनाओ",

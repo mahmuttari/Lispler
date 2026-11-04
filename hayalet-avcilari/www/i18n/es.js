@@ -250,6 +250,7 @@ I18N.es = {
   "🥈 Turu 2. bitirdin!": "🥈 ¡Terminaste la ronda en 2.º lugar!",
   "🥉 3. sıraya girdin!": "🥉 ¡Llegaste al puesto 3!",
   "🥉 Turu 3. bitirdin!": "🥉 ¡Terminaste la ronda en 3.er lugar!",
+  "🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!": "🦇 Murciélagos vuelan por el bosque y una nube de tormenta lanza rayos sobre el jefe.",
   "🧹 Kalan: {n}": "🧹 Quedan: {n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 Menos anuncios: ninguno para jugadores nuevos ni tras partidas cortas.",
   "🚀 ODA KUR": "🚀 CREAR SALA",

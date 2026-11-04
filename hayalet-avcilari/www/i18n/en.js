@@ -250,6 +250,7 @@ I18N.en = {
   "🥈 Turu 2. bitirdin!": "🥈 You finished the round 2nd!",
   "🥉 3. sıraya girdin!": "🥉 You made #3!",
   "🥉 Turu 3. bitirdin!": "🥉 You finished the round 3rd!",
+  "🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!": "🦇 Bats now swoop through the forest, and a thundercloud flashes lightning above the boss!",
   "🧹 Kalan: {n}": "🧹 Left: {n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 Fewer ads: none for new players or after short games.",
   "🚀 ODA KUR": "🚀 CREATE ROOM",

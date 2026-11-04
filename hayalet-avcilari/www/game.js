@@ -322,10 +322,19 @@ const LEADERBOARD_MAX = 500; // 3.16.1, kullanıcı: "Şampiyon listesi ilk 500 
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.16.2";
+const APP_VERSION = "3.17.0";
 const UPDATE_NOTES = {
   // Mağaza notu aynı satırlar; her dilde 500 karakterin altında kalsın diye Dünya Turu'nun satırları (3.14.0) yok
   // 3.15.0 incelemedeyken 3.15.1 gelebilir: 3.15.0'ın satırları ve düzeltme (mağaza notu aynı satırlar, ≤ 500)
+  // 3.17.0 (kullanıcı: "Yarasalar uçuşsun ormanda. Arada şimşek çakan bulutlar gezinsin. Bosun üzerinde."): 3.16.2
+  // gönderilmeden geldi, onun satırları da var; 🌉 ve 🌿 (3.15.0'dan beri yayında) 500 sınırı için çıktı
+  "3.17.0": [
+    t("🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!"),
+    t("🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi."),
+    t("🎬 Reklam izle: Dünya Turu'nda kaldığın yerden devam et (3 kez) ya da oyun sonunda paranı 2 katına çıkar."),
+    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var."),
+  ],
   // 3.16.2 (kullanıcının seçimi "2 ve 3"): ödüllü 2× para ve biraz daha sık geçiş reklamı; 🎬 satırı reklamla devamı ve
   // 2× parayı birlikte söyler (500 karakter sınırı)
   "3.16.2": [
@@ -5093,6 +5102,7 @@ function startGame(secenek) {
   ensurePlayerSafe();
   spawnBot();
   petKur(); // yanına alınan pet (pet.js)
+  havaKur(); // yarasalar ve fırtına bulutu (hava.js)
   closeInventory();
   refreshInventoryButton();
   // Dünya Turu'nda önce ülkenin tanıtım satırı; bot bildirimi okunabilsin diye sonra gelir
@@ -5746,6 +5756,7 @@ function update(dt, now) {
   if (GUNS[game.player.gun]) fireDelay *= GUNS[game.player.gun].delayMul;
   updateBot(dt, now);
   petGuncelle(dt, now); // pet: oyuncuyu izler, yakındaki hayalete saldırır (pet.js)
+  havaGuncelle(dt); // yarasalar ve fırtına bulutu: yalnız görsel (hava.js)
   if (online.mode) uzakPetleriGuncelle(dt);
   if (keys["b"] && game.bot) game.player.botTargetUntil = now + 300; // klavye: B'ye basılıyken Bot'a ateş
   let fireTarget = (!game.player.dead && !game.player.gizli) ? nearestGhost(game.player.range) : null; // çalıda ateş yok
@@ -5936,6 +5947,7 @@ function nextLevel() {
   ensurePlayerSafe();
   spawnBot();
   petKur(); // yanına alınan pet (pet.js)
+  havaKur(); // yarasalar ve fırtına bulutu (hava.js)
   if (online.mode) yenidenDog();
   showToast(bolumBildirimi());
   // Boss bölüm seviyesine göre belli bir süre sonra
@@ -6643,8 +6655,10 @@ function render() {
     }
     ctx.restore();
   }
+  havaCiz(ctx); // yarasalar, fırtına bulutu ve şimşek (hava.js)
 
   ctx.restore();
+  havaParlamaCiz(ctx); // şimşeğin ekran parlaması
 }
 
 function updateHUD() {

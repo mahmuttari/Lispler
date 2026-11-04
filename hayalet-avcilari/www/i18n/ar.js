@@ -250,6 +250,7 @@ I18N.ar = {
   "🥈 Turu 2. bitirdin!": "🥈 أنهيت الجولة في المركز الثاني!",
   "🥉 3. sıraya girdin!": "🥉 دخلت المركز الثالث!",
   "🥉 Turu 3. bitirdin!": "🥉 أنهيت الجولة في المركز الثالث!",
+  "🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!": "🦇 الخفافيش تحلّق في الغابة، وسحابة عاصفة تُطلق البرق فوق الزعيم!",
   "🧹 Kalan: {n}": "🧹 المتبقي: {n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 إعلانات أقل: لا إعلانات للاعبين الجدد ولا بعد الجولات القصيرة.",
   "🚀 ODA KUR": "🚀 إنشاء غرفة",

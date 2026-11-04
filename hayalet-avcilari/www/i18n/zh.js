@@ -250,6 +250,7 @@ I18N.zh = {
   "🥈 Turu 2. bitirdin!": "🥈 你获得本轮第 2 名！",
   "🥉 3. sıraya girdin!": "🥉 你进入了第3名！",
   "🥉 Turu 3. bitirdin!": "🥉 你获得本轮第 3 名！",
+  "🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!": "🦇 森林里蝙蝠飞舞，BOSS头顶的雷云不时劈下闪电！",
   "🧹 Kalan: {n}": "🧹 剩余：{n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 广告更少：新玩家和短局之后不再显示广告。",
   "🚀 ODA KUR": "🚀 创建房间",

@@ -1,0 +1,62 @@
+# Tavla — Cloud Firestore kurallarını yayınlar (tavla/firebase/kurallar.mjs, Firebase Rules API). Komutlar
+# tavla/firebase/yayin-istek.txt'ye yazılır: durum (yazmaz) | yayinla (önce emülatör testleri; kırmızıysa yayın yok).
+# Kimlik anahtarsız: Play işleriyle aynı Workload Identity hizmet hesabı (android/play-kimlik.env). Hesabın
+# tavla-online-oyundar projesinde roles/firebaserules.admin rolü olmalı (tavla/firebase/README.md › Kurulum).
+name: Firebase kural yayını (Tavla)
+
+on:
+  push:
+    paths: ['tavla/firebase/yayin-istek.txt']
+  workflow_dispatch:
+
+concurrency:
+  group: tavla-kural-yayini
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  yayin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Komutlar ve kimlik
+        run: |
+          grep -v '^[[:space:]]*#' tavla/firebase/yayin-istek.txt | tr -d '\r' | sed '/^[[:space:]]*$/d' > "$RUNNER_TEMP/komutlar"
+          while IFS= read -r K; do case "$K" in durum|yayinla) ;; *) echo "::error::geçersiz komut: $K"; exit 1;; esac; done < "$RUNNER_TEMP/komutlar"
+          echo "Komutlar:"; cat "$RUNNER_TEMP/komutlar"
+          grep -E '^(PLAY_WIF_PROVIDER|PLAY_SERVICE_ACCOUNT)=' android/play-kimlik.env >> "$GITHUB_ENV"
+          if [ -s "$RUNNER_TEMP/komutlar" ]; then echo "KOMUT_VAR=1" >> "$GITHUB_ENV"; fi
+          if grep -qx 'yayinla' "$RUNNER_TEMP/komutlar"; then echo "YAYIN_VAR=1" >> "$GITHUB_ENV"; fi
+      - uses: actions/setup-java@v5
+        if: env.YAYIN_VAR == '1'
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Yayından önce testler (kırmızıysa hiçbir şey yayınlanmaz)
+        if: env.YAYIN_VAR == '1'
+        working-directory: tavla/firebase
+        run: |
+          (cd .. && npm ci)
+          npm ci && npx playwright install --with-deps chromium
+          npm test && npm run test:akis
+      - id: auth
+        if: env.KOMUT_VAR == '1'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.PLAY_WIF_PROVIDER }}
+          service_account: ${{ env.PLAY_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/firebase
+      - name: Kurallar
+        if: env.KOMUT_VAR == '1'
+        env:
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          while IFS= read -r K; do echo; echo "════ $K ════"; node tavla/firebase/kurallar.mjs $K < /dev/null; done < "$RUNNER_TEMP/komutlar"

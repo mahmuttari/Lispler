@@ -1,0 +1,63 @@
+# Tavla — Firebase projesine (tavla-online-oyundar) Android uygulamasını, imza parmak izlerini ekler ve
+# google-services.json'u indirir (tavla/firebase/uygulama.mjs, Firebase Management API). Komutlar
+# tavla/firebase/uygulama-istek.txt'de: durum | android ekle | sha ekle <parmak izi> | yapilandirma
+# "yapilandirma" dosyayı tavla/android/app/google-services.json'a yazar ve değiştiyse aynı dala commit + push eder
+# (dosyada gizli bilgi yoktur: aynı değerler her APK'nın içindedir).
+# Kimlik anahtarsız: Play işleriyle aynı Workload Identity hizmet hesabı. Hesabın tavla-online-oyundar projesinde
+# roles/firebase.admin rolü olmalı (tavla/firebase/README.md › Kurulum).
+name: Firebase uygulaması (Tavla)
+
+on:
+  push:
+    paths: ['tavla/firebase/uygulama-istek.txt']
+  workflow_dispatch:
+
+concurrency:
+  group: tavla-firebase-uygulama
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # google-services.json commit'i
+  id-token: write
+
+jobs:
+  uygulama:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Komutlar ve kimlik
+        run: |
+          grep -v '^[[:space:]]*#' tavla/firebase/uygulama-istek.txt | tr -d '\r' | sed '/^[[:space:]]*$/d' > "$RUNNER_TEMP/komutlar"
+          while IFS= read -r K; do case "$K" in "durum"|"android ekle"|"yapilandirma"|"sha ekle "[0-9A-Fa-f]*) ;; *) echo "::error::geçersiz komut: $K"; exit 1;; esac; done < "$RUNNER_TEMP/komutlar"
+          echo "Komutlar:"; cat "$RUNNER_TEMP/komutlar"
+          grep -E '^(PLAY_WIF_PROVIDER|PLAY_SERVICE_ACCOUNT)=' android/play-kimlik.env >> "$GITHUB_ENV"
+          if [ -s "$RUNNER_TEMP/komutlar" ]; then echo "KOMUT_VAR=1" >> "$GITHUB_ENV"; fi
+      - id: auth
+        if: env.KOMUT_VAR == '1'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.PLAY_WIF_PROVIDER }}
+          service_account: ${{ env.PLAY_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/firebase
+      - name: Komutları çalıştır
+        if: env.KOMUT_VAR == '1'
+        env:
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          while IFS= read -r K; do echo; echo "════ $K ════"; node tavla/firebase/uygulama.mjs $K < /dev/null; done < "$RUNNER_TEMP/komutlar"
+      - name: google-services.json değiştiyse commit et
+        if: env.KOMUT_VAR == '1'
+        run: |
+          F=tavla/android/app/google-services.json
+          [ -f "$F" ] || { echo "yapılandırma yazılmadı"; exit 0; }
+          git add "$F"
+          git diff --cached --quiet && { echo "google-services.json değişmedi"; exit 0; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Tavla: google-services.json (Firebase, com.poyrazworkshop.tavla)"
+          git push origin "HEAD:$GITHUB_REF_NAME"

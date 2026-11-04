@@ -1,0 +1,8 @@
+# Firebase Android uygulaması, imza parmak izleri ve google-services.json (.github/workflows/tavla-firebase-uygulama.yml,
+# firebase/uygulama.mjs). Her satır bir komut; etkin satırlar her push'ta yeniden çalışır (hepsi tekrar çalıştırılınca
+# zararsızdır), işi biten satır "# (yapıldı …)" ile kapatılır.
+#   durum                    Android uygulamaları ve parmak izleri (salt okuma)
+#   android ekle             com.poyrazworkshop.tavla yoksa oluşturur
+#   sha ekle <parmak izi>    SHA-1 ya da SHA-256: yükleme anahtarı (tavla-android.yml çıktısı) ve Play uygulama imzası
+#   yapilandirma             google-services.json'u tavla/android/app/'e yazar; iş akışı dala commit eder
+# Hizmet hesabının tavla-online-oyundar projesinde roles/firebase.admin rolü olmalı (firebase/README.md › Kurulum).

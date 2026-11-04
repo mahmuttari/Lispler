@@ -1,0 +1,12 @@
+# Tavla — Google Play komutları. Bu dosya değişip push edilince .github/workflows/play-tavla.yml çalışır
+# (android/play.mjs, PLAY_UYGULAMA=tavla). "uygula" olmayan komut yalnız plan yazar.
+# Önce magaza/PLAY-YAYIN.md'deki tarayıcı adımları (uygulamayı oluşturma, ilk AAB, hizmet hesabı izni) bitmeli.
+#   durum                       salt okuma
+#   magaza uygula               iletişim + mağaza metni: tr-TR (magaza/aciklamalar.md)
+#   gorsel uygula               simge, tanıtım görseli, ekran görüntüleri: magaza/play
+#   veriguvenligi uygula        Veri güvenliği formu: magaza/veri-guvenligi.csv
+#   yukle uygula                tavla-android.yml'in imzalı AAB'si → üretim kanalına TASLAK
+#   yukle yayinla uygula        sürümü incelemeye gönderir — yalnız kullanıcının açık onayıyla
+#   imza                        Play uygulama imzalama anahtarının SHA-256'sı ve SHA-1'i (Firebase'e eklenir)
+# Yeni istek: yalnız çalıştırılacak komutları yazın; eski satırları "# (yapıldı …)" ile kapatın (her push dosyadaki bütün
+# etkin satırları çalıştırır).

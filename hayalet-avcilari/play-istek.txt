@@ -78,4 +78,4 @@
 # (yapıldı 2026-11-04, koşu 41761530427: AAB 53 (koşu 41760721364, commit 2b3b741) yüklendi, üretim 3.16.0 (52) → 3.16.1 (53) completed (%100), düzenleme onaylandı, incelemeye gönderildi) yukle yayinla uygula
 
 # istek 2026-11-04: 3.17.0 (55) üretime yükle, %100 yayın (status completed, kademeli değil), incelemeye gönder; yayındaki 3.16.1 (53)'ün yerini alır (kullanıcının açık onayıyla: "gönder"); AAB: hayalet-android koşusu 41869190255 (bu dal, commit 6d2181a, versionCode 55, Poyraz Workshop yükleme anahtarı); yarasalar ve fırtına bulutu, 2× para, geçiş reklamı ayarı, çevrimiçi sonuçta ödüllü düğme yok; sürüm notu 7 dilde magaza/
-yukle yayinla uygula
+# (yapıldı 2026-11-04, koşu 41870132061: AAB 55 (koşu 41869190255, commit 6d2181a) yüklendi, üretim 3.16.1 (53) → 3.17.0 (55) completed (%100), düzenleme onaylandı, incelemeye gönderildi) yukle yayinla uygula

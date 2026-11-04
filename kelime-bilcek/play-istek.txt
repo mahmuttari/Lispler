@@ -12,8 +12,8 @@
 # etkin satırları çalıştırır).
 
 # istek 2026-11-04: ilk AAB taslak olarak yüklendi (tarayıcı); mağaza, görsel, Veri güvenliği, imza
-durum
-magaza uygula
-gorsel uygula
-veriguvenligi uygula
-imza
+# (yapıldı 2026-11-04, koşu 41868509396: production 1 (1.0.0) draft) durum
+# (yapıldı 2026-11-04, koşu 41868509396: tamam — tr-TR metin + iletişim) magaza uygula
+# (yapıldı 2026-11-04, koşu 41868509396: tamam — simge, tanıtım, 5 ekran) gorsel uygula
+# (yapıldı 2026-11-04, koşu 41868509396: tamam — form yazıldı) veriguvenligi uygula
+# (yapıldı 2026-11-04, koşu 41868509396: SHA-1 V3.0 c111f874a25841aa3fcdbf6646a0b42ce641a411, V3.2 hibrit 5f7247c9153a8587c7d7b593b3ad10f41503d41a) imza

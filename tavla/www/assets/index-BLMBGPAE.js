@@ -29395,6 +29395,434 @@ function Ey(e) {
   let n = Math.ceil(e / (3600 * 1e3));
   return n >= 2 ? `${n} saat` : `${Math.max(1, Math.ceil(e / (60 * 1e3)))} dakika`;
 }
+// ═══════════════════════════════════════════════════════════════════════════════════════════════
+// Poyraz Workshop 1.0.0 — güvenlik bölümü (DENETIM.md › T-01, T-02, T-03). Okunur biçimde elle yazıldı.
+// Küçültülmüş Firebase işlevleri: X = Firestore, Lv = Auth, q = doc, td = collection, ff = getDoc,
+// pf = getDocs, mf = setDoc, gf = deleteDoc, _f = addDoc, Jd = query, Xd = where, Rd = serverTimestamp.
+// ═══════════════════════════════════════════════════════════════════════════════════════════════
+var TV_SURUM = `1.0.0`,
+  TV_GIZLILIK = `https://mahmuttari.github.io/Lispler/tavla/gizlilik.html`,
+  TV_HESAP_SILME = `https://mahmuttari.github.io/Lispler/tavla/hesap-silme.html`,
+  TV_ILETISIM = `mahmuttari@gmail.com`,
+  TV_NEDENLER = [
+    { id: `kufur`, ad: `Küfür / hakaret` },
+    { id: `taciz`, ad: `Taciz / tehdit` },
+    { id: `rumuz`, ad: `Uygunsuz rumuz` },
+    { id: `hile`, ad: `Hile / oyunu bozma` },
+    { id: `spam`, ad: `Reklam / spam` },
+    { id: `diger`, ad: `Diğer` },
+  ],
+  tvEngelliler = new Set(),
+  tvEngelDinleyiciler = new Set();
+function tvEngelliMi(e) {
+  return !!e && tvEngelliler.has(e);
+}
+function tvEngelBildir() {
+  tvEngelDinleyiciler.forEach((e) => {
+    try {
+      e(tvEngelliler);
+    } catch {}
+  });
+}
+function tvEngelAboneOl(e) {
+  return (tvEngelDinleyiciler.add(e), () => tvEngelDinleyiciler.delete(e));
+}
+// Engellenenler users/{uid}/engellenen/{hedefUid}: yalnız sahibi okur ve yazar (firestore.rules).
+async function tvEngelleriYukle() {
+  try {
+    await zv();
+    let e = Bv();
+    if (!e) return;
+    let t = await pf(td(X, `users`, e, `engellenen`));
+    ((tvEngelliler = new Set(t.docs.map((e) => e.id))), tvEngelBildir());
+  } catch (e) {
+    console.warn(`[Engel] yükleme:`, e?.message || e);
+  }
+}
+async function tvEngelle(e, t) {
+  if (!e) return;
+  await zv();
+  let n = Bv();
+  if (!n || n === e) return;
+  (await mf(q(X, `users`, n, `engellenen`, e), { uid: e, name: String(t || ``).slice(0, 16), at: Rd() }),
+    tvEngelliler.add(e),
+    tvEngelBildir());
+}
+async function tvEngelKaldir(e) {
+  await zv();
+  let t = Bv();
+  t && (await gf(q(X, `users`, t, `engellenen`, e)), tvEngelliler.delete(e), tvEngelBildir());
+}
+async function tvEngelListesi() {
+  await zv();
+  let e = Bv();
+  return e
+    ? (await pf(td(X, `users`, e, `engellenen`))).docs.map((e) => ({ uid: e.id, name: e.data().name || `Oyuncu` }))
+    : [];
+}
+// Şikâyet reports/{otomatik}: istemci yalnız oluşturur, okuyamaz (moderasyon Firebase konsolundan).
+async function tvSikayetEt({ hedefUid: e, hedefAd: t, odaId: n, neden: r, not: i, mesajlar: a }) {
+  await zv();
+  let o = Bv();
+  if (!o || !e || o === e) throw Error(`Şikâyet gönderilemedi.`);
+  if (!TV_NEDENLER.some((e) => e.id === r)) throw Error(`Bir neden seç.`);
+  await _f(td(X, `reports`), {
+    fromUid: o,
+    againstUid: e,
+    againstName: String(t || ``).slice(0, 16),
+    roomId: n || null,
+    reason: r,
+    note: String(i || ``).trim().slice(0, 300),
+    messages: (a || [])
+      .filter((t) => t.uid === e)
+      .slice(-20)
+      .map((e) => String(e.text || ``).slice(0, 280)),
+    status: `yeni`,
+    appVersion: TV_SURUM,
+    createdAt: Rd(),
+  });
+}
+async function tvKoleksiyonuSil(e) {
+  let t = await pf(e);
+  for (let e of t.docs)
+    try {
+      await gf(e.ref);
+    } catch (t) {
+      console.warn(`[HesapSil] ${e.ref.path}:`, t?.message || t);
+    }
+  return t.docs;
+}
+// Hesap silme (Play: uygulama içinden ve web'den). Sıra önemli: önce başkalarının listelerindeki izler,
+// sonra kendi alt koleksiyonlar, odalar, rumuz, kullanıcı kaydı; en son Firebase Authentication hesabı.
+async function tvHesabiSil() {
+  await zv();
+  let e = Lv.currentUser;
+  if (!e) throw Error(`Oturum yok.`);
+  let t = e.uid,
+    n = q(X, `users`, t);
+  for (let e of await tvKoleksiyonuSil(td(X, `users`, t, `friends`)))
+    try {
+      await gf(q(X, `users`, e.id, `friends`, t));
+    } catch {}
+  (await tvKoleksiyonuSil(td(X, `users`, t, `invites`)),
+    await tvKoleksiyonuSil(td(X, `users`, t, `engellenen`)),
+    await tvKoleksiyonuSil(Jd(td(X, `friendRequests`), Xd(`fromUid`, `==`, t))),
+    await tvKoleksiyonuSil(Jd(td(X, `friendRequests`), Xd(`toUid`, `==`, t))));
+  for (let e of [`hostUid`, `guestUid`]) {
+    let n = await pf(Jd(td(X, `rooms`), Xd(e, `==`, t)));
+    for (let e of n.docs) {
+      (await tvKoleksiyonuSil(td(X, `rooms`, e.id, `messages`)),
+        await tvKoleksiyonuSil(td(X, `rooms`, e.id, `signaling`)));
+      try {
+        await gf(e.ref);
+      } catch (e) {
+        console.warn(`[HesapSil] oda:`, e?.message || e);
+      }
+    }
+  }
+  (await tvKoleksiyonuSil(Jd(td(X, `names`), Xd(`uid`, `==`, t))), await gf(n));
+  try {
+    Object.keys(window.localStorage)
+      .filter((e) => e.startsWith(`tavla_`))
+      .forEach((e) => window.localStorage.removeItem(e));
+  } catch {}
+  ((tvEngelliler = new Set()), tvEngelBildir());
+  let r = !0;
+  try {
+    await e.delete();
+  } catch (e) {
+    if ((e?.code || ``) !== `auth/requires-recent-login`) throw e;
+    r = !1;
+  }
+  return (await Gv(), { tamam: r });
+}
+// Ortak ekran parçaları (sohbet ve hesap pencereleri).
+function tvSikayetPenceresi({ hedefAd: e, onGonder: t, onKapat: n }) {
+  let [r, i] = (0, _.useState)(``),
+    [a, o] = (0, _.useState)(``),
+    [s, c] = (0, _.useState)(!0),
+    [l, u] = (0, _.useState)(!1),
+    [d, f] = (0, _.useState)(null);
+  return (0, Z.jsx)(`div`, {
+    style: tvStil.perde,
+    onClick: n,
+    children: (0, Z.jsxs)(`div`, {
+      style: tvStil.kutu,
+      role: `dialog`,
+      "aria-modal": !0,
+      "aria-label": `Oyuncuyu şikâyet et`,
+      onClick: (e) => e.stopPropagation(),
+      children: [
+        (0, Z.jsxs)(`h3`, { style: tvStil.baslik, children: [`⚠️ Şikâyet: `, (0, Z.jsx)(`bdi`, { children: e || `Rakip` })] }),
+        (0, Z.jsx)(`div`, {
+          style: { display: `flex`, flexDirection: `column`, gap: 6 },
+          children: TV_NEDENLER.map((e) =>
+            (0, Z.jsxs)(
+              `label`,
+              {
+                style: { ...tvStil.secenek, ...(r === e.id ? tvStil.secili : {}) },
+                children: [
+                  (0, Z.jsx)(`input`, {
+                    type: `radio`,
+                    name: `tv-neden`,
+                    value: e.id,
+                    checked: r === e.id,
+                    onChange: () => i(e.id),
+                  }),
+                  e.ad,
+                ],
+              },
+              e.id,
+            ),
+          ),
+        }),
+        (0, Z.jsx)(`textarea`, {
+          value: a,
+          onChange: (e) => o(e.target.value),
+          maxLength: 300,
+          placeholder: `Not (isteğe bağlı)`,
+          "aria-label": `Not`,
+          style: tvStil.not,
+        }),
+        (0, Z.jsxs)(`label`, {
+          style: { display: `flex`, gap: 8, alignItems: `center`, fontSize: 14, margin: `8px 0` },
+          children: [
+            (0, Z.jsx)(`input`, { type: `checkbox`, checked: s, onChange: (e) => c(e.target.checked) }),
+            `Ayrıca engelle`,
+          ],
+        }),
+        (0, Z.jsx)(`p`, {
+          style: tvStil.ipucu,
+          children: `Şikâyetle birlikte bu oyuncunun bu odadaki son mesajları da gider. Şikâyetler 24 saat içinde incelenir.`,
+        }),
+        d && (0, Z.jsx)(`p`, { style: tvStil.hata, role: `alert`, children: d }),
+        (0, Z.jsxs)(`div`, {
+          style: { display: `flex`, gap: 8, marginTop: 10 },
+          children: [
+            (0, Z.jsx)(`button`, { type: `button`, onClick: n, style: tvStil.ikincil, children: `Vazgeç` }),
+            (0, Z.jsx)(`button`, {
+              type: `button`,
+              disabled: !r || l,
+              style: { ...tvStil.birincil, opacity: !r || l ? 0.5 : 1 },
+              onClick: async () => {
+                (u(!0), f(null));
+                try {
+                  (await t({ neden: r, not: a, engelle: s }), n());
+                } catch (e) {
+                  f(e?.message || `Gönderilemedi.`);
+                } finally {
+                  u(!1);
+                }
+              },
+              children: l ? `Gönderiliyor…` : `Gönder`,
+            }),
+          ],
+        }),
+      ],
+    }),
+  });
+}
+function tvHesapBolumu({ onSilindi: e }) {
+  let [t, n] = (0, _.useState)([]),
+    [r, i] = (0, _.useState)(!1),
+    [a, o] = (0, _.useState)(null);
+  (0, _.useEffect)(() => {
+    let e = !0,
+      t = () =>
+        tvEngelListesi()
+          .then((t) => e && n(t))
+          .catch(() => {});
+    t();
+    let r = tvEngelAboneOl(t);
+    return () => {
+      ((e = !1), r());
+    };
+  }, []);
+  return (0, Z.jsxs)(`div`, {
+    style: tvStil.bolum,
+    children: [
+      (0, Z.jsx)(`div`, { style: tvStil.bolumBaslik, children: `Gizlilik ve hesap` }),
+      (0, Z.jsxs)(`div`, {
+        style: { fontSize: 13, marginBottom: 6 },
+        children: [`🚫 Engellenenler`, t.length ? ` (${t.length})` : ``],
+      }),
+      t.length === 0
+        ? (0, Z.jsx)(`p`, { style: tvStil.ipucu, children: `Engellediğin oyuncu yok.` })
+        : t.map((e) =>
+            (0, Z.jsxs)(
+              `div`,
+              {
+                style: { display: `flex`, alignItems: `center`, gap: 8, marginBottom: 4 },
+                children: [
+                  (0, Z.jsx)(`bdi`, { style: { flex: 1, fontSize: 13 }, children: e.name }),
+                  (0, Z.jsx)(`button`, {
+                    type: `button`,
+                    style: tvStil.kucuk,
+                    onClick: () => tvEngelKaldir(e.uid).catch(() => {}),
+                    children: `Engeli kaldır`,
+                  }),
+                ],
+              },
+              e.uid,
+            ),
+          ),
+      (0, Z.jsxs)(`div`, {
+        style: { display: `flex`, gap: 12, flexWrap: `wrap`, margin: `10px 0`, fontSize: 13 },
+        children: [
+          (0, Z.jsx)(`a`, { href: TV_GIZLILIK, target: `_blank`, rel: `noopener`, style: tvStil.bag, children: `🔒 Gizlilik` }),
+          (0, Z.jsx)(`a`, { href: `mailto:${TV_ILETISIM}`, style: tvStil.bag, children: `✉️ İletişim` }),
+        ],
+      }),
+      a && (0, Z.jsx)(`p`, { style: a.tamam ? tvStil.tamam : tvStil.hata, role: `status`, children: a.metin }),
+      (0, Z.jsx)(`button`, {
+        type: `button`,
+        disabled: r,
+        style: { ...tvStil.tehlike, opacity: r ? 0.5 : 1 },
+        onClick: async () => {
+          if (
+            window.confirm(
+              `Hesabın kalıcı olarak silinsin mi?\n\nRumuzun, puanların, arkadaş listen, davetlerin, odaların ve sohbet mesajların silinir. Bu işlem geri alınamaz.`,
+            )
+          ) {
+            (i(!0), o(null));
+            try {
+              let t = await tvHesabiSil();
+              (o(
+                t.tamam
+                  ? { tamam: !0, metin: `✓ Hesabın ve bütün verilerin silindi.` }
+                  : {
+                      tamam: !0,
+                      metin: `✓ Verilerin silindi. Giriş hesabını da silmek için yeniden giriş yapıp "Hesabı sil"e bir kez daha bas.`,
+                    },
+              ),
+                e?.());
+            } catch (e) {
+              o({ tamam: !1, metin: `✗ Silinemedi: ${e?.message || e}` });
+            } finally {
+              i(!1);
+            }
+          }
+        },
+        children: r ? `Siliniyor…` : `🗑️ Hesabı sil`,
+      }),
+    ],
+  });
+}
+var tvStil = {
+  perde: {
+    position: `fixed`,
+    inset: 0,
+    zIndex: 1100,
+    background: `rgba(0,0,0,0.6)`,
+    display: `flex`,
+    alignItems: `center`,
+    justifyContent: `center`,
+    padding: 16,
+  },
+  kutu: {
+    background: `#1f2937`,
+    color: `#e5e7eb`,
+    borderRadius: 14,
+    padding: 18,
+    width: `100%`,
+    maxWidth: 380,
+    maxHeight: `90vh`,
+    overflowY: `auto`,
+    fontFamily: `system-ui, sans-serif`,
+  },
+  baslik: { margin: `0 0 12px`, fontSize: 17 },
+  secenek: {
+    display: `flex`,
+    gap: 10,
+    alignItems: `center`,
+    minHeight: 44,
+    padding: `0 12px`,
+    borderRadius: 8,
+    background: `#374151`,
+    fontSize: 14,
+    cursor: `pointer`,
+  },
+  secili: { outline: `2px solid #f59e0b` },
+  not: {
+    width: `100%`,
+    boxSizing: `border-box`,
+    marginTop: 10,
+    minHeight: 64,
+    padding: 10,
+    borderRadius: 8,
+    border: `1px solid #4b5563`,
+    background: `#111827`,
+    color: `white`,
+    fontSize: 14,
+  },
+  ipucu: { fontSize: 12, color: `#cbd5e1`, margin: `4px 0`, lineHeight: 1.4 },
+  hata: { fontSize: 13, color: `#fecaca`, background: `#7f1d1d`, padding: 8, borderRadius: 6 },
+  tamam: { fontSize: 13, color: `#bbf7d0`, background: `#14532d`, padding: 8, borderRadius: 6 },
+  birincil: {
+    flex: 1,
+    minHeight: 44,
+    border: `none`,
+    borderRadius: 8,
+    background: `#f59e0b`,
+    color: `#111827`,
+    fontWeight: 700,
+    fontSize: 15,
+    cursor: `pointer`,
+  },
+  ikincil: {
+    flex: 1,
+    minHeight: 44,
+    border: `1px solid #6b7280`,
+    borderRadius: 8,
+    background: `transparent`,
+    color: `#e5e7eb`,
+    fontSize: 15,
+    cursor: `pointer`,
+  },
+  kucuk: {
+    minHeight: 36,
+    padding: `0 10px`,
+    border: `1px solid #6b7280`,
+    borderRadius: 6,
+    background: `transparent`,
+    color: `inherit`,
+    fontSize: 12,
+    cursor: `pointer`,
+  },
+  bolum: { marginTop: 16, paddingTop: 12, borderTop: `1px solid rgba(255,255,255,0.15)`, textAlign: `start` },
+  bolumBaslik: { fontWeight: 700, fontSize: 14, marginBottom: 8 },
+  bag: { color: `#fbbf24`, textDecoration: `underline`, minHeight: 44, display: `inline-flex`, alignItems: `center` },
+  tehlike: {
+    width: `100%`,
+    minHeight: 44,
+    border: `1px solid #fca5a5`,
+    borderRadius: 8,
+    background: `#7f1d1d`,
+    color: `#fee2e2`,
+    fontWeight: 700,
+    fontSize: 14,
+    cursor: `pointer`,
+  },
+  sohbetSerit: {
+    display: `flex`,
+    gap: 6,
+    padding: `6px 10px`,
+    borderBottom: `1px solid #374151`,
+    alignItems: `center`,
+    flexWrap: `wrap`,
+  },
+  seritDugme: {
+    minHeight: 36,
+    padding: `0 10px`,
+    border: `1px solid #4b5563`,
+    borderRadius: 6,
+    background: `#111827`,
+    color: `#e5e7eb`,
+    fontSize: 12,
+    cursor: `pointer`,
+  },
+};
+
 var Dy = [
     `İyi atış! 👏`,
     `Şanslı zar 🎲`,

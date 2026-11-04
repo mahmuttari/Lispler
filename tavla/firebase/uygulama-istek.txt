@@ -11,9 +11,9 @@
 # (yapıldı 2026-11-04, koşu 41851273025: YETKİ YOK — 403, roller henüz verilmedi) durum
 
 # istek 2026-11-04T14:58:57Z: roller verildi (kullanıcı: "verildi"); Android uygulaması, yükleme anahtarı SHA-1, google-services.json
-durum
-android ekle
-sha ekle d088a07577d189b015d4a588749a1a8cc2ee5699
-yapilandirma
-durum
+# (yapıldı 2026-11-04, koşu 41853495103) durum
+# (yapıldı 2026-11-04, koşu 41853495103: com.poyrazworkshop.tavla oluşturuldu) android ekle
+# (yapıldı 2026-11-04, koşu 41853495103: yükleme anahtarı SHA-1 eklendi) sha ekle d088a07577d189b015d4a588749a1a8cc2ee5699
+# (yapıldı 2026-11-04, koşu 41853495103: google-services.json commit 8b1a1af, Android OAuth istemcisi var) yapilandirma
+# (yapıldı 2026-11-04, koşu 41853495103) durum
 # (koşu 41853021083: durum geçti, android ekle 403 — yeni rol henüz yayılmamıştı; aynı komutlarla yeniden)

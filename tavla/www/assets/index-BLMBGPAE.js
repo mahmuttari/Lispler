@@ -29391,7 +29391,7 @@ async function Ty() {
 function Ey(e) {
   if (!e || e <= 0) return ``;
   let t = Math.ceil(e / xy);
-  if (t >= 2) return `${t} gun`;
+  if (t >= 2) return `${t} gün`;
   let n = Math.ceil(e / (3600 * 1e3));
   return n >= 2 ? `${n} saat` : `${Math.max(1, Math.ceil(e / (60 * 1e3)))} dakika`;
 }
@@ -29457,7 +29457,10 @@ async function tvEngelListesi() {
   await zv();
   let e = Bv();
   return e
-    ? (await pf(td(X, `users`, e, `engellenen`))).docs.map((e) => ({ uid: e.id, name: e.data().name || `Oyuncu` }))
+    ? (await pf(td(X, `users`, e, `engellenen`))).docs.map((e) => ({
+        uid: e.id,
+        name: e.data().name || `Oyuncu`,
+      }))
     : [];
 }
 // Şikâyet reports/{otomatik}: istemci yalnız oluşturur, okuyamaz (moderasyon Firebase konsolundan).
@@ -29472,7 +29475,9 @@ async function tvSikayetEt({ hedefUid: e, hedefAd: t, odaId: n, neden: r, not: i
     againstName: String(t || ``).slice(0, 16),
     roomId: n || null,
     reason: r,
-    note: String(i || ``).trim().slice(0, 300),
+    note: String(i || ``)
+      .trim()
+      .slice(0, 300),
     messages: (a || [])
       .filter((t) => t.uid === e)
       .slice(-20)
@@ -29553,7 +29558,10 @@ function tvSikayetPenceresi({ hedefAd: e, onGonder: t, onKapat: n }) {
       "aria-label": `Oyuncuyu şikâyet et`,
       onClick: (e) => e.stopPropagation(),
       children: [
-        (0, Z.jsxs)(`h3`, { style: tvStil.baslik, children: [`⚠️ Şikâyet: `, (0, Z.jsx)(`bdi`, { children: e || `Rakip` })] }),
+        (0, Z.jsxs)(`h3`, {
+          style: tvStil.baslik,
+          children: [`⚠️ Şikâyet: `, (0, Z.jsx)(`bdi`, { children: e || `Rakip` })],
+        }),
         (0, Z.jsx)(`div`, {
           style: { display: `flex`, flexDirection: `column`, gap: 6 },
           children: TV_NEDENLER.map((e) =>
@@ -29669,11 +29677,18 @@ function tvHesapBolumu({ onSilindi: e }) {
       (0, Z.jsxs)(`div`, {
         style: { display: `flex`, gap: 12, flexWrap: `wrap`, margin: `10px 0`, fontSize: 13 },
         children: [
-          (0, Z.jsx)(`a`, { href: TV_GIZLILIK, target: `_blank`, rel: `noopener`, style: tvStil.bag, children: `🔒 Gizlilik` }),
+          (0, Z.jsx)(`a`, {
+            href: TV_GIZLILIK,
+            target: `_blank`,
+            rel: `noopener`,
+            style: tvStil.bag,
+            children: `🔒 Gizlilik`,
+          }),
           (0, Z.jsx)(`a`, { href: `mailto:${TV_ILETISIM}`, style: tvStil.bag, children: `✉️ İletişim` }),
         ],
       }),
-      a && (0, Z.jsx)(`p`, { style: a.tamam ? tvStil.tamam : tvStil.hata, role: `status`, children: a.metin }),
+      a &&
+        (0, Z.jsx)(`p`, { style: a.tamam ? tvStil.tamam : tvStil.hata, role: `status`, children: a.metin }),
       (0, Z.jsx)(`button`, {
         type: `button`,
         disabled: r,
@@ -29791,7 +29806,13 @@ var tvStil = {
   },
   bolum: { marginTop: 16, paddingTop: 12, borderTop: `1px solid rgba(255,255,255,0.15)`, textAlign: `start` },
   bolumBaslik: { fontWeight: 700, fontSize: 14, marginBottom: 8 },
-  bag: { color: `#fbbf24`, textDecoration: `underline`, minHeight: 44, display: `inline-flex`, alignItems: `center` },
+  bag: {
+    color: `#fbbf24`,
+    textDecoration: `underline`,
+    minHeight: 44,
+    display: `inline-flex`,
+    alignItems: `center`,
+  },
   tehlike: {
     width: `100%`,
     minHeight: 44,
@@ -29894,7 +29915,7 @@ function jy(e) {
         let a = await wy();
         if ((c(a), a.banned)) {
           let e = Ey(a.msLeft);
-          throw (u({ banned: !0, msLeft: a.msLeft, sure: e }), Error(`Sohbet yasagin var. Kalan: ${e}.`));
+          throw (u({ banned: !0, msLeft: a.msLeft, sure: e }), Error(`Sohbet yasağın var. Kalan: ${e}.`));
         }
         if (by(r)) {
           let e = await Ty();
@@ -29910,11 +29931,11 @@ function jy(e) {
             e.banned)
           )
             throw Error(
-              `Argo nedeniyle sohbet yasagin baslatildi. Kalan: ${Ey(Math.max(0, (e.until || 0) - Date.now()))}.`,
+              `Argo nedeniyle sohbet yasağın başladı. Kalan: ${Ey(Math.max(0, (e.until || 0) - Date.now()))}.`,
             );
           let t = Math.max(0, 3 - e.strike);
           throw Error(
-            `Mesaj engellendi (argo). Bir daha denersen ${t === 0 ? `yasaklanirsin` : `${t} hak kaldi`}.`,
+            `Mesaj engellendi (argo). Bir daha denersen ${t === 0 ? `yasaklanırsın` : `${t} hakkın kaldı`}.`,
           );
         }
         (i(!0), o(null));
@@ -29983,7 +30004,26 @@ var Ny = o((e) => {
     t.exports = Ny();
   })();
 function Py({ roomDocId: e }) {
-  let t = jy(e),
+  // T-01: rakibi oda kaydından al; engellenen oyuncunun mesajları gizlenir, sohbet kapanır
+  let [tvRakip, tvRakipAyarla] = (0, _.useState)(null),
+    [tvSikayetAcik, tvSikayetAyarla] = (0, _.useState)(!1),
+    [, tvYenile] = (0, _.useState)(0);
+  ((0, _.useEffect)(() => tvEngelAboneOl(() => tvYenile((e) => e + 1)), []),
+    (0, _.useEffect)(() => {
+      if (!e) return;
+      return vf(
+        q(X, `rooms`, e),
+        (t) => {
+          if (!t.exists()) return;
+          let n = t.data(),
+            r = n.hostUid === Bv() ? `guest` : `host`;
+          tvRakipAyarla(n[`${r}Uid`] ? { uid: n[`${r}Uid`], name: n[`${r}Name`] || `Rakip` } : null);
+        },
+        () => {},
+      );
+    }, [e]));
+  let tvEngelli = !!tvRakip && tvEngelliMi(tvRakip.uid),
+    t = jy(e),
     n = My(`(orientation: landscape) and (max-height: 600px)`),
     [r, i] = (0, _.useState)(!1),
     [a, o] = (0, _.useState)(`hazir`),
@@ -30032,8 +30072,8 @@ function Py({ roomDocId: e }) {
           m(e.message);
         }
     },
-    v = t.banStatus?.banned,
-    y = v ? Ey(t.banStatus.msLeft) : ``;
+    v = t.banStatus?.banned || tvEngelli,
+    y = t.banStatus?.banned ? Ey(t.banStatus.msLeft) : ``;
   if (!e) return null;
   let b = n ? { left: 12, bottom: 12 } : { right: 16, bottom: 16 },
     x = n
@@ -30076,9 +30116,47 @@ function Py({ roomDocId: e }) {
                 style: zy,
                 children: [
                   (0, Z.jsx)(`strong`, { children: `Sohbet` }),
-                  (0, Z.jsx)(`button`, { onClick: () => i(!1), style: By, children: `✕` }),
+                  (0, Z.jsx)(`button`, {
+                    type: `button`,
+                    onClick: () => i(!1),
+                    style: By,
+                    "aria-label": `Sohbeti kapat`,
+                    children: `✕`,
+                  }),
                 ],
               }),
+              tvRakip &&
+                (0, Z.jsxs)(`div`, {
+                  style: tvStil.sohbetSerit,
+                  children: [
+                    (0, Z.jsx)(`bdi`, {
+                      style: { flex: 1, fontSize: 12, color: `#cbd5e1` },
+                      children: tvRakip.name,
+                    }),
+                    (0, Z.jsx)(`button`, {
+                      type: `button`,
+                      style: tvStil.seritDugme,
+                      onClick: () => tvSikayetAyarla(!0),
+                      children: `⚠️ Şikâyet`,
+                    }),
+                    (0, Z.jsx)(`button`, {
+                      type: `button`,
+                      style: tvStil.seritDugme,
+                      onClick: async () => {
+                        try {
+                          tvEngelli
+                            ? await tvEngelKaldir(tvRakip.uid)
+                            : window.confirm(
+                                `${tvRakip.name} engellensin mi?\nMesajlarını görmezsin; sesli sohbet, arkadaşlık ve oyun davetlerini almazsın.`,
+                              ) && (await tvEngelle(tvRakip.uid, tvRakip.name));
+                        } catch (e) {
+                          m(e?.message || `İşlem yapılamadı.`);
+                        }
+                      },
+                      children: tvEngelli ? `Engeli kaldır` : `🚫 Engelle`,
+                    }),
+                  ],
+                }),
               (0, Z.jsxs)(`div`, {
                 style: Vy,
                 children: [
@@ -30157,26 +30235,28 @@ function Py({ roomDocId: e }) {
                       children: [
                         t.messages.length === 0
                           ? (0, Z.jsx)(`p`, { style: Yy, children: `Henüz mesaj yok.` })
-                          : t.messages.map((e) => {
-                              let n = e.uid === t.myUid;
-                              return (0, Z.jsx)(
-                                `div`,
-                                {
-                                  style: { ...Zy, justifyContent: n ? `flex-end` : `flex-start` },
-                                  children: (0, Z.jsx)(`div`, {
-                                    style: {
-                                      ...Qy,
-                                      background: n ? `#3b82f6` : `#374151`,
-                                      color: `white`,
-                                      borderBottomRightRadius: n ? 4 : 14,
-                                      borderBottomLeftRadius: n ? 14 : 4,
-                                    },
-                                    children: e.text,
-                                  }),
-                                },
-                                e.id,
-                              );
-                            }),
+                          : t.messages
+                              .filter((e) => !tvEngelliMi(e.uid))
+                              .map((e) => {
+                                let n = e.uid === t.myUid;
+                                return (0, Z.jsx)(
+                                  `div`,
+                                  {
+                                    style: { ...Zy, justifyContent: n ? `flex-end` : `flex-start` },
+                                    children: (0, Z.jsx)(`div`, {
+                                      style: {
+                                        ...Qy,
+                                        background: n ? `#3b82f6` : `#374151`,
+                                        color: `white`,
+                                        borderBottomRightRadius: n ? 4 : 14,
+                                        borderBottomLeftRadius: n ? 14 : 4,
+                                      },
+                                      children: e.text,
+                                    }),
+                                  },
+                                  e.id,
+                                );
+                              }),
                         (0, Z.jsx)(`div`, { ref: f }),
                       ],
                     }),
@@ -30186,10 +30266,12 @@ function Py({ roomDocId: e }) {
               v &&
                 (0, Z.jsxs)(`div`, {
                   style: ab,
-                  children: [
-                    `🚫 Sohbet yasaklisin — kalan: `,
-                    (0, Z.jsx)(`strong`, { style: { marginLeft: 4 }, children: y }),
-                  ],
+                  children: tvEngelli
+                    ? [`🚫 Bu oyuncuyu engelledin.`]
+                    : [
+                        `🚫 Sohbet yasağın var — kalan: `,
+                        (0, Z.jsx)(`strong`, { style: { marginLeft: 4 }, children: y }),
+                      ],
                 }),
               (0, Z.jsxs)(`div`, {
                 style: $y,
@@ -30199,7 +30281,8 @@ function Py({ roomDocId: e }) {
                     value: s,
                     onChange: (e) => c(e.target.value),
                     onKeyDown: (e) => e.key === `Enter` && g(),
-                    placeholder: v ? `Yasakli (${y})` : `Mesaj yaz...`,
+                    placeholder: v ? (tvEngelli ? `Engelledin` : `Yasaklı (${y})`) : `Mesaj yaz...`,
+                    "aria-label": `Mesaj`,
                     maxLength: 280,
                     disabled: v,
                     style: { ...eb, opacity: v ? 0.5 : 1 },
@@ -30224,6 +30307,24 @@ function Py({ roomDocId: e }) {
               t.error && (0, Z.jsxs)(`div`, { style: rb, children: [`⚠️ `, t.error] }),
             ],
           }),
+        }),
+      tvSikayetAcik &&
+        tvRakip &&
+        (0, Z.jsx)(tvSikayetPenceresi, {
+          hedefAd: tvRakip.name,
+          onKapat: () => tvSikayetAyarla(!1),
+          onGonder: async ({ neden: n, not: r, engelle: i }) => {
+            (await tvSikayetEt({
+              hedefUid: tvRakip.uid,
+              hedefAd: tvRakip.name,
+              odaId: e,
+              neden: n,
+              not: r,
+              mesajlar: t.messages,
+            }),
+              i && (await tvEngelle(tvRakip.uid, tvRakip.name)),
+              m(`✓ Şikâyetin alındı, teşekkürler.`));
+          },
         }),
     ],
   });
@@ -30521,7 +30622,12 @@ function cb({ roomDocId: e, myRole: t }) {
     if (!e || !t) return;
     let r = vf(q(X, `rooms`, e), (e) => {
       if (!e.exists()) return;
-      let r = e.data().voiceConsent || { host: !1, guest: !1, requestedBy: null },
+      let tvD = e.data();
+      if (tvEngelliMi(t === `host` ? tvD.guestUid : tvD.hostUid)) {
+        ((l.current || p.current) && m(), i(`idle`));
+        return;
+      }
+      let r = tvD.voiceConsent || { host: !1, guest: !1, requestedBy: null },
         a = !!r[t],
         o = !!r[n],
         s = r.requestedBy;
@@ -32325,6 +32431,7 @@ async function Hb({ won: e, isMars: t, name: n }) {
 async function Ub(e, t) {
   let n = (e || ``).trim().slice(0, 16);
   if (!n) return { ok: !1, reason: `error`, detail: `Boş rumuz` };
+  if (by(n)) return { ok: !1, reason: `error`, detail: `Bu rumuz uygun değil` };
   let r;
   try {
     if ((await zv(), (r = Bv()), !r)) return { ok: !1, reason: `error`, detail: `Auth eksik` };
@@ -32563,7 +32670,11 @@ function ix(e) {
         n = vf(
           Jd(td(X, `friendRequests`), Xd(`toUid`, `==`, r)),
           (t) => {
-            e(t.docs.map((e) => ({ id: e.id, ...e.data() })).filter((e) => e.status === `pending`));
+            e(
+              t.docs
+                .map((e) => ({ id: e.id, ...e.data() }))
+                .filter((e) => e.status === `pending` && !tvEngelliMi(e.fromUid)),
+            );
           },
           (t) => {
             (console.warn(`[Friends] incoming listener hatasi:`, t.code, t.message), e([]));
@@ -32750,7 +32861,7 @@ function fx(e) {
               let n = Date.now(),
                 r = t.docs
                   .map((e) => ({ id: e.id, ...e.data() }))
-                  .filter((e) => !e.expiresAt || e.expiresAt > n);
+                  .filter((e) => (!e.expiresAt || e.expiresAt > n) && !tvEngelliMi(e.fromUid));
               if (r.length === 0) {
                 e(null);
                 return;
@@ -34093,7 +34204,7 @@ async function xC(e) {
   let t = await pf(Jd(td(X, `rooms`), Xd(`waiting`, `==`, !0)));
   for (let n of t.docs) {
     let t = n.data();
-    if (t.hostUid !== e && !t.guestUid) return n;
+    if (t.hostUid !== e && !t.guestUid && !tvEngelliMi(t.hostUid)) return n;
   }
   return null;
 }
@@ -34912,7 +35023,7 @@ function NC({
       }),
       (0, Z.jsx)(Zx, { myName: t, onOpenFull: () => w(!0) }),
       (0, Z.jsx)(Xx, { onSendGameInvite: S }),
-      (0, Z.jsx)(`div`, { className: `menu-foot`, children: `v2 · pas-and-play, AI ve oda-kod modu` }),
+      (0, Z.jsx)(`div`, { className: `menu-foot`, children: `Tavla ${TV_SURUM} · Poyraz Workshop` }),
     ],
   });
 }
@@ -35539,6 +35650,11 @@ function RC({
             },
             children: `Çıkış Yap`,
           }),
+        (0, Z.jsx)(tvHesapBolumu, {
+          onSilindi: () => {
+            (d((e) => e + 1), f?.());
+          },
+        }),
         (0, Z.jsx)(`button`, { className: `theme-modal-close`, onClick: e, children: `Kapat` }),
       ],
     }),
@@ -36783,7 +36899,7 @@ function VC() {
     };
   return (
     (0, _.useEffect)(() => {
-      zv().catch((e) => console.error(`Auth hatası:`, e));
+      (zv().catch((e) => console.error(`Auth hatası:`, e)), Qh(Lv, () => tvEngelleriYukle()));
     }, []),
     (0, _.useEffect)(() => {
       typeof window > `u` ||

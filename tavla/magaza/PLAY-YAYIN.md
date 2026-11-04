@@ -83,8 +83,7 @@ Kategori **Masa oyunu**, etiketler (bulunanlar: Tavla, Masa oyunu, Zar), e-posta
 Beyanları göndermeden önce kullanıcıya özetle.
 
 ### 6. Eski paket
-`com.korfe.tavla` başka bir Play hesabında taslak ya da yayında ise (kullanıcıya sor), yeni uygulama yayına girince
-o kayıt yayından kaldırılır / silinir: aynı oyunun iki hesaptan yayınlanması Play'in "tekrarlayan içerik" kuralına takılır.
+Gerekmez: `com.korfe.tavla` hiçbir Play hesabında yayında ya da taslak değil (kullanıcı, 4 Kasım 2026).
 
 ## Kullanıcı Oluşturulan İçerik (UGC) — moderasyon sözü
 

@@ -16,3 +16,6 @@
 
 # istek 2026-11-06: 1.0.1 (2) avatar düzeltmesi — imzalı AAB üretime TASLAK (kullanıcı: "avatarları kaldır … sonra hemen güncelleme yayınla"); incelemeye gönderme ayrı ONAY ister
 # (yapıldı 2026-11-06, koşu 42231019730: 1.0.1 (2) üretime draft, AAB koşu 42229224540) yukle uygula
+
+# istek 2026-11-06: 1.0.1 mağaza görselleri (eski ilk ekran görüntüsünde DiceBear'in başörtülü avatarı vardı; kullanıcı: "ONAY: 1.0.1 yayınla")
+gorsel uygula

@@ -13,3 +13,6 @@
 
 # istek 2026-11-04T15:17:07Z: Play'de uygulama var mı (salt okuma; kullanıcı: "hepsini sen yap")
 # (yapıldı 2026-11-04, koşu 41856130864: 404 — uygulama Play Console'da henüz yok) durum
+
+# istek 2026-11-06: 1.0.1 (2) avatar düzeltmesi — imzalı AAB üretime TASLAK (kullanıcı: "avatarları kaldır … sonra hemen güncelleme yayınla"); incelemeye gönderme ayrı ONAY ister
+# (yapıldı 2026-11-06, koşu 42231019730: 1.0.1 (2) üretime draft, AAB koşu 42229224540) yukle uygula

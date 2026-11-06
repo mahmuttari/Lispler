@@ -29406,7 +29406,7 @@ function Ey(e) {
 // Küçültülmüş Firebase işlevleri: X = Firestore, Lv = Auth, q = doc, td = collection, ff = getDoc,
 // pf = getDocs, mf = setDoc, gf = deleteDoc, _f = addDoc, Jd = query, Xd = where, Rd = serverTimestamp.
 // ═══════════════════════════════════════════════════════════════════════════════════════════════
-var TV_SURUM = `1.0.0`,
+var TV_SURUM = `1.0.1`,
   TV_GIZLILIK = `https://mahmuttari.github.io/Lispler/tavla/gizlilik.html`,
   TV_HESAP_SILME = `https://mahmuttari.github.io/Lispler/tavla/hesap-silme.html`,
   TV_ILETISIM = `poyrazworkshop7@gmail.com`,
@@ -32542,16 +32542,15 @@ async function Gb() {
   }
 }
 var Kb = [
-    { id: `avataaars`, name: `Karikatür`, params: `` },
-    { id: `bottts`, name: `Robot`, params: `` },
-    { id: `lorelei`, name: `Kadın`, params: `&glassesProbability=20&earringsProbability=40` },
-    { id: `micah`, name: `Erkek`, params: `&facialHairProbability=70&earringsProbability=0` },
-    { id: `fun-emoji`, name: `Emoji`, params: `` },
-    { id: `pixel-art`, name: `Piksel`, params: `` },
+    { id: `pul`, name: `Pul` },
+    { id: `zar`, name: `Zar` },
+    { id: `kahve`, name: `Kahve` },
+    { id: `cay`, name: `Çay` },
   ],
-  qb = `avataaars`,
+  qb = `pul`,
   Jb = `tavla_avatar`;
-// T-06: tohum (çoğu zaman Firebase kullanıcı kimliği) api.dicebear.com'a olduğu gibi gitmez; tek yönlü özet gider.
+// 1.0.1: avatarlar uygulamanın içinde çizilir (SVG). Dış avatar servisi (DiceBear) yok, insan yüzü ya da figürü yok;
+// tohum yalnız rengi ve zar sayısını seçer. 1.0.0'ın eski stil adları (Karikatür, Kadın, Erkek…) varsayılan "pul"a düşer.
 function tvAvatarTohumu(e) {
   let t = 2166136261,
     n = 5381;
@@ -32561,11 +32560,57 @@ function tvAvatarTohumu(e) {
   }
   return t.toString(36) + n.toString(36);
 }
+var tvAvatarRenk = [
+  [`#8b1e1e`, `#f3d9a4`],
+  [`#1e4f8b`, `#f1e6d0`],
+  [`#2e6b3a`, `#f3e3b3`],
+  [`#6b4518`, `#f6e7c8`],
+  [`#4b2e6b`, `#efe2f5`],
+  [`#1d6b65`, `#e6f4ef`],
+  [`#8a5a00`, `#fbeec9`],
+  [`#333333`, `#eeeeee`],
+];
+var tvZarNokta = {
+  1: [[32, 32]],
+  2: [[22, 22], [42, 42]],
+  3: [[20, 20], [32, 32], [44, 44]],
+  4: [[22, 22], [42, 22], [22, 42], [42, 42]],
+  5: [[20, 20], [44, 20], [32, 32], [20, 44], [44, 44]],
+  6: [[22, 18], [42, 18], [22, 32], [42, 32], [22, 46], [42, 46]],
+};
+function tvAvatarSvg(e, t) {
+  let h = 2166136261;
+  for (let r of tvAvatarTohumu(t)) h = Math.imul(h ^ r.codePointAt(0), 16777619) >>> 0;
+  let [a, b] = tvAvatarRenk[h % tvAvatarRenk.length],
+    i = ``;
+  if (e === `zar`) {
+    let n = ((h >>> 8) % 6) + 1;
+    i =
+      `<rect x="10" y="10" width="44" height="44" rx="9" fill="${b}" stroke="#00000033" stroke-width="2"/>` +
+      tvZarNokta[n].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4.2" fill="${a}"/>`).join(``);
+  } else if (e === `kahve`) {
+    i =
+      `<path d="M19 26h24v10a12 12 0 0 1-24 0z" fill="${b}"/>` +
+      `<path d="M43 29h3a5 5 0 0 1 0 10h-4" fill="none" stroke="${b}" stroke-width="3"/>` +
+      `<ellipse cx="31" cy="26" rx="12" ry="3" fill="#4a2c17"/>` +
+      `<path d="M14 49h34" stroke="${b}" stroke-width="3" stroke-linecap="round"/>` +
+      `<path d="M27 12c-2 3 2 5 0 8M35 12c-2 3 2 5 0 8" fill="none" stroke="${b}" stroke-width="2" stroke-linecap="round" opacity=".7"/>`;
+  } else if (e === `cay`) {
+    i =
+      `<path d="M23 18h18c0 6-4 9-4 15s4 9 4 13H23c0-4 4-7 4-13s-4-9-4-15z" fill="#b5401f" stroke="${b}" stroke-width="2"/>` +
+      `<path d="M23 18h18" stroke="${b}" stroke-width="3" stroke-linecap="round"/>` +
+      `<ellipse cx="32" cy="50" rx="13" ry="3.5" fill="${b}"/>`;
+  } else {
+    i =
+      `<circle cx="32" cy="32" r="21" fill="${b}" stroke="#00000033" stroke-width="2"/>` +
+      `<circle cx="32" cy="32" r="14" fill="none" stroke="${a}" stroke-width="3"/>` +
+      `<circle cx="32" cy="32" r="5" fill="${a}"/>`;
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="${a}"/>${i}</svg>`;
+}
 function Yb(e, t) {
-  let n = Kb.find((t) => t.id === e) || Kb.find((e) => e.id === qb),
-    r = encodeURIComponent(tvAvatarTohumu(t)),
-    i = n.params || ``;
-  return `https://api.dicebear.com/9.x/${n.id}/svg?seed=${r}&backgroundColor=transparent,b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf${i}`;
+  let n = Kb.find((t) => t.id === e) || Kb.find((e) => e.id === qb);
+  return `data:image/svg+xml;charset=utf-8,` + encodeURIComponent(tvAvatarSvg(n.id, t));
 }
 function Xb() {
   if (typeof window > `u`) return null;
@@ -33429,7 +33474,7 @@ yok`,
                 title: `${t.name} — tıkla, oyuna davet et`,
                 children: [
                   (0, Z.jsx)(`img`, {
-                    src: Yb(`avataaars`, t.uid),
+                    src: Yb(qb, t.uid),
                     alt: t.name,
                     className: `online-dock-avatar`,
                   }),
@@ -36872,7 +36917,7 @@ function VC() {
   let me = async () => {
       fe && (await hx(fe.toUid, fe.inviteId), await wC(fe.roomCode), C(null));
     },
-    [he, ge] = (0, _.useState)(() => Xb() || { style: `avataaars`, seed: Bv() || `misafir` }),
+    [he, ge] = (0, _.useState)(() => Xb() || { style: qb, seed: Bv() || `misafir` }),
     _e = (e) => {
       (ge(e), Zb(e));
     },

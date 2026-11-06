@@ -1,6 +1,7 @@
 # Ölçü Kutusu (Measure Box) — Google Play'e ilk yayın
 
-Hesap: **Poyraz Workshop** (doğrudan **Üretim**). Reklam hesabı: **AdMob, mahmuttari@gmail.com** (yayıncı
+Hesap: **MARFEN** (`7263444126314683368`; doğrudan **Üretim**, kuruluşa geçişten en az 72 saat sonra:
+[`../../docs/marfen-hesap-aktarim.md`](../../docs/marfen-hesap-aktarim.md) §5). Reklam hesabı: **AdMob, mahmuttari@gmail.com** (yayıncı
 `pub-2417242373034448`). Paket: `com.poyrazworkshop.smartmeasure`. Dört küçük uygulama (Unitica, Calqora, Kıble Bul,
 Ölçü Kutusu) **tek tarayıcı oturumunda** sırayla yapılır: ortak akış
 [`../../docs/kucuk-uygulamalar-play.md`](../../docs/kucuk-uygulamalar-play.md); bu dosya yalnız Ölçü Kutusu'na özgü

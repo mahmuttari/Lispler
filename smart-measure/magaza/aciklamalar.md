@@ -10,7 +10,7 @@ reklamlar açıkça anlatılır (`test/magaza.test.mjs` denetler).
 ## Ortak
 
 - **Uygulama adı:** Ölçü Kutusu – Terazi, Cetvel
-- **Geliştirici adı:** Poyraz Workshop
+- **Geliştirici adı:** MARFEN
 - **Paket adı:** `com.poyrazworkshop.smartmeasure`
 - **Tür ve kategori:** Uygulama · Araçlar
 - **Hedef kitle:** 13-15, 16-17, 18 ve üzeri (13 altı seçilmez)

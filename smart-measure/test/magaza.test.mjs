@@ -62,7 +62,7 @@ test('gizlilik ve tanıtım sayfası: AdMob, UMP, Play Faturalandırma, kamera, 
   assert.match(md, /Gizlilik politikası:\*\* https:\/\/mahmuttari\.github\.io\/Lispler\/smart-measure\/gizlilik\.html/);
   const g = fs.readFileSync(path.join(SM, '..', 'app', 'smart-measure', 'gizlilik.html'), 'utf8');
   for (const s of ['Gizlilik Politikası', 'AdMob', 'Reklam gizlilik seçenekleri', 'Google Play Faturalandırma', 'Kamera:', 'Mikrofon:',
-    'kaydedilmez', 'Tüm verileri sil', 'Privacy Policy (English)', 'mahmuttari@gmail.com', 'Poyraz Workshop']) assert.ok(g.includes(s), s);
+    'kaydedilmez', 'Tüm verileri sil', 'Privacy Policy (English)', 'mahmuttari@gmail.com', 'MARFEN']) assert.ok(g.includes(s), s);
   assert.ok(fs.existsSync(path.join(SM, '..', 'app', 'smart-measure', 'index.html')));
   const ic = png(path.join(SM, '..', 'app', 'smart-measure', 'icon-192.png'));
   assert.deepEqual([ic.w, ic.h], [192, 192]);

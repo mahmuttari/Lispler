@@ -6,7 +6,7 @@ import { S } from '../store.js';
 import * as native from '../native.js';
 import { lowPass, corrected } from '../olcum/level.js';
 import * as isik from '../olcum/isik.js';
-import { topbar, moreButton, tileIcon, timeOf } from './common.js';
+import { topbar, moreButton, tileIcon, timeOf, dayLabel } from './common.js';
 
 const DEG = 180 / Math.PI;
 
@@ -41,7 +41,7 @@ export function render({ go }) {
   // Sensörler
   const sn = S.sensors;
   const soundVal = h('span', { class: 'value', text: sn.lastSoundDb != null ? `${num(sn.lastSoundDb, 1)} ${sn.lastSoundUnit === 'dB' ? t('sn_unit_db') : t('sn_unit_dbfs')}` : '—' });
-  const soundSub = h('span', { class: 'muted', text: sn.lastSoundAt ? `${t('hm_sound_last')} · ${timeOf(sn.lastSoundAt)}` : t('hm_sound_idle') });
+  const soundSub = h('span', { class: 'muted', text: sn.lastSoundAt ? `${t('hm_sound_last')} · ${dayLabel(sn.lastSoundAt)} ${timeOf(sn.lastSoundAt)}` : t('hm_sound_idle') });
   const luxVal = h('span', { class: 'value', text: '—' });
   const luxSub = h('span', { class: 'muted', text: t('sn_light_waiting') });
   const advice = h('p', { class: 'muted small', text: '' });

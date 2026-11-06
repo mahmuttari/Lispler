@@ -37,7 +37,7 @@ final class SesOlcer implements Runnable {
         AudioManager am = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
         boolean islenmemis = am != null && "true".equals(am.getProperty(AudioManager.PROPERTY_SUPPORT_AUDIO_SOURCE_UNPROCESSED));
         int[] kaynaklar = islenmemis
-            ? new int[] { MediaRecorder.AudioSource.UNPROCESSED, MediaRecorder.AudioSource.VOICE_RECOGNITION }
+            ? new int[] { MediaRecorder.AudioSource.UNPROCESSED, MediaRecorder.AudioSource.VOICE_RECOGNITION, MediaRecorder.AudioSource.MIC }
             : new int[] { MediaRecorder.AudioSource.VOICE_RECOGNITION, MediaRecorder.AudioSource.MIC };
         for (int kaynak : kaynaklar) {
             for (int fs : new int[] { 48000, 44100 }) {

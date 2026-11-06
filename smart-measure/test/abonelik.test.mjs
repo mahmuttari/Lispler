@@ -48,3 +48,12 @@ test('fiyat yalnız tarayıcı taklidinde: uygulamanın sayfaları fiyat yazmaz'
     assert.ok(!/[$€₺]\s?\d|\d\s?(TL|USD)\b/.test(s), `${d} içinde fiyat var`);
   }
 });
+
+test('satın alma hataları: Android kodları (vazgeçme, zaten abone, bekleyen ödeme)', () => {
+  assert.equal(B.purchaseError({ code: 'USER_CANCELED', message: 'Purchase is not purchased' }), 'cancelled');
+  assert.equal(B.purchaseError({ code: 'ITEM_ALREADY_OWNED' }), 'owned');
+  assert.equal(B.purchaseError({ code: 'PURCHASE_STATE_2' }), 'pending');
+  assert.equal(B.purchaseError({ message: 'Purchase is pending' }), 'pending');
+  assert.equal(B.purchaseError(new Error('Billing unavailable')), 'failed');
+  assert.equal(B.purchaseError(undefined), 'failed');
+});

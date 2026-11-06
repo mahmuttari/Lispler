@@ -29,10 +29,11 @@ export function start() {
   return Promise.race([refresh().catch(() => false), new Promise((r) => setTimeout(r, 4000))]);
 }
 
-/** → 'ok' | 'pending' | 'cancelled' | 'failed' */
+/** → 'ok' | 'pending' | 'cancelled' | 'failed' (zaten abone olan hesapta abonelik geri yüklenir) */
 export async function subscribe(p, offerToken) {
   const r = await billing.purchase(p, offerToken);
   if (r === 'ok') set(true, p);
+  if (r === 'owned') return (await restore()) === 'restored' ? 'ok' : 'failed';
   return r;
 }
 

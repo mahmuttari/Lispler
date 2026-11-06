@@ -185,7 +185,9 @@ export function render({ params, back }) {
       draw();
     };
     box.addEventListener('pointermove', mv);
-    box.addEventListener('pointerup', () => { if (drag) { drag = null; changed('ruler'); } });
+    const end = () => { if (drag) { drag = null; changed('ruler'); } };
+    box.addEventListener('pointerup', end);
+    box.addEventListener('pointercancel', end); // sistem hareketi dokunuşu iptal ederse de kılavuz kaydedilir
     window.addEventListener('resize', draw);
     function close() {
       window.removeEventListener('resize', draw);

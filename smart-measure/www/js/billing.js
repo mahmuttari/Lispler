@@ -59,16 +59,31 @@ export function entitled(purchases) {
     && p.isActive !== false);
 }
 
-/** → 'ok' | 'pending' | 'cancelled' | 'failed' */
+/** Reddedilen satın alma → ne oldu. @capgo/native-purchases 8.9.6 (Android) purchaseProduct'ı yalnız PURCHASED (1)
+ *  durumunda çözer; yoksa reddeder: kullanıcı vazgeçti USER_CANCELED ("Purchase is not purchased"), zaten abone
+ *  ITEM_ALREADY_OWNED, bekleyen ödeme (Purchase.PurchaseState.PENDING = 2) "Purchase is pending", başka durum
+ *  PURCHASE_STATE_<n>. Önce kod, sonra ileti. (Android'de 0 UNSPECIFIED'dır, bekleyen değil; Calqora'daki düzeltmenin aynısı.) */
+export function purchaseError(e) {
+  const code = String((e && e.code) || '');
+  const msg = String((e && e.message) || (typeof e === 'string' ? e : '') || '');
+  if (code === 'USER_CANCELED') return 'cancelled';
+  if (code === 'ITEM_ALREADY_OWNED') return 'owned';
+  if (code === 'PURCHASE_STATE_2') return 'pending';
+  if (/pending/i.test(msg)) return 'pending';
+  if (/cancel/i.test(msg)) return 'cancelled';
+  if (/already.?owned/i.test(msg)) return 'owned';
+  return 'failed';
+}
+
+/** → 'ok' | 'pending' | 'cancelled' | 'owned' | 'failed' */
 export async function purchase(plan, offerToken) {
   if (!SUBSCRIPTION.plans.includes(plan)) return 'failed';
   if (!isNative) { await wait(400); if (mockOff()) return 'failed'; mockSet(plan); return 'ok'; }
   try {
     const r = await np().purchaseProduct({ productIdentifier: SUBSCRIPTION.productId, planIdentifier: plan, productType: SUBS, offerToken, quantity: 1 });
-    if (r && String(r.purchaseState) === '0') return 'pending';
-    return 'ok';
+    return r && r.purchaseState !== undefined && r.purchaseState !== null && String(r.purchaseState) !== '1' ? 'pending' : 'ok';
   } catch (e) {
-    return /cancel/i.test(String((e && (e.message || e.code)) || '')) ? 'cancelled' : 'failed';
+    return purchaseError(e);
   }
 }
 

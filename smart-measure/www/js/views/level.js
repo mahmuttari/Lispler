@@ -37,7 +37,7 @@ export function render({ back }) {
 
   // ---- parçalar
   const modes = segmented(L.MODES.map((m) => ({ value: m, label: t(`lv_mode_${m}`), sub: t(`lv_mode_${m}_sub`) })), P.mode,
-    (v) => { P.mode = v; changed('level'); onTarget = false; unlockAudio(); build(); }, { label: t('lv_level_title') });
+    (v) => { P.mode = v; changed('level'); onTarget = false; unlockAudio(); r = readingNow(); build(); }, { label: t('lv_level_title') });
   const gaugeBox = h('div');
   const big = h('div', { class: 'big', 'aria-live': 'off' });
   const state = h('div', { class: 'level-state', 'aria-live': 'polite' });
@@ -148,7 +148,7 @@ export function render({ back }) {
     if (samples.on) samples.list.push({ x: s.x, y: s.y, z: s.z });
     const dt = lastT ? Math.max(0, (s.t - lastT) / 1000) : 0; lastT = s.t;
     filt = L.lowPass(filt, L.corrected(s, P.cal), dt, 0.2);
-    r = L.applyReference(L.reading(P.mode, filt), P.ref[P.mode]);
+    r = readingNow();
     const was = onTarget;
     onTarget = L.targetLatch(onTarget, L.offTarget(r), P.tolerance);
     if (onTarget && !was) {
@@ -156,6 +156,11 @@ export function render({ back }) {
       if (P.sound) beep();
     }
     if (!raf) raf = requestAnimationFrame(draw);
+  }
+
+  // Süzülmüş son örnekten bu kipin okuması (kip değişince eski kipin okuması ekranda kalmasın)
+  function readingNow() {
+    return filt ? L.applyReference(L.reading(P.mode, filt), P.ref[P.mode]) : { mode: P.mode, noData: true, valid: false };
   }
 
   function zeroHere() {
@@ -197,11 +202,12 @@ export function render({ back }) {
 
   // ---- kalibrasyon
   function calibrationSheet() {
-    let step = 1, single = false, m1 = null, busy = false;
+    let step = 1, single = false, m1 = null, busy = false, closed = false, finishCollect = null;
     const body = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '14px' } });
     const collect = () => new Promise((res) => {
       samples.list = []; samples.on = true;
-      setTimeout(() => { samples.on = false; res(samples.list.slice()); }, 1600);
+      const timer = setTimeout(() => finishCollect && finishCollect(), 1600);
+      finishCollect = () => { clearTimeout(timer); finishCollect = null; samples.on = false; res(samples.list.slice()); };
     });
     const failText = { no_data: 'lv_cal_failed_no_data', moving: 'lv_cal_failed_moving', not_flat: 'lv_cal_failed_not_flat', bias: 'lv_cal_failed_bias' };
     function view(kind, extra) {
@@ -227,6 +233,7 @@ export function render({ back }) {
       const res = L.calibrationStep(await collect());
       busy = false;
       reklam.mesgul('kalibrasyon', false);
+      if (closed) return; // pencere ölçüm sürerken kapatıldı: yarım ölçüm kaydedilmez
       if (!res.ok) { view('fail', res.reason); return; }
       if (step === 1 && !single) { m1 = res.mean; step = 2; native.haptic('light'); view('step'); return; }
       const c = single ? L.calibrate(res.mean) : L.calibrate(m1, res.mean);
@@ -237,7 +244,10 @@ export function render({ back }) {
       view('done', c.surfaceTiltDeg);
     }
     view('step');
-    const sh = sheet(t('lv_cal_title'), body, { cls: 'acc-green', onClose: () => { samples.on = false; reklam.mesgul('kalibrasyon', false); } });
+    const sh = sheet(t('lv_cal_title'), body, { cls: 'acc-green', onClose: () => {
+      // bekleyen ölçüm hemen biter; measure() kapandığını görüp hiçbir şey kaydetmez
+      closed = true; if (finishCollect) finishCollect(); samples.on = false; reklam.mesgul('kalibrasyon', false);
+    } });
   }
 
   // ---- akış
@@ -251,7 +261,9 @@ export function render({ back }) {
   return {
     el,
     pause: halt,
-    resume: start,
+    // Android onPause'da eklenti sensörü kapatır ama sayfaya duraklama gelmeyebilir (izin penceresi, yarı saydam
+    // ekran): dönüşte akış her zaman yeniden açılır.
+    resume: () => { halt(); start(); },
     destroy: () => { halt(); window.removeEventListener('resize', placeTolerance); if (raf) cancelAnimationFrame(raf); },
   };
 }

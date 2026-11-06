@@ -73,7 +73,7 @@ export function render({ params, back }) {
   // ses durumu
   let mic = 'idle', stopMic = null, fast = null, leq = SES.leqStart(), hist = [], clipping = false, source = null, calLeq = null;
   // ışık durumu
-  let light = 'waiting', lux = null, luxStats = { sum: 0, n: 0, max: -Infinity }, luxHist = [], stopLight = null;
+  let light = 'waiting', lux = null, luxStats = ISIK.luxStart(), luxHist = [], stopLight = null;
 
   const tabs = segmented([{ value: 'sound', label: t('sn_tab_sound'), icon: 'Volume2' }, { value: 'light', label: t('sn_tab_light'), icon: 'Sun' }], tab,
     (v) => {
@@ -91,7 +91,7 @@ export function render({ params, back }) {
     topbar({ title: t('sn_sensors_title'), sub: t('sn_sensors_subtitle'), onBack: back, actions: [help, more] }), tabs, body);
 
   function resetStats() {
-    leq = SES.leqStart(); hist = []; luxStats = { sum: 0, n: 0, max: -Infinity }; luxHist = [];
+    leq = SES.leqStart(); hist = []; luxStats = ISIK.luxStart(); luxHist = [];
     toast(t('sn_menu_reset_stats'));
     redraw();
   }
@@ -189,27 +189,36 @@ export function render({ params, back }) {
     redraw();
   }
 
+  // micGen: her açma bir oturumdur; durdurulmuş ya da yerine yenisi açılmış oturumun geç gelen olayı ve hatası
+  // yeni oturuma dokunmaz. micOpening: izin sorulurken ikinci dokunuş ikinci bir dinleyici açmasın.
+  let micGen = 0, micOpening = false;
   function startMic() {
-    if (stopMic) return;
+    if (stopMic || micOpening) return;
+    micOpening = true;
+    const gen = ++micGen;
     native.permission('microphone').then(async (p) => {
-      if (p === 'unavailable' && !native.isNative) { mic = 'missing'; redraw(); return; }
+      if (p === 'unavailable' && !native.isNative) { micOpening = false; mic = 'missing'; redraw(); return; }
       if (p !== 'granted') p = await native.permission('microphone', true);
+      micOpening = false;
+      if (gen !== micGen) return; // izin sorulurken kapatıldı
       if (p !== 'granted') { mic = p === 'unavailable' ? 'missing' : 'denied'; redraw(); return; }
       mic = 'running'; clipping = false;
       reklam.mesgul('mikrofon', true);
       native.keepAwake(true);
       stopMic = native.sound((e) => {
+        if (gen !== micGen) return;
         fast = e.fast; clipping = e.clipping; source = e.source;
         leq = SES.leqAdd(leq, e.block, e.seconds, e.fast);
         if (calLeq) calLeq = SES.leqAdd(calLeq, e.block, e.seconds, e.fast);
         hist.push(e.fast); if (hist.length > 600) hist.shift();
         SN.lastSoundDb = Math.round(lvl(e.fast) * 10) / 10; SN.lastSoundUnit = calibrated() ? 'dB' : 'dBFS'; SN.lastSoundAt = Date.now();
         schedule();
-      }, (why) => { haltMic(); mic = why; redraw(); });
+      }, (why) => { if (gen !== micGen) return; haltMic(); mic = why; redraw(); });
       redraw();
-    });
+    }).catch(() => { micOpening = false; });
   }
   function haltMic() {
+    micGen++;
     if (stopMic) { stopMic(); stopMic = null; changed('sensors'); }
     reklam.mesgul('mikrofon', false);
     native.keepAwake(false);
@@ -284,7 +293,7 @@ export function render({ params, back }) {
       const lv = live ? ISIK.level(lux) : null;
       levelTxt.textContent = lv ? t(`sn_level_${lv}`) : '';
       put(marks, ...ISIK.GAUGE_MARKS.map((m) => h('span', { class: `badge${lv === m.id ? ' warn' : ''}`, text: t(`sn_mark_${m.id}`) })));
-      const avg = luxStats.n ? luxStats.sum / luxStats.n : null;
+      const avg = ISIK.luxAverage(luxStats, performance.now());
       const cell = (k, v) => h('div', null, h('small', { text: t(k) }), h('span', { class: 'value', text: f(v) }));
       put(chips, cell('sn_chip_live', live ? lux : null), cell('sn_chip_average', avg), cell('sn_chip_max', Number.isFinite(luxStats.max) ? luxStats.max : null));
       sp.set(luxHist.map(ISIK.gauge), 0, 1);
@@ -303,7 +312,7 @@ export function render({ params, back }) {
     stopLight = native.light((s) => {
       if (!s) { light = 'missing'; schedule(); return; }
       light = 'live'; lux = s.lux;
-      luxStats = { sum: luxStats.sum + lux, n: luxStats.n + 1, max: Math.max(luxStats.max, lux) };
+      luxStats = ISIK.luxAdd(luxStats, lux, performance.now());
       luxHist.push(lux); if (luxHist.length > 600) luxHist.shift();
       SN.lastLux = lux; SN.lastLuxAt = Date.now();
       schedule();
@@ -320,7 +329,12 @@ export function render({ params, back }) {
   return {
     el,
     pause: () => { haltLight(); if (mic === 'running') pauseMic(); },
-    resume: () => { startLight(); },
+    // Android onPause'da eklenti ışık sensörünü ve mikrofonu kapatır ama sayfaya duraklama gelmeyebilir (izin
+    // penceresi, yarı saydam ekran): dönüşte ikisi de yeniden açılır, yoksa ekranda donmuş değer kalır.
+    resume: () => {
+      haltLight(); startLight();
+      if (mic === 'running') { haltMic(); startMic(); }
+    },
     destroy: () => { haltLight(); haltMic(); if (raf) cancelAnimationFrame(raf); changed('sensors'); },
   };
 }

@@ -95,8 +95,9 @@ export function stateKey(r, tolerance) {
   if (r.noData) return 'lv_state_no_data';
   if (!r.valid) return r.mode === 'surface' ? 'lv_state_hold_flat' : 'lv_state_hold_upright';
   const tol = tolerance + 1e-9;
+  // "Düz" ile titreşim/ses aynı ölçütü kullanır: toplam eğim (göstergedeki tolerans halkası da dairedir)
   if (r.mode === 'surface') {
-    if (Math.abs(r.x) <= tol && Math.abs(r.y) <= tol) return 'lv_state_level';
+    if (offTarget(r) <= tol) return 'lv_state_level';
     if (Math.abs(r.x) >= Math.abs(r.y)) return r.x > 0 ? 'lv_state_right_low' : 'lv_state_left_low';
     return r.y > 0 ? 'lv_state_top_low' : 'lv_state_bottom_low';
   }
@@ -104,7 +105,7 @@ export function stateKey(r, tolerance) {
     if (offTarget(r) <= tol) return 'lv_state_on_target';
     return r.angle > 0 ? 'lv_state_rising' : 'lv_state_falling';
   }
-  if (Math.abs(r.side) <= tol && Math.abs(r.fb) <= tol) return 'lv_state_on_target';
+  if (offTarget(r) <= tol) return 'lv_state_on_target';
   if (Math.abs(r.side) >= Math.abs(r.fb)) return r.side > 0 ? 'lv_state_leans_right' : 'lv_state_leans_left';
   return r.fb > 0 ? 'lv_state_leans_back' : 'lv_state_leans_forward';
 }

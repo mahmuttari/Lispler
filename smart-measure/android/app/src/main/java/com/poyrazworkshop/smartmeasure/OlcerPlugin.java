@@ -47,7 +47,6 @@ import org.json.JSONObject;
 public class OlcerPlugin extends Plugin {
     private static final long YERCEKIMI_NS = 30_000_000L; // en sık ~33 olay/sn
     private static final long YONELIM_NS = 30_000_000L;
-    private static final long ISIK_NS = 100_000_000L;
 
     private SensorManager sm;
     private SensorEventListener yercekimi, yonelim, isik;
@@ -234,13 +233,11 @@ public class OlcerPlugin extends Plugin {
             call.resolve(r);
             return;
         }
+        // Işık sensörü yalnız değer değişince bildirir (ON_CHANGE): seyreltilmez, yoksa ışık değişip sabit kalınca
+        // son değer hiç gelmez ve ekranda eski değer kalır. Hız SENSOR_DELAY_UI ile zaten sınırlı.
         isik = new SensorEventListener() {
-            private long son = 0;
-
             @Override
             public void onSensorChanged(SensorEvent e) {
-                if (e.timestamp - son < ISIK_NS) return;
-                son = e.timestamp;
                 JSObject o = new JSObject();
                 o.put("lux", (double) e.values[0]);
                 o.put("t", e.timestamp / 1e6);

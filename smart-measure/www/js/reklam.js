@@ -59,7 +59,14 @@ function bannerPayi(px) {
   document.documentElement.style.setProperty('--banner-h', `${Math.max(0, Math.round(px))}px`);
 }
 
-export async function baslat() {
+/** Aynı anda bir kez çalışır: açılışta abonelik bayrağı değişince (abonelikDegisti) ve app.js birlikte çağırabilir. */
+let baslatiliyor = null;
+export function baslat() {
+  if (!baslatiliyor) baslatiliyor = baslatAsil().finally(() => { baslatiliyor = null; });
+  return baslatiliyor;
+}
+
+async function baslatAsil() {
   const ad = admob();
   if (!ad || durum.hazir || isPremium()) return;
   try {
@@ -89,6 +96,9 @@ async function bannerGoster() {
     durum.bannerAcik = true;
     await ad.showBanner({ adId: durum.kimlik.banner, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0 });
     durum.banner = true;
+    // banner açılırken abonelik başladıysa abonelikDegisti onu göremedi: burada kaldırılır
+    if (isPremium()) { await abonelikDegisti(); return; }
+    durum.bannerAcik = true;
     if (durum.gizle.size) bannerGizliMi();
   } catch (e) { durum.bannerAcik = false; console.warn('AdMob banner', e); }
 }

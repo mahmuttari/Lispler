@@ -52,3 +52,16 @@ export const GAUGE_MARKS = [
   { id: 'bright', from: gauge(350), to: gauge(750) },
   { id: 'very_bright', from: gauge(750), to: 1 },
 ];
+
+/** Ortalama ve en yüksek değer. Işık sensörü yalnız değer değişince bildirir (titrek ışıkta çok, sabit ışıkta tek
+ *  olay): ortalama olay sayısına göre değil, her değerin ekranda kaldığı süreye göre alınır. Zamanlar ms. */
+export const luxStart = () => ({ sum: 0, dur: 0, max: -Infinity, last: null, at: 0 });
+export function luxAdd(st, lux, now) {
+  const dt = st.last == null ? 0 : Math.max(0, now - st.at);
+  return { sum: st.sum + (st.last == null ? 0 : st.last * dt), dur: st.dur + dt, max: Math.max(st.max, lux), last: lux, at: now };
+}
+export function luxAverage(st, now) {
+  if (st.last == null) return null;
+  const dt = Math.max(0, now - st.at), dur = st.dur + dt;
+  return dur > 0 ? (st.sum + st.last * dt) / dur : st.last;
+}

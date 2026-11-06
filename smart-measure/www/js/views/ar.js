@@ -19,7 +19,7 @@ export function render({ params, back }) {
   let mode = ['distance', 'height', 'width'].includes(params.mode) ? params.mode : S.ar.mode;
   let points = [];
   let aim = null, dir = null, lastT = 0, bearingOk = false, orientation = 'waiting';
-  let stream = null, track = null, torchOn = false, camState = 'idle', destroyed = false;
+  let stream = null, track = null, torchOn = false, camState = 'idle', destroyed = false, opening = false, paused = false;
   let caps = null;
   const units = () => S.settings.units;
   const h0 = () => S.settings.cameraHeight;
@@ -35,7 +35,7 @@ export function render({ params, back }) {
   const problem = h('div', { class: 'cam-problem hidden' });
   const torchBtn = iconButton('Flashlight', t('cm_torch'), toggleTorch);
   torchBtn.classList.add('hidden');
-  const fsBtn = iconButton('Maximize', t('cm_fullscreen'), () => fullscreen(true));
+  const fsBtn = iconButton('Maximize', t('cm_fullscreen'), () => fullscreen(!document.body.classList.contains('fullscreen')));
   const overlay = h('div', { class: 'cam-overlay hidden' });
   const hud = h('div', { class: 'cam-hud hidden', 'aria-live': 'polite' });
   const cam = h('div', { class: 'cam acc-blue' }, video, cross, pill, problem, hud, h('div', { class: 'cam-tools' }, torchBtn, fsBtn), overlay);
@@ -109,7 +109,8 @@ export function render({ params, back }) {
 
   function finish() {
     const r = A.result(mode, h0(), points);
-    if (!r || !r.main) { toast(t(mode === 'height' ? 'cm_problem_aim_higher' : 'cm_problem_aim_lower')); points = points.slice(0, 1); return; }
+    // yükseklikte tepe tabanın üstünde değil: tepeye nişan alınmalı ("dümdüz aşağı bakıyorsunuz" değil)
+    if (!r || !r.main) { toast(t(mode === 'height' ? 'cm_hint_top' : 'cm_problem_aim_lower')); points = points.slice(0, 1); return; }
     addHistory('ar', t(HISTORY_KEY[mode]), meas(r.main), `${t('cm_height_set', B.phoneHeight(h0(), units(), getLang()))}`);
     native.haptic('success');
     toast(t('cm_saved'));
@@ -190,15 +191,18 @@ export function render({ params, back }) {
     schedule();
   }
 
-  let sensorStops = [];
+  let sensorStops = [], sensorGen = 0;
   function startSensors() {
     orientation = 'waiting';
     let rotOk = false;
+    const gen = ++sensorGen; // durdurulmuş bir başlatmanın geç gelen yanıtı yeni dinleyici açmasın
     const stopRot = native.rotation((s) => {
+      if (gen !== sensorGen || destroyed) return;
       if (!s) {
         if (rotOk) return;
         // dönme vektörü yok: yalnız yerçekimi (yön bilinmez)
         sensorStops.push(native.gravity((g) => {
+          if (gen !== sensorGen || destroyed) return;
           if (!g) { orientation = 'missing'; aim = null; drawOverlay(); drawAll(); return; }
           if (orientation !== 'live') { orientation = 'live'; bearingOk = false; drawAll(); }
           const n = Math.hypot(g.x, g.y, g.z), sz = Math.max(-1, Math.min(1, g.z / n));
@@ -211,7 +215,7 @@ export function render({ params, back }) {
     });
     sensorStops.push(stopRot);
   }
-  const stopSensors = () => { sensorStops.forEach((f) => f()); sensorStops = []; };
+  const stopSensors = () => { sensorGen++; sensorStops.forEach((f) => f()); sensorStops = []; lastT = 0; dir = null; };
 
   // ---- kamera
   function drawOverlay() {
@@ -250,12 +254,16 @@ export function render({ params, back }) {
   }
 
   async function startCamera() {
-    if (destroyed || stream) return;
+    // opening: getUserMedia sürerken ikinci bir çağrı (izin penceresinden dönüşte resume) ikinci akış açmasın
+    if (destroyed || stream || opening) return;
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { camState = 'nocam'; drawOverlay(); return; }
     camState = 'idle'; drawOverlay();
+    opening = true;
     try {
       const s = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 960 } } });
-      if (destroyed) { s.getTracks().forEach((x) => x.stop()); return; }
+      opening = false;
+      // açılırken ekrandan çıkıldı ya da uygulama arka plana gitti: akış hemen kapanır (resume yeniden açar)
+      if (destroyed || paused) { s.getTracks().forEach((x) => x.stop()); camState = 'idle'; return; }
       stream = s; track = s.getVideoTracks()[0] || null;
       video.srcObject = s;
       try { await video.play(); } catch (e) { /* sessiz video kendiliğinden oynar */ }
@@ -263,6 +271,7 @@ export function render({ params, back }) {
       reklam.mesgul('kamera', true);
       native.keepAwake(true);
     } catch (e) {
+      opening = false;
       const n = e && e.name;
       camState = n === 'NotAllowedError' || n === 'SecurityError' ? 'denied' : n === 'NotFoundError' || n === 'OverconstrainedError' ? 'nocam' : 'failed';
     }
@@ -294,7 +303,6 @@ export function render({ params, back }) {
     reklam.bannerGizle('tamekran', on);
     put(fsBtn, icon(on ? 'Minimize' : 'Maximize', 22));
     fsBtn.setAttribute('aria-label', t(on ? 'cm_fullscreen_exit' : 'cm_fullscreen'));
-    fsBtn.onclick = () => fullscreen(!on);
   }
 
   // ---- telefon yüksekliği
@@ -327,8 +335,10 @@ export function render({ params, back }) {
   return {
     el,
     onBack: () => { if (document.body.classList.contains('fullscreen')) { fullscreen(false); return true; } return false; },
-    pause: () => { stopCamera(); stopSensors(); },
-    resume: () => { if (!destroyed) { startSensors(); if (camState === 'idle') begin(); } },
+    pause: () => { paused = true; stopCamera(); stopSensors(); },
+    // Android onPause'da eklenti sensörü kapatır ama sayfaya duraklama gelmeyebilir (izin penceresi): dönüşte eski
+    // dinleyiciler kapatılıp yenileri açılır (yoksa her olay iki kez işlenir ve yumuşatma bozulur).
+    resume: () => { paused = false; if (!destroyed) { stopSensors(); startSensors(); if (camState === 'idle') begin(); } },
     destroy: () => { destroyed = true; stopCamera(); stopSensors(); if (raf) cancelAnimationFrame(raf); fullscreen(false); },
   };
 }

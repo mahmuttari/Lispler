@@ -214,3 +214,25 @@ test('birimler: dile göre ondalık ayırıcı, metrik ve İngiliz', () => {
   assert.equal(B.num(-0.00001, 1, 'tr'), '0,0');
   assert.equal(B.num(-2.5, 1, 'en'), '−2.5');
 });
+
+test('su terazisi: "düz" durumu titreşim/ses ile aynı ölçütü (toplam eğim) kullanır', () => {
+  // her eksende 0,45° ama toplam ≈ 0,64°: tolerans 0,5° içinde değildir, uyarı da çalmaz
+  const r = L.reading('surface', egik(0.45, 0.45));
+  assert.ok(L.offTarget(r) > 0.5);
+  assert.notEqual(L.stateKey(r, 0.5), 'lv_state_level');
+  assert.equal(L.targetLatch(false, L.offTarget(r), 0.5), false);
+  const r2 = L.reading('surface', egik(0.3, 0.3));
+  assert.equal(L.stateKey(r2, 0.5), 'lv_state_level');
+  assert.equal(L.targetLatch(false, L.offTarget(r2), 0.5), true);
+});
+
+test('ışık: ortalama olay sayısına değil süreye göre (sensör yalnız değişince bildirir)', () => {
+  let st = I.luxStart();
+  assert.equal(I.luxAverage(st, 0), null);
+  st = I.luxAdd(st, 1000, 0);                 // 10 sn sabit 1000 lx (tek olay)
+  for (let i = 0; i < 10; i++) st = I.luxAdd(st, 100, 10000 + i * 100); // 1 sn titrek ~100 lx (10 olay)
+  const avg = I.luxAverage(st, 11000);
+  assert.ok(Math.abs(avg - (1000 * 10 + 100 * 1) / 11) < 1e-6, String(avg));
+  assert.equal(st.max, 1000);
+  assert.equal(I.luxAverage(I.luxAdd(I.luxStart(), 420, 5), 5), 420);
+});

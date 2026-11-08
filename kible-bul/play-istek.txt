@@ -20,4 +20,6 @@
 
 # 2026-11-08: 1.2.0 (2), masaüstündeki geliştirme klasörüyle birleştirme (Camiler, yeni pusula; README › "1.2.0").
 # Önce salt okuma; AAB derlenince "yukle uygula" (taslak), incelemeye gönderme kullanıcının "ONAY: …" satırıyla.
-durum
+# (yapıldı 2026-11-08, b8fbf0d, koşu 42434951977: üretimde 1 (1.1.0) completed) durum
+# AAB: derleme koşusu 42434951933 (versionCode 2, admob gerçek). Üretim kanalına TASLAK; incelemeye gönderilmez.
+yukle uygula

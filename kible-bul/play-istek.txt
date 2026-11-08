@@ -27,4 +27,5 @@
 # Önce 11 dilde mağaza metni (Camiler, pusula düzeltmesi), sonra 1.2.0 (2) üretimde incelemeye (AAB: main koşusu 42435705972).
 # (yapıldı 2026-11-08, koşu 42436265128: 11 dilde mağaza metni) magaza uygula
 # (yapıldı 2026-11-08, koşu 42436265128: production → 1.2.0 (2) completed, incelemede) yukle yayinla uygula
-durum
+# (yapıldı 2026-11-08, koşu 42436333106: production 1.2.0 (2) completed; paketler 1, 2) durum
+# Google incelemesi bekleniyor; yönetilen yayınlama kapalı → onaylanınca kendiliğinden yayına çıkar. Etkin komut yok.

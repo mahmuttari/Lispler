@@ -4,7 +4,7 @@
 
 ## Kısa açıklama
 
-Direção da Caaba com bússola, mapa e distância; 34 mil cidades sem internet.
+Direção da Caaba com bússola, mapa e distância; mesquitas próximas e rotas.
 
 ## Uzun açıklama
 
@@ -17,10 +17,17 @@ O Encontrar a Qibla mostra a direção da Caaba, em Meca, a partir de onde você
 • Indicador de precisão: a avaliação que o próprio celular faz do sensor e a intensidade medida do campo magnético. Ele avisa quando um ímã, metal ou aparelho eletrônico por perto desvia a bússola.
 • Ajuda para calibrar: mostra o progresso enquanto você desenha um oito no ar com o celular.
 • Informações da bússola: os números por trás da agulha, ao vivo (direção magnética, declinação, direção verdadeira, intensidade do campo).
+• Correção da bússola: se a agulha estiver sempre desviada na mesma quantidade, corrija-a voltando-se para uma direção que você sabe ser a Qibla.
 
 🗺️ MAPA
 • O caminho mais curto (círculo máximo) de onde você está até a Caaba sobre uma imagem de satélite.
 • Nomes dos países no idioma do app; sem internet, um mapa desenhado com os contornos dos países.
+
+🕌 MESQUITAS
+• Mesquitas e salas de oração perto de você, as mais próximas primeiro, em uma lista ou em um mapa de ruas. A lista fica dentro do app e é pesquisada sem internet.
+• Para cada lugar: a distância, um tempo estimado a pé e uma seta que gira com o celular para apontá-lo.
+• As rotas a pé, de ônibus ou de carro abrem no app de mapas do seu celular.
+• Os lugares vêm de dados de mapas abertos feitos por voluntários; algumas mesquitas podem estar faltando ou desatualizadas.
 
 📍 LOCAL
 • Basta a localização aproximada do celular: alguns quilômetros não mudam a Qibla, e a localização exata nunca é pedida.
@@ -32,8 +39,8 @@ O Encontrar a Qibla mostra a direção da Caaba, em Meca, a partir de onde você
 • 11 idiomas: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, 日本語, 한국어, العربية.
 
 🔒 PRIVACIDADE
-• Sem conta e sem servidor nosso. Sua localização é usada somente no celular para calcular a direção; o app não a envia para nós nem para o provedor de anúncios.
-• O mapa baixa imagens de satélite da área que você está vendo, e os anúncios vêm da internet. Detalhes na política de privacidade.
+• Sem conta e sem servidor nosso. Sua localização é usada somente no celular para calcular a direção e encontrar as mesquitas perto de você; o app não a envia para nós nem para o provedor de anúncios.
+• Os mapas de satélite e de ruas baixam imagens da área que você está vendo, e os anúncios vêm da internet. Detalhes na política de privacidade.
 
 ℹ️ BOM SABER
 • O ângulo da Qibla é calculado e uma localização aproximada não o altera; a direção na tela é tão precisa quanto a bússola do seu celular. Um ímã, metal, um alto-falante ou uma capa magnética podem desviá-la vários graus: afaste-se deles e calibre quando precisar.

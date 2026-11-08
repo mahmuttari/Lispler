@@ -4,7 +4,7 @@
 
 ## Kısa açıklama
 
-La direzione della Kaaba con bussola, mappa e distanza; 34.000 città offline.
+Direzione della Kaaba: bussola, mappa e distanza; moschee vicine e percorsi.
 
 ## Uzun açıklama
 
@@ -17,10 +17,17 @@ Trova la Qibla mostra la direzione della Kaaba, alla Mecca, dal luogo in cui si 
 • Indicatore di precisione: la valutazione che il telefono dà del proprio sensore e l’intensità misurata del campo magnetico. La avvisa quando un magnete, del metallo o un dispositivo elettronico vicino devia la bussola.
 • Aiuto per la calibrazione: mostra l’avanzamento mentre disegna un otto nell’aria con il telefono.
 • Informazioni sulla bussola: i numeri dietro l’ago, in tempo reale (direzione magnetica, declinazione, direzione vera, intensità del campo).
+• Correzione della bussola: se l’ago è sempre spostato della stessa quantità, la corregga orientandosi verso una direzione che sa essere la Qibla.
 
 🗺️ MAPPA
 • Il percorso più breve (cerchio massimo) dal suo luogo alla Kaaba su un’immagine satellitare.
 • Nomi dei paesi nella lingua dell’app; senza connessione, una mappa disegnata con i confini dei paesi.
+
+🕌 MOSCHEE
+• Moschee e sale di preghiera vicino a lei, le più vicine per prime, come elenco o su una mappa stradale. L’elenco è dentro l’app e si cerca offline.
+• Per ogni luogo: la distanza, un tempo di cammino stimato e una freccia che ruota con il telefono per indicarlo.
+• Le indicazioni a piedi, in autobus o in auto si aprono nell’app di mappe del suo telefono.
+• I luoghi provengono da dati cartografici aperti creati da volontari; alcune moschee possono mancare o essere obsolete.
 
 📍 POSIZIONE
 • Basta la posizione approssimativa del telefono: qualche chilometro non cambia la Qibla, la posizione precisa non viene mai richiesta.
@@ -32,8 +39,8 @@ Trova la Qibla mostra la direzione della Kaaba, alla Mecca, dal luogo in cui si 
 • 11 lingue: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, 日本語, 한국어, العربية.
 
 🔒 PRIVACY
-• Nessun account e nessun nostro server. La sua posizione viene usata solo sul telefono per calcolare la direzione; l’app non la invia né a noi né al fornitore di pubblicità.
-• La mappa scarica le immagini satellitari dell’area che sta guardando e gli annunci arrivano da internet. Dettagli nell’informativa sulla privacy.
+• Nessun account e nessun nostro server. La sua posizione viene usata solo sul telefono per calcolare la direzione e trovare le moschee vicino a lei; l’app non la invia né a noi né al fornitore di pubblicità.
+• Le mappe satellitari e stradali scaricano immagini dell’area che sta guardando e gli annunci arrivano da internet. Dettagli nell’informativa sulla privacy.
 
 ℹ️ DA SAPERE
 • L’angolo della Qibla è calcolato e una posizione approssimativa non lo cambia; la direzione sullo schermo è precisa quanto la bussola del suo telefono. Un magnete, del metallo, un altoparlante o una custodia magnetica possono deviarla di diversi gradi: se ne allontani e calibri quando serve.

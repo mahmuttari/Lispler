@@ -19,7 +19,7 @@ fiyat yok, adda emoji, BÜYÜK HARF, "en iyi" ve "ücretsiz" yok; doğruluk sın
 
 ## Kısa açıklama
 
-Kâbe'nin yönü pusula, harita ve mesafeyle; 34.000 şehir internetsiz aranır.
+Kâbe'nin yönü pusula, harita ve mesafeyle; yakındaki camiler ve yol tarifi.
 
 ## Uzun açıklama
 
@@ -32,10 +32,17 @@ Kıble Bul, bulunduğunuz yerden Mekke'deki Kâbe'nin yönünü pusula, harita v
 • Doğruluk göstergesi: telefonun kendi algılayıcı değerlendirmesi ve ölçülen manyetik alan şiddeti. Yakındaki bir mıknatıs, metal ya da elektronik cihaz pusulayı saptırıyorsa uyarır.
 • Kalibrasyon yardımcısı: telefonla havada 8 çizerken ilerlemeyi gösterir.
 • Pusula bilgisi: ibrenin ardındaki sayılar canlı olarak (manyetik yön, sapma, gerçek yön, alan şiddeti).
+• Pusula düzeltmesi: ibre hep aynı miktarda şaşıyorsa, kıble olduğunu bildiğiniz bir yöne bakarak düzeltebilirsiniz.
 
 🗺️ HARİTA
 • Uydu görüntüsü üzerinde bulunduğunuz yerden Kâbe'ye en kısa (büyük daire) yol.
 • Ülke adları uygulamanın dilinde; internet yokken ülke sınırlarıyla çizilmiş harita.
+
+🕌 CAMİLER
+• Yakınınızdaki cami ve mescitler, en yakından başlayarak liste hâlinde ya da sokak haritasında. Liste uygulamanın içindedir, internetsiz aranır.
+• Her yer için mesafe, yaklaşık yürüyüş süresi ve telefonla birlikte dönerek o yeri gösteren bir ok.
+• Yürüyerek, otobüsle ya da arabayla yol tarifi telefonunuzdaki harita uygulamasında açılır.
+• Yerler gönüllülerin hazırladığı açık harita verisinden gelir; bazı camiler eksik ya da güncel olmayabilir.
 
 📍 KONUM
 • Telefonun yaklaşık konumu yeterlidir: kıble için birkaç kilometre fark etmez, tam konum izni istenmez.
@@ -47,8 +54,8 @@ Kıble Bul, bulunduğunuz yerden Mekke'deki Kâbe'nin yönünü pusula, harita v
 • 11 dil: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, 日本語, 한국어, العربية.
 
 🔒 GİZLİLİK
-• Hesap yok, sunucumuz yok. Konumunuz yalnızca telefonda yönü hesaplamak için kullanılır; uygulama onu bize ya da reklam sağlayıcısına göndermez.
-• Harita, baktığınız bölgenin uydu görüntüsü karolarını indirir; reklamlar internetten gelir. Ayrıntılar gizlilik politikasında.
+• Hesap yok, sunucumuz yok. Konumunuz yalnızca telefonda yönü hesaplamak ve yakındaki camileri bulmak için kullanılır; uygulama onu bize ya da reklam sağlayıcısına göndermez.
+• Uydu ve sokak haritası baktığınız bölgenin görüntü karolarını indirir; reklamlar internetten gelir. Ayrıntılar gizlilik politikasında.
 
 ℹ️ BİLMENİZ GEREKENLER
 • Kıble açısı hesapla bulunur ve yaklaşık konumla da değişmez; ekrandaki yön ise telefonunuzun pusulası kadar doğrudur. Mıknatıs, metal, hoparlör ya da manyetik kılıf pusulayı birkaç dereceden fazla saptırabilir: bunlardan uzaklaşın, gerekirse kalibre edin.

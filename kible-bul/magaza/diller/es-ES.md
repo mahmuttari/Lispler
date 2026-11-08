@@ -4,7 +4,7 @@
 
 ## Kısa açıklama
 
-Dirección de la Kaaba: brújula, mapa y distancia; 34 000 ciudades sin conexión.
+Dirección de la Kaaba: brújula, mapa y distancia; mezquitas cercanas y rutas.
 
 ## Uzun açıklama
 
@@ -17,10 +17,17 @@ Encontrar la Qibla muestra la dirección de la Kaaba, en La Meca, desde donde es
 • Indicador de precisión: la valoración que hace el propio teléfono de su sensor y la intensidad medida del campo magnético. Te avisa cuando un imán, metal o un aparato electrónico cercano desvía la brújula.
 • Ayuda de calibración: muestra el progreso mientras dibujas un ocho en el aire con el teléfono.
 • Información de la brújula: los números detrás de la aguja, en directo (rumbo magnético, declinación, rumbo verdadero, intensidad del campo).
+• Corrección de la brújula: si la aguja siempre se desvía la misma cantidad, corrígela orientándote hacia una dirección que sepas que es la Qibla.
 
 🗺️ MAPA
 • El camino más corto (círculo máximo) desde donde estás hasta la Kaaba sobre una imagen de satélite.
 • Nombres de los países en el idioma de la aplicación; sin conexión, un mapa dibujado con los contornos de los países.
+
+🕌 MEZQUITAS
+• Mezquitas y salas de oración cerca de ti, las más cercanas primero, en una lista o en un mapa de calles. La lista está dentro de la aplicación y se busca sin conexión.
+• Para cada lugar: la distancia, un tiempo estimado a pie y una flecha que gira con el teléfono para señalarlo.
+• Las indicaciones a pie, en autobús o en coche se abren en la aplicación de mapas de tu teléfono.
+• Los lugares proceden de datos de mapas abiertos hechos por voluntarios; puede que falten algunas mezquitas o estén desactualizadas.
 
 📍 UBICACIÓN
 • Basta con la ubicación aproximada del teléfono: unos kilómetros no cambian la Qibla y nunca se pide la ubicación precisa.
@@ -32,8 +39,8 @@ Encontrar la Qibla muestra la dirección de la Kaaba, en La Meca, desde donde es
 • 11 idiomas: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, 日本語, 한국어, العربية.
 
 🔒 PRIVACIDAD
-• Sin cuenta y sin servidor propio. Tu ubicación solo se usa en el teléfono para calcular la dirección; la aplicación no la envía ni a nosotros ni al proveedor de anuncios.
-• El mapa descarga teselas de satélite de la zona que estás viendo y los anuncios llegan desde internet. Más detalles en la política de privacidad.
+• Sin cuenta y sin servidor propio. Tu ubicación solo se usa en el teléfono para calcular la dirección y encontrar las mezquitas cerca de ti; la aplicación no la envía ni a nosotros ni al proveedor de anuncios.
+• Los mapas de satélite y de calles descargan teselas de imagen de la zona que estás viendo, y los anuncios llegan desde internet. Más detalles en la política de privacidad.
 
 ℹ️ CONVIENE SABER
 • El ángulo de la Qibla se calcula y una ubicación aproximada no lo cambia; la dirección en pantalla es tan precisa como la brújula de tu teléfono. Un imán, metal, un altavoz o una funda magnética pueden desviarla varios grados: aléjate de ellos y calibra cuando haga falta.

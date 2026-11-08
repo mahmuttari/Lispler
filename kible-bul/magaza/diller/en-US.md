@@ -4,7 +4,7 @@
 
 ## Kısa açıklama
 
-Kaaba direction with compass, map and distance; 34,000 cities offline.
+Kaaba direction with compass, map and distance; nearby mosques and directions.
 
 ## Uzun açıklama
 
@@ -17,10 +17,17 @@ Qibla Finder shows the direction of the Kaaba in Mecca from where you are, with 
 • Accuracy indicator: the phone's own rating of its sensor and the measured strength of the magnetic field. It warns you when a nearby magnet, metal or electronic device is bending the compass.
 • Calibration helper: shows your progress while you draw a figure eight in the air with the phone.
 • Compass information: the numbers behind the needle, live (magnetic heading, declination, true heading, field strength).
+• Compass correction: if the needle is always off by the same amount, correct it by facing a direction you know is the Qibla.
 
 🗺️ MAP
 • The shortest (great-circle) path from where you are to the Kaaba over a satellite picture.
 • Country names in the language of the app; without a connection, a map drawn from country outlines.
+
+🕌 MOSQUES
+• Mosques and prayer rooms near you, nearest first, as a list or on a street map. The list is inside the app and is searched offline.
+• For each place: the distance, an estimated walking time and an arrow that turns with the phone to point at it.
+• Directions on foot, by bus or by car open in the maps app on your phone.
+• The places come from open map data made by volunteers; some mosques may be missing or out of date.
 
 📍 LOCATION
 • The phone's approximate location is all it needs: a few kilometres make no difference to the Qibla, so precise location is never requested.
@@ -32,8 +39,8 @@ Qibla Finder shows the direction of the Kaaba in Mecca from where you are, with 
 • 11 languages: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, 日本語, 한국어, العربية.
 
 🔒 PRIVACY
-• No account and no server of ours. Your location is used only on the phone to work out the direction; the app does not send it to us or to the ad provider.
-• The map downloads satellite tiles for the area you are looking at, and ads come from the internet. Details are in the privacy policy.
+• No account and no server of ours. Your location is used only on the phone to work out the direction and to find the mosques near you; the app does not send it to us or to the ad provider.
+• The satellite and street maps download picture tiles for the area you are looking at, and ads come from the internet. Details are in the privacy policy.
 
 ℹ️ GOOD TO KNOW
 • The Qibla angle is calculated, and an approximate location does not change it; the direction on the screen is only as accurate as your phone's compass. A magnet, metal, a loudspeaker or a magnetic case can bend the compass by more than a few degrees: move away from them and calibrate when needed.

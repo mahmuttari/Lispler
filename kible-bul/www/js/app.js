@@ -9,6 +9,7 @@ import { closeTop, sheetOpen } from './sheet.js';
 import { installDefs } from './art.js';
 import { mountCompass } from './ui-compass.js';
 import { mountMap } from './ui-map.js';
+import { mountMosques } from './ui-mosques.js';
 import { mountPlace } from './ui-place.js';
 import { mountSettings } from './ui-settings.js';
 import { showOnboarding } from './ui-onboard.js';
@@ -20,7 +21,7 @@ import { onBack, setBars, onResume, keepAwake } from './native.js';
 import { isPremium, refresh as refreshPremium, onChange as onPremiumChange } from './premium.js';
 import { reklamAyarla, reklamBaslat, reklamDurdur, reklamEngeli, gecisFirsati, reklamGorunurluk, KURAL } from './reklam.js';
 
-const TABS = [['compass', 'compass'], ['map', 'map'], ['place', 'map-pin'], ['settings', 'settings']];
+const TABS = [['compass', 'compass'], ['map', 'map'], ['mosques', 'mosque'], ['place', 'map-pin'], ['settings', 'settings']];
 const params = new URLSearchParams(location.search);
 let current = 'compass', trail = [], mods = {}, onboarding = null;
 let mapSince = 0, adOpenNow = false;   // when the map was opened (a look of a few seconds is a natural pause for an ad); an interstitial is on screen
@@ -46,6 +47,7 @@ function build() {
   for (const [id] of TABS) { sections[id] = h('section', { class: 'screen ' + id, id: 'scr-' + id }); main.append(sections[id]); }
   mods.compass = mountCompass(sections.compass, api);
   mods.map = mountMap(sections.map, api);
+  mods.mosques = mountMosques(sections.mosques, api);
   mods.place = mountPlace(sections.place, api);
   mods.settings = mountSettings(sections.settings, api, changed);
   bar.replaceChildren(...TABS.map(([id, ic]) => h('button', { role: 'tab', 'data-tab': id, onclick: () => { trail = []; show(id); } }, icon(ic), h('span', { text: t('nav.' + id) }))));

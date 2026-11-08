@@ -17,3 +17,10 @@
 # (yapıldı 2026-10-28, f38cd3f) gorsel uygula
 # (yapıldı 2026-10-28, f38cd3f) durum
 # 2026-10-28: üretim sürümü Console'da "Önizle ve onayla" ile kaydedildi, 21 değişiklik incelemeye gönderildi. Etkin komut yok.
+
+# 2026-11-08: 1.2.0 (2), masaüstündeki geliştirme klasörüyle birleştirme (Camiler, yeni pusula; README › "1.2.0").
+# Önce salt okuma; AAB derlenince "yukle uygula" (taslak), incelemeye gönderme kullanıcının "ONAY: …" satırıyla.
+# (yapıldı 2026-11-08, b8fbf0d, koşu 42434951977: üretimde 1 (1.1.0) completed) durum
+# AAB: derleme koşusu 42434951933 (versionCode 2, admob gerçek). Üretim kanalına TASLAK; incelemeye gönderilmez.
+# (yapıldı 2026-11-08, 35d02c3, koşu 42435282162: production → 1.2.0 (2) draft, 11 dilde sürüm notu) yukle uygula
+# Sırada: kullanıcının "ONAY: …" satırıyla PR #25 main'e, sonra "yukle yayinla uygula" (incelemeye gönderir). Etkin komut yok.

@@ -91,9 +91,11 @@ html[data-night="1"] .pill.paper-pill { background: rgba(255, 255, 255, .09); }
 .scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 16px 24px; overscroll-behavior: contain; }
 
 /* ---------- tab bar */
-#tabbar { flex: none; display: flex; gap: 6px; padding: 8px 10px calc(8px + var(--safe-b)); background: var(--nav-bg); border-radius: 24px 24px 0 0; box-shadow: 0 -8px 26px rgba(0, 0, 0, .4); position: relative; z-index: 5; }
-#tabbar button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 0 7px; border-radius: 16px; color: var(--muted); font-size: 12.5px; font-weight: 520; }
-#tabbar button svg.i { width: 26px; height: 26px; }
+#tabbar { flex: none; display: flex; gap: 4px; padding: 8px 8px calc(8px + var(--safe-b)); background: var(--nav-bg); border-radius: 24px 24px 0 0; box-shadow: 0 -8px 26px rgba(0, 0, 0, .4); position: relative; z-index: 5; }
+#tabbar button { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 2px 7px; border-radius: 16px; color: var(--muted); font-size: 11.5px; font-weight: 520; }
+#tabbar button span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#tabbar button svg.i { width: 25px; height: 25px; }
+@media (max-width: 340px) { #tabbar { gap: 2px; padding-left: 4px; padding-right: 4px; } #tabbar button { font-size: 10.5px; } }
 #tabbar button.on { background: var(--nav-on); color: var(--text); }
 #app.no-tabs #tabbar { display: none; }
 
@@ -345,8 +347,8 @@ html[dir="rtl"] .calib .cx { right: auto; left: 10px; }
 .cacc[data-level="good"] { color: var(--ok); } .cacc[data-level="mid"] { color: var(--warn); } .cacc[data-level="bad"] { color: var(--bad); }
 .diag { display: flex; flex-direction: column; margin-top: 6px; }
 .drow { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--paper-line); font-size: 14.5px; }
-.drow span { color: var(--paper-sub); flex: none; }
-.drow b { text-align: end; font-weight: 650; font-variant-numeric: tabular-nums; word-break: break-word; }
+.drow span { color: var(--paper-sub); flex: 0 1 50%; }
+.drow b { flex: 1 1 auto; min-width: 0; text-align: end; font-weight: 650; font-variant-numeric: tabular-nums; word-break: break-word; }
 .dial.aligned.weak .glow { stroke: var(--warn); }
 .dial.aligned.weak .lubber { fill: var(--warn); }
 .dial.aligned.weak .needle { filter: drop-shadow(0 0 6px var(--warn)); }
@@ -360,6 +362,60 @@ html.reklamli #reklam-serit { border-top: 1px solid var(--card-line); }
 html.reklamli #layer { bottom: calc(var(--reklam-h) + var(--safe-b)); }
 html.reklamli .sheet { padding-bottom: 0; }
 html.reklamli #toast { bottom: calc(96px + var(--safe-b) + var(--reklam-h)); }
-/* About: developer line and the plain GeoTerva link */
+/* About: the developer line and the link buttons */
 .about .wrap { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 6px; }
 .about .dev a, .about .small a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+/* ---------- nearby mosques */
+.chips { flex: none; display: flex; gap: 8px; padding: 2px 16px 8px; overflow-x: auto; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: none; min-height: 38px; padding: 0 15px; border-radius: 19px; background: var(--card); border: 1px solid var(--card-line); font-size: 14.5px; font-weight: 600; white-space: nowrap; }
+.chip:active { filter: brightness(.9); }
+.chip.on { background: linear-gradient(180deg, #f1d58b, #d6a845); border-color: transparent; color: #2a1f06; }
+.mosloc { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; margin: 2px 0 4px; }
+.mosloc .chev { color: var(--muted); }
+.mosloc .sub { white-space: normal; line-height: 1.3; }
+.msum { margin: 10px 4px 8px; font-size: 13.5px; color: var(--muted); }
+.item.mosq { padding: 10px 12px; }
+.mic { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; flex: none; background: rgba(225, 191, 109, .14); color: var(--gold); }
+.mic.room { background: rgba(255, 255, 255, .08); color: #a9d8c3; }
+.item .mic svg.i { width: 27px; height: 27px; color: inherit; }
+.arr { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex: none; border: 1.5px solid rgba(225, 191, 109, .55); }
+.item .arr svg.i { width: 22px; height: 22px; fill: var(--gold); stroke-width: 1.2; }
+.more { width: 100%; margin-top: 12px; min-height: 46px; }
+.mosmsg { display: flex; align-items: center; gap: 14px; padding: 14px; margin-top: 8px; }
+.mosmsg .msgicon { width: 40px; display: grid; place-items: center; flex: none; color: var(--warn); }
+.mosmsg .msgicon svg.i { width: 32px; height: 32px; stroke-width: 1.5; }
+.mosmsg p { margin: 0; font-size: 15px; line-height: 1.4; }
+.empty p { margin: 0 0 12px; }
+.mosques .mapwrap { background: #e6e2d6; }
+.mosques .mapview { background: #e6e2d6; }
+.mosques .recenter { left: 12px; bottom: 28px; }
+.mapnote { position: absolute; left: 12px; right: 12px; top: 12px; z-index: 1000; padding: 8px 12px; border-radius: 12px; background: var(--paper); color: var(--paper-ink); font-size: 13.5px; text-align: center; box-shadow: 0 4px 14px rgba(0, 0, 0, .3); }
+.mpin-wrap { background: none; border: 0; }
+.mpin { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #0f6b47; color: #fff; border: 2.5px solid #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, .45); }
+.mpin.room { background: #6f857a; }
+.mpin svg.i { width: 19px; height: 19px; stroke-width: 1.9; }
+.mhead { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.msheet .msub { margin: 0; font-size: 15px; color: var(--paper-sub); }
+.msheet .arr { border-color: var(--accent); }
+.sheet .item .arr svg.i, .msheet .arr svg.i { width: 22px; height: 22px; fill: var(--accent); stroke-width: 1.2; }
+.msheet h4 { margin: 12px 0 8px; font: 700 15px var(--serif); }
+.modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.mode { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 96px; padding: 12px 4px; border-radius: 16px; background: var(--accent-soft); color: var(--accent); text-align: center; }
+.mode:active { filter: brightness(.94); }
+.mode svg.i { width: 30px; height: 30px; }
+.mode b { color: var(--text); font-size: 15.5px; }
+.mode small { color: var(--muted); font-size: 12.5px; line-height: 1.25; }
+.msheet .note { margin: 12px 0 10px; font-size: 13px; line-height: 1.4; color: var(--paper-sub); }
+.msheet .wrap { margin-bottom: 12px; }
+.msheet .small { margin: 10px 0 0; font-size: 12.5px; line-height: 1.4; color: var(--paper-sub); }
+
+/* the compass correction sheet, the dimmed needle while the compass has no reading */
+.corr p { margin: 0 0 10px; font-size: 15px; line-height: 1.45; }
+.corr .corrnow { font-weight: 650; font-variant-numeric: tabular-nums; }
+.corr .corrcur { margin: 12px 0 8px; color: var(--paper-sub); }
+.corr .corrmsg { color: var(--danger); font-size: 14px; }
+.corr .bigbtn { margin: 4px 0 10px; }
+.corr .small { font-size: 13px; color: var(--paper-sub); margin-top: 12px; }
+.compass.wait .needle, .compass.wait .kaaba-tip { opacity: .22; }

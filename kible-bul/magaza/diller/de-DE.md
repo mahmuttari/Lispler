@@ -43,9 +43,9 @@ Kostenlose App: Ein Werbebanner liegt unten in einem eigenen Streifen und verdec
 
 ## Sürüm notu
 
-Erste Version 🎉
-🧭 Richtung der Kaaba, Qibla-Winkel und Entfernung, mit Korrektur auf geografisch Nord.
-🗺️ Der kürzeste Weg zur Kaaba auf einer Satellitenkarte.
-📍 Offline-Suche in 34.000 Städten, Eingabe von Koordinaten.
-🎯 Genauigkeitsanzeige und Kalibrierhilfe.
-🌐 11 Sprachen.
+Was ist neu 🎉
+🕌 Moscheen: Moscheen und Gebetsräume in der Nähe, als Liste und auf einer Straßenkarte; Wegbeschreibungen zu Fuß, mit Bus oder Auto.
+🧭 Zuverlässigerer Kompass: Prüfung auf magnetische Störungen und die eigene Fehlerschätzung des Sensors; ein hängender Sensor startet von selbst neu.
+🎯 Einstellungen › Kompasskorrektur: eine Nadel korrigieren, die immer um denselben Betrag abweicht.
+ℹ️ Detaillierte Messwerte und Kopiertaste in den Kompassinformationen.
+🐞 Fehlerbehebungen.

@@ -14,6 +14,7 @@ export const S = {
     vibrate: true,         // one short buzz when the phone points at the Qibla
     map: 'sat',            // map picture: sat | map
     labels: true,          // country names on the map
+    offset: 0,             // the user's compass correction in degrees, added to the heading (for a compass that is always off by the same amount)
   },
   place: null,             // { mode: 'gps' | 'manual', lat, lon, name, cc, at }  the place the Qibla is measured from
   recents: [],             // [{ name, cc, lat, lon }] places chosen by hand, newest first
@@ -26,6 +27,7 @@ export const S = {
     const raw = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (!raw || typeof raw !== 'object') return;
     Object.assign(S.settings, raw.settings || {});
+    if (!Number.isFinite(S.settings.offset) || Math.abs(S.settings.offset) > 180) S.settings.offset = 0;
     if (raw.place && Number.isFinite(raw.place.lat) && Number.isFinite(raw.place.lon)) S.place = raw.place;
     S.recents = Array.isArray(raw.recents) ? raw.recents.filter(r => r && Number.isFinite(r.lat) && Number.isFinite(r.lon)).slice(0, 8) : [];
     S.onboarded = !!raw.onboarded;

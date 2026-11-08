@@ -43,9 +43,9 @@ Application gratuite : une bannière publicitaire occupe sa propre bande en bas 
 
 ## Sürüm notu
 
-Première version 🎉
-🧭 Direction de la Kaaba, angle de la Qibla et distance, avec correction du nord géographique.
-🗺️ Le chemin le plus court vers la Kaaba sur une carte satellite.
-📍 Recherche hors ligne de 34 000 villes, saisie de coordonnées.
-🎯 Indicateur de précision et aide à l’étalonnage.
-🌐 11 langues.
+Nouveautés 🎉
+🕌 Mosquées : mosquées et salles de prière à proximité, en liste et sur une carte routière ; itinéraires à pied, en bus ou en voiture.
+🧭 Une boussole plus fiable : contrôle des interférences magnétiques et estimation de l’erreur du capteur ; un capteur bloqué redémarre tout seul.
+🎯 Paramètres › Correction de la boussole : corriger une aiguille toujours décalée du même montant.
+ℹ️ Relevés détaillés et bouton de copie dans les Informations sur la boussole.
+🐞 Corrections de bugs.

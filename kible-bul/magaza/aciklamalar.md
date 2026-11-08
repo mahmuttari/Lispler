@@ -81,13 +81,16 @@ Kıble Bul, bulunduğunuz yerden Mekke'deki Kâbe'nin yönünü pusula, harita v
   cihazda kalan veri "toplanmış" sayılmaz. Konum hiçbir sunucuya gönderilmez.
 - Google Play faturalandırması beyan dışıdır: ödeme bilgisini Google Play doğrudan kullanıcıdan alır, uygulama ona
   erişmez ([Play Console Yardım](https://support.google.com/googleplay/android-developer/answer/10787469)).
-- "Yol Tarifi" düğmesi seçili yerin koordinatıyla harita uygulamasını açar: kullanıcının kendi işlemidir ve kullanıcı
-  bunu bekler; Play bu tür aktarımı "paylaşım" saymaz (aynı kaynak). Konum zaten "yaklaşık konum" olarak beyan edilir.
+- "Yol Tarifi" düğmesi seçili yerin koordinatıyla harita uygulamasını açar; 1.2.0'dan beri Camiler ekranındaki
+  yürüyerek / otobüsle / arabayla ve "Haritada göster" düğmeleri de caminin (elle seçilmiş yerde başlangıcın da)
+  koordinatıyla Google Haritalar'ı ya da `geo:` bağlantısıyla seçilen harita uygulamasını açar: kullanıcının kendi
+  işlemidir ve kullanıcı bunu bekler; Play bu tür aktarımı "paylaşım" saymaz (aynı kaynak). Konum zaten "yaklaşık konum"
+  olarak beyan edilir.
 - Cihazdan çıkan iki akış beyan edilir. Geliştiricinin elinde veri olmadığından silme isteği yolu sunulmaz.
 
 | Veri türü | Kim | Toplanıyor · paylaşılıyor | İsteğe bağlı | Amaç |
 |---|---|---|---|---|
-| Konum › Yaklaşık konum | AdMob (IP adresinden) + NASA GIBS karo sunucusu (haritada bakılan bölge; harita açılınca konumun çevresi; en yakın düzeyde bir karo ≈ 150 km, yani 3 km²'den büyük) | Evet · **Evet** | Hayır | Uygulama işlevleri, Reklam veya pazarlama, Analiz, Dolandırıcılığı önleme |
+| Konum › Yaklaşık konum | AdMob (IP adresinden) + NASA GIBS karo sunucusu (haritada bakılan bölge; harita açılınca konumun çevresi; en yakın düzeyde bir karo ≈ 150 km, yani 3 km²'den büyük) + 1.2.0'dan beri OpenStreetMap karo sunucusu (Camiler ekranının sokak haritası; karo birkaç yüz metre olabilir ama konum yalnız yaklaşık konum izninden gelir, bu yüzden giden bilgi de yaklaşık konumdur; yeni veri türü yok) | Evet · **Evet** | Hayır | Uygulama işlevleri, Reklam veya pazarlama, Analiz, Dolandırıcılığı önleme |
 | Uygulama etkinliği › Uygulama etkileşimleri | AdMob: açılış, dokunma, reklam etkileşimi | Evet · **Evet** | Hayır | Reklam veya pazarlama, Analiz, Dolandırıcılığı önleme |
 | Uygulama bilgileri ve performans › Teşhis | AdMob: uygulamanın ve SDK'nın başarımı | Evet · **Evet** | Hayır | Reklam veya pazarlama, Analiz, Dolandırıcılığı önleme |
 | Cihaz veya diğer kimlikler | AdMob: reklam kimliği, uygulama grubu kimliği | Evet · **Evet** | Hayır | Reklam veya pazarlama, Analiz, Dolandırıcılığı önleme |

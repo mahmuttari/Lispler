@@ -43,9 +43,9 @@ Aplicación gratuita: un banner publicitario ocupa su propia franja en la parte 
 
 ## Sürüm notu
 
-Primera versión 🎉
-🧭 Dirección de la Kaaba, ángulo de la Qibla y distancia, con corrección al norte geográfico.
-🗺️ El camino más corto hasta la Kaaba en un mapa de satélite.
-📍 Búsqueda sin conexión de 34 000 ciudades, introducción de coordenadas.
-🎯 Indicador de precisión y ayuda de calibración.
-🌐 11 idiomas.
+Novedades 🎉
+🕌 Mezquitas: mezquitas y salas de oración cercanas, en lista y en un mapa de calles; indicaciones a pie, en bus o en coche.
+🧭 Una brújula más fiable: comprobación de interferencias magnéticas y estimación del error del sensor; un sensor bloqueado se reinicia solo.
+🎯 Ajustes › Corrección de la brújula: corrige una aguja que siempre se desvía lo mismo.
+ℹ️ Lecturas detalladas y botón de copiar en Información de la brújula.
+🐞 Corrección de errores.

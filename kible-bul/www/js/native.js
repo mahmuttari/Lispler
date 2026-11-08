@@ -30,6 +30,17 @@ export function openUrl(url) {
   else window.open(url, '_blank', 'noopener');
 }
 
+/**
+ * Opens a link in the app that handles it: a Google Maps link in the Maps app (directions with the mode already chosen), a geo: link in the phone's map apps.
+ * An https link falls back to the browser when no app takes it. -> true when something opened
+ */
+export async function openExternal(url) {
+  if (!isNative) { if (/^https:/.test(url)) window.open(url, '_blank', 'noopener'); return /^https:/.test(url); }
+  try { const r = await plug('AppLauncher').openUrl({ url }); if (r && r.completed) return true; } catch (e) { /* the launcher is not there: the browser below */ }
+  if (/^https:/.test(url)) { openUrl(url); return true; }
+  return false;
+}
+
 // a native plugin by name (NativePurchases): null outside the Android app
 export const plugin = name => (isNative ? plug(name) : null);
 

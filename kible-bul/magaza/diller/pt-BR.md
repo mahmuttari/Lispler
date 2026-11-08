@@ -43,9 +43,9 @@ App gratuito: um banner de anúncio fica numa faixa própria na parte de baixo e
 
 ## Sürüm notu
 
-Primeira versão 🎉
-🧭 Direção da Caaba, ângulo da Qibla e distância, com correção para o norte geográfico.
-🗺️ O caminho mais curto até a Caaba em um mapa de satélite.
-📍 Busca sem internet de 34 mil cidades, entrada de coordenadas.
-🎯 Indicador de precisão e ajuda para calibrar.
-🌐 11 idiomas.
+Novidades 🎉
+🕌 Mesquitas: mesquitas e salas de oração próximas, em lista e num mapa de ruas; direções a pé, de ônibus ou de carro.
+🧭 Uma bússola mais confiável: verificação de interferência magnética e estimativa do erro do sensor; um sensor travado reinicia sozinho.
+🎯 Ajustes › Correção da bússola: corrija uma agulha que sempre desvia o mesmo valor.
+ℹ️ Leituras detalhadas e botão de copiar em Informações da bússola.
+🐞 Correções de bugs.

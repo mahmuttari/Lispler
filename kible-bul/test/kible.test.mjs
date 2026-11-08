@@ -92,6 +92,8 @@ test('uygulama içi gizlilik metni AdMob ve NASA karolarıyla doğru (11 dil); "
     const ui = (await import(`../www/js/lang/${l}.js`)).default.ui;
     assert.match(ui['about.privacyText'], /AdMob/, `${l}: AdMob`);
     assert.match(ui['about.privacyText'], /NASA/, `${l}: NASA`);
+    assert.match(ui['about.privacyText'], /OpenStreetMap/, `${l}: OpenStreetMap (Camiler ekranının sokak haritası)`);
+    assert.ok(ui['about.privacyText'].includes(ui['nav.mosques']), `${l}: Camiler ekranının adı`);
     assert.match(ui['about.privacyText'], /Google Play/, `${l}: Google Play`);
     assert.ok(ui['about.privacyText'].includes(ui['settings.adPrivacy']), `${l}: metin ayar satırının adını anar`);
     for (const k of ['ad.label', 'ad.closeIn', 'ad.close', 'p.removeAds']) assert.ok(!(k in ui), `${l}: ${k} (GeoTerva reklamı) silinmeli`);
@@ -100,7 +102,7 @@ test('uygulama içi gizlilik metni AdMob ve NASA karolarıyla doğru (11 dil); "
   assert.doesNotMatch(en['about.privacyText'], /only network use/);
 });
 
-test('yerel pusula eklentisi: sayfanın kullandığı arayüzle aynı (Compass.start/stop, "reading" { r, acc, field })', () => {
+test('yerel pusula eklentisi: sayfanın kullandığı arayüzle aynı (Compass.start/stop, "reading" { r, b, acc, rotAcc, hacc, field })', () => {
   const java = oku('android', 'app', 'src', 'main', 'java', 'com', 'poyrazworkshop', 'kiblebul', 'CompassPlugin.java');
   const js = oku('www', 'js', 'compass.js');
   assert.match(java, /@CapacitorPlugin\(name = "Compass"\)/);
@@ -110,9 +112,13 @@ test('yerel pusula eklentisi: sayfanın kullandığı arayüzle aynı (Compass.s
     assert.match(js, new RegExp(`nat\\.${m}\\(\\)`));
   }
   assert.match(js, /addListener\('reading'/);
-  assert.match(java, /notifyListeners\("reading", ret\)/);
-  for (const k of ['"r"', '"acc"', '"rotAcc"', '"field"', '"available"', '"rotationVector"', '"magnetometer"']) assert.ok(java.includes(`ret.put(${k}`), k);
-  for (const k of ['ev.r', 'ev.acc', 'ev.field', 'r.available']) assert.ok(js.includes(k), k);
+  const olay = /notifyListeners\("reading", (\w+)\)/.exec(java);
+  assert.ok(olay, 'notifyListeners("reading", …)');
+  for (const k of ['"r"', '"b"', '"acc"', '"rotAcc"', '"hacc"', '"field"']) assert.ok(java.includes(`${olay[1]}.put(${k}`), k);
+  for (const k of ['"available"', '"rotationVector"', '"magnetometer"']) assert.ok(new RegExp(`\\w+\\.put\\(${k}`).test(java), k);
+  for (const k of ['ev.r', 'ev.b', 'ev.acc', 'ev.field', 'ev.hacc', 'r.available']) assert.ok(js.includes(k), k);
+  // susan algılayıcı için bekçi: 5 sn olay gelmezse algılayıcılar yeniden kaydedilir
+  for (const s of ['SILENCE_MS = 5000', 'watchdog', 'registerSensors()']) assert.ok(java.includes(s), s);
   // özgündeki algılayıcı mantığı: dönme vektörü, yoksa ivmeölçer + manyetometre; SENSOR_DELAY_GAME; 33 ms
   for (const s of ['TYPE_ROTATION_VECTOR', 'TYPE_MAGNETIC_FIELD', 'TYPE_ACCELEROMETER', 'getRotationMatrixFromVector', 'getRotationMatrix(matrix, null, gravity, geomagnetic)', 'SENSOR_DELAY_GAME', 'MIN_INTERVAL_MS = 33', 'handleOnPause', 'handleOnResume']) {
     assert.ok(java.includes(s), s);
@@ -142,7 +148,7 @@ test('yeni kimlik: com.geoterva yok; izinler özgündeki gibi (yalnız yaklaşı
   assert.match(m, /android:usesCleartextTraffic="false"/);
 });
 
-test('Hakkında: Poyraz Workshop, e-posta, gizlilik politikası adresi, GeoTerva yalnız düz bir satır; sürüm build.gradle ile aynı', async () => {
+test('Hakkında: Poyraz Workshop, e-posta, gizlilik politikası adresi, OpenStreetMap atfı; GeoTerva yok; sürüm build.gradle ile aynı', async () => {
   const cfg = oku('www', 'js', 'config.js');
   assert.match(cfg, /developer: 'Poyraz Workshop'/);
   assert.match(cfg, /email: 'mahmuttari@gmail\.com'/);
@@ -150,6 +156,6 @@ test('Hakkında: Poyraz Workshop, e-posta, gizlilik politikası adresi, GeoTerva
   const ay = oku('www', 'js', 'ui-settings.js');
   const surum = /export const VERSION = '([^']+)'/.exec(ay)[1];
   assert.equal(surum, /versionName\s+'([^']+)'/.exec(oku('android', 'app', 'build.gradle'))[1]);
-  assert.match(ay, /'geoterva\.com'/);
-  assert.doesNotMatch(ay, /class: 'pill', text: 'geoterva\.com'/, 'GeoTerva düğme/reklam değil, düz satır');
+  assert.match(ay, /openstreetmap\.org\/copyright/);
+  for (const s of [cfg, ay]) assert.doesNotMatch(s, /geoterva/i, 'GeoTerva bağlantısı yok (kullanıcı 23.10.2026: uygulamanın geoterva.com ile ilgisi yok)');
 });

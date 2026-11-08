@@ -4,8 +4,9 @@
 //   node kible-bul/araclar/tarayici-dene.mjs [--ekran] [--uygulama]
 //     --ekran: her durumun ekran görüntüsü kible-bul/.dene/ (depoya girmez)   --uygulama: yalnız uygulama kipi (reklam)
 //
-// Her dilde (11) bütün ekranlar ve sayfalar dolaşılır: karşılama (4 kart), pusula, harita, yer arama ve koordinat,
-// ayarlar, Hakkında, pusula bilgisi, kalibrasyon, reklamsız üyelik. Her durumda şunlar aranır:
+// Her dilde (11) bütün ekranlar ve sayfalar dolaşılır: karşılama (4 kart), pusula, harita, Camiler (liste, bir caminin
+// sayfası ve yol tarifi bağlantıları, sokak haritası), yer arama ve koordinat, ayarlar, Hakkında, pusula bilgisi, pusula
+// düzeltmesi, kalibrasyon, reklamsız üyelik. Her durumda şunlar aranır:
 //   - konsol hatası ya da yakalanmamış hata,
 //   - yatay taşma (sayfa ya da görünür bir öğe ekranın dışına çıkıyor),
 //   - çevrilmemiş anahtar (ekranda "compass.tip" gibi bir sözlük anahtarı görünüyor).
@@ -112,9 +113,10 @@ async function dolas(dil, gen, gece) {
   await denetle(p, `${ad}-harita`, hatalar);
   await tikla(p, '.mapwrap .sq:not(.recenter)');
   await denetle(p, `${ad}-harita-katman`, hatalar);
+  await camiler(p, ad, hatalar);
   await sekme(p, 'place');
   await p.fill('input.search', ARAMA[dil]);
-  await p.waitForFunction(() => document.querySelectorAll('.list .item').length > 0, null, { timeout: 10000 });
+  await p.waitForFunction(() => document.querySelectorAll('#scr-place .list .item').length > 0, null, { timeout: 10000 });
   await p.evaluate(() => document.activeElement && document.activeElement.blur());
   await denetle(p, `${ad}-yer-arama`, hatalar);
   await tikla(p, '.rowbtn');
@@ -134,6 +136,10 @@ async function dolas(dil, gen, gece) {
   await denetle(p, `${ad}-pusula-bilgisi`, hatalar);
   await p.keyboard.press('Escape'); await p.waitForTimeout(300);
   await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  // pusula düzeltmesi (Görünüm grubunda, titreşimden önceki satır)
+  await p.locator('#scr-settings section.group').nth(1).locator('.srow').nth(5).click(); await p.waitForTimeout(400);
+  await denetle(p, `${ad}-pusula-duzeltmesi`, hatalar);
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300);
   await p.locator('#scr-settings section.group').nth(2).locator('.srow').click(); await p.waitForTimeout(700);
   await denetle(p, `${ad}-uyelik`, hatalar);
   await p.keyboard.press('Escape'); await p.waitForTimeout(300);
@@ -141,6 +147,29 @@ async function dolas(dil, gen, gece) {
   await denetle(p, `${ad}-kalibrasyon`, hatalar);
   await tikla(p, '.calib .bigbtn');
   await b.close();
+}
+
+/** Camiler sekmesi (1.2.0): yakındaki yerlerin listesi, bir yerin sayfası, sokak haritası görünümü. Döner: sayfanın alt kenarı. */
+async function camiler(p, ad, hatalar) {
+  await sekme(p, 'mosques');
+  await p.waitForFunction(() => document.querySelectorAll('#scr-mosques .item.mosq').length > 0, null, { timeout: 15000 });
+  await denetle(p, `${ad}-camiler`, hatalar);
+  await tikla(p, '#scr-mosques .item.mosq');
+  await p.waitForTimeout(300);
+  const yer = await p.evaluate(() => ({
+    url: [...document.querySelectorAll('.sheet .msheet .mode')].map((e) => e.dataset.url),
+    alt: document.querySelector('.sheet').getBoundingClientRect().bottom,
+  }));
+  if (yer.url.length !== 3 || !yer.url.every((u) => /^https:\/\/www\.google\.com\/maps\/dir\/\?api=1&origin=[-\d.]+,[-\d.]+&destination=[-\d.]+,[-\d.]+&travelmode=(walking|transit|driving)$/.test(u))) {
+    sorunlar.push(`${ad}: cami yol tarifi bağlantıları: ${yer.url.join(' ')}`);
+  }
+  await denetle(p, `${ad}-cami-sayfasi`, hatalar);
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  await tikla(p, '#scr-mosques header .ibtn:not(.ghost)');
+  await p.waitForTimeout(600);
+  await denetle(p, `${ad}-camiler-harita`, hatalar);
+  await tikla(p, '#scr-mosques header .ibtn:not(.ghost)');
+  return yer.alt;
 }
 
 /** Uygulama kipi: banner şeridi ve reklam kuralları (AdMob taklidi) */
@@ -170,6 +199,13 @@ async function uygulamaKipi(dil, gen, gece) {
   bekle(sayfaAlt <= o.serit.top + 0.5, `alt sayfa banner'ın üstünde bitmeli (${sayfaAlt} > ${o.serit.top})`);
   await denetle(p, `${ad}-hakkinda-banner`, hatalar);
   await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  await tikla(p, '#scr-settings header .ibtn');   // Ayarlar sekme çubuğunu gizler: önce geri
+  const camiAlt = await camiler(p, `${ad}-banner`, hatalar);
+  o = await olc();
+  bekle(camiAlt <= o.serit.top + 0.5, `cami sayfası banner'ın üstünde bitmeli (${camiAlt} > ${o.serit.top})`);
+  const liste = await p.evaluate(() => document.querySelector('#scr-mosques .scroll').getBoundingClientRect().bottom);
+  bekle(liste <= o.sekme.top + 0.5, `Camiler listesi sekme çubuğunun üstünde bitmeli (${liste} > ${o.sekme.top})`);
+  await sekme(p, 'settings');
   // kalibrasyonda banner gizli
   await tikla(p, '.calcard .bigbtn');
   o = await olc();
@@ -186,8 +222,8 @@ async function uygulamaKipi(dil, gen, gece) {
   await p.waitForTimeout(400);
   o = await olc();
   bekle(!o.sinif, 'klavye açıkken banner gizlenmeli');
-  await p.waitForFunction(() => document.querySelectorAll('.list .item').length > 0, null, { timeout: 10000 });
-  await p.locator('.list .item').first().click();
+  await p.waitForFunction(() => document.querySelectorAll('#scr-place .list .item').length > 0, null, { timeout: 10000 });
+  await p.locator('#scr-place .list .item').first().click();
   await p.waitForTimeout(900);
   o = await olc();
   bekle(o.sinif, 'arama bitince banner geri gelmeli');
@@ -196,15 +232,15 @@ async function uygulamaKipi(dil, gen, gece) {
   await p.evaluate(async () => { const m = await import('./js/reklam.js'); m.__oturumBasi(Date.now() - 4 * 60e3); });
   await sekme(p, 'place');
   await p.fill('input.search', ARAMA[dil]);
-  await p.waitForFunction(() => document.querySelectorAll('.list .item').length > 0, null, { timeout: 10000 });
-  await p.locator('.list .item').first().click();
+  await p.waitForFunction(() => document.querySelectorAll('#scr-place .list .item').length > 0, null, { timeout: 10000 });
+  await p.locator('#scr-place .list .item').first().click();
   await p.waitForTimeout(1200);
   o = await olc();
   bekle(o.cagri.filter((c) => c === 'showInterstitial').length === 1, 'tamamlanan aramadan sonra bir geçiş reklamı');
   await sekme(p, 'place');
   await p.fill('input.search', ARAMA[dil]);
-  await p.waitForFunction(() => document.querySelectorAll('.list .item').length > 0, null, { timeout: 10000 });
-  await p.locator('.list .item').first().click();
+  await p.waitForFunction(() => document.querySelectorAll('#scr-place .list .item').length > 0, null, { timeout: 10000 });
+  await p.locator('#scr-place .list .item').first().click();
   await p.waitForTimeout(1200);
   o = await olc();
   bekle(o.cagri.filter((c) => c === 'showInterstitial').length === 1, '4 dakika dolmadan ikinci geçiş reklamı olmamalı');

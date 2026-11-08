@@ -24,6 +24,10 @@ const EXTRA = {
   noads: ICONS['megaphone-off'],
   back: ICONS['chevron-left'],
   chevron: ICONS['chevron-right'],
+  // a mosque: dome with its finial, the door, a minaret on the right (drawn like the lucide icons: 24 x 24, stroke)
+  // a prayer room: a small house with its door
+  room: '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10.5h13V10"/><path d="M10.2 20.5v-4.7a1.8 1.8 0 0 1 3.6 0v4.7"/>',
+  mosque: '<path d="M2.5 21h19"/><path d="M5 21v-6.5a5.5 5.5 0 0 1 11 0V21"/><path d="M8.8 21v-3.4a2.2 2.2 0 0 1 4.4 0V21"/><path d="M10.5 9V6.6"/><path d="M9.6 5.4a1.1 1.1 0 0 0 1.8 0"/><path d="M18 21V11.5l1.4-2.4 1.4 2.4V21"/><path d="M19.4 9.1V7.4"/>',
 };
 export function icon(name, cls = '') {
   const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');

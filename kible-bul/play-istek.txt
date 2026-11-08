@@ -17,3 +17,7 @@
 # (yapıldı 2026-10-28, f38cd3f) gorsel uygula
 # (yapıldı 2026-10-28, f38cd3f) durum
 # 2026-10-28: üretim sürümü Console'da "Önizle ve onayla" ile kaydedildi, 21 değişiklik incelemeye gönderildi. Etkin komut yok.
+
+# 2026-11-08: 1.2.0 (2), masaüstündeki geliştirme klasörüyle birleştirme (Camiler, yeni pusula; README › "1.2.0").
+# Önce salt okuma; AAB derlenince "yukle uygula" (taslak), incelemeye gönderme kullanıcının "ONAY: …" satırıyla.
+durum

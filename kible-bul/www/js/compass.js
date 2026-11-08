@@ -3,11 +3,12 @@
 // (see android/.../CompassPlugin.java); in a browser (and on a phone where the plugin finds no sensor) the web's device-orientation events are used.
 // Screens ask for the sensor with hold(name) and give it back with release(name); pause()/resume() follow the app going to the background.
 import { headingFromOrientation, headingFromMatrix, smoothAngle, angleDiff } from './qibla.js';
+import { fieldParts, estimateDeg } from './quality.js';
 import { isNative, plugin } from './native.js';
 
 const listeners = new Set(), statusListeners = new Set(), rawListeners = new Set(), holders = new Set();
-let running = false, paused = false, heading = null, fixed = null, events = 0, lastAt = 0, absoluteSeen = false, fallbackTimer = 0, session = 0;
-let status = { source: 'none', acc: -1, field: 0, at: 0 };   // source: 'native' | 'web' | 'none'
+let beganAt = 0, running = false, paused = false, heading = null, fixed = null, events = 0, lastAt = 0, absoluteSeen = false, fallbackTimer = 0, session = 0;
+let status = { source: 'none', acc: -1, field: 0, at: 0, est: -1, parts: null };   // source: 'native' | 'web' | 'none'
 let nat = null, natHandle = null;
 
 export const onHeading = cb => { listeners.add(cb); return () => listeners.delete(cb); };
@@ -18,8 +19,10 @@ export const currentHeading = () => (fixed !== null ? fixed : heading);
 /** is there a sensor at all? false until the first reading arrives (or for ever on a phone without a compass) */
 export const hasReadings = () => fixed !== null || events > 0;
 export const lastReadingAt = () => lastAt;
-/** { source, acc (0 unreliable .. 3 high, -1 unknown), field (microtesla, 0 unknown), at } */
+/** { source, acc (0 unreliable .. 3 high, -1 unknown), field (microtesla, 0 unknown), at, est (the sensor's own estimate of its heading error, degrees, -1 unknown), parts (the field split in horizontal / vertical / dip, see quality.js) } */
 export const getStatus = () => ({ ...status });
+/** milliseconds since the last reading of the sensor, counted from the start of the sensor when that is later (0 while there has been none, or while a fixed heading stands in for the sensor) */
+export const msSinceReading = () => (fixed !== null || events === 0 || lastAt === 0 ? 0 : Date.now() - Math.max(lastAt, beganAt));
 
 function emit() { for (const f of listeners) f(currentHeading()); }
 function emitStatus() { for (const f of statusListeners) f(status); }
@@ -40,7 +43,7 @@ function onOrientation(e) {
   if (e.type === 'deviceorientationabsolute') absoluteSeen = true;
   else if (absoluteSeen) return;                              // both fire on Android: use the absolute one
   take(headingFromOrientation(e.alpha, e.beta ?? 0, e.gamma ?? 0));
-  status = { source: 'web', acc: -1, field: 0, at: Date.now() };
+  status = { source: 'web', acc: -1, field: 0, at: Date.now(), est: -1, parts: null };
   emit(); emitStatus();
 }
 
@@ -57,9 +60,12 @@ function stopWeb() {
 
 // ---- the native plugin
 function onNative(ev) {
-  if (fixed !== null || !ev || !ev.r || ev.r.length < 9) return;
-  take(headingFromMatrix(ev.r));
-  status = { source: 'native', acc: Number.isFinite(ev.acc) ? ev.acc : -1, field: Number.isFinite(ev.field) ? ev.field : 0, at: Date.now() };
+  if (fixed !== null || !ev || !ev.r || ev.r.length < 9 || !Array.prototype.every.call(ev.r, Number.isFinite)) return;
+  const hd = headingFromMatrix(ev.r);
+  if (!Number.isFinite(hd)) return;
+  take(hd);
+  const parts = fieldParts(ev.r, ev.b);
+  status = { source: 'native', acc: Number.isFinite(ev.acc) ? ev.acc : -1, field: Number.isFinite(ev.field) ? ev.field : 0, at: Date.now(), est: estimateDeg(ev.hacc), parts };
   emit(); emitStatus();
   for (const f of rawListeners) f(ev.r);
 }
@@ -78,7 +84,7 @@ function stopNative() { try { if (nat) nat.stop(); } catch (e) { /* already stop
 
 function begin() {
   if (running) return;
-  running = true;
+  running = true; beganAt = Date.now();
   const my = ++session;
   startNative().then(ok => {
     if (my !== session) { if (ok && !running) stopNative(); return; }   // stopped while the plugin was answering (a newer start, if any, keeps the sensors)
@@ -98,6 +104,8 @@ export function release(name) { holders.delete(name); if (!holders.size) end(); 
 /** the app went to the background / came back */
 export function pause() { paused = true; end(); }
 export function resume() { paused = false; if (holders.size) begin(); }
+/** the sensor stopped reporting: start it again (the screens keep holding it) */
+export function restart() { if (!running) return; end(); if (holders.size && !paused) begin(); }
 
 // for demos and tests (?heading=NN in the address, or window.__kibleHeading(deg)): a fixed heading instead of the sensor; null gives the sensor back
 export function setFixedHeading(deg) {
@@ -108,8 +116,8 @@ export function setFixedHeading(deg) {
 
 // for demos and tests (window.__kibleStatus(acc, field)): pretend the native sensor reported this accuracy (0..3) and field strength (microtesla); null clears it
 export function setTestStatus(acc, field) {
-  if (acc === null || acc === undefined) { status = { source: 'none', acc: -1, field: 0, at: 0 }; emitStatus(); return; }
-  status = { source: 'native', acc, field: field || 0, at: Date.now() };
+  if (acc === null || acc === undefined) { status = { source: 'none', acc: -1, field: 0, at: 0, est: -1, parts: null }; emitStatus(); return; }
+  status = { source: 'native', acc, field: field || 0, at: Date.now(), est: -1, parts: null };
   if (!events) events = 1;
   emitStatus();
 }

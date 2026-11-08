@@ -43,9 +43,9 @@ Free app: an ad banner sits at the bottom in its own strip and never covers the 
 
 ## Sürüm notu
 
-First release 🎉
-🧭 Direction of the Kaaba, Qibla angle and distance, with true north correction.
-🗺️ The shortest path to the Kaaba on a satellite map.
-📍 Offline search of 34,000 cities, coordinate entry.
-🎯 Accuracy indicator and calibration helper.
-🌐 11 languages.
+What's new 🎉
+🕌 Mosques: nearby mosques and prayer rooms, as a list and on a street map; directions on foot, by bus or by car.
+🧭 A more reliable compass: a magnetic interference check and the sensor's own error estimate; a stalled sensor restarts by itself.
+🎯 Settings › Compass correction: fix a needle that is always off by the same amount.
+ℹ️ Detailed readings and a copy button in Compass info.
+🐞 Bug fixes.

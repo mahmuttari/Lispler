@@ -35,7 +35,7 @@ export default [
   },
   {
     // Bu dosyalardaki page.evaluate(() => …) gövdeleri tarayıcıda, oyunun genel ad alanında çalışır
-    files: ['test/arayuz.test.mjs', 'test/akis.test.mjs', 'araclar/magaza-gorsel.mjs'],
+    files: ['test/arayuz.test.mjs', 'test/akis.test.mjs', 'araclar/magaza-gorsel.mjs', 'araclar/ekranlar.mjs'],
     rules: { 'no-undef': 'off' },
   },
 ];

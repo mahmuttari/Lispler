@@ -28,6 +28,7 @@ await s.route((u) => !u.href.startsWith(kok), (r) => r.abort());
 await s.goto(`${kok}/index.html`);
 await s.waitForFunction(() => !document.getElementById('authScreen').classList.contains('hidden'));
 await s.addStyleTag({ content: '.toast{display:none!important} footer{visibility:hidden}' });
+await s.evaluate(() => document.fonts.ready);
 
 const kare = async (ad, hazirla) => {
   await s.evaluate(hazirla);
@@ -70,16 +71,16 @@ await kare('telefon-5-kategoriler.png', () => { categoriesSelected = new Set(CAT
 const t = await tarayici.newPage({ viewport: { width: 1024, height: 500 }, deviceScaleFactor: 1 });
 await t.route((u) => !u.href.startsWith(kok), (r) => r.abort());
 await t.goto(`${kok}/index.html`);
-await t.setContent(`<!doctype html><html><head><style>
-  body{margin:0;width:1024px;height:500px;overflow:hidden;font-family:Roboto,"Segoe UI",sans-serif;
+await t.setContent(`<!doctype html><html><head><link rel="stylesheet" href="${kok}/vendor/fonts/fonts.css"><style>
+  body{margin:0;width:1024px;height:500px;overflow:hidden;font-family:'Nunito Variable',sans-serif;
     background:radial-gradient(ellipse at 30% 20%,#2a1d63 0%,#0e0a1f 70%);display:flex;align-items:center;gap:48px;padding:0 70px;box-sizing:border-box;color:#f0eeff}
   img{width:300px;height:300px;border-radius:56px;box-shadow:0 0 50px rgba(255,107,53,.45),0 0 90px rgba(74,158,255,.3)}
-  h1{margin:0 0 14px;font-size:74px;line-height:1;background:linear-gradient(135deg,#ff6b35,#ffd34d 50%,#4a9eff);-webkit-background-clip:text;color:transparent}
-  p{margin:0 0 10px;font-size:32px;font-weight:600}
+  h1{margin:0 0 14px;font-family:'Fredoka Variable',sans-serif;font-weight:700;font-size:76px;line-height:1;background:linear-gradient(135deg,#ff6b35,#ffd34d 50%,#4a9eff);-webkit-background-clip:text;color:transparent}
+  p{margin:0 0 10px;font-family:'Fredoka Variable',sans-serif;font-size:34px;font-weight:600}
   small{font-size:24px;color:#c9c4ef}
 </style></head><body><img src="${kok}/icon.jpg" alt=""><div><h1>Kelime Bilcek</h1><p>Türkçe kelime düellosu</p>
-<small>Hızlı · Tenis · Zincir — 25 kategori, arkadaşlarınla çevrimiçi</small></div></body></html>`);
-await t.waitForTimeout(300);
+<small>Hızlı · Sıra Beklicek · Zincir — arkadaşınla ya da yapay zekâya karşı</small></div></body></html>`);
+await t.evaluate(() => document.fonts.ready); await t.waitForTimeout(300);
 await t.screenshot({ path: path.join(CIKTI, 'tanitim-gorseli-1024x500.png') });
 console.log('magaza/play/tanitim-gorseli-1024x500.png');
 

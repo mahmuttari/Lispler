@@ -43,6 +43,24 @@ CI'da ilk koşular (commit b6dbe16): Denetim 41827897508 ✓, Firebase kurallar�
 | K-16 | Düşük (görünüş) | APK'daki uyarlanabilir simge Cordova'nın varsayılan robotuydu; Capacitor projesinde varsayılan açılış görseli. | Simgeler ve açılış görseli `icon.jpg`'den üretildi; Play simgesi 512×512. | — |
 | K-17 | Düşük (erişilebilirlik) | Kategori rozeti kontrastı yetersiz (axe "serious"); profil açan kullanıcı adı `span` (klavyeyle açılmıyor) ve dar ekranda başlığa biniyordu; animasyonlar hareket azaltma tercihini yok sayıyordu. | Rozet rengi koyulaştırıldı; `button` + `aria-label`; dar ekranda sağa yaslanır; `prefers-reduced-motion`. bütün düğmelere `type="button"`; `span` içindeki `div`'ler düzeltildi. | axe-core, html-validate |
 
+## 1.0.3 — Yeni görünüm (9 Kasım 2026)
+
+Kullanıcı isteği: "butonlar ince cılız olmasın, güzel bir görünüme kavuştur tüm oyunu". Yön `ui-ux-pro-max` tasarım
+sistemi önerisinden (oyunlar için "claymorphism": kalın, 3 boyutlu, yuvarlak; Fredoka + Nunito) koyu tema ve simgedeki
+ateş/buz/altın kimliğiyle uyarlandı.
+
+- **Düğmeler:** en az 58 px (küçük 48 px), 18 px köşe, 6 px alt gölge, basınca çökme; birincil ateş, onay yeşil, tehlike
+  kırmızı, ikincil kenarlıklı mor; "Maçı Terk Et" ve "Hesabı Sil" artık dikkat dağıtmayan çerçeveli tehlike düğmesi.
+- **Yazı tipi:** Fredoka (başlık, düğme, sayı) ve Nunito (metin), SIL OFL 1.1, `@fontsource-variable`; yalnız latin ve
+  latin-ext (Türkçe) alt kümeleri cihazda (`www/vendor/fonts`, 124 KB; `araclar/vendor.mjs`).
+- **Simgeler:** emoji yerine Lucide SVG (ISC), sayfaya gömülü küme (`araclar/ikonlar.mjs`, 33 simge, 7,5 KB).
+- **Ekranlar:** lobide renkli simge kutulu büyük kart + 2×2 kutucuk ızgarası, 76 px mod seçici; bot zorluk kartları;
+  bekleme ekranlarında halka animasyonu; maçta yuvarlak sayaç, iri kelime balonları, büyük giriş alanı; sonuç ekranında
+  büyük skor; pencerelerde bulanık arka plan; bildirim hapı.
+- **Erişilebilirlik:** metin kontrastı ≥ 4,5:1, büyük kalın düğme metni ≥ 3:1, dokunma hedefi ≥ 44 px, görünür odak
+  halkası, hareket azaltma; axe-core ağır ihlal yok, Lighthouse dört kategoride 1,00.
+- Ekran görüntüsü aracı `araclar/ekranlar.mjs` (16 ekran); mağaza görselleri yeni görünümle yeniden üretildi.
+
 ## 1.0.2 — Maliyet hesabı, yapay zekâya karşı mod ve tasarruf (9 Kasım 2026)
 
 ### Maliyet (aylık, USD) — `araclar/maliyet.py`

@@ -628,8 +628,10 @@ $("soundToggleBtn").addEventListener("click", () => {
 $("usernameBack").addEventListener("click", resetUsernameScreen);
 
 function updateSoundToggleBtn(){
-  const btn = $("soundToggleBtn");
-  if(btn) btn.textContent = soundEnabled ? "🔊 Sesler: Açık" : "🔇 Sesler: Kapalı";
+  // 1.0.3: düğme SVG simge + metin taşır; yalnız metin ve simge değişir
+  const yazi = $("soundToggleText"), ikon = $("soundIkon");
+  if(yazi) yazi.textContent = soundEnabled ? "Sesler: Açık" : "Sesler: Kapalı";
+  if(ikon) ikon.setAttribute("href", soundEnabled ? "#i-volume-2" : "#i-volume-x");
 }
 updateSoundToggleBtn();
 // Overlay arkaplanına tıklayınca kapansın
@@ -924,7 +926,7 @@ function renderFriends(){
   $("friendsCount").textContent = uids.length;
   $("friendsCount").classList.toggle("hidden", uids.length === 0);
   if(uids.length === 0){
-    list.innerHTML = '<div class="empty">Henüz arkadaşın yok.<br>"+ Arkadaş Ekle" ile başla.</div>';
+    list.innerHTML = '<div class="empty">Henüz arkadaşın yok.<br>"Arkadaş Ekle" ile başla.</div>';
     return;
   }
   list.innerHTML = "";
@@ -937,8 +939,8 @@ function renderFriends(){
       <span class="dot"></span>
       <span class="nm">${escapeHtml(name)}</span>
       <span class="actions">
-        <button class="btn small success" data-act="invite" data-uid="${uid}" data-name="${escapeHtml(name)}">Davet</button>
-        <button class="btn small danger" data-act="remove" data-uid="${uid}" data-name="${escapeHtml(name)}">✕</button>
+        <button type="button" class="btn small success" data-act="invite" data-uid="${uid}" data-name="${escapeHtml(name)}"><svg class="ikon" aria-hidden="true"><use href="#i-gamepad-2"/></svg>Davet</button>
+        <button type="button" class="btn small secondary ikon-dugme" data-act="remove" data-uid="${uid}" data-name="${escapeHtml(name)}" aria-label="${escapeHtml(name)} arkadaşlıktan çıkar"><svg class="ikon" aria-hidden="true"><use href="#i-x"/></svg></button>
       </span>`;
     list.appendChild(row);
     // Online status dinle
@@ -1461,14 +1463,14 @@ function renderRoom(d){
           wIn.disabled = false;
           sBtn.disabled = false;
           wIn.placeholder = mode === "chain" && nextL
-            ? "'" + nextL.toLocaleUpperCase("tr-TR") + "' ile başlayan kelime yaz..."
-            : "Kelimeyi yaz, Enter ile gönder...";
+            ? nextL.toLocaleUpperCase("tr-TR") + " ile başla…"
+            : "Kelimeyi yaz…";
         } else {
           const oppName = opp?.name || "rakip";
           text.textContent = "⏳ " + oppName + " yazıyor..." + (mode === "chain" ? letterHint : "");
           wIn.disabled = true;
           sBtn.disabled = true;
-          wIn.placeholder = oppName + " yazıyor, sıranı bekle...";
+          wIn.placeholder = "Sıranı bekle…";
           wIn.value = "";
         }
         // Chain modunda kelime sayısı göster (kim kaç kelime yazdı)
@@ -1486,7 +1488,7 @@ function renderRoom(d){
         text.textContent = "✍️ YAZ! YAZ! YAZ!";
         wIn.disabled = false;
         sBtn.disabled = false;
-        wIn.placeholder = "Kelimeyi yaz, Enter ile gönder...";
+        wIn.placeholder = "Kelimeyi yaz…";
         $("liveScores").classList.remove("hidden");
       }
     } else if(round.phase === "ended"){

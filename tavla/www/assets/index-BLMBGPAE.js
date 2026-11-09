@@ -29332,10 +29332,29 @@ function yy(e) {
     t
   );
 }
+// 1.0.2: eskiden bütün mesaj boşluksuz birleştirilip her parça alt dize olarak aranıyordu; "sık sık", "tahta dolu",
+// "hocam", "kocaman", "tamam kardeş", "sokak" küfür sayılıp uyarı (3 uyarıda 3 gün yasak) veriyordu.
+// Şimdi: kısa parçalar yalnız tek başına kelimeyse, uzunlar kelime başındaysa (ekli hâller), açık küfürler boşlukla
+// bölünse de (birleşik metinde) yakalanır. "götürmek" (fiil) ve "sıkış" listeden çıktı.
+var tvYalnizTamKelime = new Set([`sikis`]),
+  tvMasumlar = new Set([`goturmek`]),
+  tvBirlesikteAra = [`siktir`, `orospu`, `pezevenk`, `aminakoy`, `sikerim`, `sikeyim`, `sikecegim`, `gotveren`,
+    `ibnelik`, `amcigin`, `amcigima`, `amcigini`, `ananisik`, `bacinisik`, `avradini`, `kerhane`, `fahise`];
 function by(e) {
-  let t = yy(e);
-  if (!t) return !1;
-  for (let e of gy) if (t.includes(e)) return !0;
+  if (!e) return !1;
+  let o = String(e).split(/\s+/).filter(Boolean),
+    n = o.map(yy).filter(Boolean),
+    // tam kelime karşılaştırmasında "ı" ayrı tutulur: "sık" ≠ "sik"
+    a = o.map((e) => yy(e.toLowerCase().replace(/ı/g, `x`))).filter(Boolean);
+  if (n.length === 0) return !1;
+  for (let r of gy) {
+    if (tvMasumlar.has(r)) continue;
+    if (r.length <= 3 || tvYalnizTamKelime.has(r)) {
+      for (let e of a) if (e === r) return !0;
+    } else for (let e of n) if (e.startsWith(r)) return !0;
+  }
+  let t = n.join(``);
+  for (let r of tvBirlesikteAra) if (t.includes(r)) return !0;
   return !1;
 }
 var xy = 1440 * 60 * 1e3,
@@ -29912,9 +29931,11 @@ function jy(e) {
         return;
       }
       let t = vf(
-        Jd(td(X, `rooms`, e, `messages`), $d(`at`, `asc`), tf(Ay)),
+        // 1.0.2: eskiden artan sırada ilk 50 mesaj alınıyordu; 50'den sonra yeni mesajlar hiç görünmüyordu.
+        // Şimdi en yeni 50 mesaj alınır, ekranda eskiden yeniye dizilir.
+        Jd(td(X, `rooms`, e, `messages`), $d(`at`, `desc`), tf(Ay)),
         (e) => {
-          n(e.docs.map((e) => ({ id: e.id, ...e.data() })));
+          n(e.docs.map((e) => ({ id: e.id, ...e.data() })).reverse());
         },
         (e) => {
           (console.error(`Chat dinleme hatası:`, e), o(e.message));
@@ -31024,7 +31045,7 @@ var wb = [],
           `Nihayet doğru zarı bulduk.`,
           `Girdik girmesine de, ortalık karışık.`,
           `Gurbet bitti, hadi hayırlısı.`,
-          `Hala dışarıdayız, şaka gibi!`,
+          `Hâlâ dışarıdayız, şaka gibi!`,
         ],
       },
     },
@@ -31169,7 +31190,7 @@ var wb = [],
           `Hadi gir içeri artık, bekliyoruz!`,
           `Açıl susam açıl!`,
           `Nihayet! İçerideyim be!`,
-          `Hala dışarıdayım, delireceğim!`,
+          `Hâlâ dışarıdayım, delireceğim!`,
           `Kapılar kapalı, güvenlik almıyor içeri.`,
           `Girdik be! Sonunda!`,
           `Zar gelmiyor ki içeri sızalım.`,
@@ -31180,7 +31201,7 @@ var wb = [],
           `Hadi be kemik, bir güzellik yap!`,
           `Zor oldu ama sızmayı başardık.`,
           `İçerideyiz kanka, kork benden!`,
-          `Hala gelemedik mi ya?`,
+          `Hâlâ gelemedik mi ya?`,
           `Zarlar resmen içeri girmemi istemiyor.`,
           `Sonunda bir kapı bulduk.`,
           `Hadi bismillah, daldık içeri.`,
@@ -31657,7 +31678,7 @@ var wb = [],
         { text: `Nihayet doğru zarı bulduk.`, file: `voices/dayi/AI_ENTERED_16_tmq3vh.mp3` },
         { text: `Girdik girmesine de, ortalık karışık.`, file: `voices/dayi/AI_ENTERED_17_7hgmi5.mp3` },
         { text: `Gurbet bitti, hadi hayırlısı.`, file: `voices/dayi/AI_ENTERED_18_1c0474.mp3` },
-        { text: `Hala dışarıdayız, şaka gibi!`, file: `voices/dayi/AI_ENTERED_19_ayi6sw.mp3` },
+        { text: `Hâlâ dışarıdayız, şaka gibi!`, file: `voices/dayi/AI_ENTERED_19_ayi6sw.mp3` },
       ],
     },
     genc: {
@@ -31946,7 +31967,7 @@ var wb = [],
         { text: `Hadi gir içeri artık, bekliyoruz!`, file: `voices/genc/AI_ENTERED_00_kr1h3n.mp3` },
         { text: `Açıl susam açıl!`, file: `voices/genc/AI_ENTERED_01_4we1uh.mp3` },
         { text: `Nihayet! İçerideyim be!`, file: `voices/genc/AI_ENTERED_02_1cosc1.mp3` },
-        { text: `Hala dışarıdayım, delireceğim!`, file: `voices/genc/AI_ENTERED_03_x85moe.mp3` },
+        { text: `Hâlâ dışarıdayım, delireceğim!`, file: `voices/genc/AI_ENTERED_03_x85moe.mp3` },
         { text: `Kapılar kapalı, güvenlik almıyor içeri.`, file: `voices/genc/AI_ENTERED_04_mbkkg6.mp3` },
         { text: `Girdik be! Sonunda!`, file: `voices/genc/AI_ENTERED_05_c3u800.mp3` },
         { text: `Zar gelmiyor ki içeri sızalım.`, file: `voices/genc/AI_ENTERED_06_imttjp.mp3` },
@@ -31957,7 +31978,7 @@ var wb = [],
         { text: `Hadi be kemik, bir güzellik yap!`, file: `voices/genc/AI_ENTERED_11_jilkp7.mp3` },
         { text: `Zor oldu ama sızmayı başardık.`, file: `voices/genc/AI_ENTERED_12_tcy09o.mp3` },
         { text: `İçerideyiz kanka, kork benden!`, file: `voices/genc/AI_ENTERED_13_1ujdbd.mp3` },
-        { text: `Hala gelemedik mi ya?`, file: `voices/genc/AI_ENTERED_14_vyk3bj.mp3` },
+        { text: `Hâlâ gelemedik mi ya?`, file: `voices/genc/AI_ENTERED_14_vyk3bj.mp3` },
         { text: `Zarlar resmen içeri girmemi istemiyor.`, file: `voices/genc/AI_ENTERED_15_mt5xoo.mp3` },
         { text: `Sonunda bir kapı bulduk.`, file: `voices/genc/AI_ENTERED_16_xej1fo.mp3` },
         { text: `Hadi bismillah, daldık içeri.`, file: `voices/genc/AI_ENTERED_17_yk56tx.mp3` },
@@ -36162,7 +36183,11 @@ function BC({
     }, [m.winner, D, s, Ie]),
     (0, _.useEffect)(() => {
       if (!m.winner) return;
+      // 1.0.2: sıralama kaydı ve maç puanı aynı anahtarı (be.current) paylaşıyordu; bilgisayara karşı maçta
+      // efekt yeniden çalışınca maç puanı iki kez ekleniyor, sıralama puanı iki kez yazılıyordu. Ayrı anahtarlar:
+      // be.current = sıralama kaydı, be.mac = maç puanı.
       if ((D || E) && be.current !== m.winner + `:rank:` + me) {
+        be.current = m.winner + `:rank:` + me;
         let e = m.winner === Q ? $ : Q,
           n = m.off[e] === 0;
         if (m.winner === t) d?.({ isMars: n });
@@ -36171,8 +36196,8 @@ function BC({
           f?.({ isMars: e });
         }
       }
-      if (!C || be.current === m.winner + `:` + me) return;
-      be.current = m.winner + `:` + me;
+      if (!C || be.mac === m.winner + `:` + me) return;
+      be.mac = m.winner + `:` + me;
       let e = m.winner,
         n = e === Q ? $ : Q,
         r = m.off[n] === 0,
@@ -36208,7 +36233,8 @@ function BC({
       (ze.current = !1),
       (Be.current = !1),
       (Ve.current = 0),
-      (be.current = null));
+      (be.current = null),
+      (be.mac = null));
   };
   ((0, _.useEffect)(
     () => () => {
@@ -36784,7 +36810,7 @@ function BC({
                   !Ae &&
                     (0, Z.jsx)(`div`, {
                       className: `match-end-sub`,
-                      children: e ? `${r}'ı yendin, helal olsun!` : `${n} bu maçı aldı, sıradakine!`,
+                      children: e ? `${r} karşısında kazandın, helal olsun!` : `${n} bu maçı aldı, sıradakine!`,
                     }),
                   C &&
                     (0, Z.jsxs)(`div`, {

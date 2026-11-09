@@ -39,8 +39,9 @@ içinde ("Poyraz Workshop 1.0.0 — güvenlik bölümü").
 
 Uygulama kodu (`www/assets/index-BLMBGPAE.js`, 28740. satırdan sonrası; kütüphaneler hariç, gömülü ses verisi kısaltılmış,
 Firebase web anahtarı gizlenmiş) ve yapılandırma (`firestore.rules`, `reklam.js`, manifest, `build.gradle`) 17 parça
-hâlinde **NVIDIA nemotron-3-ultra** (17/17 parça) ve **Evren** (deepseek-v4.1-flash; Evren kapasite ve ağ geçidi
-hataları yüzünden kısmi) ile tarandı. Her bulgu koda karşı tek tek doğrulandı; doğrulananlar düzeltildi.
+hâlinde **NVIDIA nemotron-3-ultra** (17/17 parça) ve **Evren** (17/17 parça; glm-5.3 ve deepseek-v4.1-flash
+kapasite hatası verdiği için çoğu qwen3.8-flash-next, düşük düşünme düzeyiyle) ile tarandı. Her bulgu koda karşı tek
+tek doğrulandı; doğrulananlar düzeltildi.
 
 | No | Önem | Bulgu | Düzeltme (1.0.2) |
 |---|---|---|---|
@@ -52,17 +53,23 @@ hataları yüzünden kısmi) ile tarandı. Her bulgu koda karşı tek tek doğru
 | T-18 | Düşük (görünüş) | Maç puanlı oyunda üstteki ad kutusu 130 px'e sığmıyor, adlar "Be…", "Siy…" diye kesiliyordu (mağaza görüntüsünde de). | Kutu 200 px (dar ekranda 150 px), rozetler daralmaz, ad en az 3 em. |
 | T-19 | Düşük (erişilebilirlik) | Düğmelerde klavye odak göstergesi yoktu; "hareketi azalt" ayarı yok sayılıyordu. | Genel `:focus-visible` çerçevesi ve `prefers-reduced-motion` kuralı (`index-nqMpL4T3.css`). |
 | T-20 | Düşük (görünüş) | Simge ve açılış ekranı APK'daki görseldi; açılış ekranı beyaz zeminde, simgede görsel üretici filigranı seçiliyordu. | Yeni simge (elle yazılmış SVG, `araclar/kaynak/`), Android katmanları ve koyu açılış ekranı `araclar/simge-uret.mjs` ile; Android 12+ açılış zemini koyu. Yeni tanıtım görseli, ekran görüntüleri 1.0.2'den yeniden çekildi. |
+| T-21 | Yüksek | Argo filtresi bütün mesajı boşluksuz birleştirip "mk", "oc", "sik", "dol", "sok" gibi parçaları alt dize olarak arıyordu: "sık sık", "tahta dolu", "hocam", "kocaman", "tamam kardeş", "sokak" küfür sayılıp uyarı alıyordu (3 uyarıda 3 gün yasak); rumuzda da aynı. Listede "götürmek" (fiil) ve "sıkış" vardı. (Evren) | Kelime bazlı: kısa parçalar yalnız tek başına kelimeyse ("ı" ayrı tutulur: "sık" ≠ "sik"), uzunlar kelime başındaysa, açık küfürler boşlukla bölünse de yakalanır; iki masum kelime çıktı. `test/argo.test.mjs` (35 örnek). |
+| T-22 | Yüksek | Bilgisayara karşı maçta (5/7/11 puan) oyun sonu efekti sıralama kaydıyla maç puanını aynı anahtarla ayırıyordu; efekt yeniden çalışınca maç puanı **iki kez** ekleniyor, sıralama puanı iki kez yazılıyordu (Playwright ile doğrulandı: eski 2, yeni 1). (Evren) | Ayrı anahtarlar (`be.current` sıralama, `be.mac` maç puanı); yeni maçta ikisi de sıfırlanır. |
+| T-23 | Yüksek | Sohbet artan sırada **ilk** 50 mesajı dinliyordu; 50 mesajdan sonra yeni mesajlar hiç görünmüyordu. (Evren) | En yeni 50 mesaj (`desc` + `limit`), ekranda eskiden yeniye. |
+| T-24 | Düşük (metin) | Maç sonunda "${rakip}'ı yendin" eki sabitti ("Kahveci'ı yendin"); repliklerde "Hala dışarıdayız" ("hâlâ" olmalı). (Evren) | "… karşısında kazandın, helal olsun!"; "Hâlâ" (ekranda; ses kayıtları aynı). |
 
 **Doğrulanıp yanlış bulunanlar (değiştirilmedi):** toplama ve ev bölgesi hesabı (model beyazın yönünü ters varsaymış),
 çift zarın 4 kez oynanması, hesap silmede "tanımsız değişken" ve "kullanıcı belgesi silinmiyor" (ikisi de doğru
 çalışıyor), rumuz yarışı ve başkasının rumuzunu silme (kurallar engelliyor), odaya iki konuğun aynı anda yazması
 (kural ikinci yazımı reddediyor), çıkışta engel listesinin sızması (giriş değişince yeniden yükleniyor), "Tekrar Oyna"nın
 maç puanını silmesi (yalnız maç bitince sıfırlanıyor), "alnımızın akı" (doğru deyim), yasak süresinin ham sayı olması
-(`Ey` ile biçimleniyor), kısaltılmış satırlardaki bozuk karakterler (taramaya hazırlıktaki kısaltmadan).
+(`Ey` ile biçimleniyor), şikâyet gönderiminde hata yakalanmaması (pencere yakalıyor ve gösteriyor), kısaltılmış
+satırlardaki bozuk karakterler (taramaya hazırlıktaki kısaltmadan).
 
 **Bilinçli bırakılanlar:** sohbet yasağı belge silinip yeniden açılarak atlanabilir (uyarı sayacını zaten istemci yazıyor;
 yeni hesap açmakla aynı), bazı karakterlerde boş replik kategorileri (ses kaydı yok, sessiz kalıyor, hata yok),
-`minifyEnabled false` (Capacitor varsayılanı), "Vatan toprağına ayak bastık" gibi üslup tercihleri.
+`minifyEnabled false` ve `allowBackup="true"` (Capacitor varsayılanları), Genç Mert repliklerindeki oyun argosu ("aimbot",
+"wallhack", "ulan") ve "Vatan toprağına ayak bastık" gibi üslup tercihleri (ses kayıtlarıyla birlikte; değiştirmek kullanıcı kararı).
 
 ## Açık kalanlar (bilinçli olarak bırakılan ya da kullanıcıda olan)
 

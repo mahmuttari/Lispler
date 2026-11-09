@@ -19,4 +19,7 @@
 # (yapıldı 2026-11-04, koşu 41868509396: SHA-1 V3.0 c111f874a25841aa3fcdbf6646a0b42ce641a411, V3.2 hibrit 5f7247c9153a8587c7d7b593b3ad10f41503d41a) imza
 
 # istek 2026-11-09T20:57:25Z: salt okuma durum (1.0.1 yayını öncesi; Play'deki taslak ve paketler)
-durum
+# (yapıldı 2026-11-09, koşu 42697873508: production 1 (1.0.0) completed — uygulama Play'de yayında; paketler 1; tr-TR icon 1, featureGraphic 1, phoneScreenshots 5) durum
+
+# istek 2026-11-09T21:02:37Z: 1.0.1 (2) üretime yükle ve incelemeye gönder; yayındaki 1.0.0 (1)'in yerini alır (kullanıcının açık onayı: "Evet, gönder"); AAB: kelime-android koşusu 42696928440 (commit 7adb08a, versionCode 2, admob=gercek, Poyraz Workshop yükleme anahtarı)
+yukle yayinla uygula

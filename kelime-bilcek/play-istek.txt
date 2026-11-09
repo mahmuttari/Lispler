@@ -22,4 +22,4 @@
 # (yapıldı 2026-11-09, koşu 42697873508: production 1 (1.0.0) completed — uygulama Play'de yayında; paketler 1; tr-TR icon 1, featureGraphic 1, phoneScreenshots 5) durum
 
 # istek 2026-11-09T21:02:37Z: 1.0.1 (2) üretime yükle ve incelemeye gönder; yayındaki 1.0.0 (1)'in yerini alır (kullanıcının açık onayı: "Evet, gönder"); AAB: kelime-android koşusu 42696928440 (commit 7adb08a, versionCode 2, admob=gercek, Poyraz Workshop yükleme anahtarı)
-yukle yayinla uygula
+# (yapıldı 2026-11-09, koşu 42698697144: AAB 2 (koşu 42696928440, commit 7adb08a) yüklendi, üretim 1.0.0 (1) → 1.0.1 (2) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula

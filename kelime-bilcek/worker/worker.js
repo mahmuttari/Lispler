@@ -1,5 +1,5 @@
 /**
- * Kelime Bilcek — AI Kelime Hakemi v3 (Cloudflare Worker "floral-wave-f116")
+ * Kelime Bilcek — AI Kelime Hakemi v3.1 (Cloudflare Worker "floral-wave-f116")
  * ----------------------------------------------------------------------------
  * v2'ye göre değişenler (kelime-bilcek/DENETIM.md › K-03, K-07):
  *   - Yalnız Firebase'e giriş yapmış oyuncuya yanıt verir: "Authorization: Bearer <Firebase ID token>".
@@ -43,7 +43,8 @@ function normalizeWord(w) {
 
 export function kelimeGecerliBicim(k) {
   const s = String(k || "").trim();
-  return s.length >= 2 && s.length <= SINIR.kelimeEnUzun && /^[a-zA-ZçğıöşüâîûÇĞİÖŞÜÂÎÛ\s-]+$/.test(s);
+  return s.length >= 2 && s.length <= SINIR.kelimeEnUzun && /^[a-zA-ZçğıöşüâîûÇĞİÖŞÜÂÎÛ\s-]+$/.test(s)
+    && (s.match(/[a-zA-ZçğıöşüâîûÇĞİÖŞÜÂÎÛ]/g) || []).length >= 2; // en az iki harf (v3.1)
 }
 
 // ---------- CORS ve yanıt ----------
@@ -62,7 +63,8 @@ function jsonResponse(request, obj, status = 200) {
 
 // ---------- Firebase ID token doğrulama ----------
 let anahtarOnbellegi = { anahtarlar: null, bitis: 0 };
-export function _anahtarOnbelleginiSifirla() { anahtarOnbellegi = { anahtarlar: null, bitis: 0 }; }
+let sonZorlaCekim = 0;
+export function _anahtarOnbelleginiSifirla() { anahtarOnbellegi = { anahtarlar: null, bitis: 0 }; sonZorlaCekim = 0; }
 
 function b64url(s) {
   const t = s.replace(/-/g, "+").replace(/_/g, "/");
@@ -71,9 +73,9 @@ function b64url(s) {
 }
 function b64urlJson(s) { return JSON.parse(new TextDecoder().decode(b64url(s))); }
 
-async function googleAnahtarlari() {
+async function googleAnahtarlari(zorla = false) {
   const simdi = Date.now();
-  if (anahtarOnbellegi.anahtarlar && simdi < anahtarOnbellegi.bitis) return anahtarOnbellegi.anahtarlar;
+  if (!zorla && anahtarOnbellegi.anahtarlar && simdi < anahtarOnbellegi.bitis) return anahtarOnbellegi.anahtarlar;
   const r = await fetch(JWK_URL);
   if (!r.ok) throw new Error("anahtarlar alınamadı: " + r.status);
   const { keys } = await r.json();
@@ -93,7 +95,12 @@ export async function kimlikDogrula(jeton, simdiSn = Math.floor(Date.now() / 100
     if (yuk.aud !== PROJE || yuk.iss !== `https://securetoken.google.com/${PROJE}`) return null;
     if (typeof yuk.sub !== "string" || !yuk.sub || yuk.sub.length > 128) return null;
     if (!(yuk.exp > simdiSn) || !(yuk.iat <= simdiSn + 300) || !(yuk.auth_time <= simdiSn + 300)) return null;
-    const jwk = (await googleAnahtarlari()).find((k) => k.kid === baslik.kid);
+    let jwk = (await googleAnahtarlari()).find((k) => k.kid === baslik.kid);
+    // v3.1: Google anahtarları yenilediyse önbellekte yeni kid yoktur; bir kez yeniden çek (en çok dakikada bir)
+    if (!jwk && Date.now() - sonZorlaCekim > 60e3) {
+      sonZorlaCekim = Date.now();
+      jwk = (await googleAnahtarlari(true)).find((k) => k.kid === baslik.kid);
+    }
     if (!jwk) return null;
     const anahtar = await crypto.subtle.importKey("jwk", { kty: jwk.kty, n: jwk.n, e: jwk.e, alg: "RS256", ext: true },
       { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]);
@@ -181,6 +188,9 @@ export default {
     if (hizSiniriAsildi(kimlik.sub)) return jsonResponse(request, { gecerli: false, sebep: "Çok fazla istek" }, 429);
     if (!env.AI) return jsonResponse(request, { gecerli: false, sebep: "Worker AI binding eksik" }, 500);
 
+    // v3.1: gövde okunmadan önce bildirilen boyut denetlenir (büyük gövde belleğe alınmaz)
+    const bildirilen = Number(request.headers.get("Content-Length") || 0);
+    if (bildirilen > SINIR.govdeBayt) return jsonResponse(request, { gecerli: false, sebep: "İstek çok büyük" }, 413);
     const metin = await request.text();
     if (new TextEncoder().encode(metin).length > SINIR.govdeBayt) return jsonResponse(request, { gecerli: false, sebep: "İstek çok büyük" }, 413);
     let body;

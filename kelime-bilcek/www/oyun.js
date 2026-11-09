@@ -486,6 +486,10 @@ function detachAllListeners(){
       if(friendsListener) db.ref(`users/${myUid}/friends`).off("value", friendsListener);
       // v4.11 dinleyiciyi kapatmak yerine çağırıyordu; arkadaşların çevrimiçi dinleyicileri açık kalıyordu (K-09)
       Object.entries(friendsOnlineListeners || {}).forEach(([uid, fn]) => { try{ db.ref(`users/${uid}/online`).off("value", fn); }catch(e){} });
+      // 1.0.1: eşleşme ararken çıkış yapılınca kuyruk dinleyicisi açık kalıyordu (K-22)
+      if(inMatchmaking) db.ref(`matchmaking/queue/${myUid}`).remove().catch(()=>{});
+      inMatchmaking = false;
+      detachQueue();
       db.ref(`users/${myUid}/online`).set(false).catch(()=>{});
     }
   }catch(e){ console.warn("detachAllListeners:", e.message); }
@@ -879,6 +883,12 @@ function attachFriends(){
 function renderFriends(){
   const list = $("friendsList");
   const uids = Object.keys(friendsData);
+  // 1.0.1: listeden çıkan arkadaşın çevrimiçi dinleyicisi kapatılır (önceden açık kalıyordu; K-22)
+  Object.keys(friendsOnlineListeners).forEach(uid => {
+    if(friendsData[uid]) return;
+    try{ db.ref(`users/${uid}/online`).off("value", friendsOnlineListeners[uid]); }catch(e){}
+    delete friendsOnlineListeners[uid];
+  });
   $("friendsCount").textContent = uids.length;
   $("friendsCount").classList.toggle("hidden", uids.length === 0);
   if(uids.length === 0){
@@ -1128,9 +1138,13 @@ async function startQuickMatch(){
     return;
   }
 
-  // Birini bul ve odamı oluştur, diğerini joinRoom ile çağır
+  // Birini bul ve odamı oluştur, diğerini joinRoom ile çağır.
+  // 1.0.1: aynı anda tek deneme. Kuyruktaki her değişiklik tryMatch'i yeniden başlatıyordu; önceki deneme bitmeden
+  // ikincisi başka bir rakibi daha alıp ikinci bir oda kurabiliyordu (DENETIM.md › K-20).
+  let eslesiyor = false;
   const tryMatch = async () => {
-    if(!inMatchmaking) return;
+    if(!inMatchmaking || eslesiyor) return;
+    eslesiyor = true;
     try{
       const snap = await db.ref("matchmaking/queue").once("value");
       const queue = snap.val() || {};
@@ -1177,14 +1191,32 @@ async function startQuickMatch(){
       joinRoomById(newRoomId);
     }catch(e){
       console.error("match err", e);
+    }finally{
+      eslesiyor = false;
     }
+  };
+
+  // 1.0.1: rakibim kuyruk kaydımı aldı ama oda kuramadıysa (ağ hatası) arama ekranında sonsuza kadar kalıyordum.
+  // Kaydım 8 sn kuyrukta yoksa ve odaya çağrılmadıysam yeniden sıraya girerim (K-21).
+  let kayipZamanlayici = null;
+  const kaydimiDenetle = (queue) => {
+    if(!inMatchmaking){ clearTimeout(kayipZamanlayici); kayipZamanlayici = null; return; }
+    if(queue && queue[myUid]){ clearTimeout(kayipZamanlayici); kayipZamanlayici = null; return; }
+    if(kayipZamanlayici) return;
+    kayipZamanlayici = setTimeout(() => {
+      kayipZamanlayici = null;
+      if(!inMatchmaking) return;
+      myEntry.set({ name: myName, ts: Date.now(), mode: selectedMode }).catch(()=>{});
+    }, 8000);
   };
 
   // Hemen bir dene + her kuyruk değişiminde tekrar dene
   setTimeout(tryMatch, 600);
   if(queueListener) db.ref("matchmaking/queue").off("value", queueListener);
-  queueListener = db.ref("matchmaking/queue").on("value", () => {
-    if(inMatchmaking) tryMatch();
+  queueListener = db.ref("matchmaking/queue").on("value", snap => {
+    if(!inMatchmaking) return;
+    kaydimiDenetle(snap.val());
+    tryMatch();
   });
 }
 
@@ -1766,8 +1798,11 @@ async function startNextRound(){
   pendingPhaseAdvance = false;
 }
 
+// 1.0.1: Tenis ve Zincir'de kelime denetlenirken "Gönder" kapanıyordu ama Enter açıktı; aynı sırada ikinci bir kelime
+// gönderilebiliyordu (sıra geçtikten sonra yazılan kelime). Denetim sürerken yeni gönderim yok sayılır (K-23).
+let kelimeDenetleniyor = false;
 async function submitWord(){
-  if(!roomRef || gameEnded) return;
+  if(!roomRef || gameEnded || kelimeDenetleniyor) return;
   if(!currentRoundData || currentRoundData.phase !== "active") return;
   const mode = currentMatchData?.mode || "sim";
 
@@ -1806,6 +1841,7 @@ async function submitWord(){
     let valid = isWordInLocalDict(raw);
     if(!valid){
       $("sendBtn").disabled = true;
+      kelimeDenetleniyor = true;
       // wordInput KASTEN disable EDİLMİYOR — klavye kapanmasın
       showToast("Kontrol ediliyor...");
       let aiResult;
@@ -1813,6 +1849,7 @@ async function submitWord(){
         aiResult = await validateWordSmart(null, raw); // Zincir modunda kategori yok, sadece "Türkçe mi?"
       } finally {
         $("sendBtn").disabled = false;
+        kelimeDenetleniyor = false;
       }
       if(aiResult !== true){
         showToast("'" + raw + "' geçerli bir kelime değil");
@@ -1878,6 +1915,7 @@ async function submitWord(){
     // Listede yok → AI'ya kategori-uygunluk sor (TDK fallback dahil)
     if(mode === "duel"){
       $("sendBtn").disabled = true;
+      kelimeDenetleniyor = true;
       // wordInput KASTEN disable EDİLMİYOR — klavye kapanmasın
       showToast("Kontrol ediliyor...");
       let aiResult;
@@ -1885,6 +1923,7 @@ async function submitWord(){
         aiResult = await validateWordSmart(currentCategory, raw);
       } finally {
         $("sendBtn").disabled = false;
+        kelimeDenetleniyor = false;
       }
       await pushFinal(aiResult === true, aiResult === true);
     } else {
@@ -1940,6 +1979,7 @@ function resetGameState(){
   currentRoundData = null;
   currentMatchData = null;
   pendingPhaseAdvance = false;
+  kelimeDenetleniyor = false;
   $("wordInput").value = "";
   $("roomInput").value = "";
   $("wordsChat").innerHTML = "";

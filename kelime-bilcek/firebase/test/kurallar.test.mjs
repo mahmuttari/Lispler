@@ -112,6 +112,18 @@ describe('kullanıcılar ve kullanıcı adları', () => {
     await assertFails(d.ref(`users/${ALI}/stats/wins`).set(50));
     await assertFails(d.ref(`users/${ALI}/stats/hile`).set(1));
   });
+  test('1.0.1: sayaç azaltılamaz, tek tek silinemez (yenilgiyi sıfırlama hilesi; K-26)', async () => {
+    await kayitli();
+    await yonetici((y) => y.ref().update({ [`users/${ALI}/stats/losses`]: 5, [`leaderboard/${ALI}`]: { name: 'ali', losses: 5, wins: 2 } }));
+    const d = db(ALI);
+    await assertFails(d.ref(`users/${ALI}/stats/losses`).set(0));
+    await assertFails(d.ref(`users/${ALI}/stats/losses`).remove());
+    await assertFails(d.ref(`users/${ALI}/stats`).remove());
+    await assertFails(d.ref(`leaderboard/${ALI}/losses`).set(4));
+    await assertFails(d.ref(`leaderboard/${ALI}/losses`).remove());
+    await assertSucceeds(d.ref(`users/${ALI}/stats/losses`).set({ '.sv': { increment: 1 } }));
+    await assertSucceeds(d.ref(`leaderboard/${ALI}/losses`).set({ '.sv': { increment: 1 } }));
+  });
 });
 
 describe('Şampiyonlar (leaderboard)', () => {

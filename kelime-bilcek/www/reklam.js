@@ -28,7 +28,8 @@ const reklam = {
   hazir: false,          // initialize + onay tamam, reklam istenebilir
   gecisYuklu: false,
   bannerAcik: false,     // showBanner bir kez çağrıldı mı (sonra hide/resume)
-  bannerGorunur: false,
+  bannerGorunur: false,  // native tarafta gerçekten görünür mü (son tamamlanan işleme göre)
+  bannerSirasi: Promise.resolve(), // banner işlemleri sırayla yürür (1.0.1)
   ekran: null,           // son gösterilen ekran (show())
   gizlilikGerekli: false,
 };
@@ -115,35 +116,47 @@ async function reklamLobiyeDonus() {
   k.son = k.son.filter((z) => simdi - z < 3600e3);
   if (!gecisUygunMu(k, simdi)) return false;
   if (!reklam.gecisYuklu) { gecisYukle(); return false; } // hazır değil: hak bir sonraki maç sonuna kalır
-  k.son.push(simdi);
-  reklamKaydiYaz(k);
   reklam.gecisYuklu = false;
-  try { await ad.showInterstitial(); return true; }
-  catch (e) { gecisYukle(); return false; }
+  try { await ad.showInterstitial(); }
+  catch (e) { gecisYukle(); return false; } // 1.0.1: gösterilemeyen reklam sayılmaz (önceden 5 dk ve saatlik hakkı yiyordu)
+  const k2 = reklamKaydiOku();
+  k2.son = k2.son.filter((z) => simdi - z < 3600e3);
+  k2.son.push(simdi);
+  reklamKaydiYaz(k2);
+  return true;
 }
 
-/* show() her ekran değişiminde çağırır: banner yalnız lobi ve Şampiyonlar'da */
-async function reklamEkranDegisti(ekran) {
+/* show() her ekran değişiminde çağırır: banner yalnız lobi ve Şampiyonlar'da.
+   1.0.1: işlemler sıraya girer ve her işlem başlarken o anki ekrana bakar. Önceden lobiden maça hızlı geçişte
+   showBanner tamamlanmadan hideBanner çağrılıp önce bitebiliyor, banner maç ekranında kalabiliyordu (K-24). */
+function reklamEkranDegisti(ekran) {
   reklam.ekran = ekran;
+  reklam.bannerSirasi = reklam.bannerSirasi.then(bannerUygula, bannerUygula);
+  return reklam.bannerSirasi;
+}
+
+async function bannerUygula() {
   const ad = admobPlugin();
   if (!ad || !reklam.hazir || !reklamKimligiGecerli(REKLAM.bannerId)) return;
-  const istenir = REKLAM.bannerEkranlari.includes(ekran);
+  const istenir = REKLAM.bannerEkranlari.includes(reklam.ekran);
   if (istenir === reklam.bannerGorunur) return;
-  reklam.bannerGorunur = istenir;
   try {
     if (istenir && !reklam.bannerAcik) {
-      reklam.bannerAcik = true;
       await ad.showBanner({ adId: REKLAM.bannerId, adSize: "ADAPTIVE_BANNER", position: "BOTTOM_CENTER", margin: 0 });
+      reklam.bannerAcik = true;
     } else if (istenir) {
       await ad.resumeBanner();
     } else {
       await ad.hideBanner();
       bannerBoslugu(0);
     }
+    reklam.bannerGorunur = istenir;
   } catch (e) {
-    if (istenir) reklam.bannerAcik = false;
     console.warn("AdMob banner", e);
+    return; // hata: yeniden deneme döngüsüne girme; sonraki ekran değişimi yeniden dener
   }
+  // Bu işlem sürerken ekran değiştiyse son hâle getir
+  if (REKLAM.bannerEkranlari.includes(reklam.ekran) !== reklam.bannerGorunur) return bannerUygula();
 }
 
 /* Banner içeriğin üstüne binmesin: sayfanın altında banner yüksekliği kadar boşluk */

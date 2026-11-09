@@ -1,1 +1,1 @@
-İlk sürüm: Hızlı, Tenis ve Zincir modları, 25 kategori, arkadaşlar, oda kodu, hızlı eşleşme ve Şampiyonlar listesi.
+Hata düzeltmeleri: hızlı eşleşmede çift oda ve takılma giderildi, kelime denetlenirken çift gönderim engellendi, reklam bandı maç ekranında artık görünmez, istatistik güvenliği artırıldı.

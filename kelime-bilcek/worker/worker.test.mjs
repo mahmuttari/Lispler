@@ -98,3 +98,24 @@ test('CORS: yalnız uygulama ve site kökenleri; * yok', async () => {
   assert.match(on.headers.get('Access-Control-Allow-Headers'), /Authorization/);
   assert.equal((await worker.fetch(istek(null, { method: 'GET' }), env())).status, 405);
 });
+
+test('v3.1: Google anahtarı yenilenince yeni kid bir kez yeniden çekilir', async () => {
+  const eskiFetch = globalThis.fetch;
+  let cekim = 0;
+  globalThis.fetch = async () => {
+    cekim++;
+    const keys = cekim === 1 ? [{ ...jwk, kid: 'eski-kid' }] : [jwk]; // ilk çekimde yeni anahtar yok
+    return new Response(JSON.stringify({ keys }), { headers: { 'Cache-Control': 'public, max-age=20000' } });
+  };
+  try {
+    assert.equal((await kimlikDogrula(await jeton())).sub, 'oyuncu1');
+    assert.equal(cekim, 2);
+  } finally { globalThis.fetch = eskiFetch; }
+});
+
+test('v3.1: harfsiz kelime ve büyük bildirilen gövde reddedilir', async () => {
+  const t = await jeton();
+  assert.equal((await worker.fetch(istek({ kategori: '', kelime: '- -' }, { token: t }), env())).status, 400);
+  const r = new Request('https://w.example/', { method: 'POST', headers: { Authorization: `Bearer ${t}`, 'Content-Length': '999999', Origin: 'https://localhost' }, body: '{}' });
+  assert.equal((await worker.fetch(r, env())).status, 413);
+});

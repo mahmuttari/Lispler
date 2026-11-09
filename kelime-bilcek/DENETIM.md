@@ -43,6 +43,40 @@ CI'da ilk koşular (commit b6dbe16): Denetim 41827897508 ✓, Firebase kurallar�
 | K-16 | Düşük (görünüş) | APK'daki uyarlanabilir simge Cordova'nın varsayılan robotuydu; Capacitor projesinde varsayılan açılış görseli. | Simgeler ve açılış görseli `icon.jpg`'den üretildi; Play simgesi 512×512. | — |
 | K-17 | Düşük (erişilebilirlik) | Kategori rozeti kontrastı yetersiz (axe "serious"); profil açan kullanıcı adı `span` (klavyeyle açılmıyor) ve dar ekranda başlığa biniyordu; animasyonlar hareket azaltma tercihini yok sayıyordu. | Rozet rengi koyulaştırıldı; `button` + `aria-label`; dar ekranda sağa yaslanır; `prefers-reduced-motion`. bütün düğmelere `type="button"`; `span` içindeki `div`'ler düzeltildi. | axe-core, html-validate |
 
+## 1.0.1 — NVIDIA ve Gemini ile tarama (9 Kasım 2026)
+
+Kod (oyun.js, reklam.js, kelime.js, index.html, kurallar, Worker, manifest) iki ücretsiz modele aynı istemle gönderildi:
+NVIDIA `nemotron-3.5-lightning-30b-a3b` (integrate.api.nvidia.com) ve Google `gemini-3.5-flash`. Depo herkese açık,
+kişisel veri yok. Betik bulut oturumunun karalama alanında; proxy 60 sn sessizlikte bağlantıyı kestiği için yanıtlar
+akışla (düşünce özetleri dahil) alındı, gövde ~140 KB sınırı yüzünden kod iki parçada gönderildi.
+
+| Model | Bulgu | Doğrulanan | Yanlış alarm nedenleri |
+|---|---|---|---|
+| Gemini | 30 | 9 | "tanımsız işlev" (kelime.js ayrı parçadaydı), silmede `.validate` çalışır sanması, alt düğüm `.write` yetkisini görmemesi, hesap silmenin zaten sildiği veriler |
+| NVIDIA | 26 | 1 (+1 Gemini ile ortak) | Capacitor kökenini `http://localhost` sanması, kodda olan `onDisconnect` iptalini ve oda silmeyi görmemesi, belirsiz "yarış" iddiaları |
+
+Ayrıca bu inceleme sırasında modellerin kaçırdığı bir hata bulundu (K-20).
+
+| No | Önem | Bulgu | Düzeltme | Kaynak | Sınama |
+|---|---|---|---|---|---|
+| K-20 | Yüksek | Hızlı eşleşmede kuyruktaki her değişiklik `tryMatch`'i yeniden başlatıyordu; önceki deneme bitmeden ikincisi başka bir rakibi daha alıp **ikinci oda** kurabiliyordu (3+ kişilik kuyrukta bir oyuncu boş odaya düşer). | Aynı anda tek deneme (`eslesiyor`). | inceleme | akis.test |
+| K-21 | Orta | Rakip kuyruk kaydını alıp oda kuramazsa (ağ hatası) oyuncu arama ekranında sonsuza kadar kalıyordu. | Kayıt 8 sn kuyrukta yoksa ve odaya çağrılmadıysa yeniden sıraya girer. | Gemini | kod incelemesi |
+| K-22 | Düşük | Eşleşme ararken çıkışta kuyruk dinleyicisi ve kaydı kalıyordu; listeden çıkarılan arkadaşın çevrimiçi dinleyicisi kapanmıyordu. | `detachAllListeners` kuyruğu kapatır/siler; `renderFriends` eski dinleyicileri kapatır. | Gemini | — |
+| K-23 | Orta | Tenis ve Zincir'de kelime denetlenirken "Gönder" kapanıyor ama **Enter açık**: sıra geçtikten sonra ikinci kelime yazılabiliyordu. | Denetim sürerken gönderim yok sayılır. | NVIDIA + Gemini | — |
+| K-24 | Yüksek (politika) | Lobiden maça hızlı geçişte `showBanner` bitmeden `hideBanner` çağrılıp önce bitebiliyordu: **banner maç ekranında kalıyordu** ("maç sırasında reklam yok" kuralı). | Banner işlemleri sıraya girer, her adım o anki ekranı denetler; hata olursa döngüye girmez. | Gemini | reklam.test (eski kodda kırmızı) |
+| K-25 | Düşük | Gösterilemeyen geçiş reklamı da gösterilmiş sayılıyor, 5 dk ve saatlik hakkı yiyordu. | Sayaç yalnız başarılı gösterimden sonra yazılır. | Gemini | reklam.test |
+| K-26 | Orta (hile) | Sayaç kuralı yalnız üst sınır koyuyordu: oyuncu **yenilgi sayısını düşürebiliyor** ya da sayacı tek tek silebiliyordu. | Sayaç yalnız artar (+0/+1); tek sayaç ve `stats` düğümü silinemez (hesap silmedeki toplu silme sürer). | Gemini | kurallar.test 25/25 |
+| K-27 | Düşük | Yalnız tire ve boşluktan oluşan girdi ("- -") kelime biçimini geçiyordu; Zincir'de aynı zaman damgalı kelimelerde sıradaki harf istemciye göre değişebiliyordu. | En az iki harf şartı (istemci + Worker); ikincil sıralama. | Gemini | kelime.test, worker.test |
+| K-28 | Orta | Worker: Google imza anahtarlarını yenileyince yeni `kid` önbellekte yoktu, geçerli jetonlar 6 saate kadar 401 alabiliyordu; gövde boyutu okunmadan önce denetlenmiyordu. | v3.1: bilinmeyen `kid`'de anahtarlar bir kez yeniden çekilir (dakikada en çok bir); `Content-Length` > 1 KB ise okunmadan 413. **Cloudflare'e yüklenmeli** (`worker/README.md`). | Gemini | worker.test 10/10 |
+
+Bilinçli olarak bırakılanlar (aşağıdaki "Açık kalanlar"da zaten var): istemci otoriteli maç sonucu ve oda verisi, onaysız
+arkadaş ekleme, başkasının kuyruk kaydını silebilme (eşleşme yöntemi), AI yanıt vermezse TDK'ya düşme (sunucu kapalıyken
+oyun oynanabilsin diye).
+
+Telefondaki eski sürüm (v4.11, ayrı paket) Şampiyonlar'da `permission_denied at /users` verir: 4 Kasım'da yayınlanan sıkı
+kurallar herkesin `users` ağacını okumayı kapattı (K-02). 1.0.x listeyi `leaderboard` düğümünden okur; eski uygulama
+kaldırılmalıdır.
+
 ## Açık kalanlar (bilinçli olarak bırakılan ya da kullanıcıda olan)
 
 - **Worker yayını:** `worker/worker.js` Cloudflare'e yüklenene kadar eski Worker herkese açık kalır (`worker/README.md`).

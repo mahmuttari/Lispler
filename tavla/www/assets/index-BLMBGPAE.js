@@ -40253,6 +40253,32 @@ var HC = `
   /* Görünüm + AI yan yana: alçak ekranda bir satır kazandırır */
   .menu-pair-row { flex-wrap: nowrap; }
   .menu-pair-row .menu-name-row.half { flex: 1 1 0; }
+
+  /* Pencereler: yukarıdaki yan tutuş kuralları, dosyada sonra gelen genel kurallarca eziliyordu
+     (pencereler uzun kalıyor, "Kapat/Tamam" düğmesi ekranın altında kalıyordu). Burada yeniden. */
+  .theme-modal { padding: 10px 14px; }
+  .theme-modal-title { font-size: 12px; margin-bottom: 8px; }
+  .theme-modal .theme-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 6px; }
+  .theme-card { padding: 6px 4px; gap: 2px; }
+  .theme-card img { width: 40px !important; height: 40px !important; }
+  .theme-card-name { font-size: 11px; margin-top: 2px; }
+  .theme-card-desc { font-size: 9px; line-height: 1.25; }
+  .ai-toggle-row { padding: 6px 10px; font-size: 12px; margin-bottom: 8px; }
+  .ai-section-label { font-size: 10px; margin-bottom: 4px; }
+  .ai-icon { font-size: 22px; }
+  .ai-mode-btn { padding: 5px 4px; }
+  .ai-mode-label { font-size: 11px; }
+  .ai-mode-desc { font-size: 8px; }
+  .theme-modal-close { padding: 6px; font-size: 12px; margin-top: 8px; }
+  .theme-modal .leaderboard-card { width: 100%; }
+  /* Son kapatma düğmesi pencerenin altına sabit: içerik kaysa da hep görünür */
+  .theme-modal > .theme-modal-close:last-child {
+    position: sticky;
+    bottom: -10px;
+    z-index: 1;
+    background: #14100b;
+    box-shadow: 0 -8px 10px #14100b, 0 4px 0 6px #14100b;
+  }
 }
 /* Çok alçak yatay ekran (iPhone SE gibi, ≤ 340 px): başlık ve alt yazı küçülür, mod düğmeleri sığar */
 @media (orientation: landscape) and (max-height: 340px) {

@@ -19,5 +19,4 @@
 
 # istek 2026-11-09: 1.0.2 (3) — yeni simge/tanıtım görseli ve ekran görüntüleri, imzalı AAB üretime ve incelemeye gönderim
 # (kullanıcı: "Her şey bitince direkt yayınla"; AAB: tavla-android.yml koşu 42701359572, eb12012)
-gorsel uygula
-yukle yayinla uygula
+# (yapıldı 2026-11-09, koşu 42702454157: görseller tr-TR icon/featureGraphic/6 ekran; AAB versionCode 3 yüklendi, üretim 1.0.2 (3) completed — incelemeye gönderildi) gorsel uygula · yukle yayinla uygula

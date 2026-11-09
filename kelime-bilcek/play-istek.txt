@@ -27,3 +27,7 @@
 # istek 2026-11-09T22:25:19Z: 1.0.2 (3) — mağaza metni ("Yapay zekâya karşı" bölümü) ve paketi üretime yükle, incelemeye gönder; 1.0.1 (2)'nin yerini alır (kullanıcının açık onayı: "Evet, ikisini de yayınla"); AAB: kelime-android koşusu 42706597921 (commit e53153d, versionCode 3, admob=gercek, Poyraz Workshop yükleme anahtarı); gizlilik sayfası önce yayınlandı (koşu 42711576086)
 # (yapıldı 2026-11-09, koşu 42711733748: tr-TR metin yazıldı, tam açıklama 1564 karakter, düzenleme onaylandı) magaza uygula
 # (yapıldı 2026-11-09, koşu 42711733748: AAB 3 (koşu 42706597921, commit e53153d) yüklendi, üretim 1.0.1 (2) → 1.0.2 (3) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula
+
+# istek 2026-11-09T22:43:04Z: 1.0.3 (4) yeni görünüm — mağaza görselleri (simge, tanıtım, 5 telefon karesi) ve paket üretime, incelemeye gönder; 1.0.2 (3)'ün yerini alır (kullanıcının açık isteği: "İşlemleri bitince direkt yayınlayalım"); AAB: kelime-android koşusu 42713685679 (commit f1250e5, versionCode 4, admob=gercek, Poyraz Workshop yükleme anahtarı)
+gorsel uygula
+yukle yayinla uygula

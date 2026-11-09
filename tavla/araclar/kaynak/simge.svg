@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>Tavla – Sesli Kahvehane simgesi</title>
+  
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="42%" r="65%">
+      <stop offset="0" stop-color="#5a3a1e"/>
+      <stop offset="0.55" stop-color="#3b2414"/>
+      <stop offset="1" stop-color="#1c1009"/>
+    </radialGradient>
+    <linearGradient id="goldRing" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3d58a"/>
+      <stop offset="0.5" stop-color="#c9a24a"/>
+      <stop offset="1" stop-color="#f3d58a"/>
+    </linearGradient>
+    <linearGradient id="goldTri" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#c9a24a"/>
+      <stop offset="1" stop-color="#f3d58a"/>
+    </linearGradient>
+    <linearGradient id="ivoryTri" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#cdbb9a"/>
+      <stop offset="1" stop-color="#f1e6cf"/>
+    </linearGradient>
+    <radialGradient id="ivoryChk" cx="38%" cy="32%" r="75%">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset="0.7" stop-color="#f1e6cf"/>
+      <stop offset="1" stop-color="#b9a580"/>
+    </radialGradient>
+    <radialGradient id="blackChk" cx="38%" cy="32%" r="75%">
+      <stop offset="0" stop-color="#4a3a2e"/>
+      <stop offset="0.6" stop-color="#1f1712"/>
+      <stop offset="1" stop-color="#0a0705"/>
+    </radialGradient>
+    <radialGradient id="feltIn" cx="50%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#2f1c0f"/>
+      <stop offset="1" stop-color="#160c06"/>
+    </radialGradient>
+  </defs>
+
+  
+  <rect width="512" height="512" fill="url(#bgGlow)"/>
+  <path d="M-10 38 C 128.0 32, 256.0 44, 384.0 35.0 S 522 44, 522 38" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="2"/>
+<path d="M-10 71 C 128.0 58, 256.0 84, 384.0 64.5 S 522 84, 522 71" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="3"/>
+<path d="M-10 118 C 128.0 107, 256.0 129, 384.0 112.5 S 522 129, 522 118" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="4"/>
+<path d="M-10 160 C 128.0 151, 256.0 169, 384.0 155.5 S 522 169, 522 160" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="2"/>
+<path d="M-10 205 C 128.0 198, 256.0 212, 384.0 201.5 S 522 212, 522 205" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="3"/>
+<path d="M-10 244 C 128.0 230, 256.0 258, 384.0 237.0 S 522 258, 522 244" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="4"/>
+<path d="M-10 290 C 128.0 278, 256.0 302, 384.0 284.0 S 522 302, 522 290" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="2"/>
+<path d="M-10 331 C 128.0 321, 256.0 341, 384.0 326.0 S 522 341, 522 331" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="3"/>
+<path d="M-10 372 C 128.0 364, 256.0 380, 384.0 368.0 S 522 380, 522 372" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="4"/>
+<path d="M-10 418 C 128.0 412, 256.0 424, 384.0 415.0 S 522 424, 522 418" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="2"/>
+<path d="M-10 460 C 128.0 447, 256.0 473, 384.0 453.5 S 522 473, 522 460" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="3"/>
+<path d="M-10 493 C 128.0 482, 256.0 504, 384.0 487.5 S 522 504, 522 493" fill="none" stroke="#000" stroke-opacity="0.18" stroke-width="4"/>
+  <rect width="512" height="512" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="18"/>
+
+  
+  <g>
+    <circle cx="256" cy="262" r="172" fill="#000" fill-opacity="0.5"/>
+    <circle cx="256" cy="256" r="168" fill="url(#goldRing)"/>
+    <circle cx="256" cy="256" r="152" fill="#8a6a26"/>
+    <circle cx="256" cy="256" r="142" fill="url(#feltIn)"/>
+    <clipPath id="boardClip"><circle cx="256" cy="256" r="142"/></clipPath>
+    <g clip-path="url(#boardClip)">
+      <polygon points="120.0,106 174.4,106 147.2,302" fill="url(#goldTri)"/>
+<polygon points="174.4,106 228.8,106 201.6,302" fill="url(#ivoryTri)"/>
+<polygon points="228.8,106 283.2,106 256.0,302" fill="url(#goldTri)"/>
+<polygon points="283.2,106 337.6,106 310.4,302" fill="url(#ivoryTri)"/>
+<polygon points="337.6,106 392.0,106 364.8,302" fill="url(#goldTri)"/>
+      <rect x="114" y="114" width="284" height="16" fill="#8a6a26"/>
+    </g>
+    
+    <circle cx="218" cy="332" r="58" fill="#000" fill-opacity="0.5"/>
+    <circle cx="214" cy="322" r="56" fill="url(#blackChk)" stroke="#c9a24a" stroke-width="8"/>
+    <circle cx="214" cy="322" r="37.0" fill="none" stroke="#f3d58a" stroke-width="3.5" stroke-opacity="0.85"/>
+    <circle cx="214" cy="322" r="22.4" fill="none" stroke="#f3d58a" stroke-width="2.5" stroke-opacity="0.6"/>
+
+    <circle cx="300" cy="346" r="58" fill="#000" fill-opacity="0.5"/>
+    <circle cx="296" cy="336" r="56" fill="url(#ivoryChk)" stroke="#6b4a22" stroke-width="8"/>
+    <circle cx="296" cy="336" r="37.0" fill="none" stroke="#8a6a3a" stroke-width="3.5" stroke-opacity="0.85"/>
+    <circle cx="296" cy="336" r="22.4" fill="none" stroke="#8a6a3a" stroke-width="2.5" stroke-opacity="0.6"/>
+
+  </g>
+
+</svg>

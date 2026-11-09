@@ -28779,8 +28779,9 @@ function zv() {
           let n = Qh(Lv, (t) => {
             t && (n(), e(t));
           });
+          // 1.0.2: başarısız giriş önbellekte kalmasın (çevrimdışı açılıştan sonra yeniden denenebilsin)
           lh(Lv).catch((e) => {
-            (n(), t(e));
+            (n(), (Rv = null), t(e));
           });
         })),
         Rv);
@@ -29406,7 +29407,7 @@ function Ey(e) {
 // Küçültülmüş Firebase işlevleri: X = Firestore, Lv = Auth, q = doc, td = collection, ff = getDoc,
 // pf = getDocs, mf = setDoc, gf = deleteDoc, _f = addDoc, Jd = query, Xd = where, Rd = serverTimestamp.
 // ═══════════════════════════════════════════════════════════════════════════════════════════════
-var TV_SURUM = `1.0.1`,
+var TV_SURUM = `1.0.2`,
   TV_GIZLILIK = `https://mahmuttari.github.io/Lispler/tavla/gizlilik.html`,
   TV_HESAP_SILME = `https://mahmuttari.github.io/Lispler/tavla/hesap-silme.html`,
   TV_ILETISIM = `poyrazworkshop7@gmail.com`,
@@ -30636,7 +30637,11 @@ function cb({ roomDocId: e, myRole: t }) {
   (0, _.useEffect)(() => {
     if (!e || !t) return;
     let r = vf(q(X, `rooms`, e), (e) => {
-      if (!e.exists()) return;
+      // 1.0.2: oda silinince (rakip ayrıldı, hesap silindi) mikrofon ve bağlantı açık kalmasın
+      if (!e.exists()) {
+        ((l.current || p.current) && m(), i(`idle`));
+        return;
+      }
       let tvD = e.data();
       if (tvEngelliMi(t === `host` ? tvD.guestUid : tvD.hostUid)) {
         ((l.current || p.current) && m(), i(`idle`));
@@ -30960,7 +30965,6 @@ var wb = [],
           `Bugün senin gününmüş, belli.`,
           `Yenildik ama ezilmedik!`,
           `Hadi bakalım, rövanşa beklerim.`,
-          `Zar dediğin kahpeymiş, bugün anladık.`,
           `Senin şansın bizim ustalığı yendi.`,
           `Helal olsun, iyi kıvırdın.`,
           `Canın sağ olsun, bir dahaki sefere.`,
@@ -31579,7 +31583,6 @@ var wb = [],
         { text: `Bugün senin gününmüş, belli.`, file: `voices/dayi/OPPONENT_WIN_05_p3vslt.mp3` },
         { text: `Yenildik ama ezilmedik!`, file: `voices/dayi/OPPONENT_WIN_06_58her8.mp3` },
         { text: `Hadi bakalım, rövanşa beklerim.`, file: `voices/dayi/OPPONENT_WIN_07_7qn47u.mp3` },
-        { text: `Zar dediğin kahpeymiş, bugün anladık.`, file: `voices/dayi/OPPONENT_WIN_08_iixrkd.mp3` },
         { text: `Senin şansın bizim ustalığı yendi.`, file: `voices/dayi/OPPONENT_WIN_09_yrjage.mp3` },
         { text: `Helal olsun, iyi kıvırdın.`, file: `voices/dayi/OPPONENT_WIN_10_s55cc9.mp3` },
         { text: `Canın sağ olsun, bir dahaki sefere.`, file: `voices/dayi/OPPONENT_WIN_11_ds0ws3.mp3` },
@@ -32817,7 +32820,15 @@ async function sx(e) {
   try {
     await zv();
     let t = Bv();
-    return t ? (await gf(q(X, `users`, t, `friends`, e)), { ok: !0 }) : { ok: !1 };
+    if (!t) return { ok: !1 };
+    await gf(q(X, `users`, t, `friends`, e));
+    // 1.0.2: karşı tarafın listesinden de çık (kurallar: arkadaş kendini listeden silebilir)
+    try {
+      await gf(q(X, `users`, e, `friends`, t));
+    } catch (e) {
+      console.warn(`[Friends] karşı listeden çıkma:`, e?.message || e);
+    }
+    return { ok: !0 };
   } catch (e) {
     return (console.warn(`[Friends] removeFriend:`, e?.message), { ok: !1, error: e?.message });
   }
@@ -34270,13 +34281,19 @@ async function bC(e) {
   let t = await pf(Jd(td(X, `rooms`), Xd(`code`, `==`, e)));
   return t.empty ? null : t.docs[0];
 }
+// 1.0.2: kurucusu uygulamayı kapatan bekleyen odalar silinmeden kalıyordu; hızlı eşleşme bu ölü odalara düşüyordu.
+// 10 dakikadan eski bekleyen odalar atlanır, en yeni oda seçilir.
+var tvBeklemeSuresi = 10 * 60 * 1e3;
 async function xC(e) {
-  let t = await pf(Jd(td(X, `rooms`), Xd(`waiting`, `==`, !0)));
-  for (let n of t.docs) {
-    let t = n.data();
-    if (t.hostUid !== e && !t.guestUid && !tvEngelliMi(t.hostUid)) return n;
-  }
-  return null;
+  let t = await pf(Jd(td(X, `rooms`), Xd(`waiting`, `==`, !0))),
+    r = Date.now() - tvBeklemeSuresi;
+  let n = t.docs
+    .filter((n) => {
+      let t = n.data();
+      return t.hostUid !== e && !t.guestUid && !tvEngelliMi(t.hostUid) && (t.ts || 0) > r;
+    })
+    .sort((a, b) => (b.data().ts || 0) - (a.data().ts || 0));
+  return n[0] || null;
 }
 async function SC(e, t) {
   await zv();
@@ -35159,11 +35176,15 @@ function PC({ onJoin: e, onBack: t, myName: n }) {
                               try {
                                 await zv();
                                 let t = await xC(Bv());
-                                if (t) {
-                                  let { code: r, version: i } = await SC(t, n);
-                                  (f(!1), e(r, $, i));
-                                  return;
-                                }
+                                if (t)
+                                  try {
+                                    let { code: r, version: i } = await SC(t, n);
+                                    (f(!1), e(r, $, i));
+                                    return;
+                                  } catch (e) {
+                                    // 1.0.2: oda o arada doldu (başka oyuncu katıldı); yeni oda kurulur
+                                    console.warn(`[Eşleşme] katılma:`, e?.message || e);
+                                  }
                                 let { code: r } = await CC(n);
                                 (o(r), i(`matchmaking`));
                               } catch (e) {
@@ -37992,7 +38013,7 @@ var HC = `
   .icon-btn { width: 24px; height: 22px; font-size: 13px; }
   .player-tag {
     font-size: 10px; height: 20px;
-    padding: 1px 6px; max-width: 100px;
+    padding: 1px 6px; max-width: 150px;
     border-radius: 10px;
   }
   .player-tag .color-chip { width: 10px; height: 10px; }
@@ -39352,14 +39373,17 @@ var HC = `
   color: #b3a17e;
   font-family: 'Manrope', sans-serif;
   font-size: 12px; font-weight: 600;
-  max-width: 130px;
+  max-width: 200px; /* 1.0.2: maç puanı rozetiyle "Be…" diye kesiliyordu */
   transition: all 220ms ease;
   white-space: nowrap;
   overflow: hidden;
 }
 .player-tag .player-name {
   overflow: hidden; text-overflow: ellipsis;
+  min-width: 3em;
 }
+.player-tag .set-score,
+.player-tag .pieces-left { flex-shrink: 0; }
 .player-tag.active {
   background: rgba(255, 213, 92, 0.18);
   border-color: #d4a340;

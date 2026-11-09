@@ -2,7 +2,7 @@
 // Tavla — Google Play görselleri (Playwright + Chromium). Uygulamanın kendisi (www/) yerel sunucuda, Google/Firebase
 // adresleri kapalıyken açılır (misafir görünümü; canlı projeye bir şey yazılmaz).
 //   node tavla/araclar/magaza-gorsel.mjs   → tavla/magaza/play/
-// Çıktılar: simge-512.png (uyarlanabilir simgenin ön + arka katmanı, APK'dan), tanitim-gorseli-1024x500.png,
+// Çıktılar: simge-512.png ve tanitim-gorseli-1024x500.png (kaynak: araclar/kaynak/*.svg, tanitim.html),
 // telefon-1…6-*.png (yatay 1920×1080; uygulama yatay ekrana kilitli).
 import { createServer } from 'node:http';
 import { readFile, mkdir } from 'node:fs/promises';
@@ -85,31 +85,21 @@ const kaydet = async (s, ad) => { await s.screenshot({ path: join(CIKTI, ad) });
   await kaydet(s, 'telefon-6-iki-oyunculu.png'); await s.close();
 }
 
-// Simge 512×512: uyarlanabilir simgenin arka + ön katmanı (APK, 432 px), Play kare ister (köşeleri Play yuvarlar)
+// Simge 512×512: araclar/kaynak/simge.svg (uyarlanabilir simgenin ön + arka katmanı; Android katmanları simge-uret.mjs ile)
+// Play kare ister, köşeleri kendisi yuvarlar.
 {
   const s = await tarayici.newPage({ viewport: { width: 512, height: 512 } });
-  await s.setContent(`<body style="margin:0"><div style="position:relative;width:512px;height:512px;overflow:hidden">
-    <img src="${ADRES}__kaynak/simge-arka.png" style="position:absolute;inset:0;width:512px;height:512px">
-    <img src="${ADRES}__kaynak/simge-on.png" style="position:absolute;inset:0;width:512px;height:512px"></div></body>`);
-  await s.waitForLoadState('networkidle');
+  await s.goto(`${ADRES}__kaynak/simge.svg`);
   await s.screenshot({ path: join(CIKTI, 'simge-512.png'), clip: { x: 0, y: 0, width: 512, height: 512 } });
   console.log('simge-512.png'); await s.close();
 }
 
-// Tanıtım görseli 1024×500
+// Tanıtım görseli 1024×500: araclar/kaynak/tanitim.html (elle yazılmış SVG, yerel yazı tipleri)
 {
   const s = await tarayici.newPage({ viewport: { width: 1024, height: 500 } });
-  await s.setContent(`<body style="margin:0;font-family:Georgia,'Times New Roman',serif">
-  <div style="width:1024px;height:500px;display:flex;align-items:center;gap:48px;padding:0 64px;box-sizing:border-box;
-    background:radial-gradient(ellipse at 30% 40%,#1f6b3a 0%,#154a28 50%,#0a2814 100%);color:#f3d58a">
-    <div style="position:relative;width:300px;height:300px;flex:none;border-radius:64px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.5)">
-      <img src="${ADRES}__kaynak/simge-arka.png" style="position:absolute;inset:0;width:300px;height:300px">
-      <img src="${ADRES}__kaynak/simge-on.png" style="position:absolute;inset:0;width:300px;height:300px"></div>
-    <div><div style="font-size:96px;letter-spacing:14px;font-weight:700;text-shadow:0 4px 14px rgba(0,0,0,.5)">TAVLA</div>
-      <div style="font-size:36px;color:#fff3d0;margin-top:6px">Sesli Kahvehane</div>
-      <div style="font-size:24px;color:#d9e8d2;margin-top:22px;font-family:system-ui,sans-serif">🎙️ Pala Dayı · Genç Mert · Selim Bey<br>🎲 Bilgisayara karşı · İki kişi · Çevrimiçi</div></div></div></body>`);
+  await s.goto(`${ADRES}__kaynak/tanitim.html`);
   await s.waitForLoadState('networkidle');
-  await s.screenshot({ path: join(CIKTI, 'tanitim-gorseli-1024x500.png') });
+  await s.screenshot({ path: join(CIKTI, 'tanitim-gorseli-1024x500.png'), clip: { x: 0, y: 0, width: 1024, height: 500 } });
   console.log('tanitim-gorseli-1024x500.png'); await s.close();
 }
 

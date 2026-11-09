@@ -99,8 +99,8 @@ test('1.0.2: yapay zekâya karşı (Zincir, zor): bot doğru harfle yazar, sıra
   await sayfa.click('#botBtn');
   assert.equal(await sayfa.textContent('#botModAdi'), 'Zincir');
   await sayfa.click('.bot-zorluk[data-zorluk="zor"]');
-  await sayfa.waitForFunction(() => !document.getElementById('gameScreen').classList.contains('hidden'));
-  assert.match(await sayfa.textContent('#msOppChip'), /Bilcek \(Zor\)/);
+  await sayfa.waitForFunction(() => !document.getElementById('gameScreen').classList.contains('hidden')
+    && /Bilcek \(Zor\)/.test(document.getElementById('msOppChip').textContent), null, { timeout: 10000 });
   await sayfa.waitForFunction(() => currentRoundData && currentRoundData.phase === 'active', null, { timeout: 20000 });
   if (await sayfa.evaluate(() => currentRoundData.turn === mySlot)) {
     await sayfa.fill('#wordInput', 'elma');
@@ -122,7 +122,7 @@ test('1.0.2: yapay zekâya karşı (Zincir, zor): bot doğru harfle yazar, sıra
 });
 
 test('1.0.2: yapay zekâya karşı (Hızlı, orta): bot round boyunca kategori kelimesi yazar, round puanlanır', { timeout: 60000 }, async () => {
-  await sayfa.evaluate(() => { selectedMode = 'sim'; BOT.hizli.orta = [400, 700, 0.7]; show('lobbyScreen'); });
+  await sayfa.evaluate(() => { if (roomRef) resetGameState(); selectedMode = 'sim'; BOT.hizli.orta = [400, 700, 0.7]; show('lobbyScreen'); });
   await sayfa.click('#botBtn');
   await sayfa.click('.bot-zorluk[data-zorluk="orta"]');
   await sayfa.waitForFunction(() => currentRoundData && currentRoundData.phase === 'thinking');

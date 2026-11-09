@@ -1289,9 +1289,8 @@ async function startBotMatch(zorluk){
   mySlot = "p1";
   await roomRef.child("round/phaseStartTime").set(SV.TIMESTAMP);
   botBaslat(roomRef, zorluk);
-  show("gameScreen");
+  subscribeRoom(); // önce abone ol: ilk çizimde rakip adı hazır olsun (renderRoom ekranı kendisi açar)
   SFX.matchFound();
-  subscribeRoom();
 }
 
 /* ============================================================

@@ -13,4 +13,4 @@
 # (yapıldı 2026-11-04, koşu 41832016690: yayınlandı; https://kelime-bilcek.web.app sayfaları ve app-ads.txt 200, gizlilik.html depodakiyle aynı) yayinla
 
 # istek 2026-11-09T22:24:17Z: 1.0.2 gizlilik metni (kelime denetimi önbelleği 90 gün, cihaz önbelleği, bot maçı) — yayınla (kullanıcının açık onayı: "Evet, ikisini de yayınla")
-yayinla
+# (yapıldı 2026-11-09, koşu 42711576086: yayınlandı; gizlilik.html yayındakiyle aynı, "90 gün" cümlesi canlıda) yayinla

@@ -40217,6 +40217,71 @@ var HC = `
   color: #b3a17e;
   opacity: 0.85;
 }
+
+/* ===== 1.0.2 — Yatay telefonda menü çakışmaları =====
+   Alçak yatay ekranda (≤ 600 px yükseklik) puan kartı eziliyor (yazılar kesiliyordu), sol üstteki
+   "Misafir" düğmesi orta sütuna, sağ üstteki 3 mini düğme rumuz satırına biniyordu. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .menu-screen { overflow-y: auto; }
+  .menu-avatar-corner {
+    top: max(6px, var(--safe-top, 0px));
+    left: max(6px, var(--safe-left, 0px));
+    padding: 3px 8px 3px 3px;
+    gap: 5px;
+    max-width: 108px;
+  }
+  .menu-avatar-img { width: 28px; height: 28px; }
+  .menu-avatar-name { font-size: 10.5px; max-width: 62px; }
+  .menu-screen > .menu-rank-row {
+    width: calc(100% - 64px);
+    align-self: flex-start;
+  }
+  .menu-screen > .score-showcase {
+    flex-shrink: 0;
+    width: max-content;
+    margin: 2px auto;
+    padding: 3px 12px;
+    gap: 10px;
+  }
+  .ss-score-block { gap: 0; }
+  .ss-score-value { font-size: 18px; line-height: 1.1; }
+  .ss-score-label, .ss-stats-row { line-height: 1.2; }
+  .menu-screen > .menu-name-row,
+  .menu-screen > .menu-pair-row,
+  .menu-screen > .menu-options,
+  .menu-screen > .menu-foot { flex-shrink: 0; }
+  /* Görünüm + AI yan yana: alçak ekranda bir satır kazandırır */
+  .menu-pair-row { flex-wrap: nowrap; }
+  .menu-pair-row .menu-name-row.half { flex: 1 1 0; }
+}
+/* Çok alçak yatay ekran (iPhone SE gibi, ≤ 340 px): başlık ve alt yazı küçülür, mod düğmeleri sığar */
+@media (orientation: landscape) and (max-height: 340px) {
+  .big-title { font-size: 18px; }
+  .menu-divider { display: none; }
+  .menu-foot { display: none; }
+  .menu-screen > .menu-name-row { margin: 1px 0; padding: 3px 10px; }
+  .menu-options .menu-btn { padding: 4px 6px; gap: 6px; }
+  .menu-options .menu-btn .menu-icon { width: 30px; height: 30px; }
+  .menu-options .menu-btn .menu-icon svg { width: 24px; height: 24px; }
+  .menu-options .menu-btn .menu-label { font-size: 11.5px; }
+}
+/* Dikey telefon (yalnız web'de olur; Android uygulaması hep yatay açılır): oyun yatay tasarlandı,
+   dikeyde menü sütunu dar kalıp düğmeler üst üste biniyordu. Telefonu yan çevirme uyarısı gösterilir. */
+@media (orientation: portrait) and (max-width: 600px) {
+  body::after {
+    content: '↻\\A\\A Tavla yatay oynanır.\\A Telefonu yan çevir.';
+    white-space: pre;
+    position: fixed; inset: 0; z-index: 99999;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    background: #0a0604; color: #ffd55c;
+    font: 600 18px/1.5 'Manrope', sans-serif;
+  }
+}
+/* Büyük ekranda "Misafir" düğmesi ile EFSANELER kartı üst üste binmesin */
+@media not all and (orientation: landscape) and (max-height: 600px) {
+  .leaderboard-dock { top: calc(max(12px, var(--safe-top, 0px)) + 62px); }
+}
+
 `;
 (0, v.createRoot)(document.getElementById(`root`)).render(
   (0, Z.jsx)(_.StrictMode, { children: (0, Z.jsx)(VC, {}) }),

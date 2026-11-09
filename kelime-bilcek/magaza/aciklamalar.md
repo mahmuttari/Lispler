@@ -24,12 +24,15 @@ Türkçe kelime düellosu: kategoride rakibinden çok kelime bil, Şampiyon ol!
 
 ## Uzun açıklama
 
-Kelime Bilcek, arkadaşınla ya da rastgele bir rakiple oynadığın çevrimiçi Türkçe kelime düellosu! Kategori gelir, süre başlar: aklına gelen kelimeleri rakibinden hızlı yaz, roundu kap, maçı kazan.
+Kelime Bilcek, arkadaşınla, rastgele bir rakiple ya da yapay zekâya karşı oynadığın Türkçe kelime düellosu! Kategori gelir, süre başlar: aklına gelen kelimeleri rakibinden hızlı yaz, roundu kap, maçı kazan.
 
 🎯 ÜÇ OYUN MODU
 • Hızlı: 10 round, iki oyuncu aynı anda yazar. Aynı kelimeyi önce yazan puanı alır.
 • Tenis (Sıra Beklicek): sırayla yazılır, yazamayan roundu kaybeder. 3 roundda 2 alan kazanır.
 • Zincir: kategori yok; kelimen rakibinin kelimesinin son harfiyle başlamalı. 15 saniyede yazamayan kaybeder.
+
+🤖 YAPAY ZEKÂYA KARŞI
+Rakip beklemeden Bilcek'e karşı oyna: Kolay, Orta ve Zor seviye; üç modun hepsinde.
 
 📚 25 KATEGORİ
 Buzdolabı, banyo, alet çantası, kahvaltı, sulu yemekler, araba parçaları, ofis, inşaat, piknik, deniz kenarı, bahçe, gökyüzü, kırtasiye, yazılım, hukuk, finans, tıp, edebiyat ve daha fazlası. İstemediğin kategorileri kapat; maçta iki oyuncunun seçtikleri gelir.

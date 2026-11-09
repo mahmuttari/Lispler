@@ -43,6 +43,47 @@ CI'da ilk koşular (commit b6dbe16): Denetim 41827897508 ✓, Firebase kurallar�
 | K-16 | Düşük (görünüş) | APK'daki uyarlanabilir simge Cordova'nın varsayılan robotuydu; Capacitor projesinde varsayılan açılış görseli. | Simgeler ve açılış görseli `icon.jpg`'den üretildi; Play simgesi 512×512. | — |
 | K-17 | Düşük (erişilebilirlik) | Kategori rozeti kontrastı yetersiz (axe "serious"); profil açan kullanıcı adı `span` (klavyeyle açılmıyor) ve dar ekranda başlığa biniyordu; animasyonlar hareket azaltma tercihini yok sayıyordu. | Rozet rengi koyulaştırıldı; `button` + `aria-label`; dar ekranda sağa yaslanır; `prefers-reduced-motion`. bütün düğmelere `type="button"`; `span` içindeki `div`'ler düzeltildi. | axe-core, html-validate |
 
+## 1.0.2 — Maliyet hesabı, yapay zekâya karşı mod ve tasarruf (9 Kasım 2026)
+
+### Maliyet (aylık, USD) — `araclar/maliyet.py`
+
+Fiyatlar: Workers AI 0,011 $/1.000 nöron, günde 10.000 nöron ücretsiz, Llama 3.3 70B fp8-fast 26.668 nöron/M giriş ve
+204.805 nöron/M çıkış token'ı, Workers Paid 5 $/ay (Cloudflare resmî sayfası); Firebase RTDB Spark 100 eşzamanlı bağlantı /
+10 GB indirme, Blaze 1 $/GB indirme; Google girişi 50.000 aylık aktif kullanıcıya kadar ücretsiz; AdMob Türkiye eCPM geçiş
+1,5–4 $, banner 0,10–0,45 $ (Gemini'nin Google aramasıyla bulduğu sektör/forum verisi, güven orta). Ölçüm: emülatörde bir
+kısa Zincir maçı oyuncu başına 6–7 KB indirdi. Varsayımlar: Hızlı maçta 80, Tenis'te 15, Zincir'de 10 kelime yerel
+listede yok ve denetime gider; mod karışımı %50/%30/%20; maç başına 0,5 geçiş + 2 banner gösterimi. Hesabı Gemini denetledi
+(matematik hatası yok; veritabanı payı ihtiyatlı; ortak önbellek ve Spark bağlantı sınırı önerisi alındı).
+
+| Günlük maç | 1.0.1 düzeni | 1.0.2 (önbellek %95 + tek çağrı) | Reklam geliri |
+|---|---|---|---|
+| 100 | 52 $ | 0 $ | 3 $ |
+| 1.000 | 507 $ | 14 $ | 34 $ |
+| 10.000 (10.000 kişi × 1) | 5.068 $ | 139 $ | 345 $ |
+| 100.000 | 50.756 $ | 1.525 $ | 3.450 $ |
+
+1.0.1'de bir çok oyunculu maç ortalama 1.532 nöron (0,017 $) harcıyordu: reklam gelirinin (~0,001 $) 17 katı. Günde
+10.000 ücretsiz nöron ~6 maça yetiyordu. Veritabanı bu ölçekte 0–11 $/ay; asıl kalem kelime hakemi.
+
+**Sınır:** Firebase Spark'ta en çok 100 eşzamanlı bağlantı var. Kullanıcı sayısı büyüyünce oyun bağlanamaz: Blaze planına
+(kullandıkça öde; bu ölçekte birkaç dolar) geçilmeli. Günde ~6 maçtan fazlası için Cloudflare Workers Paid (5 $/ay) gerekir.
+
+### Yapılanlar
+
+- **Yapay zekâya karşı** (`www/bot.js`): rakip "Bilcek" kelimelerini cihazdaki kategori sözlüğünden (Zincir'de bütün
+  kategorilerin tek kelimelik girişleri, ~1.000+) seçer; Kolay/Orta/Zor hız, bilinen kelime oranı ve takılma olasılığıyla
+  ayrılır. Maç çok oyunculu motorla aynen oynanır; Firebase odası yerine bellekteki `YerelOda` kullanılır. Bot için
+  yapay zekâ ve veritabanı maliyeti yok; maç istatistiğe ve Şampiyonlar'a sayılmaz. Bağlantı yoksa kategori tercihi 2 sn
+  bekleyip bütün kategorilerle başlar.
+- **Worker v3.2:** ortak önbellek (`v1|kategori|kelime` → karar; KV `kelime-bilcek-sozluk` bağlıysa küresel, değilse
+  Cache API; 90 gün) ve tek katı hakem çağrısı (eski iki çağrı: `IKI_HAKEM=1`). Kısmi ya da hatalı yanıt önbelleğe
+  yazılmaz. **Cloudflare'e yüklenmeli ve KV bağlanmalı** (`worker/README.md`).
+- **Cihaz önbelleği:** telefonda denetlenen kelimeler (en çok 1.500) yeniden sorulmaz.
+- Gizlilik sayfası: kelime/kategori/karar 90 gün (kullanıcı kimliği ve IP olmadan) ve cihaz önbelleği yazıldı.
+
+Sınama: `test/bot.test.mjs` 6/6, `test/arayuz.test.mjs` 8/8 (tarayıcıda Zincir ve Hızlı bot maçı), `worker/worker.test.mjs`
+13/13 (önbellek, tek çağrı, hatalı yanıtın yazılmaması).
+
 ## 1.0.1 — NVIDIA ve Gemini ile tarama (9 Kasım 2026)
 
 Kod (oyun.js, reklam.js, kelime.js, index.html, kurallar, Worker, manifest) iki ücretsiz modele aynı istemle gönderildi:

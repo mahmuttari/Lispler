@@ -1,1 +1,1 @@
-Hata düzeltmeleri: hızlı eşleşmede çift oda ve takılma giderildi, kelime denetlenirken çift gönderim engellendi, reklam bandı maç ekranında artık görünmez, istatistik güvenliği artırıldı.
+Yeni: Yapay zekâya karşı oyna! Rakip beklemeden Bilcek'e karşı Kolay, Orta ve Zor seviyede Hızlı, Sıra Beklicek ve Zincir modları. Kelime denetimi daha hızlı.

@@ -8,7 +8,7 @@ const kelimeAdlari = Object.fromEntries(['CATEGORIES', 'CATEGORY_WORDS', 'CATEGO
   'getChainNextLetter', 'isWordInLocalDict', 'kelimeBicimiGecerli', 'kullaniciAdiGecerli', 'isMatchOver',
   'KELIME_EN_UZUN'].map((a) => [a, 'readonly']));
 const reklamAdlari = Object.fromEntries(['REKLAM', 'reklam', 'reklamBaslat', 'reklamMacBitti', 'reklamLobiyeDonus',
-  'reklamEkranDegisti', 'reklamGizlilikSecenekleri'].map((a) => [a, 'readonly']));
+  'reklamEkranDegisti', 'reklamGizlilikSecenekleri', 'BOT', 'YerelOda', 'botBaslat', 'botDurdur'].map((a) => [a, 'readonly']));
 
 export default [
   { ignores: ['www/vendor/**', 'android/**', 'node_modules/**', 'firebase/node_modules/**'] },
@@ -27,9 +27,10 @@ export default [
     },
   },
   { files: ['www/oyun.js'], languageOptions: { globals: { ...kelimeAdlari, ...reklamAdlari } } },
+  { files: ['www/bot.js'], languageOptions: { globals: { ...kelimeAdlari, nowServer: 'readonly' } } },
   {
     files: ['test/**/*.mjs', 'araclar/**/*.mjs', 'firebase/*.mjs', 'firebase/test/**/*.mjs', 'site/**/*.mjs', 'worker/**/*.{js,mjs}', '*.mjs'],
-    languageOptions: { ecmaVersion: 2023, sourceType: 'module', globals: { ...globals.node } },
+    languageOptions: { ecmaVersion: 2023, sourceType: 'module', globals: { ...globals.node, caches: 'readonly' } },
     rules: { 'no-unused-vars': ['error', { caughtErrors: 'none' }] },
   },
   {

@@ -148,18 +148,45 @@ async function aiValidateWord(category, word){
 }
 
 /* Birleşik validator: yerel pre-check → AI → TDK fallback */
+/* 1.0.2: cihaz önbelleği — bu cihazda denetlenmiş kelime yeniden sorulmaz (en çok 1500 kayıt, localStorage).
+   Yalnız kesin sonuçlar yazılır (yapay zekâ evet/hayır ya da TDK evet); bağlantı hatası yazılmaz. */
+const DENETIM_ONBELLEK_ANAHTARI = "kb_denetim_v1";
+const DENETIM_ONBELLEK_EN_COK = 1500;
+function denetimOnbellegi(){
+  try{ const o = JSON.parse(localStorage.getItem(DENETIM_ONBELLEK_ANAHTARI) || "{}"); return (o && typeof o === "object") ? o : {}; }
+  catch(e){ return {}; }
+}
+function denetimAnahtari(category, word){ return (category || "zincir") + "|" + normalizeWord(word); }
+function denetimOku(category, word){
+  const v = denetimOnbellegi()[denetimAnahtari(category, word)];
+  return typeof v === "boolean" ? v : null;
+}
+function denetimYaz(category, word, sonuc){
+  try{
+    const o = denetimOnbellegi();
+    o[denetimAnahtari(category, word)] = !!sonuc;
+    const anahtarlar = Object.keys(o);
+    for(let i = 0; i < anahtarlar.length - DENETIM_ONBELLEK_EN_COK; i++) delete o[anahtarlar[i]];
+    localStorage.setItem(DENETIM_ONBELLEK_ANAHTARI, JSON.stringify(o));
+  }catch(e){ /* depolama yoksa önbelleksiz devam */ }
+}
+
 async function validateWordSmart(category, word){
   // 1. Yerel hızlı kontrol
   const pre = localCategoryPreCheck(category, word);
   if(pre === true){ return true; }
   if(pre === false){ return false; }
-  // 2. AI
+  // 2. Bu cihazın önbelleği (1.0.2)
+  const onceki = denetimOku(category, word);
+  if(onceki !== null) return onceki;
+  // 3. AI
   const ai = await aiValidateWord(category, word);
-  if(ai === true) return true;
+  if(ai === true){ denetimYaz(category, word, true); return true; }
   // Kategori varsa AI otoritedir (HAYIR dediyse reddet)
   // Zincir modunda (kategori yok) cömert davran: AI HAYIR dese bile TDK'ya bak
-  if(category && ai === false) return false;
+  if(category && ai === false){ denetimYaz(category, word, false); return false; }
   const tdk = await isValidTurkishWord(word);
+  if(tdk === true || (tdk === false && ai === false)) denetimYaz(category, word, tdk === true);
   return tdk === true;
 }
 
@@ -366,7 +393,7 @@ const ENDED_MS = 5000;
 
 /* ===== DOM kısayolları ===== */
 const $ = id => document.getElementById(id);
-const SCREENS = ["loadingScreen","authScreen","usernameScreen","lobbyScreen","roomCodeScreen","friendsScreen","addFriendScreen","searchingScreen","inviteSentScreen","waitingScreen","gameScreen","endScreen","leaderboardScreen","categoriesScreen"];
+const SCREENS = ["loadingScreen","authScreen","usernameScreen","lobbyScreen","roomCodeScreen","friendsScreen","addFriendScreen","searchingScreen","inviteSentScreen","waitingScreen","gameScreen","endScreen","leaderboardScreen","categoriesScreen","botScreen"];
 
 function show(id){
   SCREENS.forEach(s => { const el=$(s); if(el) el.classList.add("hidden"); });
@@ -500,7 +527,7 @@ function detachAllListeners(){
 /* Biten maçın odası silinir (v4.11'de odalar veritabanında sonsuza kadar kalıyordu: kullanıcı adları ve yazılan
    kelimeler dahil; DENETIM.md › K-10). İki oyuncudan önce dönen siler; öteki için silme zararsızdır. */
 function odayiTemizle(ref){
-  if(!ref || !myUid) return;
+  if(!ref || !myUid || ref instanceof YerelOda) return; // bot odası bellekte: silinecek kayıt yok
   const rid = ref.key;
   ref.once("value").then(s => {
     const c = s.val();
@@ -738,6 +765,11 @@ function onLoggedIn(){
    LOBBY NAVIGATION
    ============================================================ */
 $("quickMatchBtn").addEventListener("click", startQuickMatch);
+$("botBtn").addEventListener("click", () => {
+  $("botModAdi").textContent = { sim: "Hızlı", duel: "Sıra Beklicek", chain: "Zincir" }[selectedMode] || "Hızlı";
+  show("botScreen");
+});
+document.querySelectorAll(".bot-zorluk").forEach(b => b.addEventListener("click", () => startBotMatch(b.dataset.zorluk)));
 $("friendsBtn").addEventListener("click", () => show("friendsScreen"));
 $("roomCodeBtn").addEventListener("click", () => show("roomCodeScreen"));
 $("categoriesBtn").addEventListener("click", openCategoriesScreen);
@@ -1232,6 +1264,37 @@ async function cancelQuickMatch(){
 }
 
 /* ============================================================
+   YAPAY ZEKÂYA KARŞI (1.0.2): oda bellekte (YerelOda), rakip bot.js
+   ============================================================ */
+function botOdasiMi(){ return !!(roomRef && typeof YerelOda !== "undefined" && roomRef instanceof YerelOda); }
+
+async function startBotMatch(zorluk){
+  if(!myUid || roomRef) return;
+  const mode = selectedMode;
+  // Kategori tercihleri Firebase'den; bağlantı yoksa okuma hiç bitmeyebilir: 2 sn sonra bütün kategorilerle başlanır
+  const prefs = mode === "chain" ? null
+    : await Promise.race([fetchCategoryPrefs(myUid), new Promise(r => setTimeout(() => r(null), 2000))]);
+  const pool = (prefs && prefs.length) ? prefs : CATEGORIES.slice();
+  const cats = pickMatchCategories(mode, pool);
+  const rid = "bot_" + Math.random().toString(36).slice(2, 10);
+  const veri = {
+    status: "playing",
+    p1: { uid: myUid, name: myName },
+    p2: { uid: "bilcek", name: BOT.ad[zorluk] || BOT.ad.orta },
+    mode, match: makeMatchInit(cats, mode), round: makeRound1(cats, mode),
+    createdAt: Date.now(), winner: null, reason: null
+  };
+  roomId = rid;
+  roomRef = new YerelOda(rid, veri);
+  mySlot = "p1";
+  await roomRef.child("round/phaseStartTime").set(SV.TIMESTAMP);
+  botBaslat(roomRef, zorluk);
+  show("gameScreen");
+  SFX.matchFound();
+  subscribeRoom();
+}
+
+/* ============================================================
    ODA KODU İLE EŞLEŞME (mevcut)
    ============================================================ */
 async function joinRoomByCode(){
@@ -1318,7 +1381,7 @@ async function joinRoomById(rid){
    ============================================================ */
 function subscribeRoom(){
   // Katıldığım odaların listesi: hesap silinince bu odalar da silinir (hesabiSil)
-  if(myUid && roomId) db.ref(`users/${myUid}/odalar/${roomId}`).set(true).catch(()=>{});
+  if(myUid && roomId && !botOdasiMi()) db.ref(`users/${myUid}/odalar/${roomId}`).set(true).catch(()=>{});
   if(roomListener) roomRef.off("value", roomListener);
   roomListener = roomRef.on("value", snap => {
     const d = snap.val();
@@ -1514,7 +1577,7 @@ function renderRoom(d){
     else if(d.winner === "tie") SFX.message();
     else SFX.lose();
     // Stats kaydet (her oyuncu kendi sonucunu yazar)
-    recordMatchResult(d.winner, (d.match && d.match.mode) || "sim").catch(()=>{});
+    if(!botOdasiMi()) recordMatchResult(d.winner, (d.match && d.match.mode) || "sim").catch(()=>{}); // bot maçı sayılmaz
     reklamMacBitti();
     show("endScreen");
     const me = mySlot === "p1" ? d.p1 : d.p2;
@@ -1972,6 +2035,7 @@ function leaveAndReset(){
 
 function resetGameState(){
   stopPhaseTicker();
+  botDurdur();
   if(roomRef && roomListener) roomRef.off("value", roomListener);
   roomRef = null; roomListener = null; mySlot = null; roomId = null;
   gameEnded = false;

@@ -64,11 +64,11 @@ test('girdi sınırı: uzun kelime, bilinmeyen kategori, büyük gövde, bozuk J
   assert.equal(aiCagri, 0);
 });
 
-test('karar: iki hakem de evet → kabul; biri hayır → ret; Zincir modu', async () => {
+test('karar: hakem evet → kabul; hayır → ret; Zincir modu', async () => {
   const t = await jeton();
   let r = await (await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: 'Masa' }, { token: t }), env())).json();
   assert.equal(r.gecerli, true);
-  assert.equal(aiCagri, 2);
+  assert.equal(aiCagri, 1, 'v3.2: tek çağrı');
   r = await (await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: 'roket' }, { token: t }), env('{"gecerli": false, "sebep": "değil"}'))).json();
   assert.equal(r.gecerli, false);
   r = await (await worker.fetch(istek({ kategori: '', kelime: 'kalem' }, { token: t }), env())).json();
@@ -118,4 +118,36 @@ test('v3.1: harfsiz kelime ve büyük bildirilen gövde reddedilir', async () =>
   assert.equal((await worker.fetch(istek({ kategori: '', kelime: '- -' }, { token: t }), env())).status, 400);
   const r = new Request('https://w.example/', { method: 'POST', headers: { Authorization: `Bearer ${t}`, 'Content-Length': '999999', Origin: 'https://localhost' }, body: '{}' });
   assert.equal((await worker.fetch(r, env())).status, 413);
+});
+
+function sahteKV() {
+  const m = new Map();
+  return { m, get: async (k, tur) => (m.has(k) ? (tur === 'json' ? JSON.parse(m.get(k)) : m.get(k)) : null), put: async (k, v) => { m.set(k, v); } };
+}
+
+test('v3.2: ortak önbellek — aynı kelime/kategori yapay zekâya bir kez sorulur', async () => {
+  const t = await jeton();
+  const e = { ...env(), SOZLUK: sahteKV() };
+  const r1 = await (await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: 'Masa' }, { token: t }), e)).json();
+  const r2 = await (await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: '  masa ' }, { token: t }), e)).json();
+  assert.equal(aiCagri, 1);
+  assert.equal(r1.gecerli, true); assert.equal(r2.gecerli, true); assert.equal(r2.onbellek, true);
+  assert.ok(e.SOZLUK.m.has('v1|Ev ve Yaşam|masa'));
+  // başka kategori ayrı sorulur
+  await worker.fetch(istek({ kategori: 'Hobi ve Eğlence', kelime: 'masa' }, { token: t }), e);
+  assert.equal(aiCagri, 2);
+});
+
+test('v3.2: yapay zekâ yanıt veremezse önbelleğe yazılmaz', async () => {
+  const t = await jeton();
+  const e = { AI: { run: async () => { aiCagri++; return { response: 'bozuk' }; } }, SOZLUK: sahteKV() };
+  const r = await worker.fetch(istek({ kategori: '', kelime: 'kalem' }, { token: t }), e);
+  assert.equal(r.status, 502);
+  assert.equal(e.SOZLUK.m.size, 0);
+});
+
+test('v3.2: IKI_HAKEM=1 eski iki çağrılı kararı geri getirir', async () => {
+  const t = await jeton();
+  await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: 'sandalye' }, { token: t }), { ...env(), IKI_HAKEM: '1' });
+  assert.equal(aiCagri, 2);
 });

@@ -65,6 +65,13 @@
         <span class="sub">Anında rastgele rakip bul</span>
       </span>
     </button>
+    <button type="button" class="lobby-btn" id="botBtn">
+      <span class="ico">🤖</span>
+      <span class="body">
+        <span class="title">Yapay Zekâya Karşı</span>
+        <span class="sub">Bilcek'e karşı oyna, rakip beklemeden</span>
+      </span>
+    </button>
     <button type="button" class="lobby-btn" id="friendsBtn">
       <span class="ico">👥</span>
       <span class="body">
@@ -124,6 +131,16 @@
     <div style="height:14px"></div>
     <button type="button" id="joinRoomBtn" class="btn">🚪 Odaya Katıl / Oluştur</button>
     <p style="color:var(--muted);font-size:12px;text-align:center;margin:12px 0 0">İki oyuncu da aynı oda kodunu yazınca eşleşir.</p>
+  </section>
+
+  <!-- YAPAY ZEKÂYA KARŞI (1.0.2) -->
+  <section id="botScreen" class="card hidden">
+    <button type="button" class="back-btn" data-back="lobby">← Geri</button>
+    <h3 style="margin:0 0 6px">🤖 Yapay Zekâya Karşı</h3>
+    <p style="color:var(--muted);font-size:13px;margin:0 0 14px">Mod: <b id="botModAdi">Hızlı</b> (lobide seçtiğin mod). Bilcek kelimelerini kendi sözlüğünden yazar; bu maçlar Şampiyonlar'a sayılmaz.</p>
+    <button type="button" class="btn secondary bot-zorluk" data-zorluk="kolay" style="margin-bottom:10px">🙂 Kolay</button>
+    <button type="button" class="btn secondary bot-zorluk" data-zorluk="orta" style="margin-bottom:10px">😐 Orta</button>
+    <button type="button" class="btn bot-zorluk" data-zorluk="zor">😈 Zor</button>
   </section>
 
   <!-- FRIENDS -->
@@ -233,7 +250,7 @@
     </div>
   </section>
 </main>
-<footer>Kelime Bilcek 1.0.1 · <a href="https://kelime-bilcek.web.app/gizlilik.html" target="_blank" rel="noopener">Gizlilik</a> · <a href="https://kelime-bilcek.web.app/hesap-silme.html" target="_blank" rel="noopener">Hesap silme</a></footer>
+<footer>Kelime Bilcek 1.0.2 · <a href="https://kelime-bilcek.web.app/gizlilik.html" target="_blank" rel="noopener">Gizlilik</a> · <a href="https://kelime-bilcek.web.app/hesap-silme.html" target="_blank" rel="noopener">Hesap silme</a></footer>
 
 <div id="toast" class="toast"></div>
 
@@ -273,6 +290,7 @@
 <script src="vendor/firebase-database-compat.js"></script>
 <script src="kelime.js"></script>
 <script src="reklam.js"></script>
+<script src="bot.js"></script>
 <script src="oyun.js"></script>
 </body>
 </html>

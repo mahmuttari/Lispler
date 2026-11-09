@@ -35,17 +35,18 @@ public class Dene { public static void main(String[] a) throws Exception {
   SesIsleyici p = new SesIsleyici(48000, sos);
   for (int k = 3; k < s.size(); k++) { String[] n = s.get(k).trim().split(" "); short[] b = new short[n.length];
     for (int i = 0; i < n.length; i++) b[i] = (short) Integer.parseInt(n[i]);
-    SesIsleyici.Sonuc r = p.blok(b, b.length); System.out.println(r.hizli + " " + r.blok + " " + r.tepe + " " + r.kirpma); }
+    SesIsleyici.Sonuc r = p.blok(b, b.length); System.out.println(r.hizli + " " + r.blok + " " + r.tepe + " " + r.kirpma + " " + r.hizliEnCok); }
 } }`);
     execFileSync('javac', ['-d', d, KAYNAK, path.join(d, 'Dene.java')], { stdio: 'pipe' });
     const cikti = execFileSync('java', ['-cp', d, 'Dene', path.join(d, 'girdi.txt')], { encoding: 'utf8' }).trim().split('\n');
     assert.equal(cikti.length, js.length);
     cikti.forEach((satir, i) => {
-      const [hizli, blok, tepe, kirpma] = satir.split(' ');
+      const [hizli, blok, tepe, kirpma, hizliEnCok] = satir.split(' ');
       assert.ok(Math.abs(Number(hizli) - js[i].fast) < 1e-9, `blok ${i} hızlı`);
       assert.ok(Math.abs(Number(blok) - js[i].block) < 1e-9, `blok ${i} ortalama`);
       assert.ok(Math.abs(Number(tepe) - js[i].peak) < 1e-12, `blok ${i} tepe`);
       assert.equal(kirpma === 'true', js[i].clipping);
+      assert.ok(Math.abs(Number(hizliEnCok) - js[i].fastMax) < 1e-9, `blok ${i} hızlıEnCok`);
     });
   } finally {
     fs.rmSync(d, { recursive: true, force: true });

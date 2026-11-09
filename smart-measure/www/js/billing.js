@@ -20,14 +20,26 @@ const mockSet = (v) => { try { if (v) localStorage.setItem(mockKey, v); else loc
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const np = () => plugin('NativePurchases');
 
-/** → { monthly: {priceString, amount, offerToken}, yearly: {...} } ya da null (mağazaya ulaşılamadı). */
+// Play yanıt vermezse ms sonra reddeder.
+function withTimeout(promise, ms) {
+  let timeoutId;
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error('zaman aşımı')), ms);
+  });
+  return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timeoutId));
+}
+
+/** → { monthly: {priceString, amount, offerToken}, yearly: {...} } ya da null (mağazaya ulaşılamadı / zaman aşımı). */
 export async function getPlans() {
   if (!isNative) {
     await wait(200);
     return mockOff() ? null : { monthly: { priceString: SUBSCRIPTION.fallbackPrice.monthly, amount: 0.99 }, yearly: { priceString: SUBSCRIPTION.fallbackPrice.yearly, amount: 9.99 } };
   }
   try {
-    const { products } = await np().getProducts({ productIdentifiers: [SUBSCRIPTION.productId], productType: SUBS });
+    const { products } = await withTimeout(
+      np().getProducts({ productIdentifiers: [SUBSCRIPTION.productId], productType: SUBS }),
+      15000
+    );
     return plansFrom(products);
   } catch (e) { return null; }
 }
@@ -43,11 +55,14 @@ export function plansFrom(products) {
   return Object.keys(out).length ? out : null;
 }
 
-/** → { ok: true, purchases } mağaza yanıt verdi · { ok: false } soramadık */
+/** → { ok: true, purchases } mağaza yanıt verdi · { ok: false } soramadık / zaman aşımı */
 export async function ownedPurchases() {
   if (!isNative) return mockOff() ? { ok: false } : { ok: true, purchases: mockGet() ? [{ productIdentifier: SUBSCRIPTION.productId, purchaseState: '1' }] : [] };
   try {
-    const { purchases } = await np().getPurchases({ productType: SUBS });
+    const { purchases } = await withTimeout(
+      np().getPurchases({ productType: SUBS }),
+      15000
+    );
     return { ok: true, purchases: purchases || [] };
   } catch (e) { return { ok: false }; }
 }
@@ -89,7 +104,10 @@ export async function purchase(plan, offerToken) {
 
 export async function restore() {
   if (!isNative) { await wait(250); return !mockOff(); }
-  try { await np().restorePurchases(); return true; } catch (e) { return false; }
+  try {
+    await withTimeout(np().restorePurchases(), 15000);
+    return true;
+  } catch (e) { return false; }
 }
 
 /** Tarayıcı taklidinde "yönet" taklit aboneliği kapatır. */

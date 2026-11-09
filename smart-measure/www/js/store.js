@@ -53,10 +53,15 @@ const listeners = new Set();
 export function onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); }
 export function changed(what) { save(); listeners.forEach((f) => { try { f(what); } catch (e) { console.error(e); } }); }
 
-export function addHistory(tool, label, value, note = '') {
+export function addHistory(tool, label, value, note = '', options = {}) {
+  const { labelKey, labelArgs, noteKey, noteArgs } = options;
   const r = new Uint32Array(1);
   try { crypto.getRandomValues(r); } catch (err) { r[0] = S.history.length; }
   const e = { id: `${Date.now().toString(36)}${r[0].toString(36)}`, time: Date.now(), tool, label, value, note };
+  if (labelKey) e.labelKey = labelKey;
+  if (labelArgs && labelArgs.length) e.labelArgs = labelArgs;
+  if (noteKey) e.noteKey = noteKey;
+  if (noteArgs && noteArgs.length) e.noteArgs = noteArgs;
   S.history.unshift(e);
   if (S.history.length > HISTORY_MAX) S.history.length = HISTORY_MAX;
   changed('history');

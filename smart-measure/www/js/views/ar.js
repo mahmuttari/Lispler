@@ -111,7 +111,9 @@ export function render({ params, back }) {
     const r = A.result(mode, h0(), points);
     // yükseklikte tepe tabanın üstünde değil: tepeye nişan alınmalı ("dümdüz aşağı bakıyorsunuz" değil)
     if (!r || !r.main) { toast(t(mode === 'height' ? 'cm_hint_top' : 'cm_problem_aim_lower')); points = points.slice(0, 1); return; }
-    addHistory('ar', t(HISTORY_KEY[mode]), meas(r.main), `${t('cm_height_set', B.phoneHeight(h0(), units(), getLang()))}`);
+    const ph = B.phoneHeight(h0(), units(), getLang());
+    const note = t('cm_height_set', ph);
+    addHistory('ar', t(HISTORY_KEY[mode]), meas(r.main), note, { labelKey: HISTORY_KEY[mode], noteKey: 'cm_height_set', noteArgs: [ph] });
     native.haptic('success');
     toast(t('cm_saved'));
   }

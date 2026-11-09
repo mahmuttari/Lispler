@@ -126,7 +126,9 @@ export function render({ params, back }) {
     function copy() {
       const v = fmtLen(R.guides.b - R.guides.a);
       native.copyText(v);
-      addHistory('ruler', t('rl_history_ruler'), v, R.calibrated ? t('rl_cal_done') : '');
+      const noteKey = R.calibrated ? 'rl_cal_done' : undefined;
+      const note = noteKey ? t(noteKey) : '';
+      addHistory('ruler', t('rl_history_ruler'), v, note, { labelKey: 'rl_history_ruler', noteKey });
       toast(t('rl_copied', v));
     }
     const onR = () => draw();
@@ -324,7 +326,8 @@ export function render({ params, back }) {
       const an = C.angles(R.arms.a, R.arms.b), inner = R.view === 'inner';
       const v = `${num(inner ? an.inner : an.outer, 1)}°`;
       native.copyText(v);
-      addHistory('protractor', t(inner ? 'rl_history_inner' : 'rl_history_outer'), v);
+      const labelKey = inner ? 'rl_history_inner' : 'rl_history_outer';
+      addHistory('protractor', t(labelKey), v, '', { labelKey });
       toast(t('rl_copied', v));
     }
     const onR = () => draw();

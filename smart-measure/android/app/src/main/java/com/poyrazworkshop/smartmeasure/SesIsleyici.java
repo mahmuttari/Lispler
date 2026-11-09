@@ -18,10 +18,10 @@ public final class SesIsleyici {
 
     /** Bir bloğun sonucu. */
     public static final class Sonuc {
-        public final double hizli, blok, tepe;
+        public final double hizli, blok, tepe, hizliEnCok;
         public final boolean kirpma;
-        Sonuc(double hizli, double blok, double tepe) {
-            this.hizli = hizli; this.blok = blok; this.tepe = tepe; this.kirpma = tepe >= KIRPMA;
+        Sonuc(double hizli, double blok, double tepe, double hizliEnCok) {
+            this.hizli = hizli; this.blok = blok; this.tepe = tepe; this.hizliEnCok = hizliEnCok; this.kirpma = tepe >= KIRPMA;
         }
     }
 
@@ -37,7 +37,7 @@ public final class SesIsleyici {
     }
 
     public Sonuc blok(short[] ornek, int n) {
-        double toplam = 0, tepe = 0;
+        double toplam = 0, tepe = 0, hizliEnCok = 0;
         for (int i = 0; i < n; i++) {
             double x = ornek[i] / 32768.0;
             double ax = Math.abs(x);
@@ -52,7 +52,8 @@ public final class SesIsleyici {
             double kare = x * x;
             toplam += kare;
             hizli += (kare - hizli) * alfa;
+            if (hizli > hizliEnCok) hizliEnCok = hizli;
         }
-        return new Sonuc(db(hizli), db(n > 0 ? toplam / n : 0), tepe);
+        return new Sonuc(db(hizli), db(n > 0 ? toplam / n : 0), tepe, db(hizliEnCok));
     }
 }

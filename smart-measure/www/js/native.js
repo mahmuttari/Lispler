@@ -175,7 +175,7 @@ export function light(cb) {
 export function sound(cb, onError) {
   if (!isNative) { setTimeout(() => onError('missing'), 0); return () => {}; }
   const o = O();
-  const off = listen(o, 'ses', (e) => cb({ fast: e.hizli, block: e.blok, peak: e.tepe, clipping: !!e.kirpma, seconds: e.sure, source: e.kaynak }));
+  const off = listen(o, 'ses', (e) => cb({ fast: e.hizli, block: e.blok, peak: e.tepe, clipping: !!e.kirpma, seconds: e.sure, source: e.kaynak, fastMax: e.hizliEnCok }));
   const offErr = listen(o, 'sesHata', (e) => onError((e && e.neden) || 'failed'));
   o.sesBaslat({ suzgecler: filterSet() }).then((r) => {
     if (!r || !r.var) onError(r && r.neden ? r.neden : 'failed');

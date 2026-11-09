@@ -265,7 +265,7 @@ public class OlcerPlugin extends Plugin {
 
     // ---------------------------------------------------------------- ses düzeyi
     @PluginMethod
-    public void sesBaslat(PluginCall call) {
+    public synchronized void sesBaslat(PluginCall call) {
         sesKapat();
         JSObject r = new JSObject();
         if (!getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_MICROPHONE)) {
@@ -291,6 +291,7 @@ public class OlcerPlugin extends Plugin {
                 o.put("kirpma", s.kirpma);
                 o.put("sure", saniye);
                 o.put("kaynak", kaynak);
+                o.put("hizliEnCok", s.hizliEnCok);
                 olay("ses", o);
             }
 
@@ -335,7 +336,7 @@ public class OlcerPlugin extends Plugin {
         call.resolve();
     }
 
-    private void sesKapat() {
+    private synchronized void sesKapat() {
         if (ses != null) ses.dur();
         ses = null;
     }

@@ -6,7 +6,16 @@ import * as native from '../native.js';
 import { HISTORY_TOOLS } from '../tools.js';
 import { topbar, tileIcon, timeOf, dayLabel } from './common.js';
 
-export const entryText = (e) => `${e.label}: ${e.value}${e.note ? ` (${e.note})` : ''}`;
+function getLabel(e) {
+  if (e.labelKey) return t(e.labelKey, ...(e.labelArgs || []));
+  return e.label;
+}
+function getNote(e) {
+  if (e.noteKey) return t(e.noteKey, ...(e.noteArgs || []));
+  return e.note;
+}
+
+export const entryText = (e) => `${getLabel(e)}: ${e.value}${getNote(e) ? ` (${getNote(e)})` : ''}`;
 
 export function render() {
   const body = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } });
@@ -34,7 +43,7 @@ export function render() {
       const tool = HISTORY_TOOLS[e.tool] || { icon: 'Ruler', accent: 'blue' };
       out.push(h('div', { class: `card hist acc-${tool.accent}` },
         tileIcon(tool.icon, tool.accent, 20),
-        h('div', { class: 'grow' }, h('small', { text: `${e.label} · ${timeOf(e.time)}` }), h('b', { text: e.value }), e.note ? h('small', { text: e.note }) : null),
+        h('div', { class: 'grow' }, h('small', { text: `${getLabel(e)} · ${timeOf(e.time)}` }), h('b', { text: e.value }), getNote(e) ? h('small', { text: getNote(e) }) : null),
         iconButton('Copy', t('lb_history_copy'), async () => { if (await native.copyText(entryText(e))) toast(t('lb_history_copied', e.value)); }),
         iconButton('Share2', t('lb_history_share'), () => native.shareText(entryText(e)))));
     }

@@ -52,6 +52,8 @@ const durum = {
 };
 export const _durum = durum; // sınama için
 
+let yenidenDene = false;
+
 const admob = () => plugin('AdMob');
 
 function bannerPayi(px) {
@@ -70,6 +72,7 @@ async function baslatAsil() {
   const ad = admob();
   if (!ad || durum.hazir || isPremium()) return;
   try {
+    yenidenDene = false;
     const bilgi = await appInfo();
     if (bilgi.debug) durum.kimlik = TEST_KIMLIK;
     let onay = await ad.requestConsentInfo();
@@ -85,6 +88,7 @@ async function baslatAsil() {
     await bannerGoster();
     gecisYukle();
   } catch (e) {
+    yenidenDene = true;
     console.warn('AdMob', e);
   }
 }
@@ -150,6 +154,8 @@ export function uygulamaDurumu(aktif) {
   if (!aktif) { durum.arkaPlan = Date.now(); return; }
   if (durum.arkaPlan && Date.now() - durum.arkaPlan > KURAL.yeniOturumDk * 60e3) durum.oturumBasi = Date.now();
   durum.arkaPlan = null;
+  // Ön plana döndüğünde reklam başlatmayı dene (ağ hatasıydıysa)
+  if (yenidenDene && !durum.hazir && !isPremium()) baslat();
 }
 
 /** Abonelik değişince: reklamsızsa banner kaldırılır. */
@@ -184,4 +190,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   });
   document.addEventListener('focusin', (e) => { if (e.target && e.target.matches && e.target.matches('input:not([type=checkbox]), textarea')) bannerGizle('klavye-odak', true); });
   document.addEventListener('focusout', () => bannerGizle('klavye-odak', false));
+  window.addEventListener('online', () => {
+    if (yenidenDene && !durum.hazir && !isPremium()) baslat();
+  });
 }

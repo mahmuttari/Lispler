@@ -208,8 +208,8 @@ export function render({ params, back }) {
       stopMic = native.sound((e) => {
         if (gen !== micGen) return;
         fast = e.fast; clipping = e.clipping; source = e.source;
-        leq = SES.leqAdd(leq, e.block, e.seconds, e.fast);
-        if (calLeq) calLeq = SES.leqAdd(calLeq, e.block, e.seconds, e.fast);
+        leq = SES.leqAdd(leq, e.block, e.seconds, e.fastMax ?? e.fast);
+        if (calLeq) calLeq = SES.leqAdd(calLeq, e.block, e.seconds, e.fastMax ?? e.fast);
         hist.push(e.fast); if (hist.length > 600) hist.shift();
         SN.lastSoundDb = Math.round(lvl(e.fast) * 10) / 10; SN.lastSoundUnit = calibrated() ? 'dB' : 'dBFS'; SN.lastSoundAt = Date.now();
         schedule();

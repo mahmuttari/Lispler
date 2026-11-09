@@ -115,6 +115,7 @@ export function createProcessor(fs, sos) {
   let fast = 0;
   return function block(samples) {
     let sum = 0, peak = 0;
+    let maxFastSq = 0;
     for (let i = 0; i < samples.length; i++) {
       let x = samples[i] / 32768;
       const ax = Math.abs(x);
@@ -129,8 +130,9 @@ export function createProcessor(fs, sos) {
       const sq = x * x;
       sum += sq;
       fast += (sq - fast) * alpha;
+      if (fast > maxFastSq) maxFastSq = fast;
     }
     const db = (ms) => (ms > 0 ? 10 * Math.log10(2 * ms) : -120);
-    return { fast: Math.max(-120, db(fast)), block: Math.max(-120, db(sum / samples.length)), peak, clipping: peak >= CLIP };
+    return { fast: Math.max(-120, db(fast)), block: Math.max(-120, db(sum / samples.length)), peak, clipping: peak >= CLIP, fastMax: Math.max(-120, db(maxFastSq)) };
   };
 }

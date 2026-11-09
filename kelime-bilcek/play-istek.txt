@@ -29,5 +29,5 @@
 # (yapıldı 2026-11-09, koşu 42711733748: AAB 3 (koşu 42706597921, commit e53153d) yüklendi, üretim 1.0.1 (2) → 1.0.2 (3) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula
 
 # istek 2026-11-09T22:43:04Z: 1.0.3 (4) yeni görünüm — mağaza görselleri (simge, tanıtım, 5 telefon karesi) ve paket üretime, incelemeye gönder; 1.0.2 (3)'ün yerini alır (kullanıcının açık isteği: "İşlemleri bitince direkt yayınlayalım"); AAB: kelime-android koşusu 42713685679 (commit f1250e5, versionCode 4, admob=gercek, Poyraz Workshop yükleme anahtarı)
-gorsel uygula
-yukle yayinla uygula
+# (yapıldı 2026-11-09, koşu 42714353339: tr-TR simge, tanıtım görseli ve 5 telefon karesi yüklendi, düzenleme onaylandı) gorsel uygula
+# (yapıldı 2026-11-09, koşu 42714353339: AAB 4 (koşu 42713685679, commit f1250e5) yüklendi, üretim 1.0.2 (3) → 1.0.3 (4) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula

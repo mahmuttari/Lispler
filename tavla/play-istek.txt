@@ -16,3 +16,8 @@
 
 # istek 2026-11-06: 1.0.1 (2) avatar düzeltmesi — imzalı AAB üretime TASLAK (kullanıcı: "avatarları kaldır … sonra hemen güncelleme yayınla"); incelemeye gönderme ayrı ONAY ister
 # (yapıldı 2026-11-06, koşu 42231019730: 1.0.1 (2) üretime draft, AAB koşu 42229224540) yukle uygula
+
+# istek 2026-11-09: 1.0.2 (3) — yeni simge/tanıtım görseli ve ekran görüntüleri, imzalı AAB üretime ve incelemeye gönderim
+# (kullanıcı: "Her şey bitince direkt yayınla"; AAB: tavla-android.yml koşu 42701359572, eb12012)
+gorsel uygula
+yukle yayinla uygula

@@ -22,7 +22,7 @@
 // "kelime" (Kelime Bilcek: kelime-bilcek/ klasörü, .github/workflows/play-kelime.yml),
 // "tavla" (Tavla: tavla/ klasörü, .github/workflows/play-tavla.yml),
 // "masteroffice" (Master Office, com.ofivora.app: master-office/ klasörü, .github/workflows/play-masteroffice.yml;
-// kaynak kodu bu depoda yok, AAB'yi uygulamanın sahibi imzalayıp verir; sürüm master-office/surum.gradle'dadır).
+// kaynak kodu bu depoda yok, AAB Play Console'dan elle yüklenir; sürüm master-office/surum.gradle'dadır).
 // Telefon ekran görüntüleri PNG ya da JPEG olabilir (telefon-*.png / telefon-*.jpg).
 //
 // "uygula" yoksa hiçbir şey yazılmaz: düzenleme (edit) açılır, plan yazılır, düzenleme silinir. Uygulamayı oluşturmak

@@ -4,8 +4,8 @@
 politikası" satırlarını ve "Kısa açıklama" / "Uzun açıklama" bölümlerini okur (ad ≤30, kısa ≤80, uzun ≤4000 karakter).
 Web sitesi adresi gizlilik politikası adresinden çıkarılır. İngilizce metin `diller/en-US.md`'dedir (aynı biçim +
 "Sürüm notu" bölümü, ≤500 karakter). Gizlilik ve tanıtım sayfası MARFEN uygulama sayfalarındadır (`mahmuttari/mahmuttari.github.io` › `master-office/`).
-Metinler, form cevapları ve görseller uygulamanın sahibinin verdiği
-`MasterOffice_PlayStore_Paketi`'nden (10 Kasım 2026) **birebir** alındı; kaynak kodu bu depoda yoktur.
+Metinler, form cevapları ve görseller `MasterOffice_PlayStore_Paketi`'nden (10 Kasım 2026) **birebir** alındı. Uygulamanın
+sahibi kullanıcıdır; kaynak kodu hiçbir yerde yoktur.
 
 ## Ortak
 
@@ -124,7 +124,7 @@ only on the device and are never uploaded.
 Hiçbir türde "geçici işleme" yoktur. Dosyalar ve dokümanlar, fotoğraflar, kişisel bilgiler, finansal bilgiler, mesajlar,
 kişiler, sağlık, kilitlenme günlüğü: **toplanmıyor**.
 
-Sahibin rehberinden tek fark: rehber "Kilitlenme günlükleri + Teşhis" (amaç Analiz, Dolandırıcılığı önleme) diyordu.
+Paketteki rehberden tek fark: rehber "Kilitlenme günlükleri + Teşhis" (amaç Analiz, Dolandırıcılığı önleme) diyordu.
 Rehberin kendisi Google'ın sayfasıyla karşılaştırmayı istiyor; Google'ın bugünkü AdMob beyanı (SDK 25.5.0) dört veri
 türünü sayar, kilitlenme günlüğü ayrı tür değildir ("Diagnostic information": açılış süresi, takılma oranı, enerji) ve
 hepsini "reklam, analiz ve dolandırıcılığı önleme amacıyla otomatik olarak toplanır ve paylaşılır" diye verir

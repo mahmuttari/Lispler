@@ -9,7 +9,7 @@
 #   yukle uygula              Play Console'a elle yüklenmiş AAB'yi (surum.gradle'daki versionCode) üretim kanalına TASLAK
 #                             olarak koyar, sürüm notlarıyla (AAB bu herkese açık depoya konmaz, PLAY-YAYIN.md)
 #   yukle yayinla uygula      incelemeye gönder — yalnız kullanıcının "ONAY: …" satırıyla. 3.5.1 (3005001) AdMob TEST
-#                             kimlikli olduğu için iş akışı onu üretime koymaz; sahibin 3.5.2'si beklenir
+#                             kimlikli olduğu için iş akışı onu üretime koymaz; gerçek kimlikli yeniden kurulan sürüm beklenir
 # Her push dosyadaki bütün etkin satırları çalıştırır: çalışan satırlar "# (yapıldı …)" ile kapatılır.
 
 # 2026-11-10: ilk bağlantı denemesi (salt okuma). Hizmet hesabının kimliği çalışıyor mu, Master Office Play'de var mı?

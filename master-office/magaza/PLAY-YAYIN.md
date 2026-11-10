@@ -1,6 +1,6 @@
 # Master Office — Google Play'e ilk yayın
 
-Uygulamanın sahibi başkasıdır: kaynak kodu bu depoda yoktur, imzalı AAB'yi ve mağaza paketini sahibi verdi
+Uygulamanın sahibi kullanıcıdır; kaynak kodu hiçbir yerde yoktur (kullanıcı, 10 Kasım 2026). Elde imzalı AAB ve mağaza paketi var
 (`MasterOffice_PlayStore_Paketi`, 10 Kasım 2026; rehberi `00_REHBER_Claude_icin.md`). Bu klasör o paketi Lispler'in Play
 düzenine bağlar. Hesap: **MARFEN** (kuruluş hesabı: kapalı test şartı ve bekleme süresi yok → doğrudan **Üretim**).
 Reklam hesabı: **AdMob, mahmuttari@gmail.com** (yayıncı `pub-2417242373034448`; `mahmuttari.github.io/app-ads.txt` bunu
@@ -19,9 +19,9 @@ listeler).
 | Alan | Değer |
 |---|---|
 | Uygulama adı (mağaza, tr-TR ve en-US) | `Master Office` |
-| Paket adı | `com.ofivora.app` (uygulamanın içinde sabit; "paket adı kullanılıyor" hatasında sahibine haber verilir) |
-| İlk paket | `3.5.1` (versionCode `3005001`), sahibin imzalı AAB'si `01_Yuklenecek_Uygulama/MasterOffice-3.5.1.aab`. **AdMob TEST kimlikli** (`ca-app-pub-3940256099942544~3347511713`): yalnız dahili test |
-| Yükleme anahtarı | Sahibin anahtarı (CN=Sayfa, SHA-256 `40:80:24:0A:…:04:CF:09`). Play Uygulama İmzalama: **Google'ın oluşturduğu anahtar**. Yeniden kurulan sürüm başka anahtarla imzalanırsa Play Console'dan **yükleme anahtarı sıfırlama** istenir |
+| Paket adı | `com.ofivora.app` (uygulamanın içinde sabit; "paket adı kullanılıyor" hatası çıkarsa dur ve kullanıcıya sor) |
+| İlk paket | `3.5.1` (versionCode `3005001`), imzalı AAB `01_Yuklenecek_Uygulama/MasterOffice-3.5.1.aab`. **AdMob TEST kimlikli** (`ca-app-pub-3940256099942544~3347511713`): yalnız dahili test |
+| Yükleme anahtarı | 3.5.1'i imzalayan anahtar (CN=Sayfa; dosyası elde olmayabilir; SHA-256 `40:80:24:0A:…:04:CF:09`). Play Uygulama İmzalama: **Google'ın oluşturduğu anahtar**. Yeniden kurulan sürüm başka anahtarla imzalanırsa Play Console'dan **yükleme anahtarı sıfırlama** istenir |
 | Hedef API · min API | 36 · 24 (yeni uygulamalar için 31 Ağustos 2026'dan beri 36 zorunlu) |
 | Varsayılan dil | Türkçe – tr-TR; çeviri en-US (API yükler) |
 | Uygulama / oyun · fiyat | **Uygulama** · **Ücretsiz** (AdMob + yıllık abonelikler) |
@@ -66,7 +66,7 @@ kaydedildiği kısaca Türkçe özetlenir.
 mahmuttari.github.io PR'ı main'e birleşince `https://mahmuttari.github.io/master-office/gizlilik.html` giriş istemeden
 açılmalı (açılmıyorsa dur).
 
-### 1. AdMob (sahibin rehberi §11)
+### 1. AdMob (paketteki rehber §11)
 https://admob.google.com → mahmuttari@gmail.com (yayıncı `pub-2417242373034448`) → **Uygulamalar → Uygulama ekle** →
 Android → "Desteklenen bir mağazada listeleniyor mu?" **Hayır** → ad `Master Office`. Reklam birimleri:
 
@@ -78,7 +78,7 @@ Android → "Desteklenen bir mağazada listeleniyor mu?" **Hayır** → ad `Mast
 
 **Gizlilik ve mesajlaşma → Avrupa tüzükleri**: Master Office mevcut mesaja eklenir ya da Türkçe + İngilizce yeni mesaj,
 gizlilik politikası adresi yukarıdaki → onayla **Yayınla**. Dört kimlik (uygulama kimliği `ca-app-pub-…~…`, üç birim
-`ca-app-pub-…/…`) kaydedilir: yeniden kurulan sürüm (ya da sahibin 3.5.2'si) bunlarla derlenir. Kendi reklamlarına
+`ca-app-pub-…/…`) kaydedilir: yeniden kurulan sürüm bunlarla derlenir. Kendi reklamlarına
 tıklanmaz.
 
 ### 2. Play Console: uygulamayı oluştur
@@ -117,7 +117,7 @@ değişir; o sürümle birlikte güncellenir.)
 
 ### 6. Abonelikler
 Para kazanma → Ürünler → Abonelikler: [`fiyatlandirma.md`](fiyatlandirma.md). Fiyat tablosu etkinleştirmeden önce
-kullanıcıya gösterilir. Sonra satın alma denemesi (sahibin rehberi §10): dahili testten kurulan uygulamada Hesap →
+kullanıcıya gösterilir. Sonra satın alma denemesi (paketteki rehber §10): dahili testten kurulan uygulamada Hesap →
 Paketler → Reklamsız'ı al → Pro'ya yükselt → sil-kur → Satın alımları geri yükle → Aboneliği yönet → iptal.
 
 ### 7. API

@@ -1,6 +1,6 @@
 # Master Office — abonelikler ve fiyatlar
 
-Kaynak: sahibin rehberi (`MasterOffice_PlayStore_Paketi/00_REHBER_Claude_icin.md` §9). Ürün ve plan kimlikleri
+Kaynak: paketteki rehber (`MasterOffice_PlayStore_Paketi/00_REHBER_Claude_icin.md` §9). Ürün ve plan kimlikleri
 **birebir** böyle olmalı: uygulama (Google Play Billing 9.1.0) bu kimlikleri arar. Etkinleştirmeden önce tablo
 kullanıcıya gösterilir.
 

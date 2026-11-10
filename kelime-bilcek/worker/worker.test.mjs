@@ -136,6 +136,10 @@ test('v3.2: ortak önbellek — aynı kelime/kategori yapay zekâya bir kez soru
   // başka kategori ayrı sorulur
   await worker.fetch(istek({ kategori: 'Hobi ve Eğlence', kelime: 'masa' }, { token: t }), e);
   assert.equal(aiCagri, 2);
+  // 1.0.4: şapkalı yazım aynı kayda düşer (istemcinin normalizeWord'ü gibi â→a, î→i, û→u)
+  const r3 = await (await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: 'Hâlı' }, { token: t }), e)).json();
+  const r4 = await (await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: 'halı' }, { token: t }), e)).json();
+  assert.equal(aiCagri, 3); assert.equal(r4.onbellek, true); assert.equal(r3.gecerli, r4.gecerli);
 });
 
 test('v3.2: yapay zekâ yanıt veremezse önbelleğe yazılmaz', async () => {

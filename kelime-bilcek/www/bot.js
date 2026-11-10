@@ -72,8 +72,12 @@ class YerelOda {
     this._dinleyiciler = [];
   }
   _anlik() { const v = yerelKopya(this._veri); return { val: () => yerelKopya(v), exists: () => v !== null, key: this.key }; }
-  _bildir() { const s = this._anlik(); this._dinleyiciler.slice().forEach((fn) => setTimeout(() => fn(s), 0)); }
-  on(olay, fn) { if (olay === "value") { this._dinleyiciler.push(fn); setTimeout(() => fn(this._anlik()), 0); } return fn; }
+  // 1.0.4: bildirim sıradayken off() edilen dinleyici artık çağrılmaz
+  _bildir() { const s = this._anlik(); this._dinleyiciler.slice().forEach((fn) => setTimeout(() => { if (this._dinleyiciler.includes(fn)) fn(s); }, 0)); }
+  on(olay, fn) {
+    if (olay === "value") { this._dinleyiciler.push(fn); setTimeout(() => { if (this._dinleyiciler.includes(fn)) fn(this._anlik()); }, 0); }
+    return fn;
+  }
   off(olay, fn) { this._dinleyiciler = fn ? this._dinleyiciler.filter((x) => x !== fn) : []; }
   once() { return Promise.resolve(this._anlik()); }
   async transaction(fn) {
@@ -128,7 +132,7 @@ async function botSiraVer() {
   const oda = bot.oda;
   if (!oda) return;
   await oda.transaction((c) => {
-    if (!c || !c.round || c.round.phase !== "active" || c.round.turn !== bot.slot) return c;
+    if (!c || !c.round || c.round.phase !== "active" || c.round.turn !== bot.slot) return; // değişiklik yok: yazma/bildirim de yok
     c.round.turn = bot.slot === "p1" ? "p2" : "p1";
     c.round.turnStart = typeof nowServer === "function" ? nowServer() : Date.now();
     return c;

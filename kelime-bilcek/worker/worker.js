@@ -1,5 +1,5 @@
 /**
- * Kelime Bilcek — AI Kelime Hakemi v3.2 (Cloudflare Worker "floral-wave-f116")
+ * Kelime Bilcek — AI Kelime Hakemi v3.3 (Cloudflare Worker "floral-wave-f116")
  * ----------------------------------------------------------------------------
  * v2'ye göre değişenler (kelime-bilcek/DENETIM.md › K-03, K-07):
  *   - Yalnız Firebase'e giriş yapmış oyuncuya yanıt verir: "Authorization: Bearer <Firebase ID token>".
@@ -39,7 +39,8 @@ export const KATEGORILER = [
 ];
 
 function normalizeWord(w) {
-  return String(w || "").trim().toLocaleLowerCase("tr-TR").replace(/\s+/g, " ");
+  // 1.0.4: istemciyle aynı (www/kelime.js): şapkalı harfler düzleşir, "hâlı" ile "halı" aynı önbellek kaydına düşer
+  return String(w || "").trim().toLocaleLowerCase("tr-TR").replace(/â/g, "a").replace(/î/g, "i").replace(/û/g, "u").replace(/\s+/g, " ");
 }
 
 export function kelimeGecerliBicim(k) {

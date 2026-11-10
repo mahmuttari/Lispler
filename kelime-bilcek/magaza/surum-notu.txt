@@ -1,1 +1,1 @@
-Yeni görünüm: daha büyük ve kolay dokunulan düğmeler, yeni yazı tipi ve simgeler, yenilenen lobi, maç ve sonuç ekranları. Yapay zekâya karşı oyun da burada!
+Hata düzeltmeleri: telefon saati yanlış olsa da Zincir sırası ve Hızlı moddaki "ilk yazan kapar" artık doğru çalışır; süre dolduktan sonra onaylanan kelime sonraki rounda yazılmaz.

@@ -43,6 +43,32 @@ CI'da ilk koşular (commit b6dbe16): Denetim 41827897508 ✓, Firebase kurallar�
 | K-16 | Düşük (görünüş) | APK'daki uyarlanabilir simge Cordova'nın varsayılan robotuydu; Capacitor projesinde varsayılan açılış görseli. | Simgeler ve açılış görseli `icon.jpg`'den üretildi; Play simgesi 512×512. | — |
 | K-17 | Düşük (erişilebilirlik) | Kategori rozeti kontrastı yetersiz (axe "serious"); profil açan kullanıcı adı `span` (klavyeyle açılmıyor) ve dar ekranda başlığa biniyordu; animasyonlar hareket azaltma tercihini yok sayıyordu. | Rozet rengi koyulaştırıldı; `button` + `aria-label`; dar ekranda sağa yaslanır; `prefers-reduced-motion`. bütün düğmelere `type="button"`; `span` içindeki `div`'ler düzeltildi. | axe-core, html-validate |
 
+## 1.0.4 — Evren ile tarama (10 Kasım 2026)
+
+**Düzeltme:** 1.0.1 ve 1.0.2'de "Evren" yerine yanlışlıkla Gemini kullanılmıştı. Evren, `evren-llmapi.ssyz.org.tr`
+adresindeki OpenAI uyumlu servis. Kod (bot modu ve yeni görünüm dahil) `araclar/model-tarama.py evren a|b` ile
+**DeepSeek V4.1 Flash**'a gönderildi. Modelin düşünme kipi 16 bin jetonluk bütçenin tamamını harcadığı için
+kapatıldı (`chat_template_kwargs.thinking=false`); açmak için `DUSUN=1`. Depo herkese açık ve gönderilen kodda kişisel veri yok.
+
+| Parça | Bulgu | Doğrulanan | Yanlış alarm nedenleri |
+|---|---|---|---|
+| a (oyun.js + kurallar) | 25 | 2 | Kendi kendini yalanlayan maddeler ("…bu tamam, değişiklik gerekmez"), `onDisconnect` silmesini tehlike sanması, bilinçli tasarım (istemci otoriteli sonuç) |
+| b (bot, reklam, kelime, Worker, kurallar, manifest) | 25 | 3 (küçük) | RTDB'de üst düğümün `.write` kuralı alt düğümün iznini engeller sanması (kurallar.test 25/25 aksini gösteriyor), `"General"` değerini geçersiz sanması, başlatıcı etkinliğinde `exported=true`'yu açık sanması, sınırlı hız haritasını sızıntı sanması |
+
+| No | Önem | Bulgu | Düzeltme | Kaynak | Sınama |
+|---|---|---|---|---|---|
+| K-29 | Yüksek (adalet) | Kelime, davet ve kuyruk zaman damgaları **cihaz saatiyle** yazılıyordu. Zincir'de sıra ve son harf, Hızlı'da "ilk yazan kapar" (çalma) bu zamana göre belirlenir. Saati geride olan oyuncunun kelimesi öne sıralanıyor, yanlış harf isteniyor ya da kelime haksızca kapılıyordu. Davetin süresi de karşı cihazın saatiyle ölçüldüğü için davet erken düşebiliyordu. | Bütün oyun zamanları `nowServer()` ile yazılıyor (Firebase `.info/serverTimeOffset`). Eşit zamanda sıralama push anahtarına göre. | Evren (DeepSeek), elle genişletildi | arayuz.test: 1 saat kaymış saatte kelime sunucu saatinde (eski kodda kırmızı) |
+| K-30 | Orta | Hızlı modda listede olmayan kelimenin denetimi round bitene kadar sürerse kelime **sonraki rounda** yazılıyordu: başka kategoride sayılabiliyordu. Oyuncu bu arada yeni maça geçtiyse kelime **yeni odaya** gidiyordu. | Kelime yalnız aynı odanın aynı roundunda ve round sürerken yazılır. Değilse "sayılmadı" bildirimi gösterilir. | Evren (DeepSeek) | arayuz.test: geç dönen denetim (eski kodda kırmızı) |
+| K-31 | Düşük | Yapay zekâ maçında, bildirimi sıradayken kapatılan dinleyici yine de çağrılıyordu. Botun sırası değilse transaction boşuna yazılıyor ve bildirim tetikleniyordu. | `YerelOda` dinleyicinin hâlâ kayıtlı olduğunu denetler. Değişiklik yoksa transaction iptal edilir. | Evren (DeepSeek) | bot.test (eski kodda kırmızı) |
+| K-32 | Düşük (maliyet) | Worker önbellek anahtarında şapkalı harfler düzleşmiyordu: "hâlı" ile "halı" yapay zekâya ayrı ayrı soruluyordu. | Worker'ın `normalizeWord`'ü istemciyle aynı (â→a, î→i, û→u). | Evren (DeepSeek) | worker.test |
+| — | — | Davet kabulünde gönderen `inv.fromUid` diye okunuyordu (alan `from`). Yedek okuma çalıştığı için hata yoktu, gereksiz bir okuma vardı. | `inv.from`. | Evren (DeepSeek) | — |
+
+**Canlı ortam (10 Kasım 2026):**
+- Worker `floral-wave-f116` v3.2 Cloudflare API ile yüklendi. Bağlamalar: `AI`, KV `SOZLUK`, sırlar `ANTHROPIC_API_KEY` ve `FIREBASE_API_KEY`.
+- Denetim sonuçları: jetonsuz POST 401, GET 405, OPTIONS 204 (`https://localhost` CORS).
+- Firebase projesi **Blaze** planında; Spark'ın 100 eşzamanlı bağlantı sınırı kalktı.
+- 1.0.4 ile Worker v3.3 (K-32) yüklendi.
+
 ## 1.0.3 — Yeni görünüm (9 Kasım 2026)
 
 Kullanıcı isteği: "butonlar ince cılız olmasın, güzel bir görünüme kavuştur tüm oyunu". Yön `ui-ux-pro-max` tasarım
@@ -138,8 +164,7 @@ kaldırılmalıdır.
 
 ## Açık kalanlar (bilinçli olarak bırakılan ya da kullanıcıda olan)
 
-- **Worker yayını:** `worker/worker.js` Cloudflare'e yüklenene kadar eski Worker herkese açık kalır (`worker/README.md`).
-- **İstemci otoriteli tasarım:** Spark planında Cloud Functions yok; maç sonucu ve sayaçlar istemciden yazılır. Kurallar
+- **İstemci otoriteli tasarım:** Cloud Functions kullanılmıyor (proje Blaze'de, yazılabilir); maç sonucu ve sayaçlar istemciden yazılır. Kurallar
   her yazımda en çok +1'e izin verir ama değiştirilmiş bir istemci tekrar tekrar +1 yazabilir; oda üyeleri oda
   verisini istediği gibi yazabilir (rakip hile yapabilir). Çözüm sunucu tarafı hakemlik (Blaze + Functions) ister.
 - **Arkadaş ekleme onaysızdır** (v4.11 tasarımı): kullanıcı adını bilen herkes sizi listesine ekleyebilir; böylece

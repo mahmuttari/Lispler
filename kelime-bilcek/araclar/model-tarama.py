@@ -1,10 +1,11 @@
 # Kelime Bilcek kodunu ücretsiz modellere hata taraması için gönderir (DENETIM.md › 1.0.1).
-# Kullanım (bulut oturumu; anahtarları proxy ekler): python3 -I araclar/model-tarama.py nvidia|gemini a|b > sonuc.json
+# Kullanım (bulut oturumu; anahtarları proxy ekler): python3 -I araclar/model-tarama.py nvidia|gemini|evren a|b > sonuc.json
+# evren: evren-llmapi.ssyz.org.tr (OpenAI uyumlu; MODEL ortam değişkeni, varsayılan deepseek-v4.1-flash)
 # a: oyun.js + kurallar, b: diğer dosyalar (proxy gövde sınırı ~140 KB). Bulgular elle doğrulanmadan düzeltilmez.
-import json, sys, re, urllib.request, pathlib
+import json, sys, re, os, urllib.request, pathlib
 K = pathlib.Path(__file__).resolve().parent.parent
 GRUP = sys.argv[2]
-DOSYALAR = ['www/oyun.js', 'firebase/database.rules.json'] if GRUP == 'a' else ['www/reklam.js', 'www/kelime.js', 'www/index.html',
+DOSYALAR = ['www/oyun.js', 'firebase/database.rules.json'] if GRUP == 'a' else ['www/reklam.js', 'www/bot.js', 'www/kelime.js',
             'firebase/database.rules.json', 'worker/worker.js', 'capacitor.config.json', 'android/app/src/main/AndroidManifest.xml']
 parca = []
 for d in DOSYALAR:
@@ -31,7 +32,11 @@ En önemli en fazla 25 bulgu.
 
 """ + '\n\n'.join(parca)
 saglayici = sys.argv[1]
-if saglayici == 'nvidia':
+if saglayici == 'evren':
+    url = 'https://evren-llmapi.ssyz.org.tr/v1/chat/completions'
+    govde = {'model': os.environ.get('MODEL', 'deepseek-v4.1-flash'), 'messages': [{'role': 'user', 'content': ISTEM}], 'max_tokens': 32000, 'temperature': 0.2, 'stream': True, 'chat_template_kwargs': {'thinking': os.environ.get('DUSUN') == '1'}}
+    bas = {'Content-Type': 'application/json', 'Authorization': 'Bearer dummy'}
+elif saglayici == 'nvidia':
     url = 'https://integrate.api.nvidia.com/v1/chat/completions'
     govde = {'model': 'nvidia/nemotron-3.5-lightning-30b-a3b', 'messages': [{'role': 'system', 'content': '/no_think'}, {'role': 'user', 'content': ISTEM}], 'chat_template_kwargs': {'enable_thinking': False}, 'max_tokens': 32000, 'temperature': 0.2, 'stream': True}
     bas = {'Content-Type': 'application/json', 'Authorization': 'Bearer dummy'}
@@ -39,7 +44,6 @@ else:
     url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:streamGenerateContent?alt=sse'
     govde = {'contents': [{'parts': [{'text': ISTEM}]}], 'generationConfig': {'temperature': 0.2, 'maxOutputTokens': 32000, 'responseMimeType': 'application/json', 'thinkingConfig': {'includeThoughts': True}}}
     bas = {'Content-Type': 'application/json', 'x-goog-api-key': 'dummy'}
-import os
 if os.environ.get('DOKUM'): open(os.environ['DOKUM'],'wb').write(json.dumps(govde, ensure_ascii=False).encode('utf-8')); sys.exit()
 if os.environ.get('BOYUT'): print(len(json.dumps(govde, ensure_ascii=False).encode('utf-8'))); sys.exit()
 r = urllib.request.urlopen(urllib.request.Request(url, json.dumps(govde, ensure_ascii=False).encode('utf-8'), bas), timeout=1200)
@@ -50,7 +54,7 @@ for satir in r:
     veri = satir[5:].strip()
     if veri == '[DONE]': break
     d = json.loads(veri)
-    if saglayici == 'nvidia':
+    if saglayici in ('nvidia', 'evren'):
         for c in d.get('choices', []):
             de = c.get('delta') or {}
             cikti.append(de.get('content') or '')

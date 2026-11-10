@@ -147,6 +147,47 @@ test('1.0.2: yapay zekâya karşı (Hızlı, orta): bot round boyunca kategori k
   assert.deepEqual(hatalar, []);
 });
 
+test('1.0.4: kelime zaman damgası sunucu saatiyle yazılır (cihaz saati kaymış olsa da Zincir sırası/Hızlı kapma doğru)', { timeout: 60000 }, async () => {
+  await sayfa.evaluate(() => { if (roomRef) resetGameState(); serverTimeOffset = 3600000; selectedMode = 'chain'; BOT.sira.zor = [300, 600, 0]; show('lobbyScreen'); });
+  await sayfa.click('#botBtn');
+  await sayfa.click('.bot-zorluk[data-zorluk="zor"]');
+  await sayfa.waitForFunction(() => currentRoundData && currentRoundData.phase === 'active', null, { timeout: 20000 });
+  await sayfa.waitForFunction(() => currentRoundData.turn === mySlot, null, { timeout: 10000 });
+  const harf = await sayfa.evaluate(() => getChainNextLetter(currentRoundData.words));
+  const kelime = await sayfa.evaluate((h) => zincirSozlugu().find((w) => (!h || turkishFirstLetter(w) === h) && !botKullanilanlar(currentRoundData.words).has(w)), harf);
+  await sayfa.fill('#wordInput', kelime);
+  await sayfa.click('#sendBtn');
+  await sayfa.waitForFunction(() => Object.values(currentRoundData.words || {}).some((w) => w.by === mySlot));
+  const fark = await sayfa.evaluate(() => Object.values(currentRoundData.words).filter((w) => w.by === mySlot).map((w) => Math.abs(w.ts - nowServer())));
+  for (const f of fark) assert.ok(f < 30000, `oyuncunun kelimesi cihaz saatiyle yazılmış (fark ${f} ms)`);
+  await sayfa.evaluate(() => { serverTimeOffset = 0; gameEnded = true; });
+  await sayfa.evaluate(() => { resetGameState(); show('lobbyScreen'); });
+  assert.deepEqual(hatalar, []);
+});
+
+test('1.0.4: Hızlı modda denetimi round bittikten sonra dönen kelime sonraki rounda yazılmaz', { timeout: 60000 }, async () => {
+  await sayfa.evaluate(() => { if (roomRef) resetGameState(); selectedMode = 'sim'; BOT.hizli.orta = [60000, 60000, 0.7]; show('lobbyScreen'); });
+  await sayfa.click('#botBtn');
+  await sayfa.click('.bot-zorluk[data-zorluk="orta"]');
+  await sayfa.waitForFunction(() => currentRoundData && currentRoundData.phase === 'thinking');
+  await sayfa.evaluate(() => roomRef.child('round/phaseStartTime').set(nowServer() - 9800));
+  await sayfa.waitForFunction(() => currentRoundData.phase === 'active', null, { timeout: 5000 });
+  // listede olmayan kelime → yavaş denetim (round bitene kadar dönmez)
+  await sayfa.evaluate(() => { window._eskiDenetim = validateWordSmart; window._denetimBitir = null;
+    validateWordSmart = () => new Promise((r) => { window._denetimBitir = () => r(true); }); });
+  await sayfa.fill('#wordInput', 'qqqzzz');
+  await sayfa.click('#sendBtn');
+  await sayfa.waitForFunction(() => typeof window._denetimBitir === 'function');
+  await sayfa.evaluate(() => roomRef.child('round/phaseStartTime').set(nowServer() - 29900));
+  await sayfa.waitForFunction(() => currentRoundData.number === 2, null, { timeout: 15000 });
+  await sayfa.evaluate(() => window._denetimBitir());
+  await sayfa.waitForTimeout(500);
+  const sizan = await sayfa.evaluate(() => Object.values(currentRoundData.words || {}).filter((w) => w.text === 'qqqzzz').length);
+  await sayfa.evaluate(() => { validateWordSmart = window._eskiDenetim; gameEnded = true; resetGameState(); show('lobbyScreen'); });
+  assert.equal(sizan, 0, 'eski roundun kelimesi yeni rounda yazıldı');
+  assert.deepEqual(hatalar, []);
+});
+
 test('web sürümünde reklam kodu hiçbir şey yapmaz', async () => {
   assert.equal(await sayfa.evaluate(() => reklam.hazir), false);
   assert.deepEqual(hatalar, []);

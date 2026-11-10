@@ -88,3 +88,15 @@ test('bot döngüsü: Zincir\'de sırası gelince doğru harfle yazar ve sıray�
   assert.equal(K.turkishFirstLetter(botun[0].text), 'm');
   assert.equal(v.round.turn, 'p1');
 });
+
+test('1.0.4: YerelOda — bildirim sıradayken off() edilen dinleyici çağrılmaz', async () => {
+  const oda = new B.YerelOda('r', { a: 1 });
+  let cagri = 0;
+  const fn = oda.on('value', () => { cagri++; });
+  await new Promise((r) => setTimeout(r, 5));
+  cagri = 0;
+  await oda.child('a').set(2);
+  oda.off('value', fn);
+  await new Promise((r) => setTimeout(r, 5));
+  assert.equal(cagri, 0);
+});

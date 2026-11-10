@@ -243,7 +243,7 @@ function makeMatchInit(cats, mode){
   return { mode: mode || "sim", totalRounds: totalR, p1Wins: 0, p2Wins: 0, ties: 0, completedRounds: [], categories: cats };
 }
 function makeRound1(cats, mode){
-  const r = { number: 1, category: (mode === "chain" ? null : cats[0]), phase: "thinking", phaseStartTime: Date.now(), words: {} };
+  const r = { number: 1, category: (mode === "chain" ? null : cats[0]), phase: "thinking", phaseStartTime: nowServer(), words: {} };
   if(mode === "duel" || mode === "chain"){
     r.turn = Math.random() < 0.5 ? "p1" : "p2";
     r.turnStart = null;
@@ -735,7 +735,7 @@ function onLoggedIn(){
   inviteListener = db.ref(`users/${myUid}/invite`).on("value", snap => {
     const inv = snap.val();
     if(!inv) { hideInvitePopup(); return; }
-    if(Date.now() - inv.ts > INVITE_EXPIRE_MS){
+    if(nowServer() - inv.ts > INVITE_EXPIRE_MS){
       // Süresi geçmiş, sil
       db.ref(`users/${myUid}/invite`).remove();
       return;
@@ -1039,7 +1039,7 @@ async function inviteFriend(friendUid, friendName){
       from: myUid,
       fromName: myName,
       roomId: newRoomId,
-      ts: Date.now()
+      ts: nowServer()
     });
     pendingInviteRoomId = newRoomId;
     pendingInviteToUid = friendUid;
@@ -1109,7 +1109,7 @@ async function acceptInvite(){
   try{
     // Odaya p2 olarak gir + oyunu başlat
     const ref = db.ref(`rooms/${inv.roomId}`);
-    const fromUid = inv.fromUid || (await ref.child("p1/uid").once("value")).val();
+    const fromUid = inv.from || (await ref.child("p1/uid").once("value")).val();
     const pool = fromUid ? await buildMatchPool(myUid, fromUid) : null;
     const result = await ref.transaction(c => {
       if(!c) return;
@@ -1164,7 +1164,7 @@ async function startQuickMatch(){
   // Kuyruğa gir (mod bilgisi de eklenir — sadece aynı modda olanlar eşleşir)
   const myEntry = db.ref(`matchmaking/queue/${myUid}`);
   try{
-    await myEntry.set({ name: myName, ts: Date.now(), mode: selectedMode });
+    await myEntry.set({ name: myName, ts: nowServer(), mode: selectedMode });
     myEntry.onDisconnect().remove();
   }catch(e){
     console.error(e); showToast("Sıraya girilemedi"); show("lobbyScreen");
@@ -1183,7 +1183,7 @@ async function startQuickMatch(){
       const snap = await db.ref("matchmaking/queue").once("value");
       const queue = snap.val() || {};
       const candidates = Object.entries(queue)
-        .filter(([uid, d]) => uid !== myUid && d && d.mode === selectedMode && (Date.now() - d.ts < QUEUE_STALE_MS))
+        .filter(([uid, d]) => uid !== myUid && d && d.mode === selectedMode && (nowServer() - d.ts < QUEUE_STALE_MS))
         .sort((a,b) => a[1].ts - b[1].ts);
       if(candidates.length === 0){ return; } // aynı modda kimse yok
       const [otherUid, otherData] = candidates[0];
@@ -1240,7 +1240,7 @@ async function startQuickMatch(){
     kayipZamanlayici = setTimeout(() => {
       kayipZamanlayici = null;
       if(!inMatchmaking) return;
-      myEntry.set({ name: myName, ts: Date.now(), mode: selectedMode }).catch(()=>{});
+      myEntry.set({ name: myName, ts: nowServer(), mode: selectedMode }).catch(()=>{});
     }, 8000);
   };
 
@@ -1517,7 +1517,7 @@ function renderRoom(d){
     // Words (chat)
     const wordsObj = round.words || {};
     const words = Object.entries(wordsObj).map(([id, w]) => ({...w, id}))
-      .sort((a, b) => (a.ts || 0) - (b.ts || 0));
+      .sort((a, b) => ((a.ts || 0) - (b.ts || 0)) || (a.id < b.id ? -1 : 1));
 
     const chat = $("wordsChat");
     const oldCount = chat.childElementCount;
@@ -1688,10 +1688,10 @@ async function advanceToActive(){
     await roomRef.transaction(c => {
       if(!c || !c.round || c.round.phase !== "thinking") return c;
       c.round.phase = "active";
-      c.round.phaseStartTime = Date.now();
+      c.round.phaseStartTime = nowServer();
       const m = c.match && c.match.mode;
       if(m === "duel" || m === "chain"){
-        c.round.turnStart = Date.now();
+        c.round.turnStart = nowServer();
         needsTurnStart = true;
       }
       return c;
@@ -1740,7 +1740,7 @@ async function endRoundTurnTimeout(){
         if(winner === "p1") c.match.p1Wins = (c.match.p1Wins || 0) + 1;
         else if(winner === "p2") c.match.p2Wins = (c.match.p2Wins || 0) + 1;
         c.round.phase = "ended";
-        c.round.phaseStartTime = Date.now();
+        c.round.phaseStartTime = nowServer();
         c.round.roundWinner = winner;
         c.round.reason = "timeout";
         c.round.p1Score = p1Score;
@@ -1767,7 +1767,7 @@ async function switchTurn(){
       if(m !== "duel" && m !== "chain") return c;
       if(c.round.turn !== mySlot) return c;
       c.round.turn = mySlot === "p1" ? "p2" : "p1";
-      c.round.turnStart = Date.now();
+      c.round.turnStart = nowServer();
       return c;
     });
     try{ await roomRef.child("round/turnStart").set(SV.TIMESTAMP); }catch(e){}
@@ -1782,7 +1782,7 @@ async function endActiveRound(){
       // (sim mode için skor hesaplaması)
       const wordsObj = c.round.words || {};
       // Zaman sırasına göre işle, ilk yazan claim eder
-      const sortedKeys = Object.keys(wordsObj).sort((a, b) => (wordsObj[a].ts || 0) - (wordsObj[b].ts || 0));
+      const sortedKeys = Object.keys(wordsObj).sort((a, b) => ((wordsObj[a].ts || 0) - (wordsObj[b].ts || 0)) || (a < b ? -1 : 1));
       const claimedBy = {};
       const p1Set = new Set(), p2Set = new Set();
       sortedKeys.forEach(key => {
@@ -1814,7 +1814,7 @@ async function endActiveRound(){
       else c.match.ties = (c.match.ties || 0) + 1;
 
       c.round.phase = "ended";
-      c.round.phaseStartTime = Date.now();
+      c.round.phaseStartTime = nowServer();
       c.round.roundWinner = winner;
       c.round.p1Score = p1Score;
       c.round.p2Score = p2Score;
@@ -1848,7 +1848,7 @@ async function startNextRound(){
       const next = (c.round.number || 0) + 1;
       const cats = (c.match && c.match.categories) || [];
       const cat = cats[next - 1] || CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
-      const newRound = { number: next, category: cat, phase: "thinking", phaseStartTime: Date.now(), words: {} };
+      const newRound = { number: next, category: cat, phase: "thinking", phaseStartTime: nowServer(), words: {} };
       if(c.match && c.match.mode === "duel"){
         // Sırayı değiştir
         newRound.turn = (c.round.turn === "p1" ? "p2" : "p1");
@@ -1928,7 +1928,7 @@ async function submitWord(){
     $("wordInput").value = "";
     try{
       const wordRef = roomRef.child("round/words").push();
-      await wordRef.set({ text: raw, by: mySlot, valid: true, ts: Date.now() });
+      await wordRef.set({ text: raw, by: mySlot, valid: true, ts: nowServer() });
     }catch(e){ console.error(e); showToast("Yazma hatası"); return; }
     vibrate(30);
     SFX.success();
@@ -1938,7 +1938,7 @@ async function submitWord(){
 
   // === HIZLI / TENİS ===
   $("wordInput").value = "";
-  const submissionTs = Date.now();
+  const submissionTs = nowServer();
   const norm = normalizeWord(raw);
   const wordsObj = currentRoundData.words || {};
   let isDup;
@@ -1951,8 +1951,14 @@ async function submitWord(){
 
   const inLocal = !isDup && currentCategory && isInCategory(currentCategory, raw);
 
-  // Final state ile push — flash YOK
+  // Final state ile push — flash YOK. Denetim sürerken round bittiyse ya da oyuncu maçtan çıktıysa kelime atılır
+  // (yoksa sonraki rounda ya da başka odaya yazılırdı).
+  const yazilanOda = roomRef, yazilanRound = currentRoundData.number;
   const pushFinal = async (validResult, usedTdk) => {
+    if(roomRef !== yazilanOda || !currentRoundData || currentRoundData.number !== yazilanRound || currentRoundData.phase !== "active"){
+      if(validResult) showToast("'" + raw + "' süre dolduktan sonra onaylandı, sayılmadı");
+      return;
+    }
     try{
       const wRef = roomRef.child("round/words").push();
       const entry = { text: raw, by: mySlot, valid: validResult, ts: submissionTs };

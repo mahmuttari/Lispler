@@ -34,3 +34,6 @@
 
 # istek 2026-11-10T05:07:57Z: 1.0.4 (5) Evren taraması düzeltmeleri (K-29…K-32) — paketi üretime yükle, incelemeye gönder; incelemedeki 1.0.3 (4)'ün yerini alır (kullanıcının açık onayı: "Evet, gönder"); AAB: kelime-android koşusu 42758879442 (commit 1d3d509, versionCode 5, admob=gercek, Poyraz Workshop yükleme anahtarı); mağaza metni ve beyanlar değişmedi
 # (yapıldı 2026-11-10, koşu 42760176646: AAB 5 (koşu 42758879442, commit 1d3d509) yüklendi, üretim 1.0.3 (4) → 1.0.4 (5) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula
+
+# istek 2026-11-10T05:14:24Z: salt okuma durum (1.0.4 gönderiminden sonra kullanıcı sordu)
+durum

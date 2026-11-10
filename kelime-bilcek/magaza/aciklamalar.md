@@ -7,7 +7,7 @@ kökünde aranır).
 
 ## Ortak
 
-- **Uygulama adı:** Kelime Bilcek
+- **Uygulama adı:** Kelime Bilcek: Kelime Düellosu
 - **Geliştirici adı:** Poyraz Workshop
 - **Paket adı:** `com.poyrazworkshop.kelimebilcek`
 - **Tür ve kategori:** Oyun · Kelime
@@ -20,16 +20,18 @@ kökünde aranır).
 
 ## Kısa açıklama
 
-Türkçe kelime düellosu: kategoride rakibinden çok kelime bil, Şampiyon ol!
+Türkçe kelime oyunu: online kelime düellosu, kelime yarışı ve kelime zinciri
 
 ## Uzun açıklama
 
-Kelime Bilcek, arkadaşınla, rastgele bir rakiple ya da yapay zekâya karşı oynadığın Türkçe kelime düellosu! Kategori gelir, süre başlar: aklına gelen kelimeleri rakibinden hızlı yaz, roundu kap, maçı kazan.
+Kelime Bilcek, arkadaşınla, rastgele bir rakiple ya da yapay zekâya karşı oynadığın online Türkçe kelime oyunu! Kategori gelir, süre başlar: aklına gelen kelimeleri rakibinden hızlı yaz, roundu kap, kelime düellosunu kazan.
+
+İsim-şehir oyunundaki gibi kategoriye kelime bulmayı, kelime yarışmalarının heyecanını ve iki kişilik oyunların rekabetini bir araya getirir.
 
 🎯 ÜÇ OYUN MODU
-• Hızlı: 10 round, iki oyuncu aynı anda yazar. Aynı kelimeyi önce yazan puanı alır.
+• Hızlı: 10 roundluk kelime yarışı. İki oyuncu aynı anda yazar; aynı kelimeyi önce yazan puanı alır.
 • Tenis (Sıra Beklicek): sırayla yazılır, yazamayan roundu kaybeder. 3 roundda 2 alan kazanır.
-• Zincir: kategori yok; kelimen rakibinin kelimesinin son harfiyle başlamalı. 15 saniyede yazamayan kaybeder.
+• Zincir: kelime zinciri, yani son harfle kelime türetmece. Kelimen rakibinin kelimesinin son harfiyle başlamalı; 15 saniyede yazamayan kaybeder.
 
 🤖 YAPAY ZEKÂYA KARŞI
 Rakip beklemeden Bilcek'e karşı oyna: Kolay, Orta ve Zor seviye; üç modun hepsinde.
@@ -41,7 +43,7 @@ Buzdolabı, banyo, alet çantası, kahvaltı, sulu yemekler, araba parçaları, 
 Kelimeler önce oyunun kendi listesinde, sonra yapay zekâ hakemiyle ve Türk Dil Kurumu sözlüğünde denetlenir. Doğru kelime yeşil, hatalı kelime kırmızı görünür.
 
 👥 ARKADAŞLARINLA OYNA
-• Kullanıcı adıyla arkadaş ekle, çevrimiçi olanları gör, tek dokunuşla davet et.
+• İki kişilik kelime oyunu: kullanıcı adıyla arkadaş ekle, çevrimiçi olanları gör, tek dokunuşla davet et.
 • Oda koduyla buluş ya da hızlı eşleşmeyle rastgele bir rakip bul.
 
 🏆 ŞAMPİYONLAR

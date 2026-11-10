@@ -37,3 +37,6 @@
 
 # istek 2026-11-10T05:14:24Z: salt okuma durum (1.0.4 gönderiminden sonra kullanıcı sordu)
 # (yapıldı 2026-11-10, koşu 42760874929: production 1.0.4 (5) completed; paketler 1–5) durum
+
+# istek 2026-11-10T05:27:41Z: mağaza metni — arama görünürlüğü: ad "Kelime Bilcek: Kelime Düellosu", kısa ve uzun açıklamaya Play arama önerilerinden oyuna uyan ifadeler (kelime oyunu, kelime düellosu, kelime yarışı, iki kişilik, kelime zinciri, son harfle kelime türetmece; başka uygulama adı yok); kullanıcının açık onayı: "Kelime Düellosu (Önerilen)"
+magaza uygula

@@ -38,6 +38,13 @@ Kullanıcı onay paketinin hepsini onayladı ("Hepsine onay veriyorum, tam yetki
   `ca-app-pub-2417242373034448/3381479751` (ödül 1 × "tam kullanım"); Avrupa tüzükleri mesajı "Master Office AB tüzüğü
   mesajı" (Türkçe + İngilizce, "İzin vermeyin" düğmesi açık) yayında. 3.5.1 TEST kimlikli: gerçek kimlikler yeniden kurulan
   sürüme girer.
+- **Kullanıcı kuralı (10 Kasım 2026):** bütün uygulamalar **doğrudan üretim** kanalından ve **gerçek reklamlarla** çıkar;
+  deneme reklamlı 3.5.1 üretime konmaz. Üretim kanalının ülkeleri ayarlandı (178, hepsi).
+- **3.5.2 (3005002), gerçek AdMob kimlikli ara sürüm:** 3.5.1 AAB'sinde yalnız 4 `admob_*` kaynağı (aynı uzunluk),
+  sürüm kodu/adı ve `version.json` değiştirildi; imzasız dosya `MASTER OFFICE/yayin/MasterOffice-3.5.2-imzasiz.aab`.
+  Yeni yükleme anahtarıyla (`mahmuttari/master-office` › `MO_KEYSTORE_*`) imzalanacak; Play'de **yükleme anahtarı
+  sıfırlaması** (Uygulama imzalama › Yükleme anahtarı › Sıfırlama talep edin, yeni anahtarın PEM sertifikasıyla) onaylanınca
+  NetcadDevelop düzeniyle üretime yüklenip incelemeye gönderilir. Girişli sürüm sonraki güncelleme olur.
 - **Üretim:** yapılmadı. Google/Apple girişli, gerçek AdMob kimlikli sürüm (yeniden kurulan kaynak) bekleniyor; 3.5.1
   "Sayfa" anahtarıyla imzalı olduğu için yeni anahtarla imzalanan sürümden önce Play'den yükleme anahtarı sıfırlaması
   istenir.

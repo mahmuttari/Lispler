@@ -63,6 +63,20 @@ kapatıldı (`chat_template_kwargs.thinking=false`); açmak için `DUSUN=1`. Dep
 | K-32 | Düşük (maliyet) | Worker önbellek anahtarında şapkalı harfler düzleşmiyordu: "hâlı" ile "halı" yapay zekâya ayrı ayrı soruluyordu. | Worker'ın `normalizeWord`'ü istemciyle aynı (â→a, î→i, û→u). | Evren (DeepSeek) | worker.test |
 | — | — | Davet kabulünde gönderen `inv.fromUid` diye okunuyordu (alan `from`). Yedek okuma çalıştığı için hata yoktu, gereksiz bir okuma vardı. | `inv.from`. | Evren (DeepSeek) | — |
 
+**Maliyet modeli, Evren ile ikinci görüş:**
+- GLM 5.3 iki denemede de yanıt veremedi. İlkinde düşünme bütçeyi bitirdi, ikincisinde 502 döndü. İnceleme DeepSeek V4.1 Flash ile yapıldı.
+- 12 maddenin çoğu yanlış alarm:
+  - Ücretsiz nöron kotası doğru uygulanıyor; günlük aşım 30 ile çarpılıyor.
+  - Blaze'de eşzamanlı bağlantı ücreti yok.
+  - Bot kelimeleri yapay zekâya gitmiyor.
+  - Tek çağrı, aynı boyuttaki iki çağrının tam yarısı.
+- Gerçek eksik iki kalem modele eklendi (`araclar/maliyet.py`): Workers Paid kapsamını aşan **Worker istekleri** (ayda 10 M dahil, sonrası 0,30 $/M) ve **KV okuma/yazma** ücretleri (10 M okuma ve 1 M yazma dahil).
+- Hesap kontrol edildi: Workers Paid aboneliği açık.
+- Etkisi:
+  - 10.000 maç/gün, iyileştirilmiş düzen: 771 → 790 $/ay.
+  - 100.000 maç/gün, %95 önbellek: 1.461 → 1.594 $/ay (133 $'ı istek + KV).
+- Yapay zekâya karşı oyunda değişiklik yok denecek kadar az.
+
 **Canlı ortam (10 Kasım 2026):**
 - Worker `floral-wave-f116` v3.2 Cloudflare API ile yüklendi. Bağlamalar: `AI`, KV `SOZLUK`, sırlar `ANTHROPIC_API_KEY` ve `FIREBASE_API_KEY`.
 - Denetim sonuçları: jetonsuz POST 401, GET 405, OPTIONS 204 (`https://localhost` CORS).

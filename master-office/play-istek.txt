@@ -14,5 +14,7 @@
 
 # 2026-11-10: ilk bağlantı denemesi (salt okuma). Hizmet hesabının kimliği çalışıyor mu, Master Office Play'de var mı?
 # Uygulama henüz oluşturulmadıysa "durum" 404 ile biter; bu beklenen sonuçtur. "veriguvenligi" yalnız CSV'yi özetler.
-durum
-veriguvenligi
+# (yapıldı 2026-11-10, ee92074, koşu 42809700545: kimlik çalışıyor; 404 Package not found — uygulama Play'de henüz yok) durum
+# (çalışmadı: durum hatası sonrakileri durdurur; denetim testi CSV'yi doğruladı) veriguvenligi
+# Sıradaki: uygulama MARFEN'de oluşturulup 3.5.1 elle yüklenince ve hizmet hesabına izin verilince
+#   durum → magaza uygula → gorsel uygula → veriguvenligi uygula. Etkin komut yok.

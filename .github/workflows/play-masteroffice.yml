@@ -3,8 +3,8 @@
 # biri hata verirse sonrakiler çalışmaz). Kimlik anahtarsız: GitHub → Workload Identity → android/play-kimlik.env'deki
 # hizmet hesabının kısa ömürlü belirteci. Hizmet hesabı Play Console → Kullanıcılar ve izinler'de bu uygulamaya da
 # verilmiş olmalı (master-office/magaza/PLAY-YAYIN.md).
-# Kaynak kodu bu depoda yoktur: AAB'yi uygulamanın sahibi imzalayıp verir ve AAB bu herkese açık depoya konmaz (içinde
-# sahibin kodunun R8 eşleme dosyası var). AAB'ler Play Console'dan elle yüklenir; "yukle" komutu, master-office/surum.gradle'daki
+# Kaynak kodu bu depoda yoktur; AAB bu herkese açık depoya konmaz (içinde kodun
+# R8 eşleme dosyası var). AAB'ler Play Console'dan elle yüklenir; "yukle" komutu, master-office/surum.gradle'daki
 # versionCode Play'de zaten varsa paketi yeniden yüklemeden kanala koyar (sürüm notlarıyla) ve onayla incelemeye gönderir.
 # AdMob TEST kimlikli bir AAB (3.5.1) üretime gönderilmez (PLAY-YAYIN.md).
 name: Google Play (Master Office)
@@ -55,7 +55,7 @@ jobs:
           VC=$(sed -nE 's/^ *versionCode +([0-9]+).*/\1/p' master-office/surum.gradle | head -1)
           # 3005001 (3.5.1) Google'ın deneme reklam kimlikleriyle derlendi: yalnız dahili teste konabilir
           if [ "$VC" = 3005001 ] && grep -qE '^[[:space:]]*yukle' "$RUNNER_TEMP/komutlar" && ! grep -qE '^[[:space:]]*yukle .*dahili' "$RUNNER_TEMP/komutlar"; then
-            echo "::error::3.5.1 (3005001) AdMob TEST kimlikli: üretime konmaz. Sahibin gerçek kimlikli AAB'si (3.5.2) gelince surum.gradle güncellenir."
+            echo "::error::3.5.1 (3005001) AdMob TEST kimlikli: üretime konmaz. Gerçek kimlikli AAB gelince surum.gradle güncellenir."
             exit 1
           fi
       - id: auth

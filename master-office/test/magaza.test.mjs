@@ -38,7 +38,7 @@ test('mağaza metinleri: tr-TR ve en-US, Play sınırları içinde', () => {
   assert.deepEqual(Object.keys(m.listings).sort(), ['en-US', 'tr-TR']);
   for (const l of Object.values(m.listings)) assert.equal(l.title, 'Master Office');
   assert.match(m.details.contactEmail, /^[^@\s]+@[^@\s]+\.[a-z]+$/);
-  assert.equal(m.details.contactWebsite, 'https://mahmuttari.github.io/Lispler/master-office/');
+  assert.equal(m.details.contactWebsite, 'https://mahmuttari.github.io/master-office/');
   // Play meta veri kuralları: adda emoji / büyük harf / "en iyi" / "ücretsiz" yok
   for (const l of Object.values(m.listings)) assert.doesNotMatch(l.title + l.shortDescription, /en iyi|ücretsiz|best|free|#1/i);
 });
@@ -85,12 +85,9 @@ test('görseller: simge 512 (32 bit), tanıtım 1024×500 (saydamsız), 8 telefo
   }
 });
 
-test('gizlilik sayfası: doldurulmuş, iletişim e-postası mağazadakiyle aynı', () => {
-  const html = oku(KOK, 'app', 'master-office', 'gizlilik.html');
-  assert.doesNotMatch(html, /\[(GELİŞTİRİCİ ADI|İLETİŞİM E-POSTASI|DEVELOPER NAME|CONTACT E-MAIL)\]/);
-  assert.match(html, /com\.ofivora\.app/);
-  const eposta = /^- \*\*Destek e-postası:\*\* (\S+)$/m.exec(oku(MAGAZA, 'aciklamalar.md'))[1];
-  assert.ok(html.includes(eposta), 'gizlilik sayfasında destek e-postası yok');
-  const gelistirici = /^- \*\*Geliştirici adı:\*\* (.+)$/m.exec(oku(MAGAZA, 'aciklamalar.md'))[1].trim();
-  assert.ok(html.includes(gelistirici), 'gizlilik sayfasında geliştirici adı yok');
+test('gizlilik ve web sitesi adresi MARFEN uygulama sayfalarında', () => {
+  // Sayfa mahmuttari/mahmuttari.github.io deposundadır (master-office/gizlilik.html); burada yalnız adres denetlenir
+  const md = oku(MAGAZA, 'aciklamalar.md');
+  assert.match(md, /^- \*\*Gizlilik politikası:\*\* https:\/\/mahmuttari\.github\.io\/master-office\/gizlilik\.html$/m);
+  assert.match(md, /^- \*\*Geliştirici adı:\*\* MARFEN/m);
 });

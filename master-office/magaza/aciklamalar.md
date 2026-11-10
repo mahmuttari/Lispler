@@ -3,18 +3,19 @@
 `android/play.mjs magaza` (`PLAY_UYGULAMA=masteroffice`) bu dosyadan "Uygulama adı", "Destek e-postası", "Gizlilik
 politikası" satırlarını ve "Kısa açıklama" / "Uzun açıklama" bölümlerini okur (ad ≤30, kısa ≤80, uzun ≤4000 karakter).
 Web sitesi adresi gizlilik politikası adresinden çıkarılır. İngilizce metin `diller/en-US.md`'dedir (aynı biçim +
-"Sürüm notu" bölümü, ≤500 karakter). Metinler, form cevapları ve görseller uygulamanın sahibinin verdiği
+"Sürüm notu" bölümü, ≤500 karakter). Gizlilik ve tanıtım sayfası MARFEN uygulama sayfalarındadır (`mahmuttari/mahmuttari.github.io` › `master-office/`).
+Metinler, form cevapları ve görseller uygulamanın sahibinin verdiği
 `MasterOffice_PlayStore_Paketi`'nden (10 Kasım 2026) **birebir** alındı; kaynak kodu bu depoda yoktur.
 
 ## Ortak
 
 - **Uygulama adı:** Master Office
-- **Geliştirici adı:** Poyraz Workshop
+- **Geliştirici adı:** MARFEN (kuruluş hesabı; Play'de yasal ad da görünür)
 - **Paket adı:** `com.ofivora.app` (sürüm 3.5.1, versionCode 3005001; `../surum.gradle`)
 - **Tür ve kategori:** Uygulama · Verimlilik (Productivity)
 - **Hedef kitle:** 18 ve üzeri (13 altı seçilmez)
-- **Gizlilik politikası:** https://mahmuttari.github.io/Lispler/master-office/gizlilik.html
-- **Destek e-postası:** mahmuttari@gmail.com
+- **Gizlilik politikası:** https://mahmuttari.github.io/master-office/gizlilik.html
+- **Destek e-postası:** info@marfen.com.tr
 - **Mağaza dilleri:** tr-TR (varsayılan), en-US
 
 ## Kısa açıklama

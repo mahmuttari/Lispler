@@ -14,6 +14,34 @@ listeler).
 - **Google ve Apple ile giriş** 3.5.x'te yoktur; kullanıcı kodlanmasını istedi (10 Kasım 2026). Kaynak kodu olmadığı için
   bu, uygulamanın yeniden kurulan sürümünde ayrı bir iş olarak yapılır; üretime o sürümle çıkılır (8. adım).
 
+## Durum (10 Kasım 2026)
+
+Kullanıcı onay paketinin hepsini onayladı ("Hepsine onay veriyorum, tam yetkilisin").
+
+- **Play (MARFEN, uygulama kimliği `4975981928173512864`):** uygulama paket adıyla oluşturuldu; 3.5.1 (3005001)
+  **dahili testte etkin** (liste `Master Office test`: mahmuttari@gmail.com, bunyaminodabasi@gmail.com; katılım
+  `https://play.google.com/apps/internaltest/4701569688571077306`); lisans testi aynı liste; mağaza metni (tr-TR,
+  en-US), görseller, Veri güvenliği, kategori Verimlilik + etiketler (Araçlar, Verimlilik, Ölçüm, İş); Uygulama içeriği:
+  gizlilik, reklam, oturum açma (kısıtlı bölüm yok), IARC (PEGI 3, ESRB Herkes, Brezilya 14+), hedef kitle 18+, reklam
+  kimliği, resmî kurum / finans / sağlık yok, Tüm dosyalara erişim beyanı (İngilizce metin, video yok). Abonelikler
+  `mo_reklamsiz`, `mo_pro`, `mo_master` (`yillik` + `ilk-yil`, 174 bölge) **etkin**.
+- **Kullanıcıda kalan:** Uygulama içeriği › **Uygulama düzeyinde satıcı durumu** (otomatik izin denetimi Claude'un bu
+  yasal beyanı kaydetmesini engelledi; öneri: "Evet, satıcı durumum bu uygulama için geçerli").
+  `bunyaminodabasi@gmail.com` MARFEN'e **Yönetici** olarak davet edildi (daveti kabul etmeli).
+- **API nereden:** Lispler'in hizmet hesabı (`notdefteri-play@…`) MARFEN'de yok. Play API işleri, MARFEN'de Yönetici
+  olan DWG hizmet hesabıyla (`play-yukleme@dwg-pdf-word-goruntuleyici…`, secret `PLAY_SERVICE_ACCOUNT_JSON`) özel
+  `mahmuttari/NetcadDevelop` deposunun `master-office-play` dalından çalışır: `.github/master-office-istek.txt` →
+  `.github/workflows/master-office-play.yml` (betik ve mağaza dosyaları bu klasörden, AAB ve `abonelik.mjs` o daldan).
+  Buradaki `play-masteroffice.yml` MARFEN için kullanılmaz.
+- **AdMob (mahmuttari@gmail.com):** uygulama `ca-app-pub-2417242373034448~1591700020`; `mo_banner`
+  `ca-app-pub-2417242373034448/5806277201`, `mo_gecis` `ca-app-pub-2417242373034448/5910218983`, `mo_odullu`
+  `ca-app-pub-2417242373034448/3381479751` (ödül 1 × "tam kullanım"); Avrupa tüzükleri mesajı "Master Office AB tüzüğü
+  mesajı" (Türkçe + İngilizce, "İzin vermeyin" düğmesi açık) yayında. 3.5.1 TEST kimlikli: gerçek kimlikler yeniden kurulan
+  sürüme girer.
+- **Üretim:** yapılmadı. Google/Apple girişli, gerçek AdMob kimlikli sürüm (yeniden kurulan kaynak) bekleniyor; 3.5.1
+  "Sayfa" anahtarıyla imzalı olduğu için yeni anahtarla imzalanan sürümden önce Play'den yükleme anahtarı sıfırlaması
+  istenir.
+
 ## Sabit bilgiler
 
 | Alan | Değer |

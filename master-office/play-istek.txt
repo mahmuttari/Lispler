@@ -1,0 +1,18 @@
+# Master Office — Google Play API komutları (.github/workflows/play-masteroffice.yml çalıştırır; ayrıntı magaza/PLAY-YAYIN.md).
+# Her satır bir komut; # ile başlayanlar yok sayılır. Önce Play Console'da uygulama oluşturulup ilk AAB elle yüklenmeli
+# ve hizmet hesabına bu uygulama verilmeli; o zamana kadar API "404: uygulama yok ya da ilk AAB yüklenmedi" der.
+#   durum                     salt okuma
+#   magaza uygula             iletişim + tr-TR ve en-US mağaza metni (magaza/aciklamalar.md, magaza/diller/en-US.md)
+#   gorsel uygula             simge, tanıtım görseli (tr-TR, en-US), 8 telefon ekran görüntüsü (magaza/play)
+#   veriguvenligi             CSV'nin özeti (salt okuma)
+#   veriguvenligi uygula      Veri güvenliği formu (magaza/veri-guvenligi.csv; formun TAMAMINI değiştirir)
+#   yukle uygula              Play Console'a elle yüklenmiş AAB'yi (surum.gradle'daki versionCode) üretim kanalına TASLAK
+#                             olarak koyar, sürüm notlarıyla (AAB bu herkese açık depoya konmaz, PLAY-YAYIN.md)
+#   yukle yayinla uygula      incelemeye gönder — yalnız kullanıcının "ONAY: …" satırıyla. 3.5.1 (3005001) AdMob TEST
+#                             kimlikli olduğu için iş akışı onu üretime koymaz; sahibin 3.5.2'si beklenir
+# Her push dosyadaki bütün etkin satırları çalıştırır: çalışan satırlar "# (yapıldı …)" ile kapatılır.
+
+# 2026-11-10: ilk bağlantı denemesi (salt okuma). Hizmet hesabının kimliği çalışıyor mu, Master Office Play'de var mı?
+# Uygulama henüz oluşturulmadıysa "durum" 404 ile biter; bu beklenen sonuçtur. "veriguvenligi" yalnız CSV'yi özetler.
+durum
+veriguvenligi

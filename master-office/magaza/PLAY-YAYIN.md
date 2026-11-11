@@ -49,7 +49,11 @@ Kullanıcı onay paketinin hepsini onayladı ("Hepsine onay veriyorum, tam yetki
   `MASTER OFFICE/yayin/upload_certificate.pem`, `CN=Master Office, O=MARFEN`, SHA-256 `D1:F5:…:68:C7`). Play: yeni anahtar
   **13 Kasım 2026 08:38'den** itibaren geçerli. İmzalı 3.5.2: `MASTER OFFICE/yayin/MasterOffice-3.5.2.aab` (doğrulandı).
   Satıcı durumu beyanı kaydedildi; Uygulama içeriğinde bekleyen beyan yok.
-- **Üretim:** yapılmadı; 13 Kasım 08:38'den sonra yüklenip incelemeye gönderilecek. Google/Apple girişli, gerçek AdMob kimlikli sürüm (yeniden kurulan kaynak) bekleniyor; 3.5.1
+- **Üretime 3.5.2 gider (kullanıcı, 11 Kasım):** imzalı paket NetcadDevelop › `master-office-play` dalında
+  (`master-office/MasterOffice-3.5.2.aab`), `surum.gradle` 3005002 / `3.5.2`; prova koşusu 42967797640 temiz.
+  Uygulama "taslak uygulama": yönetilen yayınlama açılamıyor, ilk üretim sürümü API ile TASLAK yüklenip Console ›
+  Yayın özeti › "Uygulamayı incelemeye gönder" ile gönderilir; onaydan sonra kendiliğinden yayına girer.
+- **Üretim:** yapılmadı; 13 Kasım 2026 08:38'den sonra `yukle uygula` + incelemeye gönderme. Google/Apple girişli, gerçek AdMob kimlikli sürüm (yeniden kurulan kaynak) bekleniyor; 3.5.1
   "Sayfa" anahtarıyla imzalı olduğu için yeni anahtarla imzalanan sürümden önce Play'den yükleme anahtarı sıfırlaması
   istenir.
 

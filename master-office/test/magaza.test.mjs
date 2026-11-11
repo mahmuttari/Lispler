@@ -30,7 +30,7 @@ function olcu(dosya) {
 
 test('paket adı ve sürüm', () => {
   assert.equal(play.PAKET, 'com.ofivora.app');
-  assert.deepEqual(play.surumBilgisi(oku(KOK, 'master-office', 'surum.gradle')), { versionCode: 3005001, versionName: '3.5.1' });
+  assert.deepEqual(play.surumBilgisi(oku(KOK, 'master-office', 'surum.gradle')), { versionCode: 3005002, versionName: '3.5.2' });
 });
 
 test('mağaza metinleri: tr-TR ve en-US, Play sınırları içinde', () => {

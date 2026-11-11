@@ -1,6 +1,6 @@
 // Kelime Bilcek — uçtan uca akış: gerçek www/ kodu + sıkı kurallar, Firebase emülatöründe (Auth + Realtime Database).
 // İki tarayıcı sayfası (Ali, Ayşe) anonim girişle (emülatör) oynar: kullanıcı adı, arkadaş ekleme, hızlı eşleşme
-// (Zincir), kelime yazma, terk, sonuç, Şampiyonlar, biten odanın silinmesi, hesap silme.
+// (Zincir), oyunun klavyesiyle kelime yazma (1.0.5), terk, sonuç, Şampiyonlar, biten odanın silinmesi, hesap silme.
 // Çalıştırma: kelime-bilcek/firebase içinde `npm run test:akis` (emulators:exec database,auth). Google ile giriş
 // emülatörde yapılamadığı için oturum signInAnonymously ile açılır; hesap silmedeki yeniden doğrulama taklit edilir.
 import { test, before, after } from 'node:test';

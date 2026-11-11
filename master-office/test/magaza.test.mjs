@@ -66,7 +66,7 @@ test('Veri güvenliği CSV: yalnız AdMob\'un dört veri türü, hepsi toplanıy
   }
 });
 
-test('görseller: simge 512 (32 bit), tanıtım 1024×500 (saydamsız), 8 telefon görüntüsü 1080×1920', () => {
+test('görseller: simge 512 (32 bit), tanıtım 1024×500 (saydamsız), 8 telefon görüntüsü 1080×1920 (tr-TR ve en-US)', () => {
   const g = play.gorseller('tr-TR');
   const s = olcu(g.icon[0]);
   assert.deepEqual([s.tur, s.w, s.h], ['png', 512, 512]);
@@ -78,7 +78,11 @@ test('görseller: simge 512 (32 bit), tanıtım 1024×500 (saydamsız), 8 telefo
   }
   assert.ok(play.gorseller('en-US').featureGraphic[0].includes(`${path.sep}en-US${path.sep}`), 'en-US tanıtım görseli kendi klasöründen');
   assert.equal(g.phoneScreenshots.length, 8);
-  for (const f of g.phoneScreenshots) {
+  // en-US: İngilizce telefon görüntüleri kendi klasöründen (rehber eki 1, 11 Kasım 2026); Türkçelerle aynı sıra
+  const en = play.gorseller('en-US');
+  assert.equal(en.phoneScreenshots.length, 8, 'en-US: 8 İngilizce telefon görüntüsü');
+  for (const f of en.phoneScreenshots) assert.ok(f.includes(`${path.sep}en-US${path.sep}`), `${f}: en-US klasöründen olmalı`);
+  for (const f of [...g.phoneScreenshots, ...en.phoneScreenshots]) {
     const t = olcu(f);
     assert.deepEqual([t.w, t.h], [1080, 1920], f);
     assert.ok(fs.statSync(f).size <= 8 * 1024 * 1024, `${f}: 8 MB'den büyük`);

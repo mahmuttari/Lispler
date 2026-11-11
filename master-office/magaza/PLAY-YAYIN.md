@@ -76,7 +76,7 @@ Kullanıcı onay paketinin hepsini onayladı ("Hepsine onay veriyorum, tam yetki
 | Metinler ve form cevapları | [`aciklamalar.md`](aciklamalar.md) (tr-TR + formlar), [`diller/en-US.md`](diller/en-US.md) |
 | Veri güvenliği | [`aciklamalar.md` › Veri güvenliği formu](aciklamalar.md#veri-güvenliği-formu); CSV [`veri-guvenligi.csv`](veri-guvenligi.csv) |
 | Abonelikler | `mo_reklamsiz`, `mo_pro`, `mo_master`; temel plan `yillik`, teklif `ilk-yil`: [`fiyatlandirma.md`](fiyatlandirma.md) |
-| Görseller | [`play/`](play/): `simge-512.png` (32 bit), `tanitim-gorseli-1024x500.png` (tr-TR) ve `en-US/` altında İngilizcesi, 8 × `telefon-*.jpg` (1080×1920, sırayla) |
+| Görseller | [`play/`](play/): `simge-512.png` (32 bit), `tanitim-gorseli-1024x500.png` (tr-TR) ve `en-US/` altında İngilizcesi, 8 × `telefon-*.jpg` (1080×1920, sırayla); en-US'in 8 İngilizce telefon görüntüsü `play/en-US/telefon-*.jpg` (rehber eki 1, 11 Kasım 2026) |
 
 ## Onay paketi (oturumun başında kullanıcıya gösterilir)
 

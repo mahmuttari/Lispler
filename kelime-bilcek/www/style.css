@@ -327,7 +327,7 @@ input[type=text]:disabled{opacity:.6}
 .chat-msg.stolen{color:var(--soluk);opacity:.7;font-style:italic;text-decoration:line-through}
 .chat-msg .who{font:700 12px/1 var(--metin);color:var(--muted)}
 /* 1.0.5: yazma paneli + oyun klavyesi (klavye.js). Telefon klavyesi gibi ekranın altında, tam genişlikte; tuş genişliği
-   bütün satırlarda aynı (en uzun satır 11 tuş). Panel açıkken sayfanın altı panel kadar boşaltılır (body.klavye-acik). */
+   bütün satırlarda aynı (Türkçe Q; en uzun satır 12 tuş). Panel açıkken sayfanın altı panel kadar boşaltılır (body.klavye-acik). */
 .giris-paneli{position:fixed;left:50%;bottom:0;transform:translateX(-50%);z-index:30;width:min(100%,560px);
   flex-direction:column;gap:8px;padding:10px 3px max(8px,env(safe-area-inset-bottom));
   background:linear-gradient(180deg,rgba(29,22,69,.98),rgba(13,9,32,.99));border-top:2px solid var(--cizgi-acik);
@@ -351,7 +351,7 @@ body.klavye-acik #leaveBtn{min-height:42px;padding:6px 16px;font-size:16px;margi
 .giris-satiri input{flex:1;min-width:0;min-height:52px;font-size:20px;cursor:default;caret-color:transparent}
 .btn.gonder{width:auto;flex:0 0 auto;min-height:52px;padding:0 18px;margin-bottom:4px}
 @media (max-width:380px){.btn.gonder span{display:none}.btn.gonder{width:56px;padding:0}}
-.klavye{--kb-ara:4px;--kb-tus:calc((100% - 10 * var(--kb-ara)) / 11);display:flex;flex-direction:column;gap:7px;
+.klavye{--kb-ara:4px;--kb-tus:calc((100% - 11 * var(--kb-ara)) / 12);display:flex;flex-direction:column;gap:7px;
   -webkit-user-select:none;user-select:none;touch-action:manipulation}
 .kb-satir{display:flex;justify-content:center;gap:var(--kb-ara)}
 .kb-tus{flex:0 0 var(--kb-tus);min-width:0;height:50px;padding:0;border:0;border-radius:10px;cursor:pointer;
@@ -362,6 +362,7 @@ body.klavye-acik #leaveBtn{min-height:42px;padding:6px 16px;font-size:16px;margi
 .kb-tus:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
 .kb-genis{flex-basis:calc(var(--kb-tus) * 1.5 + var(--kb-ara) * .5);font-size:22px}
 .kb-sil{background:linear-gradient(180deg,#3d3470,#2c2459)}
+@media (max-width:380px){.kb-tus{font-size:19px}.kb-genis{font-size:20px}}
 @media (max-height:700px){.kb-tus{height:44px}.klavye{gap:6px}.giris-satiri input,.btn.gonder{min-height:46px}}
 #leaveBtn{margin-top:2px}
 

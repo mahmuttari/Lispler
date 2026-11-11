@@ -7,9 +7,9 @@ const require = createRequire(import.meta.url);
 const K = require('../www/kelime.js');
 const Y = require('../www/klavye.js');
 
-test('düzen: Türkçe Q, 29 harf; q, w, x yok; sözlükteki bütün harfler klavyede var', () => {
-  assert.equal(Y.KLAVYE_HARFLERI.size, 29);
-  for (const h of 'qwx') assert.equal(Y.KLAVYE_HARFLERI.has(h), false);
+test('düzen: tam Türkçe Q (QWERTY), 32 harf; sözlükteki bütün harfler klavyede var', () => {
+  assert.deepEqual(Y.KLAVYE_SATIRLARI, ['qwertyuıopğü', 'asdfghjklşi', 'zxcvbnmöç']);
+  assert.equal(Y.KLAVYE_HARFLERI.size, 32);
   for (const h of 'abcçdefgğhıijklmnoöprsştuüvyz') assert.ok(Y.KLAVYE_HARFLERI.has(h), h);
   const sozlukHarfleri = new Set(Object.values(K.CATEGORY_WORDS).flat().map(K.normalizeWord).join('').replace(/[\s,&'’-]/g, ''));
   for (const h of sozlukHarfleri) assert.ok(Y.KLAVYE_HARFLERI.has(h), `sözlükte "${h}" var, klavyede yok`);
@@ -23,7 +23,7 @@ test('tuşlar: harf ekler, sil son harfi siler, boşluk başta ve art arda yazı
   assert.equal(Y.klavyeTusu('çiğ', 'sil'), 'çi');
   assert.equal(Y.klavyeTusu('', 'sil'), '');
   assert.equal(Y.klavyeTusu('a'.repeat(30), 'b'), 'a'.repeat(30));
-  assert.equal(Y.klavyeTusu('ab', 'q'), 'ab');
+  assert.equal(Y.klavyeTusu('ab', 'q'), 'abq');
   assert.equal(Y.klavyeTusu('ab', '1'), 'ab');
 });
 
@@ -32,7 +32,8 @@ test('fiziksel klavye: Türkçe büyük/küçük harf ve şapkalı harfler', () 
   assert.equal(Y.klavyeHarfi('İ'), 'i');
   assert.equal(Y.klavyeHarfi('Ş'), 'ş');
   assert.equal(Y.klavyeHarfi('â'), 'a');
-  assert.equal(Y.klavyeHarfi('x'), null);
+  assert.equal(Y.klavyeHarfi('X'), 'x');
+  assert.equal(Y.klavyeHarfi('1'), null);
   assert.equal(Y.klavyeHarfi('Enter'), null);
 });
 

@@ -3,11 +3,11 @@
    Maçta telefonun klavyesi hiç açılmaz: kelime önerisi, otomatik tamamlama ve yapıştırma ile kelime bulunmasın diye
    kelime kutusu salt okunurdur (readonly + inputmode="none"), harfler bu klavyeden girilir. Web sürümünde bilgisayarın
    fiziksel klavyesi de çalışır (orada öneri çubuğu yok).
-   Düzen Türkçe Q; q, w ve x Türkçe alfabede yok ve oyunun sözlüğünde hiç geçmez, bu yüzden tuşlar daha geniştir.
+   Düzen tam Türkçe Q (QWERTY; telefonlardaki Türkçe Q klavyeyle aynı, q/w/x dahil).
    Sınama: test/klavye.test.mjs (tuş mantığı), test/arayuz.test.mjs (tarayıcıda klavyeyle maç).
    ============================================================ */
 
-const KLAVYE_SATIRLARI = ["ertyuıopğü", "asdfghjklşi", "zcvbnmöç"];
+const KLAVYE_SATIRLARI = ["qwertyuıopğü", "asdfghjklşi", "zxcvbnmöç"];
 const KLAVYE_HARFLERI = new Set(KLAVYE_SATIRLARI.join(""));
 const KLAVYE_DUZ = { "â": "a", "î": "i", "û": "u" };
 

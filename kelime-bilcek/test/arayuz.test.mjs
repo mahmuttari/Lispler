@@ -206,7 +206,7 @@ test('1.0.5: oyun klavyesi — telefon klavyesi açılmaz, tuşlar ve fiziksel k
     return { altta: Math.abs(p.bottom - innerHeight) < 2, tus: t.width, sinif: document.body.classList.contains('klavye-acik') };
   });
   assert.ok(olcu.altta && olcu.sinif, JSON.stringify(olcu));
-  assert.ok(olcu.tus >= 28, `tuş ${olcu.tus} px`);
+  assert.ok(olcu.tus >= 27, `tuş ${olcu.tus} px`);
   // sıra rakipteyken tuşlar kapanır (ekran güncellemesini bekle)
   await sayfa.waitForFunction(() => currentRoundData.turn === mySlot || [...document.querySelectorAll('#klavye .kb-tus')].every((b) => b.disabled), null, { timeout: 3000 });
   if (await sayfa.evaluate(() => currentRoundData.turn !== mySlot)) {
@@ -217,7 +217,7 @@ test('1.0.5: oyun klavyesi — telefon klavyesi açılmaz, tuşlar ve fiziksel k
   const harf = await sayfa.evaluate(() => getChainNextLetter(currentRoundData.words));
   // fiziksel klavyeyle yazılacak kısım ASCII (Playwright ABD düzeninde olmayan harfler için tuş olayı göndermez)
   const kelime = await sayfa.evaluate((h) => zincirSozlugu().find((w) => (!h || turkishFirstLetter(w) === h) && w.length >= 4
-    && /^[a-hj-pr-vyz]+$/.test(w.slice(2)) && !botKullanilanlar(currentRoundData.words).has(w)), harf);
+    && /^[a-hj-z]+$/.test(w.slice(2)) && !botKullanilanlar(currentRoundData.words).has(w)), harf);
   assert.ok(kelime, `"${harf}" ile başlayan uygun kelime`);
   // tuşlarla: fazladan harf + Sil
   await yaz(kelime.slice(0, 2) + 'k');

@@ -50,7 +50,7 @@ düşünmeden kategoriye uyan kelimeyi seçebiliyordu. Kopyala-yapıştır da a�
 
 **Ne değişti** (`www/klavye.js`, `index.html`, `style.css`):
 - Kelime kutusu `readonly` ve `inputmode="none"`. Telefonun klavyesi, öneri çubuğu ve yapıştırma maçta hiç açılmaz.
-- Ekranın altında, telefon klavyesi gibi tam genişlikte Türkçe Q klavyesi var. q, w ve x yok: Türkçe alfabede bulunmuyor, sözlükte de hiç geçmiyor. Bu yüzden 11 tuşluk satırda bile tuşlar 360 px'lik telefonda 29 px genişlikte.
+- Ekranın altında, telefon klavyesi gibi tam genişlikte, tam Türkçe Q (QWERTY) klavyesi var; q, w ve x dahil (kullanıcı isteği). Telefonlardaki Türkçe Q ile aynı düzen; en uzun satır 12 tuş, 360 px'lik telefonda tuş ~26 px.
 - Boşluk tuşu var; sözlükteki 1.440 girişin 329'u birden çok kelimeli. Sil tuşu basılı tutulunca art arda siler.
 - Basınca hafif titreşim (8 ms).
 - Sıra rakipteyken ya da kelime denetlenirken tuşlar kapalı.
@@ -59,10 +59,10 @@ düşünmeden kategoriye uyan kelimeyi seçebiliyordu. Kopyala-yapıştır da a�
 - Klavyede tire yok. Sözlükteki 4 tireli giriş ("e-posta" gibi) "e posta" ve "eposta" biçimlerinde de bulunur.
 
 **Sınama:**
-- `test/klavye.test.mjs` 4: düzen, sözlükteki her harfin klavyede olması, tuş mantığı, Türkçe harf eşlemesi, tireli kelimeler.
+- `test/klavye.test.mjs` 4: QWERTY düzeni, sözlükteki her harfin klavyede olması, tuş mantığı, Türkçe harf eşlemesi, tireli kelimeler.
 - `test/arayuz.test.mjs`:
   - Bütün maç testleri artık gerçek oyuncu gibi tuşlara basarak oynanıyor.
-  - Yeni test: kutu salt okunur; panel ekranın altında; tuş ≥ 28 px; sıra rakipteyken tuşlar kapalı; tuş + Sil + fiziksel klavye + Enter ile kelime gönderilir; maçtan çıkınca panel kapanır.
+  - Yeni test: kutu salt okunur; panel ekranın altında; tuş ≥ 27 px (390 px ekranda); sıra rakipteyken tuşlar kapalı; tuş + Sil + fiziksel klavye + Enter ile kelime gönderilir; maçtan çıkınca panel kapanır.
 - `test/akis.test.mjs` (iki oyunculu, emülatörde) tuşlarla yazıyor.
 
 ## 1.0.4 — Evren ile tarama (10 Kasım 2026)

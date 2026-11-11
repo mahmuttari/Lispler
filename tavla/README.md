@@ -3,7 +3,7 @@
 Sesli yorumculu klasik Türk tavlası: bilgisayara karşı (Pala Dayı, Genç Mert, Selim Bey; 480+ seslendirilmiş replik),
 aynı telefonda iki kişi ya da çevrimiçi (hızlı eşleşme, oda kodu, arkadaş daveti, yazılı ve sesli sohbet). Capacitor 8
 ile Android (`com.poyrazworkshop.tavla`, yatay ekran), Firebase (`tavla-online-oyundar`: Authentication + Firestore).
-Ücretsiz, AdMob reklamlı (oyun sırasında reklam yok; `www/reklam.js`). Sürüm **1.0.0 (1)**.
+Ücretsiz, AdMob reklamlı (oyun sırasında reklam yok; `www/reklam.js`). Sürüm **1.0.2 (3)**.
 
 Kaynak: kullanıcının `app-debug.apk`'sı (`com.korfe.tavla`); kaynak kodu olmadığı için web paketi APK'dan çıkarılıp
 okunur biçime getirildi. Elden geçirme ve bulgular: [`DENETIM.md`](DENETIM.md).
@@ -14,7 +14,7 @@ okunur biçime getirildi. Elden geçirme ve bulgular: [`DENETIM.md`](DENETIM.md)
 | `android/` | Capacitor Android projesi (imza `keystore.properties` CI'da yazılır; `google-services.json` iş akışıyla gelir) |
 | `firebase/` | Firestore kuralları, emülatör testleri, kural yayını, Firebase Android uygulaması — [`firebase/README.md`](firebase/README.md) |
 | `magaza/` | Play metinleri, görseller, Veri güvenliği CSV'si, yayın talimatı — [`magaza/PLAY-YAYIN.md`](magaza/PLAY-YAYIN.md) |
-| `araclar/` | `magaza-gorsel.mjs` (Playwright), `veri-guvenligi.mjs`, `filigran-temizle.py` |
+| `araclar/` | `magaza-gorsel.mjs` (Playwright), `simge-uret.mjs` (Android simgesi ve açılış ekranı), `veri-guvenligi.mjs`, `filigran-temizle.py`; `kaynak/` simge ve tanıtım görselinin SVG/HTML kaynakları (1.0.2) |
 | `test/` | `arayuz.test.mjs` (Playwright), `magaza.test.mjs` |
 | `play-istek.txt` | Play API komutları (`play-tavla.yml`) |
 | `../app/tavla/` | Tanıtım, gizlilik ve hesap silme sayfaları (GitHub Pages, yalnız main'den) |
@@ -24,6 +24,7 @@ okunur biçime getirildi. Elden geçirme ve bulgular: [`DENETIM.md`](DENETIM.md)
 ```sh
 cd tavla && npm ci && npm test                 # arayüz + mağaza (Playwright, Chromium)
 cd tavla/firebase && npm ci && npm test && npm run test:akis   # kurallar + uçtan uca (Java 21)
+node tavla/araclar/simge-uret.mjs              # Android simgesi + açılış ekranı (araclar/kaynak/*.svg)
 node tavla/araclar/magaza-gorsel.mjs           # mağaza görselleri
 node tavla/araclar/veri-guvenligi.mjs          # Veri güvenliği CSV'si
 cd tavla && npm run sync                       # www → android

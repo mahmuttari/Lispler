@@ -1,1 +1,1 @@
-Yeni avatarlar: pul, zar, kahve fincanı ve çay bardağı. Avatarlar artık uygulamanın içinde çiziliyor; dış hizmete istek gitmiyor. Küçük düzeltmeler.
+Yeni simge ve açılış ekranı. Bilgisayara karşı maçta puanın iki kez sayılması düzeltildi. Sohbette yeni mesajların görünmemesi giderildi. Argo filtresi artık "sık sık", "tahta dolu" gibi gündelik sözleri engellemiyor. Küçük telefonlarda menü ve pencereler ekrana sığıyor, düğmeler üst üste binmiyor. Oyuncu adları kesilmiyor. Küçük düzeltmeler.

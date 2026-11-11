@@ -28779,8 +28779,9 @@ function zv() {
           let n = Qh(Lv, (t) => {
             t && (n(), e(t));
           });
+          // 1.0.2: başarısız giriş önbellekte kalmasın (çevrimdışı açılıştan sonra yeniden denenebilsin)
           lh(Lv).catch((e) => {
-            (n(), t(e));
+            (n(), (Rv = null), t(e));
           });
         })),
         Rv);
@@ -29331,10 +29332,29 @@ function yy(e) {
     t
   );
 }
+// 1.0.2: eskiden bütün mesaj boşluksuz birleştirilip her parça alt dize olarak aranıyordu; "sık sık", "tahta dolu",
+// "hocam", "kocaman", "tamam kardeş", "sokak" küfür sayılıp uyarı (3 uyarıda 3 gün yasak) veriyordu.
+// Şimdi: kısa parçalar yalnız tek başına kelimeyse, uzunlar kelime başındaysa (ekli hâller), açık küfürler boşlukla
+// bölünse de (birleşik metinde) yakalanır. "götürmek" (fiil) ve "sıkış" listeden çıktı.
+var tvYalnizTamKelime = new Set([`sikis`]),
+  tvMasumlar = new Set([`goturmek`]),
+  tvBirlesikteAra = [`siktir`, `orospu`, `pezevenk`, `aminakoy`, `sikerim`, `sikeyim`, `sikecegim`, `gotveren`,
+    `ibnelik`, `amcigin`, `amcigima`, `amcigini`, `ananisik`, `bacinisik`, `avradini`, `kerhane`, `fahise`];
 function by(e) {
-  let t = yy(e);
-  if (!t) return !1;
-  for (let e of gy) if (t.includes(e)) return !0;
+  if (!e) return !1;
+  let o = String(e).split(/\s+/).filter(Boolean),
+    n = o.map(yy).filter(Boolean),
+    // tam kelime karşılaştırmasında "ı" ayrı tutulur: "sık" ≠ "sik"
+    a = o.map((e) => yy(e.toLowerCase().replace(/ı/g, `x`))).filter(Boolean);
+  if (n.length === 0) return !1;
+  for (let r of gy) {
+    if (tvMasumlar.has(r)) continue;
+    if (r.length <= 3 || tvYalnizTamKelime.has(r)) {
+      for (let e of a) if (e === r) return !0;
+    } else for (let e of n) if (e.startsWith(r)) return !0;
+  }
+  let t = n.join(``);
+  for (let r of tvBirlesikteAra) if (t.includes(r)) return !0;
   return !1;
 }
 var xy = 1440 * 60 * 1e3,
@@ -29406,7 +29426,7 @@ function Ey(e) {
 // Küçültülmüş Firebase işlevleri: X = Firestore, Lv = Auth, q = doc, td = collection, ff = getDoc,
 // pf = getDocs, mf = setDoc, gf = deleteDoc, _f = addDoc, Jd = query, Xd = where, Rd = serverTimestamp.
 // ═══════════════════════════════════════════════════════════════════════════════════════════════
-var TV_SURUM = `1.0.1`,
+var TV_SURUM = `1.0.2`,
   TV_GIZLILIK = `https://mahmuttari.github.io/Lispler/tavla/gizlilik.html`,
   TV_HESAP_SILME = `https://mahmuttari.github.io/Lispler/tavla/hesap-silme.html`,
   TV_ILETISIM = `poyrazworkshop7@gmail.com`,
@@ -29911,9 +29931,11 @@ function jy(e) {
         return;
       }
       let t = vf(
-        Jd(td(X, `rooms`, e, `messages`), $d(`at`, `asc`), tf(Ay)),
+        // 1.0.2: eskiden artan sırada ilk 50 mesaj alınıyordu; 50'den sonra yeni mesajlar hiç görünmüyordu.
+        // Şimdi en yeni 50 mesaj alınır, ekranda eskiden yeniye dizilir.
+        Jd(td(X, `rooms`, e, `messages`), $d(`at`, `desc`), tf(Ay)),
         (e) => {
-          n(e.docs.map((e) => ({ id: e.id, ...e.data() })));
+          n(e.docs.map((e) => ({ id: e.id, ...e.data() })).reverse());
         },
         (e) => {
           (console.error(`Chat dinleme hatası:`, e), o(e.message));
@@ -30636,7 +30658,11 @@ function cb({ roomDocId: e, myRole: t }) {
   (0, _.useEffect)(() => {
     if (!e || !t) return;
     let r = vf(q(X, `rooms`, e), (e) => {
-      if (!e.exists()) return;
+      // 1.0.2: oda silinince (rakip ayrıldı, hesap silindi) mikrofon ve bağlantı açık kalmasın
+      if (!e.exists()) {
+        ((l.current || p.current) && m(), i(`idle`));
+        return;
+      }
       let tvD = e.data();
       if (tvEngelliMi(t === `host` ? tvD.guestUid : tvD.hostUid)) {
         ((l.current || p.current) && m(), i(`idle`));
@@ -30960,7 +30986,6 @@ var wb = [],
           `Bugün senin gününmüş, belli.`,
           `Yenildik ama ezilmedik!`,
           `Hadi bakalım, rövanşa beklerim.`,
-          `Zar dediğin kahpeymiş, bugün anladık.`,
           `Senin şansın bizim ustalığı yendi.`,
           `Helal olsun, iyi kıvırdın.`,
           `Canın sağ olsun, bir dahaki sefere.`,
@@ -31020,7 +31045,7 @@ var wb = [],
           `Nihayet doğru zarı bulduk.`,
           `Girdik girmesine de, ortalık karışık.`,
           `Gurbet bitti, hadi hayırlısı.`,
-          `Hala dışarıdayız, şaka gibi!`,
+          `Hâlâ dışarıdayız, şaka gibi!`,
         ],
       },
     },
@@ -31165,7 +31190,7 @@ var wb = [],
           `Hadi gir içeri artık, bekliyoruz!`,
           `Açıl susam açıl!`,
           `Nihayet! İçerideyim be!`,
-          `Hala dışarıdayım, delireceğim!`,
+          `Hâlâ dışarıdayım, delireceğim!`,
           `Kapılar kapalı, güvenlik almıyor içeri.`,
           `Girdik be! Sonunda!`,
           `Zar gelmiyor ki içeri sızalım.`,
@@ -31176,7 +31201,7 @@ var wb = [],
           `Hadi be kemik, bir güzellik yap!`,
           `Zor oldu ama sızmayı başardık.`,
           `İçerideyiz kanka, kork benden!`,
-          `Hala gelemedik mi ya?`,
+          `Hâlâ gelemedik mi ya?`,
           `Zarlar resmen içeri girmemi istemiyor.`,
           `Sonunda bir kapı bulduk.`,
           `Hadi bismillah, daldık içeri.`,
@@ -31579,7 +31604,6 @@ var wb = [],
         { text: `Bugün senin gününmüş, belli.`, file: `voices/dayi/OPPONENT_WIN_05_p3vslt.mp3` },
         { text: `Yenildik ama ezilmedik!`, file: `voices/dayi/OPPONENT_WIN_06_58her8.mp3` },
         { text: `Hadi bakalım, rövanşa beklerim.`, file: `voices/dayi/OPPONENT_WIN_07_7qn47u.mp3` },
-        { text: `Zar dediğin kahpeymiş, bugün anladık.`, file: `voices/dayi/OPPONENT_WIN_08_iixrkd.mp3` },
         { text: `Senin şansın bizim ustalığı yendi.`, file: `voices/dayi/OPPONENT_WIN_09_yrjage.mp3` },
         { text: `Helal olsun, iyi kıvırdın.`, file: `voices/dayi/OPPONENT_WIN_10_s55cc9.mp3` },
         { text: `Canın sağ olsun, bir dahaki sefere.`, file: `voices/dayi/OPPONENT_WIN_11_ds0ws3.mp3` },
@@ -31654,7 +31678,7 @@ var wb = [],
         { text: `Nihayet doğru zarı bulduk.`, file: `voices/dayi/AI_ENTERED_16_tmq3vh.mp3` },
         { text: `Girdik girmesine de, ortalık karışık.`, file: `voices/dayi/AI_ENTERED_17_7hgmi5.mp3` },
         { text: `Gurbet bitti, hadi hayırlısı.`, file: `voices/dayi/AI_ENTERED_18_1c0474.mp3` },
-        { text: `Hala dışarıdayız, şaka gibi!`, file: `voices/dayi/AI_ENTERED_19_ayi6sw.mp3` },
+        { text: `Hâlâ dışarıdayız, şaka gibi!`, file: `voices/dayi/AI_ENTERED_19_ayi6sw.mp3` },
       ],
     },
     genc: {
@@ -31943,7 +31967,7 @@ var wb = [],
         { text: `Hadi gir içeri artık, bekliyoruz!`, file: `voices/genc/AI_ENTERED_00_kr1h3n.mp3` },
         { text: `Açıl susam açıl!`, file: `voices/genc/AI_ENTERED_01_4we1uh.mp3` },
         { text: `Nihayet! İçerideyim be!`, file: `voices/genc/AI_ENTERED_02_1cosc1.mp3` },
-        { text: `Hala dışarıdayım, delireceğim!`, file: `voices/genc/AI_ENTERED_03_x85moe.mp3` },
+        { text: `Hâlâ dışarıdayım, delireceğim!`, file: `voices/genc/AI_ENTERED_03_x85moe.mp3` },
         { text: `Kapılar kapalı, güvenlik almıyor içeri.`, file: `voices/genc/AI_ENTERED_04_mbkkg6.mp3` },
         { text: `Girdik be! Sonunda!`, file: `voices/genc/AI_ENTERED_05_c3u800.mp3` },
         { text: `Zar gelmiyor ki içeri sızalım.`, file: `voices/genc/AI_ENTERED_06_imttjp.mp3` },
@@ -31954,7 +31978,7 @@ var wb = [],
         { text: `Hadi be kemik, bir güzellik yap!`, file: `voices/genc/AI_ENTERED_11_jilkp7.mp3` },
         { text: `Zor oldu ama sızmayı başardık.`, file: `voices/genc/AI_ENTERED_12_tcy09o.mp3` },
         { text: `İçerideyiz kanka, kork benden!`, file: `voices/genc/AI_ENTERED_13_1ujdbd.mp3` },
-        { text: `Hala gelemedik mi ya?`, file: `voices/genc/AI_ENTERED_14_vyk3bj.mp3` },
+        { text: `Hâlâ gelemedik mi ya?`, file: `voices/genc/AI_ENTERED_14_vyk3bj.mp3` },
         { text: `Zarlar resmen içeri girmemi istemiyor.`, file: `voices/genc/AI_ENTERED_15_mt5xoo.mp3` },
         { text: `Sonunda bir kapı bulduk.`, file: `voices/genc/AI_ENTERED_16_xej1fo.mp3` },
         { text: `Hadi bismillah, daldık içeri.`, file: `voices/genc/AI_ENTERED_17_yk56tx.mp3` },
@@ -32817,7 +32841,15 @@ async function sx(e) {
   try {
     await zv();
     let t = Bv();
-    return t ? (await gf(q(X, `users`, t, `friends`, e)), { ok: !0 }) : { ok: !1 };
+    if (!t) return { ok: !1 };
+    await gf(q(X, `users`, t, `friends`, e));
+    // 1.0.2: karşı tarafın listesinden de çık (kurallar: arkadaş kendini listeden silebilir)
+    try {
+      await gf(q(X, `users`, e, `friends`, t));
+    } catch (e) {
+      console.warn(`[Friends] karşı listeden çıkma:`, e?.message || e);
+    }
+    return { ok: !0 };
   } catch (e) {
     return (console.warn(`[Friends] removeFriend:`, e?.message), { ok: !1, error: e?.message });
   }
@@ -34270,13 +34302,19 @@ async function bC(e) {
   let t = await pf(Jd(td(X, `rooms`), Xd(`code`, `==`, e)));
   return t.empty ? null : t.docs[0];
 }
+// 1.0.2: kurucusu uygulamayı kapatan bekleyen odalar silinmeden kalıyordu; hızlı eşleşme bu ölü odalara düşüyordu.
+// 10 dakikadan eski bekleyen odalar atlanır, en yeni oda seçilir.
+var tvBeklemeSuresi = 10 * 60 * 1e3;
 async function xC(e) {
-  let t = await pf(Jd(td(X, `rooms`), Xd(`waiting`, `==`, !0)));
-  for (let n of t.docs) {
-    let t = n.data();
-    if (t.hostUid !== e && !t.guestUid && !tvEngelliMi(t.hostUid)) return n;
-  }
-  return null;
+  let t = await pf(Jd(td(X, `rooms`), Xd(`waiting`, `==`, !0))),
+    r = Date.now() - tvBeklemeSuresi;
+  let n = t.docs
+    .filter((n) => {
+      let t = n.data();
+      return t.hostUid !== e && !t.guestUid && !tvEngelliMi(t.hostUid) && (t.ts || 0) > r;
+    })
+    .sort((a, b) => (b.data().ts || 0) - (a.data().ts || 0));
+  return n[0] || null;
 }
 async function SC(e, t) {
   await zv();
@@ -35159,11 +35197,15 @@ function PC({ onJoin: e, onBack: t, myName: n }) {
                               try {
                                 await zv();
                                 let t = await xC(Bv());
-                                if (t) {
-                                  let { code: r, version: i } = await SC(t, n);
-                                  (f(!1), e(r, $, i));
-                                  return;
-                                }
+                                if (t)
+                                  try {
+                                    let { code: r, version: i } = await SC(t, n);
+                                    (f(!1), e(r, $, i));
+                                    return;
+                                  } catch (e) {
+                                    // 1.0.2: oda o arada doldu (başka oyuncu katıldı); yeni oda kurulur
+                                    console.warn(`[Eşleşme] katılma:`, e?.message || e);
+                                  }
                                 let { code: r } = await CC(n);
                                 (o(r), i(`matchmaking`));
                               } catch (e) {
@@ -36141,7 +36183,11 @@ function BC({
     }, [m.winner, D, s, Ie]),
     (0, _.useEffect)(() => {
       if (!m.winner) return;
+      // 1.0.2: sıralama kaydı ve maç puanı aynı anahtarı (be.current) paylaşıyordu; bilgisayara karşı maçta
+      // efekt yeniden çalışınca maç puanı iki kez ekleniyor, sıralama puanı iki kez yazılıyordu. Ayrı anahtarlar:
+      // be.current = sıralama kaydı, be.mac = maç puanı.
       if ((D || E) && be.current !== m.winner + `:rank:` + me) {
+        be.current = m.winner + `:rank:` + me;
         let e = m.winner === Q ? $ : Q,
           n = m.off[e] === 0;
         if (m.winner === t) d?.({ isMars: n });
@@ -36150,8 +36196,8 @@ function BC({
           f?.({ isMars: e });
         }
       }
-      if (!C || be.current === m.winner + `:` + me) return;
-      be.current = m.winner + `:` + me;
+      if (!C || be.mac === m.winner + `:` + me) return;
+      be.mac = m.winner + `:` + me;
       let e = m.winner,
         n = e === Q ? $ : Q,
         r = m.off[n] === 0,
@@ -36187,7 +36233,8 @@ function BC({
       (ze.current = !1),
       (Be.current = !1),
       (Ve.current = 0),
-      (be.current = null));
+      (be.current = null),
+      (be.mac = null));
   };
   ((0, _.useEffect)(
     () => () => {
@@ -36763,7 +36810,7 @@ function BC({
                   !Ae &&
                     (0, Z.jsx)(`div`, {
                       className: `match-end-sub`,
-                      children: e ? `${r}'ı yendin, helal olsun!` : `${n} bu maçı aldı, sıradakine!`,
+                      children: e ? `${r} karşısında kazandın, helal olsun!` : `${n} bu maçı aldı, sıradakine!`,
                     }),
                   C &&
                     (0, Z.jsxs)(`div`, {
@@ -37992,7 +38039,7 @@ var HC = `
   .icon-btn { width: 24px; height: 22px; font-size: 13px; }
   .player-tag {
     font-size: 10px; height: 20px;
-    padding: 1px 6px; max-width: 100px;
+    padding: 1px 6px; max-width: 150px;
     border-radius: 10px;
   }
   .player-tag .color-chip { width: 10px; height: 10px; }
@@ -39352,14 +39399,17 @@ var HC = `
   color: #b3a17e;
   font-family: 'Manrope', sans-serif;
   font-size: 12px; font-weight: 600;
-  max-width: 130px;
+  max-width: 200px; /* 1.0.2: maç puanı rozetiyle "Be…" diye kesiliyordu */
   transition: all 220ms ease;
   white-space: nowrap;
   overflow: hidden;
 }
 .player-tag .player-name {
   overflow: hidden; text-overflow: ellipsis;
+  min-width: 3em;
 }
+.player-tag .set-score,
+.player-tag .pieces-left { flex-shrink: 0; }
 .player-tag.active {
   background: rgba(255, 213, 92, 0.18);
   border-color: #d4a340;
@@ -40167,6 +40217,97 @@ var HC = `
   color: #b3a17e;
   opacity: 0.85;
 }
+
+/* ===== 1.0.2 — Yatay telefonda menü çakışmaları =====
+   Alçak yatay ekranda (≤ 600 px yükseklik) puan kartı eziliyor (yazılar kesiliyordu), sol üstteki
+   "Misafir" düğmesi orta sütuna, sağ üstteki 3 mini düğme rumuz satırına biniyordu. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .menu-screen { overflow-y: auto; }
+  .menu-avatar-corner {
+    top: max(6px, var(--safe-top, 0px));
+    left: max(6px, var(--safe-left, 0px));
+    padding: 3px 8px 3px 3px;
+    gap: 5px;
+    max-width: 108px;
+  }
+  .menu-avatar-img { width: 28px; height: 28px; }
+  .menu-avatar-name { font-size: 10.5px; max-width: 62px; }
+  .menu-screen > .menu-rank-row {
+    width: calc(100% - 64px);
+    align-self: flex-start;
+  }
+  .menu-screen > .score-showcase {
+    flex-shrink: 0;
+    width: max-content;
+    margin: 2px auto;
+    padding: 3px 12px;
+    gap: 10px;
+  }
+  .ss-score-block { gap: 0; }
+  .ss-score-value { font-size: 18px; line-height: 1.1; }
+  .ss-score-label, .ss-stats-row { line-height: 1.2; }
+  .menu-screen > .menu-name-row,
+  .menu-screen > .menu-pair-row,
+  .menu-screen > .menu-options,
+  .menu-screen > .menu-foot { flex-shrink: 0; }
+  /* Görünüm + AI yan yana: alçak ekranda bir satır kazandırır */
+  .menu-pair-row { flex-wrap: nowrap; }
+  .menu-pair-row .menu-name-row.half { flex: 1 1 0; }
+
+  /* Pencereler: yukarıdaki yan tutuş kuralları, dosyada sonra gelen genel kurallarca eziliyordu
+     (pencereler uzun kalıyor, "Kapat/Tamam" düğmesi ekranın altında kalıyordu). Burada yeniden. */
+  .theme-modal { padding: 10px 14px; }
+  .theme-modal-title { font-size: 12px; margin-bottom: 8px; }
+  .theme-modal .theme-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 6px; }
+  .theme-card { padding: 6px 4px; gap: 2px; }
+  .theme-card img { width: 40px !important; height: 40px !important; }
+  .theme-card-name { font-size: 11px; margin-top: 2px; }
+  .theme-card-desc { font-size: 9px; line-height: 1.25; }
+  .ai-toggle-row { padding: 6px 10px; font-size: 12px; margin-bottom: 8px; }
+  .ai-section-label { font-size: 10px; margin-bottom: 4px; }
+  .ai-icon { font-size: 22px; }
+  .ai-mode-btn { padding: 5px 4px; }
+  .ai-mode-label { font-size: 11px; }
+  .ai-mode-desc { font-size: 8px; }
+  .theme-modal-close { padding: 6px; font-size: 12px; margin-top: 8px; }
+  .theme-modal .leaderboard-card { width: 100%; }
+  /* Son kapatma düğmesi pencerenin altına sabit: içerik kaysa da hep görünür */
+  .theme-modal > .theme-modal-close:last-child {
+    position: sticky;
+    bottom: -10px;
+    z-index: 1;
+    background: #14100b;
+    box-shadow: 0 -8px 10px #14100b, 0 4px 0 6px #14100b;
+  }
+}
+/* Çok alçak yatay ekran (iPhone SE gibi, ≤ 340 px): başlık ve alt yazı küçülür, mod düğmeleri sığar */
+@media (orientation: landscape) and (max-height: 340px) {
+  .big-title { font-size: 18px; }
+  .menu-divider { display: none; }
+  .menu-foot { display: none; }
+  .menu-screen > .menu-name-row { margin: 1px 0; padding: 3px 10px; }
+  .menu-options .menu-btn { padding: 4px 6px; gap: 6px; }
+  .menu-options .menu-btn .menu-icon { width: 30px; height: 30px; }
+  .menu-options .menu-btn .menu-icon svg { width: 24px; height: 24px; }
+  .menu-options .menu-btn .menu-label { font-size: 11.5px; }
+}
+/* Dikey telefon (yalnız web'de olur; Android uygulaması hep yatay açılır): oyun yatay tasarlandı,
+   dikeyde menü sütunu dar kalıp düğmeler üst üste biniyordu. Telefonu yan çevirme uyarısı gösterilir. */
+@media (orientation: portrait) and (max-width: 600px) {
+  body::after {
+    content: '↻\\A\\A Tavla yatay oynanır.\\A Telefonu yan çevir.';
+    white-space: pre;
+    position: fixed; inset: 0; z-index: 99999;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    background: #0a0604; color: #ffd55c;
+    font: 600 18px/1.5 'Manrope', sans-serif;
+  }
+}
+/* Büyük ekranda "Misafir" düğmesi ile EFSANELER kartı üst üste binmesin */
+@media not all and (orientation: landscape) and (max-height: 600px) {
+  .leaderboard-dock { top: calc(max(12px, var(--safe-top, 0px)) + 62px); }
+}
+
 `;
 (0, v.createRoot)(document.getElementById(`root`)).render(
   (0, Z.jsx)(_.StrictMode, { children: (0, Z.jsx)(VC, {}) }),

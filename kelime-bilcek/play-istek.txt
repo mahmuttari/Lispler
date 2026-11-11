@@ -42,4 +42,4 @@
 # (yapıldı 2026-11-10, koşu 42762272451: tr-TR "Kelime Bilcek: Kelime Düellosu", kısa 76, tam 1803 karakter, düzenleme onaylandı) magaza uygula
 
 # istek 2026-11-11T16:10:20Z: 1.0.5 (6) oyunun kendi klavyesi (tam Türkçe Q, telefon klavyesi ve öneri yok) — paketi üretime yükle, incelemeye gönder; 1.0.4 (5)'in yerini alır (kullanıcının açık onayı: "Evet, gönder"); AAB: kelime-android koşusu 43043619768 (commit 77f3595, versionCode 6, admob=gercek, Poyraz Workshop yükleme anahtarı); beyanlar değişmedi
-yukle yayinla uygula
+# (yapıldı 2026-11-11, koşu 43055649639: AAB 6 (koşu 43043619768, commit 77f3595) yüklendi, üretim 1.0.4 (5) → 1.0.5 (6) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula

@@ -35,12 +35,13 @@ async function oyuncu(ad) {
   // Kuralın reddettiği her yazım/okuma konsolda "permission_denied" olarak görünür; hiçbiri olmamalı
   s.on('console', (m) => { if (/permission[_ ]denied/i.test(m.text())) hatalar.push(`${ad}: ${m.text().slice(0, 200)}`); });
   await s.route((u) => !u.href.startsWith(`http://127.0.0.1:${sunucu.address().port}/`) && !u.href.includes(RTDB) && !u.href.includes(AUTH), (r) => r.abort());
-  // Firebase'i emülatöre yönelt: oyun.js'teki initializeApp satırı değiştirilir (dosya diskte değişmez)
+  // Firebase'i emülatöre yönelt: oyun.js'teki initializeApp satırı değiştirilir (dosya diskte değişmez).
+  // 1.0.5: emülatörün altta sabit uyarı şeridi kapatılır; yoksa ekranın altındaki oyun klavyesinin üstüne biner.
   await s.route('**/oyun.js', async (r) => {
     let js = fs.readFileSync(path.join(WWW, 'oyun.js'), 'utf8');
     js = js.replace('firebase.initializeApp(firebaseConfig);',
       `firebaseConfig.projectId = "demo-kelime-bilcek"; firebaseConfig.databaseURL = "https://${NS}.europe-west1.firebasedatabase.app";
-       firebase.initializeApp(firebaseConfig); firebase.auth().useEmulator("http://${AUTH}"); firebase.database().useEmulator("${RTDB.split(':')[0]}", ${RTDB.split(':')[1]});`);
+       firebase.initializeApp(firebaseConfig); firebase.auth().useEmulator("http://${AUTH}", { disableWarnings: true }); firebase.database().useEmulator("${RTDB.split(':')[0]}", ${RTDB.split(':')[1]});`);
     await r.fulfill({ status: 200, contentType: 'text/javascript', body: js });
   });
   await s.goto(`http://127.0.0.1:${sunucu.address().port}/index.html`);

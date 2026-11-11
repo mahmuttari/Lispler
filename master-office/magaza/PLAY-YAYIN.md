@@ -45,7 +45,11 @@ Kullanıcı onay paketinin hepsini onayladı ("Hepsine onay veriyorum, tam yetki
   Yeni yükleme anahtarıyla (`mahmuttari/master-office` › `MO_KEYSTORE_*`) imzalanacak; Play'de **yükleme anahtarı
   sıfırlaması** (Uygulama imzalama › Yükleme anahtarı › Sıfırlama talep edin, yeni anahtarın PEM sertifikasıyla) onaylanınca
   NetcadDevelop düzeniyle üretime yüklenip incelemeye gönderilir. Girişli sürüm sonraki güncelleme olur.
-- **Üretim:** yapılmadı. Google/Apple girişli, gerçek AdMob kimlikli sürüm (yeniden kurulan kaynak) bekleniyor; 3.5.1
+- **Yükleme anahtarı sıfırlaması (11 Kasım 2026):** kullanıcı istedi (neden "Yükleme anahtarımı kaybettim", PEM
+  `MASTER OFFICE/yayin/upload_certificate.pem`, `CN=Master Office, O=MARFEN`, SHA-256 `D1:F5:…:68:C7`). Play: yeni anahtar
+  **13 Kasım 2026 08:38'den** itibaren geçerli. İmzalı 3.5.2: `MASTER OFFICE/yayin/MasterOffice-3.5.2.aab` (doğrulandı).
+  Satıcı durumu beyanı kaydedildi; Uygulama içeriğinde bekleyen beyan yok.
+- **Üretim:** yapılmadı; 13 Kasım 08:38'den sonra yüklenip incelemeye gönderilecek. Google/Apple girişli, gerçek AdMob kimlikli sürüm (yeniden kurulan kaynak) bekleniyor; 3.5.1
   "Sayfa" anahtarıyla imzalı olduğu için yeni anahtarla imzalanan sürümden önce Play'den yükleme anahtarı sıfırlaması
   istenir.
 

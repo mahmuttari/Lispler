@@ -43,6 +43,28 @@ CI'da ilk koşular (commit b6dbe16): Denetim 41827897508 ✓, Firebase kurallar�
 | K-16 | Düşük (görünüş) | APK'daki uyarlanabilir simge Cordova'nın varsayılan robotuydu; Capacitor projesinde varsayılan açılış görseli. | Simgeler ve açılış görseli `icon.jpg`'den üretildi; Play simgesi 512×512. | — |
 | K-17 | Düşük (erişilebilirlik) | Kategori rozeti kontrastı yetersiz (axe "serious"); profil açan kullanıcı adı `span` (klavyeyle açılmıyor) ve dar ekranda başlığa biniyordu; animasyonlar hareket azaltma tercihini yok sayıyordu. | Rozet rengi koyulaştırıldı; `button` + `aria-label`; dar ekranda sağa yaslanır; `prefers-reduced-motion`. bütün düğmelere `type="button"`; `span` içindeki `div`'ler düzeltildi. | axe-core, html-validate |
 
+## 1.0.5 — Oyunun kendi klavyesi (11 Kasım 2026)
+
+**Neden:** Kullanıcı isteği. Telefon klavyeleri (Gboard, Samsung) yazarken kelime önerir ve otomatik tamamlar; oyuncu
+düşünmeden kategoriye uyan kelimeyi seçebiliyordu. Kopyala-yapıştır da açıktı.
+
+**Ne değişti** (`www/klavye.js`, `index.html`, `style.css`):
+- Kelime kutusu `readonly` ve `inputmode="none"`. Telefonun klavyesi, öneri çubuğu ve yapıştırma maçta hiç açılmaz.
+- Ekranın altında, telefon klavyesi gibi tam genişlikte Türkçe Q klavyesi var. q, w ve x yok: Türkçe alfabede bulunmuyor, sözlükte de hiç geçmiyor. Bu yüzden 11 tuşluk satırda bile tuşlar 360 px'lik telefonda 29 px genişlikte.
+- Boşluk tuşu var; sözlükteki 1.440 girişin 329'u birden çok kelimeli. Sil tuşu basılı tutulunca art arda siler.
+- Basınca hafif titreşim (8 ms).
+- Sıra rakipteyken ya da kelime denetlenirken tuşlar kapalı.
+- Web sürümünde bilgisayarın fiziksel klavyesi de yazar: harfler, Sil, boşluk, Enter. Türkçe büyük/küçük harf doğru: I → ı, İ → i.
+- Panel açıkken maç ekranı panelin üstüne sığar: logo ve kural kartı gizlenir, kelime listesi kalan yeri doldurur. Önceden telefon klavyesi listeyi örtüyordu.
+- Klavyede tire yok. Sözlükteki 4 tireli giriş ("e-posta" gibi) "e posta" ve "eposta" biçimlerinde de bulunur.
+
+**Sınama:**
+- `test/klavye.test.mjs` 4: düzen, sözlükteki her harfin klavyede olması, tuş mantığı, Türkçe harf eşlemesi, tireli kelimeler.
+- `test/arayuz.test.mjs`:
+  - Bütün maç testleri artık gerçek oyuncu gibi tuşlara basarak oynanıyor.
+  - Yeni test: kutu salt okunur; panel ekranın altında; tuş ≥ 28 px; sıra rakipteyken tuşlar kapalı; tuş + Sil + fiziksel klavye + Enter ile kelime gönderilir; maçtan çıkınca panel kapanır.
+- `test/akis.test.mjs` (iki oyunculu, emülatörde) tuşlarla yazıyor.
+
 ## 1.0.4 — Evren ile tarama (10 Kasım 2026)
 
 **Düzeltme:** 1.0.1 ve 1.0.2'de "Evren" yerine yanlışlıkla Gemini kullanılmıştı. Evren, `evren-llmapi.ssyz.org.tr`

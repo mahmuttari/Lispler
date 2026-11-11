@@ -57,6 +57,10 @@ async function axe(seciciler) {
     return r.violations.map((v) => ({ id: v.id, etki: v.impact, adet: v.nodes.length, ornek: v.nodes[0]?.target?.join(' ') }));
   }, seciciler);
 }
+// 1.0.5: kelime kutusu salt okunur; kelime oyunun klavyesinden, gerçek oyuncu gibi tuşlara basılarak yazılır
+async function yaz(kelime) {
+  for (const h of Array.from(kelime)) await sayfa.click(h === ' ' ? '#klavye [data-tus="bosluk"]' : `#klavye [data-tus="${h}"]`);
+}
 const agir = (ihlaller) => ihlaller.filter((v) => v.etki === 'serious' || v.etki === 'critical');
 
 test('sayfa hatasız açılır, giriş ekranı görünür', () => {
@@ -103,7 +107,7 @@ test('1.0.2: yapay zekâya karşı (Zincir, zor): bot doğru harfle yazar, sıra
     && /Bilcek \(Zor\)/.test(document.getElementById('msOppChip').textContent), null, { timeout: 10000 });
   await sayfa.waitForFunction(() => currentRoundData && currentRoundData.phase === 'active', null, { timeout: 20000 });
   if (await sayfa.evaluate(() => currentRoundData.turn === mySlot)) {
-    await sayfa.fill('#wordInput', 'elma');
+    await yaz('elma');
     await sayfa.click('#sendBtn');
   }
   // bot yazar ve sıra oyuncuya döner
@@ -129,7 +133,7 @@ test('1.0.2: yapay zekâya karşı (Hızlı, orta): bot round boyunca kategori k
   // düşünme süresini kısalt (zaman damgasını geri al)
   await sayfa.evaluate(() => roomRef.child('round/phaseStartTime').set(nowServer() - 9800));
   await sayfa.waitForFunction(() => currentRoundData.phase === 'active', null, { timeout: 5000 });
-  await sayfa.fill('#wordInput', 'simit');
+  await yaz('simit');
   await sayfa.click('#sendBtn');
   await sayfa.waitForFunction(() => Object.values(currentRoundData.words || {}).filter((w) => w.by === 'p2').length >= 3, null, { timeout: 8000 });
   const kat = await sayfa.evaluate(() => currentRoundData.category);
@@ -155,7 +159,7 @@ test('1.0.4: kelime zaman damgası sunucu saatiyle yazılır (cihaz saati kaymı
   await sayfa.waitForFunction(() => currentRoundData.turn === mySlot, null, { timeout: 10000 });
   const harf = await sayfa.evaluate(() => getChainNextLetter(currentRoundData.words));
   const kelime = await sayfa.evaluate((h) => zincirSozlugu().find((w) => (!h || turkishFirstLetter(w) === h) && !botKullanilanlar(currentRoundData.words).has(w)), harf);
-  await sayfa.fill('#wordInput', kelime);
+  await yaz(kelime);
   await sayfa.click('#sendBtn');
   await sayfa.waitForFunction(() => Object.values(currentRoundData.words || {}).some((w) => w.by === mySlot));
   const fark = await sayfa.evaluate(() => Object.values(currentRoundData.words).filter((w) => w.by === mySlot).map((w) => Math.abs(w.ts - nowServer())));
@@ -175,16 +179,57 @@ test('1.0.4: Hızlı modda denetimi round bittikten sonra dönen kelime sonraki 
   // listede olmayan kelime → yavaş denetim (round bitene kadar dönmez)
   await sayfa.evaluate(() => { window._eskiDenetim = validateWordSmart; window._denetimBitir = null;
     validateWordSmart = () => new Promise((r) => { window._denetimBitir = () => r(true); }); });
-  await sayfa.fill('#wordInput', 'qqqzzz');
+  await yaz('zzvvzz');
   await sayfa.click('#sendBtn');
   await sayfa.waitForFunction(() => typeof window._denetimBitir === 'function');
   await sayfa.evaluate(() => roomRef.child('round/phaseStartTime').set(nowServer() - 29900));
   await sayfa.waitForFunction(() => currentRoundData.number === 2, null, { timeout: 15000 });
   await sayfa.evaluate(() => window._denetimBitir());
   await sayfa.waitForTimeout(500);
-  const sizan = await sayfa.evaluate(() => Object.values(currentRoundData.words || {}).filter((w) => w.text === 'qqqzzz').length);
+  const sizan = await sayfa.evaluate(() => Object.values(currentRoundData.words || {}).filter((w) => w.text === 'zzvvzz').length);
   await sayfa.evaluate(() => { validateWordSmart = window._eskiDenetim; gameEnded = true; resetGameState(); show('lobbyScreen'); });
   assert.equal(sizan, 0, 'eski roundun kelimesi yeni rounda yazıldı');
+  assert.deepEqual(hatalar, []);
+});
+
+test('1.0.5: oyun klavyesi — telefon klavyesi açılmaz, tuşlar ve fiziksel klavye yazar, sıra rakipteyken kapalı', { timeout: 60000 }, async () => {
+  await sayfa.evaluate(() => { if (roomRef) resetGameState(); selectedMode = 'chain'; BOT.sira.zor = [1500, 1500, 0]; show('lobbyScreen'); });
+  const kutu = await sayfa.evaluate(() => { const w = document.getElementById('wordInput'); return [w.readOnly, w.getAttribute('inputmode')]; });
+  assert.deepEqual(kutu, [true, 'none'], 'kelime kutusu telefonun klavyesini açmamalı');
+  await sayfa.click('#botBtn');
+  await sayfa.click('.bot-zorluk[data-zorluk="zor"]');
+  await sayfa.waitForFunction(() => currentRoundData && currentRoundData.phase === 'active', null, { timeout: 20000 });
+  // panel ekranın altında, tuşlar en dar telefonda da yeterince geniş
+  const olcu = await sayfa.evaluate(() => {
+    const p = document.getElementById('inputRow').getBoundingClientRect();
+    const t = document.querySelector('#klavye [data-tus="e"]').getBoundingClientRect();
+    return { altta: Math.abs(p.bottom - innerHeight) < 2, tus: t.width, sinif: document.body.classList.contains('klavye-acik') };
+  });
+  assert.ok(olcu.altta && olcu.sinif, JSON.stringify(olcu));
+  assert.ok(olcu.tus >= 28, `tuş ${olcu.tus} px`);
+  // sıra rakipteyken tuşlar kapanır (ekran güncellemesini bekle)
+  await sayfa.waitForFunction(() => currentRoundData.turn === mySlot || [...document.querySelectorAll('#klavye .kb-tus')].every((b) => b.disabled), null, { timeout: 3000 });
+  if (await sayfa.evaluate(() => currentRoundData.turn !== mySlot)) {
+    assert.equal(await sayfa.evaluate(() => [...document.querySelectorAll('#klavye .kb-tus')].every((b) => b.disabled)), true, 'sıra rakipteyken tuşlar kapalı');
+    await sayfa.waitForFunction(() => currentRoundData.turn === mySlot, null, { timeout: 10000 });
+  }
+  await sayfa.waitForFunction(() => [...document.querySelectorAll('#klavye .kb-tus')].every((b) => !b.disabled));
+  const harf = await sayfa.evaluate(() => getChainNextLetter(currentRoundData.words));
+  // fiziksel klavyeyle yazılacak kısım ASCII (Playwright ABD düzeninde olmayan harfler için tuş olayı göndermez)
+  const kelime = await sayfa.evaluate((h) => zincirSozlugu().find((w) => (!h || turkishFirstLetter(w) === h) && w.length >= 4
+    && /^[a-hj-pr-vyz]+$/.test(w.slice(2)) && !botKullanilanlar(currentRoundData.words).has(w)), harf);
+  assert.ok(kelime, `"${harf}" ile başlayan uygun kelime`);
+  // tuşlarla: fazladan harf + Sil
+  await yaz(kelime.slice(0, 2) + 'k');
+  await sayfa.click('#klavye [data-tus="sil"]');
+  assert.equal(await sayfa.inputValue('#wordInput'), kelime.slice(0, 2));
+  // fiziksel klavyeyle devam (web sürümü) ve Enter ile gönder
+  await sayfa.keyboard.type(kelime.slice(2).toLocaleUpperCase('tr-TR'));
+  assert.equal(await sayfa.inputValue('#wordInput'), kelime);
+  await sayfa.keyboard.press('Enter');
+  await sayfa.waitForFunction((k) => Object.values(currentRoundData.words || {}).some((w) => w.by === mySlot && w.text === k), kelime, { timeout: 5000 });
+  await sayfa.evaluate(() => { gameEnded = true; resetGameState(); show('lobbyScreen'); });
+  await sayfa.waitForFunction(() => !document.body.classList.contains('klavye-acik'));
   assert.deepEqual(hatalar, []);
 });
 

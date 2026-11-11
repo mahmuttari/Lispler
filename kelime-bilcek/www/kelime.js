@@ -98,7 +98,13 @@ function normalizeWord(w){
 
 const CATEGORY_LOOKUP = {};
 Object.keys(CATEGORY_WORDS).forEach(cat => {
-  CATEGORY_LOOKUP[cat] = new Set(CATEGORY_WORDS[cat].map(normalizeWord));
+  // 1.0.5: oyun klavyesinde tire yok; "e-posta" "e posta" ve "eposta" diye de bulunur
+  const set = new Set();
+  CATEGORY_WORDS[cat].map(normalizeWord).forEach(w => {
+    set.add(w);
+    if(w.includes("-")){ set.add(w.replace(/-/g, " ")); set.add(w.replace(/-/g, "")); }
+  });
+  CATEGORY_LOOKUP[cat] = set;
 });
 
 function isInCategory(category, word){

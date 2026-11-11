@@ -1,5 +1,5 @@
 /* ============================================================
-   KELİME BİLCEK — görünüm (1.0.3)
+   KELİME BİLCEK — görünüm (1.0.3; yazma paneli 1.0.5)
    Koyu tema; simgedeki ateş turuncusu (ben), buz mavisi (rakip) ve altın (vurgu). Oyuncak gibi "kalın" düğmeler:
    3 boyutlu alt gölge, basınca çökme. Yazı tipi: Fredoka (başlık, düğme, sayı) + Nunito (metin), cihazda (vendor/fonts).
    Erişilebilirlik: metin kontrastı ≥ 4.5:1 (büyük kalın metin ≥ 3:1), dokunma hedefi ≥ 48 px, görünür odak halkası,
@@ -326,10 +326,43 @@ input[type=text]:disabled{opacity:.6}
 .chat-msg.validating{color:var(--muted);font-style:italic}
 .chat-msg.stolen{color:var(--soluk);opacity:.7;font-style:italic;text-decoration:line-through}
 .chat-msg .who{font:700 12px/1 var(--metin);color:var(--muted)}
-.giris-satiri{gap:10px}
-.giris-satiri input{flex:1;min-width:0}
-.btn.gonder{width:auto;flex:0 0 auto;min-height:56px;padding:0 18px;margin-bottom:6px}
+/* 1.0.5: yazma paneli + oyun klavyesi (klavye.js). Telefon klavyesi gibi ekranın altında, tam genişlikte; tuş genişliği
+   bütün satırlarda aynı (en uzun satır 11 tuş). Panel açıkken sayfanın altı panel kadar boşaltılır (body.klavye-acik). */
+.giris-paneli{position:fixed;left:50%;bottom:0;transform:translateX(-50%);z-index:30;width:min(100%,560px);
+  flex-direction:column;gap:8px;padding:10px 3px max(8px,env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(29,22,69,.98),rgba(13,9,32,.99));border-top:2px solid var(--cizgi-acik);
+  border-radius:20px 20px 0 0;box-shadow:0 -12px 30px rgba(0,0,0,.45)}
+/* Panel açıkken maç ekranı panelin üstüne sığar: logo ve kural kartı gizlenir, kelime listesi kalan yeri doldurur */
+body.klavye-acik header,body.klavye-acik footer,body.klavye-acik .rules-card{display:none}
+body.klavye-acik main{padding:6px 10px calc(var(--klavye-h,250px) + 6px)}
+body.klavye-acik #gameScreen{padding:10px;gap:8px;min-height:300px;
+  height:calc(100vh - var(--klavye-h,250px) - 12px);height:calc(100dvh - var(--klavye-h,250px) - 12px)}
+body.klavye-acik .match-header{padding:5px 8px}
+body.klavye-acik .category{padding:6px 10px}
+body.klavye-acik .category small{margin-bottom:3px;font-size:11px}
+body.klavye-acik .category strong{font-size:19px}
+body.klavye-acik .phase-banner{padding:6px 8px 6px 14px}
+body.klavye-acik .phase-timer{flex-basis:46px;width:46px;height:46px;font-size:23px}
+body.klavye-acik .live-scores span{padding:5px 12px}
+body.klavye-acik .live-scores b{font-size:21px}
+body.klavye-acik .chat-list{flex:1 1 auto;height:auto;min-height:84px}
+body.klavye-acik #leaveBtn{min-height:42px;padding:6px 16px;font-size:16px;margin:0}
+.giris-satiri{gap:8px;padding:0 6px}
+.giris-satiri input{flex:1;min-width:0;min-height:52px;font-size:20px;cursor:default;caret-color:transparent}
+.btn.gonder{width:auto;flex:0 0 auto;min-height:52px;padding:0 18px;margin-bottom:4px}
 @media (max-width:380px){.btn.gonder span{display:none}.btn.gonder{width:56px;padding:0}}
+.klavye{--kb-ara:4px;--kb-tus:calc((100% - 10 * var(--kb-ara)) / 11);display:flex;flex-direction:column;gap:7px;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation}
+.kb-satir{display:flex;justify-content:center;gap:var(--kb-ara)}
+.kb-tus{flex:0 0 var(--kb-tus);min-width:0;height:50px;padding:0;border:0;border-radius:10px;cursor:pointer;
+  background:linear-gradient(180deg,var(--panel3),var(--panel2));color:var(--text);font:600 21px/1 var(--baslik);
+  box-shadow:0 4px 0 #120d2e,inset 0 1px 0 rgba(255,255,255,.14);transition:transform .06s,box-shadow .06s}
+.kb-tus:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 #120d2e;background:var(--cizgi-acik)}
+.kb-tus:disabled{opacity:.4;cursor:not-allowed}
+.kb-tus:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+.kb-genis{flex-basis:calc(var(--kb-tus) * 1.5 + var(--kb-ara) * .5);font-size:22px}
+.kb-sil{background:linear-gradient(180deg,#3d3470,#2c2459)}
+@media (max-height:700px){.kb-tus{height:44px}.klavye{gap:6px}.giris-satiri input,.btn.gonder{min-height:46px}}
 #leaveBtn{margin-top:2px}
 
 /* ---------- Maç sonu ---------- */

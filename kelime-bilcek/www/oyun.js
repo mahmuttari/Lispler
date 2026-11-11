@@ -876,18 +876,10 @@ $("againBtn").addEventListener("click", async () => {
   await reklamLobiyeDonus(); // maç bitti: kurallar uygunsa geçiş reklamı (reklam.js)
 });
 $("sendBtn").addEventListener("click", submitWord);
-$("wordInput").addEventListener("keydown", e => { if(e.key==="Enter") submitWord(); });
+klavyeKur(submitWord); // 1.0.5: oyunun kendi klavyesi (klavye.js); Enter ve fiziksel klavye de oradan
 $("acceptInviteBtn").addEventListener("click", acceptInvite);
 $("declineInviteBtn").addEventListener("click", declineInvite);
 
-// Chat'e tıklayınca input'a focus (klavyeyi yeniden açar — bu user gesture içinde olduğu için Android'de çalışır)
-$("wordsChat").addEventListener("click", () => {
-  if(!currentRoundData || currentRoundData.phase !== "active") return;
-  const w = $("wordInput");
-  if(w && !w.disabled){
-    try{ w.focus(); }catch(e){}
-  }
-});
 
 document.querySelectorAll("[data-back]").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -1919,7 +1911,6 @@ async function submitWord(){
         showToast("'" + raw + "' geçerli bir kelime değil");
         vibrate([90,50,90]);
         SFX.error();
-        try{ $("wordInput").focus(); }catch(e){}
         return;
       }
       valid = true;
@@ -2004,7 +1995,6 @@ async function submitWord(){
         .catch(() => pushFinal(false, false));
     }
   }
-  setTimeout(() => { try{ $("wordInput").focus(); }catch(e){} }, 30);
 }
 
 async function endGame(winnerSlot, reason){

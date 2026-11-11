@@ -1,1 +1,1 @@
-Hata düzeltmeleri: telefon saati yanlış olsa da Zincir sırası ve Hızlı moddaki "ilk yazan kapar" artık doğru çalışır; süre dolduktan sonra onaylanan kelime sonraki rounda yazılmaz.
+Oyunun kendi klavyesi: maçta telefon klavyesi açılmaz, kelime önerisi ve otomatik tamamlama yok — herkes kendi bildiğiyle yarışır. Kelime listesi artık klavyenin üstünde hep görünür.

@@ -100,10 +100,12 @@ test('hızlı eşleşme (Zincir): iki oyuncu aynı odada oynar, terk, sonuç ve 
   const sira = await ali.evaluate(() => (currentRoundData.turn === mySlot ? 'ali' : 'ayse'));
   const ilk = sira === 'ali' ? ali : ayse;
   const ikinci = sira === 'ali' ? ayse : ali;
-  await ilk.fill('#wordInput', 'elma');
+  // 1.0.5: kelime kutusu salt okunur; oyunun klavyesinden yazılır
+  const tusla = async (s, k) => { for (const h of k) await s.click(`#klavye [data-tus="${h}"]`); };
+  await tusla(ilk, 'elma');
   await ilk.click('#sendBtn');
   await ikinci.waitForFunction(() => currentRoundData && currentRoundData.turn === mySlot, null, { timeout: 10000 });
-  await ikinci.fill('#wordInput', 'armut');
+  await tusla(ikinci, 'armut');
   await ikinci.click('#sendBtn');
   await ilk.waitForFunction(() => Object.keys(currentRoundData.words || {}).length === 2, null, { timeout: 10000 });
   const odaId = await ali.evaluate(() => roomId);

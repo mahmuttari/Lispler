@@ -380,6 +380,7 @@ let currentMatchData = null;
 let phaseTickInterval = null;
 let pendingPhaseAdvance = false;
 let selectedMode = "sim"; // "sim" veya "duel"
+let sonMac = null; // 1.0.6: son biten maç {kazandi, ben, rakip} — paylaşım metni ve değerlendirme penceresi
 let serverTimeOffset = 0;  // Firebase server clock - client clock farkı (ms)
 function nowServer(){ return Date.now() + serverTimeOffset; }
 const TOTAL_ROUNDS_SIM = 10;
@@ -870,11 +871,21 @@ $("leaveWaitBtn").addEventListener("click", leaveAndReset);
 $("leaveBtn").addEventListener("click", forfeitGame);
 $("againBtn").addEventListener("click", async () => {
   const bitenOda = roomRef;
+  const mac = sonMac; sonMac = null;
   resetGameState();
   show("lobbyScreen");
   odayiTemizle(bitenOda);
-  await reklamLobiyeDonus(); // maç bitti: kurallar uygunsa geçiş reklamı (reklam.js)
+  const reklamGosterildi = await reklamLobiyeDonus(); // maç bitti: kurallar uygunsa geçiş reklamı (reklam.js)
+  // 1.0.6: reklam gösterilmediyse ve maç kazanıldıysa, kurallar uygunsa Play'in değerlendirme penceresi (tanitim.js)
+  if(!reklamGosterildi) await degerlendirmeIste(!!(mac && mac.kazandi));
 });
+// 1.0.6: arkadaşını davet et (lobi) ve maç sonunda meydan oku (tanitim.js)
+async function paylasDugmesi(skor){
+  const sonuc = await oyunuPaylas(skor);
+  if(sonuc === "kopyalandi") showToast("Bağlantı kopyalandı, arkadaşına gönder", true);
+}
+$("shareBtn").addEventListener("click", () => paylasDugmesi());
+$("endShareBtn").addEventListener("click", () => paylasDugmesi(sonMac && sonMac.kazandi ? sonMac : null));
 $("sendBtn").addEventListener("click", submitWord);
 klavyeKur(submitWord); // 1.0.5: oyunun kendi klavyesi (klavye.js); Enter ve fiziksel klavye de oradan
 $("acceptInviteBtn").addEventListener("click", acceptInvite);
@@ -1572,12 +1583,15 @@ function renderRoom(d){
     // Stats kaydet (her oyuncu kendi sonucunu yazar)
     if(!botOdasiMi()) recordMatchResult(d.winner, (d.match && d.match.mode) || "sim").catch(()=>{}); // bot maçı sayılmaz
     reklamMacBitti();
+    tanitimMacBitti(); // 1.0.6: değerlendirme penceresi için biten maç sayısı
     show("endScreen");
     const me = mySlot === "p1" ? d.p1 : d.p2;
     const opp = mySlot === "p1" ? d.p2 : d.p1;
     const m = d.match || {};
     const meWins = mySlot === "p1" ? (m.p1Wins || 0) : (m.p2Wins || 0);
     const oppWins = mySlot === "p1" ? (m.p2Wins || 0) : (m.p1Wins || 0);
+    sonMac = { kazandi: d.winner === mySlot, ben: meWins, rakip: oppWins };
+    $("endShareText").textContent = sonMac.kazandi ? "Arkadaşına Meydan Oku" : "Arkadaşını Davet Et";
 
     const won = d.winner === mySlot;
     const tied = d.winner === "tie";

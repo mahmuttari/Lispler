@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const KOK = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const IKONLAR = ['zap', 'bot', 'users', 'key-round', 'layout-grid', 'trophy', 'hourglass', 'link', 'chevron-right',
   'arrow-left', 'send', 'user', 'log-out', 'trash-2', 'pencil', 'volume-2', 'volume-x', 'shield-check', 'search', 'x', 'check',
-  'user-plus', 'door-open', 'swords', 'crown', 'gamepad-2', 'flag', 'house', 'sparkles', 'smile', 'meh', 'skull', 'timer'];
+  'user-plus', 'door-open', 'swords', 'crown', 'gamepad-2', 'flag', 'house', 'sparkles', 'smile', 'meh', 'skull', 'timer', 'share-2'];
 
 const semboller = IKONLAR.map((ad) => {
   const svg = fs.readFileSync(path.join(KOK, 'node_modules', 'lucide-static', 'icons', `${ad}.svg`), 'utf8');

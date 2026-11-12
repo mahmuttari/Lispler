@@ -233,6 +233,49 @@ test('1.0.5: oyun klavyesi — telefon klavyesi açılmaz, tuşlar ve fiziksel k
   assert.deepEqual(hatalar, []);
 });
 
+test('1.0.6: Arkadaşını Davet Et — web\'de navigator.share, telefonda Share eklentisi; mağaza bağlantısıyla', async () => {
+  await sayfa.evaluate(() => { if (roomRef) resetGameState(); show('lobbyScreen'); window._paylasim = null;
+    navigator.share = async (d) => { window._paylasim = d; }; });
+  await sayfa.click('#shareBtn');
+  await sayfa.waitForFunction(() => window._paylasim);
+  const web = await sayfa.evaluate(() => window._paylasim);
+  assert.equal(web.url, 'https://play.google.com/store/apps/details?id=com.poyrazworkshop.kelimebilcek');
+  assert.match(web.text, /kelime düellosu/);
+  // telefonda: Capacitor Share eklentisi; kazanılan maçın sonunda skorlu "meydan oku" metni
+  await sayfa.evaluate(() => { window._paylasim = null;
+    window.Capacitor = { isNativePlatform: () => true, Plugins: { Share: { share: async (d) => { window._paylasim = d; } } } };
+    sonMac = { kazandi: true, ben: 6, rakip: 4 }; document.getElementById('endShareText').textContent = 'Arkadaşına Meydan Oku'; show('endScreen'); });
+  await sayfa.click('#endShareBtn');
+  await sayfa.waitForFunction(() => window._paylasim);
+  const tel = await sayfa.evaluate(() => window._paylasim);
+  assert.match(tel.text, /6-4 kazandım/);
+  assert.equal(tel.dialogTitle, 'Arkadaşını davet et');
+  await sayfa.evaluate(() => { delete window.Capacitor; delete navigator.share; sonMac = null; show('lobbyScreen'); });
+  assert.deepEqual(hatalar, []);
+});
+
+test('1.0.6: değerlendirme penceresi — kazanılan maçtan lobiye dönerken bir kez; 30 gün içinde tekrar yok; kaybedince yok', async () => {
+  await sayfa.evaluate(() => {
+    window._istek = 0;
+    window.Capacitor = { isNativePlatform: () => true, Plugins: { InAppReview: { requestReview: async () => { window._istek++; } } } };
+    localStorage.setItem('kb_tanitim_v1', JSON.stringify({ mac: 2, istek: [] }));
+  });
+  const don = async (kazandi) => {
+    await sayfa.evaluate((k) => { sonMac = { kazandi: k, ben: 2, rakip: 1 }; show('endScreen'); }, kazandi);
+    await sayfa.click('#againBtn');
+    await sayfa.waitForFunction(() => !document.getElementById('lobbyScreen').classList.contains('hidden'));
+    await sayfa.waitForTimeout(150);
+    return sayfa.evaluate(() => window._istek);
+  };
+  assert.equal(await don(true), 0, 'ilk 3 maçta istenmez');
+  await sayfa.evaluate(() => localStorage.setItem('kb_tanitim_v1', JSON.stringify({ mac: 3, istek: [] })));
+  assert.equal(await don(false), 0, 'kaybedince istenmez');
+  assert.equal(await don(true), 1, 'kazanınca istenir');
+  assert.equal(await don(true), 1, '30 gün içinde ikinci kez istenmez');
+  await sayfa.evaluate(() => { delete window.Capacitor; localStorage.removeItem('kb_tanitim_v1'); });
+  assert.deepEqual(hatalar, []);
+});
+
 test('web sürümünde reklam kodu hiçbir şey yapmaz', async () => {
   assert.equal(await sayfa.evaluate(() => reklam.hazir), false);
   assert.deepEqual(hatalar, []);

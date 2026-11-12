@@ -43,7 +43,7 @@ jobs:
           # erişilemezse (Kasım 2026'da tekrarlayan DNS hatası) iş durmasın; tarayıcı açılamazsa testler zaten kırmızı olur.
           npx playwright install-deps chromium || echo "::warning::playwright install-deps başarısız (apt); kurulu paketlerle devam"
       - name: Birim, Worker, site, arayüz ve erişilebilirlik testleri
-        run: node --test test/kelime.test.mjs test/reklam.test.mjs test/bot.test.mjs test/klavye.test.mjs test/arayuz.test.mjs worker/worker.test.mjs site/site.test.mjs
+        run: node --test test/kelime.test.mjs test/reklam.test.mjs test/bot.test.mjs test/klavye.test.mjs test/tanitim.test.mjs test/arayuz.test.mjs worker/worker.test.mjs site/site.test.mjs
       - name: Lighthouse CI
         run: |
           export CHROME_PATH=$(node -e "console.log(require('playwright').chromium.executablePath())")

@@ -1,18 +1,20 @@
 {
   "name": "kelime-bilcek",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": true,
   "description": "Kelime Bilcek — Capacitor ile Android kelime düellosu (Poyraz Workshop)",
   "scripts": {
     "vendor": "node araclar/vendor.mjs",
     "sync": "npm run vendor && cap sync android",
-    "test": "node --test test/kelime.test.mjs test/reklam.test.mjs test/bot.test.mjs test/klavye.test.mjs test/arayuz.test.mjs",
+    "test": "node --test test/kelime.test.mjs test/reklam.test.mjs test/bot.test.mjs test/klavye.test.mjs test/tanitim.test.mjs test/arayuz.test.mjs",
     "lint": "eslint www/*.js test/ araclar/ worker/ site/*.mjs firebase/*.mjs firebase/test/ && html-validate www/index.html site/*.html"
   },
   "dependencies": {
     "@capacitor-community/admob": "8.2.1",
+    "@capacitor-community/in-app-review": "8.0.0",
     "@capacitor/android": "^8.5.3",
     "@capacitor/core": "^8.5.3",
+    "@capacitor/share": "8.0.3",
     "@codetrix-studio/capacitor-google-auth": "3.4.0-rc.4",
     "@fontsource-variable/fredoka": "5.3.0",
     "@fontsource-variable/nunito": "5.3.0",

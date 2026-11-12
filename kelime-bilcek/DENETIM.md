@@ -43,6 +43,31 @@ CI'da ilk koşular (commit b6dbe16): Denetim 41827897508 ✓, Firebase kurallar�
 | K-16 | Düşük (görünüş) | APK'daki uyarlanabilir simge Cordova'nın varsayılan robotuydu; Capacitor projesinde varsayılan açılış görseli. | Simgeler ve açılış görseli `icon.jpg`'den üretildi; Play simgesi 512×512. | — |
 | K-17 | Düşük (erişilebilirlik) | Kategori rozeti kontrastı yetersiz (axe "serious"); profil açan kullanıcı adı `span` (klavyeyle açılmıyor) ve dar ekranda başlığa biniyordu; animasyonlar hareket azaltma tercihini yok sayıyordu. | Rozet rengi koyulaştırıldı; `button` + `aria-label`; dar ekranda sağa yaslanır; `prefers-reduced-motion`. bütün düğmelere `type="button"`; `span` içindeki `div`'ler düzeltildi. | axe-core, html-validate |
 
+## 1.0.6 — Arkadaşını davet et ve değerlendirme (12 Kasım 2026)
+
+**Neden:** Kullanıcı isteği. Play aramasında yeni bir uygulamayı yükselten indirme ve puandır. Oyun "bilcek" ve tam adla 1. sırada çıkıyor, ama "kelime bilcek" ve genel aramalarda ilk 30–50'de yok (12 Kasım ölçümü, play.google.com, tr/TR).
+
+**Ne değişti** (`www/tanitim.js`):
+- **Paylaşım düğmeleri:**
+  - Lobide "Arkadaşını Davet Et".
+  - Maç sonunda "Arkadaşına Meydan Oku" (kazanınca skorlu metin, ör. "6-4 kazandım!") ya da "Arkadaşını Davet Et".
+  - Telefonun paylaşım menüsü (Capacitor Share 8.0.3) mağaza bağlantısıyla açılır. Web'de `navigator.share` kullanılır, yoksa bağlantı panoya kopyalanır.
+- **Değerlendirme:** Google Play'in uygulama içi değerlendirme penceresi (`@capacitor-community/in-app-review` 8.0.0, Play In-App Review). Ne zaman istenir:
+  - yalnız kazanılan bir maçtan lobiye dönerken;
+  - en az 3 bitmiş maçtan sonra;
+  - o anda geçiş reklamı gösterilmediyse;
+  - iki istek arası ≥ 30 gün, toplamda ≤ 3 kez.
+
+  Google'ın kuralı gereği önceden "puan verir misin?" diye sorulmaz. Pencereyi gösterip göstermemeye Play karar verir.
+- **Eklenti sürümleri:** Sabitlendi (`--save-exact`). İkisi de Capacitor ekibinin bakımında ve iki haftadan eski: Share 8.0.3 (2 Ekim 2026), In-App Review 8.0.0 (26 Aralık 2025).
+- **Veri güvenliği:** Değişmedi. Paylaşımda veri bize gelmez. Değerlendirmeyi Google Play kendisi işler.
+
+**Sınama:**
+- `test/tanitim.test.mjs` 5: kurallar, sayaç, web'de istenmemesi, paylaşım metni ve mağaza adresi.
+- `test/arayuz.test.mjs`:
+  - web ve telefon (eklenti taklidi) paylaşımı;
+  - değerlendirme akışı: ilk 3 maçta yok, kaybedince yok, kazanınca bir kez, 30 gün içinde tekrar yok.
+
 ## 1.0.5 — Oyunun kendi klavyesi (11 Kasım 2026)
 
 **Neden:** Kullanıcı isteği. Telefon klavyeleri (Gboard, Samsung) yazarken kelime önerir ve otomatik tamamlar; oyuncu

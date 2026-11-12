@@ -1,5 +1,5 @@
 // Kelime Bilcek — ESLint (kelime-denetim.yml). www/*.js tarayıcıda düz <script> olarak, aynı genel ad alanında
-// yüklenir: kelime.js → reklam.js → bot.js → klavye.js → oyun.js. Dosyalar arası adlar burada "globals" olarak bildirilir.
+// yüklenir: kelime.js → reklam.js → bot.js → klavye.js → tanitim.js → oyun.js. Dosyalar arası adlar burada "globals" olarak bildirilir.
 import js from '@eslint/js';
 import globals from 'globals';
 
@@ -8,7 +8,7 @@ const kelimeAdlari = Object.fromEntries(['CATEGORIES', 'CATEGORY_WORDS', 'CATEGO
   'getChainNextLetter', 'isWordInLocalDict', 'kelimeBicimiGecerli', 'kullaniciAdiGecerli', 'isMatchOver',
   'KELIME_EN_UZUN'].map((a) => [a, 'readonly']));
 const reklamAdlari = Object.fromEntries(['REKLAM', 'reklam', 'reklamBaslat', 'reklamMacBitti', 'reklamLobiyeDonus',
-  'reklamEkranDegisti', 'reklamGizlilikSecenekleri', 'BOT', 'YerelOda', 'botBaslat', 'botDurdur', 'klavyeKur'].map((a) => [a, 'readonly']));
+  'reklamEkranDegisti', 'reklamGizlilikSecenekleri', 'BOT', 'YerelOda', 'botBaslat', 'botDurdur', 'klavyeKur', 'tanitimMacBitti', 'degerlendirmeIste', 'oyunuPaylas'].map((a) => [a, 'readonly']));
 
 export default [
   { ignores: ['www/vendor/**', 'android/**', 'node_modules/**', 'firebase/node_modules/**'] },

@@ -45,4 +45,4 @@
 # (yapıldı 2026-11-11, koşu 43055649639: AAB 6 (koşu 43043619768, commit 77f3595) yüklendi, üretim 1.0.4 (5) → 1.0.5 (6) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula
 
 # istek 2026-11-12T03:47:16Z: salt okuma durum (kullanıcı 1.0.5 yayında mı diye sordu)
-durum
+# (yapıldı 2026-11-12, koşu 43150517560: production 1.0.5 (6) completed; mağaza sayfasında 1.0.5, yeni ad ve kısa açıklama yayında) durum

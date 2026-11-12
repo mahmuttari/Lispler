@@ -47,5 +47,5 @@
 # istek 2026-11-12T03:47:16Z: salt okuma durum (kullanıcı 1.0.5 yayında mı diye sordu)
 # (yapıldı 2026-11-12, koşu 43150517560: production 1.0.5 (6) completed; mağaza sayfasında 1.0.5, yeni ad ve kısa açıklama yayında) durum
 
-# istek 2026-11-12T05:03:07Z: 1.0.6 (7) Arkadaşını Davet Et + Play değerlendirme penceresi — paketi üretime yükle, incelemeye gönder; 1.0.5 (6)'nın yerini alır (kullanıcının açık isteği: "İkisini de ekle ve yayınla"); AAB: kelime-android koşusu 43158240301 (commit 0b9f392, versionCode 7, admob=gercek, Poyraz Workshop yükleme anahtarı); beyanlar değişmedi
-yukle yayinla uygula
+# istek 2026-11-12T05:03:07Z: 1.0.6 (7) Arkadaşını Davet Et + Play değerlendirme penceresi — paketi üretime yükle, incelemeye gönder; 1.0.5 (6)'nın yerini alır (kullanıcının açık isteği: "İkisini de ekle ve yayınla"); AAB: kelime-android koşusu 43158240442 (commit 0b9f392, versionCode 7, admob=gercek, Poyraz Workshop yükleme anahtarı); beyanlar değişmedi
+# (yapıldı 2026-11-12, koşu 43158760314: AAB 7 (koşu 43158240442, commit 0b9f392) yüklendi, üretim 1.0.5 (6) → 1.0.6 (7) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula

@@ -6,4 +6,5 @@
 #   yas <uygulama> [uygula]        yaş derecesi (reklam var, başka içerik yok → 4+)
 #   abonelik <uygulama> [uygula]   reklamsız abonelik: aylık 0,99 $, yıllık 9,99 $ (öbür ülkeler Apple'ın eşdeğeri)
 #   gorsel <uygulama> [uygula]     iPhone 6,9″ ekran görüntüleri (<klasör>/magaza/app-store/<dil>/iphone-*.jpg)
-durum
+# 2026-11-13: kullanıcı "apilerimiz var, hepsini sen yap" → önce durum (anahtar Lispler'de var mı?)
+durum smart-measure

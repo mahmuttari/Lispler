@@ -137,9 +137,14 @@ export function gravity(cb) {
 export function rotation(cb) {
   if (isNative) {
     const o = O();
-    const off = listen(o, 'yonelim', (e) => cb({ R: e.m, t: e.t, source: e.kaynak }));
-    o.yonelimBaslat().then((r) => { if (!r || !r.var) cb(null); }).catch(() => cb(null));
-    return () => { off(); safe(() => o.yonelimDurdur()); };
+    // Sensör var görünüp okuma vermeyebilir: ilk okuma FIRST_EVENT_MS içinde gelmezse cb(null) (çağıran yerçekimine düşer);
+    // okuma sonradan gelirse yine iletilir.
+    let got = false, told = false;
+    const none = () => { if (!told && !got) { told = true; cb(null); } };
+    const off = listen(o, 'yonelim', (e) => { got = true; cb({ R: e.m, t: e.t, source: e.kaynak }); });
+    const tm = setTimeout(none, FIRST_EVENT_MS);
+    o.yonelimBaslat().then((r) => { if (!r || !r.var) none(); }).catch(none);
+    return () => { told = true; clearTimeout(tm); off(); safe(() => o.yonelimDurdur()); };
   }
   let got = false;
   const h = (ev) => {

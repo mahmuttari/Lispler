@@ -17,6 +17,13 @@ export function sahteCihaz(ayar = {}) {
   const zam = { };
   const basla = (ad, ms, uret) => { clearInterval(zam[ad]); zam[ad] = setInterval(() => yay(ad, uret()), ms); };
   const dur = (ad) => { clearInterval(zam[ad]); delete zam[ad]; };
+  // Sınama kancaları: olay yayma (ör. App › appStateChange), dinleyici sayısı, telefonun sayfaya haber vermeden bir akışı
+  // kesmesi (Android'de eklenti her Activity.onPause'da sensörleri kapatır), başlatma çağrılarının sayısı
+  S.yay = (ad, veri) => yay(ad, veri);
+  S.dinleyiciSayisi = (ad) => (dinleyici[ad] || []).length;
+  S.kes = (ad) => dur(ad);
+  S.cagri = {};
+  const say = (ad) => { S.cagri[ad] = (S.cagri[ad] || 0) + 1; };
   let tohum = 7;
   const rnd = () => { tohum = (tohum * 16807) % 2147483647; return tohum / 2147483647 - 0.5; };
   const DEG = Math.PI / 180;
@@ -48,9 +55,9 @@ export function sahteCihaz(ayar = {}) {
     }),
     checkPermissions: async () => ({ camera: 'granted', microphone: 'granted' }),
     requestPermissions: async () => ({ camera: 'granted', microphone: 'granted' }),
-    yercekimiBaslat: async () => { basla('yercekimi', 33, () => ({ x: S.gravity.x + rnd() * S.gurultu, y: S.gravity.y + rnd() * S.gurultu, z: S.gravity.z, t: performance.now(), kaynak: 'gravity' })); return { var: true, kaynak: 'gravity' }; },
+    yercekimiBaslat: async () => { say('yercekimiBaslat'); basla('yercekimi', 33, () => ({ x: S.gravity.x + rnd() * S.gurultu, y: S.gravity.y + rnd() * S.gurultu, z: S.gravity.z, t: performance.now(), kaynak: 'gravity' })); return { var: true, kaynak: 'gravity' }; },
     yercekimiDurdur: async () => dur('yercekimi'),
-    yonelimBaslat: async () => { basla('yonelim', 33, () => ({ m: matris(), t: performance.now(), kaynak: 'game' })); return { var: true, kaynak: 'game' }; },
+    yonelimBaslat: async () => { say('yonelimBaslat'); if (S.yonelimYok) return { var: false }; if (S.yonelimSessiz) return { var: true, kaynak: 'game' }; basla('yonelim', 33, () => ({ m: matris(), t: performance.now(), kaynak: 'game' })); return { var: true, kaynak: 'game' }; },
     yonelimDurdur: async () => dur('yonelim'),
     isikBaslat: async () => { basla('isik', 120, () => ({ lux: Math.max(0, S.lux * (1 + rnd() * 0.04)), t: performance.now() })); return { var: true }; },
     isikDurdur: async () => dur('isik'),

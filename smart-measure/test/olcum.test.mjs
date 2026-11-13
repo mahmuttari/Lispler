@@ -135,6 +135,80 @@ test('kamera: döndürme matrisi ve Euler açılarından bakış', () => {
   yakin(b.pitch, 30, 1e-9);
 });
 
+/** pitch° aşağı, bearing° yönünde bakan birim vektör (dünya: Z yukarı) */
+const yon = (pitch, bearing = 0) => ({ x: Math.cos(pitch * DEG) * Math.sin(bearing * DEG), y: Math.cos(pitch * DEG) * Math.cos(bearing * DEG), z: -Math.sin(pitch * DEG) });
+/** 30 ms aralıklı örnekler: f(t) → {pitch, bearing} */
+const ornekler = (bas, son, f) => { const o = []; for (let t = bas; t <= son; t += 30) { const a = f(t); o.push({ t, ...yon(a.pitch, a.bearing) }); } return o; };
+
+test('kamera: seçim, dokunmadan önceki sakin pencereden alınır (dokunma sarsıntısı sonuca girmez)', () => {
+  // 12°'ye nişan; parmak 1000. ms'de değiyor, son 80 ms'de telefon 1,5° yukarı kalkıyor (uzaklık %14 büyürdü)
+  const s = ornekler(0, 1000, (t) => ({ pitch: t > 920 ? 10.5 : 12, bearing: 40 }));
+  const a = A.steadyAim(s, 1000);
+  yakin(a.pitch, 12, 1e-9); yakin(a.bearing, 40, 1e-9); yakin(a.sp, 0, 1e-9); yakin(a.sb, 0, 1e-6);
+  assert.ok(a.n >= 8);
+  assert.equal(A.pointProblem('distance', [], 1.4, a), null);
+  // pencerede yeterli örnek yoksa null (çağıran güncel bakışa düşer)
+  assert.equal(A.steadyAim(s.filter((x) => x.t > 900), 1000), null);
+  assert.equal(A.steadyAim([], 1000), null);
+  // örnek akışı teklediyse (son 300 ms boş) geniş pencere eski sakin örnekleri kullanır
+  const tekleyen = s.filter((x) => x.t < 700);
+  assert.equal(A.steadyAim(tekleyen, 1000), null);
+  yakin(A.steadyAim(tekleyen, 1000, true, 900).pitch, 12, 1e-9);
+  // yön 0° / 360° sınırında ortalama doğru, oynama küçük
+  const b = A.steadyAim(ornekler(0, 1000, (t) => ({ pitch: 30, bearing: (t / 30) % 2 ? 359.5 : 0.5 })), 1000);
+  yakin(Math.abs(((b.bearing + 180) % 360) - 180), 0, 0.2); yakin(b.sb, 0.5, 0.05);
+  // yön bilinmiyorsa (yalnız yerçekimi) bearing null
+  assert.equal(A.steadyAim(s, 1000, false).bearing, null);
+  // telefon gezdirilirken basılırsa (270 ms'de 6°) reddedilir; hafif titreme kabul edilir ama belirsizliği büyütür
+  const gezen = A.steadyAim(ornekler(0, 1000, (t) => ({ pitch: 20 + (t - 650) * 6 / 270, bearing: 0 })), 1000);
+  assert.ok(gezen.sp > A.STEADY.maxSpread);
+  assert.equal(A.pointProblem('distance', [], 1.4, gezen), 'Moving');
+  const titrek = A.steadyAim(ornekler(0, 1000, (t) => ({ pitch: 20 + ((t / 30) % 2 ? 0.5 : -0.5), bearing: 0 })), 1000);
+  assert.equal(A.pointProblem('distance', [], 1.4, titrek), null);
+  assert.ok(A.rangeOf(1.4, titrek).sigma > A.rangeOf(1.4, { pitch: titrek.pitch }).sigma * 1.2);
+});
+
+test('kamera: canlı önizleme, tepe ve yön denetimleri', () => {
+  const h = 1.5, r = A.floorRange(h, 30), taban = { pitch: 30, bearing: 0 };
+  // ilk noktadan sonra şu anki bakışla çıkacak sonuç
+  yakin(A.preview('distance', h, [taban], { pitch: 30, bearing: 90 }).value, r * Math.SQRT2, 1e-9);
+  yakin(A.preview('height', h, [taban], { pitch: -Math.atan(0.5 / r) / DEG, bearing: 0 }).value, 2, 1e-9);
+  assert.equal(A.preview('distance', h, [], { pitch: 30, bearing: 0 }), null);          // henüz nokta yok
+  assert.equal(A.preview('distance', h, [taban], { pitch: 3, bearing: 0 }), null);      // ufka çok yakın
+  assert.equal(A.preview('height', h, [taban], { pitch: 40, bearing: 0 }), null);       // tabanın altı
+  assert.equal(A.preview('distance', null, [taban], { pitch: 30, bearing: 0 }), null);  // yükseklik girilmemiş
+  // tepe tabanın üstünde olmalı; çok dik yukarı bakış reddedilir
+  assert.equal(A.pointProblem('height', [taban], h, { pitch: 30.5 }), 'TopLow');
+  assert.equal(A.pointProblem('height', [taban], h, { pitch: 29 }), null);
+  assert.equal(A.pointProblem('height', [taban], h, { pitch: -75.1 }), 'TopSteep');
+  assert.equal(A.pointProblem('height', [taban], h, { pitch: -75 }), null);
+  assert.equal(A.pointProblem('height', [], h, { pitch: -20 }), 'AimLower');            // taban zeminde olmalı
+  // genişlik yön ister
+  assert.equal(A.pointProblem('width', [], h, { pitch: 30, bearing: null }), 'NoBearing');
+  assert.equal(A.pointProblem('distance', [], h, { pitch: 30, bearing: null }), null);
+  assert.equal(A.pointProblem('distance', [], h, null), 'NoAim');
+  assert.equal(A.hintFor('height', 0, true).key, 'cm_hint_base_first');
+});
+
+test('kamera: belirsizlik çakışan noktalarda sıfıra düşmez, yönsüz kipte de doğru', () => {
+  const h = 1.5, a = { pitch: 30, bearing: 10 };
+  const ayni = A.distanceBetween(h, a, { ...a });
+  yakin(ayni.value, 0, 1e-12);
+  assert.ok(ayni.sigma > 0.02, `aynı nokta iki kez: ± ${ayni.sigma}`);
+  // uzak noktalarda birinci dereceden yayılımla aynı (eski formül): 90° ayrık, eşit uzaklık
+  const d = A.distanceBetween(h, { pitch: 30, bearing: 0 }, { pitch: 30, bearing: 90 });
+  const eski = A.propagate((v) => { const r1 = A.floorRange(v.h, v.p1), r2 = A.floorRange(v.h, v.p2); return Math.sqrt(r1 * r1 + r2 * r2 - 2 * r1 * r2 * Math.cos((v.b1 - v.b2) * DEG)); },
+    { h, p1: 30, b1: 0, p2: 30, b2: 90 }, { h: A.SIGMA.height, p1: A.SIGMA.pitch, p2: A.SIGMA.pitch, b1: A.SIGMA.bearing, b2: A.SIGMA.bearing });
+  yakin(d.value, eski.value, 1e-9); yakin(d.sigma, eski.sigma, 1e-6);
+  // yön yok: aynı eğimde iki nokta 0 ± (sıfır değil)
+  const yonsuz = A.distanceBetween(h, { pitch: 30, bearing: null }, { pitch: 30, bearing: null });
+  yakin(yonsuz.value, 0, 1e-12); assert.ok(yonsuz.sigma > 0.02);
+  // yön vektöründen bakış, matristen bakışla aynı
+  const R = A.rotationFromEuler(40, 60, 0);
+  assert.deepEqual(A.aimFromDirection({ x: -R[2], y: -R[5], z: -R[8] }), A.aimFromRotation(R));
+  assert.equal(A.aimFromDirection({ x: 0, y: 0, z: 0 }), null);
+});
+
 test('ses: A-ağırlık süzgeci 48 ve 44,1 kHz\'de çözümsel eğriye ±1 dB yakın (20 Hz – 10 kHz)', () => {
   for (const fs of [48000, 44100]) {
     const sos = S.aWeightingSos(fs);

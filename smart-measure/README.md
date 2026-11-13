@@ -37,8 +37,21 @@ adımı olmayan ES modülleri `www/`'de, telefona özgü işler küçük bir Jav
 internet yalnız AdMob ve Play için"); Premium metni; lisans metni (Capacitor ve eklentiler); "açık tema geliştiriliyor"
 notu kaldırıldı; "Bu telefon" notu ARCore'un kullanılmadığını söylüyor. Yeni dizeler `pr_*`, `common_*`,
 `cm_no_bearing`, `cm_camera_failed`, `cm_fullscreen_exit`, `cm_torch_off`, `lb_fav_*`, `lb_history_copy/share`,
-`st_language_en/tr`, `st_ad_privacy`, `st_privacy_policy`, `st_developer`, `st_contact`.
+`st_language_en/tr`, `st_ad_privacy`, `st_privacy_policy`, `st_developer`, `st_contact`, `cm_hint_base_first`,
+`cm_problem_steady`, `cm_problem_top_low`, `cm_problem_top_steep`. Özgün `cm_hint_edge_left/right` "kenarın zemine değdiği yer"
+diye netleştirildi (genişlik iki zemin noktasından hesaplanır; havadaki kenara nişan almak yanlış sonuç verir).
 **Eklenen:** kamera sonucunun önizleme üstünde gösterimi (tam ekranda da), genişlik kipinde dönme sensörü yoksa uyarı.
+**Kamerayla ölçümün sağlamlığı (13 Kasım 2026; `olcum/ar.js` başındaki not, `araclar/kamera-dene.mjs`):**
+- Nokta, düğmeye dokunulmadan önceki sakin bakıştan alınır (parmak değmeden 350–80 ms öncesinin ortalaması): düğmeye
+  basmak telefonu oynatır, 12° bakışta 1° sapma uzaklığı ≈ %9 değiştirir. Telefon gezdirilirken basılırsa nokta alınmaz;
+  hafif titreme sonucun belirsizliğine (±) eklenir.
+- İlk noktadan sonra sonuç çarpının altında canlı gösterilir (mesafe, yükseklik, genişlik); ikinci dokunuş sabitler.
+- Bitmiş ölçümde "Bitiş / Tepe Seç" ikinci noktayı yeniden seçer, "Başlangıç / Taban Seç" yeni ölçüm başlatır; reddedilen
+  nokta eski sonucu bozmaz. Tepe tabanın üstünde olmalı, ufkun en çok 75° üstünde.
+- Sensör akışı tek kurulur (Android her sistem penceresinden sonra da "geri geldi" der; dinleyici çoğalmaz). Okuma 1,5 sn
+  kesilirse bakış bayat sayılır (ölçüme girmez) ve akış yeniden başlatılır; dönme sensörü var görünüp susarsa yerçekimine
+  düşülür. Kamera açılırken arka plana gidilirse açık kalmaz; kamera elden alınırsa "açılamadı" denir.
+- Çakışan iki noktada belirsizlik sıfıra düşmez (fark vektörünün kovaryansı).
 **Yapılamayan:** CameraX'in kamera seçimi ve yakınlaştırması yok (WebView `getUserMedia` arka kamerayı seçer); fener
 WebView'in `torch` kısıtıyla çalışır, desteklemeyen telefonda düğme görünmez.
 
@@ -100,6 +113,8 @@ secret'ı varsa imzalı AAB (`SmartMeasure-aab` + `surum.txt`).
 - `node smart-measure/araclar/tarayici-dene.mjs` — yerel tarayıcı denemesi (Playwright): iki dil × dört görünüm (TR açık
   390 px, EN koyu 340 px ve tersleri) × iki ortam (eklentisiz tarayıcı: "sensör yok" durumları; sahte telefon: canlı
   değerler), her ekranın alt sayfaları ve menüleriyle; konsol hatası, taşma, çevrilmemiş anahtar arar.
+- `node smart-measure/araclar/kamera-dene.mjs` — kamerayla ölçümün akış sınaması (sahte telefon): bakış değiştirilir, düğmelere
+  basılır, ekrandaki sonuç trigonometriyle beklenenle karşılaştırılır (üç kip, sarsıntı, tam ekran, arka plan, akış kesilmesi).
 - `node smart-measure/araclar/magaza-gorsel.mjs [--android]` — mağaza görselleri (sentetik veri, çizilmiş kamera
   sahnesi) ve simgeler.
 

@@ -136,12 +136,14 @@ export function distanceBetween(h, a, b) {
     const jx = (up[0] - dn[0]) / (2 * e) * s, jy = (up[1] - dn[1]) / (2 * e) * s;
     sxx += jx * jx; syy += jy * jy; sxy += jx * jy;
   }
-  const tr = sxx + syy, es = Math.sqrt(tr / 2);
-  if (!(d * d > tr * 1e-12)) return { value: d, sigma: es };
+  // Doğrultu boyunca belirsizlik (birinci derece). Uzaklık kendi belirsizliğinden küçükken doğrultunun kendisi de
+  // belirsizdir: yönsüz (ortalama) paya kesintisiz geçilir; çakışan noktalarda tam olarak odur.
+  const tr = sxx + syy, es2 = tr / 2;
+  if (!(d > 0)) return { value: d, sigma: Math.sqrt(es2) };
   const ux = d0[0] / d, uy = d0[1] / d;
-  const along = Math.sqrt(Math.max(0, ux * ux * sxx + 2 * ux * uy * sxy + uy * uy * syy));
-  // Uzaklık kendi belirsizliğinden küçükken doğrultu da belirsizdir: yönsüz pay yumuşakça eklenir
-  return { value: d, sigma: Math.hypot(along, es * Math.max(0, 1 - d * d / tr)) };
+  const along2 = Math.max(0, ux * ux * sxx + 2 * ux * uy * sxy + uy * uy * syy);
+  const w = Math.min(1, d * d / tr);
+  return { value: d, sigma: Math.sqrt(w * along2 + (1 - w) * es2) };
 }
 
 /** Taban (zemin) ve tepe bakışından yükseklik. Tepe tabanın üstünde değilse null. */

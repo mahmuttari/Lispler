@@ -195,6 +195,8 @@ test('kamera: belirsizlik çakışan noktalarda sıfıra düşmez, yönsüz kipt
   const ayni = A.distanceBetween(h, a, { ...a });
   yakin(ayni.value, 0, 1e-12);
   assert.ok(ayni.sigma > 0.02, `aynı nokta iki kez: ± ${ayni.sigma}`);
+  // çakışmadan uzaklaşırken belirsizlik sıçramaz (1e-6° ayrık nokta, çakışan noktayla aynı)
+  yakin(A.distanceBetween(h, a, { pitch: 30, bearing: 10 + 1e-6 }).sigma, ayni.sigma, 1e-6);
   // uzak noktalarda birinci dereceden yayılımla aynı (eski formül): 90° ayrık, eşit uzaklık
   const d = A.distanceBetween(h, { pitch: 30, bearing: 0 }, { pitch: 30, bearing: 90 });
   const eski = A.propagate((v) => { const r1 = A.floorRange(v.h, v.p1), r2 = A.floorRange(v.h, v.p2); return Math.sqrt(r1 * r1 + r2 * r2 - 2 * r1 * r2 * Math.cos((v.b1 - v.b2) * DEG)); },

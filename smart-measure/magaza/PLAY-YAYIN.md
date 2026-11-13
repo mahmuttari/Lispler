@@ -1,6 +1,6 @@
 # Ölçü Kutusu (Measure Box) — Google Play'e ilk yayın
 
-Hesap: **Poyraz Workshop** (doğrudan **Üretim**). Reklam hesabı: **AdMob, mahmuttari@gmail.com** (yayıncı
+Hesap: **MARFEN** (kuruluş hesabı, doğrudan **Üretim**; 13 Kasım 2026 sahip kararı). Play API işleri `mahmuttari/NetcadDevelop` › `.github/olcu-kutusu-istek.txt` ile yürür (MARFEN hizmet hesabı orada); bu depodaki `play-smartmeasure.yml` Poyraz Workshop hesabına bağlıdır, Ölçü Kutusu için kullanılmaz. Reklam hesabı: **AdMob, mahmuttari@gmail.com** (yayıncı
 `pub-2417242373034448`). Paket: `com.poyrazworkshop.smartmeasure`. Dört küçük uygulama (Unitica, Calqora, Kıble Bul,
 Ölçü Kutusu) **tek tarayıcı oturumunda** sırayla yapılır: ortak akış
 [`../../docs/kucuk-uygulamalar-play.md`](../../docs/kucuk-uygulamalar-play.md); bu dosya yalnız Ölçü Kutusu'na özgü
@@ -20,7 +20,7 @@ bilgileri ve adımları verir. Düzen İz Haritası'nınkiyle aynıdır
 | Varsayılan dil | Türkçe – tr-TR; çeviri en-US |
 | Uygulama / oyun · fiyat | **Uygulama** · **Ücretsiz** (indirme ücretsiz; AdMob reklamı + uygulama içi abonelik) |
 | Kategori | **Araçlar** |
-| İletişim e-postası | `mahmuttari@gmail.com` |
+| İletişim e-postası | `info@marfen.com.tr` |
 | Web sitesi | `https://mahmuttari.github.io/Lispler/smart-measure/` |
 | Gizlilik politikası | `https://mahmuttari.github.io/Lispler/smart-measure/gizlilik.html` |
 | Hesap silme adresi | yok: uygulamada hesap yok |

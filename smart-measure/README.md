@@ -1,6 +1,7 @@
 # 📐 Ölçü Kutusu / Measure Box (Google Play sürümü; özgün adı Smart Measure)
 
-Poyraz Workshop'un ölçüm araçları uygulaması: su terazisi, ekran cetveli ve açıölçer, kamerayla mesafe / yükseklik /
+Ölçüm araçları uygulaması (Poyraz Workshop'ta geliştirildi; mağazalarda **MARFEN** adıyla yayımlanır, iletişim
+`info@marfen.com.tr` — 13 Kasım 2026 sahip kararı; Play işleri `mahmuttari/NetcadDevelop` › `olcu-kutusu/` hattından): su terazisi, ekran cetveli ve açıölçer, kamerayla mesafe / yükseklik /
 genişlik, ses ölçer ve ışık ölçer. Kaynağı Drive'daki `KUCUK_UYGULAMALAR/SmartMeasure-0.1.0.apk`'dır (GeoTerva, yayınlanmamış
 ilk sürüm; `KAYNAK.txt`). O APK yerel bir Kotlin + Jetpack Compose + CameraX uygulamasıydı ve R8 ile küçültülmüştü;
 kaynak kod olmadığı için uygulama **aynı özellikler, akışlar ve metinlerle Capacitor 8 ile yeniden yazıldı** (derleme

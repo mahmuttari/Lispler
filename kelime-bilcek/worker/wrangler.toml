@@ -1,0 +1,12 @@
+# İsteğe bağlı: npx wrangler deploy (CLOUDFLARE_API_TOKEN ve CLOUDFLARE_ACCOUNT_ID gerekir; README.md)
+name = "floral-wave-f116"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+[ai]
+binding = "AI"
+
+# v3.2 ortak önbellek (Cloudflare KV "kelime-bilcek-sozluk", 9 Kasım 2026'da açıldı)
+[[kv_namespaces]]
+binding = "SOZLUK"
+id = "70e23f1b10d442da8b1e7d7191fa9d75"

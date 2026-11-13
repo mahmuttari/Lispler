@@ -21,14 +21,14 @@ function png(dosya) {
   return { w: b.readUInt32BE(16), h: b.readUInt32BE(20), renk: b[25], boyut: b.length };
 }
 
-test('paket adı play.mjs, build.gradle ve capacitor.config.json ile aynı; sürüm 1.1.0 (1)', () => {
+test('paket adı play.mjs, build.gradle ve capacitor.config.json ile aynı; sürüm 1.2.0 (2)', () => {
   assert.equal(play.PAKET, 'com.poyrazworkshop.kiblebul');
   assert.equal(play.UYGULAMALAR.kiblebul.magaza, 'kible-bul/magaza');
   const g = fs.readFileSync(path.join(KB, 'android', 'app', 'build.gradle'), 'utf8');
   assert.match(g, /applicationId "com\.poyrazworkshop\.kiblebul"/);
-  assert.deepEqual(play.surumBilgisi(g), { versionCode: 1, versionName: '1.1.0' });
+  assert.deepEqual(play.surumBilgisi(g), { versionCode: 2, versionName: '1.2.0' });
   assert.equal(JSON.parse(fs.readFileSync(path.join(KB, 'capacitor.config.json'), 'utf8')).appId, 'com.poyrazworkshop.kiblebul');
-  assert.equal(JSON.parse(fs.readFileSync(path.join(KB, 'package.json'), 'utf8')).version, '1.1.0');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(KB, 'package.json'), 'utf8')).version, '1.2.0');
   const v = fs.readFileSync(path.join(KB, 'android', 'variables.gradle'), 'utf8');
   for (const [k, d] of [['compileSdkVersion', 36], ['targetSdkVersion', 36], ['minSdkVersion', 24]]) assert.match(v, new RegExp(`${k} = ${d}\\b`));
 });
@@ -62,7 +62,8 @@ test('gizlilik ve tanıtım sayfası var; gizlilik sayfası yaklaşık konumu, N
   const app = path.join(KB, '..', 'app', 'kible-bul');
   const g = fs.readFileSync(path.join(app, 'gizlilik.html'), 'utf8');
   for (const s of ['Gizlilik Politikası', 'ACCESS_COARSE_LOCATION', 'gibs.earthdata.nasa.gov', 'AdMob', 'Reklam gizlilik seçenekleri',
-    'Google Play', 'Privacy Policy (English)', 'approximate location', 'mahmuttari@gmail.com', 'Poyraz Workshop']) assert.ok(g.includes(s), s);
+    'Google Play', 'Privacy Policy (English)', 'approximate location', 'mahmuttari@gmail.com', 'Poyraz Workshop',
+    'tile.openstreetmap.org', 'osmfoundation.org/wiki/Privacy_Policy', 'Camilere yol tarifi', 'Street map and directions to mosques', 'ODbL']) assert.ok(g.includes(s), s);
   assert.doesNotMatch(g, /tam konum izni ister|ACCESS_FINE_LOCATION/);
   assert.ok(fs.existsSync(path.join(app, 'index.html')));
   const i = png(path.join(app, 'icon-192.png'));

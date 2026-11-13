@@ -1,0 +1,60 @@
+# Kelime Bilcek — tanıtım, gizlilik ve hesap silme sayfalarını Firebase Hosting'e yayınlar (https://kelime-bilcek.web.app;
+# Play'e verilen adres, sahibinin adını içermez). Komutlar kelime-bilcek/site/yayin-istek.txt'ye yazılır (play-istek.txt düzeni):
+#   durum    — yayındaki siteyi depodakiyle karşılaştırır; hiçbir şey yazmaz
+#   kur      — varsayılan Hosting sitesi (kelime-bilcek) yoksa oluşturur
+#   yayinla  — kelime-bilcek/site/ (sayfalar, legal.css, simge, app-ads.txt) yayınlar, geri okuyup depodakiyle aynı olduğunu denetler
+# Önce site testleri çalışır (sayfalarda sahibin adı yok, bağlantılar, app-ads.txt, gizlilik içeriği); kırmızıysa hiçbir
+# şey yayınlanmaz. Kimlik anahtarsız: Play işleriyle aynı Workload
+# Identity hizmet hesabı (android/play-kimlik.env). Hesabın kelime-bilcek projesindeki rolleri: kelime-bilcek/site/README.md › Kurulum.
+name: Firebase site yayını (Kelime Bilcek)
+
+on:
+  push:
+    paths: ['kelime-bilcek/site/yayin-istek.txt']
+  workflow_dispatch:
+
+concurrency:
+  group: kelime-site-yayini
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  yayin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Komutlar ve kimlik
+        run: |
+          grep -v '^[[:space:]]*#' kelime-bilcek/site/yayin-istek.txt | tr -d '\r' | sed '/^[[:space:]]*$/d' > "$RUNNER_TEMP/komutlar"
+          while IFS= read -r K; do case "$K" in durum|kur|yayinla) ;; *) echo "::error::geçersiz komut: $K"; exit 1;; esac; done < "$RUNNER_TEMP/komutlar"
+          echo "Komutlar:"; cat "$RUNNER_TEMP/komutlar"
+          grep -E '^(PLAY_WIF_PROVIDER|PLAY_SERVICE_ACCOUNT)=' android/play-kimlik.env >> "$GITHUB_ENV"
+          if [ -s "$RUNNER_TEMP/komutlar" ]; then echo "KOMUT_VAR=1" >> "$GITHUB_ENV"; fi
+      - name: Site testleri
+        run: node --test kelime-bilcek/site/site.test.mjs
+      - name: Yayın planı
+        run: node kelime-bilcek/site/yayin.mjs plan
+      - id: auth
+        if: env.KOMUT_VAR == '1'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.PLAY_WIF_PROVIDER }}
+          service_account: ${{ env.PLAY_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/firebase
+      - name: Komutları çalıştır
+        if: env.KOMUT_VAR == '1'
+        env:
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          for K in $(cat "$RUNNER_TEMP/komutlar"); do
+            echo; echo "════ $K ════"
+            node kelime-bilcek/site/yayin.mjs "$K"
+          done

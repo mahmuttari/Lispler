@@ -1,0 +1,48 @@
+# Kelime Bilcek: Realtime Database kurallarını emülatörde sınar (kurallar.test.mjs) ve gerçek oyun kodunu iki tarayıcıyla
+# bu kurallarla oynatır (test/akis.test.mjs: ad, arkadaş, hızlı eşleşme, Zincir, Şampiyonlar, hesap silme).
+# Kuralları YAYINLAMAZ; yayın kelime-kural-yayini.yml.
+name: Firebase kuralları (Kelime Bilcek)
+
+on:
+  push:
+    paths:
+      - 'kelime-bilcek/firebase/**'
+      - 'kelime-bilcek/www/**'
+      - 'kelime-bilcek/test/akis.test.mjs'
+      - '!kelime-bilcek/firebase/yayin-istek.txt'
+      - '!kelime-bilcek/firebase/uygulama-istek.txt'
+      - '.github/workflows/kelime-firebase-kurallar.yml'
+  pull_request:
+    paths: ['kelime-bilcek/firebase/**', 'kelime-bilcek/www/**', '.github/workflows/kelime-firebase-kurallar.yml']
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Oyun bağımlılıkları (Firebase SDK, Playwright)
+        working-directory: kelime-bilcek
+        run: |
+          npm ci
+          npm run vendor
+          npx playwright install chromium
+          # Sistem paketleri (apt): çalıştırıcıda Chrome'un gerektirdikleri çoğunlukla kurulu. Ubuntu paket sunucuları
+          # erişilemezse (Kasım 2026'da tekrarlayan DNS hatası) iş durmasın; tarayıcı açılamazsa testler zaten kırmızı olur.
+          npx playwright install-deps chromium || echo "::warning::playwright install-deps başarısız (apt); kurulu paketlerle devam"
+      - working-directory: kelime-bilcek/firebase
+        run: npm ci
+      - name: Kural testleri
+        working-directory: kelime-bilcek/firebase
+        run: npm test
+      - name: Uçtan uca akış (gerçek oyun kodu + kurallar)
+        working-directory: kelime-bilcek/firebase
+        run: npm run test:akis

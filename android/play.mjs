@@ -18,7 +18,12 @@
 // PLAY_UYGULAMA ortam değişkeni hangi uygulamanın işleneceğini seçer: boş ya da "notdefteri" (varsayılan),
 // "hayalet" (Hayalet Avcıları: hayalet-avcilari/ klasörü, .github/workflows/play-hayalet.yml),
 // "iz" (İz Haritası: iz-haritasi/ klasörü, .github/workflows/play-iz.yml); KUCUK_UYGULAMALAR'dan gelen dört uygulama
-// "unitica", "calqora", "kiblebul" (Kıble Bul) ve "smartmeasure" (Smart Measure): kendi klasörleri ve play-<anahtar>.yml.
+// "unitica", "calqora", "kiblebul" (Kıble Bul) ve "smartmeasure" (Smart Measure): kendi klasörleri ve play-<anahtar>.yml;
+// "kelime" (Kelime Bilcek: kelime-bilcek/ klasörü, .github/workflows/play-kelime.yml),
+// "tavla" (Tavla: tavla/ klasörü, .github/workflows/play-tavla.yml),
+// "masteroffice" (Master Office, com.ofivora.app: master-office/ klasörü, .github/workflows/play-masteroffice.yml;
+// kaynak kodu bu depoda yok, AAB Play Console'dan elle yüklenir; sürüm master-office/surum.gradle'dadır).
+// Telefon ekran görüntüleri PNG ya da JPEG olabilir (telefon-*.png / telefon-*.jpg).
 //
 // "uygula" yoksa hiçbir şey yazılmaz: düzenleme (edit) açılır, plan yazılır, düzenleme silinir. Uygulamayı oluşturmak
 // ve ilk AAB'yi yüklemek Play Console'dan elle yapılır (taslak uygulamada API paketi bulamaz); API ondan sonra çalışır.
@@ -35,6 +40,9 @@ export const UYGULAMALAR = {
   calqora: { paket: 'com.poyrazworkshop.calqora', magaza: 'calqora/magaza', aab: 'dist/Calqora-play.aab', gradle: 'calqora/android/app/build.gradle' },
   kiblebul: { paket: 'com.poyrazworkshop.kiblebul', magaza: 'kible-bul/magaza', aab: 'dist/KibleBul-play.aab', gradle: 'kible-bul/android/app/build.gradle' },
   smartmeasure: { paket: 'com.poyrazworkshop.smartmeasure', magaza: 'smart-measure/magaza', aab: 'dist/SmartMeasure-play.aab', gradle: 'smart-measure/android/app/build.gradle' },
+  kelime: { paket: 'com.poyrazworkshop.kelimebilcek', magaza: 'kelime-bilcek/magaza', aab: 'dist/KelimeBilcek-play.aab', gradle: 'kelime-bilcek/android/app/build.gradle' },
+  tavla: { paket: 'com.poyrazworkshop.tavla', magaza: 'tavla/magaza', aab: 'dist/Tavla-play.aab', gradle: 'tavla/android/app/build.gradle' },
+  masteroffice: { paket: 'com.ofivora.app', magaza: 'master-office/magaza', aab: 'dist/MasterOffice-play.aab', gradle: 'master-office/surum.gradle' },
 };
 const SECIM = UYGULAMALAR[process.env.PLAY_UYGULAMA || 'notdefteri'];
 if (!SECIM) throw new Error(`PLAY_UYGULAMA bilinmiyor: ${process.env.PLAY_UYGULAMA} (${Object.keys(UYGULAMALAR).join(', ')})`);
@@ -114,7 +122,7 @@ export function gorseller(dil = 'tr-TR') {
   const kok = path.join(MAGAZA, 'play');
   const d = dil === 'tr-TR' ? kok : path.join(kok, dil);
   if (!fs.existsSync(d)) return null;
-  const tel = fs.readdirSync(d).filter((f) => /^telefon-.*\.png$/.test(f)).sort();
+  const tel = fs.readdirSync(d).filter((f) => /^telefon-.*\.(png|jpe?g)$/i.test(f)).sort();
   const yol = (f) => (fs.existsSync(path.join(d, f)) ? path.join(d, f) : path.join(kok, f));
   const g = { icon: ['simge-512.png'], featureGraphic: ['tanitim-gorseli-1024x500.png'], phoneScreenshots: tel };
   return Object.fromEntries(Object.entries(g).map(([tur, dosyalar]) => [tur, dosyalar.map(yol)]));
@@ -250,7 +258,7 @@ async function gorsel() {
       for (const [tur, dosyalar] of Object.entries(g)) {
         if (UYGULA) {
           await api('DELETE', `${API}/edits/${id}/listings/${dil}/${tur}`);
-          for (const f of dosyalar) await api('POST', `${UPAPI}/edits/${id}/listings/${dil}/${tur}?uploadType=media`, fs.readFileSync(f), 'image/png');
+          for (const f of dosyalar) await api('POST', `${UPAPI}/edits/${id}/listings/${dil}/${tur}?uploadType=media`, fs.readFileSync(f), /\.jpe?g$/i.test(f) ? 'image/jpeg' : 'image/png');
         }
       }
       console.log(`  ${UYGULA ? '[tamam]' : '[plan]'} ${dil}: ${Object.entries(g).map(([t, f]) => `${t}=${f.length}`).join(' ')}`);
@@ -259,15 +267,18 @@ async function gorsel() {
 }
 
 async function yukle() {
-  if (!fs.existsSync(AAB)) throw new Error(`${AAB} yok`);
+  // AAB dosyası yalnız Play'de henüz olmayan bir versionCode için gerekir (Master Office'in AAB'si depoya konmaz,
+  // Play Console'dan elle yüklenir; bu durumda komut yalnız kanalı ve sürüm notlarını yazar)
+  const aabVar = fs.existsSync(AAB);
   const { versionCode: vc, versionName } = surumBilgisi(fs.readFileSync(path.join(KOK, SECIM.gradle), 'utf8'));
   const kanal = ARG.includes('dahili') ? 'internal' : 'production';
   const status = ARG.includes('yayinla') ? 'completed' : 'draft';
   const notlar = surumNotlari(fs.readFileSync(path.join(MAGAZA, 'surum-notu.txt'), 'utf8'), dilDosyalari());
-  console.log(`paket ${PAKET} · versionCode ${vc} · ${(fs.statSync(AAB).size / 1048576).toFixed(1)} MB · kanal ${kanal} · durum ${status}`);
+  console.log(`paket ${PAKET} · versionCode ${vc} · ${aabVar ? `${(fs.statSync(AAB).size / 1048576).toFixed(1)} MB` : 'AAB dosyası yok'} · kanal ${kanal} · durum ${status}`);
   await duzenle(async (id) => {
     const varolan = ((await api('GET', `${API}/edits/${id}/bundles`)).bundles || []).map((b) => b.versionCode);
     if (varolan.includes(vc)) console.log(`  versionCode ${vc} Play'de zaten var: paket yeniden yüklenmez`);
+    else if (!aabVar) throw new Error(`${AAB} yok ve versionCode ${vc} Play'de de yok: önce AAB yüklenmeli`);
     else if (UYGULA) {
       const y = await api('POST', `${UPAPI}/edits/${id}/bundles?uploadType=media`, fs.readFileSync(AAB), 'application/octet-stream');
       if (y.versionCode !== vc) throw new Error(`yüklenen AAB versionCode ${y.versionCode}, build.gradle ${vc}: önce AAB'yi yeniden derleyin`);
@@ -289,6 +300,16 @@ async function imza() {
   const vc = Math.max(...b);
   for (const k of (await api('GET', `${API}/generatedApks/${vc}`)).generatedApks || []) {
     console.log(`::notice::Play uygulama imzalama anahtarı SHA-256 (versionCode ${vc}): ${parmakIzi(k.certificateSha256Hash)}`);
+    // SHA-1 (Firebase'de Google ile Giriş için gerekir) API'de yok: IMZA_APK verilmişse Play'in bu anahtarla imzaladığı
+    // evrensel APK indirilir; iş akışı onu apksigner ile okur (play-kelime.yml)
+    const indir = k.generatedUniversalApk?.downloadId;
+    if (process.env.IMZA_APK && indir && !fs.existsSync(process.env.IMZA_APK)) {
+      const r = await fetch(`${API}/generatedApks/${vc}/downloads/${encodeURIComponent(indir)}:download?alt=media`,
+        { headers: { Authorization: `Bearer ${process.env.PLAY_ACCESS_TOKEN}` } });
+      if (!r.ok) throw new Error(`evrensel APK indirilemedi: ${r.status} ${(await r.text()).slice(0, 300)}`);
+      fs.writeFileSync(process.env.IMZA_APK, Buffer.from(await r.arrayBuffer()));
+      console.log(`  Play'in imzaladığı evrensel APK: ${process.env.IMZA_APK}`);
+    }
   }
 }
 

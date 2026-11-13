@@ -1,0 +1,19 @@
+{
+	"appId": "com.poyrazworkshop.kelimebilcek",
+	"appName": "Kelime Bilcek",
+	"webDir": "www",
+	"android": {
+		"backgroundColor": "#0e0a1f",
+		"allowMixedContent": false
+	},
+	"plugins": {
+		"GoogleAuth": {
+			"scopes": [
+				"profile",
+				"email"
+			],
+			"serverClientId": "313302601000-7jpidappolf8uqnf9hkm0craf5sgf7aj.apps.googleusercontent.com",
+			"forceCodeForRefreshToken": false
+		}
+	}
+}

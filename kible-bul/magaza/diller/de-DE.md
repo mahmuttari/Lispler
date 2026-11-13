@@ -4,7 +4,7 @@
 
 ## Kısa açıklama
 
-Richtung der Kaaba mit Kompass, Karte und Entfernung; 34.000 Städte offline.
+Kaaba-Richtung mit Kompass, Karte und Entfernung; Moscheen in der Nähe und Wege.
 
 ## Uzun açıklama
 
@@ -17,10 +17,17 @@ Qibla Finder zeigt Ihnen die Richtung der Kaaba in Mekka von Ihrem Standort aus 
 • Genauigkeitsanzeige: die eigene Einschätzung des Telefons zu seinem Sensor und die gemessene Stärke des Magnetfelds. Sie warnt, wenn ein Magnet, Metall oder ein elektronisches Gerät in der Nähe den Kompass ablenkt.
 • Kalibrierhilfe: zeigt den Fortschritt, während Sie mit dem Telefon eine Acht in die Luft zeichnen.
 • Kompassinformationen: die Zahlen hinter der Nadel, live (magnetische Richtung, Deklination, geografische Richtung, Feldstärke).
+• Kompasskorrektur: Wenn die Nadel immer um denselben Betrag abweicht, korrigieren Sie sie, indem Sie sich in eine Richtung stellen, von der Sie wissen, dass sie die Qibla ist.
 
 🗺️ KARTE
 • Der kürzeste Weg (Großkreis) von Ihrem Standort zur Kaaba auf einem Satellitenbild.
 • Ländernamen in der Sprache der App; ohne Verbindung eine Karte aus den Ländergrenzen.
+
+🕌 MOSCHEEN
+• Moscheen und Gebetsräume in Ihrer Nähe, die nächsten zuerst, als Liste oder auf einer Straßenkarte. Die Liste ist in der App und wird offline durchsucht.
+• Zu jedem Ort: die Entfernung, eine geschätzte Gehzeit und ein Pfeil, der sich mit dem Telefon dreht und auf ihn zeigt.
+• Wegbeschreibungen zu Fuß, mit dem Bus oder dem Auto öffnen sich in der Karten-App Ihres Telefons.
+• Die Orte stammen aus offenen Kartendaten von Freiwilligen; manche Moscheen können fehlen oder veraltet sein.
 
 📍 STANDORT
 • Der ungefähre Standort des Telefons genügt: Ein paar Kilometer ändern die Qibla nicht, ein genauer Standort wird nie angefragt.
@@ -32,8 +39,8 @@ Qibla Finder zeigt Ihnen die Richtung der Kaaba in Mekka von Ihrem Standort aus 
 • 11 Sprachen: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, 日本語, 한국어, العربية.
 
 🔒 DATENSCHUTZ
-• Kein Konto, kein eigener Server. Ihr Standort wird nur auf dem Telefon zur Berechnung der Richtung verwendet; die App sendet ihn weder an uns noch an den Werbeanbieter.
-• Die Karte lädt Satellitenkacheln für den angezeigten Bereich, die Werbung kommt aus dem Internet. Einzelheiten in der Datenschutzerklärung.
+• Kein Konto, kein eigener Server. Ihr Standort wird nur auf dem Telefon verwendet, um die Richtung zu berechnen und die Moscheen in Ihrer Nähe zu finden; die App sendet ihn weder an uns noch an den Werbeanbieter.
+• Die Satelliten- und Straßenkarten laden Bildkacheln für den angezeigten Bereich, und die Werbung kommt aus dem Internet. Einzelheiten in der Datenschutzerklärung.
 
 ℹ️ GUT ZU WISSEN
 • Der Qibla-Winkel wird berechnet und ändert sich durch einen ungefähren Standort nicht; die Richtung auf dem Bildschirm ist so genau wie der Kompass Ihres Telefons. Ein Magnet, Metall, ein Lautsprecher oder eine magnetische Hülle können den Kompass um mehr als ein paar Grad ablenken: Gehen Sie davon weg und kalibrieren Sie bei Bedarf.
@@ -43,9 +50,9 @@ Kostenlose App: Ein Werbebanner liegt unten in einem eigenen Streifen und verdec
 
 ## Sürüm notu
 
-Erste Version 🎉
-🧭 Richtung der Kaaba, Qibla-Winkel und Entfernung, mit Korrektur auf geografisch Nord.
-🗺️ Der kürzeste Weg zur Kaaba auf einer Satellitenkarte.
-📍 Offline-Suche in 34.000 Städten, Eingabe von Koordinaten.
-🎯 Genauigkeitsanzeige und Kalibrierhilfe.
-🌐 11 Sprachen.
+Was ist neu 🎉
+🕌 Moscheen: Moscheen und Gebetsräume in der Nähe, als Liste und auf einer Straßenkarte; Wegbeschreibungen zu Fuß, mit Bus oder Auto.
+🧭 Zuverlässigerer Kompass: Prüfung auf magnetische Störungen und die eigene Fehlerschätzung des Sensors; ein hängender Sensor startet von selbst neu.
+🎯 Einstellungen › Kompasskorrektur: eine Nadel korrigieren, die immer um denselben Betrag abweicht.
+ℹ️ Detaillierte Messwerte und Kopiertaste in den Kompassinformationen.
+🐞 Fehlerbehebungen.

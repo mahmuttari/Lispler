@@ -1,0 +1,90 @@
+# Kelime Bilcek — ücretsiz araçlarla denetim (kelime-bilcek/DENETIM.md). Her değişiklikte:
+#   - ESLint (www, test, araclar, worker, site) ve html-validate (oyun + site sayfaları)
+#   - node --test: kelime işlevleri, reklam kuralları, Worker (kimlik, girdi sınırı), site, arayüz + axe-core
+#   - Lighthouse CI (erişilebilirlik ≥ 0,9 zorunlu; performans ve iyi uygulamalar uyarı)
+#   - Android lint (lintRelease raporu artifact olarak)
+# Firebase kural ve uçtan uca akış testleri: kelime-firebase-kurallar.yml.
+name: Denetim (Kelime Bilcek)
+
+on:
+  push:
+    paths:
+      - 'kelime-bilcek/**'
+      - '!kelime-bilcek/play-istek.txt'
+      - '!kelime-bilcek/firebase/yayin-istek.txt'
+      - '!kelime-bilcek/firebase/uygulama-istek.txt'
+      - '!kelime-bilcek/site/yayin-istek.txt'
+      - '.github/workflows/kelime-denetim.yml'
+  pull_request:
+    paths: ['kelime-bilcek/**', '.github/workflows/kelime-denetim.yml']
+  workflow_dispatch:
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: kelime-bilcek
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run vendor
+      - name: ESLint
+        run: npx eslint www/*.js test/ araclar/ worker/ site/*.mjs firebase/*.mjs firebase/test/
+      - name: html-validate
+        run: npx html-validate www/index.html site/*.html
+      - run: |
+          npx playwright install chromium
+          # Sistem paketleri (apt): çalıştırıcıda Chrome'un gerektirdikleri çoğunlukla kurulu. Ubuntu paket sunucuları
+          # erişilemezse (Kasım 2026'da tekrarlayan DNS hatası) iş durmasın; tarayıcı açılamazsa testler zaten kırmızı olur.
+          npx playwright install-deps chromium || echo "::warning::playwright install-deps başarısız (apt); kurulu paketlerle devam"
+      - name: Birim, Worker, site, arayüz ve erişilebilirlik testleri
+        run: node --test test/kelime.test.mjs test/reklam.test.mjs test/bot.test.mjs test/klavye.test.mjs test/tanitim.test.mjs test/arayuz.test.mjs worker/worker.test.mjs site/site.test.mjs
+      - name: Lighthouse CI
+        run: |
+          export CHROME_PATH=$(node -e "console.log(require('playwright').chromium.executablePath())")
+          npx --yes @lhci/cli@0.16.0 autorun
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: KelimeBilcek-lighthouse
+          path: kelime-bilcek/.lighthouseci/
+          include-hidden-files: true
+          retention-days: 14
+
+  android-lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: kelime-bilcek
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: npm ci
+      - run: npm run sync
+      - name: Android lint
+        working-directory: kelime-bilcek/android
+        run: |
+          ./gradlew lintRelease --no-daemon --console=plain
+          R=app/build/reports/lint-results-release.xml
+          if [ -f "$R" ]; then
+            echo "::notice::Android lint: $(grep -c 'severity="Error"' $R) hata, $(grep -c 'severity="Warning"' $R) uyarı; kimlikler: $(grep -o 'id="[A-Za-z]*"' $R | sort | uniq -c | sort -rn | head -12 | awk '{printf "%s×%s ", $1, $2}' | tr -d '"' | sed 's/id=//g')"
+            grep -o 'id="[A-Za-z]*"' $R | sort | uniq -c | sort -rn | head -30
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: KelimeBilcek-android-lint
+          path: kelime-bilcek/android/app/build/reports/lint-results-release.*
+          retention-days: 14

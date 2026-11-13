@@ -1,0 +1,24 @@
+# Firebase Android uygulaması ve imza parmak izleri (.github/workflows/kelime-firebase-uygulama.yml, firebase/uygulama.mjs).
+# Her satır bir komut; etkin satırlar her push'ta yeniden çalışır (hepsi tekrar çalıştırılınca zararsızdır), işi biten
+# satır "# (yapıldı …)" ile kapatılır.
+#   durum                    Android uygulamaları ve parmak izleri (salt okuma)
+#   android ekle             com.poyrazworkshop.kelimebilcek yoksa oluşturur
+#   sha ekle <parmak izi>    SHA-1 ya da SHA-256: yükleme anahtarı (kelime-android.yml çıktısı) ve Play uygulama imzası
+# Hizmet hesabının kelime-bilcek projesinde roles/firebase.admin rolü olmalı (firebase/README.md › Kurulum).
+
+# istek 2026-11-04: yetki denemesi (salt okuma)
+# (yapıldı 2026-11-04, koşu 41827897612: yetkisiz — rol henüz verilmedi) durum
+
+# istek 2026-11-04T12:31:18Z: yetki yoklaması, hata iletisi not olarak (salt okuma; kullanıcı: "sen yap herşeyi")
+# (yapıldı 2026-11-04, koşu 41829994331: YETKİ YOK — roles/firebase.admin yok) durum
+
+# istek 2026-11-04T12:45:21Z: roller verildi (kullanıcı: "verildi"); Android uygulamasını ve yükleme anahtarının SHA-1'ini ekle (kullanıcının önceden onayı: "yeni Android uygulamasını ve SHA-1'leri ekle")
+# (yapıldı 2026-11-04, koşu 41832016647: önce yalnız mevcut uygulamalar) durum
+# (yapıldı 2026-11-04, koşu 41832016647: com.poyrazworkshop.kelimebilcek oluşturuldu) android ekle
+# (yapıldı 2026-11-04, koşu 41832016647: yükleme anahtarı SHA-1 eklendi) sha ekle d088a07577d189b015d4a588749a1a8cc2ee5699
+# (yapıldı 2026-11-04, koşu 41832016647: yeni uygulama ve SHA-1 listede) durum
+
+# istek 2026-11-04: Play uygulama imzalama anahtarı (play-kelime koşu 41868509396). V3.0 imzacı bugünkü cihazlar, V3.2 hibrit SDK 37+ için; ikisi de eklenir
+# (yapıldı 2026-11-04, koşu 41868946738: eklendi) sha ekle c111f874a25841aa3fcdbf6646a0b42ce641a411
+# (yapıldı 2026-11-04, koşu 41868946738: eklendi) sha ekle 5f7247c9153a8587c7d7b593b3ad10f41503d41a
+# (yapıldı 2026-11-04, koşu 41868946738: 3 SHA-1 listede) durum

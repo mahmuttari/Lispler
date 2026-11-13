@@ -11,14 +11,15 @@ denetlemesi gerekiyor.
     Bu yüzden **Hayalet Avcıları ve Kıble Bul Poyraz Workshop'ta kalır**; Not Defteri, İz Haritası, Unitica ve Calqora
     taşınır. Hayalet'in reklamı için kurulan adsız düzen bozulmaz
     ([`../hayalet-avcilari/reklam/REKLAM-PLANI.md`](../hayalet-avcilari/reklam/REKLAM-PLANI.md)).
-  - MARFEN hesabı **önce kuruluşa çevrilir**; talimatı bu dosyadır.
+  - MARFEN hesabı **kuruluş hesabına geçti** (kullanıcı, 10 Kasım 2026). Yeni uygulama için bekleme süresi ve kapalı test
+    şartı yoktur; aşağıdaki geçiş adımları kayıt içindir.
 - Aktarma ve hesap türü değişikliği Play Console'da hesap sahibinin işidir; Google'ın bunlar için API'si yok. Talimatı
   kullanıcı ya da bilgisayardaki Claude (Claude uygulamasının yerleşik tarayıcı paneli) izler. Her geri dönüşü zor
   adımdan önce kullanıcının açık onayı alınır. Kimlik, vergi ve kart bilgilerini kullanıcı girer.
 
 | Hesap | Kimlik | Tür | Uygulamalar |
 |---|---|---|---|
-| **MARFEN** | `7263444126314683368` (sahibi mahmuttari@gmail.com) | Kişisel → **kuruluş** | Mevcut uygulamaları **[K]** |
+| **MARFEN** | `7263444126314683368` (sahibi mahmuttari@gmail.com) | **Kuruluş** (geçiş tamamlandı) | Mevcut uygulamaları **[K]** |
 | **Poyraz Workshop** | **[K]** | Kişisel (eski hesap, kapalı test zorunluluğu yok) | Not Defteri, Hayalet Avcıları, İz Haritası, Unitica, Calqora, Kıble Bul |
 
 | Taşınacak | Paket | Abonelik | Firebase |
@@ -65,7 +66,7 @@ Kaynak: Drive › `DUNS_BASVURUSU_OZETI_2026-10-19.md` §2, §5, §6. Geri alın
 5. **Belgeler:** kimlik ve kuruluş belgesi (Faaliyet Belgesi, 19.10.2026). Kimlik numarasını içeren belgeleri
    kullanıcı yükler.
 6. **Geliştirici adı:** kullanıcı seçer (`MARFEN` ya da başka bir ad); her uygulamanın altında bu ad görünür.
-7. Ödeme profili bağlanır. Sonrası **72 saat yeni uygulama gönderilmez** (Ölçü Kutusu dahil).
+7. Ödeme profili bağlanır.
 8. Plesk'teki `google-site-verification` TXT satırı silinmez. Silinirse marfen.com.tr web sitesi doğrulaması düşer.
 9. **Satıcı (ödemeler) profili:** abonelikli uygulamalar taşınacağı için MARFEN'de **etkin bir ödemeler profili**
    şarttır **[D]** ([6230247](https://support.google.com/googleplay/android-developer/answer/6230247)). Varsayılan para
@@ -117,7 +118,7 @@ Kaynak: Drive › `DUNS_BASVURUSU_OZETI_2026-10-19.md` §2, §5, §6. Geri alın
      notları yeni hesaba göre güncellenir.
    - Gizlilik metni herkese açık metindir; değişiklik yayından önce kullanıcıya tam olarak gösterilir.
 4. **Ölçü Kutusu:**
-   - `docs/kucuk-uygulamalar-play.md` adım 2–6, **MARFEN** hesabında ve kuruluşa geçişten en az 72 saat sonra yapılır.
+   - `docs/kucuk-uygulamalar-play.md` adım 2–6, **MARFEN** hesabında yapılır (bekleme yok).
    - Kuruluş hesapları kapalı test (12 testçi × 14 gün) şartından muaftır **[K]** (D-U-N-S özeti §2).
    - Ardından `play-istek.txt` adımları uygulanır.
 5. **Hayalet Avcıları ve Kıble Bul:**

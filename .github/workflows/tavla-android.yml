@@ -1,0 +1,118 @@
+# Tavla: Android derlemesi (kelime-android.yml düzeni).
+# - Her değişiklikte APK derlenir (Artifacts).
+# - HAYALET_KEYSTORE_BASE64 / HAYALET_KEYSTORE_PASSWORD (Poyraz Workshop yükleme anahtarı) varsa İMZALI APK + AAB;
+#   AAB "Tavla-aab" artifact'ı olarak surum.txt ile kalır. play-tavla.yml'deki "yukle" komutu AAB'yi buradan alır.
+# - Yükleme anahtarının SHA-1/SHA-256 parmak izi günlüğe yazılır: Firebase'e eklenir (firebase/uygulama-istek.txt › sha ekle).
+# - android/app/google-services.json yoksa (Firebase'e com.poyrazworkshop.tavla henüz eklenmedi) uyarır ve surum.txt'ye
+#   firebase=yok yazar: yerel Google girişi o pakette çalışmaz, play-tavla.yml böyle bir paketi yüklemez.
+# - AdMob uygulama kimliği hâlâ Google'ın örnek kimliğiyse ya da www/reklam.js'te BEKLIYOR varsa surum.txt'ye admob=ornek
+#   yazar; play-tavla.yml böyle bir paketi de yüklemez.
+name: Android (Tavla)
+
+on:
+  push:
+    paths:
+      - 'tavla/**'
+      - '!tavla/play-istek.txt'
+      - '!tavla/magaza/**'
+      - '!tavla/firebase/**'
+      - '!tavla/*.md'
+      - '.github/workflows/tavla-android.yml'
+  # google-services.json'u iş akışı (GITHUB_TOKEN) commit eder; o push başka iş akışı başlatmaz. Firebase uygulaması
+  # iş akışı başarıyla bitince derleme onun commit'iyle yeniden çalışır.
+  workflow_run:
+    workflows: ['Firebase uygulaması (Tavla)']
+    types: [completed]
+  workflow_dispatch:
+
+jobs:
+  build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: tavla
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # workflow_run'da Firebase iş akışının dalının son hâli (google-services.json commit'i dahil)
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || github.ref }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: npm ci
+      - run: npm run sync
+      - name: Firebase yapılandırması
+        id: firebase
+        run: |
+          if [ -s android/app/google-services.json ] && grep -q '"com.poyrazworkshop.tavla"' android/app/google-services.json; then
+            echo "durum=var" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::android/app/google-services.json yok: Firebase'e com.poyrazworkshop.tavla eklenip 'yapilandirma' çalıştırılmalı (firebase/uygulama-istek.txt). Bu paket Play'e yüklenmez."
+            echo "durum=yok" >> "$GITHUB_OUTPUT"
+          fi
+      - name: AdMob kimlikleri
+        id: admob
+        run: |
+          if grep -q 'ca-app-pub-3940256099942544' android/app/src/main/AndroidManifest.xml || grep -q 'BEKLIYOR' www/reklam.js; then
+            echo "::warning::AdMob uygulama ya da reklam birimi kimliği henüz girilmedi (örnek kimlik): bu paket Play'e yüklenmez"
+            echo "durum=ornek" >> "$GITHUB_OUTPUT"
+          else
+            echo "durum=gercek" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Yükleme anahtarını secret'tan yaz
+        id: imza
+        env:
+          KS_B64: ${{ secrets.HAYALET_KEYSTORE_BASE64 }}
+          KS_PAROLA: ${{ secrets.HAYALET_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KS_B64" ] || [ -z "$KS_PAROLA" ]; then
+            echo "::warning::HAYALET_KEYSTORE_BASE64 / HAYALET_KEYSTORE_PASSWORD secret'ı yok — derleme İMZASIZ, Play'e yüklenemez"
+            echo "imzali=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          printf '%s' "$KS_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=upload\nkeyPassword=%s\n' "$RUNNER_TEMP/upload.jks" "$KS_PAROLA" "$KS_PAROLA" > android/keystore.properties
+          echo "imzali=true" >> "$GITHUB_OUTPUT"
+      - name: Derle (+ lint-vital)
+        working-directory: tavla/android
+        run: |
+          if [ "${{ steps.imza.outputs.imzali }}" = "true" ]; then
+            ./gradlew assembleRelease bundleRelease --no-daemon --console=plain
+          else
+            ./gradlew assembleRelease --no-daemon --console=plain
+          fi
+          rm -f keystore.properties "$RUNNER_TEMP/upload.jks"
+      - name: Çıktılar, parmak izleri ve surum.txt
+        working-directory: tavla/android
+        run: |
+          mkdir -p "$RUNNER_TEMP/cikti"
+          VC=$(sed -nE 's/^ *versionCode +([0-9]+).*/\1/p' app/build.gradle | head -1)
+          VN=$(sed -nE "s/^ *versionName +'([^']+)'.*/\1/p" app/build.gradle | head -1)
+          printf 'versionCode=%s\nversionName=%s\ncommit=%s\nfirebase=%s\nadmob=%s\n' "$VC" "$VN" "$GITHUB_SHA" "${{ steps.firebase.outputs.durum }}" "${{ steps.admob.outputs.durum }}" > "$RUNNER_TEMP/cikti/surum.txt"
+          cp app/build/outputs/apk/release/*.apk "$RUNNER_TEMP/cikti/"
+          if [ -f app/build/outputs/bundle/release/app-release.aab ]; then
+            cp app/build/outputs/bundle/release/app-release.aab "$RUNNER_TEMP/cikti/Tavla.aab"
+            echo "Yükleme anahtarı (Firebase'e eklenecek parmak izleri):"
+            keytool -printcert -jarfile "$RUNNER_TEMP/cikti/Tavla.aab" | grep -E "Owner|SHA1:|SHA256:" || true
+            SHA1=$(keytool -printcert -jarfile "$RUNNER_TEMP/cikti/Tavla.aab" | sed -nE 's/^[[:space:]]*SHA1: (.*)$/\1/p' | head -1)
+            echo "::notice::Yükleme anahtarı SHA-1: $SHA1 (versionCode $VC, firebase=${{ steps.firebase.outputs.durum }})"
+          fi
+          ls -la "$RUNNER_TEMP/cikti"; cat "$RUNNER_TEMP/cikti/surum.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Tavla-apk
+          path: ${{ runner.temp }}/cikti/*.apk
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: steps.imza.outputs.imzali == 'true'
+        with:
+          name: Tavla-aab
+          path: |
+            ${{ runner.temp }}/cikti/Tavla.aab
+            ${{ runner.temp }}/cikti/surum.txt
+          retention-days: 30

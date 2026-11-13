@@ -1,0 +1,51 @@
+# Kelime Bilcek — Google Play komutları. Bu dosya değişip push edilince .github/workflows/play-kelime.yml
+# çalışır (android/play.mjs, PLAY_UYGULAMA=kelime). "uygula" olmayan komut yalnız plan yazar.
+# Önce magaza/PLAY-YAYIN.md'deki tarayıcı adımları (uygulamayı oluşturma, ilk AAB, hizmet hesabı izni) bitmeli.
+#   durum                       salt okuma
+#   magaza uygula               iletişim + mağaza metni: tr-TR (magaza/aciklamalar.md)
+#   gorsel uygula               simge, tanıtım görseli, ekran görüntüleri: magaza/play
+#   veriguvenligi uygula        Veri güvenliği formu: magaza/veri-guvenligi.csv
+#   yukle uygula                kelime-android.yml'in imzalı AAB'si → üretim kanalına TASLAK
+#   yukle yayinla uygula        sürümü incelemeye gönderir — yalnız kullanıcının açık onayıyla
+#   imza                        Play uygulama imzalama anahtarının SHA-256'sı ve SHA-1'i (Firebase'e eklenir)
+# Yeni istek: yalnız çalıştırılacak komutları yazın; eski satırları "# (yapıldı …)" ile kapatın (her push dosyadaki bütün
+# etkin satırları çalıştırır).
+
+# istek 2026-11-04: ilk AAB taslak olarak yüklendi (tarayıcı); mağaza, görsel, Veri güvenliği, imza
+# (yapıldı 2026-11-04, koşu 41868509396: production 1 (1.0.0) draft) durum
+# (yapıldı 2026-11-04, koşu 41868509396: tamam — tr-TR metin + iletişim) magaza uygula
+# (yapıldı 2026-11-04, koşu 41868509396: tamam — simge, tanıtım, 5 ekran) gorsel uygula
+# (yapıldı 2026-11-04, koşu 41868509396: tamam — form yazıldı) veriguvenligi uygula
+# (yapıldı 2026-11-04, koşu 41868509396: SHA-1 V3.0 c111f874a25841aa3fcdbf6646a0b42ce641a411, V3.2 hibrit 5f7247c9153a8587c7d7b593b3ad10f41503d41a) imza
+
+# istek 2026-11-09T20:57:25Z: salt okuma durum (1.0.1 yayını öncesi; Play'deki taslak ve paketler)
+# (yapıldı 2026-11-09, koşu 42697873508: production 1 (1.0.0) completed — uygulama Play'de yayında; paketler 1; tr-TR icon 1, featureGraphic 1, phoneScreenshots 5) durum
+
+# istek 2026-11-09T21:02:37Z: 1.0.1 (2) üretime yükle ve incelemeye gönder; yayındaki 1.0.0 (1)'in yerini alır (kullanıcının açık onayı: "Evet, gönder"); AAB: kelime-android koşusu 42696928440 (commit 7adb08a, versionCode 2, admob=gercek, Poyraz Workshop yükleme anahtarı)
+# (yapıldı 2026-11-09, koşu 42698697144: AAB 2 (koşu 42696928440, commit 7adb08a) yüklendi, üretim 1.0.0 (1) → 1.0.1 (2) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula
+
+# istek 2026-11-09T22:25:19Z: 1.0.2 (3) — mağaza metni ("Yapay zekâya karşı" bölümü) ve paketi üretime yükle, incelemeye gönder; 1.0.1 (2)'nin yerini alır (kullanıcının açık onayı: "Evet, ikisini de yayınla"); AAB: kelime-android koşusu 42706597921 (commit e53153d, versionCode 3, admob=gercek, Poyraz Workshop yükleme anahtarı); gizlilik sayfası önce yayınlandı (koşu 42711576086)
+# (yapıldı 2026-11-09, koşu 42711733748: tr-TR metin yazıldı, tam açıklama 1564 karakter, düzenleme onaylandı) magaza uygula
+# (yapıldı 2026-11-09, koşu 42711733748: AAB 3 (koşu 42706597921, commit e53153d) yüklendi, üretim 1.0.1 (2) → 1.0.2 (3) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula
+
+# istek 2026-11-09T22:43:04Z: 1.0.3 (4) yeni görünüm — mağaza görselleri (simge, tanıtım, 5 telefon karesi) ve paket üretime, incelemeye gönder; 1.0.2 (3)'ün yerini alır (kullanıcının açık isteği: "İşlemleri bitince direkt yayınlayalım"); AAB: kelime-android koşusu 42713685679 (commit f1250e5, versionCode 4, admob=gercek, Poyraz Workshop yükleme anahtarı)
+# (yapıldı 2026-11-09, koşu 42714353339: tr-TR simge, tanıtım görseli ve 5 telefon karesi yüklendi, düzenleme onaylandı) gorsel uygula
+# (yapıldı 2026-11-09, koşu 42714353339: AAB 4 (koşu 42713685679, commit f1250e5) yüklendi, üretim 1.0.2 (3) → 1.0.3 (4) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula
+
+# istek 2026-11-10T05:07:57Z: 1.0.4 (5) Evren taraması düzeltmeleri (K-29…K-32) — paketi üretime yükle, incelemeye gönder; incelemedeki 1.0.3 (4)'ün yerini alır (kullanıcının açık onayı: "Evet, gönder"); AAB: kelime-android koşusu 42758879442 (commit 1d3d509, versionCode 5, admob=gercek, Poyraz Workshop yükleme anahtarı); mağaza metni ve beyanlar değişmedi
+# (yapıldı 2026-11-10, koşu 42760176646: AAB 5 (koşu 42758879442, commit 1d3d509) yüklendi, üretim 1.0.3 (4) → 1.0.4 (5) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula
+
+# istek 2026-11-10T05:14:24Z: salt okuma durum (1.0.4 gönderiminden sonra kullanıcı sordu)
+# (yapıldı 2026-11-10, koşu 42760874929: production 1.0.4 (5) completed; paketler 1–5) durum
+
+# istek 2026-11-10T05:27:41Z: mağaza metni — arama görünürlüğü: ad "Kelime Bilcek: Kelime Düellosu", kısa ve uzun açıklamaya Play arama önerilerinden oyuna uyan ifadeler (kelime oyunu, kelime düellosu, kelime yarışı, iki kişilik, kelime zinciri, son harfle kelime türetmece; başka uygulama adı yok); kullanıcının açık onayı: "Kelime Düellosu (Önerilen)"
+# (yapıldı 2026-11-10, koşu 42762272451: tr-TR "Kelime Bilcek: Kelime Düellosu", kısa 76, tam 1803 karakter, düzenleme onaylandı) magaza uygula
+
+# istek 2026-11-11T16:10:20Z: 1.0.5 (6) oyunun kendi klavyesi (tam Türkçe Q, telefon klavyesi ve öneri yok) — paketi üretime yükle, incelemeye gönder; 1.0.4 (5)'in yerini alır (kullanıcının açık onayı: "Evet, gönder"); AAB: kelime-android koşusu 43043619768 (commit 77f3595, versionCode 6, admob=gercek, Poyraz Workshop yükleme anahtarı); beyanlar değişmedi
+# (yapıldı 2026-11-11, koşu 43055649639: AAB 6 (koşu 43043619768, commit 77f3595) yüklendi, üretim 1.0.4 (5) → 1.0.5 (6) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula
+
+# istek 2026-11-12T03:47:16Z: salt okuma durum (kullanıcı 1.0.5 yayında mı diye sordu)
+# (yapıldı 2026-11-12, koşu 43150517560: production 1.0.5 (6) completed; mağaza sayfasında 1.0.5, yeni ad ve kısa açıklama yayında) durum
+
+# istek 2026-11-12T05:03:07Z: 1.0.6 (7) Arkadaşını Davet Et + Play değerlendirme penceresi — paketi üretime yükle, incelemeye gönder; 1.0.5 (6)'nın yerini alır (kullanıcının açık isteği: "İkisini de ekle ve yayınla"); AAB: kelime-android koşusu 43158240442 (commit 0b9f392, versionCode 7, admob=gercek, Poyraz Workshop yükleme anahtarı); beyanlar değişmedi
+# (yapıldı 2026-11-12, koşu 43158760314: AAB 7 (koşu 43158240442, commit 0b9f392) yüklendi, üretim 1.0.5 (6) → 1.0.6 (7) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula

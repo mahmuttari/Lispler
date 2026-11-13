@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gizlilik Politikası – Kelime Bilcek</title>
+<link rel="canonical" href="https://kelime-bilcek.web.app/gizlilik.html">
+<link rel="stylesheet" href="legal.css">
+</head>
+<body>
+<main>
+<nav><a href="index.html">Kelime Bilcek</a><a href="gizlilik.html">Gizlilik Politikası</a><a href="hesap-silme.html">Hesap Silme</a><a href="#en">English</a></nav>
+<h1>Gizlilik Politikası</h1>
+<p class="date">Geliştirici: Poyraz Workshop · Son güncelleme: 9 Kasım 2026</p>
+<p>Bu politika, Poyraz Workshop ("biz") tarafından yayınlanan Kelime Bilcek oyununun ("Oyun") hangi verileri nasıl
+işlediğini açıklar. Oyunda gerçek parayla satın alma yoktur; Android uygulaması Google AdMob reklamları gösterir
+(bkz. 4. bölüm).</p>
+
+<h2>1. Hesap: Google ile giriş</h2>
+<p>Oyun çevrimiçi oynandığı için Google hesabınızla giriş yapmanız gerekir. Giriş Google'ın Firebase Authentication
+hizmetiyle yapılır; Firebase, Google hesabınızın <b>adını, e-posta adresini, profil fotoğrafı adresini</b> ve size
+verdiği <b>kullanıcı kimliğini</b> saklar. Bu bilgiler hesabınızı tanımak içindir; oyun e-postanızı ve adınızı diğer
+oyunculara göstermez, oyun veritabanına yazmaz.</p>
+
+<h2>2. Oyun verileri (Firebase Realtime Database, Avrupa – Belçika)</h2>
+<ul>
+  <li><b>Kullanıcı adı</b> (siz seçersiniz, 3–14 harf/rakam), hesabın açılış ve ad değiştirme zamanı.</li>
+  <li><b>İstatistikler:</b> oynadığınız, kazandığınız, kaybettiğiniz ve berabere kaldığınız maç sayıları (modlara göre).</li>
+  <li><b>Şampiyonlar listesi:</b> kullanıcı adınız ve bu sayılar. Liste giriş yapmış bütün oyunculara açıktır; gerçek
+      adınızı kullanıcı adı olarak kullanmayın.</li>
+  <li><b>Arkadaşlar ve davet:</b> arkadaş listeniz (arkadaşlarınızın kullanıcı adları), size gelen oyun daveti (gönderenin
+      kullanıcı adı, oda kodu, zaman). Arkadaş listenizi ve davetlerinizi yalnız siz görürsünüz; kullanıcı adınız
+      arkadaşlarınızın listesinde yer alır.</li>
+  <li><b>Çevrimiçi durumu ve kategori tercihleri:</b> kullanıcı adınızı bilen oyuncular görebilir (davet ve kategori
+      eşleştirmesi için).</li>
+  <li><b>Yapay zekâya karşı maçlar</b> yalnız telefonunuzda oynanır; sunucuya maç kaydı yazılmaz ve Şampiyonlar'a sayılmaz.</li>
+  <li><b>Maçlar:</b> eşleşme kuyruğunda kullanıcı adınız, seçtiğiniz mod ve zaman (eşleşince silinir); maç odasında iki
+      oyuncunun kullanıcı adı ve kimliği, yazılan kelimeler ve skorlar (yalnız iki oyuncu görür). Maç bitip lobiye
+      dönülünce oda silinir; yarıda kalan odalar hesabınızı sildiğinizde silinir.</li>
+</ul>
+<p>Firebase hizmeti sunmak ve güvenliği sağlamak için IP adresi gibi teknik verileri de işleyebilir. Google'ın gizlilik
+politikası: <a href="https://policies.google.com/privacy">policies.google.com/privacy</a></p>
+
+<h2>3. Kelime denetimi</h2>
+<p>Yazdığınız kelime oyunun kendi listesinde yoksa denetlenmek üzere gönderilir:</p>
+<ul>
+  <li><b>Cloudflare Workers ve Workers AI:</b> kelime ve kategori adı, giriş yaptığınızı kanıtlayan Firebase kimlik jetonuyla
+      birlikte. Aynı kelimenin yeniden sorulmaması için <b>kelime, kategori ve kararı</b> (geçerli/geçersiz) Cloudflare'de en çok
+      90 gün saklanır; bu kayıtta kimin yazdığı, kullanıcı kimliği ya da IP adresi yoktur. Cloudflare hizmeti sunmak için IP
+      adresi gibi teknik kayıtlar tutabilir (<a href="https://www.cloudflare.com/privacypolicy/">cloudflare.com/privacypolicy</a>).
+      Denetlenen kelimeler ve kararları aynı amaçla telefonunuzda da saklanır (en çok 1500 kayıt).</li>
+  <li><b>Türk Dil Kurumu sözlüğü (sozluk.gov.tr):</b> yalnız kelime; istek doğrudan cihazınızdan gider.</li>
+</ul>
+
+<h2>4. Reklamlar (Google AdMob, yalnız Android uygulaması)</h2>
+<p>Oyunu ücretsiz tutmak için Android uygulaması reklam gösterir: maç bitip lobiye dönerken arada bir tam ekran reklam
+(ilk 3 maçta yok, iki reklam arasında en az 5 dakika, saatte en çok 4) ve lobi ile Şampiyonlar ekranının altında bir
+bant reklam. Maç sırasında reklam yoktur. AdMob; cihazınızın reklam kimliğini, IP adresini, cihaz ve uygulama
+bilgilerini, reklam etkileşimlerini ve yaklaşık konumu reklam göstermek, ölçmek, dolandırıcılığı önlemek ve (izin
+verdiyseniz) kişiselleştirmek için işleyebilir. Avrupa Ekonomik Alanı, Birleşik Krallık ve İsviçre'de oyun ilk açılışta
+Google'ın onay formunu gösterir; tercihinizi profil menüsündeki <b>🔒 Reklam gizlilik seçenekleri</b> düğmesiyle
+değiştirebilirsiniz. Reklam kimliğinizi Android ayarlarından (Google › Reklamlar) sıfırlayabilir ya da silebilirsiniz.
+Google'ın reklam verilerini nasıl kullandığı:
+<a href="https://policies.google.com/technologies/partner-sites">policies.google.com/technologies/partner-sites</a></p>
+
+<h2>5. Paylaşım</h2>
+<p>Verilerinizi satmayız. Veriler yalnız hizmet sağlayıcılarımızla (Google: Firebase ve AdMob; Cloudflare) ve kelime
+denetimi için Türk Dil Kurumu sözlüğüyle yukarıdaki amaçlarla paylaşılır. Kullanıcı adınız ve maç sayılarınız diğer
+oyunculara görünür.</p>
+
+<h2>6. Saklama ve silme</h2>
+<p>Hesabınız ve oyun verileriniz siz silene kadar saklanır. Oyunda üstteki kullanıcı adınıza dokunup
+<b>🗑️ Hesabı Sil</b> düğmesiyle hesabınızı hemen silebilirsiniz: kullanıcı adınız, istatistikleriniz, Şampiyonlar
+kaydınız, arkadaş listeniz ve arkadaşlarınızın listesindeki kaydınız, davetleriniz, kategori tercihleriniz, eşleşme
+kuyruğu kaydınız, katıldığınız maç odaları ve Firebase giriş hesabınız silinir. Oyun kurulu değilse e-postayla
+isteyebilirsiniz: <a href="hesap-silme.html">Hesap Silme</a>. E-postayla gelen istekler en geç 30 gün içinde yerine
+getirilir.</p>
+
+<h2>7. Çocuklar</h2>
+<p>Oyun 13 yaş ve üzeri kullanıcılar için yayınlanmıştır. 13 yaşından küçük bir çocuğa ait veri işlediğimizi fark
+ederseniz bize yazın; veriyi sileriz.</p>
+
+<h2>8. Haklarınız</h2>
+<p>6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve geçerli olduğu yerde GDPR kapsamında verilerinize erişme,
+düzeltilmesini ya da silinmesini isteme haklarına sahipsiniz. Başvuru:
+<a href="mailto:poyrazworkshop7@gmail.com">poyrazworkshop7@gmail.com</a></p>
+
+<h2>9. Değişiklikler</h2>
+<p>Bu politikayı güncellersek yeni tarihi bu sayfada yayınlarız.</p>
+
+<h2 id="en">Privacy Policy (English)</h2>
+<p>Kelime Bilcek by Poyraz Workshop has no real-money purchases. You sign in with Google (Firebase Authentication stores
+your Google name, e-mail, photo URL and a user ID; the game never shows them to other players). The game's database
+(Firebase Realtime Database, Belgium) stores your chosen username, match statistics, leaderboard entry (visible to
+signed-in players), friends list and invites (visible only to you), online status and category preferences, the
+matchmaking queue entry and match rooms (usernames, words and scores, visible only to the two players; deleted after the
+match). Words not in the game's own list are checked by our Cloudflare Worker (Cloudflare Workers AI; word, category
+and your Firebase ID token; word, category and verdict are cached for up to 90 days without any user ID or IP address) and by the Turkish Language Association dictionary (sozluk.gov.tr;
+the word only). The Android app shows Google AdMob ads only after a match and in the lobby/leaderboard, never during a
+match; AdMob may process your advertising ID, IP address, device data and approximate location, and asks for consent in
+the EEA, UK and Switzerland. We do not sell data. Delete your account in the app (tap your username › Delete account)
+or e-mail <a href="mailto:poyrazworkshop7@gmail.com">poyrazworkshop7@gmail.com</a>. The game is for users aged 13+.</p>
+</main>
+</body>
+</html>

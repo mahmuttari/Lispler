@@ -1,0 +1,5 @@
+// Master Office — Play'e yüklenecek AAB'nin sürümü. Kaynak kodu yoktur (uygulama yeniden kuruluyor); 3.5.1 AAB'si
+// "Sayfa" anahtarıyla imzalı. android/play.mjs "yukle" komutu sürümü buradan okur ve yüklenen AAB'ninkiyle karşılaştırır.
+// Yeni AAB gelince (ör. gerçek AdMob kimlikli 3.5.2 → 3005002) iki satır birlikte güncellenir.
+versionCode 3005002
+versionName '3.5.2'

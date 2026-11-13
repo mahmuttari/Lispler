@@ -1,0 +1,19 @@
+# Firebase Android uygulaması, imza parmak izleri ve google-services.json (.github/workflows/tavla-firebase-uygulama.yml,
+# firebase/uygulama.mjs). Her satır bir komut; etkin satırlar her push'ta yeniden çalışır (hepsi tekrar çalıştırılınca
+# zararsızdır), işi biten satır "# (yapıldı …)" ile kapatılır.
+#   durum                    Android uygulamaları ve parmak izleri (salt okuma)
+#   android ekle             com.poyrazworkshop.tavla yoksa oluşturur
+#   sha ekle <parmak izi>    SHA-1 ya da SHA-256: yükleme anahtarı (tavla-android.yml çıktısı) ve Play uygulama imzası
+#   yapilandirma             google-services.json'u tavla/android/app/'e yazar; iş akışı dala commit eder
+# Hizmet hesabının tavla-online-oyundar projesinde roles/firebase.admin rolü olmalı (firebase/README.md › Kurulum).
+
+# istek 2026-11-04T14:48:32Z: yetki yoklaması (salt okuma; kullanıcı: "tamam hepsini hallet")
+# (yapıldı 2026-11-04, koşu 41851273025: YETKİ YOK — 403, roller henüz verilmedi) durum
+
+# istek 2026-11-04T14:58:57Z: roller verildi (kullanıcı: "verildi"); Android uygulaması, yükleme anahtarı SHA-1, google-services.json
+# (yapıldı 2026-11-04, koşu 41853495103) durum
+# (yapıldı 2026-11-04, koşu 41853495103: com.poyrazworkshop.tavla oluşturuldu) android ekle
+# (yapıldı 2026-11-04, koşu 41853495103: yükleme anahtarı SHA-1 eklendi) sha ekle d088a07577d189b015d4a588749a1a8cc2ee5699
+# (yapıldı 2026-11-04, koşu 41853495103: google-services.json commit 8b1a1af, Android OAuth istemcisi var) yapilandirma
+# (yapıldı 2026-11-04, koşu 41853495103) durum
+# (koşu 41853021083: durum geçti, android ekle 403 — yeni rol henüz yayılmamıştı; aynı komutlarla yeniden)

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gizlilik Politikası – Tavla</title>
+<link rel="stylesheet" href="../legal.css">
+</head>
+<body>
+<main>
+<nav><a href="index.html">Tavla</a><a href="gizlilik.html">Gizlilik Politikası</a><a href="hesap-silme.html">Hesap Silme</a><a href="#en">English</a></nav>
+<h1>Gizlilik Politikası</h1>
+<p class="date">Son güncelleme: 4 Kasım 2026</p>
+
+<p>Bu politika, <b>Poyraz Workshop</b> ("biz") tarafından Android için yayınlanan <b>Tavla – Sesli Kahvehane</b>
+uygulamasının ("Oyun") hangi verileri nasıl işlediğini açıklar. Oyun ücretsizdir ve <b>Google AdMob</b> reklamları
+gösterir (bkz. 3. bölüm); analiz ya da çökme raporu aracı içermez. Çevrimiçi özellikler için Google'ın <b>Firebase</b>
+hizmetlerini (Authentication ve Cloud Firestore) kullanırız.</p>
+
+<div class="box"><b>Kısaca:</b> Kayıt zorunlu değil; misafir olarak oynarsınız. Sakladıklarımız rumuzunuz, puanlarınız,
+arkadaş listeniz ve çevrimiçi oyundaki sohbet mesajlarınızdır. E-postanız yalnız hesabınızı yedeklerseniz tutulur ve
+başka oyunculara gösterilmez. Sesli sohbet kaydedilmez. Reklam sağlayıcısı (Google AdMob) cihazınızın reklam kimliğini ve
+yaklaşık konumunu (IP adresinden) kullanır. Hesabınızı oyunun içinden silebilirsiniz.</div>
+
+<h2>1. Hangi verileri işliyoruz</h2>
+<ul>
+  <li><b>Kullanıcı kimliği:</b> Oyunu ilk açtığınızda Firebase size anonim bir kullanıcı kimliği verir. Puanlarınız ve
+      arkadaşlarınız bu kimliğe bağlıdır.</li>
+  <li><b>Rumuz:</b> İsterseniz seçtiğiniz takma ad (en çok 16 karakter; yoksa "Misafir"). Rumuzunuz, puanınız,
+      galibiyet ve mars sayılarınız Yaşayan Efsaneler listesinde ve arkadaş listelerinde diğer oyunculara görünür.</li>
+  <li><b>E-posta adresi:</b> Yalnız "Hesabını yedekle" ile e-posta + şifre ya da Google hesabınızı bağlarsanız Firebase
+      Authentication'da tutulur. Şifrenizi biz göremeyiz. E-postanız başka oyunculara gösterilmez.</li>
+  <li><b>Oyun verileri:</b> Puan, galibiyet/mağlubiyet ve mars sayıları, rütbe, son görülme zamanı ("çevrimiçi"
+      göstergesi; menüden gizleyebilirsiniz), arkadaş listesi, arkadaşlık istekleri ve oyun davetleri, çevrimiçi
+      oyun odalarının durumu (tahta, zarlar, oda kodu).</li>
+  <li><b>Sohbet mesajları:</b> Çevrimiçi oyunda yazdığınız ya da seçtiğiniz hazır mesajlar; yalnız o odadaki iki
+      oyuncu okur. Argo filtresi mesajı göndermeden önce telefonunuzda denetler; üç uyarıda sohbet geçici olarak
+      kapanır (3 gün, tekrarında 30 gün).</li>
+  <li><b>Şikâyetler:</b> Bir oyuncuyu şikâyet ederseniz şikâyet nedeniniz, notunuz, iki tarafın kullanıcı kimliği ve
+      şikâyet edilen oyuncunun o odadaki son 20 mesajı kaydedilir. Şikâyetleri yalnız biz okuruz.</li>
+  <li><b>Engellenenler:</b> Engellediğiniz oyuncuların listesi (yalnız siz görürsünüz).</li>
+  <li><b>Sesli sohbet:</b> İki oyuncu da onay verirse sesiniz WebRTC ile doğrudan rakibinize iletilir (uçtan uca
+      şifreli). Ses bizim sunucumuzdan geçmez ve hiçbir yerde kaydedilmez. Bağlantı kurmak için Google'ın STUN
+      sunucuları IP adresinizi görür. Mikrofon izni yalnız sesli sohbeti açınca istenir.</li>
+  <li><b>Telefonunuzda kalanlar:</b> Görünüm, yorumcu ve maç ayarları, favori mesajlar, son oda kodu.</li>
+</ul>
+<p>Kesin konum, rehber ya da fotoğraf toplamayız. Reklam kimliği ve yaklaşık konum yalnız reklam sağlayıcısının SDK'sı
+tarafından işlenir (3. bölüm).</p>
+
+<h2>2. Neden işliyoruz</h2>
+<p>Oyun verilerini yalnız oyunun çalışması için işleriz: çevrimiçi eşleşme ve oyun, puan ve sıralama, arkadaşlık ve
+davet, sohbet, hesabın cihazlar arasında taşınması ve kötüye kullanımın önlenmesi (argo filtresi, şikâyet, engelleme).
+Rumuzunuzu, puanlarınızı ya da mesajlarınızı reklam sağlayıcısına vermeyiz ve satmayız.</p>
+
+<h2>3. Kimlerle paylaşılıyor</h2>
+<ul>
+  <li><b>Google (Firebase):</b> Verileri bizim adımıza saklayan hizmet sağlayıcı. Google'ın Firebase gizlilik ve güvenlik
+      açıklaması: <a href="https://firebase.google.com/support/privacy">firebase.google.com/support/privacy</a>.</li>
+  <li><b>Diğer oyuncular:</b> Rumuzunuzu, puanlarınızı, çevrimiçi durumunuzu ve oyun içindeki mesajlarınızı görür.</li>
+  <li><b>Google AdMob (reklam):</b> Reklamlar yalnız ana menünün altında ve maç bittikten sonra gösterilir, oyun
+      sırasında asla. AdMob SDK'sı reklam göstermek, ölçmek ve dolandırıcılığı önlemek için cihazınızın reklam kimliğini,
+      IP adresini (yaklaşık konum), uygulama etkileşimlerini ve teşhis bilgisini işler. Avrupa Ekonomik Alanı, İngiltere ve
+      İsviçre'de ilk açılışta izniniz sorulur; tercihinizi Hesap › Gizlilik ve hesap › Reklam tercihleri'nden değiştirebilirsiniz.
+      Kişiselleştirilmiş reklamları Android ayarlarından (Google › Reklamlar) kapatabilirsiniz. Google'ın açıklaması:
+      <a href="https://policies.google.com/technologies/partner-sites">policies.google.com/technologies/partner-sites</a>.</li>
+  <li><b>Avatarlar:</b> 1.0.1 sürümünden itibaren avatarlar (pul, zar, fincan, çay bardağı) uygulamanın içinde çizilir;
+      bunun için hiçbir hizmete istek gitmez. (1.0.0 sürümü avatarları DiceBear'den, kimliğinizden türetilmiş anlamsız bir
+      değerle isterdi.)</li>
+</ul>
+<p>Yasal bir zorunluluk olmadıkça verilerinizi başka kimseye vermeyiz.</p>
+
+<h2>4. Ne kadar süre saklıyoruz</h2>
+<p>Hesap verileriniz siz silene kadar saklanır. Çevrimiçi oyun odaları ve içlerindeki mesajlar oyun bitince ya da
+hesabınızı silince silinir. Şikâyet kayıtları incelendikten sonra en çok 1 yıl tutulur.</p>
+
+<h2>5. Haklarınız ve hesap silme</h2>
+<p>Oyunda ana menünün sağ üstündeki yeşil <b>☁️ bulut</b> düğmesi › <b>Gizlilik ve hesap</b> › <b>🗑️ Hesabı sil</b> ile rumuzunuz, puanlarınız, arkadaş
+listeniz (ve arkadaşlarınızın listesindeki kaydınız), davetleriniz, engel listeniz, oyun odalarınız, sohbet mesajlarınız
+ve Firebase giriş hesabınız silinir. Oyun kurulu değilse <a href="hesap-silme.html">hesap silme sayfasındaki</a> yoldan
+isteyebilirsiniz. KVKK m.11 ve GDPR kapsamındaki bilgi alma, düzeltme ve silme talepleriniz için bize yazın.</p>
+
+<h2>6. Çocuklar</h2>
+<p>Oyun 13 yaş altındaki çocuklara yönelik değildir; çevrimiçi bölümde yabancılarla yazılı ve sesli sohbet vardır.
+13 yaş altındaki bir çocuğun veri verdiğini öğrenirsek o hesabı sileriz.</p>
+
+<h2>7. Güvenlik</h2>
+<p>Bütün bağlantılar şifrelidir (HTTPS; sesli sohbette DTLS-SRTP). Firebase güvenlik kuralları her oyuncunun yalnız
+kendi verisini değiştirmesine izin verir; sohbeti yalnız odadaki iki oyuncu okur, şikâyetleri yalnız biz okuruz.</p>
+
+<h2>8. Değişiklikler ve iletişim</h2>
+<p>Bu politikayı değiştirirsek tarihini güncelleriz. Sorularınız için:
+<a href="mailto:poyrazworkshop7@gmail.com">poyrazworkshop7@gmail.com</a> (Poyraz Workshop).</p>
+
+<h2 id="en">Privacy Policy (English summary)</h2>
+<p><b>Tavla – Sesli Kahvehane</b> by Poyraz Workshop shows Google AdMob ads (bottom of the main menu and after a match,
+never during play) and has no analytics or crash reporting SDKs. AdMob processes your advertising ID, IP address
+(approximate location), app interactions and diagnostics for ads, measurement and fraud prevention; in the EEA, UK and
+Switzerland your consent is asked first and can be changed in Account › Privacy and account › Ad choices. It uses Google
+Firebase (Authentication, Cloud Firestore) for online play. We store an anonymous Firebase user ID, your optional
+nickname, your score and win/loss counts (shown to other players), last-seen time, friends list, friend requests and
+game invites, online room state, chat messages (readable only by the two players in the room), reports you file
+(reason, note, both user IDs and the reported player's last 20 messages in that room; kept up to 1 year) and your block
+list. Your e-mail is stored only if you back up your account with e-mail/password or Google, and is never shown to other
+players. Voice chat (only if both players agree) is sent peer-to-peer over WebRTC, end-to-end encrypted, and never
+recorded. Since version 1.0.1 avatars are drawn inside the app and no request is sent to any avatar service. We do not
+collect precise location, contacts or photos, and we do not sell data or give game data to the ad provider. Delete your account in the game
+(green cloud button › Privacy and account › Delete account) or see the <a href="hesap-silme.html">account deletion page</a>.
+Not directed at children under 13. Contact: <a href="mailto:poyrazworkshop7@gmail.com">poyrazworkshop7@gmail.com</a>.</p>
+</main>
+</body>
+</html>

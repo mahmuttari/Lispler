@@ -66,9 +66,8 @@ export function headingFromOrientation(alpha, beta, gamma) {
   const ca = Math.cos(a), sa = Math.sin(a), cb = Math.cos(b), sb = Math.sin(b), cg = Math.cos(g), sg = Math.sin(g);
   // the phone's axes in the earth frame (x east, y north, z up): R = Rz(alpha) Rx(beta) Ry(gamma)
   const flat = cb * cg;                                   // how much the screen faces the sky (1 = lying flat)
-  if (flat > 0.5) return norm360(Math.atan2(-sa * cb, ca * cb) * DEG);   // top edge: east -sin(a)cos(b), north cos(a)cos(b)
-  const east = -(ca * sg + sa * sb * cg), north = -(sa * sg - ca * sb * cg);   // back of the phone
-  return norm360(Math.atan2(east, north) * DEG);
+  // top edge: east -sin(a)cos(b), north cos(a)cos(b); back of the phone: east, north below
+  return mixHeading(-sa * cb, ca * cb, -(ca * sg + sa * sb * cg), -(sa * sg - ca * sb * cg), flat);
 }
 
 /**
@@ -76,8 +75,25 @@ export function headingFromOrientation(alpha, beta, gamma) {
  * Compass plugin delivers. R[8] is how much the screen faces the sky; R[1], R[4] the top edge (device y) in east / north; -R[2], -R[5] the back of the phone.
  */
 export function headingFromMatrix(R) {
-  if (R[8] > 0.5) return norm360(Math.atan2(R[1], R[4]) * DEG);
-  return norm360(Math.atan2(-R[2], -R[5]) * DEG);
+  return mixHeading(R[1], R[4], -R[2], -R[5], R[8]);
+}
+
+// How much of the TOP EDGE reading is used: all of it while the screen faces the sky (flat >= 0.5, a total tilt of up to 60 degrees: the way a compass is held, and a phone read at an
+// angle), none of it once the phone is stood up (flat <= 0.25, over 75 degrees: then the back of the phone is what points), and a smooth mix in between (60 to 75 degrees).
+// A hard switch at one tilt jumped by about the roll of the hand there (11 degrees at 10 degrees of roll); the mix never jumps, and for a phone held the usual way it changes nothing.
+const topWeight = flat => { const x = Math.max(0, Math.min(1, (flat - 0.25) / 0.25)); return x * x * (3 - 2 * x); };
+
+function mixHeading(topE, topN, backE, backN, flat) {
+  const w = topWeight(flat);
+  const top = () => norm360(Math.atan2(topE, topN) * DEG), back = () => norm360(Math.atan2(backE, backN) * DEG);
+  if (w >= 1) return top();
+  if (w <= 0) return back();
+  // both directions as unit vectors (so that the shorter one does not vanish), added with their weights
+  const lt = Math.hypot(topE, topN), lb = Math.hypot(backE, backN);
+  const e = (lt > 1e-9 ? w * topE / lt : 0) + (lb > 1e-9 ? (1 - w) * backE / lb : 0);
+  const n = (lt > 1e-9 ? w * topN / lt : 0) + (lb > 1e-9 ? (1 - w) * backN / lb : 0);
+  if (Math.hypot(e, n) < 0.05) return w >= 0.5 ? top() : back();   // the two point opposite ways (a phone held top edge down): the stronger one decides
+  return norm360(Math.atan2(e, n) * DEG);
 }
 
 /** exponential smoothing of an angle on the circle (no jump at 0/360); k = 0..1, bigger follows faster */

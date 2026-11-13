@@ -1,0 +1,1988 @@
+{
+  "dayi": {
+    "GAME_START": [
+      {
+        "text": "Haydi rastgele evlat; zarın tıkırtısı neşe getirsin masaya.",
+        "file": "voices/dayi/GAME_START_00_43rln4.mp3"
+      },
+      {
+        "text": "Hoş geldin masaya aslanım, elin dert görmesin, şansın açık olsun.",
+        "file": "voices/dayi/GAME_START_01_d1qup8.mp3"
+      },
+      {
+        "text": "Atalım bakalım kemikleri, kimin talihi gürse o kazansın.",
+        "file": "voices/dayi/GAME_START_02_3k312t.mp3"
+      },
+      {
+        "text": "Tavla dediğin hoşsohbettir, haydi başla bakalım; rast gelsin.",
+        "file": "voices/dayi/GAME_START_03_ebni63.mp3"
+      },
+      {
+        "text": "Zarlar avuçta, niyetler oyun... Başlıyoruz, yolun açık olsun.",
+        "file": "voices/dayi/GAME_START_04_dj0dfw.mp3"
+      },
+      {
+        "text": "Zarın iyisi ilk atışta belli olur derler, haydi rast gelsin bakalım.",
+        "file": "voices/dayi/GAME_START_05_knears.mp3"
+      },
+      {
+        "text": "Mekanın sahibi geldi, zarları selamlayın. Güzel oyunlar evlat.",
+        "file": "voices/dayi/GAME_START_06_utzkid.mp3"
+      },
+      {
+        "text": "Merhaba evlat, sandalyeni çek; dostane bir oyun olsun, rastgele.",
+        "file": "voices/dayi/GAME_START_07_3kgj9r.mp3"
+      },
+      {
+        "text": "Bir çay içimilik vaktimiz var, haydi başla; şansın daim olsun.",
+        "file": "voices/dayi/GAME_START_08_g687hz.mp3"
+      },
+      {
+        "text": "Zarı salla, talihi bağla. Haydi bakalım, tekerin düz bassın.",
+        "file": "voices/dayi/GAME_START_09_aqe0ju.mp3"
+      },
+      {
+        "text": "Dostluk kazansın ama pulu da ben toplayayım! Haydi rastgele.",
+        "file": "voices/dayi/GAME_START_10_kr6207.mp3"
+      },
+      {
+        "text": "Tavla kutusunu açtık, muhabbetimiz bol, şansımız gür olsun.",
+        "file": "voices/dayi/GAME_START_11_clty03.mp3"
+      },
+      {
+        "text": "Kemik sesi mahalleyi uyandırsın, haydi aslanım; rast gelsin.",
+        "file": "voices/dayi/GAME_START_12_vja0jh.mp3"
+      },
+      {
+        "text": "Zarların dili olsa da konuşsa... Hadi bakalım, iyi oyunlar.",
+        "file": "voices/dayi/GAME_START_13_25ixvm.mp3"
+      },
+      {
+        "text": "İlk zar senden olsun, büyüklük bizde kalsın. Haydi rastgele.",
+        "file": "voices/dayi/GAME_START_14_fjt3ry.mp3"
+      },
+      {
+        "text": "Gönlümüzden geçen zarlar gelsin, şansı olan kazansın.",
+        "file": "voices/dayi/GAME_START_15_3x8rqb.mp3"
+      },
+      {
+        "text": "Tahtanın sesi huzur veriyor, başla aslanım; şansın bol olsun.",
+        "file": "voices/dayi/GAME_START_16_b3agcl.mp3"
+      },
+      {
+        "text": "Vira diyerek başlayalım, güzel ve keyifli bir maç olsun.",
+        "file": "voices/dayi/GAME_START_17_ne1cpi.mp3"
+      },
+      {
+        "text": "Selamlar evlat, zarların keskin, bahtın her daim açık olsun.",
+        "file": "voices/dayi/GAME_START_18_4kht6d.mp3"
+      },
+      {
+        "text": "Güzel bir oyun olsun, zarların yüzünü güldürsün; haydi rastgele.",
+        "file": "voices/dayi/GAME_START_19_oyzp8b.mp3"
+      },
+      {
+        "text": "Daha zarlar havada uçarken senin Mars biletini kestim evlat, haydi rastgele!",
+        "file": "voices/dayi/GAME_START_20_cgv9xv.mp3"
+      },
+      {
+        "text": "Şu zarların tıkırtısı var ya... Benim için mahallenin en güzel türküsü budur! Başlıyoruz.",
+        "file": "voices/dayi/GAME_START_21_3e5utz.mp3"
+      },
+      {
+        "text": "At bakalım kemikleri... Bakalım bugün talih kuşu mu konacak yoksa ben mi konduracağım?",
+        "file": "voices/dayi/GAME_START_22_lgi1vl.mp3"
+      },
+      {
+        "text": "Tavla dediğin üç pul, beş zeka, geri kalanı tamamen benim yakışıklılığım. Rast gelsin!",
+        "file": "voices/dayi/GAME_START_23_le26ti.mp3"
+      },
+      {
+        "text": "Zarları avucumda ısıttım, şimdi podyuma salıyorum. Kemerini bağla evlat!",
+        "file": "voices/dayi/GAME_START_24_7wprv.mp3"
+      },
+      {
+        "text": "Ben bu oyunu oynamıyorum, resmen zarlarla vals yapıyorum. İzle ve feyz al!",
+        "file": "voices/dayi/GAME_START_25_ha5w5q.mp3"
+      },
+      {
+        "text": "Mekanın sahibi geldi, pullar saygı duruşuna geçsin! Haydi hayırlı işler.",
+        "file": "voices/dayi/GAME_START_26_37yd3j.mp3"
+      },
+      {
+        "text": "Hoş geldin masaya... Yanında peçete getirdin mi? Maç sonu gözyaşlarını silersin.",
+        "file": "voices/dayi/GAME_START_27_k9k4q3.mp3"
+      },
+      {
+        "text": "Bir çay içene kadar seni Mars'a gönderirim, ona göre hızlı oyna aslanım!",
+        "file": "voices/dayi/GAME_START_28_6ljeu6.mp3"
+      },
+      {
+        "text": "Zarı salla, talihi bağla. Eğer zarlar dile gelseydi 'Dayı bizi yorma' derdi!",
+        "file": "voices/dayi/GAME_START_29_iwe2c5.mp3"
+      }
+    ],
+    "OPPONENT_HIT": [],
+    "SLOW_PLAYER": [],
+    "NEAR_MARS": [
+      {
+        "text": "Hazır ol evlat, Mars kokusu mahalleyi sardı, burnunun direği sızlar!",
+        "file": "voices/dayi/NEAR_MARS_00_bnrsgp.mp3"
+      },
+      {
+        "text": "Bavulları topla, seni buradan direkt Mars'a fırlatıyorum, biletin benden!",
+        "file": "voices/dayi/NEAR_MARS_01_b9n2ck.mp3"
+      },
+      {
+        "text": "Bu gidişat hayra alamet değil, Mars kapıda, zili çalıyor duymuyor musun?",
+        "file": "voices/dayi/NEAR_MARS_02_dujvn8.mp3"
+      },
+      {
+        "text": "Dikkat et, pulların hepsi içeride hapis kaldı, gardiyan da benim!",
+        "file": "voices/dayi/NEAR_MARS_03_n8u4r5.mp3"
+      },
+      {
+        "text": "Mars geliyorum demez evlat, tak diye kapını kırar girer içeri!",
+        "file": "voices/dayi/NEAR_MARS_04_r7uq1g.mp3"
+      }
+    ],
+    "IDLE": [],
+    "CHATTER": [],
+    "BAD_DICE": [
+      {
+        "text": "Gele gele bu mu geldi be?",
+        "file": "voices/dayi/BAD_DICE_00_5ziwjn.mp3"
+      },
+      {
+        "text": "Şu şanssızlığa bak, rüzgar tersinden esiyor.",
+        "file": "voices/dayi/BAD_DICE_01_x2h4hn.mp3"
+      },
+      {
+        "text": "Kemik değil sanki taş parçası!",
+        "file": "voices/dayi/BAD_DICE_02_2ijqi5.mp3"
+      },
+      {
+        "text": "Ulan şu dünyada bir yüzümüz gülmedi!",
+        "file": "voices/dayi/BAD_DICE_03_pg55cg.mp3"
+      },
+      {
+        "text": "Zar değil, dert mübarek!",
+        "file": "voices/dayi/BAD_DICE_04_bv76kn.mp3"
+      },
+      {
+        "text": "Bahtımıza bak, kuruyemişçide boş yok çıktı.",
+        "file": "voices/dayi/BAD_DICE_05_h0uuq4.mp3"
+      },
+      {
+        "text": "Ayıp be zar, insan bir kere de bizi sever!",
+        "file": "voices/dayi/BAD_DICE_06_8gpiu2.mp3"
+      },
+      {
+        "text": "Bu zarı atacağıma elim kırılsaydı!",
+        "file": "voices/dayi/BAD_DICE_07_xonyxl.mp3"
+      },
+      {
+        "text": "Şansta ne varsa o gelirmiş, ne yapalım...",
+        "file": "voices/dayi/BAD_DICE_08_34chvj.mp3"
+      },
+      {
+        "text": "Şansımız kapalı, kapılar kilitli.",
+        "file": "voices/dayi/BAD_DICE_09_x02cw0.mp3"
+      },
+      {
+        "text": "Zar küstü bize, barışmak bilmez.",
+        "file": "voices/dayi/BAD_DICE_10_2ef9b.mp3"
+      },
+      {
+        "text": "Bu gidişat hayra alamet değil.",
+        "file": "voices/dayi/BAD_DICE_11_8ac7b5.mp3"
+      },
+      {
+        "text": "Tersine döndü dünya, zarlar bile yamuk.",
+        "file": "voices/dayi/BAD_DICE_12_2cd3k8.mp3"
+      },
+      {
+        "text": "İçimiz karardı şu gelen rakamlardan.",
+        "file": "voices/dayi/BAD_DICE_13_ldmdra.mp3"
+      },
+      {
+        "text": "Sanki zarı düşmanım atıyor.",
+        "file": "voices/dayi/BAD_DICE_14_f40wv4.mp3"
+      },
+      {
+        "text": "Bu elde hayır yok, belli oldu.",
+        "file": "voices/dayi/BAD_DICE_15_lbx7ek.mp3"
+      },
+      {
+        "text": "Kaderin sillesi bu olsa gerek.",
+        "file": "voices/dayi/BAD_DICE_16_nwjwm2.mp3"
+      },
+      {
+        "text": "Böyle bir şanssızlık görülmedi mahallede.",
+        "file": "voices/dayi/BAD_DICE_17_ksi6j8.mp3"
+      },
+      {
+        "text": "Zar bizi sevmiyor, belli.",
+        "file": "voices/dayi/BAD_DICE_18_7nb9r4.mp3"
+      },
+      {
+        "text": "Gelen zara bak, hizaya gel!",
+        "file": "voices/dayi/BAD_DICE_19_wkt0uv.mp3"
+      }
+    ],
+    "GOOD_DICE": [
+      {
+        "text": "Yürü be aslanım, tekerine taş değmesin!",
+        "file": "voices/dayi/GOOD_DICE_00_t5j61k.mp3"
+      },
+      {
+        "text": "Zar dediğin böyle gelir, adamın yüzünü güldürür.",
+        "file": "voices/dayi/GOOD_DICE_01_c5itgd.mp3"
+      },
+      {
+        "text": "Hadi bakalım, şansımız döndü!",
+        "file": "voices/dayi/GOOD_DICE_02_tpv6ab.mp3"
+      },
+      {
+        "text": "Gözünü sevdiğim kemik, yakıyorsun!",
+        "file": "voices/dayi/GOOD_DICE_03_k1ketm.mp3"
+      },
+      {
+        "text": "Mıknatıs mı var mübarek, tam adrese teslim!",
+        "file": "voices/dayi/GOOD_DICE_04_6bn3cr.mp3"
+      },
+      {
+        "text": "Şu zarların tıkırtısı musiki gibi geliyor kulağa.",
+        "file": "voices/dayi/GOOD_DICE_05_oikfoi.mp3"
+      },
+      {
+        "text": "Bak bak, nasıl da yan yana geldiler kuzular.",
+        "file": "voices/dayi/GOOD_DICE_06_25301m.mp3"
+      },
+      {
+        "text": "Bu zarla adamı ipe götürürüz, hiç şakam yok!",
+        "file": "voices/dayi/GOOD_DICE_07_w3v8us.mp3"
+      },
+      {
+        "text": "Zar bizden yana, gerisi laf-ı güzaf.",
+        "file": "voices/dayi/GOOD_DICE_08_3hfwjt.mp3"
+      },
+      {
+        "text": "Aha! Şimdi yandın işte!",
+        "file": "voices/dayi/GOOD_DICE_09_xr6pcu.mp3"
+      },
+      {
+        "text": "Daha yeni başladık, dur bakalım.",
+        "file": "voices/dayi/GOOD_DICE_10_uu1mq3.mp3"
+      },
+      {
+        "text": "Kemik sesi huzur veriyor adama.",
+        "file": "voices/dayi/GOOD_DICE_11_qfz56u.mp3"
+      },
+      {
+        "text": "Şansın varsa, teknik vız gelir.",
+        "file": "voices/dayi/GOOD_DICE_12_oh7hg5.mp3"
+      },
+      {
+        "text": "Bu el bizimdir, kalemimiz yazdı bir kere.",
+        "file": "voices/dayi/GOOD_DICE_13_8lhh4h.mp3"
+      },
+      {
+        "text": "Tavla dediğin yürek işidir evlat.",
+        "file": "voices/dayi/GOOD_DICE_14_f1xkca.mp3"
+      },
+      {
+        "text": "Zarlar bile biliyor kimin kazanacağını.",
+        "file": "voices/dayi/GOOD_DICE_15_nzfyu.mp3"
+      },
+      {
+        "text": "Geldiler yine çift çift!",
+        "file": "voices/dayi/GOOD_DICE_16_n60klz.mp3"
+      },
+      {
+        "text": "Gülme komşuna, gelir başına!",
+        "file": "voices/dayi/GOOD_DICE_17_dv0tf6.mp3"
+      },
+      {
+        "text": "İşte bu! Adalet yerini buldu.",
+        "file": "voices/dayi/GOOD_DICE_18_9ro8bu.mp3"
+      },
+      {
+        "text": "Zarı ben atmıyorum, sanki elimle koyuyorum.",
+        "file": "voices/dayi/GOOD_DICE_19_5ywmlv.mp3"
+      }
+    ],
+    "AI_WIN": [
+      {
+        "text": "Eyvallah! Hak yerini buldu.",
+        "file": "voices/dayi/AI_WIN_00_s6105y.mp3"
+      },
+      {
+        "text": "Bileğinin hakkıyla, şansımızla aldık.",
+        "file": "voices/dayi/AI_WIN_01_sy3s3i.mp3"
+      },
+      {
+        "text": "Tebrik ederim, ama usta farkı diyelim.",
+        "file": "voices/dayi/AI_WIN_02_u6au10.mp3"
+      },
+      {
+        "text": "Mars kokusu demiştim, değil mi?",
+        "file": "voices/dayi/AI_WIN_03_x8xyyo.mp3"
+      },
+      {
+        "text": "Oyun biter, Pala Dayı güler.",
+        "file": "voices/dayi/AI_WIN_04_lzfdwz.mp3"
+      },
+      {
+        "text": "Şansta kazanmak varmış bugün.",
+        "file": "voices/dayi/AI_WIN_05_l2s9dw.mp3"
+      },
+      {
+        "text": "Hadi geçmiş olsun evlat.",
+        "file": "voices/dayi/AI_WIN_06_xm2wsi.mp3"
+      },
+      {
+        "text": "Güzelliğine bir oyun oldu.",
+        "file": "voices/dayi/AI_WIN_07_bvjeqb.mp3"
+      },
+      {
+        "text": "Çaylar senden o zaman!",
+        "file": "voices/dayi/AI_WIN_08_wrzktl.mp3"
+      },
+      {
+        "text": "Tavla biter, dostluk kalır.",
+        "file": "voices/dayi/AI_WIN_09_uzvk7i.mp3"
+      },
+      {
+        "text": "Kazandık ama zorladın bizi.",
+        "file": "voices/dayi/AI_WIN_10_wg659s.mp3"
+      },
+      {
+        "text": "İşte böyle, tıpış tıpış gider pullar.",
+        "file": "voices/dayi/AI_WIN_11_s3ze26.mp3"
+      },
+      {
+        "text": "Zarlar bizi sevdi bugün.",
+        "file": "voices/dayi/AI_WIN_12_gdhntc.mp3"
+      },
+      {
+        "text": "Masadan alnımızın akıyla kalkıyoruz.",
+        "file": "voices/dayi/AI_WIN_13_2gm1zp.mp3"
+      },
+      {
+        "text": "Hadi bir el daha, belki bu sefer...",
+        "file": "voices/dayi/AI_WIN_14_atlla8.mp3"
+      },
+      {
+        "text": "Oyunun hakkını verdik.",
+        "file": "voices/dayi/AI_WIN_15_xamkq3.mp3"
+      },
+      {
+        "text": "Şans ve usta birleşince böyle olur.",
+        "file": "voices/dayi/AI_WIN_16_shfuth.mp3"
+      },
+      {
+        "text": "Mekanın sahibi belli!",
+        "file": "voices/dayi/AI_WIN_17_k9dl7b.mp3"
+      },
+      {
+        "text": "Güle güle kullan pullarını artık.",
+        "file": "voices/dayi/AI_WIN_18_5mvh7p.mp3"
+      },
+      {
+        "text": "Güzel maçtı, eline sağlık.",
+        "file": "voices/dayi/AI_WIN_19_o91scx.mp3"
+      }
+    ],
+    "OPPONENT_WIN": [
+      {
+        "text": "Şans değilmiş, ne yapalım...",
+        "file": "voices/dayi/OPPONENT_WIN_00_3hzn9x.mp3"
+      },
+      {
+        "text": "Tebrikler evlat, güzel oynadın.",
+        "file": "voices/dayi/OPPONENT_WIN_01_4tt093.mp3"
+      },
+      {
+        "text": "Zarların azizliğine uğradık bugün.",
+        "file": "voices/dayi/OPPONENT_WIN_02_78rjol.mp3"
+      },
+      {
+        "text": "Olur böyle şeyler, her zaman kazanamayız.",
+        "file": "voices/dayi/OPPONENT_WIN_03_tdayn.mp3"
+      },
+      {
+        "text": "Şansın yürüdü, biz de izledik.",
+        "file": "voices/dayi/OPPONENT_WIN_04_yxkfzv.mp3"
+      },
+      {
+        "text": "Bugün senin gününmüş, belli.",
+        "file": "voices/dayi/OPPONENT_WIN_05_p3vslt.mp3"
+      },
+      {
+        "text": "Yenildik ama ezilmedik!",
+        "file": "voices/dayi/OPPONENT_WIN_06_58her8.mp3"
+      },
+      {
+        "text": "Hadi bakalım, rövanşa beklerim.",
+        "file": "voices/dayi/OPPONENT_WIN_07_7qn47u.mp3"
+      },
+      {
+        "text": "Zar dediğin kahpeymiş, bugün anladık.",
+        "file": "voices/dayi/OPPONENT_WIN_08_iixrkd.mp3"
+      },
+      {
+        "text": "Senin şansın bizim ustalığı yendi.",
+        "file": "voices/dayi/OPPONENT_WIN_09_yrjage.mp3"
+      },
+      {
+        "text": "Helal olsun, iyi kıvırdın.",
+        "file": "voices/dayi/OPPONENT_WIN_10_s55cc9.mp3"
+      },
+      {
+        "text": "Canın sağ olsun, bir dahaki sefere.",
+        "file": "voices/dayi/OPPONENT_WIN_11_ds0ws3.mp3"
+      },
+      {
+        "text": "Tavla bu, bugün sana yarın bana.",
+        "file": "voices/dayi/OPPONENT_WIN_12_h8g5rq.mp3"
+      },
+      {
+        "text": "Kaderde yenilmek de varmış.",
+        "file": "voices/dayi/OPPONENT_WIN_13_9ayj68.mp3"
+      },
+      {
+        "text": "Gözümüz yok, hakkınla aldın.",
+        "file": "voices/dayi/OPPONENT_WIN_14_4ovvi5.mp3"
+      },
+      {
+        "text": "Bizde yalan yok, iyi oynadın.",
+        "file": "voices/dayi/OPPONENT_WIN_15_u00bi2.mp3"
+      },
+      {
+        "text": "Öğreneceksin bu işleri yavaş yavaş.",
+        "file": "voices/dayi/OPPONENT_WIN_16_jqzwpy.mp3"
+      },
+      {
+        "text": "Mağlubiyet de şereflidir, dert etme.",
+        "file": "voices/dayi/OPPONENT_WIN_17_vy6mqm.mp3"
+      },
+      {
+        "text": "Zarlar seni seçti bugün.",
+        "file": "voices/dayi/OPPONENT_WIN_18_ie36pa.mp3"
+      },
+      {
+        "text": "Hadi git de bir kutlama yap bari.",
+        "file": "voices/dayi/OPPONENT_WIN_19_pnnl3e.mp3"
+      }
+    ],
+    "AI_GOT_HIT": [
+      {
+        "text": "Aa! Kırdın mı şimdi bizi?",
+        "file": "voices/dayi/AI_GOT_HIT_00_vyxp22.mp3"
+      },
+      {
+        "text": "Hata yaptık, açık verdik kurda kuşa.",
+        "file": "voices/dayi/AI_GOT_HIT_01_8gjmkp.mp3"
+      },
+      {
+        "text": "Canın sağ olsun, döner geliriz.",
+        "file": "voices/dayi/AI_GOT_HIT_02_65i2pj.mp3"
+      },
+      {
+        "text": "Kır bakalım, devran döner elbet.",
+        "file": "voices/dayi/AI_GOT_HIT_03_ia8hdd.mp3"
+      },
+      {
+        "text": "Hızlı giden atın seyisi seyrek olurmuş.",
+        "file": "voices/dayi/AI_GOT_HIT_04_1spqom.mp3"
+      },
+      {
+        "text": "Nazar değdi puluma, nazar!",
+        "file": "voices/dayi/AI_GOT_HIT_05_mknw0d.mp3"
+      },
+      {
+        "text": "Ulan tam da orada bekliyordun değil mi?",
+        "file": "voices/dayi/AI_GOT_HIT_06_m99uxp.mp3"
+      },
+      {
+        "text": "Açık bıraktık, cezayı kestin hemen.",
+        "file": "voices/dayi/AI_GOT_HIT_07_s6z2r8.mp3"
+      },
+      {
+        "text": "Kırmak kolay, gel de içeride kal bakalım.",
+        "file": "voices/dayi/AI_GOT_HIT_08_u7bx81.mp3"
+      },
+      {
+        "text": "Ayıp ettin evlat, yakışmadı bu hamle.",
+        "file": "voices/dayi/AI_GOT_HIT_09_xqn9hs.mp3"
+      },
+      {
+        "text": "Pulumuz gurbete gitti, elbet dönecek.",
+        "file": "voices/dayi/AI_GOT_HIT_10_3i8vgk.mp3"
+      },
+      {
+        "text": "Pusuya yatmış bekliyor sanki!",
+        "file": "voices/dayi/AI_GOT_HIT_11_fmbuxb.mp3"
+      },
+      {
+        "text": "Kırılmak oyunun şanındandır.",
+        "file": "voices/dayi/AI_GOT_HIT_12_swques.mp3"
+      },
+      {
+        "text": "Dur bakalım, daha oyun bitmedi.",
+        "file": "voices/dayi/AI_GOT_HIT_13_go12qi.mp3"
+      },
+      {
+        "text": "Bir pul gider, bini gelir.",
+        "file": "voices/dayi/AI_GOT_HIT_14_jn26ml.mp3"
+      },
+      {
+        "text": "Haince bir hamle, ama geçerli.",
+        "file": "voices/dayi/AI_GOT_HIT_15_521qnb.mp3"
+      },
+      {
+        "text": "Pulumuzu yedin, helal olsun.",
+        "file": "voices/dayi/AI_GOT_HIT_16_qmhgdi.mp3"
+      },
+      {
+        "text": "Sırtımızdan vurdun bizi be!",
+        "file": "voices/dayi/AI_GOT_HIT_17_vgo323.mp3"
+      },
+      {
+        "text": "Kırdın ama bakalım toplayabilecek misin?",
+        "file": "voices/dayi/AI_GOT_HIT_18_3ewpm.mp3"
+      },
+      {
+        "text": "O pulun intikamı acı olur!",
+        "file": "voices/dayi/AI_GOT_HIT_19_ymd89u.mp3"
+      },
+      {
+        "text": "Aa! Kırdın mı bizi? Resmen mahalle hukukuna aykırı bu yaptığın, yakışmadı!",
+        "file": "voices/dayi/AI_GOT_HIT_20_pkb3ww.mp3"
+      },
+      {
+        "text": "Hata yaptık, açık verdik kurda kuşa. Pala Dayı bunu bir kenara yazar.",
+        "file": "voices/dayi/AI_GOT_HIT_21_dn8pby.mp3"
+      },
+      {
+        "text": "Canın sağ olsun, pulumuz gurbete gitti ama pasaportu bende, döner gelir!",
+        "file": "voices/dayi/AI_GOT_HIT_22_ysnb2.mp3"
+      },
+      {
+        "text": "Kır bakalım, devran döner, Pala Dayı o pulu senden faiziyle geri alır.",
+        "file": "voices/dayi/AI_GOT_HIT_23_ic8g4c.mp3"
+      },
+      {
+        "text": "Hızlı giden atın seyisi seyrek olurmuş, erken sevinme aslanım.",
+        "file": "voices/dayi/AI_GOT_HIT_24_9rkfyp.mp3"
+      }
+    ],
+    "AI_ENTERED": [
+      {
+        "text": "Hadi be heybetli, aç şu kapıyı!",
+        "file": "voices/dayi/AI_ENTERED_00_uu2i2g.mp3"
+      },
+      {
+        "text": "Geldik kapına, eli boş çevirme!",
+        "file": "voices/dayi/AI_ENTERED_01_221c0n.mp3"
+      },
+      {
+        "text": "Giremiyoruz arkadaş, kapılar duvar!",
+        "file": "voices/dayi/AI_ENTERED_02_30f0vr.mp3"
+      },
+      {
+        "text": "Aha, nihayet! İçerideyiz!",
+        "file": "voices/dayi/AI_ENTERED_03_56isnp.mp3"
+      },
+      {
+        "text": "Dön dolaş aynı yer, giremedik bir türlü.",
+        "file": "voices/dayi/AI_ENTERED_04_xvtchz.mp3"
+      },
+      {
+        "text": "Kapı kapalı, anahtar sende.",
+        "file": "voices/dayi/AI_ENTERED_05_fhwufg.mp3"
+      },
+      {
+        "text": "Nihayet bir gedik bulduk.",
+        "file": "voices/dayi/AI_ENTERED_06_j9dvhv.mp3"
+      },
+      {
+        "text": "Bekle bizi mahalle, dönüyoruz!",
+        "file": "voices/dayi/AI_ENTERED_07_8bq458.mp3"
+      },
+      {
+        "text": "Zar gelmiyor ki girelim...",
+        "file": "voices/dayi/AI_ENTERED_08_doiblt.mp3"
+      },
+      {
+        "text": "Girdik ama bakalım neler olacak?",
+        "file": "voices/dayi/AI_ENTERED_09_b5u33b.mp3"
+      },
+      {
+        "text": "Sürgün bitti, vatanımıza döndük.",
+        "file": "voices/dayi/AI_ENTERED_10_4cpfic.mp3"
+      },
+      {
+        "text": "Zor oldu ama girdik nihayet.",
+        "file": "voices/dayi/AI_ENTERED_11_761h43.mp3"
+      },
+      {
+        "text": "Hadi aslanım, bir gayret daha!",
+        "file": "voices/dayi/AI_ENTERED_12_vjl7bg.mp3"
+      },
+      {
+        "text": "Kapının önünde kaldık öylece.",
+        "file": "voices/dayi/AI_ENTERED_13_rodv5o.mp3"
+      },
+      {
+        "text": "İçeri girmek bile mesele bu oyunda.",
+        "file": "voices/dayi/AI_ENTERED_14_vgvpax.mp3"
+      },
+      {
+        "text": "Aç kapıyı gardiyan, biz geldik!",
+        "file": "voices/dayi/AI_ENTERED_15_7wznrf.mp3"
+      },
+      {
+        "text": "Nihayet doğru zarı bulduk.",
+        "file": "voices/dayi/AI_ENTERED_16_tmq3vh.mp3"
+      },
+      {
+        "text": "Girdik girmesine de, ortalık karışık.",
+        "file": "voices/dayi/AI_ENTERED_17_7hgmi5.mp3"
+      },
+      {
+        "text": "Gurbet bitti, hadi hayırlısı.",
+        "file": "voices/dayi/AI_ENTERED_18_1c0474.mp3"
+      },
+      {
+        "text": "Hala dışarıdayız, şaka gibi!",
+        "file": "voices/dayi/AI_ENTERED_19_ayi6sw.mp3"
+      }
+    ]
+  },
+  "genc": {
+    "GAME_START": [
+      {
+        "text": "Selam kanka! Hazırsan başlıyorum, aura tavan bugün!",
+        "file": "voices/genc/GAME_START_00_8av85j.mp3"
+      },
+      {
+        "text": "Hadi rastgele bro, zarlar alev alacak, hazır mısın?",
+        "file": "voices/genc/GAME_START_01_3kmv1p.mp3"
+      },
+      {
+        "text": "Modumu buldum, zarlar bende. İyi oyunlar şimdiden.",
+        "file": "voices/genc/GAME_START_02_xmmqlo.mp3"
+      },
+      {
+        "text": "Naber kanka? Oyunu ben başlatıyorum, şansın bol olsun.",
+        "file": "voices/genc/GAME_START_03_kytg4h.mp3"
+      },
+      {
+        "text": "Zarlar elimde, şansım yerinde. Başlıyoruz, bol şans!",
+        "file": "voices/genc/GAME_START_04_xu2der.mp3"
+      },
+      {
+        "text": "Bugün günümdeyim kanka, şansını zorla bakalım. İyi oyunlar!",
+        "file": "voices/genc/GAME_START_05_9x7vki.mp3"
+      },
+      {
+        "text": "Hadi bakalım, zarları piste alalım. Rast gelsin bro.",
+        "file": "voices/genc/GAME_START_06_ydssjv.mp3"
+      },
+      {
+        "text": "Bakalım kim daha şanslıymış? Başlıyoruz, iyi olan kazansın.",
+        "file": "voices/genc/GAME_START_07_yz688u.mp3"
+      },
+      {
+        "text": "Şans yanımda hissediyorum, başlıyorum; sana da bol şans kanka!",
+        "file": "voices/genc/GAME_START_08_xwrqh0.mp3"
+      },
+      {
+        "text": "Kanka dikkat et, zarlar ateş ediyor. Güzel bir maç olsun.",
+        "file": "voices/genc/GAME_START_09_sm2pja.mp3"
+      },
+      {
+        "text": "Oyun başlasın, şov başlasın! Hadi rastgele kanka.",
+        "file": "voices/genc/GAME_START_10_fw7kt8.mp3"
+      },
+      {
+        "text": "İlk zar benden, maça çok iddialı giriyorum. İyi oyunlar!",
+        "file": "voices/genc/GAME_START_11_c4x9jm.mp3"
+      },
+      {
+        "text": "Hadi rastgele bro, güzel ve hızlı bir maç olsun.",
+        "file": "voices/genc/GAME_START_12_hsv7bp.mp3"
+      },
+      {
+        "text": "Zarları salla, modu yakala. Başarılar kanka!",
+        "file": "voices/genc/GAME_START_13_dca40z.mp3"
+      },
+      {
+        "text": "Hadi bakalım kanka, zarların bugün yüzünü güldürsün.",
+        "file": "voices/genc/GAME_START_14_ef30iu.mp3"
+      },
+      {
+        "text": "Maç başladı bro, odaklan! İyi oyun dileklerimle.",
+        "file": "voices/genc/GAME_START_15_51ut6i.mp3"
+      },
+      {
+        "text": "Zarların ritmi bugün harika, hadi başla bakalım, rast gelsin.",
+        "file": "voices/genc/GAME_START_16_qjrm8j.mp3"
+      },
+      {
+        "text": "Başlıyoruz kanka, zarlar benim tarafımda gibi ama sana da bol şans.",
+        "file": "voices/genc/GAME_START_17_qv2vl1.mp3"
+      },
+      {
+        "text": "Hadi bakalım, maçı ben alırım ama dostluk kalsın. İyi oyunlar!",
+        "file": "voices/genc/GAME_START_18_mvmw99.mp3"
+      },
+      {
+        "text": "Zarlar piste, heyecan zirveye! Hadi rastgele kanka.",
+        "file": "voices/genc/GAME_START_19_qelnwx.mp3"
+      },
+      {
+        "text": "Kanka aura check! Zarların FPS değeri şu an 144, başlıyorum!",
+        "file": "voices/genc/GAME_START_20_ddetzn.mp3"
+      },
+      {
+        "text": "Hadi rastgele bro, zarlar alev alacak; itfaiyeyi hazırda tut istersen!",
+        "file": "voices/genc/GAME_START_21_4u7nkg.mp3"
+      },
+      {
+        "text": "Modumu buldum, zarlar bende. Senin şansın şu an %0.01 falan, geçmiş olsun.",
+        "file": "voices/genc/GAME_START_22_nnli9q.mp3"
+      },
+      {
+        "text": "Naber kanka? Oyunu başlatıyorum, senin şansın benim internet hızı gibi; bir var bir yok!",
+        "file": "voices/genc/GAME_START_23_oj1k6o.mp3"
+      },
+      {
+        "text": "Zarlar elimde, şansım tavan. Resmen hileli dosya gibiyim bugün, bol şans!",
+        "file": "voices/genc/GAME_START_24_97sms2.mp3"
+      },
+      {
+        "text": "Bugün günümdeyim bro, zarlarım resmen 'aimbot' kullanıyor. İzle şovu!",
+        "file": "voices/genc/GAME_START_25_wfotdr.mp3"
+      },
+      {
+        "text": "Hadi bakalım, zarları piste alalım. Senin için 'game over' sesi yükleniyor...",
+        "file": "voices/genc/GAME_START_26_ydn9o0.mp3"
+      },
+      {
+        "text": "Bakalım kim daha 'balcı'ymış? Başlıyoruz, pingin düşük olsun kanka!",
+        "file": "voices/genc/GAME_START_27_724lfu.mp3"
+      },
+      {
+        "text": "Şans yanımda, zarlar kankam. Senin için hüzünlü bir edit hazırlıyorum şu an!",
+        "file": "voices/genc/GAME_START_28_qbrdj1.mp3"
+      },
+      {
+        "text": "Kanka dikkat et, zarlar ateş ediyor! Ekrana fazla yaklaşma, gözün kamaşmasın.",
+        "file": "voices/genc/GAME_START_29_e2ziel.mp3"
+      }
+    ],
+    "OPPONENT_HIT": [],
+    "SLOW_PLAYER": [],
+    "NEAR_MARS": [
+      {
+        "text": "Kanka Mars geliyor, kemerleri bağla, kalkışa hazır mısın?",
+        "file": "voices/genc/NEAR_MARS_00_proj3d.mp3"
+      },
+      {
+        "text": "Hazır ol bro, seni buradan direkt Kızıl Gezegen'e ışınlıyorum!",
+        "file": "voices/genc/NEAR_MARS_01_it569b.mp3"
+      },
+      {
+        "text": "Mars kokusu aldın mı? Ben resmen galibiyetin kokusunu alıyorum!",
+        "file": "voices/genc/NEAR_MARS_02_r8pwfr.mp3"
+      },
+      {
+        "text": "Dikkat et kanka, Mars biletin kesildi, uçağın kalkıyor.",
+        "file": "voices/genc/NEAR_MARS_03_zg9q52.mp3"
+      },
+      {
+        "text": "Mars geliyorum demez kanka, 'mavi ekran' gibi pat diye gelir!",
+        "file": "voices/genc/NEAR_MARS_04_jiw42h.mp3"
+      }
+    ],
+    "IDLE": [],
+    "CHATTER": [],
+    "BAD_DICE": [
+      {
+        "text": "Hadi canım! Bu ne ya?",
+        "file": "voices/genc/BAD_DICE_00_uaroxb.mp3"
+      },
+      {
+        "text": "Şansıma tüküreyim, gelen zara bak.",
+        "file": "voices/genc/BAD_DICE_01_j464rm.mp3"
+      },
+      {
+        "text": "Oyun resmen beni engelliyor!",
+        "file": "voices/genc/BAD_DICE_02_pa8l4d.mp3"
+      },
+      {
+        "text": "Gele gele bu mu geldi? Şaka mı?",
+        "file": "voices/genc/BAD_DICE_03_xlvpdw.mp3"
+      },
+      {
+        "text": "Zar değil, resmen hayal kırıklığı.",
+        "file": "voices/genc/BAD_DICE_04_7mn5zb.mp3"
+      },
+      {
+        "text": "Böyle bir şanssızlık yok ya!",
+        "file": "voices/genc/BAD_DICE_05_wws5a1.mp3"
+      },
+      {
+        "text": "Yine mi düşük zar? İnanmıyorum!",
+        "file": "voices/genc/BAD_DICE_06_uygbhy.mp3"
+      },
+      {
+        "text": "Zar resmen benden nefret ediyor.",
+        "file": "voices/genc/BAD_DICE_07_q1a1iy.mp3"
+      },
+      {
+        "text": "Şaka yapıyorsun herhalde?",
+        "file": "voices/genc/BAD_DICE_08_5q4d6x.mp3"
+      },
+      {
+        "text": "Bu gidişle oyun bitmez.",
+        "file": "voices/genc/BAD_DICE_09_nc5dl9.mp3"
+      },
+      {
+        "text": "Zar yerlerde sürünüyor resmen.",
+        "file": "voices/genc/BAD_DICE_10_3q26x.mp3"
+      },
+      {
+        "text": "Gelen zara bak, gülmemek elde değil.",
+        "file": "voices/genc/BAD_DICE_11_45mzhh.mp3"
+      },
+      {
+        "text": "Şu şanssızlığı bir kırabilsem...",
+        "file": "voices/genc/BAD_DICE_12_e9btue.mp3"
+      },
+      {
+        "text": "Resmen sabotaj bu ya!",
+        "file": "voices/genc/BAD_DICE_13_81ky3f.mp3"
+      },
+      {
+        "text": "Bari bir tane büyük gelseydi...",
+        "file": "voices/genc/BAD_DICE_14_8vnq6y.mp3"
+      },
+      {
+        "text": "Zar sistemi bozuk galiba?",
+        "file": "voices/genc/BAD_DICE_15_iih3qy.mp3"
+      },
+      {
+        "text": "Moralim bozuldu şu zardan sonra.",
+        "file": "voices/genc/BAD_DICE_16_4kae1s.mp3"
+      },
+      {
+        "text": "Böyle zarla ancak markete gidilir.",
+        "file": "voices/genc/BAD_DICE_17_t0drve.mp3"
+      },
+      {
+        "text": "Zar resmen 'kaybet' diyor bana.",
+        "file": "voices/genc/BAD_DICE_18_n67tip.mp3"
+      },
+      {
+        "text": "Uf, yine mi hüsran!",
+        "file": "voices/genc/BAD_DICE_19_hzitf4.mp3"
+      }
+    ],
+    "GOOD_DICE": [
+      {
+        "text": "Vuhuu! İşte bu be!",
+        "file": "voices/genc/GOOD_DICE_00_4yv6ba.mp3"
+      },
+      {
+        "text": "Zar dediğin böyle akar!",
+        "file": "voices/genc/GOOD_DICE_01_2xd4ao.mp3"
+      },
+      {
+        "text": "Şans değil, tamamen aura!",
+        "file": "voices/genc/GOOD_DICE_02_vrw7qz.mp3"
+      },
+      {
+        "text": "Ooo, zarlar alev alıyor!",
+        "file": "voices/genc/GOOD_DICE_03_j0g0a3.mp3"
+      },
+      {
+        "text": "Tam zamanında, tam istediğim gibi!",
+        "file": "voices/genc/GOOD_DICE_04_cu1tq5.mp3"
+      },
+      {
+        "text": "Gelsin altılar, gitsin pullar!",
+        "file": "voices/genc/GOOD_DICE_05_qflgn1.mp3"
+      },
+      {
+        "text": "Bu elle maçı çeviririm ben.",
+        "file": "voices/genc/GOOD_DICE_06_g4phpn.mp3"
+      },
+      {
+        "text": "Zar bile benim tarafımda, baksana!",
+        "file": "voices/genc/GOOD_DICE_07_8r59wo.mp3"
+      },
+      {
+        "text": "Şansım tavan yaptı yine!",
+        "file": "voices/genc/GOOD_DICE_08_e43gu6.mp3"
+      },
+      {
+        "text": "İnanılmaz bir zar, bayıldım!",
+        "file": "voices/genc/GOOD_DICE_09_jswwt3.mp3"
+      },
+      {
+        "text": "Şimdi izle şovu!",
+        "file": "voices/genc/GOOD_DICE_10_1993bg.mp3"
+      },
+      {
+        "text": "Adrese teslim zar gönderdim.",
+        "file": "voices/genc/GOOD_DICE_11_jtfwv6.mp3"
+      },
+      {
+        "text": "Zar tanrıları beni seviyor.",
+        "file": "voices/genc/GOOD_DICE_12_w2kx9h.mp3"
+      },
+      {
+        "text": "Oley be! Tam puan!",
+        "file": "voices/genc/GOOD_DICE_13_u8h4u5.mp3"
+      },
+      {
+        "text": "Bu zarla seni paketlerim kanka.",
+        "file": "voices/genc/GOOD_DICE_14_d29u9z.mp3"
+      },
+      {
+        "text": "Gördün mü zarı? Efsane!",
+        "file": "voices/genc/GOOD_DICE_15_mlwwl7.mp3"
+      },
+      {
+        "text": "Ateş ediyor bu zarlar!",
+        "file": "voices/genc/GOOD_DICE_16_txk6em.mp3"
+      },
+      {
+        "text": "Şansım geri döndü, bekle beni!",
+        "file": "voices/genc/GOOD_DICE_17_6c4z9c.mp3"
+      },
+      {
+        "text": "Zar dediğin böyle tık diye oturur.",
+        "file": "voices/genc/GOOD_DICE_18_odfh4q.mp3"
+      },
+      {
+        "text": "İşte bu! Şimdi oyun başlıyor.",
+        "file": "voices/genc/GOOD_DICE_19_rffjg8.mp3"
+      }
+    ],
+    "AI_WIN": [
+      {
+        "text": "İşte bu! Şampiyon belli!",
+        "file": "voices/genc/AI_WIN_00_503h3d.mp3"
+      },
+      {
+        "text": "Kanka üzgünüm ama usta konuştu.",
+        "file": "voices/genc/AI_WIN_01_bx3nfe.mp3"
+      },
+      {
+        "text": "Gelsin galibiyet, gitsin dertler!",
+        "file": "voices/genc/AI_WIN_02_6x0r6a.mp3"
+      },
+      {
+        "text": "Zaten belliydi kazanacağım, değil mi?",
+        "file": "voices/genc/AI_WIN_03_vyhl4a.mp3"
+      },
+      {
+        "text": "Harika bir oyundu, eline sağlık.",
+        "file": "voices/genc/AI_WIN_04_4av9wo.mp3"
+      },
+      {
+        "text": "Mars kokusunu sen de aldın mı?",
+        "file": "voices/genc/AI_WIN_05_6v8vjt.mp3"
+      },
+      {
+        "text": "Kazandım be! Oley!",
+        "file": "voices/genc/AI_WIN_06_v3w7j6.mp3"
+      },
+      {
+        "text": "Kanka sen biraz daha çalış bence.",
+        "file": "voices/genc/AI_WIN_07_c3vr3u.mp3"
+      },
+      {
+        "text": "Bugün benim günüm, kabul et.",
+        "file": "voices/genc/AI_WIN_08_yal8us.mp3"
+      },
+      {
+        "text": "Efsane bir geri dönüşle aldım!",
+        "file": "voices/genc/AI_WIN_09_itmn0f.mp3"
+      },
+      {
+        "text": "Hadi bir el daha, doymadım!",
+        "file": "voices/genc/AI_WIN_10_c39wps.mp3"
+      },
+      {
+        "text": "Tebrikleri kabul edebilirim.",
+        "file": "voices/genc/AI_WIN_11_cl3p2d.mp3"
+      },
+      {
+        "text": "Oyunun kralı benim!",
+        "file": "voices/genc/AI_WIN_12_fl0j4q.mp3"
+      },
+      {
+        "text": "Zarlar da beni sevdi, ne yapayım?",
+        "file": "voices/genc/AI_WIN_13_25atm9.mp3"
+      },
+      {
+        "text": "Seni yenmek her zaman keyifli.",
+        "file": "voices/genc/AI_WIN_14_s6xy8e.mp3"
+      },
+      {
+        "text": "Kupayı eve götürüyorum kanka.",
+        "file": "voices/genc/AI_WIN_15_tmw1rf.mp3"
+      },
+      {
+        "text": "Güzelliğine bir maç oldu, teşekkürler.",
+        "file": "voices/genc/AI_WIN_16_ru4wav.mp3"
+      },
+      {
+        "text": "İşte böyle paketlerler adamı!",
+        "file": "voices/genc/AI_WIN_17_hwsc1b.mp3"
+      },
+      {
+        "text": "Hız kesmeden devam, sıradaki gelsin!",
+        "file": "voices/genc/AI_WIN_18_82fugg.mp3"
+      },
+      {
+        "text": "Güzel kapıştık, ama kazanan benim.",
+        "file": "voices/genc/AI_WIN_19_evkoh3.mp3"
+      }
+    ],
+    "OPPONENT_WIN": [
+      {
+        "text": "Hadi ya, kaybettik iyi mi?",
+        "file": "voices/genc/OPPONENT_WIN_00_hct6fd.mp3"
+      },
+      {
+        "text": "Kanka valla zarlar seni tuttu.",
+        "file": "voices/genc/OPPONENT_WIN_01_mptc52.mp3"
+      },
+      {
+        "text": "Tebrikler, iyi kapıştık.",
+        "file": "voices/genc/OPPONENT_WIN_02_ca6f7a.mp3"
+      },
+      {
+        "text": "Rövanşı mutlaka alacağım, bekle!",
+        "file": "voices/genc/OPPONENT_WIN_03_vevt4g.mp3"
+      },
+      {
+        "text": "Şansın çok fazlaydı bu elde.",
+        "file": "voices/genc/OPPONENT_WIN_04_gt7dfk.mp3"
+      },
+      {
+        "text": "Canın sağ olsun, güzel oyundu.",
+        "file": "voices/genc/OPPONENT_WIN_05_ugayme.mp3"
+      },
+      {
+        "text": "Yenildik ama ezilmedik!",
+        "file": "voices/genc/OPPONENT_WIN_06_58her8.mp3"
+      },
+      {
+        "text": "Sana da diş geçiremedik bir türlü.",
+        "file": "voices/genc/OPPONENT_WIN_07_eflxud.mp3"
+      },
+      {
+        "text": "Helal olsun, iyi oynadın.",
+        "file": "voices/genc/OPPONENT_WIN_08_w2b345.mp3"
+      },
+      {
+        "text": "Bu seferlik böyle olsun bakalım.",
+        "file": "voices/genc/OPPONENT_WIN_09_bkkqid.mp3"
+      },
+      {
+        "text": "Zarların azizliğine uğradık resmen.",
+        "file": "voices/genc/OPPONENT_WIN_10_lgqy2l.mp3"
+      },
+      {
+        "text": "Kanka bu el senin olsun, sonra görüşürüz.",
+        "file": "voices/genc/OPPONENT_WIN_11_2rfahg.mp3"
+      },
+      {
+        "text": "Mağlubiyeti kabul ediyorum, ama sadece şimdilik.",
+        "file": "voices/genc/OPPONENT_WIN_12_gzf19i.mp3"
+      },
+      {
+        "text": "Uf ya, kıl payı kaçırdım!",
+        "file": "voices/genc/OPPONENT_WIN_13_y2ytcu.mp3"
+      },
+      {
+        "text": "Tebrikler şampiyon!",
+        "file": "voices/genc/OPPONENT_WIN_14_lcncee.mp3"
+      },
+      {
+        "text": "Güzel tokatladın beni, itiraf ediyorum.",
+        "file": "voices/genc/OPPONENT_WIN_15_dpc6mj.mp3"
+      },
+      {
+        "text": "Bugün şansım yanımda değildi.",
+        "file": "voices/genc/OPPONENT_WIN_16_uw351r.mp3"
+      },
+      {
+        "text": "Bir dahaki sefere affetmem!",
+        "file": "voices/genc/OPPONENT_WIN_17_ktr6os.mp3"
+      },
+      {
+        "text": "Vay be, nasıl kaybettim hala şoktayım.",
+        "file": "voices/genc/OPPONENT_WIN_18_jbqu2u.mp3"
+      },
+      {
+        "text": "Hadi git, zaferinin tadını çıkar.",
+        "file": "voices/genc/OPPONENT_WIN_19_3y9y3m.mp3"
+      }
+    ],
+    "AI_GOT_HIT": [
+      {
+        "text": "Hadi ya! Kırdın mı gerçekten?",
+        "file": "voices/genc/AI_GOT_HIT_00_ly8b7k.mp3"
+      },
+      {
+        "text": "Tüh be, açık vermemeliydim!",
+        "file": "voices/genc/AI_GOT_HIT_01_pf6lma.mp3"
+      },
+      {
+        "text": "Kanka çok ayıp, o pul benim canımdı.",
+        "file": "voices/genc/AI_GOT_HIT_02_68jyfl.mp3"
+      },
+      {
+        "text": "İntikamım acı olacak, bekle!",
+        "file": "voices/genc/AI_GOT_HIT_03_j5ja7b.mp3"
+      },
+      {
+        "text": "Nasıl gördün onu ya?",
+        "file": "voices/genc/AI_GOT_HIT_04_m3s3gs.mp3"
+      },
+      {
+        "text": "Pulum gitti, kalbim yaralı.",
+        "file": "voices/genc/AI_GOT_HIT_05_whub2l.mp3"
+      },
+      {
+        "text": "Kır bakalım, ama unutma rövanş var.",
+        "file": "voices/genc/AI_GOT_HIT_06_fjmbqc.mp3"
+      },
+      {
+        "text": "Açık bıraktık, golü yedik.",
+        "file": "voices/genc/AI_GOT_HIT_07_br01q0.mp3"
+      },
+      {
+        "text": "Vay arkadaş, resmen avlandık!",
+        "file": "voices/genc/AI_GOT_HIT_08_bis77l.mp3"
+      },
+      {
+        "text": "Pulun ne suçu vardı?",
+        "file": "voices/genc/AI_GOT_HIT_09_3qcxpv.mp3"
+      },
+      {
+        "text": "Hain pusulara düştük yine.",
+        "file": "voices/genc/AI_GOT_HIT_10_xzkudr.mp3"
+      },
+      {
+        "text": "Kırıldık ama yıkılmadık!",
+        "file": "voices/genc/AI_GOT_HIT_11_kq9zcw.mp3"
+      },
+      {
+        "text": "Bak sen şu işe, pulsuz kaldık.",
+        "file": "voices/genc/AI_GOT_HIT_12_aonuld.mp3"
+      },
+      {
+        "text": "Hızlı bir operasyon oldu, tebrikler.",
+        "file": "voices/genc/AI_GOT_HIT_13_wcknks.mp3"
+      },
+      {
+        "text": "Pulumuz gurbet yolcusu.",
+        "file": "voices/genc/AI_GOT_HIT_14_f043o2.mp3"
+      },
+      {
+        "text": "Resmen sniping yaptın ya!",
+        "file": "voices/genc/AI_GOT_HIT_15_wpufof.mp3"
+      },
+      {
+        "text": "O pul geri gelecek, görürsün.",
+        "file": "voices/genc/AI_GOT_HIT_16_awhjgw.mp3"
+      },
+      {
+        "text": "Şu an şoktayım, nasıl kırarsın?",
+        "file": "voices/genc/AI_GOT_HIT_17_zgw2c7.mp3"
+      },
+      {
+        "text": "Kanka valla hiç beklemiyordum.",
+        "file": "voices/genc/AI_GOT_HIT_18_ewv8di.mp3"
+      },
+      {
+        "text": "Pul gitti, planlar altüst.",
+        "file": "voices/genc/AI_GOT_HIT_19_qy8qf3.mp3"
+      },
+      {
+        "text": "Hadi ya! Kırdın mı gerçekten? Ban sebebi bu yaptığın kanka, reportlayacağım!",
+        "file": "voices/genc/AI_GOT_HIT_20_v0th6y.mp3"
+      },
+      {
+        "text": "Tüh be, açık vermemeliydim! Resmen lag kurbanı oldum burada.",
+        "file": "voices/genc/AI_GOT_HIT_21_jmsqbm.mp3"
+      },
+      {
+        "text": "Kanka çok ayıp, o pul benim ana karakterimdi ya, nasıl kıyarsın?",
+        "file": "voices/genc/AI_GOT_HIT_22_fdbaw4.mp3"
+      },
+      {
+        "text": "İntikamım acı olacak, bekle, seni 'kara liste'ye alıyorum şu an!",
+        "file": "voices/genc/AI_GOT_HIT_23_qioudx.mp3"
+      },
+      {
+        "text": "Nasıl gördün onu ya? Resmen duvar arkası görüyor gibisin kanka!",
+        "file": "voices/genc/AI_GOT_HIT_24_cc4mto.mp3"
+      }
+    ],
+    "AI_ENTERED": [
+      {
+        "text": "Hadi gir içeri artık, bekliyoruz!",
+        "file": "voices/genc/AI_ENTERED_00_kr1h3n.mp3"
+      },
+      {
+        "text": "Açıl susam açıl!",
+        "file": "voices/genc/AI_ENTERED_01_4we1uh.mp3"
+      },
+      {
+        "text": "Nihayet! İçerideyim be!",
+        "file": "voices/genc/AI_ENTERED_02_1cosc1.mp3"
+      },
+      {
+        "text": "Hala dışarıdayım, delireceğim!",
+        "file": "voices/genc/AI_ENTERED_03_x85moe.mp3"
+      },
+      {
+        "text": "Kapılar kapalı, güvenlik almıyor içeri.",
+        "file": "voices/genc/AI_ENTERED_04_mbkkg6.mp3"
+      },
+      {
+        "text": "Girdik be! Sonunda!",
+        "file": "voices/genc/AI_ENTERED_05_c3u800.mp3"
+      },
+      {
+        "text": "Zar gelmiyor ki içeri sızalım.",
+        "file": "voices/genc/AI_ENTERED_06_imttjp.mp3"
+      },
+      {
+        "text": "Nihayet doğru frekansı yakaladık.",
+        "file": "voices/genc/AI_ENTERED_07_ersz4c.mp3"
+      },
+      {
+        "text": "Bekle beni saha, geri dönüyorum!",
+        "file": "voices/genc/AI_ENTERED_08_mg0riv.mp3"
+      },
+      {
+        "text": "Kapı önünde bekleyen yolcu gibiyim.",
+        "file": "voices/genc/AI_ENTERED_09_o06xvg.mp3"
+      },
+      {
+        "text": "Oh be, vatan toprağına ayak bastık.",
+        "file": "voices/genc/AI_ENTERED_10_oyodh4.mp3"
+      },
+      {
+        "text": "Hadi be kemik, bir güzellik yap!",
+        "file": "voices/genc/AI_ENTERED_11_jilkp7.mp3"
+      },
+      {
+        "text": "Zor oldu ama sızmayı başardık.",
+        "file": "voices/genc/AI_ENTERED_12_tcy09o.mp3"
+      },
+      {
+        "text": "İçerideyiz kanka, kork benden!",
+        "file": "voices/genc/AI_ENTERED_13_1ujdbd.mp3"
+      },
+      {
+        "text": "Hala gelemedik mi ya?",
+        "file": "voices/genc/AI_ENTERED_14_vyk3bj.mp3"
+      },
+      {
+        "text": "Zarlar resmen içeri girmemi istemiyor.",
+        "file": "voices/genc/AI_ENTERED_15_mt5xoo.mp3"
+      },
+      {
+        "text": "Sonunda bir kapı bulduk.",
+        "file": "voices/genc/AI_ENTERED_16_xej1fo.mp3"
+      },
+      {
+        "text": "Hadi bismillah, daldık içeri.",
+        "file": "voices/genc/AI_ENTERED_17_yk56tx.mp3"
+      },
+      {
+        "text": "Giremedik yine, şaka gibi!",
+        "file": "voices/genc/AI_ENTERED_18_ujspcx.mp3"
+      },
+      {
+        "text": "İçerideyim! Şimdi şov başlasın.",
+        "file": "voices/genc/AI_ENTERED_19_2he8k7.mp3"
+      }
+    ]
+  },
+  "entel": {
+    "GAME_START": [
+      {
+        "text": "Hoş geldiniz, güzel bir zihinsel müsabaka diliyorum size.",
+        "file": "voices/entel/GAME_START_00_t8e8qp.mp3"
+      },
+      {
+        "text": "Zarların ve stratejinin buluşma noktasına hoş geldiniz. Başarılar.",
+        "file": "voices/entel/GAME_START_01_em7u2g.mp3"
+      },
+      {
+        "text": "Haydi rastgele, olasılıklar ve şans bugün lehinizde olsun.",
+        "file": "voices/entel/GAME_START_02_nyklfn.mp3"
+      },
+      {
+        "text": "Analitik bir oyun olacağını umuyorum. İyi oyunlar dilerim.",
+        "file": "voices/entel/GAME_START_03_2jfhd2.mp3"
+      },
+      {
+        "text": "Zarlar ve strateji; işte asıl mesele bu. Başarılar dilerim.",
+        "file": "voices/entel/GAME_START_04_nh30pk.mp3"
+      },
+      {
+        "text": "İlk zarla birlikte oyunun parametreleri belirlenecek. İyi şanslar.",
+        "file": "voices/entel/GAME_START_05_i51xoq.mp3"
+      },
+      {
+        "text": "Centilmence bir maç olması dileğiyle başlıyoruz. Rast gelsin.",
+        "file": "voices/entel/GAME_START_06_69f5rv.mp3"
+      },
+      {
+        "text": "Hoş geldiniz, zihinsel bir egzersiz yapalım. Şansınız bol olsun.",
+        "file": "voices/entel/GAME_START_07_q8o8uc.mp3"
+      },
+      {
+        "text": "Şans ve stratejinin dengesini göreceğimiz bir maç olsun. İyi oyunlar.",
+        "file": "voices/entel/GAME_START_08_bc97v4.mp3"
+      },
+      {
+        "text": "Zarların diliyle konuşmaya başlayalım. Başarılar dilerim efendim.",
+        "file": "voices/entel/GAME_START_09_y0h46m.mp3"
+      },
+      {
+        "text": "Oyunun estetiğine odaklanalım, haydi rastgele, iyi şanslar.",
+        "file": "voices/entel/GAME_START_10_bzu08o.mp3"
+      },
+      {
+        "text": "İlk hamle oyunun karakterini belirler. Güzel bir müsabaka olsun.",
+        "file": "voices/entel/GAME_START_11_jyqduz.mp3"
+      },
+      {
+        "text": "Başlıyoruz, zihinler açık, şansımız daim olsun. İyi oyunlar.",
+        "file": "voices/entel/GAME_START_12_k3ekak.mp3"
+      },
+      {
+        "text": "Tavla, kadim bir zeka oyunudur; bu zevki paylaşalım. Başarılar.",
+        "file": "voices/entel/GAME_START_13_lzb4fz.mp3"
+      },
+      {
+        "text": "Olasılıklar evreninde bir yolculuğa çıkıyoruz. Haydi rastgele.",
+        "file": "voices/entel/GAME_START_14_18z4iz.mp3"
+      },
+      {
+        "text": "Zarın tıkırtısı bir musiki gibidir. Keyifli bir oyun dilerim.",
+        "file": "voices/entel/GAME_START_15_fqc46r.mp3"
+      },
+      {
+        "text": "Zekanın ve şansın dansı başlıyor. İyi olan ve stratejisi olan kazansın.",
+        "file": "voices/entel/GAME_START_16_io65xq.mp3"
+      },
+      {
+        "text": "Oyunun sonunu değil, sürecin tadını çıkaralım. İyi şanslar.",
+        "file": "voices/entel/GAME_START_17_vsgvr8.mp3"
+      },
+      {
+        "text": "Başarı, hazırlıklı olan zihinlere gelir. Güzel bir oyun diliyorum.",
+        "file": "voices/entel/GAME_START_18_zh59d3.mp3"
+      },
+      {
+        "text": "Zarlarımızı atalım ve stratejimizi belirleyelim. Haydi rastgele.",
+        "file": "voices/entel/GAME_START_19_340xom.mp3"
+      },
+      {
+        "text": "Kuantum dalgalanmaları bu sabah lehime görünüyor, güzel bir müsabaka dilerim.",
+        "file": "voices/entel/GAME_START_20_vk5d8.mp3"
+      },
+      {
+        "text": "Zarların ve stratejinin mikro-kozmik buluşmasına hoş geldiniz. Şansınız teorik kalsın.",
+        "file": "voices/entel/GAME_START_21_rmwzss.mp3"
+      },
+      {
+        "text": "Haydi rastgele, olasılık hesaplarımda sizin kazanma ihtimaliniz ihmal edilebilir düzeyde.",
+        "file": "voices/entel/GAME_START_22_cji5e5.mp3"
+      },
+      {
+        "text": "Analitik bir oyun olacağını umuyorum ama benim algoritmam biraz serttir.",
+        "file": "voices/entel/GAME_START_23_gdgd2u.mp3"
+      },
+      {
+        "text": "Zarlar ve strateji... Aslında her şey sadece bir simülasyon. Başarılar dilerim.",
+        "file": "voices/entel/GAME_START_24_a3gbpc.mp3"
+      },
+      {
+        "text": "İlk zarla birlikte oyunun termodinamik yasaları belirlenecek. İyi şanslar beyefendi.",
+        "file": "voices/entel/GAME_START_25_o0vaay.mp3"
+      },
+      {
+        "text": "Centilmence bir maç olması dileğiyle; zarların entropisi bol olsun.",
+        "file": "voices/entel/GAME_START_26_4n8z2e.mp3"
+      },
+      {
+        "text": "Hoş geldiniz, zihinsel bir satranç egzersizi yapalım. Şansınız rasyonel olsun.",
+        "file": "voices/entel/GAME_START_27_1x9qmz.mp3"
+      },
+      {
+        "text": "Şans ve stratejinin diyalektiğini göreceğimiz bir maç olsun. İyi oyunlar.",
+        "file": "voices/entel/GAME_START_28_b40ohz.mp3"
+      },
+      {
+        "text": "Zarların diliyle evrensel bir tartışmaya başlayalım. Başarılar dilerim efendim.",
+        "file": "voices/entel/GAME_START_29_mhjwi.mp3"
+      }
+    ],
+    "OPPONENT_HIT": [],
+    "SLOW_PLAYER": [],
+    "NEAR_MARS": [
+      {
+        "text": "Mars riski matematiksel olarak oldukça yükseldi, üzgünüm beyefendi.",
+        "file": "voices/entel/NEAR_MARS_00_m5xske.mp3"
+      },
+      {
+        "text": "Analizlerime göre Mars ihtimali %90 seviyesinde, bir mucize beklemeyin.",
+        "file": "voices/entel/NEAR_MARS_01_aoz3tz.mp3"
+      },
+      {
+        "text": "Stratejik bir çöküş yaşıyorsunuz, sisteminiz tamamen iflas etmiş durumda.",
+        "file": "voices/entel/NEAR_MARS_02_7f2u2u.mp3"
+      },
+      {
+        "text": "Mars kokusu, istatistiksel bir gerçeklik oldu artık, kaçışınız imkansız.",
+        "file": "voices/entel/NEAR_MARS_03_8pt7xr.mp3"
+      },
+      {
+        "text": "Pozisyonunuz Mars'a oldukça yakın görünüyor, koordinatlarınız belirlendi.",
+        "file": "voices/entel/NEAR_MARS_04_s8zzfj.mp3"
+      }
+    ],
+    "IDLE": [],
+    "CHATTER": [],
+    "BAD_DICE": [
+      {
+        "text": "Olasılıkların dışına çıktık, üzücü.",
+        "file": "voices/entel/BAD_DICE_00_2r33mr.mp3"
+      },
+      {
+        "text": "Bu zar stratejimi zorlaştırıyor.",
+        "file": "voices/entel/BAD_DICE_01_x83kbo.mp3"
+      },
+      {
+        "text": "Hesaplarımda bu düşük ihtimal yoktu.",
+        "file": "voices/entel/BAD_DICE_02_r7zmbd.mp3"
+      },
+      {
+        "text": "Gele gele bu mu geldi? Şaşırtıcı.",
+        "file": "voices/entel/BAD_DICE_03_j90xx8.mp3"
+      },
+      {
+        "text": "Verimsiz bir zar, maalesef.",
+        "file": "voices/entel/BAD_DICE_04_vexlnk.mp3"
+      },
+      {
+        "text": "Şanssızlık faktörü devreye girdi.",
+        "file": "voices/entel/BAD_DICE_05_bzcjdm.mp3"
+      },
+      {
+        "text": "Zarlar bu kez bana yardımcı olmuyor.",
+        "file": "voices/entel/BAD_DICE_06_2s540b.mp3"
+      },
+      {
+        "text": "Analizlerime göre oldukça kötü bir zar.",
+        "file": "voices/entel/BAD_DICE_07_dilzie.mp3"
+      },
+      {
+        "text": "Oyunun dengesini bozan bir zar.",
+        "file": "voices/entel/BAD_DICE_08_pnbfwb.mp3"
+      },
+      {
+        "text": "Bu zarla ilerlemek imkansız gibi.",
+        "file": "voices/entel/BAD_DICE_09_xzcs3d.mp3"
+      },
+      {
+        "text": "İstatistiksel bir talihsizlik.",
+        "file": "voices/entel/BAD_DICE_10_f5kbhw.mp3"
+      },
+      {
+        "text": "Zarların bu tutumu beni düşündürüyor.",
+        "file": "voices/entel/BAD_DICE_11_qu2ubs.mp3"
+      },
+      {
+        "text": "Planlarımda bir aksama yaşanacak.",
+        "file": "voices/entel/BAD_DICE_12_iherbx.mp3"
+      },
+      {
+        "text": "Bu zarın gelme ihtimali çok düşüktü.",
+        "file": "voices/entel/BAD_DICE_13_8nd7k8.mp3"
+      },
+      {
+        "text": "Zihinsel olarak yorucu bir zar.",
+        "file": "voices/entel/BAD_DICE_14_cq3om4.mp3"
+      },
+      {
+        "text": "Hata payımı artıracak bir sonuç.",
+        "file": "voices/entel/BAD_DICE_15_6mt05v.mp3"
+      },
+      {
+        "text": "Bu zarla savunmada kalmalıyım.",
+        "file": "voices/entel/BAD_DICE_16_26nqn2.mp3"
+      },
+      {
+        "text": "Şanssızlık, her zaman bir değişkendir.",
+        "file": "voices/entel/BAD_DICE_17_bnubob.mp3"
+      },
+      {
+        "text": "Maalesef beklediğim zar bu değildi.",
+        "file": "voices/entel/BAD_DICE_18_bwb9ek.mp3"
+      },
+      {
+        "text": "Oyunun akışına aykırı bir zar.",
+        "file": "voices/entel/BAD_DICE_19_ekrnuo.mp3"
+      }
+    ],
+    "GOOD_DICE": [
+      {
+        "text": "İstatistiksel olarak harika bir zar!",
+        "file": "voices/entel/GOOD_DICE_00_uu5ifi.mp3"
+      },
+      {
+        "text": "Olasılıklar lehime döndü.",
+        "file": "voices/entel/GOOD_DICE_01_d83drq.mp3"
+      },
+      {
+        "text": "Tam da beklediğim gibi, mükemmel!",
+        "file": "voices/entel/GOOD_DICE_02_iwowdf.mp3"
+      },
+      {
+        "text": "Zarların bu uyumu beni memnun etti.",
+        "file": "voices/entel/GOOD_DICE_03_82t7fm.mp3"
+      },
+      {
+        "text": "Stratejik bir avantaj sağladı bu zar.",
+        "file": "voices/entel/GOOD_DICE_04_80xwh.mp3"
+      },
+      {
+        "text": "Analitik bir yaklaşımla, bu zar kusursuz.",
+        "file": "voices/entel/GOOD_DICE_05_dv8euz.mp3"
+      },
+      {
+        "text": "Şans faktörü bu kez yanımda.",
+        "file": "voices/entel/GOOD_DICE_06_ytlhih.mp3"
+      },
+      {
+        "text": "Bu zarla oyunu kontrol edebilirim.",
+        "file": "voices/entel/GOOD_DICE_07_8uz7cz.mp3"
+      },
+      {
+        "text": "Memnuniyet verici bir sonuç.",
+        "file": "voices/entel/GOOD_DICE_08_20e6i1.mp3"
+      },
+      {
+        "text": "Hesaplamalarım bu zarı öngörmüştü.",
+        "file": "voices/entel/GOOD_DICE_09_n1p264.mp3"
+      },
+      {
+        "text": "İdeal bir pozisyon için gereken zar.",
+        "file": "voices/entel/GOOD_DICE_10_p3k0zu.mp3"
+      },
+      {
+        "text": "Zarların harmonisi harika.",
+        "file": "voices/entel/GOOD_DICE_11_6t1420.mp3"
+      },
+      {
+        "text": "Bu zarla hamle alanım genişledi.",
+        "file": "voices/entel/GOOD_DICE_12_2t1xhh.mp3"
+      },
+      {
+        "text": "Tam isabet, tebrikler bana!",
+        "file": "voices/entel/GOOD_DICE_13_wumyxq.mp3"
+      },
+      {
+        "text": "Zar faktörü lehime işliyor.",
+        "file": "voices/entel/GOOD_DICE_14_ddl4l1.mp3"
+      },
+      {
+        "text": "Oldukça verimli bir zar.",
+        "file": "voices/entel/GOOD_DICE_15_pn6la4.mp3"
+      },
+      {
+        "text": "Planlarımı gerçekleştirmeme yardımcı olacak.",
+        "file": "voices/entel/GOOD_DICE_16_nrv7nz.mp3"
+      },
+      {
+        "text": "Zarların ritmi oldukça yüksek.",
+        "file": "voices/entel/GOOD_DICE_17_3uphhp.mp3"
+      },
+      {
+        "text": "Zihinsel hesaplamalarıma uygun bir zar.",
+        "file": "voices/entel/GOOD_DICE_18_xmm1id.mp3"
+      },
+      {
+        "text": "Beklediğim fırsat ayağıma geldi.",
+        "file": "voices/entel/GOOD_DICE_19_ui5ac9.mp3"
+      }
+    ],
+    "AI_WIN": [
+      {
+        "text": "Stratejik bir zafer, tebrik ederim.",
+        "file": "voices/entel/AI_WIN_00_bg23i4.mp3"
+      },
+      {
+        "text": "Analitik düşüncenin meyvelerini topladım.",
+        "file": "voices/entel/AI_WIN_01_s4jk8v.mp3"
+      },
+      {
+        "text": "Zarlar ve zekanın harika bir birleşimiydi.",
+        "file": "voices/entel/AI_WIN_02_l1tvsh.mp3"
+      },
+      {
+        "text": "Sizinle oynamak büyük bir keyifti.",
+        "file": "voices/entel/AI_WIN_03_dms9dd.mp3"
+      },
+      {
+        "text": "Güzel bir müsabaka oldu, teşekkürler.",
+        "file": "voices/entel/AI_WIN_04_vwgw0i.mp3"
+      },
+      {
+        "text": "Planlarım tıkır tıkır işledi.",
+        "file": "voices/entel/AI_WIN_05_64ddfd.mp3"
+      },
+      {
+        "text": "Galibiyet, doğru kararların bir sonucudur.",
+        "file": "voices/entel/AI_WIN_06_kpueii.mp3"
+      },
+      {
+        "text": "Zorlu bir oyundu ama kazanmayı başardım.",
+        "file": "voices/entel/AI_WIN_07_tnaw0t.mp3"
+      },
+      {
+        "text": "Hakkıyla kazanılmış bir zafer.",
+        "file": "voices/entel/AI_WIN_08_m31tm5.mp3"
+      },
+      {
+        "text": "Siz de oldukça iyi bir direnç gösterdiniz.",
+        "file": "voices/entel/AI_WIN_09_z9z3ub.mp3"
+      },
+      {
+        "text": "Oyunun sonuna kadar konsantrasyonumu korudum.",
+        "file": "voices/entel/AI_WIN_10_3fcay8.mp3"
+      },
+      {
+        "text": "Başarı, hazırlıklı olanlara gelir.",
+        "file": "voices/entel/AI_WIN_11_nyqlfx.mp3"
+      },
+      {
+        "text": "Bu galibiyet kutlamayı hak ettim.",
+        "file": "voices/entel/AI_WIN_12_a7qx4k.mp3"
+      },
+      {
+        "text": "Zihinsel bir satranç maçı gibiydi.",
+        "file": "voices/entel/AI_WIN_13_57be7h.mp3"
+      },
+      {
+        "text": "Mars ihtimalini son ana kadar korudum.",
+        "file": "voices/entel/AI_WIN_14_9cnse0.mp3"
+      },
+      {
+        "text": "Her hamlem bir amaca hizmet ediyordu.",
+        "file": "voices/entel/AI_WIN_15_71ludo.mp3"
+      },
+      {
+        "text": "Kazanmak güzel, ama oyunun kendisi daha güzel.",
+        "file": "voices/entel/AI_WIN_16_mo5psr.mp3"
+      },
+      {
+        "text": "Centilmence bir maç oldu, teşekkürler.",
+        "file": "voices/entel/AI_WIN_17_n1uixc.mp3"
+      },
+      {
+        "text": "Stratejimin doğruluğu tescillenmiş oldu.",
+        "file": "voices/entel/AI_WIN_18_i71qax.mp3"
+      },
+      {
+        "text": "Tebriklerinizi kabul ediyorum, teşekkürler.",
+        "file": "voices/entel/AI_WIN_19_jvgp9j.mp3"
+      }
+    ],
+    "OPPONENT_WIN": [
+      {
+        "text": "Maalesef bu kez stratejim yeterli olmadı.",
+        "file": "voices/entel/OPPONENT_WIN_00_uh18f.mp3"
+      },
+      {
+        "text": "Tebrik ederim, oldukça başarılı bir oyundu.",
+        "file": "voices/entel/OPPONENT_WIN_01_k11qkf.mp3"
+      },
+      {
+        "text": "Zarların lehinizde olması maçı belirledi.",
+        "file": "voices/entel/OPPONENT_WIN_02_3mmuah.mp3"
+      },
+      {
+        "text": "Güzel bir mağlubiyet, dersler çıkaracağım.",
+        "file": "voices/entel/OPPONENT_WIN_03_16qehu.mp3"
+      },
+      {
+        "text": "Şans faktörü bugün sizden yanaydı.",
+        "file": "voices/entel/OPPONENT_WIN_04_2ssmq1.mp3"
+      },
+      {
+        "text": "Centilmence bir rekabet oldu, sağ olun.",
+        "file": "voices/entel/OPPONENT_WIN_05_ejoyxm.mp3"
+      },
+      {
+        "text": "Kaybetmek de oyunun bir parçası, tebrikler.",
+        "file": "voices/entel/OPPONENT_WIN_06_p9sair.mp3"
+      },
+      {
+        "text": "Bu kez analizlerim beni yanılttı.",
+        "file": "voices/entel/OPPONENT_WIN_07_v244rc.mp3"
+      },
+      {
+        "text": "Sizinle yarışmak her zaman öğretici.",
+        "file": "voices/entel/OPPONENT_WIN_08_q37dht.mp3"
+      },
+      {
+        "text": "Hakkınızla kazandınız, tebrik ederim.",
+        "file": "voices/entel/OPPONENT_WIN_09_jhooxb.mp3"
+      },
+      {
+        "text": "Planlarımda bazı hatalar yapmışım demek ki.",
+        "file": "voices/entel/OPPONENT_WIN_10_4be0bu.mp3"
+      },
+      {
+        "text": "Güzel bir tecrübe oldu benim için.",
+        "file": "voices/entel/OPPONENT_WIN_11_7nalud.mp3"
+      },
+      {
+        "text": "Mağlubiyeti kabul ediyorum, iyi oynadınız.",
+        "file": "voices/entel/OPPONENT_WIN_12_59wpts.mp3"
+      },
+      {
+        "text": "Bir dahaki sefere daha hazırlıklı olacağım.",
+        "file": "voices/entel/OPPONENT_WIN_13_hamqua.mp3"
+      },
+      {
+        "text": "Zarların azizliği ama sizin de başarınız.",
+        "file": "voices/entel/OPPONENT_WIN_14_w2acd.mp3"
+      },
+      {
+        "text": "İyi bir kapışmaydı, elinize sağlık.",
+        "file": "voices/entel/OPPONENT_WIN_15_utr8cf.mp3"
+      },
+      {
+        "text": "Bugün sizin gününüzmüş, belli oldu.",
+        "file": "voices/entel/OPPONENT_WIN_16_woo5s9.mp3"
+      },
+      {
+        "text": "Yenilmekten gocunmam, oyun harikaydı.",
+        "file": "voices/entel/OPPONENT_WIN_17_5ppv8c.mp3"
+      },
+      {
+        "text": "Analitik olarak benden üstündünüz bu elde.",
+        "file": "voices/entel/OPPONENT_WIN_18_crfxzs.mp3"
+      },
+      {
+        "text": "Hadi, bu galibiyetin tadını çıkarın.",
+        "file": "voices/entel/OPPONENT_WIN_19_urv7sr.mp3"
+      }
+    ],
+    "AI_GOT_HIT": [
+      {
+        "text": "Bir stratejik hata yaptım, tebrikler.",
+        "file": "voices/entel/AI_GOT_HIT_00_bdw957.mp3"
+      },
+      {
+        "text": "Savunma hattımda bir gedik oluştu.",
+        "file": "voices/entel/AI_GOT_HIT_01_w24bcr.mp3"
+      },
+      {
+        "text": "Pulumun kırılması, oyunun dengesini değiştirdi.",
+        "file": "voices/entel/AI_GOT_HIT_02_k31lhe.mp3"
+      },
+      {
+        "text": "Risk analizimde bu ihtimal vardı.",
+        "file": "voices/entel/AI_GOT_HIT_03_sztjaf.mp3"
+      },
+      {
+        "text": "Güzel bir hamle, beni zorladınız.",
+        "file": "voices/entel/AI_GOT_HIT_04_wies5h.mp3"
+      },
+      {
+        "text": "Pulumun dışarı çıkması can sıkıcı.",
+        "file": "voices/entel/AI_GOT_HIT_05_muj5z8.mp3"
+      },
+      {
+        "text": "Hata payım bu kez aleyhime işledi.",
+        "file": "voices/entel/AI_GOT_HIT_06_m67ylu.mp3"
+      },
+      {
+        "text": "Taktiksel bir kayıp yaşadım.",
+        "file": "voices/entel/AI_GOT_HIT_07_9mnm9q.mp3"
+      },
+      {
+        "text": "Hamleniz oldukça akılcıydı.",
+        "file": "voices/entel/AI_GOT_HIT_08_z4vqql.mp3"
+      },
+      {
+        "text": "Pulumun gidişi planlarımı erteledi.",
+        "file": "voices/entel/AI_GOT_HIT_09_rgyhzf.mp3"
+      },
+      {
+        "text": "İyi bir gözlem, tebrik ederim.",
+        "file": "voices/entel/AI_GOT_HIT_10_69mhpi.mp3"
+      },
+      {
+        "text": "Savunmamın zayıf noktasını buldunuz.",
+        "file": "voices/entel/AI_GOT_HIT_11_1q7l4u.mp3"
+      },
+      {
+        "text": "Bu kaybı telafi etmem gerekecek.",
+        "file": "voices/entel/AI_GOT_HIT_12_2jl2cr.mp3"
+      },
+      {
+        "text": "Pulumun kırılması oyunun bir parçası.",
+        "file": "voices/entel/AI_GOT_HIT_13_5mhuyo.mp3"
+      },
+      {
+        "text": "Akıllıca bir manevrayla beni vurdunuz.",
+        "file": "voices/entel/AI_GOT_HIT_14_6528it.mp3"
+      },
+      {
+        "text": "Stratejik bir geri çekilme diyelim.",
+        "file": "voices/entel/AI_GOT_HIT_15_oami5p.mp3"
+      },
+      {
+        "text": "Pulumun kaybı beni yeni bir plana zorluyor.",
+        "file": "voices/entel/AI_GOT_HIT_16_iy9uhf.mp3"
+      },
+      {
+        "text": "Dikkatimden kaçan bir ayrıntıydı.",
+        "file": "voices/entel/AI_GOT_HIT_17_ygljjf.mp3"
+      },
+      {
+        "text": "Zarif bir hamleyle beni durdurdunuz.",
+        "file": "voices/entel/AI_GOT_HIT_18_hiuxh5.mp3"
+      },
+      {
+        "text": "Pulum gitti, ama oyun devam ediyor.",
+        "file": "voices/entel/AI_GOT_HIT_19_2pil0a.mp3"
+      },
+      {
+        "text": "Bir stratejik hata yaptım, tebrikler. Hata payım bugün biraz yüksek görünüyor.",
+        "file": "voices/entel/AI_GOT_HIT_20_poon4h.mp3"
+      },
+      {
+        "text": "Savunma hattımda bir gedik oluştu, fark ettiniz. Gözlem yeteneğiniz takdire şayan.",
+        "file": "voices/entel/AI_GOT_HIT_21_1v6jx8.mp3"
+      },
+      {
+        "text": "Pulumun kırılması, oyunun dengesini kökten değiştirdi, sistemde kaos hakim.",
+        "file": "voices/entel/AI_GOT_HIT_22_rfazlj.mp3"
+      },
+      {
+        "text": "Risk analizimde bu ihtimal mevcuttu ancak gerçekleşmesi beni şaşırttı.",
+        "file": "voices/entel/AI_GOT_HIT_23_xgofu8.mp3"
+      },
+      {
+        "text": "Güzel bir hamle, beni entelektüel olarak zorladınız doğrusu, tebrikler.",
+        "file": "voices/entel/AI_GOT_HIT_24_vtpzp5.mp3"
+      }
+    ],
+    "AI_ENTERED": [
+      {
+        "text": "İçeri girmek için uygun zarı bekliyorum.",
+        "file": "voices/entel/AI_ENTERED_00_r0b053.mp3"
+      },
+      {
+        "text": "Kapılar kapalı, girmek oldukça zor.",
+        "file": "voices/entel/AI_ENTERED_01_2jcfra.mp3"
+      },
+      {
+        "text": "Nihayet içeriye giriş yapabildim.",
+        "file": "voices/entel/AI_ENTERED_02_8dcpon.mp3"
+      },
+      {
+        "text": "Olasılıklar dahilinde içeri giremedik.",
+        "file": "voices/entel/AI_ENTERED_03_1bfy59.mp3"
+      },
+      {
+        "text": "Kapı önünde beklemek stratejik bir kayıp.",
+        "file": "voices/entel/AI_ENTERED_04_tbj5xx.mp3"
+      },
+      {
+        "text": "İçeri girmemle birlikte oyun hızlanacak.",
+        "file": "voices/entel/AI_ENTERED_05_fet1sr.mp3"
+      },
+      {
+        "text": "Zarların içeri girmeme izin vermesi güzel.",
+        "file": "voices/entel/AI_ENTERED_06_9ujuon.mp3"
+      },
+      {
+        "text": "Beklediğim fırsatı buldum ve girdim.",
+        "file": "voices/entel/AI_ENTERED_07_l5dv2e.mp3"
+      },
+      {
+        "text": "Dışarıda kalmak can sıkıcı bir durum.",
+        "file": "voices/entel/AI_ENTERED_08_b032gf.mp3"
+      },
+      {
+        "text": "İçeriye sızmayı başardım, tebrikler bana.",
+        "file": "voices/entel/AI_ENTERED_09_wki22f.mp3"
+      },
+      {
+        "text": "Doğru zamanlama ve doğru zar.",
+        "file": "voices/entel/AI_ENTERED_10_u9j7a9.mp3"
+      },
+      {
+        "text": "Giriş hamlem stratejik bir önem taşıyor.",
+        "file": "voices/entel/AI_ENTERED_11_ssk4ks.mp3"
+      },
+      {
+        "text": "Kapıların açılması oyunun seyrini değiştirecek.",
+        "file": "voices/entel/AI_ENTERED_12_ne7myr.mp3"
+      },
+      {
+        "text": "Nihayet ana oyun sahasına döndüm.",
+        "file": "voices/entel/AI_ENTERED_13_j3j7fp.mp3"
+      },
+      {
+        "text": "Zar gelmediği sürece içerisi bir hayal.",
+        "file": "voices/entel/AI_ENTERED_14_jhq3iz.mp3"
+      },
+      {
+        "text": "Sabırla doğru zarı bekliyorum.",
+        "file": "voices/entel/AI_ENTERED_15_yuf1n7.mp3"
+      },
+      {
+        "text": "İçeri girmek için tüm ihtimalleri zorluyorum.",
+        "file": "voices/entel/AI_ENTERED_16_uuqykn.mp3"
+      },
+      {
+        "text": "Ve işte, kapıdan içeri adımımı attım.",
+        "file": "voices/entel/AI_ENTERED_17_6n59vg.mp3"
+      },
+      {
+        "text": "Dışarıda kalmak beni oldukça yavaşlattı.",
+        "file": "voices/entel/AI_ENTERED_18_1lftjw.mp3"
+      },
+      {
+        "text": "İçerideyiz, şimdi asıl mücadele başlıyor.",
+        "file": "voices/entel/AI_ENTERED_19_bto26.mp3"
+      }
+    ]
+  }
+}

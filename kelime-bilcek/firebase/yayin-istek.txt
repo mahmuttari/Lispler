@@ -1,0 +1,16 @@
+# Realtime Database kural yayını — .github/workflows/kelime-kural-yayini.yml bu dosya push edilince çalışır.
+# Her satır bir komut (sırayla); etkin satırlar her push'ta yeniden çalışır, işi biten satır "# (yapıldı …)" ile kapatılır.
+#   durum     yayındaki kuralları depodaki database.rules.json ile karşılaştırır (yazmaz)
+#   yayinla   önce emülatör testleri; geçerse database.rules.json'u yayınlar ve geri okuyup denetler
+# Hizmet hesabının (android/play-kimlik.env) kelime-bilcek projesinde roles/firebasedatabase.admin rolü olmalı.
+
+# istek 2026-11-04: yetki denemesi (salt okuma; kullanıcı canlı işlemleri onayladı)
+# (yapıldı 2026-11-04, koşu 41827897495: okuma 8 denemede de yetkisiz — rol henüz verilmedi) durum
+
+# istek 2026-11-04T12:45:21Z: roller verildi (kullanıcı: "verildi"); yayındakiyle karşılaştır, testler geçince yayınla (kullanıcının önceden onayı: "testler geçince sıkı kuralları yayınla"); kurallar.test 24/24
+# (yapıldı 2026-11-04, koşu 41832016673: okuma 200) durum
+# (yapıldı 2026-11-04, koşu 41832016673: önce kurallar.test 24/24; yayınlandı, geri okunan kurallar depodakiyle AYNI) yayinla
+
+# istek 2026-11-09T20:51:21Z: 1.0.1 kuralları (sayaç yalnız artar, tek tek silinemez; K-26) — yayındakiyle karşılaştır, testler geçince yayınla (kullanıcı: "hataları bul düzelt ve güncelleme yayınla"); kurallar.test 25/25
+durum
+yayinla

@@ -5,7 +5,8 @@ import { S, save } from './state.js';
 import { openSheet } from './sheet.js';
 import { eightMarkup } from './art.js';
 import { info, placeTitle, onPlace } from './place.js';
-import { coordText } from './fmt.js';
+import { coordText, signedDegText } from './fmt.js';
+import { openCorrection } from './ui-correction.js';
 import { openCalibration } from './ui-calib.js';
 import { openCompassInfo } from './ui-diag.js';
 import { openMembership } from './ui-premium.js';
@@ -14,7 +15,7 @@ import { openUrl } from './native.js';
 import { ABOUT } from './config.js';
 import { gizlilikSecenegiGerekli, gizlilikSecenekleriniAc } from './reklam.js';
 
-export const VERSION = '1.1.0';   // = versionName in android/app/build.gradle (test/magaza.test.mjs checks it)
+export const VERSION = '1.2.0';   // = versionName in android/app/build.gradle (test/magaza.test.mjs checks it)
 
 // changed(kind): 'lang' rebuilds every screen, anything else refreshes them
 export function mountSettings(root, api, changed) {
@@ -65,11 +66,10 @@ export function mountSettings(root, api, changed) {
         h('p', { class: 'small', text: t('about.note') }),
         h('div', { class: 'wrap' },
           h('button', { class: 'pill', text: t('about.compassInfo'), onclick: openCompassInfo }),
-          h('button', { class: 'pill', text: t('about.policy'), onclick: () => openUrl(ABOUT.privacyUrl) })),
+          h('button', { class: 'pill', text: t('about.policy'), onclick: () => openUrl(ABOUT.privacyUrl) }),
+          h('button', { class: 'pill', text: '© OpenStreetMap', onclick: () => openUrl('https://www.openstreetmap.org/copyright') })),
         h('h4', { text: t('about.developer') }),
-        h('p', { class: 'dev' }, h('b', { text: ABOUT.developer }), ' · ', h('a', { href: 'mailto:' + ABOUT.email, dir: 'ltr', text: ABOUT.email })),
-        // GeoTerva: the developer's own brand, a plain line (no longer an ad)
-        h('p', { class: 'small' }, h('a', { href: ABOUT.geoterva, dir: 'ltr', onclick: e => { e.preventDefault(); openUrl(ABOUT.geoterva); }, text: 'geoterva.com' }))),
+        h('p', { class: 'dev' }, h('b', { text: ABOUT.developer }), ' · ', h('a', { href: 'mailto:' + ABOUT.email, dir: 'ltr', text: ABOUT.email }))),
     });
   }
 
@@ -77,7 +77,7 @@ export function mountSettings(root, api, changed) {
 
   function render() {
     const i = info();
-    body.replaceChildren(
+    body.replaceChildren(...[       // (replaceChildren would write a null as the word "null": the parts that may be missing are filtered out below)
       h('section', { class: 'card paper calcard' },
         h('h3', { text: t('settings.calibration') }),
         h('div', { class: 'eightbox', html: eightMarkup() }),
@@ -96,15 +96,17 @@ export function mountSettings(root, api, changed) {
         row('ruler', t('settings.degrees'), { value: t(s.degrees ? 'on' : 'off'), onclick: () => choose(t('settings.degrees'), [['on', t('on')], ['off', t('off')]], s.degrees ? 'on' : 'off', id => { s.degrees = id === 'on'; }) }),
         row('image', t('settings.kaaba'), { value: t('kaaba.' + s.kaaba), onclick: () => choose(t('settings.kaaba'), [['3d', t('kaaba.3d')], ['2d', t('kaaba.2d')], ['off', t('kaaba.off')]], s.kaaba, id => { s.kaaba = id; }) }),
         row('globe', t('settings.north'), { value: t(s.trueNorth ? 'north.true' : 'north.magnetic'), onclick: () => choose(t('settings.north'), [['true', t('north.true'), t('north.trueSub')], ['magnetic', t('north.magnetic'), t('north.magneticSub')]], s.trueNorth ? 'true' : 'magnetic', id => { s.trueNorth = id === 'true'; }) }),
+        row('crosshair', t('settings.correction'), { value: s.offset ? signedDegText(s.offset) : t('corr.none'), onclick: () => openCorrection({ onChange: render }) }),
         row('vibrate', t('settings.vibrate'), { toggle: { value: s.vibrate, set: v => { s.vibrate = v; save(); } } }),
         row('languages', t('settings.language'), { value: langInfo(s.lang).name, onclick: pickLanguage })),
+      // the ad-free membership (a member sees no ads and no membership line)
       isPremium() ? null : h('section', { class: 'card paper group' },
         h('button', { class: 'srow', onclick: openMembership },
           h('span', { class: 'sic' }, icon('megaphone-off')), h('span', { class: 'stx' }, h('b', { text: t('settings.premium') }), h('small', { text: t('settings.premiumSub') })), icon('chevron', 'chev'))),
       h('section', { class: 'card paper group' },
         // the EU consent can be changed at any time where Google's consent platform says so (EEA, UK, Switzerland)
         !isPremium() && gizlilikSecenegiGerekli() ? row('shield-check', t('settings.adPrivacy'), { onclick: () => gizlilikSecenekleriniAc() }) : null,
-        row('info', t('about.title'), { onclick: about })));
+        row('info', t('about.title'), { onclick: about }))].filter(Boolean));
   }
 
   onPlace(render);

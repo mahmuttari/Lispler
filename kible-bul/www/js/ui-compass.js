@@ -3,12 +3,14 @@ import { h, icon, $ } from './dom.js';
 import { t } from './i18n.js';
 import { S } from './state.js';
 import { buildDial } from './dial.js';
-import { onHeading, onStatus, getStatus, currentHeading, hasReadings, hold, release } from './compass.js';
-import { assess, Dwell } from './quality.js';
+import { onHeading, onStatus, getStatus, currentHeading, hasReadings, hold, release, msSinceReading, restart } from './compass.js';
+import { assess, Dwell, alignedNow } from './quality.js';
 import { openCalibration } from './ui-calib.js';
+import { openCorrection } from './ui-correction.js';
 import { info, placeTitle, onPlace, gps, useGps } from './place.js';
-import { angleDiff, norm360 } from './qibla.js';
-import { ALIGN_DEG } from './config.js';
+import { angleDiff } from './qibla.js';
+import { shownHeading, shownQibla } from './heading.js';
+import { ALIGN_DEG, ALIGN_LEAVE_DEG, STALE_MS } from './config.js';
 import { degText, kmText, coordText } from './fmt.js';
 import { vibrate, keepAwake } from './native.js';
 
@@ -32,7 +34,7 @@ export function mountCompass(root, api) {
     h('div', { class: 'dial-wrap', dir: 'ltr' }, dial.el, chip),
     h('div', { class: 'card tip' }, tipIcon, h('div', { class: 'tiptxt' }, tipText, tipActions)));
 
-  let aligned = false, sensorTimer = 0, noSensor = false, lastBuzz = 0;
+  let aligned = false, sensorTimer = 0, noSensor = false, lastBuzz = 0, stale = false, lastRestart = 0;
   let badShown = false, badReason = null;      // the compass is not to be trusted (the phone says so, or the magnetic field is disturbed)
   const dwell = new Dwell(2000);
 
@@ -52,11 +54,13 @@ export function mountCompass(root, api) {
       return;
     }
     if (i.atKaaba) { tipText.textContent = t('compass.atKaaba'); tipIcon.replaceChildren(icon('circle-check')); root.classList.add('ok'); return; }
-    if (noSensor) { root.classList.add('warn'); tipIcon.replaceChildren(icon('triangle-alert')); tipText.textContent = t('compass.noSensor', degText(i.bearing)); return; }
+    if (noSensor) { root.classList.add('warn'); tipIcon.replaceChildren(icon('triangle-alert')); tipText.textContent = t('compass.noSensor', degText(shownQibla(i))); return; }
+    if (stale) { root.classList.add('warn'); tipIcon.replaceChildren(icon('triangle-alert')); tipText.textContent = t('compass.stale'); return; }
     if (badShown) {
       root.classList.add('warn'); tipIcon.replaceChildren(icon('triangle-alert'));
       tipText.textContent = t(badReason === 'interference' ? 'compass.interference' : 'compass.calibrateWarn');
       tipActions.append(h('button', { class: 'pill gold', text: t('compass.calibrate'), onclick: () => openCalibration() }));
+      tipActions.append(h('button', { class: 'pill', text: t('settings.correction'), onclick: () => openCorrection() }));   // a constant error is what the correction is for
       return;
     }
     if (aligned) { root.classList.add('ok'); tipIcon.replaceChildren(icon('circle-check')); tipText.textContent = t('compass.aligned'); return; }
@@ -66,8 +70,8 @@ export function mountCompass(root, api) {
   // the number big, the unit small (so the card fits a narrow phone)
   function setKm(text) {
     // the unit follows the LAST non-breaking space (Russian writes the thousands with one too: "2 405 km")
-    const k = text.lastIndexOf(' ');
-    kmEl.replaceChildren(k < 0 ? text : text.slice(0, k), k < 0 ? '' : h('span', { class: 'u', text: ' ' + text.slice(k + 1) }));
+    const k = text.lastIndexOf(" ");
+    kmEl.replaceChildren(k < 0 ? text : text.slice(0, k), k < 0 ? '' : h('span', { class: 'u', text: " " + text.slice(k + 1) }));
   }
 
   function renderPlace() {
@@ -79,21 +83,13 @@ export function mountCompass(root, api) {
     } else {
       nameEl.textContent = placeTitle();
       coordEl.textContent = coordText(i.lat, i.lon);
-      angleEl.textContent = i.atKaaba ? '—' : degText(i.bearing);
-      setKm(i.atKaaba ? '0 ' + t('unit.km') : kmText(i.km));
+      angleEl.textContent = i.atKaaba ? '—' : degText(shownQibla(i));
+      setKm(i.atKaaba ? '0 ' + t('unit.km') : kmText(i.km));
       root.classList.remove('idle');
     }
-    dial.update({ qibla: i && !i.atKaaba ? i.bearing : 0, kaaba: S.settings.kaaba, degrees: S.settings.degrees });
+    dial.update({ qibla: i && !i.atKaaba ? shownQibla(i) : 0, kaaba: S.settings.kaaba, degrees: S.settings.degrees });
     draw();
     guidance();
-  }
-
-  // the heading of the phone's top edge from TRUE north (the sensor gives magnetic north)
-  function trueHeading() {
-    const raw = currentHeading();
-    if (raw === null) return 0;
-    const i = info();
-    return norm360(raw + (S.settings.trueNorth && i ? i.decl : 0));
   }
 
   let raf = 0;
@@ -101,9 +97,11 @@ export function mountCompass(root, api) {
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(() => {
       const i = info();
-      const hd = trueHeading();
-      const diff = i && !i.atKaaba ? Math.abs(angleDiff(hd, i.bearing)) : 180;
-      const now = !!i && !i.atKaaba && currentHeading() !== null && diff <= ALIGN_DEG;
+      const live = hasReadings() && !stale;
+      root.classList.toggle('wait', !live && !noSensor);   // no reading yet (or none for a long time): the needle is dimmed, it is not live
+      const hd = shownHeading() ?? 0;
+      const diff = i && !i.atKaaba ? Math.abs(angleDiff(hd, shownQibla(i))) : 180;
+      const now = !!i && !i.atKaaba && currentHeading() !== null && live && alignedNow(aligned, diff, ALIGN_DEG, ALIGN_LEAVE_DEG);
       dial.update({ heading: hd, aligned: now, weak: badShown });
       if (now !== aligned) {
         aligned = now;
@@ -118,29 +116,34 @@ export function mountCompass(root, api) {
   function watchSensor() {
     clearTimeout(sensorTimer);
     noSensor = false;
-    sensorTimer = setTimeout(() => { if (!hasReadings()) { noSensor = true; guidance(); } }, 2500);
+    sensorTimer = setTimeout(() => { if (!hasReadings()) { noSensor = true; guidance(); draw(); } }, 2500);
   }
-  // how far the compass can be trusted: the accuracy Android reports and the strength of the magnetic field (only the native sensor knows them)
+  // how far the compass can be trusted: the accuracy Android reports, the strength and the shape of the magnetic field (only the native sensor knows them)
   function renderQuality() {
     const st = getStatus(), i = info();
+    // readings that stopped (the plugin restarts the sensors by itself after five seconds; this is for the case that did not help): say so, and ask the sensor to start again
+    const silent = msSinceReading() > STALE_MS;
+    if (silent !== stale) { stale = silent; guidance(); draw(); }
+    if (silent && Date.now() - lastRestart > 10000) { lastRestart = Date.now(); restart(); }
     // no native readings, or none for half a minute (a sensor that reports only when something changes, as the emulator's does, is silent while the phone lies still)
     if (st.source !== 'native' || !hasReadings() || Date.now() - st.at > 30000) {
       chip.hidden = true; dwell.reset();
       if (badShown) { badShown = false; guidance(); }
       return;
     }
-    const q = assess(st, i ? i.fieldUt : 0);
-    const level = q.bad ? 'bad' : q.shown === 'medium' ? 'mid' : 'good', label = t('compass.acc', t('acc.' + q.shown));
+    // the Earth's field is known for the place only when the phone is there (the GPS position), not for a city that was chosen by hand
+    const q = assess(st, i ? i.fieldUt : 0, i && i.mode === 'gps' ? i.expected : null);
+    const level = q.bad ? 'bad' : q.shown === 'medium' || q.shown === 'low' ? 'mid' : 'good', label = t('compass.acc', t('acc.' + q.shown));
     if (chip.hidden) chip.hidden = false;
     if (chip.dataset.level !== level) chip.dataset.level = level;
     if (chip.lastChild.textContent !== label) chip.lastChild.textContent = label;     // the readings come thirty times a second: touch the page only when something changed
-    const shown = dwell.update(q.bad, Date.now());
-    if (shown !== badShown || (shown && q.reason !== badReason)) { badShown = shown; badReason = q.reason; guidance(); draw(); }
+    const on = dwell.update(q.bad, Date.now());
+    if (on !== badShown || (on && q.reason && q.reason !== badReason)) { badShown = on; badReason = q.reason || badReason; guidance(); draw(); }   // while the warning is leaving it keeps saying what it said
   }
   onStatus(renderQuality);
   let qTimer = 0;                      // the rating is also looked at twice a second: the 2-second rule needs time to pass even when the readings are steady
   onHeading(() => { if (noSensor && hasReadings()) { noSensor = false; guidance(); } draw(); });
-  onPlace(() => { renderPlace(); });
+  onPlace(() => { aligned = false; renderPlace(); });
 
   renderPlace();
   return {

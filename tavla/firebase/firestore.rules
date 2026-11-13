@@ -1,0 +1,161 @@
+rules_version = '2';
+// Tavla (Poyraz Workshop) — Cloud Firestore kuralları. Gerekçeler: ../DENETIM.md › T-04.
+// Eski kurallar depoda yoktu (APK'dan çıkarılan sürüm yalnız istemci kodunu içeriyordu); bu dosya oyunun
+// yazdığı her yolu tek tek tanımlar, gerisi kapalıdır. Testler: test/kurallar.test.mjs (emülatör).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function girisli() { return request.auth != null; }
+    function ben(uid) { return girisli() && request.auth.uid == uid; }
+    // hedef, beni engellemiş mi? (users/{hedef}/engellenen/{ben})
+    function engelledi(hedef) {
+      return exists(/databases/$(database)/documents/users/$(hedef)/engellenen/$(request.auth.uid));
+    }
+    function sayi(m, k) { return m.get(k, 0); }
+    function artis(k, enCok) {
+      return sayi(request.resource.data, k) - sayi(resource == null ? {} : resource.data, k) >= 0
+        && sayi(request.resource.data, k) - sayi(resource == null ? {} : resource.data, k) <= enCok;
+    }
+
+    // ── Oyuncu kaydı: herkes okur (Efsaneler, arkadaş listesi, sıralama); yalnız sahibi yazar ──
+    match /users/{uid} {
+      allow read: if girisli();
+      allow delete: if ben(uid);
+      allow create, update: if ben(uid) && oyuncuGecerli();
+
+      function oyuncuGecerli() {
+        let y = request.resource.data;
+        let e = resource == null ? {} : resource.data;
+        let skorFarki = sayi(y, 'score') - sayi(e, 'score');
+        let yasakEski = sayi(e, 'chatBannedUntil');
+        return y.keys().hasOnly(['uid', 'name', 'score', 'wins', 'losses', 'marsWins', 'marsLosses',
+                 'updatedAt', 'lastSeenAt', 'hideOnline', 'chatStrikes', 'chatBanCount', 'chatBannedUntil',
+                 'lastBanAt'])
+          && y.get('uid', uid) == uid
+          && (!('name' in y) || (y.name is string && y.name.size() <= 16))
+          && sayi(y, 'score') >= 0
+          // maç sonu: kazanınca +1, mars +2; kaybedince -1 / -2 (0'ın altına inmez)
+          && skorFarki <= 2 && (skorFarki >= -2 || sayi(y, 'score') == 0)
+          && artis('wins', 1) && artis('losses', 1) && artis('marsWins', 1) && artis('marsLosses', 1)
+          // argo uyarısı: sayaç +1; yasak başlarken sıfırlanır ve yasak sayısı +1 olur
+          && artis('chatBanCount', 1)
+          && (sayi(y, 'chatStrikes') == sayi(e, 'chatStrikes') || sayi(y, 'chatStrikes') == sayi(e, 'chatStrikes') + 1
+              || (sayi(y, 'chatStrikes') == 0 && sayi(y, 'chatBanCount') == sayi(e, 'chatBanCount') + 1))
+          // süren bir sohbet yasağı kısaltılamaz (moderatörün koyduğu dahil)
+          && (sayi(y, 'chatBannedUntil') >= yasakEski || yasakEski < request.time.toMillis())
+          && (!('hideOnline' in y) || y.hideOnline is bool);
+      }
+
+      // Arkadaş listesi: sahibi yazar; arkadaş kendini listeden silebilir (hesap silme)
+      match /friends/{f} {
+        allow read: if ben(uid);
+        allow create, update: if ben(uid) && f != uid
+          && request.resource.data.keys().hasOnly(['uid', 'name', 'addedAt'])
+          && request.resource.data.uid == f;
+        allow delete: if ben(uid) || ben(f);
+      }
+
+      // Oyun daveti: gönderen yazar (engellenmemişse), alıcı okur ve yanıtlar, ikisi de siler
+      match /invites/{id} {
+        allow read: if ben(uid) || (girisli() && resource.data.fromUid == request.auth.uid);
+        allow create: if girisli() && !ben(uid) && !engelledi(uid)
+          && request.resource.data.fromUid == request.auth.uid
+          && request.resource.data.toUid == uid
+          && request.resource.data.status == 'pending'
+          && request.resource.data.roomCode is string && request.resource.data.roomCode.size() <= 8
+          && request.resource.data.fromName is string && request.resource.data.fromName.size() <= 16;
+        allow update: if ben(uid) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+          && request.resource.data.status in ['accepted', 'declined'];
+        allow delete: if ben(uid) || (girisli() && resource.data.fromUid == request.auth.uid);
+      }
+
+      // Engellenenler: yalnız sahibi
+      match /engellenen/{hedef} {
+        allow read, delete: if ben(uid);
+        allow create, update: if ben(uid) && hedef != uid
+          && request.resource.data.keys().hasOnly(['uid', 'name', 'at'])
+          && request.resource.data.uid == hedef
+          && request.resource.data.name is string && request.resource.data.name.size() <= 16;
+      }
+    }
+
+    // ── Rumuz sahipliği: belge kimliği küçük harf rumuz ──
+    match /names/{ad} {
+      allow read: if girisli();
+      allow create: if girisli() && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid', 'name', 'createdAt'])
+        && request.resource.data.name is string && request.resource.data.name.size() <= 16
+        && request.resource.data.name.lower() == ad;
+      allow delete: if girisli() && resource.data.uid == request.auth.uid;
+    }
+
+    // ── Arkadaşlık isteği ──
+    match /friendRequests/{id} {
+      allow read: if girisli() && (resource.data.fromUid == request.auth.uid || resource.data.toUid == request.auth.uid);
+      allow create: if girisli() && request.resource.data.fromUid == request.auth.uid
+        && request.resource.data.toUid != request.auth.uid
+        && request.resource.data.status == 'pending'
+        && !engelledi(request.resource.data.toUid)
+        && request.resource.data.keys().hasOnly(['fromUid', 'fromName', 'toUid', 'toName', 'status', 'createdAt']);
+      allow update: if girisli() && resource.data.toUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['accepted', 'declined'];
+      allow delete: if girisli() && (resource.data.fromUid == request.auth.uid || resource.data.toUid == request.auth.uid);
+    }
+
+    // ── Oyun odası: kod ve bekleme durumu herkesçe aranır; yalnız iki oyuncu yazar ──
+    match /rooms/{oda} {
+      function uye(d) { return girisli() && (d.hostUid == request.auth.uid || d.get('guestUid', null) == request.auth.uid); }
+      function odaUyesi() { return uye(get(/databases/$(database)/documents/rooms/$(oda)).data); }
+
+      allow read: if girisli();
+      allow create: if girisli() && request.resource.data.hostUid == request.auth.uid
+        && request.resource.data.get('guestUid', null) == null
+        && request.resource.data.code is string && request.resource.data.code.size() == 4;
+      allow update: if girisli() && request.resource.data.hostUid == resource.data.hostUid
+        && request.resource.data.code == resource.data.code
+        && (
+          // oyunculardan biri: durum, sürüm, sesli sohbet onayı; konuk değişmez
+          (uye(resource.data) && request.resource.data.get('guestUid', null) == resource.data.get('guestUid', null))
+          // boş odaya katılan: kendini konuk yazar (kurucu onu engellememişse)
+          || (resource.data.get('guestUid', null) == null && request.resource.data.guestUid == request.auth.uid
+              && resource.data.hostUid != request.auth.uid && !engelledi(resource.data.hostUid))
+        );
+      allow delete: if uye(resource.data);
+
+      match /messages/{m} {
+        allow read, delete: if odaUyesi();
+        allow create: if odaUyesi()
+          && request.resource.data.keys().hasOnly(['uid', 'text', 'kind', 'at'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 280
+          && request.resource.data.kind in ['free', 'preset']
+          && request.resource.data.at == request.time
+          // sohbet yasağı sunucuda da geçerli
+          && (!exists(/databases/$(database)/documents/users/$(request.auth.uid))
+              || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('chatBannedUntil', 0)
+                 < request.time.toMillis());
+      }
+      // WebRTC el sıkışması (teklif, yanıt, ICE adayları)
+      match /signaling/{d} {
+        allow read, write: if odaUyesi();
+      }
+    }
+
+    // ── Şikâyet: istemci yalnız oluşturur; okuma ve karar Firebase konsolunda (moderatör) ──
+    match /reports/{id} {
+      allow create: if girisli()
+        && request.resource.data.fromUid == request.auth.uid
+        && request.resource.data.againstUid is string && request.resource.data.againstUid != request.auth.uid
+        && request.resource.data.reason in ['kufur', 'taciz', 'rumuz', 'hile', 'spam', 'diger']
+        && request.resource.data.note is string && request.resource.data.note.size() <= 300
+        && request.resource.data.messages is list && request.resource.data.messages.size() <= 20
+        && request.resource.data.status == 'yeni'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.keys().hasOnly(['fromUid', 'againstUid', 'againstName', 'roomId', 'reason', 'note',
+             'messages', 'status', 'appVersion', 'createdAt']);
+      allow read, update, delete: if false;
+    }
+  }
+}

@@ -32,6 +32,9 @@ const DILLER = {
   'ko-KR': { dil: 'ko', virgul: false, alt: '공학용 계산기', satir: '그래프 · 복소수 · 행렬 · 단위 변환' },
 };
 const secim = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(DILLER);
+// IOS=1: App Store (iPhone 6,9″) 1320×2868 (440×956, 3×) → magaza/app-store/<App Store dili>/iphone-*.jpg (JPEG); simge ve tanıtım görseli yok
+const IOS = process.env.IOS === '1';
+const AS_DIL = { 'tr-TR': 'tr', 'it-IT': 'it', 'ru-RU': 'ru', ar: 'ar-SA', 'ja-JP': 'ja', 'ko-KR': 'ko' };   // Play dili → App Store dili
 for (const d of secim) if (!DILLER[d]) throw new Error(`bilinmeyen dil: ${d}`);
 
 const sunucu = await sunucuBaslat({ '/_res/arka.png': path.join(RES, 'ic_launcher_background.png'), '/_res/on.png': path.join(RES, 'ic_launcher_foreground.png') });
@@ -60,7 +63,7 @@ const ondalik = (d, s) => (d.virgul ? s.replace(/,/g, ';').replace(/\./g, ',') :
 
 /** Bir sahne: localStorage durumu yazılır, sayfa açılır, `hazirla` sayfada çalışır, ekran görüntüsü alınır */
 async function sahne(d, cikis, ad, durum, hazirla) {
-  const p = await b.newPage({ viewport: { width: 360, height: 640 }, deviceScaleFactor: 3, colorScheme: durum.settings.theme });
+  const p = await b.newPage({ viewport: IOS ? { width: 440, height: 956 } : { width: 360, height: 640 }, deviceScaleFactor: 3, colorScheme: durum.settings.theme });
   const hatalar = [];
   p.on('pageerror', (e) => hatalar.push(e.message));
   await p.addInitScript((durum) => { localStorage.setItem('calqora.v1', JSON.stringify(durum)); }, durum);
@@ -69,7 +72,8 @@ async function sahne(d, cikis, ad, durum, hazirla) {
   await p.waitForTimeout(300);
   if (hazirla) await hazirla(p);
   await p.waitForTimeout(450);
-  await p.screenshot({ path: path.join(cikis, ad) });
+  await p.screenshot(IOS ? { path: path.join(cikis, ad.replace('telefon-', 'iphone-').replace(/\.png$/, '.jpg')), type: 'jpeg', quality: 82 }
+    : { path: path.join(cikis, ad) });
   await p.close();
   if (hatalar.length) throw new Error(`${ad}: ${hatalar.join(' | ')}`);
 }
@@ -79,10 +83,11 @@ try {
   const simge300 = 'data:image/png;base64,' + (await simge(600)).toString('base64');
   for (const playDili of secim) {
     const d = DILLER[playDili];
-    const cikis = playDili === 'tr-TR' ? path.join(KOK, 'magaza', 'play') : path.join(KOK, 'magaza', 'play', playDili);
+    const cikis = IOS ? path.join(KOK, 'magaza', 'app-store', AS_DIL[playDili] || playDili)
+      : playDili === 'tr-TR' ? path.join(KOK, 'magaza', 'play') : path.join(KOK, 'magaza', 'play', playDili);
     fs.mkdirSync(cikis, { recursive: true });
-    for (const f of fs.readdirSync(cikis)) if (/^telefon-.*\.png$/.test(f)) fs.rmSync(path.join(cikis, f));
-    if (playDili === 'tr-TR') fs.writeFileSync(path.join(cikis, 'simge-512.png'), simge512);
+    for (const f of fs.readdirSync(cikis)) if (/^(telefon|iphone)-.*\.(png|jpg)$/.test(f)) fs.rmSync(path.join(cikis, f));
+    if (playDili === 'tr-TR' && !IOS) fs.writeFileSync(path.join(cikis, 'simge-512.png'), simge512);
     const gecmis = [
       { e: '2^10', t: '1024', p: '1024' },
       { e: ondalik(d, 'nCr(10,3)'), t: '120', p: '120' },
@@ -131,6 +136,7 @@ try {
     });
 
     // Tanıtım görseli
+    if (IOS) { console.log(`${playDili}: ${cikis}`); continue; }
     const t = await b.newPage({ viewport: { width: 1024, height: 500 } });
     await t.setContent(`<!doctype html><html dir="${d.rtl ? 'rtl' : 'ltr'}" lang="${d.dil}"><head><meta charset="utf-8"><style>
       html,body{margin:0;width:1024px;height:500px;overflow:hidden;font-family:system-ui,"Segoe UI",Roboto,sans-serif;color:#fff}

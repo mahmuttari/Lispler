@@ -110,6 +110,7 @@ export default {
     "p.b1": "Hiçbir ekranda reklam yok",
     "p.b2": "Geliştirmeyi destekler",
     "p.b3": "Google Play’den istediğiniz zaman iptal edin",
+    "p.b3.ios": "App Store ayarlarından istediğiniz zaman iptal edin",
     "p.monthly": "Aylık",
     "p.yearly": "Yıllık",
     "p.perMonth": "{0} / ay",
@@ -123,7 +124,10 @@ export default {
     "p.thanks": "Desteğiniz için teşekkürler!",
     "p.loading": "Fiyatlar yükleniyor…",
     "p.unavailable": "Bu cihazda Google Play kullanılamıyor; abonelik buradan başlatılamaz.",
+    "p.unavailable.ios": "Bu cihazda App Store kullanılamıyor; abonelik buradan başlatılamaz.",
     "p.terms": "Ödeme Google Play hesabınızdan alınır. Abonelik, siz Google Play’den iptal edene kadar gösterilen fiyattan otomatik yenilenir. İstediğiniz zaman iptal edebilirsiniz.",
+    "p.terms.ios": "Ödeme, satın almayı onayladığınızda Apple hesabınızdan alınır. Abonelik, dönem bitmeden en az 24 saat önce iptal edilmezse gösterilen fiyattan kendiliğinden yenilenir; yenileme ücreti dönemin son 24 saatinde alınır. Satın aldıktan sonra aboneliği App Store hesap ayarlarınızdan yönetebilir ya da iptal edebilirsiniz.",
+    "p.eula": "Kullanım Koşulları (EULA)",
     "p.cancelled": "Satın alma iptal edildi",
     "p.failed": "Satın alma tamamlanamadı",
     "p.restored": "Üyelik geri yüklendi",
@@ -141,6 +145,7 @@ export default {
     "s.privacy": "Gizlilik politikası",
     "s.privacyOpen": "Görüntüle",
     "p.noPrices": "Fiyatlar Google Play’den alınamadı. Bağlantınızı denetleyip yeniden deneyin.",
+    "p.noPrices.ios": "Fiyatlar App Store’dan alınamadı. Bağlantınızı denetleyip yeniden deneyin.",
   },
   // category names
   cats: {

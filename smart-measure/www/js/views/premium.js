@@ -1,10 +1,13 @@
-// Premium = reklamsız abonelik (aylık / yıllık). Fiyatlar Google Play'den gelir; burada fiyat yazılmaz.
+// Premium = reklamsız abonelik (aylık / yıllık). Fiyatlar mağazadan gelir; burada fiyat yazılmaz.
+// iPhone (App Review 3.1.2): App Store'un yenileme koşulları (pr_terms_ios), gizlilik politikası ve Kullanım Koşulları (EULA) bağlantıları.
 import { h, toast, notice, put } from '../dom.js';
 import { icon } from '../icons.js';
 import { t } from '../i18n.js';
 import * as premium from '../premium.js';
 import * as billing from '../billing.js';
 import { topbar } from './common.js';
+import { PRIVACY_URL } from './settings.js';
+import { isIOS, openUrl } from '../native.js';
 
 export function render({ back }) {
   let plans = null, loading = true, selected = 'yearly', busy = false, msg = null;
@@ -78,6 +81,11 @@ export function render({ back }) {
     if (msg) out.push(notice(msg[0], msg[0] === 'ok' ? 'CircleCheck' : 'Info', null, t(msg[1])));
     if (!premium.isPremium()) out.push(h('button', { class: 'btn ghost block', type: 'button', onclick: restore, disabled: busy ? true : null, text: t('pr_restore') }));
     out.push(h('p', { class: 'muted small', text: t('pr_terms') }));
+    if (isIOS) {
+      out.push(h('div', { class: 'legal-links' },
+        h('button', { class: 'btn ghost', type: 'button', onclick: () => openUrl(PRIVACY_URL), text: t('st_privacy_policy') }),
+        h('button', { class: 'btn ghost', type: 'button', onclick: () => openUrl(billing.EULA_URL), text: t('pr_eula') })));
+    }
     put(body, ...out);
   }
   const off = premium.onChange(() => draw());

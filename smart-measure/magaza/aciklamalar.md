@@ -10,12 +10,12 @@ reklamlar açıkça anlatılır (`test/magaza.test.mjs` denetler).
 ## Ortak
 
 - **Uygulama adı:** Ölçü Kutusu – Terazi, Cetvel
-- **Geliştirici adı:** Poyraz Workshop
+- **Geliştirici adı:** MARFEN
 - **Paket adı:** `com.poyrazworkshop.smartmeasure`
 - **Tür ve kategori:** Uygulama · Araçlar
 - **Hedef kitle:** 13-15, 16-17, 18 ve üzeri (13 altı seçilmez)
 - **Gizlilik politikası:** https://mahmuttari.github.io/Lispler/smart-measure/gizlilik.html
-- **Destek e-postası:** mahmuttari@gmail.com
+- **Destek e-postası:** info@marfen.com.tr
 - **Mağaza dilleri:** tr-TR (varsayılan), en-US — uygulamanın iki diliyle bire bir
 - **Abonelik:** `adfree` (temel planlar `monthly`, `yearly`) — fiyatlar ve Console adımları [`fiyatlandirma.md`](fiyatlandirma.md)
 

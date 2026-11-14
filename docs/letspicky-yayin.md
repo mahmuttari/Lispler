@@ -20,11 +20,24 @@ Adımları sahip ya da bilgisayardaki Claude (`claude --chrome`) izler.
 
 ## Durum (14 Kasım 2026)
 
-- **Web** yayında; gizlilik politikası, `app-ads.txt` ve fragman oynatıcısı (`fragman.html`) dahil.
+- **Mekân bulucu (son yayın):** Yonetmelik-araclari#38 ve #39 main'de (`de82ca2`). Sonuç ekranında yakın mekânlar önce
+  sunucumuz üzerinden Google Places'ten (`letspicky.com/api/places`; Google anahtarı Worker gizli değeri), yanıt yoksa
+  OpenStreetMap'ten (Overpass, Photon; uzak aramada Nominatim) gelir. Konum servislere 2 ondalık yuvarlanmış gider,
+  mesafe gerçek konumla hesaplanır; Google sonuçlarında "Google Maps" atfı. `letspicky/www` bu dist ile eşlendi
+  (`reklam-kimlik.json` korundu).
+- **Web:** yeni dist main'de; **Cloudflare'e yükleme bekliyor**: GitHub'da `CLOUDFLARE_API_TOKEN` sırrı yok ("Let's
+  Picky Web" koşusu 6: "sırrı yok, yayımlanmadı"). Sahip sırrı Yonetmelik-araclari › Settings › Secrets and variables ›
+  Actions'a ekleyince iş akışı yeniden çalıştırılır. letspicky.com'da şu an önceki sürüm var (`/api/places` yok).
+- **Web (önceki):** gizlilik politikası, `app-ads.txt` ve fragman oynatıcısı (`fragman.html`) dahil.
 - **Kod:** Lispler#30 ve Yonetmelik-araclari#5 main'e birleşti. `letspicky-android.yml` main'de yeşil
   (koşu 43592891712), ama AAB Google'ın **test** AdMob kimlikleriyle derlendi: Play'e YÜKLENMEZ. Gerçek kimlikler A1'den
   sonra gelir.
-- **App Store (güncel):** 1.0.0 (3) incelemede (`WAITING_FOR_REVIEW`, NetcadDevelop koşu 43600776460). Yapı 3 Lispler
+- **App Store (14 Kasım 2026, 16:58 UTC):** Apple **1.0.0 (3)'ü reddetti**: sürüm `INVALID_BINARY`, gönderim 39eae3e3
+  `UNRESOLVED_ISSUES`, öğe `REJECTED` (NetcadDevelop koşu 43618492501). Gerekçe API'de yok: App Store Connect › Uygulama ›
+  Çözüm Merkezi (Resolution Center) ya da Apple'ın e-postası. Mekân bulucuyu içeren yapı 4 (`yukle letspicky`, bu
+  eşlemeden sonraki Lispler main) gerekçe okunduktan sonra; yeniden gönderim (`gonder letspicky uygula`) yalnız sahibin
+  açık onayıyla.
+- **App Store (önceki):** 1.0.0 (3) incelemeye gönderilmişti (`WAITING_FOR_REVIEW`, NetcadDevelop koşu 43600776460). Yapı 3 Lispler
   main 2e05246'dan derlendi: Karar Kavanozu, 94 kartın Recraft görseli, kavanoz simgesi; metinler ve iPhone ekran
   görüntüleri yenilendi. Eski görsellerle gönderilen 1.0.0 (2) sahibin onayıyla incelemeden çekildi (`gonder.mjs iptal`).
   Yayın elle: onaydan sonra satışa açma yalnız sahibin açık onayıyla. App Privacy, fiyat ve inceleme bilgileri tarayıcıdan
@@ -33,13 +46,16 @@ Adımları sahip ya da bilgisayardaki Claude (`claude --chrome`) izler.
   (reklamlardan önceki yapı; gerçek kimlikli yeni yapı 2 olur). NetcadDevelop koşu 43593690083: sürüm metinleri tr ve
   en-US yeniden yazıldı ("reklam yok" kalktı), yaş derecesi **reklam: Evet**. Ekran görüntüleri tr ve en-US 5'er, tamam.
   `letspicky-ios.yml` artık Lispler **main**'i çeker; macOS işi `cap sync`'ten önce `araclar/kimlik.mjs`'i çalıştırır.
-- **Play:** uygulama henüz oluşturulmadı (`durum`, koşu 43594104222 ve 43600437026: 404 "Package not found"). Gerçek
-  AdMob kimlikli, kavanoz simgeli AAB main'de hazır: Actions › Android (Let's Picky) › main › "LetsPicky-aab".
+- **Play:** uygulama henüz oluşturulmadı (`durum`, koşu 43594104222 ve 43600437026: 404 "Package not found"). A3'te
+  yüklenecek AAB, mekân bulucu eşlemesinden SONRAKİ main koşusunun "LetsPicky-aab"ıdır (Actions › Android (Let's Picky) ›
+  main); daha eski AAB'yi yüklemeyin (versionCode 1 bir kez kullanılır).
 - **AdMob:** gerçek kimlikler main'de (Lispler#36); A1 tamam.
 - **Veri güvenliği:** `letspicky/magaza/veri-guvenligi.csv` hazır (üretici `letspicky/araclar/veri-guvenligi.mjs`; tablo
   kaynak depodaki `ortakkarar/store/play-veri-guvenligi.md` ile aynı). Uygulamanın kendi verisi (takma ad, oylar ve
   tepkiler, "Kendin Yaz" seçenekleri, anonim Firebase kimliği, yaklaşık konum) toplanır, paylaşılmaz; AdMob'un verisi
-  (yaklaşık konum, cihaz kimliği, etkileşimler, teşhis, kilitlenme günlükleri) toplanır ve paylaşılır.
+  (yaklaşık konum, cihaz kimliği, etkileşimler, teşhis, kilitlenme günlükleri) toplanır ve paylaşılır. Nominatim ve
+  sunucumuz üzerinden Google Places yeni veri türü getirmez (yuvarlanmış konum zaten beyanlı; hizmet sağlayıcı, paylaşım
+  değil); CSV değişmedi, `--denetle` temiz.
 
 ## Onay satırı (bilgisayardaki oturumun başında sahip yazar; istemediği kalemi siler)
 

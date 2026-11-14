@@ -23,7 +23,7 @@
  *                                                   değişen yeniden yüklenir, listede olmayan silinir; sıra dosya adına göre
  *   "uygula" yoksa metin / yas / abonelik / gorsel yalnız plan yazdırır; hiçbir şey değişmez.
  *
- * <uygulama>: unitica | calqora | smart-measure | notdefteri. İncelemeye gönderme ve satışa açma bu betikte yoktur; ancak
+ * <uygulama>: unitica | calqora | smart-measure | notdefteri | letspicky. İncelemeye gönderme ve satışa açma bu betikte yoktur; ancak
  * kullanıcının açık onayıyla, ayrı komutla yapılır (docs/ios-yayin.md).
  *
  * Kimlik: ortam değişkenleri ASC_KEY_ID, ASC_ISSUER_ID, ASC_PRIVATE_KEY (.p8 içeriği), yalnız GitHub Secrets'ta. Betik
@@ -41,12 +41,13 @@ const KOK = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const API = process.env.ASC_API || 'https://api.appstoreconnect.apple.com';
 const BEKLE_MS = Number(process.env.BEKLE_MS || 60000);
 
-/** Paket kimliği, Apple Developer'daki ad (yalnız ASCII), klasör, App Store abonelikleri */
+/** Paket kimliği, Apple Developer'daki ad (yalnız ASCII), klasör, App Store abonelikleri; reklam: false → AdMob yok */
 export const UYGULAMALAR = {
   unitica: { paket: 'com.poyrazworkshop.unitica', ad: 'Unitica', klasor: 'unitica', abonelik: true },
   calqora: { paket: 'com.poyrazworkshop.calqora', ad: 'Calqora', klasor: 'calqora', abonelik: true },
   'smart-measure': { paket: 'com.poyrazworkshop.smartmeasure', ad: 'Olcu Kutusu', klasor: 'smart-measure', abonelik: true },
   notdefteri: { paket: 'com.poyrazworkshop.notdefteri', ad: 'Not Defteri', klasor: 'ios', abonelik: false },
+  letspicky: { paket: 'com.mahmuttari.letspicky', ad: 'Lets Picky', klasor: 'letspicky', abonelik: false, reklam: false },
 };
 /** App Store abonelik ürünleri: her dönem ayrı ürün, tek grupta (uygulamaların config / billing dosyalarıyla aynı) */
 export const urunler = (u) => (UYGULAMALAR[u].abonelik ? ['monthly', 'yearly'].map((d) => `${UYGULAMALAR[u].paket}.adfree.${d}`) : []);
@@ -63,6 +64,7 @@ export function surum(u) {
 
 /** Google'ın test yayıncısı mı (ca-app-pub-3940256099942544)? Test kimliğiyle derlenen paket App Store'a yüklenmez. */
 export function admobTestMi(u) {
+  if (UYGULAMALAR[u].reklam === false) return false;
   if (u === 'notdefteri') {
     const yml = fs.readFileSync(path.join(KOK, 'ios', 'project.yml'), 'utf8');
     const rel = yml.slice(yml.indexOf('Release:'));

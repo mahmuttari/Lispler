@@ -1,0 +1,20 @@
+{
+  "name": "letspicky",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Let's Picky — aile ve arkadaşlar için kaydır-eşleş karar uygulaması; Capacitor ile Android ve iOS kabuğu (kaynak: mahmuttari/Yonetmelik-araclari › ortakkarar)",
+  "scripts": {
+    "sync": "cap sync",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.6.2",
+    "@capacitor/core": "8.6.2",
+    "@capacitor/ios": "8.6.2",
+    "@capacitor/share": "8.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.2"
+  }
+}

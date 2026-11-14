@@ -22,7 +22,8 @@
 // "kelime" (Kelime Bilcek: kelime-bilcek/ klasörü, .github/workflows/play-kelime.yml),
 // "tavla" (Tavla: tavla/ klasörü, .github/workflows/play-tavla.yml),
 // "masteroffice" (Master Office, com.ofivora.app: master-office/ klasörü, .github/workflows/play-masteroffice.yml;
-// kaynak kodu bu depoda yok, AAB Play Console'dan elle yüklenir; sürüm master-office/surum.gradle'dadır).
+// kaynak kodu bu depoda yok, AAB Play Console'dan elle yüklenir; sürüm master-office/surum.gradle'dadır),
+// "letspicky" (Let's Picky, com.mahmuttari.letspicky: letspicky/ klasörü, .github/workflows/play-letspicky.yml).
 // Telefon ekran görüntüleri PNG ya da JPEG olabilir (telefon-*.png / telefon-*.jpg).
 //
 // "uygula" yoksa hiçbir şey yazılmaz: düzenleme (edit) açılır, plan yazılır, düzenleme silinir. Uygulamayı oluşturmak
@@ -43,6 +44,7 @@ export const UYGULAMALAR = {
   kelime: { paket: 'com.poyrazworkshop.kelimebilcek', magaza: 'kelime-bilcek/magaza', aab: 'dist/KelimeBilcek-play.aab', gradle: 'kelime-bilcek/android/app/build.gradle' },
   tavla: { paket: 'com.poyrazworkshop.tavla', magaza: 'tavla/magaza', aab: 'dist/Tavla-play.aab', gradle: 'tavla/android/app/build.gradle' },
   masteroffice: { paket: 'com.ofivora.app', magaza: 'master-office/magaza', aab: 'dist/MasterOffice-play.aab', gradle: 'master-office/surum.gradle' },
+  letspicky: { paket: 'com.mahmuttari.letspicky', magaza: 'letspicky/magaza', aab: 'dist/LetsPicky-play.aab', gradle: 'letspicky/android/app/build.gradle' },
 };
 const SECIM = UYGULAMALAR[process.env.PLAY_UYGULAMA || 'notdefteri'];
 if (!SECIM) throw new Error(`PLAY_UYGULAMA bilinmiyor: ${process.env.PLAY_UYGULAMA} (${Object.keys(UYGULAMALAR).join(', ')})`);

@@ -119,7 +119,7 @@ test('durum: salt okunur; paket, kayıt, sürüm, yapı, abonelik', async () => 
 
 test('paket: "uygula" yoksa yalnız plan; uygulayınca eksikleri ASCII adla kaydeder', async () => {
   istekler.length = 0;
-  assert.deepEqual(await asc.paket(false), ['calqora', 'smart-measure', 'notdefteri']);
+  assert.deepEqual(await asc.paket(false), ['calqora', 'smart-measure', 'notdefteri', 'letspicky']);
   assert.ok(!istekler.some((x) => x.yontem === 'POST'));
   istekler.length = 0;
   await asc.paket(true);
@@ -128,12 +128,14 @@ test('paket: "uygula" yoksa yalnız plan; uygulayınca eksikleri ASCII adla kayd
     { identifier: 'com.poyrazworkshop.calqora', name: 'Calqora', platform: 'IOS' },
     { identifier: 'com.poyrazworkshop.smartmeasure', name: 'Olcu Kutusu', platform: 'IOS' },
     { identifier: 'com.poyrazworkshop.notdefteri', name: 'Not Defteri', platform: 'IOS' },
+    { identifier: 'com.mahmuttari.letspicky', name: 'Lets Picky', platform: 'IOS' },
   ]);
 });
 
 test('onkontrol: test AdMob kimliği, eksik paket ya da kayıt varsa yükleme durur', async () => {
   // depodaki iOS AdMob kimlikleri şimdilik Google'ın test kimlikleri
   assert.equal(asc.admobTestMi('unitica'), true);
+  assert.equal(asc.admobTestMi('letspicky'), false, 'reklamsız uygulamada AdMob denetimi yok');
   await assert.rejects(asc.onkontrol('unitica'), /test kimlikleri/);
   await assert.rejects(asc.onkontrol('calqora'), /paket kimliği.*kayıtlı değil[\s\S]*uygulama kaydı yok/);
   await assert.rejects(asc.onkontrol('baska'), /bilinmeyen uygulama/);

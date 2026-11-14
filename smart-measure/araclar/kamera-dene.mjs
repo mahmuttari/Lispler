@@ -156,6 +156,10 @@ try {
   await s.bak(40, 0); await s.bas('Tepe Seç');
   dogru('tepe tabanın altında', /Tepe, tabandan yukarıda/.test(await s.bildirim()), await s.bildirim());
   bekle('reddedilen tepe eski sonucu bozmaz', (await s.sonuc()).ana, tr(yuk));
+  // tepe tabanın dikey doğrultusunda değilse (telefon yana çevrildi) reddedilir
+  await s.bas('Sıfırla'); await s.bak(30, 0); await s.bas('Taban Seç');
+  await s.bak(-10, 15); await s.bas('Tepe Seç');
+  dogru('tepe yana kaydı', /tam üstünde/.test(await s.bildirim()), await s.bildirim());
   await s.bas('Sıfırla'); await s.bak(30, 0); await s.bas('Taban Seç');
   await s.bak(-80, 0);
   dogru('çok dik yukarı: canlı uyarı', /Çok dik yukarı/.test(await s.uyari()), await s.uyari());
@@ -172,7 +176,47 @@ try {
   bekle('genişlik (0° / 360° sınırının iki yanı)', (await s.sonuc()).ana, tr(2 * r(30) * Math.sin(10 * DEG)));
   await s.kapat();
 
-  // ---------------------------------------------------------------- 8. dönme sensörü var görünüp okuma vermiyor: yerçekimine düşer
+  // ---------------------------------------------------------------- 8. reklam banner'ı hiçbir düğmeyi örtmez; hedef "+" biçiminde
+  s = await ac({ reklam: true }, 'ar?mode=distance');
+  await s.p.waitForFunction(() => window.__sahte.bannerAcik === true, null, { timeout: 8000 }).catch(() => {});
+  await s.p.waitForTimeout(400);
+  const ortulu = (secici) => s.p.evaluate((sec) => {
+    const el = [...document.querySelectorAll(sec)].filter((x) => x.getBoundingClientRect().height > 0).pop();
+    if (!el) return 'yok';
+    window.scrollTo(0, document.documentElement.scrollHeight);   // kullanıcı sayfanın sonuna kadar kaydırınca
+    const r = el.getBoundingClientRect();
+    const ust = document.elementFromPoint(r.left + r.width / 2, Math.min(r.bottom - 2, window.innerHeight - 1));
+    return el === ust || el.contains(ust) ? 'açık' : `örtülü (${ust && (ust.id || ust.className)})`;
+  }, secici);
+  bekle('banner açık ve sayfa payı ayrıldı', JSON.stringify([await s.p.evaluate(() => window.__sahte.bannerAcik), await s.p.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--banner-h').trim())]), JSON.stringify([true, '60px']));
+  bekle('sayfa sonuna kaydırınca son düğme banner altında kalmaz', await ortulu('.screen > .actions .act'), 'açık');
+  bekle('sayfa sonuna kaydırınca son yazı banner altında kalmaz', await ortulu('.screen > p.muted.small'), 'açık');
+  await s.p.evaluate(() => window.scrollTo(0, 0));
+  await s.p.locator('button.chip').first().click();
+  await s.p.waitForTimeout(400);
+  bekle('alt sayfa açıkken banner gizli', await s.p.evaluate(() => window.__sahte.bannerAcik), false);
+  bekle('alt sayfanın Kaydet düğmesi örtülmez', await ortulu('.sheet .btn.primary'), 'açık');
+  await s.p.locator('.sheet .btn.primary').click();
+  await s.p.waitForTimeout(400);
+  bekle('alt sayfa kapanınca banner geri gelir', await s.p.evaluate(() => window.__sahte.bannerAcik), true);
+  bekle('hedef "+" biçiminde', await s.p.evaluate(() => [...document.querySelectorAll('.cam .cross svg path')].map((x) => x.getAttribute('d')).join('|')), 'M22 2V42M2 22H42|M22 2V42M2 22H42');
+  // nişan alırken kaydırmak gerekmez: düğmeler banner'ın üstünde, sayfa kaymamışken
+  await s.p.evaluate(() => window.scrollTo(0, 0));
+  bekle('düğmeler kaydırmadan banner üstünde', await s.p.evaluate(() => { const r = document.querySelector('.screen > .actions').getBoundingClientRect(); return r.bottom <= window.innerHeight - 60 + 1; }), true);
+  // bilinen mesafeyle yükseklik: 2 m ötedeki noktaya 35° → 1,40 m; artı işareti kısa alt sayfanın üstünde görünür kalır
+  await s.bak(35, 0, 900);
+  await s.p.locator('button.chip').first().click(); await s.p.waitForTimeout(300);
+  const surdur = await s.p.evaluate(() => window.__sahte.cagri.resumeBanner || 0);
+  await s.p.locator('.sheet .btn', { hasText: 'Bilinen mesafeyle bul' }).click(); await s.p.waitForTimeout(400);
+  bekle('alt sayfadan alt sayfaya geçerken banner gizli kalır', JSON.stringify([await s.p.evaluate(() => window.__sahte.bannerAcik), await s.p.evaluate(() => window.__sahte.cagri.resumeBanner || 0)]), JSON.stringify([false, surdur]));
+  bekle('artı işareti kısa alt sayfanın üstünde', await s.p.evaluate(() => { const c = document.querySelector('.cam .cross').getBoundingClientRect(); const sh = document.querySelector('.sheet').getBoundingClientRect(); return c.bottom < sh.top; }), true);
+  bekle('alt sayfa açıkken bildirim üstte', await s.p.evaluate(() => getComputedStyle(document.getElementById('toast')).top !== 'auto' && document.body.classList.contains('altsayfa')), true);
+  await s.p.locator('.sheet .btn.primary', { hasText: 'Nişan al ve hesapla' }).click(); await s.p.waitForTimeout(300);
+  bekle('bilinen mesafeden yükseklik', await s.p.locator('button.chip').first().textContent(), `Telefon yüksekliği: ${(2 * Math.tan(35 * DEG)).toFixed(2).replace('.', ',')} m`);
+  dogru('ayarlandı bildirimi', /ayarlandı/.test(await s.bildirim()), await s.bildirim());
+  await s.kapat();
+
+  // ---------------------------------------------------------------- 9. dönme sensörü var görünüp okuma vermiyor: yerçekimine düşer
   s = await ac({ yonelimSessiz: true, gravity: { x: 0, y: 9.80665 * Math.cos(30 * DEG), z: 9.80665 * Math.sin(30 * DEG) }, gurultu: 0 }, 'ar?mode=distance');
   await s.p.waitForTimeout(600);
   bekle('yerçekimi yedeği: canlı etiket', await s.etiket(), `Sizden ${tr(r(30))}`);

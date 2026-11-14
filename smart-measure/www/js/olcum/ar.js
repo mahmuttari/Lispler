@@ -177,14 +177,34 @@ export function stepProblem(mode, n, h, aim) {
 }
 
 /** Seçilen bakış (steadyAim) kabul edilir mi? points: önceki noktalar. Adım sorunlarına ek olarak: genişlik için yön yok
- *  (NoBearing), telefon oynuyordu (Moving), yükseklik kipinde tepe tabanın üstünde değil (TopLow). */
+ *  (NoBearing), telefon oynuyordu (Moving), yükseklik kipinde tepe tabanın dikey doğrultusunda değil (NotAbove: telefon yana
+ *  çevrildi; tepenin zemindeki izi tabandan en çok 20 cm ya da uzaklığın %8'i kadar sapabilir) ya da tabanın üstünde değil (TopLow). */
 export function pointProblem(mode, points, h, aim) {
   const p = stepProblem(mode, points.length, h, aim);
   if (p) return p;
   if (mode === 'width' && aim.bearing == null) return 'NoBearing';
   if ((aim.sp || 0) > STEADY.maxSpread || (aim.sb || 0) * Math.cos(aim.pitch * DEG) > STEADY.maxSpread) return 'Moving';
+  if (mode === 'height' && points.length === 1 && aim.bearing != null && points[0].bearing != null) {
+    const r = floorRange(h, points[0].pitch), sapma = r * Math.abs(wrap180(aim.bearing - points[0].bearing)) * DEG;
+    if (sapma > Math.max(0.2, 0.08 * r)) return 'NotAbove';
+  }
   if (mode === 'height' && points.length === 1 && !heightOf(h, points[0], aim)) return 'TopLow';
   return null;
+}
+
+/** Bilinen mesafeyle telefon yüksekliği: uzaklığı bilinen (metreyle ölçülmüş) zemin noktasına nişan alınınca h = D · tan(θ).
+ *  Elle girilen yükseklik yöntemin en büyük hata kaynağıdır (2 cm ≈ %1,5; kameranın ve sensörün küçük eğim sapması da bu
+ *  "etkin yüksekliğe" katılır). → { h } ya da { problem, h? } */
+export const KNOWN = { min: 0.5, max: 15, default: 2 };
+export function heightFromKnown(rangeM, aim) {
+  if (!aim) return { problem: 'NoAim' };
+  if (!(rangeM >= KNOWN.min && rangeM <= KNOWN.max)) return { problem: 'Range' };
+  if (aim.pitch < AIM.minDown) return { problem: 'AimLower' };
+  if (aim.pitch > AIM.maxDown) return { problem: 'AimHigher' };
+  if ((aim.sp || 0) > STEADY.maxSpread) return { problem: 'Moving' };
+  const h = rangeM * Math.tan(aim.pitch * DEG);
+  if (h < HEIGHT.min || h > HEIGHT.max) return { problem: 'HeightOut', h };
+  return { h };
 }
 
 /** İlk nokta seçildikten sonra, şu anki bakışla çıkacak sonuç (canlı önizleme); yoksa null. */

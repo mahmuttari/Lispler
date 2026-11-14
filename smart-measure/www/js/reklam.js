@@ -9,8 +9,9 @@
      Reklam içerik derecesi en çok G ("General"). UMP gizlilik seçeneklerini zorunlu sayarsa Ayarlar'da
      "Reklam gizlilik seçenekleri" görünür.
    - Banner: altta, kendi şeridinde uyarlanabilir sabit banner. Sayfanın altına banner yüksekliği kadar boşluk
-     bırakılır (--banner-h), banner hiçbir düğmenin üstüne binmez; klavye açıkken ve tam ekran kamerada / tam ekran
-     cetvelde gizlenir.
+     bırakılır (--banner-h), banner hiçbir düğmenin üstüne binmez; klavye açıkken, tam ekran kamerada / tam ekran
+     cetvelde ve bir alt sayfa (ör. telefon yüksekliği, ayarlar) açıkken gizlenir: alt sayfa ekranın en altına açılır,
+     banner da sayfanın üstünde durduğu için düğmelerini örterdi.
    - Geçiş reklamı: yalnız doğal bir durakta, bir araçtan (kamera, su terazisi, cetvel, ölçerler) çıkılınca; araç
      açıkken, ölçüm ya da giriş sürerken, kamera ya da mikrofon açıkken asla. Oturumun ilk 3 dakikasında yok (açılışta
      da yok), iki geçiş reklamı arası en az 4 dakika, saatte en çok 6. Sayaçlar kalıcıdır (SYS.reklam). 30 dakikadan
@@ -106,7 +107,7 @@ async function bannerGoster() {
   } catch (e) { durum.bannerAcik = false; console.warn('AdMob banner', e); }
 }
 
-/** Banner'ı gizleme nedenleri: 'klavye', 'tamekran'. Hepsi kalkınca banner geri gelir. */
+/** Banner'ı gizleme nedenleri: 'klavye', 'klavye-odak', 'tamekran', 'altsayfa'. Hepsi kalkınca banner geri gelir. */
 export function bannerGizle(neden, gizli) {
   if (gizli) durum.gizle.add(neden); else durum.gizle.delete(neden);
   bannerGizliMi();
@@ -187,4 +188,6 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   });
   document.addEventListener('focusin', (e) => { if (e.target && e.target.matches && e.target.matches('input:not([type=checkbox]), textarea')) bannerGizle('klavye-odak', true); });
   document.addEventListener('focusout', () => bannerGizle('klavye-odak', false));
+  // Alt sayfa açıkken (dom.js › sheet) banner gizli: sayfanın düğmeleri banner'ın altında kalmasın
+  document.addEventListener('alt-sayfa', (e) => bannerGizle('altsayfa', !!(e && e.detail && e.detail.acik)));
 }

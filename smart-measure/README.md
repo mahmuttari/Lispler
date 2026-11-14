@@ -53,6 +53,18 @@ diye netleştirildi (genişlik iki zemin noktasından hesaplanır; havadaki kena
   kesilirse bakış bayat sayılır (ölçüme girmez) ve akış yeniden başlatılır; dönme sensörü var görünüp susarsa yerçekimine
   düşülür. Kamera açılırken arka plana gidilirse açık kalmaz; kamera elden alınırsa "açılamadı" denir.
 - Çakışan iki noktada belirsizlik sıfıra düşmez (fark vektörünün kovaryansı).
+- **14 Kasım 2026 (telefondaki denemeden sonra; Evren ve NVIDIA modelleriyle gözden geçirildi):**
+  - Banner, alt sayfa (telefon yüksekliği vb.) açıkken gizlenir: alt sayfa ekranın en altına açılır, AdMob banner'ı sayfanın
+    üstünde durduğu için "Kaydet"i örtüyordu. Alt sayfa açıkken kısa bildirim üstte çıkar.
+  - Hedef ince bir "+" (koyu kenarlı, her zeminde görünür); ipuçları "+ işareti" der.
+  - Nişan alırken kaydırma gerekmez: kamera kutusunun yüksekliği görünen alan − banner − üst çubuk − alttaki denetimlerden
+    hesaplanır (`app.css › .screen.ar .cam`, `--ar-alt` ölçülür); adım düğmelerinin alt yazısı kalktı (ipucu satırı söylüyor).
+    Üst çubuk düz zeminli: sonuca kaydırınca önizleme yarı saydam ucun altından görünmez.
+  - **Bilinen mesafeyle telefon yüksekliği** (yükseklik penceresi › "Bilinen mesafeyle bul"): metreyle ölçülmüş bir zemin
+    noktasına nişan alınır, h = D · tan(θ). Elle girilen yükseklik yöntemin en büyük hata kaynağıydı; kameranın ve sensörün
+    küçük eğim sapması da bu etkin yüksekliğe katılır.
+  - Yükseklikte tepe tabanın dikey doğrultusunda değilse (telefon yana çevrildi; sapma > 20 cm ya da uzaklığın %8'i) nokta alınmaz.
+  - Sürüm kodu 2 (1, Play'de ilk taslakta kaldı).
 **Yapılamayan:** CameraX'in kamera seçimi ve yakınlaştırması yok (WebView `getUserMedia` arka kamerayı seçer); fener
 WebView'in `torch` kısıtıyla çalışır, desteklemeyen telefonda düğme görünmez.
 

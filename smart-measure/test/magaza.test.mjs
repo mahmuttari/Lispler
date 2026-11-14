@@ -24,7 +24,7 @@ test('paket adı ve sürüm: play.mjs, build.gradle, capacitor.config.json, pack
   assert.equal(play.PAKET, 'com.poyrazworkshop.smartmeasure');
   const g = fs.readFileSync(path.join(SM, 'android', 'app', 'build.gradle'), 'utf8');
   assert.match(g, /applicationId "com\.poyrazworkshop\.smartmeasure"/);
-  assert.deepEqual(play.surumBilgisi(g), { versionCode: 1, versionName: '1.0.0' });
+  assert.deepEqual(play.surumBilgisi(g), { versionCode: 2, versionName: '1.0.0' });   // 1 Play'de ilk taslakta kaldı (14 Kasım 2026)
   assert.equal(JSON.parse(fs.readFileSync(path.join(SM, 'capacitor.config.json'), 'utf8')).appId, play.PAKET);
   assert.equal(JSON.parse(fs.readFileSync(path.join(SM, 'package.json'), 'utf8')).version, '1.0.0');
   const v = fs.readFileSync(path.join(SM, 'android', 'variables.gradle'), 'utf8');

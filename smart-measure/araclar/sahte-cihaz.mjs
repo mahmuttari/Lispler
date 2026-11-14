@@ -70,6 +70,28 @@ export function sahteCihaz(ayar = {}) {
     kopyala: async () => ({}), paylas: async () => ({}), cubuklar: async () => ({}), ekranAcik: async () => ({}), ayarlariAc: async () => ({}), baglantiAc: async () => ({}),
   });
   const App = eklenti({ exitApp: async () => ({}) });
+  // { reklam: true }: AdMob taklidi. Banner gerçekteki gibi sayfanın ÜSTÜNDE duran sabit bir kutudur (60 px); ekran
+  // denetimi bir düğmenin onun altında kalıp kalmadığını görebilsin. Öntanım kapalı: mağaza görsellerinde reklam olmaz.
+  const banner = (acik) => {
+    let b = document.getElementById('sahte-banner');
+    if (!b) {
+      b = document.createElement('div'); b.id = 'sahte-banner';
+      b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;height:60px;z-index:2147483647;background:#202124;color:#fff;display:flex;align-items:center;justify-content:center;font:700 14px sans-serif';
+      b.textContent = 'REKLAM'; document.body.append(b);
+    }
+    b.style.display = acik ? 'flex' : 'none';
+    S.bannerAcik = acik;
+  };
+  const AdMob = eklenti({
+    requestConsentInfo: async () => ({ status: 'NOT_REQUIRED', isConsentFormAvailable: false, canRequestAds: true, privacyOptionsRequirementStatus: 'NOT_REQUIRED' }),
+    trackingAuthorizationStatus: async () => ({ status: 'authorized' }),
+    initialize: async () => ({}),
+    showBanner: async () => { banner(true); setTimeout(() => yay('bannerAdSizeChanged', { width: 390, height: 60 }), 0); return {}; },
+    hideBanner: async () => { banner(false); return {}; },
+    resumeBanner: async () => { say('resumeBanner'); banner(true); setTimeout(() => yay('bannerAdSizeChanged', { width: 390, height: 60 }), 0); return {}; },
+    removeBanner: async () => { banner(false); return {}; },
+    prepareInterstitial: async () => ({}),
+  });
   const Haptics = eklenti({});
   const ios = A.platform === 'ios';
   const IOS = 'com.poyrazworkshop.smartmeasure.adfree.';
@@ -79,7 +101,7 @@ export function sahteCihaz(ayar = {}) {
       ? [{ identifier: IOS + 'monthly', priceString: '₺24,99', price: 24.99 }, { identifier: IOS + 'yearly', priceString: '₺249,99', price: 249.99 }]
       : [] }),
   });
-  window.Capacitor = { isNativePlatform: () => true, getPlatform: () => (ios ? 'ios' : 'android'), Plugins: { Olcer, App, Haptics, NativePurchases } };
+  window.Capacitor = { isNativePlatform: () => true, getPlatform: () => (ios ? 'ios' : 'android'), Plugins: { Olcer, App, Haptics, NativePurchases, ...(A.reklam ? { AdMob } : {}) } };
 
   // Kamera: çizilmiş sahne (zemin, duvar, kapı ve bir dolap) — gerçek kamera görüntüsü değildir
   if (A.kamera) {

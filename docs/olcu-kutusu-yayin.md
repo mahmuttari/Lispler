@@ -13,6 +13,18 @@ reklam birimi açmaya API vermez. Adımları sahip ya da bilgisayardaki Claude (
 | İletişim · site · gizlilik | `info@marfen.com.tr` · `https://mahmuttari.github.io/Lispler/smart-measure/` · `…/smart-measure/gizlilik.html` |
 | AdMob hesabı | `pub-2417242373034448` (Android kimlikleri hazır; iPhone kimlikleri A1'de açılır) |
 
+## Durum (14 Kasım 2026)
+
+**A adımları tamam** (sahibin tarayıcısındaki Claude oturumu):
+- **Play (MARFEN):** uygulama kimliği `4972698282984682097`; üretimde 1.0.0 (1) TASLAK (Lispler koşu 43518905585 AAB'si, Play App
+  Signing Google anahtarı); mağaza ayarları; Uygulama içeriği 11/11 (IARC: PEGI 3, ESRB Herkes, USK 0, Brezilya 14+).
+  **Veri güvenliği formu Console'dan CSV ile kaydedildi:** API ile yeniden yazılmaz (`veriguvenligi uygula` iki ek soruyu boşaltabilir).
+- **AdMob (pub-2417242373034448):** iOS uygulaması `ca-app-pub-2417242373034448~3964463913`, banner `…/7743751811`, geçiş `…/4079838978`
+  (`smart-measure/ios/admob.properties`); IDFA mesajı yayında, AB onay mesajına eklendi. `app-ads.txt` sitede var.
+- **App Store Connect:** Apple ID `6834697005`, SKU `olcukutusu-ios`; fiyat Ücretsiz, 175 ülke; App Privacy yayında; App Review bilgisi dolu.
+
+Sıradaki: bulut oturumu (abonelikler, mağaza metinleri, görseller, yaş derecesi, iPhone derlemesi), sonra B.
+
 ## Onay satırı (bilgisayardaki oturumun başında sahip yazar; istemediği kalemi siler)
 
 > ONAY: Ölçü Kutusu için şunlara onay veriyorum: 1. AdMob'da iPhone uygulamasının, bir banner ve bir geçiş reklam

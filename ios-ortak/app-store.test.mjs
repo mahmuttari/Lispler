@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
-import { metinler, md, ayar, YEREL, SINIR, EULA, KLASOR } from './app-store.mjs';
+import { metinler, md, ayar, YEREL, SINIR, EULA, KLASOR, emojisiz } from './app-store.mjs';
 
 const uzunluk = (s) => [...s].length;
 const emoji = /\p{Extended_Pictographic}/u;
@@ -87,6 +87,20 @@ test('abonelik inceleme görseli: her uygulamada 1320×2868 JPEG (node ios-ortak
   for (const k of Object.values(KLASOR)) {
     assert.deepEqual(jpegBoyut(fs.readFileSync(new URL(`../${k}/magaza/app-store/inceleme-abonelik.jpg`, import.meta.url))), [1320, 2868], k);
   }
+});
+
+test('emoji yok: App Store Connect açıklamada emoji kabul etmez (409 INVALID_CHARACTERS); başlıklar düz metin kalır', () => {
+  const EMOJI = /[\p{Extended_Pictographic}\u{FE0E}\u{FE0F}\u{200D}\u{20E3}]/u;
+  for (const u of Object.keys(KLASOR)) {
+    for (const [y, x] of Object.entries(metinler(u))) {
+      for (const [alan, v] of Object.entries({ ad: x.ad, altBaslik: x.altBaslik, anahtar: x.anahtar, tanitim: x.tanitim, aciklama: x.aciklama })) {
+        assert.ok(!EMOJI.test(v), `${u} ${y} ${alan}: ${(v.match(EMOJI) || [''])[0]}`);
+        assert.ok(!/^[ \t]/m.test(v) && !/[ \t]{2,}/.test(v), `${u} ${y} ${alan}: kalan boşluk`);
+      }
+    }
+  }
+  assert.equal(emojisiz('📐 SU TERAZİSİ\nℹ️ Not: ±0,1° • 🔊 ses'), 'SU TERAZİSİ\nNot: ±0,1° • ses');
+  assert.ok(metinler('smart-measure').tr.aciklama.includes('\nSU TERAZİSİ\n'));
 });
 
 test('APP-STORE.md dosyaları güncel (node ios-ortak/app-store.mjs --md)', () => {

@@ -11,38 +11,38 @@ OTOMATİK: `node ios-ortak/app-store.mjs --md` yazar; kaynak Play metinleri ve `
 - **Destek:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 - **Gizlilik:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 
-### Açıklama (3128/4000)
+### Açıklama (3111/4000)
 
 Unitica, mühendislerin, teknikerlerin ve öğrencilerin her gün kullandığı birimleri hızlı ve doğru dönüştürür. İnternet gerekmez: bütün hesap telefonunda yapılır.
 
-📐 26 KATEGORİ, 251 BİRİM
+26 KATEGORİ, 251 BİRİM
 • Geoteknik ve inşaat: uzunluk, alan, hacim, kuvvet, basınç / gerilme, birim hacim ağırlık, yoğunluk, moment, açı / eğim.
 • Akışkan ve hidrolik: debi, hız, ivme, dinamik ve kinematik viskozite, geçirgenlik (k).
 • Isı, enerji ve güç: sıcaklık, enerji, güç, ısı iletim katsayısı, özgül ısı.
 • Kütle ve atalet: kütle, kesit atalet momenti, kesit modülü, eğilme rijitliği (EI), çizgisel yük / yay sabiti, kütle atalet momenti.
 • kN/m², kgf/cm², tf/m², kN/m³, tf/m³, mH₂O, psi, ksf, m³/sa, L/s, gpm, cfs, dönüm, BG ve daha fazlası.
 
-🔁 HIZLI DÖNÜŞÜM
+HIZLI DÖNÜŞÜM
 • Yazdıkça sonuç; iki birimi tek dokunuşla yer değiştir.
 • "Tüm birimlerde" listesi: bir değeri kategorinin bütün birimlerinde aynı anda gör.
 • Birim ya da kategori adıyla, sembolle ara.
 • ± ve E tuşları: eksi değeri ve 10'un kuvvetini (1,5E-6) kolayca yaz.
 • Sonucu tek dokunuşla kopyala.
 
-⭐ GEÇMİŞ VE FAVORİLER
+GEÇMİŞ VE FAVORİLER
 • Dönüştür'e dokunduğun işlemler geçmişe kaydedilir (son 100); tek dokunuşla yeniden açılır, silinen kayıt geri alınabilir.
 • Sık kullandığın birim çiftlerini yıldızla; favoriler ekranında her biri kendi dönüşüm kartıyla hazır.
 
-⚙️ AYARLAR
+AYARLAR
 • 11 dil: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, العربية, 日本語, 한국어.
 • Açık, koyu ya da sistem teması.
 • Anlamlı basamak sayısı (3-12), ondalık işareti (nokta ya da virgül), otomatik ya da bilimsel gösterim.
 
-📏 DOĞRULUK
+DOĞRULUK
 • Katsayılar tam tanımlardan türetilir (inç = 25,4 mm, pound = 0,45359237 kg, g = 9,80665 m/s²); kalori ve BTU Uluslararası Tablo değerleridir. Bütün kabuller uygulamadaki "Kabuller ve sabitler" sayfasında yazılıdır.
 • Hesap çift duyarlıklı kayan noktayla yapılır; sonuç, seçtiğin anlamlı basamak sayısına yuvarlanarak gösterilir. Tasarım için kritik bir değeri kendi kaynağınla da doğrula.
 
-🔒 GİZLİLİK
+GİZLİLİK
 • Hesap yok. Değerlerin, geçmişin ve favorilerin yalnız telefonunda saklanır.
 • İnternet yalnız reklamlar ve reklamsız üyelik için kullanılır.
 
@@ -62,38 +62,38 @@ Gizlilik politikası: https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 - **Destek:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 - **Gizlilik:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 
-### Açıklama (3196/4000)
+### Açıklama (3179/4000)
 
 Unitica converts the units engineers, technicians and students use every day, quickly and accurately. No internet needed: every calculation runs on your phone.
 
-📐 26 CATEGORIES, 251 UNITS
+26 CATEGORIES, 251 UNITS
 • Geotechnical and civil: length, area, volume, force, pressure / stress, unit weight, density, moment, angle / slope.
 • Fluid and hydraulics: flow rate, velocity, acceleration, dynamic and kinematic viscosity, hydraulic conductivity (k).
 • Heat, energy and power: temperature, energy, power, thermal conductivity, specific heat.
 • Mass and inertia: mass, area moment of inertia, section modulus, flexural rigidity (EI), line load / spring constant, mass moment of inertia.
 • kN/m², kgf/cm², tf/m², kN/m³, pcf, mH₂O, psi, ksf, m³/h, L/s, gpm, cfs, acre-ft and more.
 
-🔁 FAST CONVERSION
+FAST CONVERSION
 • The result appears as you type; swap the two units with one tap.
 • "In all units" list: see a value in every unit of the category at once.
 • Search by unit or category name, or by symbol.
 • ± and E keys: type negative values and powers of ten (1.5E-6) easily.
 • Copy the result with one tap.
 
-⭐ HISTORY AND FAVORITES
+HISTORY AND FAVORITES
 • Conversions you save with Convert go to the history (last 100); reopen one with a tap, undo a deletion.
 • Star the unit pairs you use most; on the Favorites screen each one is ready with its own conversion card.
 
-⚙️ SETTINGS
+SETTINGS
 • 11 languages: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, العربية, 日本語, 한국어.
 • Light, dark or system theme.
 • Significant digits (3-12), decimal mark (point or comma), automatic or scientific notation.
 
-📏 ACCURACY
+ACCURACY
 • Factors are derived from exact definitions (inch = 25.4 mm, pound = 0.45359237 kg, g = 9.80665 m/s²); the calorie and the BTU are the International Table values. Every assumption is listed on the app's "Assumptions and constants" page.
 • Calculations use double-precision floating point; the result is rounded to the number of significant digits you choose. Check a design-critical value against your own reference too.
 
-🔒 PRIVACY
+PRIVACY
 • No account. Your values, history and favorites are stored on your phone only.
 • The internet is used only for ads and the ad-free membership.
 
@@ -113,38 +113,38 @@ Privacy policy: https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 - **Destek:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 - **Gizlilik:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 
-### Açıklama (3506/4000)
+### Açıklama (3489/4000)
 
 Unitica rechnet die Einheiten, die Ingenieure, Techniker und Studierende täglich brauchen, schnell und genau um. Kein Internet nötig: Jede Berechnung läuft auf Ihrem Handy.
 
-📐 26 KATEGORIEN, 251 EINHEITEN
+26 KATEGORIEN, 251 EINHEITEN
 • Geotechnik und Bauwesen: Länge, Fläche, Volumen, Kraft, Druck / Spannung, Wichte, Dichte, Moment, Winkel / Neigung.
 • Strömung und Hydraulik: Durchfluss, Geschwindigkeit, Beschleunigung, dynamische und kinematische Viskosität, Durchlässigkeit (k).
 • Wärme, Energie und Leistung: Temperatur, Energie, Leistung, Wärmeleitfähigkeit, spezifische Wärme.
 • Masse und Trägheit: Masse, Flächenträgheitsmoment, Widerstandsmoment, Biegesteifigkeit (EI), Streckenlast / Federkonstante, Massenträgheitsmoment.
 • kN/m², kgf/cm², tf/m², kN/m³, mWS (mH₂O), psi, ksf, m³/h, L/s, gpm, cfs und mehr.
 
-🔁 SCHNELL UMRECHNEN
+SCHNELL UMRECHNEN
 • Das Ergebnis erscheint schon beim Tippen; beide Einheiten tauschen Sie mit einem Tipp.
 • Liste „In allen Einheiten“: einen Wert in allen Einheiten der Kategorie auf einmal sehen.
 • Suche nach Einheit, Kategorie oder Symbol.
 • Tasten ± und E: negative Werte und Zehnerpotenzen (1,5E-6) bequem eingeben.
 • Ergebnis mit einem Tipp kopieren.
 
-⭐ VERLAUF UND FAVORITEN
+VERLAUF UND FAVORITEN
 • Mit „Umrechnen“ gespeicherte Umrechnungen landen im Verlauf (die letzten 100); mit einem Tipp wieder öffnen, Löschen rückgängig machen.
 • Häufig genutzte Einheitenpaare mit einem Stern markieren; auf dem Favoriten-Bildschirm hat jedes seine eigene Umrechnungskarte.
 
-⚙️ EINSTELLUNGEN
+EINSTELLUNGEN
 • 11 Sprachen: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, العربية, 日本語, 한국어.
 • Helles, dunkles oder System-Design.
 • Signifikante Stellen (3-12), Dezimalzeichen (Punkt oder Komma), automatische oder wissenschaftliche Schreibweise.
 
-📏 GENAUIGKEIT
+GENAUIGKEIT
 • Die Faktoren stammen aus exakten Definitionen (Zoll = 25,4 mm, Pfund = 0,45359237 kg, g = 9,80665 m/s²); Kalorie und BTU sind die Werte der Internationalen Tafel. Alle Annahmen stehen in der App unter „Annahmen und Konstanten“.
 • Gerechnet wird mit doppelt genauen Gleitkommazahlen; das Ergebnis wird auf die gewählte Zahl signifikanter Stellen gerundet. Prüfen Sie einen für die Bemessung kritischen Wert auch mit Ihrer eigenen Quelle.
 
-🔒 DATENSCHUTZ
+DATENSCHUTZ
 • Kein Konto. Ihre Werte, der Verlauf und die Favoriten bleiben nur auf Ihrem Handy.
 • Das Internet wird nur für Werbung und die werbefreie Mitgliedschaft genutzt.
 
@@ -164,38 +164,38 @@ Datenschutzerklärung: https://mahmuttari.github.io/Lispler/unitica/gizlilik.htm
 - **Destek:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 - **Gizlilik:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 
-### Açıklama (3683/4000)
+### Açıklama (3666/4000)
 
 Unitica convertit rapidement et avec précision les unités que les ingénieurs, techniciens et étudiants utilisent chaque jour. Pas besoin d’Internet : tous les calculs se font sur votre téléphone.
 
-📐 26 CATÉGORIES, 251 UNITÉS
+26 CATÉGORIES, 251 UNITÉS
 • Géotechnique et génie civil : longueur, surface, volume, force, pression / contrainte, poids volumique, masse volumique, moment, angle / pente.
 • Fluides et hydraulique : débit, vitesse, accélération, viscosité dynamique et cinématique, perméabilité (k).
 • Chaleur, énergie et puissance : température, énergie, puissance, conductivité thermique, chaleur spécifique.
 • Masse et inertie : masse, moment quadratique, module de section, rigidité en flexion (EI), charge linéique / raideur de ressort, moment d’inertie de masse.
 • kN/m², kgf/cm², tf/m², kN/m³, mCE (mH₂O), psi, ksf, m³/h, L/s, gpm, cfs et bien d’autres.
 
-🔁 CONVERSION RAPIDE
+CONVERSION RAPIDE
 • Le résultat s’affiche pendant la saisie ; inversez les deux unités d’une touche.
 • Liste « Dans toutes les unités » : une valeur dans toutes les unités de la catégorie à la fois.
 • Recherche par nom d’unité, de catégorie ou par symbole.
 • Touches ± et E : saisissez facilement les valeurs négatives et les puissances de dix (1,5E-6).
 • Copiez le résultat d’une touche.
 
-⭐ HISTORIQUE ET FAVORIS
+HISTORIQUE ET FAVORIS
 • Les conversions enregistrées avec « Convertir » vont dans l’historique (les 100 dernières) ; rouvrez-les d’une touche, annulez une suppression.
 • Ajoutez une étoile aux paires d’unités que vous utilisez le plus ; dans Favoris, chacune a sa propre carte de conversion.
 
-⚙️ RÉGLAGES
+RÉGLAGES
 • 11 langues : Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, العربية, 日本語, 한국어.
 • Thème clair, sombre ou système.
 • Chiffres significatifs (3-12), séparateur décimal (point ou virgule), notation automatique ou scientifique.
 
-📏 PRÉCISION
+PRÉCISION
 • Les facteurs découlent des définitions exactes (pouce = 25,4 mm, livre = 0,45359237 kg, g = 9,80665 m/s²) ; la calorie et le BTU sont les valeurs de la Table internationale. Toutes les hypothèses figurent dans la page « Hypothèses et constantes » de l’app.
 • Les calculs utilisent des nombres à virgule flottante en double précision ; le résultat est arrondi au nombre de chiffres significatifs choisi. Vérifiez aussi une valeur critique pour un dimensionnement avec votre propre référence.
 
-🔒 CONFIDENTIALITÉ
+CONFIDENTIALITÉ
 • Aucun compte. Vos valeurs, votre historique et vos favoris restent uniquement sur votre téléphone.
 • Internet sert uniquement aux publicités et à l’abonnement sans publicité.
 
@@ -215,38 +215,38 @@ Politique de confidentialité : https://mahmuttari.github.io/Lispler/unitica/giz
 - **Destek:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 - **Gizlilik:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 
-### Açıklama (3462/4000)
+### Açıklama (3445/4000)
 
 Unitica convierte de forma rápida y precisa las unidades que ingenieros, técnicos y estudiantes usan a diario. No necesita Internet: todos los cálculos se hacen en tu teléfono.
 
-📐 26 CATEGORÍAS, 251 UNIDADES
+26 CATEGORÍAS, 251 UNIDADES
 • Geotecnia y construcción: longitud, área, volumen, fuerza, presión / tensión, peso específico, densidad, momento, ángulo / pendiente.
 • Fluidos e hidráulica: caudal, velocidad, aceleración, viscosidad dinámica y cinemática, permeabilidad (k).
 • Calor, energía y potencia: temperatura, energía, potencia, conductividad térmica, calor específico.
 • Masa e inercia: masa, momento de inercia de área, módulo resistente, rigidez a flexión (EI), carga lineal / constante de muelle, momento de inercia de masa.
 • kN/m², kgf/cm², tf/m², kN/m³, mca (mH₂O), psi, ksf, m³/h, L/s, gpm, cfs y muchas más.
 
-🔁 CONVERSIÓN RÁPIDA
+CONVERSIÓN RÁPIDA
 • El resultado aparece mientras escribes; intercambia las dos unidades con un toque.
 • Lista «En todas las unidades»: un valor en todas las unidades de la categoría a la vez.
 • Busca por nombre de unidad, de categoría o por símbolo.
 • Teclas ± y E: escribe valores negativos y potencias de diez (1,5E-6) con facilidad.
 • Copia el resultado con un toque.
 
-⭐ HISTORIAL Y FAVORITOS
+HISTORIAL Y FAVORITOS
 • Las conversiones que guardas con «Convertir» van al historial (las últimas 100); vuelve a abrirlas con un toque y deshaz un borrado.
 • Marca con una estrella los pares de unidades que más usas; en Favoritos cada uno tiene su propia tarjeta de conversión.
 
-⚙️ AJUSTES
+AJUSTES
 • 11 idiomas: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, العربية, 日本語, 한국어.
 • Tema claro, oscuro o del sistema.
 • Cifras significativas (3-12), separador decimal (punto o coma), notación automática o científica.
 
-📏 PRECISIÓN
+PRECISIÓN
 • Los factores se derivan de definiciones exactas (pulgada = 25,4 mm, libra = 0,45359237 kg, g = 9,80665 m/s²); la caloría y el BTU son los valores de la Tabla Internacional. Todas las suposiciones están en la página «Supuestos y constantes» de la app.
 • Los cálculos usan coma flotante de doble precisión; el resultado se redondea al número de cifras significativas que elijas. Comprueba también un valor crítico de diseño con tu propia referencia.
 
-🔒 PRIVACIDAD
+PRIVACIDAD
 • Sin cuenta. Tus valores, tu historial y tus favoritos se guardan solo en tu teléfono.
 • Internet solo se usa para los anuncios y la suscripción sin anuncios.
 
@@ -266,38 +266,38 @@ Política de privacidad: https://mahmuttari.github.io/Lispler/unitica/gizlilik.h
 - **Destek:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 - **Gizlilik:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 
-### Açıklama (3423/4000)
+### Açıklama (3406/4000)
 
 Unitica converte in modo rapido e preciso le unità che ingegneri, tecnici e studenti usano ogni giorno. Non serve Internet: tutti i calcoli avvengono sul tuo telefono.
 
-📐 26 CATEGORIE, 251 UNITÀ
+26 CATEGORIE, 251 UNITÀ
 • Geotecnica e costruzioni: lunghezza, area, volume, forza, pressione / tensione, peso dell’unità di volume, densità, momento, angolo / pendenza.
 • Fluidi e idraulica: portata, velocità, accelerazione, viscosità dinamica e cinematica, permeabilità (k).
 • Calore, energia e potenza: temperatura, energia, potenza, conducibilità termica, calore specifico.
 • Massa e inerzia: massa, momento d’inerzia della sezione, modulo di resistenza, rigidezza flessionale (EI), carico lineare / costante elastica, momento d’inerzia di massa.
 • kN/m², kgf/cm², tf/m², kN/m³, mH₂O, psi, ksf, m³/h, L/s, gpm, cfs e molte altre.
 
-🔁 CONVERSIONE RAPIDA
+CONVERSIONE RAPIDA
 • Il risultato compare mentre scrivi; scambia le due unità con un tocco.
 • Elenco «In tutte le unità»: un valore in tutte le unità della categoria insieme.
 • Cerca per nome di unità, di categoria o per simbolo.
 • Tasti ± ed E: inserisci facilmente valori negativi e potenze di dieci (1,5E-6).
 • Copia il risultato con un tocco.
 
-⭐ CRONOLOGIA E PREFERITI
+CRONOLOGIA E PREFERITI
 • Le conversioni salvate con «Converti» finiscono nella cronologia (le ultime 100); riaprile con un tocco e annulla un’eliminazione.
 • Aggiungi una stella alle coppie di unità che usi di più; nei Preferiti ognuna ha la propria scheda di conversione.
 
-⚙️ IMPOSTAZIONI
+IMPOSTAZIONI
 • 11 lingue: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, العربية, 日本語, 한국어.
 • Tema chiaro, scuro o di sistema.
 • Cifre significative (3-12), separatore decimale (punto o virgola), notazione automatica o scientifica.
 
-📏 PRECISIONE
+PRECISIONE
 • I fattori derivano dalle definizioni esatte (pollice = 25,4 mm, libbra = 0,45359237 kg, g = 9,80665 m/s²); caloria e BTU sono i valori della Tabella internazionale. Tutte le ipotesi sono nella pagina «Ipotesi e costanti» dell’app.
 • I calcoli usano numeri in virgola mobile a doppia precisione; il risultato è arrotondato al numero di cifre significative scelto. Verifica un valore critico per il progetto anche con una tua fonte.
 
-🔒 PRIVACY
+PRIVACY
 • Nessun account. Valori, cronologia e preferiti restano solo sul tuo telefono.
 • Internet serve solo per la pubblicità e per l’abbonamento senza pubblicità.
 
@@ -317,38 +317,38 @@ Informativa sulla privacy: https://mahmuttari.github.io/Lispler/unitica/gizlilik
 - **Destek:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 - **Gizlilik:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 
-### Açıklama (3399/4000)
+### Açıklama (3382/4000)
 
 O Unitica converte com rapidez e precisão as unidades que engenheiros, técnicos e estudantes usam todos os dias. Não precisa de internet: todos os cálculos são feitos no seu celular.
 
-📐 26 CATEGORIAS, 251 UNIDADES
+26 CATEGORIAS, 251 UNIDADES
 • Geotecnia e construção: comprimento, área, volume, força, pressão / tensão, peso específico, massa específica, momento, ângulo / inclinação.
 • Fluidos e hidráulica: vazão, velocidade, aceleração, viscosidade dinâmica e cinemática, permeabilidade (k).
 • Calor, energia e potência: temperatura, energia, potência, condutividade térmica, calor específico.
 • Massa e inércia: massa, momento de inércia de área, módulo de resistência, rigidez à flexão (EI), carga linear / constante de mola, momento de inércia de massa.
 • kN/m², kgf/cm², tf/m², kN/m³, mca (mH₂O), psi, ksf, m³/h, L/s, gpm, cfs e muito mais.
 
-🔁 CONVERSÃO RÁPIDA
+CONVERSÃO RÁPIDA
 • O resultado aparece enquanto você digita; troque as duas unidades com um toque.
 • Lista "Em todas as unidades": um valor em todas as unidades da categoria de uma vez.
 • Pesquise pelo nome da unidade, da categoria ou pelo símbolo.
 • Teclas ± e E: digite valores negativos e potências de dez (1,5E-6) com facilidade.
 • Copie o resultado com um toque.
 
-⭐ HISTÓRICO E FAVORITOS
+HISTÓRICO E FAVORITOS
 • As conversões salvas com "Converter" vão para o histórico (as últimas 100); reabra com um toque e desfaça uma exclusão.
 • Marque com estrela os pares de unidades que você mais usa; em Favoritos cada um tem seu próprio cartão de conversão.
 
-⚙️ CONFIGURAÇÕES
+CONFIGURAÇÕES
 • 11 idiomas: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, العربية, 日本語, 한국어.
 • Tema claro, escuro ou do sistema.
 • Algarismos significativos (3-12), separador decimal (ponto ou vírgula), notação automática ou científica.
 
-📏 PRECISÃO
+PRECISÃO
 • Os fatores vêm de definições exatas (polegada = 25,4 mm, libra = 0,45359237 kg, g = 9,80665 m/s²); a caloria e o BTU são os valores da Tabela Internacional. Todas as premissas estão na página "Premissas e constantes" do app.
 • Os cálculos usam ponto flutuante de dupla precisão; o resultado é arredondado ao número de algarismos significativos escolhido. Confira também um valor crítico de projeto com a sua própria referência.
 
-🔒 PRIVACIDADE
+PRIVACIDADE
 • Sem conta. Seus valores, histórico e favoritos ficam só no seu celular.
 • A internet é usada apenas para os anúncios e a assinatura sem anúncios.
 
@@ -368,38 +368,38 @@ Política de privacidade: https://mahmuttari.github.io/Lispler/unitica/gizlilik.
 - **Destek:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 - **Gizlilik:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 
-### Açıklama (3366/4000)
+### Açıklama (3349/4000)
 
 Unitica быстро и точно переводит единицы, которыми каждый день пользуются инженеры, техники и студенты. Интернет не нужен: все расчёты выполняются на вашем телефоне.
 
-📐 26 КАТЕГОРИЙ, 251 ЕДИНИЦА
+26 КАТЕГОРИЙ, 251 ЕДИНИЦА
 • Геотехника и строительство: длина, площадь, объём, сила, давление / напряжение, удельный вес, плотность, момент, угол / уклон.
 • Жидкости и гидравлика: расход, скорость, ускорение, динамическая и кинематическая вязкость, коэффициент фильтрации (k).
 • Тепло, энергия и мощность: температура, энергия, мощность, теплопроводность, удельная теплоёмкость.
 • Масса и инерция: масса, момент инерции сечения, момент сопротивления, изгибная жёсткость (EI), погонная нагрузка / жёсткость пружины, момент инерции массы.
 • kN/m², kgf/cm², tf/m², kN/m³, mH₂O, psi, ksf, m³/h, L/s, gpm, cfs и многое другое.
 
-🔁 БЫСТРЫЙ ПЕРЕВОД
+БЫСТРЫЙ ПЕРЕВОД
 • Результат появляется прямо во время ввода; поменяйте единицы местами одним касанием.
 • Список «Во всех единицах»: значение сразу во всех единицах категории.
 • Поиск по названию единицы, категории или по обозначению.
 • Клавиши ± и E: удобный ввод отрицательных значений и степеней десяти (1,5E-6).
 • Копирование результата одним касанием.
 
-⭐ ИСТОРИЯ И ИЗБРАННОЕ
+ИСТОРИЯ И ИЗБРАННОЕ
 • Переводы, сохранённые кнопкой «Перевести», попадают в историю (последние 100); откройте их снова одним касанием, отмените удаление.
 • Отмечайте звёздочкой пары единиц, которыми пользуетесь чаще всего; в «Избранном» у каждой своя карточка перевода.
 
-⚙️ НАСТРОЙКИ
+НАСТРОЙКИ
 • 11 языков: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, العربية, 日本語, 한국어.
 • Светлая, тёмная или системная тема.
 • Значащие цифры (3-12), десятичный разделитель (точка или запятая), автоматическая или научная запись.
 
-📏 ТОЧНОСТЬ
+ТОЧНОСТЬ
 • Коэффициенты выведены из точных определений (дюйм = 25,4 мм, фунт = 0,45359237 кг, g = 9,80665 м/с²); калория и BTU взяты по Международной таблице. Все допущения перечислены на странице приложения «Допущения и константы».
 • Расчёты ведутся в числах с плавающей запятой двойной точности; результат округляется до выбранного числа значащих цифр. Критичное для проекта значение проверьте и по своему источнику.
 
-🔒 КОНФИДЕНЦИАЛЬНОСТЬ
+КОНФИДЕНЦИАЛЬНОСТЬ
 • Без учётной записи. Ваши значения, история и избранное хранятся только на телефоне.
 • Интернет используется только для рекламы и подписки без рекламы.
 
@@ -419,38 +419,38 @@ Unitica быстро и точно переводит единицы, котор
 - **Destek:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 - **Gizlilik:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 
-### Açıklama (2787/4000)
+### Açıklama (2770/4000)
 
 يحوّل Unitica بسرعة ودقة الوحدات التي يستخدمها المهندسون والفنيون والطلاب كل يوم. لا حاجة إلى الإنترنت: تتم جميع الحسابات على هاتفك.
 
-📐 26 فئة، 251 وحدة
+26 فئة، 251 وحدة
 • الجيوتقنية والإنشاءات: الطول، المساحة، الحجم، القوة، الضغط / الإجهاد، وزن وحدة الحجم، الكثافة، العزم، الزاوية / الميل.
 • الموائع والهيدروليكا: معدل التدفق، السرعة، التسارع، اللزوجة الديناميكية والكينماتيكية، النفاذية (k).
 • الحرارة والطاقة والقدرة: درجة الحرارة، الطاقة، القدرة، الموصلية الحرارية، الحرارة النوعية.
 • الكتلة والقصور الذاتي: الكتلة، عزم القصور الذاتي للمقطع، معامل المقطع، الصلابة الانحنائية (EI)، الحمل الخطي / ثابت النابض، عزم القصور الذاتي للكتلة.
 • kN/m² وkgf/cm² وtf/m² وkN/m³ وmH₂O وpsi وksf وm³/h وL/s وgpm وcfs وغيرها.
 
-🔁 تحويل سريع
+تحويل سريع
 • تظهر النتيجة أثناء الكتابة؛ بدّل الوحدتين بلمسة واحدة.
 • قائمة «في جميع الوحدات»: قيمة واحدة بكل وحدات الفئة دفعة واحدة.
 • ابحث باسم الوحدة أو الفئة أو بالرمز.
 • مفتاحا ± وE: اكتب القيم السالبة وقوى العشرة (1.5E-6) بسهولة.
 • انسخ النتيجة بلمسة واحدة.
 
-⭐ السجل والمفضلة
+السجل والمفضلة
 • تُحفظ التحويلات التي تحفظها بزر «تحويل» في السجل (آخر 100)؛ افتحها مجددًا بلمسة وتراجع عن الحذف.
 • ضع نجمة على أزواج الوحدات التي تستخدمها كثيرًا؛ في شاشة المفضلة لكل منها بطاقة تحويل خاصة بها.
 
-⚙️ الإعدادات
+الإعدادات
 • 11 لغة: Türkçe وEnglish وDeutsch وFrançais وEspañol وPortuguês وItaliano وРусский والعربية و日本語 و한국어.
 • مظهر فاتح أو داكن أو حسب النظام.
 • عدد الأرقام المعنوية (3-12)، الفاصلة العشرية (نقطة أو فاصلة)، تنسيق تلقائي أو علمي.
 
-📏 الدقة
+الدقة
 • تُشتق المعاملات من التعريفات الدقيقة (البوصة = 25.4 مم، الرطل = 0.45359237 كغ، g = 9.80665 م/ث²)؛ والسعر الحراري وBTU وفق الجدول الدولي. جميع الافتراضات مكتوبة في صفحة «الافتراضات والثوابت» داخل التطبيق.
 • تُجرى الحسابات بأعداد عشرية مزدوجة الدقة، وتُقرَّب النتيجة إلى عدد الأرقام المعنوية الذي تختاره. تحقّق من أي قيمة حرجة في التصميم بمرجعك الخاص أيضًا.
 
-🔒 الخصوصية
+الخصوصية
 • لا حساب. تُحفظ قيمك وسجلك ومفضلتك على هاتفك فقط.
 • يُستخدم الإنترنت للإعلانات والاشتراك بلا إعلانات فقط.
 
@@ -470,38 +470,38 @@ Unitica быстро и точно переводит единицы, котор
 - **Destek:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 - **Gizlilik:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 
-### Açıklama (1631/4000)
+### Açıklama (1614/4000)
 
 Unitica は、エンジニア、技術者、学生が毎日使う単位をすばやく正確に変換します。インターネットは不要で、計算はすべてスマートフォン内で行われます。
 
-📐 26 カテゴリ、251 単位
+26 カテゴリ、251 単位
 • 地盤・建設：長さ、面積、体積、力、圧力・応力、単位体積重量、密度、モーメント、角度・勾配。
 • 流体・水理：流量、速度、加速度、粘度（動粘度・粘性係数）、透水係数（k）。
 • 熱・エネルギー・動力：温度、エネルギー、動力、熱伝導率、比熱。
 • 質量・慣性：質量、断面二次モーメント、断面係数、曲げ剛性（EI）、線荷重・ばね定数、慣性モーメント。
 • kN/m²、kgf/cm²、tf/m²、kN/m³、mH₂O、psi、ksf、m³/h、L/s、gpm、cfs など。
 
-🔁 すばやい変換
+すばやい変換
 • 入力と同時に結果を表示。2 つの単位はワンタップで入れ替え。
 • 「すべての単位で表示」：1 つの値をカテゴリ内の全単位で一度に確認。
 • 単位名・カテゴリ名・記号で検索。
 • ± キーと E キーで、負の値や 10 のべき乗（1.5E-6）もかんたん入力。
 • 結果をワンタップでコピー。
 
-⭐ 履歴とお気に入り
+履歴とお気に入り
 • 「変換」で保存した結果は履歴に残ります（最新 100 件）。ワンタップで開き直し、削除も元に戻せます。
 • よく使う単位の組み合わせに星を付けると、お気に入り画面でそれぞれ専用の変換カードとして使えます。
 
-⚙️ 設定
+設定
 • 11 言語：Türkçe、English、Deutsch、Français、Español、Português、Italiano、Русский、العربية、日本語、한국어。
 • ライト、ダーク、システムのテーマ。
 • 有効数字（3〜12 桁）、小数点（ピリオドまたはカンマ）、自動表記または指数表記。
 
-📏 精度について
+精度について
 • 換算係数は厳密な定義から求めています（インチ = 25.4 mm、ポンド = 0.45359237 kg、g = 9.80665 m/s²）。カロリーと BTU は国際蒸気表（IT）の値です。前提条件はすべてアプリの「前提と定数」ページに記載しています。
 • 計算は倍精度浮動小数点で行い、結果は選んだ有効数字に丸めて表示します。設計上重要な値は、お手元の資料でもご確認ください。
 
-🔒 プライバシー
+プライバシー
 • アカウント不要。入力した値、履歴、お気に入りはスマートフォンにのみ保存されます。
 • インターネットは広告と広告なしメンバーシップにのみ使います。
 
@@ -521,38 +521,38 @@ Unitica は、エンジニア、技術者、学生が毎日使う単位をすば
 - **Destek:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 - **Gizlilik:** https://mahmuttari.github.io/Lispler/unitica/gizlilik.html
 
-### Açıklama (1816/4000)
+### Açıklama (1799/4000)
 
 Unitica는 엔지니어, 기술자, 학생이 매일 쓰는 단위를 빠르고 정확하게 변환합니다. 인터넷이 필요 없으며 모든 계산은 휴대폰에서 이루어집니다.
 
-📐 26개 카테고리, 251개 단위
+26개 카테고리, 251개 단위
 • 지반 및 건설: 길이, 면적, 부피, 힘, 압력 / 응력, 단위중량, 밀도, 모멘트, 각도 / 경사.
 • 유체 및 수리: 유량, 속도, 가속도, 동점성 및 점성계수, 투수계수(k).
 • 열, 에너지, 동력: 온도, 에너지, 동력, 열전도율, 비열.
 • 질량 및 관성: 질량, 단면 2차 모멘트, 단면계수, 휨강성(EI), 선하중 / 스프링 상수, 질량 관성 모멘트.
 • kN/m², kgf/cm², tf/m², kN/m³, mH₂O, psi, ksf, m³/h, L/s, gpm, cfs 등.
 
-🔁 빠른 변환
+빠른 변환
 • 입력하는 즉시 결과가 표시되며, 두 단위를 한 번에 바꿀 수 있습니다.
 • '모든 단위로 보기' 목록: 하나의 값을 카테고리의 모든 단위로 한꺼번에 확인합니다.
 • 단위 이름, 카테고리 이름, 기호로 검색합니다.
 • ± 키와 E 키로 음수와 10의 거듭제곱(1.5E-6)을 쉽게 입력합니다.
 • 결과를 한 번에 복사합니다.
 
-⭐ 기록과 즐겨찾기
+기록과 즐겨찾기
 • '변환'으로 저장한 결과는 기록에 남습니다(최근 100개). 한 번에 다시 열고, 삭제도 되돌릴 수 있습니다.
 • 자주 쓰는 단위 쌍에 별표를 표시하면 즐겨찾기 화면에서 각각 전용 변환 카드로 바로 쓸 수 있습니다.
 
-⚙️ 설정
+설정
 • 11개 언어: Türkçe, English, Deutsch, Français, Español, Português, Italiano, Русский, العربية, 日本語, 한국어.
 • 밝은 테마, 어두운 테마, 시스템 설정.
 • 유효숫자(3-12자리), 소수점 기호(마침표 또는 쉼표), 자동 또는 과학적 표기법.
 
-📏 정확도
+정확도
 • 환산 계수는 정확한 정의에서 유도합니다(인치 = 25.4mm, 파운드 = 0.45359237kg, g = 9.80665m/s²). 칼로리와 BTU는 국제 증기표(IT) 값입니다. 모든 가정은 앱의 '가정 및 상수' 페이지에 적혀 있습니다.
 • 계산은 배정밀도 부동소수점으로 하며, 결과는 선택한 유효숫자에 맞춰 반올림해 표시합니다. 설계에 중요한 값은 별도의 자료로도 확인하세요.
 
-🔒 개인정보 보호
+개인정보 보호
 • 계정이 없습니다. 입력한 값, 기록, 즐겨찾기는 휴대폰에만 저장됩니다.
 • 인터넷은 광고와 광고 없는 멤버십에만 사용합니다.
 

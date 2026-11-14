@@ -4,6 +4,8 @@
  *   - Uzun açıklama, <klasör>/magaza/app-store.json › "degistir" ile iPhone'a uyarlanır (ör. Ölçü Kutusu'nda ışık ölçer
  *     yok, Calqora iPhone'da yalnız dikey). Her değiştirilecek metin kaynakta tam olarak bulunmalıdır; yoksa hata.
  *   - Sonuna Apple'ın abonelik açıklaması ile Kullanım Koşulları (EULA) ve gizlilik bağlantıları eklenir (App Review 3.1.2).
+ *   - Emoji çıkarılır: App Store Connect açıklamada emoji kabul etmez (409 INVALID_CHARACTERS, 14 Kasım 2026); Play
+ *     açıklamasının "📐 SU TERAZİSİ" gibi başlıkları düz "SU TERAZİSİ" olur.
  *   - Alt başlık, anahtar sözcükler ve tanıtım metni app-store.json › "yerel"den; ad verilmemişse Play'deki ad.
  *   - Destek adresi ve gizlilik politikası adresi app-store.json'dan.
  *
@@ -43,6 +45,13 @@ export const ALT = {
   ko: '광고 없는 구독\n월간 또는 연간 자동 갱신 구독입니다. 결제는 구매를 확인할 때 Apple 계정으로 청구되며, 현재 기간이 끝나기 최소 24시간 전에 취소하지 않으면 구독이 갱신됩니다. App Store 계정 설정에서 관리하거나 취소할 수 있습니다. 가격은 앱에서 현지 통화로 표시됩니다.\n이용 약관(EULA): {eula}\n개인정보 처리방침: {gizlilik}',
 };
 
+/** Emoji, emoji biçim seçicisi (U+FE0E/FE0F), birleştirici (U+200D) ve tuş kapağı (U+20E3) çıkarılır; satır başında kalan
+ *  boşluk ve satır içinde kalan çift boşluk temizlenir. */
+export function emojisiz(s) {
+  return String(s).replace(/[\p{Extended_Pictographic}\u{FE0E}\u{FE0F}\u{200D}\u{20E3}]/gu, '')
+    .replace(/^[ \t]+/gm, '').replace(/[ \t]{2,}/g, ' ').replace(/[ \t]+$/gm, '');
+}
+
 /** Play metni: ad ve uzun açıklama (tr-TR aciklamalar.md'de, öbürleri diller/<dil>.md'de) */
 export function playMetni(klasor, playDil) {
   const dosya = playDil === 'tr-TR' ? path.join(KOK, klasor, 'magaza', 'aciklamalar.md') : path.join(KOK, klasor, 'magaza', 'diller', `${playDil}.md`);
@@ -73,11 +82,11 @@ export function metinler(uygulama) {
     }
     const alt = ALT[yerel].replace('{eula}', EULA).replace('{gizlilik}', a.gizlilik);
     out[yerel] = {
-      ad: y.ad || play.ad,
-      altBaslik: y.altBaslik,
-      anahtar: y.anahtar,
-      tanitim: y.tanitim,
-      aciklama: `${uzun.replace(/\n{3,}/g, '\n\n').trim()}\n\n${alt}`,
+      ad: emojisiz(y.ad || play.ad),
+      altBaslik: emojisiz(y.altBaslik),
+      anahtar: emojisiz(y.anahtar),
+      tanitim: emojisiz(y.tanitim),
+      aciklama: `${emojisiz(uzun).replace(/\n{3,}/g, '\n\n').trim()}\n\n${alt}`,
       destek: a.destek,
       gizlilik: a.gizlilik,
     };

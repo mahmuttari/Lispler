@@ -2,7 +2,7 @@
 // elle düzenlenmez. Platforma göre: android / ios.
 export const REKLAM_KIMLIK = {
   android: { banner: 'ca-app-pub-2417242373034448/9192206063', gecis: 'ca-app-pub-2417242373034448/7966754303' },
-  ios: { banner: 'ca-app-pub-3940256099942544/2435281174', gecis: 'ca-app-pub-3940256099942544/4411468910' },
+  ios: { banner: 'ca-app-pub-2417242373034448/7743751811', gecis: 'ca-app-pub-2417242373034448/4079838978' },
 };
 // Google'ın test kimlikleri: hata ayıklama derlemesi her zaman bunları kullanır.
 export const TEST_KIMLIK = {

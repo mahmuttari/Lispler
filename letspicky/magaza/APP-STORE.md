@@ -6,12 +6,12 @@ OTOMATİK: `node ios-ortak/app-store.mjs --md` yazar; kaynak Play metinleri ve `
 
 - **Ad (24/30):** Let's Picky: Ortak Karar
 - **Alt başlık (29/30):** Ne yesek, ne izlesek? Kaydır!
-- **Anahtar sözcükler (99/100):** ne yesek,ne izlesek,film,yemek,restoran,aile,arkadaş,grup,oylama,anket,kaydır,eşleş,hafta sonu,çark
+- **Anahtar sözcükler (99/100):** ne yesek,ne izlesek,film,yemek,restoran,aile,arkadaş,grup,oylama,anket,kaydır,eşleş,hafta sonu,kura
 - **Tanıtım metni (155/170):** Akşam ne yesek, hangi filmi izlesek? Oda kur, kodu paylaş, herkes kartları kaydırsın; herkesin beğendiği seçenek ortak karar olur. Üyelik yok, kurulum yok.
 - **Destek:** https://letspicky.com/gizlilik.html
 - **Gizlilik:** https://letspicky.com/gizlilik.html
 
-### Açıklama (1792/4000)
+### Açıklama (1795/4000)
 
 Akşam ne yesek? Hangi filmi izlesek? Hafta sonu nereye gitsek? Bitmeyen tartışmalara son!
 
@@ -20,7 +20,7 @@ Let's Picky, aile ve arkadaş gruplarının birlikte hızlıca karar vermesini s
 NASIL ÇALIŞIR?
 • Oda kur: bir kategori seç, oda kodunu, QR kodunu ya da WhatsApp davetini paylaş.
 • Kaydır: 60 saniye içinde kartları sağa (beğen) ya da sola (geç) kaydır. Her gün bir süper istek hakkın var.
-• Eşleş: herkesin beğendiği kart ortak karar olur. Kimse anlaşamazsa "Şansa Bırak" herkese aynı kartı seçer.
+• Eşleş: herkesin beğendiği kart ortak karar olur. Kimse anlaşamazsa "Kavanozdan Çek" herkese aynı kartı seçer.
 • Git: sonuç ekranından haritada aç, fragmanı izle ya da sonucu paylaş.
 
 HAZIR DESTELER
@@ -50,7 +50,7 @@ Bir dahaki "ne yapsak?" sorusunda tartışmayın, Let's Picky'yi açın!
 - **Destek:** https://letspicky.com/gizlilik.html
 - **Gizlilik:** https://letspicky.com/gizlilik.html
 
-### Açıklama (1818/4000)
+### Açıklama (1819/4000)
 
 What should we eat tonight? Which movie should we watch? Where should we go this weekend? No more endless debates!
 
@@ -59,7 +59,7 @@ Let's Picky helps families and groups of friends decide together, fast. Create a
 HOW IT WORKS
 • Create a room: pick a category, then share the room code, the QR code or a WhatsApp invite.
 • Swipe: in 60 seconds swipe right (like) or left (skip). You get one super like every day.
-• Match: the card everyone likes becomes the shared decision. If nobody agrees, "Leave it to Luck" picks the same card for everyone.
+• Match: the card everyone likes becomes the shared decision. If nobody agrees, "Draw From the Jar" picks the same card for everyone.
 • Go: open the result in maps, watch the trailer or share the result.
 
 READY-MADE DECKS

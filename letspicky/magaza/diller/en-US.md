@@ -15,7 +15,7 @@ Let's Picky helps families and groups of friends decide together, fast. Create a
 HOW IT WORKS
 • Create a room: pick a category, then share the room code, the QR code or a WhatsApp invite.
 • Swipe: in 60 seconds swipe right (like) or left (skip). You get one super like every day.
-• Match: the card everyone likes becomes the shared decision. If nobody agrees, "Leave it to Luck" picks the same card for everyone.
+• Match: the card everyone likes becomes the shared decision. If nobody agrees, "Draw From the Jar" picks the same card for everyone.
 • Go: open the result in maps, watch the trailer or share the result.
 
 READY-MADE DECKS
@@ -38,4 +38,4 @@ Next time someone asks "what should we do?", do not argue. Open Let's Picky!
 
 ## Sürüm notu
 
-Let's Picky is now on Google Play 🎉 Create a room, share the code, swipe together and decide in 30 seconds. New: Decide Solo with a knockout tournament, a 3-question Oracle or a lucky spin. Plan ahead: pick a place and a day to get weather-aware ideas and nearby places. Film trailers now play right in the app. No sign-up, no chat, family friendly.
+Let's Picky is now on Google Play 🎉 Create a room, share the code, swipe together and decide in 30 seconds. New: Decide Solo with a knockout tournament, a 3-question Oracle or the Decision Jar. Plan ahead: pick a place and a day to get weather-aware ideas and nearby places. Film trailers now play right in the app. No sign-up, no chat, family friendly.

@@ -30,7 +30,7 @@ Let's Picky, aile ve arkadaş gruplarının birlikte hızlıca karar vermesini s
 NASIL ÇALIŞIR?
 • Oda kur: bir kategori seç, oda kodunu, QR kodunu ya da WhatsApp davetini paylaş.
 • Kaydır: 60 saniye içinde kartları sağa (beğen) ya da sola (geç) kaydır. Her gün bir süper istek hakkın var.
-• Eşleş: herkesin beğendiği kart ortak karar olur. Kimse anlaşamazsa "Şansa Bırak" herkese aynı kartı seçer.
+• Eşleş: herkesin beğendiği kart ortak karar olur. Kimse anlaşamazsa "Kavanozdan Çek" herkese aynı kartı seçer.
 • Git: sonuç ekranından haritada aç, fragmanı izle ya da sonucu paylaş.
 
 HAZIR DESTELER

@@ -38,4 +38,4 @@ Next time someone asks "what should we do?", do not argue. Open Let's Picky!
 
 ## Sürüm notu
 
-Let's Picky is now on Google Play 🎉 Create a room, share the code, swipe together and decide in 30 seconds. No sign-up, no chat, family friendly.
+Let's Picky is now on Google Play 🎉 Create a room, share the code, swipe together and decide in 30 seconds. New: Decide Solo with a knockout tournament, a 3-question Oracle or a lucky spin. No sign-up, no chat, family friendly.

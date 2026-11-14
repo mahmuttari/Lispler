@@ -1,5 +1,5 @@
 {
-  "_": "App Store metinleri (ios-ortak/app-store.mjs). Açıklama Play'deki uzun açıklamadan (aciklamalar.md, diller/en-US.md). App Store Connect emoji kabul etmediği için emoji tepkileri cümlesi düz metne çevrilir. Abonelik ve reklam yok: Apple'ın abonelik açıklaması eklenmez. Destek adresi gizlilik sayfası (letspicky.com ana sayfasında iletişim bilgisi yok; Apple 1.5 destek sayfasında iletişim yolu ister).",
+  "_": "App Store metinleri (ios-ortak/app-store.mjs). Açıklama Play'deki uzun açıklamadan (aciklamalar.md, diller/en-US.md). App Store Connect emoji kabul etmediği için emoji tepkileri cümlesi düz metne çevrilir. Abonelik yok (reklam var: AdMob): Apple'ın abonelik açıklaması eklenmez. Destek adresi gizlilik sayfası (letspicky.com ana sayfasında iletişim bilgisi yok; Apple 1.5 destek sayfasında iletişim yolu ister).",
   "abonelik": false,
   "destek": "https://letspicky.com/gizlilik.html",
   "gizlilik": "https://letspicky.com/gizlilik.html",
@@ -25,12 +25,12 @@
     "tr": {
       "altBaslik": "Ne yesek, ne izlesek? Kaydır!",
       "anahtar": "ne yesek,ne izlesek,film,yemek,restoran,aile,arkadaş,grup,oylama,anket,kaydır,eşleş,hafta sonu,çark",
-      "tanitim": "Akşam ne yesek, hangi filmi izlesek? Oda kur, kodu paylaş, herkes kartları kaydırsın; herkesin beğendiği seçenek ortak karar olur. Üyelik yok, reklam yok."
+      "tanitim": "Akşam ne yesek, hangi filmi izlesek? Oda kur, kodu paylaş, herkes kartları kaydırsın; herkesin beğendiği seçenek ortak karar olur. Üyelik yok, kurulum yok."
     },
     "en-US": {
       "altBaslik": "What to eat or watch? Swipe!",
       "anahtar": "what to eat,what to watch,movie,food,restaurant,family,friends,group,vote,poll,swipe,match,weekend",
-      "tanitim": "What should we eat tonight? Which movie? Create a room, share the code and swipe together; the option everyone likes becomes your decision. No sign-up, no ads."
+      "tanitim": "What should we eat tonight? Which movie? Create a room, share the code and swipe together; the option everyone likes becomes your decision. No sign-up needed."
     }
   }
 }

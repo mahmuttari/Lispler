@@ -24,6 +24,17 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<key>SKAdNetworkItems</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>cstr6suwn9.skadnetwork</string>
+		</dict>
+	</array>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Daha ilgili reklamlar göstermek için kullanılır; ayarlardan istediğin zaman değiştirebilirsin. / Your data will be used to show you more relevant ads. You can change this at any time in Settings.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Karar çıkınca yakınındaki mekânları listelemek için yaklaşık konumun kullanılır; konum saklanmaz. / Your approximate location is used to list nearby places for your decision; it is not stored.</string>
 	<key>UIApplicationSceneManifest</key>

@@ -7,11 +7,11 @@ OTOMATİK: `node ios-ortak/app-store.mjs --md` yazar; kaynak Play metinleri ve `
 - **Ad (24/30):** Let's Picky: Ortak Karar
 - **Alt başlık (29/30):** Ne yesek, ne izlesek? Kaydır!
 - **Anahtar sözcükler (99/100):** ne yesek,ne izlesek,film,yemek,restoran,aile,arkadaş,grup,oylama,anket,kaydır,eşleş,hafta sonu,çark
-- **Tanıtım metni (154/170):** Akşam ne yesek, hangi filmi izlesek? Oda kur, kodu paylaş, herkes kartları kaydırsın; herkesin beğendiği seçenek ortak karar olur. Üyelik yok, reklam yok.
+- **Tanıtım metni (155/170):** Akşam ne yesek, hangi filmi izlesek? Oda kur, kodu paylaş, herkes kartları kaydırsın; herkesin beğendiği seçenek ortak karar olur. Üyelik yok, kurulum yok.
 - **Destek:** https://letspicky.com/gizlilik.html
 - **Gizlilik:** https://letspicky.com/gizlilik.html
 
-### Açıklama (1754/4000)
+### Açıklama (1792/4000)
 
 Akşam ne yesek? Hangi filmi izlesek? Hafta sonu nereye gitsek? Bitmeyen tartışmalara son!
 
@@ -35,7 +35,7 @@ GÜVENLİ VE AİLE DOSTU
 • Üyelik yok, profil yok, fotoğraf yok: yalnız geçici bir takma ad.
 • Rastgele eşleşme ya da keşfet yok: odaya yalnız kodu bilenler girer.
 • Serbest sohbet yok: yalnız birkaç sabit emoji tepkisi.
-• Reklam yok, izleme yok. Oda bilgileri en geç 24 saat içinde silinir.
+• Reklamlar oyunu bölmez: yalnız karar çıktıktan sonra görünür. Oda bilgileri en geç 24 saat içinde silinir.
 
 İki kişiyle ya da kalabalık bir grupla oynayın: kararın "iki kişi anlaşınca" mı yoksa "herkes anlaşınca" mı çıkacağını siz seçin. Açık ve koyu tema, Türkçe ve İngilizce dil desteği vardır. Arkadaşınızda uygulama yoksa davet bağlantısı tarayıcıda da açılır.
 
@@ -46,11 +46,11 @@ Bir dahaki "ne yapsak?" sorusunda tartışmayın, Let's Picky'yi açın!
 - **Ad (28/30):** Let's Picky: Decide Together
 - **Alt başlık (28/30):** What to eat or watch? Swipe!
 - **Anahtar sözcükler (98/100):** what to eat,what to watch,movie,food,restaurant,family,friends,group,vote,poll,swipe,match,weekend
-- **Tanıtım metni (159/170):** What should we eat tonight? Which movie? Create a room, share the code and swipe together; the option everyone likes becomes your decision. No sign-up, no ads.
+- **Tanıtım metni (158/170):** What should we eat tonight? Which movie? Create a room, share the code and swipe together; the option everyone likes becomes your decision. No sign-up needed.
 - **Destek:** https://letspicky.com/gizlilik.html
 - **Gizlilik:** https://letspicky.com/gizlilik.html
 
-### Açıklama (1773/4000)
+### Açıklama (1818/4000)
 
 What should we eat tonight? Which movie should we watch? Where should we go this weekend? No more endless debates!
 
@@ -74,7 +74,7 @@ SAFE AND FAMILY FRIENDLY
 • No sign-up, no profiles, no photos: only a temporary nickname.
 • No random matching or discovery: only people who know the code can join a room.
 • No free-text chat: only a few fixed emoji reactions.
-• No ads, no tracking. Room data is deleted within 24 hours.
+• Ads never interrupt a round: they appear only after the decision. Room data is deleted within 24 hours.
 
 Play as a pair or with a big group: choose whether a decision needs two people or everyone to agree. Light and dark themes, Turkish and English. If a friend does not have the app, the invite link also opens in a web browser.
 

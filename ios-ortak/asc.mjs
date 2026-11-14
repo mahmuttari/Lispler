@@ -50,7 +50,8 @@ export const UYGULAMALAR = {
   calqora: { paket: 'com.poyrazworkshop.calqora', ad: 'Calqora', klasor: 'calqora', abonelik: true },
   'smart-measure': { paket: 'com.poyrazworkshop.smartmeasure', ad: 'Olcu Kutusu', klasor: 'smart-measure', abonelik: true },
   notdefteri: { paket: 'com.poyrazworkshop.notdefteri', ad: 'Not Defteri', klasor: 'ios', abonelik: false },
-  letspicky: { paket: 'com.mahmuttari.letspicky', ad: 'Lets Picky', klasor: 'letspicky', abonelik: false, reklam: false },
+  // Let's Picky: AdMob var (ödüllü, sonuç ekranında banner, seyrek geçiş); abonelik henüz yok.
+  letspicky: { paket: 'com.mahmuttari.letspicky', ad: 'Lets Picky', klasor: 'letspicky', abonelik: false },
 };
 /** App Store abonelik ürünleri: her dönem ayrı ürün, tek grupta (uygulamaların config / billing dosyalarıyla aynı) */
 export const urunler = (u) => (UYGULAMALAR[u].abonelik ? ['monthly', 'yearly'].map((d) => `${UYGULAMALAR[u].paket}.adfree.${d}`) : []);
@@ -73,8 +74,11 @@ export function admobTestMi(u) {
     const rel = yml.slice(yml.indexOf('Release:'));
     return /ADMOB_APP_ID:\s*"?ca-app-pub-3940256099942544/.test(rel) || !/ADMOB_APP_ID/.test(rel);
   }
-  const k = admobOku(fs.readFileSync(path.join(KOK, UYGULAMALAR[u].klasor, 'ios', 'admob.properties'), 'utf8'));
-  return [k.app, k.banner, k.gecis].some((x) => x.startsWith('ca-app-pub-3940256099942544'));
+  const metin = fs.readFileSync(path.join(KOK, UYGULAMALAR[u].klasor, 'ios', 'admob.properties'), 'utf8');
+  const k = admobOku(metin);
+  // Ödüllü reklam birimi (Let's Picky) varsa o da denetlenir.
+  const odul = /^ADMOB_REWARDED_ID=(.+)$/m.exec(metin)?.[1].trim();
+  return [k.app, k.banner, k.gecis, odul].some((x) => x?.startsWith('ca-app-pub-3940256099942544'));
 }
 
 // ---------------------------------------------------------------- JWT ve istek

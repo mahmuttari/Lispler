@@ -12,7 +12,7 @@ Sınama: `node --test letspicky/test/*.test.mjs`.
 - **Paket adı:** `com.mahmuttari.letspicky`
 - **Tür ve kategori:** Uygulama · Yaşam tarzı
 - **Hedef kitle:** 13-15, 16-17, 18 ve üzeri (13 altı seçilmez)
-- **Reklam:** Yok · **Uygulama içi satın alma:** Yok
+- **Reklam:** Var (AdMob: yalnız karar çıktıktan sonra sonuç ekranında banner, seyrek geçiş reklamı ve isteğe bağlı ödüllü reklam) · **Uygulama içi satın alma:** Yok
 - **Gizlilik politikası:** https://letspicky.com/gizlilik.html
 - **Destek e-postası:** mahmuttari@gmail.com
 - **Mağaza dilleri:** tr-TR (varsayılan), en-US
@@ -45,7 +45,7 @@ GÜVENLİ VE AİLE DOSTU
 • Üyelik yok, profil yok, fotoğraf yok: yalnız geçici bir takma ad.
 • Rastgele eşleşme ya da keşfet yok: odaya yalnız kodu bilenler girer.
 • Serbest sohbet yok: yalnız sabit emoji tepkileri (👍 🍕 🎬 😂 🔥).
-• Reklam yok, izleme yok. Oda bilgileri en geç 24 saat içinde silinir.
+• Reklamlar oyunu bölmez: yalnız karar çıktıktan sonra görünür. Oda bilgileri en geç 24 saat içinde silinir.
 
 İki kişiyle ya da kalabalık bir grupla oynayın: kararın "iki kişi anlaşınca" mı yoksa "herkes anlaşınca" mı çıkacağını siz seçin. Açık ve koyu tema, Türkçe ve İngilizce dil desteği vardır. Arkadaşınızda uygulama yoksa davet bağlantısı tarayıcıda da açılır.
 

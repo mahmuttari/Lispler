@@ -135,7 +135,7 @@ test('paket: "uygula" yoksa yalnız plan; uygulayınca eksikleri ASCII adla kayd
 test('onkontrol: test AdMob kimliği, eksik paket ya da kayıt varsa yükleme durur', async () => {
   // depodaki iOS AdMob kimlikleri şimdilik Google'ın test kimlikleri
   assert.equal(asc.admobTestMi('unitica'), true);
-  assert.equal(asc.admobTestMi('letspicky'), false, 'reklamsız uygulamada AdMob denetimi yok');
+  assert.equal(asc.admobTestMi('letspicky'), true, "Let's Picky Google'ın test kimlikleriyle (ödüllü birim dahil) yüklenmez");
   await assert.rejects(asc.onkontrol('unitica'), /test kimlikleri/);
   await assert.rejects(asc.onkontrol('calqora'), /paket kimliği.*kayıtlı değil[\s\S]*uygulama kaydı yok/);
   await assert.rejects(asc.onkontrol('baska'), /bilinmeyen uygulama/);
@@ -239,13 +239,13 @@ test('gorsel: plan kipinde yazmaz; uygulayınca 6,9″ kümesi açılır, her g�
   } finally { veri.vl = []; }
 });
 
-test("Let's Picky (reklamsız, aboneliksiz): yaşta reklam Hayır; metin 2 dilde, abonelik açıklaması yok; abonelik komutu durur", async () => {
+test("Let's Picky (reklamlı, aboneliksiz): yaşta reklam Evet; metin 2 dilde, abonelik açıklaması yok; abonelik komutu durur", async () => {
   veri.apps.push({ id: 'A1', type: 'apps', attributes: { bundleId: 'com.mahmuttari.letspicky', name: "Let's Picky" } });
   try {
     istekler.length = 0;
     await asc.yas('letspicky', true);
     const g = istekler.find((x) => x.yol === '/v1/ageRatingDeclarations/Y1').govde.data.attributes;
-    assert.equal(g.advertising, false);
+    assert.equal(g.advertising, true);
     assert.equal(g.userGeneratedContent, false);
     assert.equal(g.socialMedia, false);
     const p = await asc.metin('letspicky', false);

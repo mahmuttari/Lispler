@@ -30,7 +30,7 @@ SAFE AND FAMILY FRIENDLY
 • No sign-up, no profiles, no photos: only a temporary nickname.
 • No random matching or discovery: only people who know the code can join a room.
 • No free-text chat: only fixed emoji reactions (👍 🍕 🎬 😂 🔥).
-• No ads, no tracking. Room data is deleted within 24 hours.
+• Ads never interrupt a round: they appear only after the decision. Room data is deleted within 24 hours.
 
 Play as a pair or with a big group: choose whether a decision needs two people or everyone to agree. Light and dark themes, Turkish and English. If a friend does not have the app, the invite link also opens in a web browser.
 

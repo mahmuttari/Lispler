@@ -34,6 +34,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+        <!-- AdMob uygulama kimliği: yayın derlemesinde gradle.properties › ADMOB_APP_ID, hata ayıklamada Google'ın test
+             kimliği. Kimlik olmadan AdMob SDK'sı uygulamayı açılışta durdurur. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
     </application>
 
     <!-- Permissions -->

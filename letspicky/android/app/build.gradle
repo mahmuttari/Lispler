@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+// Google'ın test reklam uygulama kimliği: hata ayıklama derlemesi (assembleDebug) her zaman bunu kullanır.
+// Yayın derlemesinin kimliği gradle.properties › ADMOB_APP_ID'dir (tek kaynak; birim kimlikleri de orada,
+// web tarafına araclar/kimlik.mjs → www/reklam-kimlik.json ile gider).
+def TEST_APP_ID = 'ca-app-pub-3940256099942544~3347511713'
+
 android {
     namespace = "com.mahmuttari.letspicky"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -36,6 +41,10 @@ android {
             signingConfig ksDosya.exists() ? signingConfigs.upload : signingConfigs.debug
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [admobAppId: project.property('ADMOB_APP_ID')]
+        }
+        debug {
+            manifestPlaceholders = [admobAppId: TEST_APP_ID]
         }
     }
 }

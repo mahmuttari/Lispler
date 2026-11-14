@@ -33,3 +33,20 @@ Yeni sürüm: kaynakta `npm run build`, sonra `dist/` → `www/` kopyalanır; `a
 2. App Store Connect (14 Kasım 2026'da yapıldı): `paket uygula` paket kimliğini kaydetti; "New App" ile kayıt açıldı
    (Let's Picky, Türkçe, paket `com.mahmuttari.letspicky`, SKU `letspicky-ios`, Apple ID 6834758192); `yukle letspicky`
    1.0.0 (1)'i TestFlight'a yükledi. Kalanlar sahibin: App Privacy yanıtları, inceleme bilgileri ve incelemeye gönderme.
+
+## Reklamlar (AdMob)
+
+Let's Picky'de Lispler'deki öbür uygulamalarla aynı düzende AdMob reklamı vardır (yalnız Android ve iOS; web sürümünde
+yok). Yerleşim ve kurallar kaynak depodadır: Yonetmelik-araclari › ortakkarar/README.md › "Gelir modeli ve reklamlar".
+
+- Eklenti: `@capacitor-community/admob` 8.2.1 (package.json).
+- Kimlikler (tek kaynak): `android/gradle.properties` ve `ios/admob.properties` › `ADMOB_APP_ID`, `ADMOB_BANNER_ID`,
+  `ADMOB_INTERSTITIAL_ID`, `ADMOB_REWARDED_ID`. Şimdilik Google'ın test kimlikleri vardır.
+- `node araclar/kimlik.mjs`: birim kimliklerini `www/reklam-kimlik.json`'a, iOS uygulama kimliğini `Info.plist`'e yazar.
+  `www/` ortakkarar/dist'ten yeniden kopyalandıktan sonra da çalıştırılır (CI "cap sync"ten önce çalıştırır).
+- Android manifestinde uygulama kimliği `${admobAppId}` (yayın: gradle.properties, hata ayıklama: Google'ın test kimliği).
+  iOS: `GADApplicationIdentifier`, SKAdNetwork, izleme izni metni, PrivacyInfo'da reklam kimliği.
+- App Store önkontrolü (`ios-ortak/asc.mjs`) test kimliğiyle derlenen paketi yüklemez.
+- Gerçek kimlikler: AdMob'da Let's Picky'nin Android ve iOS kaydı ile ödüllü, banner ve geçiş birimleri açılınca iki
+  properties dosyasına yazılır ve `node araclar/kimlik.mjs` çalıştırılır. Yaş derecesi için `yas letspicky uygula`
+  yeniden çalıştırılır (reklam: Evet).

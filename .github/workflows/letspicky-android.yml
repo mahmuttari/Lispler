@@ -35,6 +35,8 @@ jobs:
           java-version: '21'
       # GitHub'ın Ubuntu sunucularında Android SDK hazır kurulu gelir (ANDROID_HOME)
       - run: npm ci
+      # AdMob birim kimlikleri web tarafına (www/reklam-kimlik.json) ve iOS Info.plist'e
+      - run: node araclar/kimlik.mjs
       - run: npx cap sync android
       - name: Yükleme anahtarını secret'tan yaz
         id: imza

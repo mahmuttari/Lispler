@@ -20,6 +20,14 @@ Adımları sahip ya da bilgisayardaki Claude (`claude --chrome`) izler.
 
 ## Durum (14 Kasım 2026)
 
+- **Son durum (20:28 UTC):** App Store'da **1.0.0 (6) incelemede** (`WAITING_FOR_REVIEW`, gönderim 4796162f, NetcadDevelop
+  koşu 43637652154; yayın elle). Yapı 6 Lispler main 31fdd4f'ten: ITMS-91064 düzeltmesi (Lispler#40), mekân bulucu ve
+  yeni puanlar (Lispler#41 = ortakkarar#42: Google Maps puanı, yorum sayısı, açık / kapalı, fiyat düzeyi; film
+  önerilerinde IMDb puanı ve bağlantısı). Reddedilen 1.0.0 (3) gönderimi iptal edildi; yapı 4 ve 5 gönderilmedi.
+  Web aynı sürümle önce yayınlandı (NetcadDevelop "Let's Picky Web" koşusu 43637014883: `/api/places` 200; Worker alan
+  maskesi yalnız id, ad, adres, konum, puan, yorum sayısı, açık mı, fiyat düzeyi — photos / reviews / editorialSummary
+  yok). Play'e yüklenecek AAB: Lispler main 31fdd4f'ten sonraki "LetsPicky-aab".
+
 - **Mekân bulucu (son yayın):** Yonetmelik-araclari#38 ve #39 main'de (`de82ca2`). Sonuç ekranında yakın mekânlar önce
   sunucumuz üzerinden Google Places'ten (`letspicky.com/api/places`; Google anahtarı Worker gizli değeri), yanıt yoksa
   OpenStreetMap'ten (Overpass, Photon; uzak aramada Nominatim) gelir. Konum servislere 2 ondalık yuvarlanmış gider,

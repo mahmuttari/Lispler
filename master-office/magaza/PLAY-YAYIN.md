@@ -72,9 +72,10 @@ Sahip: "Master Office uygulamamızın market görünürlüğünü artıracak met
   iddia ve anlamsız kelime yığını yasak). İçerik 3.5.2'ye sadıktır: hesap / giriş yazılmaz (3.6.0+ Play'e gelince eklenir).
 - **Kurallar:** ad ≤ 30, emoji / "en iyi" / "ücretsiz" / "#1" yok (`test/magaza.test.mjs`); başka uygulamanın adı geçmez (Word / Excel /
   PowerPoint dosya türü olarak). Kaynak: [Google Play meta veri politikası](https://support.google.com/googleplay/android-developer/answer/9898842).
-- **Yayın:** Lispler `main` → NetcadDevelop `master-office-play` › `.github/master-office-istek.txt` › `magaza uygula`. Uygulama Play'de
-  hâlâ **taslak uygulama** (3.5.2 üretimde taslak, 13 Kasım): metin kaydedilir ama mağazada görünmesi Console › Yayın özeti ›
-  "Uygulamayı incelemeye gönder" ve Google'ın onayını bekler (sahibin adımı). Görünürlüğün asıl engeli budur.
+- **Yayın (yapıldı 14 Kasım 2026):** Lispler `main` (`9d26dea`) → NetcadDevelop `master-office-play` › `.github/master-office-istek.txt` ›
+  `magaza uygula`, koşu 43591066466: tr-TR ve en-US KAYDEDİLDİ. Aynı koşunun `durum`u: üretimde 3.5.2 (3005002) **completed** —
+  uygulama Play'de **yayında** (mağaza sayfası `https://play.google.com/store/apps/details?id=com.ofivora.app` açık). Yeni ad ve metin
+  Google'ın değişiklik incelemesinden sonra sayfada görünür (genelde birkaç saat, en çok birkaç gün).
 - **Önerilen sonraki adımlar (sahibin kararı):** (1) Varsayılan dil Türkçe: Türkçe ve İngilizce dışındaki dillerde Play sayfayı Türkçe
   gösterip yalnız otomatik çeviri önerir ([Play Yardım](https://support.google.com/googleplay/android-developer/answer/9844778)); dünya geneli
   için en-US varsayılan dil daha uygundur (`android/play.mjs › magazaMetinleri` `defaultLanguage` bütün uygulamalarda tr-TR; Master Office

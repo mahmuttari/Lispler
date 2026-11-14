@@ -3,4 +3,4 @@
 # yukle [dahili] [yayinla] [uygula] | imza. Uygulamayı oluşturmak ve ilk AAB'yi yüklemek Play Console'dan elle yapılır.
 
 # 2026-11-14: Play Console'da uygulama var mı? (salt okuma; docs/letspicky-yayin.md › A2'den önce yok beklenir)
-durum
+# (yapıldı, koşu 43594104222) durum → 404 "Package not found": uygulama Play Console'da yok (beklenen; A2 ve A3 bekleniyor)

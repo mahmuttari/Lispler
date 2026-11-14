@@ -28,7 +28,7 @@ Adımları sahip ya da bilgisayardaki Claude (`claude --chrome`) izler.
   (reklamlardan önceki yapı; gerçek kimlikli yeni yapı 2 olur). NetcadDevelop koşu 43593690083: sürüm metinleri tr ve
   en-US yeniden yazıldı ("reklam yok" kalktı), yaş derecesi **reklam: Evet**. Ekran görüntüleri tr ve en-US 5'er, tamam.
   `letspicky-ios.yml` artık Lispler **main**'i çeker; macOS işi `cap sync`'ten önce `araclar/kimlik.mjs`'i çalıştırır.
-- **Play:** uygulama henüz oluşturulmadı.
+- **Play:** uygulama henüz oluşturulmadı (`durum`, koşu 43594104222: 404 "Package not found").
 - **Veri güvenliği:** `letspicky/magaza/veri-guvenligi.csv` hazır (üretici `letspicky/araclar/veri-guvenligi.mjs`; tablo
   kaynak depodaki `ortakkarar/store/play-veri-guvenligi.md` ile aynı). Uygulamanın kendi verisi (takma ad, oylar ve
   tepkiler, "Kendin Yaz" seçenekleri, anonim Firebase kimliği, yaklaşık konum) toplanır, paylaşılmaz; AdMob'un verisi

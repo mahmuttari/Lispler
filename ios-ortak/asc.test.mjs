@@ -119,7 +119,7 @@ test('durum: salt okunur; paket, kayıt, sürüm, yapı, abonelik', async () => 
 
 test('paket: "uygula" yoksa yalnız plan; uygulayınca eksikleri ASCII adla kaydeder', async () => {
   istekler.length = 0;
-  assert.deepEqual(await asc.paket(false), ['calqora', 'smart-measure', 'notdefteri']);
+  assert.deepEqual(await asc.paket(false), ['calqora', 'smart-measure', 'notdefteri', 'letspicky']);
   assert.ok(!istekler.some((x) => x.yontem === 'POST'));
   istekler.length = 0;
   await asc.paket(true);
@@ -128,12 +128,14 @@ test('paket: "uygula" yoksa yalnız plan; uygulayınca eksikleri ASCII adla kayd
     { identifier: 'com.poyrazworkshop.calqora', name: 'Calqora', platform: 'IOS' },
     { identifier: 'com.poyrazworkshop.smartmeasure', name: 'Olcu Kutusu', platform: 'IOS' },
     { identifier: 'com.poyrazworkshop.notdefteri', name: 'Not Defteri', platform: 'IOS' },
+    { identifier: 'com.mahmuttari.letspicky', name: 'Lets Picky', platform: 'IOS' },
   ]);
 });
 
 test('onkontrol: test AdMob kimliği, eksik paket ya da kayıt varsa yükleme durur', async () => {
   // depodaki iOS AdMob kimlikleri şimdilik Google'ın test kimlikleri
   assert.equal(asc.admobTestMi('unitica'), true);
+  assert.equal(asc.admobTestMi('letspicky'), true, "Let's Picky Google'ın test kimlikleriyle (ödüllü birim dahil) yüklenmez");
   await assert.rejects(asc.onkontrol('unitica'), /test kimlikleri/);
   await assert.rejects(asc.onkontrol('calqora'), /paket kimliği.*kayıtlı değil[\s\S]*uygulama kaydı yok/);
   await assert.rejects(asc.onkontrol('baska'), /bilinmeyen uygulama/);
@@ -182,7 +184,7 @@ test('yaş: reklam Evet, öbür sorular Yok / Hayır; çocuk kategorisine dokunu
   assert.equal(g.unrestrictedWebAccess, false);
   assert.equal(g.violenceRealistic, 'NONE');
   assert.ok(!('kidsAgeBand' in g));
-  await assert.rejects(asc.yas('notdefteri'), /yalnız Unitica/);
+  await assert.rejects(asc.yas('notdefteri'), /App Store metinleri tanımlı değil/);
 });
 
 test('abonelik: plan kipinde yazmaz; aylık ürün açılır, adlar 11 dilde, Çin hariç, ABD 0,99 $ + eşdeğerleri', async () => {
@@ -235,4 +237,30 @@ test('gorsel: plan kipinde yazmaz; uygulayınca 6,9″ kümesi açılır, her g�
     assert.equal(bitti.length, 6);
     assert.ok(bitti.every((a) => a.uploaded === true && /^[0-9a-f]{32}$/.test(a.sourceFileChecksum)));
   } finally { veri.vl = []; }
+});
+
+test("Let's Picky (reklamlı, aboneliksiz): yaşta reklam Evet; metin 2 dilde, abonelik açıklaması yok; abonelik komutu durur", async () => {
+  veri.apps.push({ id: 'A1', type: 'apps', attributes: { bundleId: 'com.mahmuttari.letspicky', name: "Let's Picky" } });
+  try {
+    istekler.length = 0;
+    await asc.yas('letspicky', true);
+    const g = istekler.find((x) => x.yol === '/v1/ageRatingDeclarations/Y1').govde.data.attributes;
+    assert.equal(g.advertising, true);
+    assert.equal(g.userGeneratedContent, false);
+    assert.equal(g.socialMedia, false);
+    const p = await asc.metin('letspicky', false);
+    assert.ok(p.some((x) => /kategori: — \/ — → LIFESTYLE \/ ENTERTAINMENT/.test(x)));
+    assert.equal(p.filter((x) => /^uygulama bilgisi /.test(x)).length, 2);
+    istekler.length = 0;
+    await asc.metin('letspicky', true);
+    const s = istekler.filter((x) => x.yol === '/v1/appStoreVersionLocalizations' && x.yontem === 'POST').map((x) => x.govde.data.attributes);
+    assert.deepEqual(s.map((x) => x.locale).sort(), ['en-US', 'tr']);
+    for (const x of s) {
+      assert.doesNotMatch(x.description, /stdeula|EULA/);
+      assert.equal(x.supportUrl, 'https://letspicky.com/gizlilik.html');
+    }
+    const v = istekler.find((x) => x.yol === '/v1/appStoreVersions/V1' && x.yontem === 'PATCH').govde.data.attributes;
+    assert.equal(v.versionString, '1.0.0', 'App Store Connect kaydının açtığı 1.0 → 1.0.0');
+    await assert.rejects(asc.abonelik('letspicky'), /aboneliği yok/);
+  } finally { veri.apps.pop(); }
 });

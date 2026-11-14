@@ -2,7 +2,7 @@
 # Tetik: ios-ortak/asc-istek.txt değişince (ilk yorum olmayan satır) ya da elle (Run workflow, "komut").
 #   durum [uygulama…]   salt okunur rapor (ios-ortak/asc.mjs durum)
 #   paket [uygula]      eksik paket kimliklerini (bundle ID) kaydeder; "uygula" yoksa yalnız plan
-#   yukle <uygulama>    unitica | calqora | smart-measure | notdefteri: önkontrol (Linux) → derle, imzala, yükle (macOS) →
+#   yukle <uygulama>    unitica | calqora | smart-measure | notdefteri | letspicky: önkontrol (Linux) → derle, imzala, yükle (macOS) →
 #                       Apple'ın işlemesini bekle (Linux). Yapı TestFlight'a gider; incelemeye gönderme burada YOK.
 #   metin | yas | abonelik | gorsel <uygulama> [uygula]   App Store metinleri, yaş derecesi, reklamsız abonelik, iPhone ekran
 #                       görüntüleri (unitica, calqora, smart-measure); "uygula" yoksa yalnız plan.
@@ -101,7 +101,8 @@ jobs:
         run: |
           cd "$U"
           npm ci
-          node araclar/kimlik.mjs
+          # Reklamsız uygulamalarda (Let's Picky) reklam kimliği adımı yoktur.
+          if [ -f araclar/kimlik.mjs ]; then node araclar/kimlik.mjs; fi
           npx cap sync ios
       - name: Xcode projesi (Not Defteri, XcodeGen)
         if: env.U == 'notdefteri'

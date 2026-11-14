@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="description" content="Let's Picky: Ne yesek, ne izlesek, nereye gitsek? Oda kur, kartları kaydır, 30 saniyede ortak karar ver. Üyelik yok, sohbet yok, aile dostu." />
+    <meta name="theme-color" content="#f5f3ff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e0b1f" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Let's Picky" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta property="og:title" content="Let's Picky — 30 saniyede ortak karar" />
+    <meta property="og:description" content="Oda kur, kartları kaydır, herkesin istediği seçenek bir anda ortaya çıksın." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Let's Picky" />
+    <meta property="og:locale" content="tr_TR" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <title>Let's Picky — 30 saniyede ortak karar</title>
+    <script>
+      // Koyu tema sınıfı React yüklenmeden konur; sayfa açılırken beyaz parlama olmaz.
+      ;(function () {
+        try {
+          var prefs = JSON.parse(localStorage.getItem('ok:v1:prefs') || '{}')
+          var theme = prefs.theme || 'system'
+          var dark = theme === 'dark' || (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)
+          if (dark) document.documentElement.classList.add('dark')
+          if (prefs.lang === 'en') document.documentElement.lang = 'en'
+        } catch (e) {}
+      })()
+    </script>
+    <script type="module" crossorigin src="./assets/index-BAT1n4A4.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/dist-B-Lo1tqG.js">
+    <link rel="modulepreload" crossorigin href="./assets/parse-DmW1yA9w.js">
+    <link rel="modulepreload" crossorigin href="./assets/preload-helper-DclECHGd.js">
+    <link rel="modulepreload" crossorigin href="./assets/storage-Cg6PuAzd.js">
+    <link rel="modulepreload" crossorigin href="./assets/ui-LVvSIopt.js">
+    <link rel="modulepreload" crossorigin href="./assets/sound-CJpooSNp.js">
+    <link rel="stylesheet" crossorigin href="./assets/index-CcXAtgzl.css">
+    <link rel="canonical" href="https://letspicky.com/">
+    <meta property="og:url" content="https://letspicky.com/">
+    <meta property="og:image" content="https://letspicky.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Let's Picky için JavaScript gereklidir. / Let's Picky needs JavaScript.</noscript>
+    <!-- GitHub Pages bu kaynak dosyayı ortakkarar/ adresinde sunar; kaynak kod orada çalışmaz.
+         Betik yüklenemezse derlenmiş uygulamaya (dist/) geçilir. Derlemede bu etiket değişir. -->
+  </body>
+</html>

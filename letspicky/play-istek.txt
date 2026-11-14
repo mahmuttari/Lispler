@@ -1,0 +1,3 @@
+# Google Play isteği (Let's Picky): bu dosya değişince .github/workflows/play-letspicky.yml yorum olmayan her satırı
+# sırayla çalıştırır (android/play.mjs, PLAY_UYGULAMA=letspicky). Komutlar: durum | magaza [uygula] | gorsel [uygula] |
+# yukle [dahili] [yayinla] [uygula] | imza. Uygulamayı oluşturmak ve ilk AAB'yi yüklemek Play Console'dan elle yapılır.

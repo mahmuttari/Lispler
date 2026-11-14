@@ -4,6 +4,7 @@
  *   - Uzun açıklama, <klasör>/magaza/app-store.json › "degistir" ile iPhone'a uyarlanır (ör. Ölçü Kutusu'nda ışık ölçer
  *     yok, Calqora iPhone'da yalnız dikey). Her değiştirilecek metin kaynakta tam olarak bulunmalıdır; yoksa hata.
  *   - Sonuna Apple'ın abonelik açıklaması ile Kullanım Koşulları (EULA) ve gizlilik bağlantıları eklenir (App Review 3.1.2).
+ *     Aboneliği olmayan uygulamada (app-store.json › "abonelik": false, ör. Let's Picky) bu bölüm eklenmez.
  *   - Emoji çıkarılır: App Store Connect açıklamada emoji kabul etmez (409 INVALID_CHARACTERS, 14 Kasım 2026); Play
  *     açıklamasının "📐 SU TERAZİSİ" gibi başlıkları düz "SU TERAZİSİ" olur.
  *   - Alt başlık, anahtar sözcükler ve tanıtım metni app-store.json › "yerel"den; ad verilmemişse Play'deki ad.
@@ -28,7 +29,7 @@ export const YEREL = {
 };
 export const SINIR = { ad: 30, altBaslik: 30, anahtar: 100, tanitim: 170, aciklama: 4000 };
 export const EULA = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
-export const KLASOR = { unitica: 'unitica', calqora: 'calqora', 'smart-measure': 'smart-measure' };
+export const KLASOR = { unitica: 'unitica', calqora: 'calqora', 'smart-measure': 'smart-measure', letspicky: 'letspicky' };
 
 /** Apple'ın abonelik açıklaması (3.1.2): yenileme, iptal, yönetim; fiyat uygulamada. {eula}, {gizlilik} yer tutucu. */
 export const ALT = {
@@ -80,13 +81,13 @@ export function metinler(uygulama) {
       if (!uzun.includes(eski)) throw new Error(`${uygulama} ${yerel}: değiştirilecek metin Play açıklamasında yok: "${eski.slice(0, 60)}"`);
       uzun = uzun.split(eski).join(yeni);
     }
-    const alt = ALT[yerel].replace('{eula}', EULA).replace('{gizlilik}', a.gizlilik);
+    const alt = a.abonelik === false ? '' : ALT[yerel].replace('{eula}', EULA).replace('{gizlilik}', a.gizlilik);
     out[yerel] = {
       ad: emojisiz(y.ad || play.ad),
       altBaslik: emojisiz(y.altBaslik),
       anahtar: emojisiz(y.anahtar),
       tanitim: emojisiz(y.tanitim),
-      aciklama: `${emojisiz(uzun).replace(/\n{3,}/g, '\n\n').trim()}\n\n${alt}`,
+      aciklama: [emojisiz(uzun).replace(/\n{3,}/g, '\n\n').trim(), alt].filter(Boolean).join('\n\n'),
       destek: a.destek,
       gizlilik: a.gizlilik,
     };

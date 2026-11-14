@@ -24,11 +24,18 @@ Adımları sahip ya da bilgisayardaki Claude (`claude --chrome`) izler.
 - **Kod:** Lispler#30 ve Yonetmelik-araclari#5 main'e birleşti. `letspicky-android.yml` main'de yeşil
   (koşu 43592891712), ama AAB Google'ın **test** AdMob kimlikleriyle derlendi: Play'e YÜKLENMEZ. Gerçek kimlikler A1'den
   sonra gelir.
-- **App Store:** kayıt "Let's Picky: Ortak Karar"; sürüm 1.0.0 `PREPARE_FOR_SUBMISSION`; TestFlight'ta yapı 1 `VALID`
+- **App Store (güncel):** 1.0.0 (3) incelemede (`WAITING_FOR_REVIEW`, NetcadDevelop koşu 43600776460). Yapı 3 Lispler
+  main 2e05246'dan derlendi: Karar Kavanozu, 94 kartın Recraft görseli, kavanoz simgesi; metinler ve iPhone ekran
+  görüntüleri yenilendi. Eski görsellerle gönderilen 1.0.0 (2) sahibin onayıyla incelemeden çekildi (`gonder.mjs iptal`).
+  Yayın elle: onaydan sonra satışa açma yalnız sahibin açık onayıyla. App Privacy, fiyat ve inceleme bilgileri tarayıcıdan
+  yapıldı (A6 tamam).
+- **App Store (ilk durum):** kayıt "Let's Picky: Ortak Karar"; sürüm 1.0.0 `PREPARE_FOR_SUBMISSION`; TestFlight'ta yapı 1 `VALID`
   (reklamlardan önceki yapı; gerçek kimlikli yeni yapı 2 olur). NetcadDevelop koşu 43593690083: sürüm metinleri tr ve
   en-US yeniden yazıldı ("reklam yok" kalktı), yaş derecesi **reklam: Evet**. Ekran görüntüleri tr ve en-US 5'er, tamam.
   `letspicky-ios.yml` artık Lispler **main**'i çeker; macOS işi `cap sync`'ten önce `araclar/kimlik.mjs`'i çalıştırır.
-- **Play:** uygulama henüz oluşturulmadı (`durum`, koşu 43594104222: 404 "Package not found").
+- **Play:** uygulama henüz oluşturulmadı (`durum`, koşu 43594104222 ve 43600437026: 404 "Package not found"). Gerçek
+  AdMob kimlikli, kavanoz simgeli AAB main'de hazır: Actions › Android (Let's Picky) › main › "LetsPicky-aab".
+- **AdMob:** gerçek kimlikler main'de (Lispler#36); A1 tamam.
 - **Veri güvenliği:** `letspicky/magaza/veri-guvenligi.csv` hazır (üretici `letspicky/araclar/veri-guvenligi.mjs`; tablo
   kaynak depodaki `ortakkarar/store/play-veri-guvenligi.md` ile aynı). Uygulamanın kendi verisi (takma ad, oylar ve
   tepkiler, "Kendin Yaz" seçenekleri, anonim Firebase kimliği, yaklaşık konum) toplanır, paylaşılmaz; AdMob'un verisi

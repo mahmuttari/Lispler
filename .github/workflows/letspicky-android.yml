@@ -66,7 +66,9 @@ jobs:
           mkdir -p "$RUNNER_TEMP/cikti"
           VC=$(sed -nE 's/^ *versionCode +([0-9]+).*/\1/p' app/build.gradle | head -1)
           VN=$(sed -nE "s/^ *versionName +'([^']+)'.*/\1/p" app/build.gradle | head -1)
-          printf 'versionCode=%s\nversionName=%s\ncommit=%s\n' "$VC" "$VN" "$GITHUB_SHA" > "$RUNNER_TEMP/cikti/surum.txt"
+          # AdMob uygulama kimliği: Play'e elle yüklemeden önce ca-app-pub-3940… (Google test kimliği) görünüyorsa YÜKLENMEZ
+          AM=$(sed -nE 's/^ADMOB_APP_ID=(.*)$/\1/p' gradle.properties | head -1)
+          printf 'versionCode=%s\nversionName=%s\ncommit=%s\nadmob=%s\n' "$VC" "$VN" "$GITHUB_SHA" "$AM" > "$RUNNER_TEMP/cikti/surum.txt"
           cp app/build/outputs/apk/release/*.apk "$RUNNER_TEMP/cikti/LetsPicky.apk"
           if [ -f app/build/outputs/bundle/release/app-release.aab ]; then
             cp app/build/outputs/bundle/release/app-release.aab "$RUNNER_TEMP/cikti/LetsPicky.aab"

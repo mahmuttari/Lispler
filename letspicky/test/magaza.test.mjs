@@ -10,6 +10,7 @@ process.env.PLAY_UYGULAMA = 'letspicky';
 const LP = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MAGAZA = path.join(LP, 'magaza');
 const play = await import('../../android/play.mjs');
+const vg = await import('../araclar/veri-guvenligi.mjs');
 
 /** PNG başlığı → genişlik, yükseklik, renk türü (2 RGB, 6 RGBA) */
 function png(dosya) {
@@ -42,5 +43,31 @@ test('Play görselleri: 512 simge, saydamlıksız 1024×500 öne çıkan görsel
     assert.deepEqual(png(g.icon[0]), { w: 512, h: 512, renk: 2 }, dil);
     assert.deepEqual(png(g.featureGraphic[0]), { w: 1024, h: 500, renk: 2 }, dil);
     assert.equal(g.phoneScreenshots.length, 5, dil);
+  }
+});
+
+test('Veri güvenliği CSV\'si tabloyla aynı: uygulamanın kendi verisi paylaşılmaz, AdMob verisi paylaşılır', () => {
+  const csv = fs.readFileSync(path.join(MAGAZA, 'veri-guvenligi.csv'), 'utf8');
+  const sablon = fs.readFileSync(path.join(LP, '..', 'hayalet-avcilari', 'magaza', 'veri-guvenligi.csv'), 'utf8');
+  assert.equal(csv, vg.csvYaz(vg.uret(sablon)), 'CSV elle değişmiş: node letspicky/araclar/veri-guvenligi.mjs');
+  const o = play.veriGuvenligiOzeti(csv);
+  assert.deepEqual(Object.keys(o.turler).sort(), Object.keys(vg.TURLER).sort());
+  for (const yok of ['PSL_PRECISE_LOCATION', 'PSL_EMAIL', 'PSL_PHOTOS', 'PSL_AUDIO', 'PSL_CONTACTS', 'PSL_PURCHASE_HISTORY']) {
+    assert.ok(!(yok in o.turler), yok);
+  }
+  assert.equal(o.genel.PSL_DATA_COLLECTION_ENCRYPTED_IN_TRANSIT, 'TRUE');
+  assert.equal(o.genel.PSL_DATA_COLLECTION_USER_REQUEST_DELETE, 'TRUE', 'oda verisi 24 saatte silinir, e-postayla da istenir');
+  assert.equal(o.genel['PSL_SUPPORTED_ACCOUNT_CREATION_METHODS/PSL_ACM_NONE'], 'TRUE', 'hesap oluşturulamaz (Play zorunlu tutar)');
+  for (const [tur, t] of Object.entries(o.turler)) {
+    assert.equal(t.toplanan, true, tur);
+    assert.equal(t.gecici, false, tur);
+  }
+  // Takma ad ve "Kendin Yaz" seçenekleri yalnız Firebase'de (hizmet sağlayıcı): paylaşım değildir
+  for (const tur of ['PSL_NAME', 'PSL_USER_GENERATED_CONTENT']) assert.ok(!o.turler[tur].paylasilan, tur);
+  assert.equal(o.turler.PSL_USER_GENERATED_CONTENT.istege, true);
+  // AdMob'un türleri paylaşılır: reklam, analiz, dolandırıcılığı önleme
+  for (const tur of ['PSL_APPROX_LOCATION', 'PSL_DEVICE_ID', 'PSL_USER_INTERACTION', 'PSL_PERFORMANCE_DIAGNOSTICS']) {
+    assert.ok(o.turler[tur].paylasilan, tur);
+    assert.deepEqual([...o.turler[tur].paylasimAmaci].sort(), ['ADVERTISING', 'ANALYTICS', 'FRAUD_PREVENTION_SECURITY'], tur);
   }
 });

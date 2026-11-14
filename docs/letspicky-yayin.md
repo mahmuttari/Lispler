@@ -36,8 +36,13 @@ Adımları sahip ya da bilgisayardaki Claude (`claude --chrome`) izler.
   (koşu 43592891712), ama AAB Google'ın **test** AdMob kimlikleriyle derlendi: Play'e YÜKLENMEZ. Gerçek kimlikler A1'den
   sonra gelir.
 - **App Store (14 Kasım 2026, 16:58 UTC):** Apple **1.0.0 (3)'ü reddetti**: sürüm `INVALID_BINARY`, gönderim 39eae3e3
-  `UNRESOLVED_ISSUES`, öğe `REJECTED` (NetcadDevelop koşu 43618492501). Gerekçe API'de yok: App Store Connect › Uygulama ›
-  Çözüm Merkezi (Resolution Center) ya da Apple'ın e-postası. Mekân bulucuyu içeren **1.0.0 (4)** Lispler main
+  `UNRESOLVED_ISSUES`, öğe `REJECTED` (NetcadDevelop koşu 43618492501). Gerekçe (Apple e-postası, yapı 2 ve 3):
+  **ITMS-91064 Invalid tracking information**: `PrivacyInfo.xcprivacy`'de `NSPrivacyTracking` true iken
+  `NSPrivacyTrackingDomains` boştu (Apple kuralı iki yönlü: biri varsa öteki de). Düzeltme: Google Mobile Ads SDK
+  13.11.0'ın kendi bildirimi gibi `NSPrivacyTracking` false, alan adı yok; izleme veri türü düzeyinde (Device ID,
+  tracking: true) ve ATT izni (`NSUserTrackingUsageDescription`) aynen. Reklam alan adlarını izleme alanı yazmak, izin
+  vermeyen kullanıcıda iOS'un reklam isteklerini engellemesine yol açardı. `test/reklam.test.mjs` kuralı sınar. Yapı 4 de
+  eski bildirimle derlendi, gönderilmez; düzeltilmiş yapı 5 yüklenir. Mekân bulucuyu içeren **1.0.0 (4)** Lispler main
   e531fbe'den yüklendi ve VALID (TestFlight; NetcadDevelop koşu 43623752030). Yeniden gönderim (`gonder letspicky
   uygula`) ret gerekçesi okunduktan sonra, yalnız sahibin açık onayıyla.
 - **App Store (önceki):** 1.0.0 (3) incelemeye gönderilmişti (`WAITING_FOR_REVIEW`, NetcadDevelop koşu 43600776460). Yapı 3 Lispler

@@ -133,9 +133,9 @@ test('paket: "uygula" yoksa yalnız plan; uygulayınca eksikleri ASCII adla kayd
 });
 
 test('onkontrol: test AdMob kimliği, eksik paket ya da kayıt varsa yükleme durur', async () => {
-  // depodaki iOS AdMob kimlikleri şimdilik Google'ın test kimlikleri
+  // Unitica'nın iOS AdMob kimlikleri şimdilik Google'ın test kimlikleri; Let's Picky'ninkiler gerçek (AdMob, 14 Kasım 2026)
   assert.equal(asc.admobTestMi('unitica'), true);
-  assert.equal(asc.admobTestMi('letspicky'), true, "Let's Picky Google'ın test kimlikleriyle (ödüllü birim dahil) yüklenmez");
+  assert.equal(asc.admobTestMi('letspicky'), false, "Let's Picky'nin iOS kimlikleri gerçek (letspicky/ios/admob.properties)");
   await assert.rejects(asc.onkontrol('unitica'), /test kimlikleri/);
   await assert.rejects(asc.onkontrol('calqora'), /paket kimliği.*kayıtlı değil[\s\S]*uygulama kaydı yok/);
   await assert.rejects(asc.onkontrol('baska'), /bilinmeyen uygulama/);

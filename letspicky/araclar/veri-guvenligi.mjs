@@ -12,7 +12,10 @@
 //
 // Uygulamanın kendi verisi (Firebase, oda 24 saatte silinir): takma ad, oylar ve tepkiler, "Kendin Yaz" seçenekleri,
 // anonim Firebase kimliği; plan için yazılan yer ve izin verilirse cihazın 2 ondalığa yuvarlanmış konumu (yakın mekân
-// araması). Google Firebase, Open-Meteo, Overpass ve Photon hizmet sağlayıcıdır: Play'in tanımında paylaşım değildir.
+// araması). Google Firebase, Open-Meteo, Overpass, Photon, Nominatim (yalnız arama sözcükleri, konum almaz) ve sunucumuz
+// (letspicky.com/api/places, Cloudflare Workers) üzerinden Google Places hizmet sağlayıcıdır: Play'in tanımında paylaşım
+// değildir; yeni bir veri türü getirmez (yuvarlanmış konum zaten PSL_APPROX_LOCATION / uygulama işlevselliği).
+// "Geçici işleme" veri türü başına tek yanıttır: yaklaşık konumu AdMob da (IP'den) topladığı için FALSE yazılır.
 // AdMob SDK'sının kendi beyanı (developers.google.com/admob/android/privacy/play-data-disclosure): IP adresi → yaklaşık
 // konum, ürün etkileşimleri, teşhis bilgisi, cihaz kimlikleri; "reklam, analiz ve dolandırıcılığı önleme" için toplanır
 // ve paylaşılır. Kilitlenme günlükleri kaynak depodaki yanıtlarla aynı olsun diye ayrıca beyan edilir. Fragman oynatıcısı

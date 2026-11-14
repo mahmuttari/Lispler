@@ -28,6 +28,10 @@ Yeni sürüm: kaynakta `npm run build`, sonra `dist/` → `www/` kopyalanır; `a
 
 ## İlk yayın (bir kez, elle)
 
+Ayrıntılı adımlar, onay satırı ve güncel durum: [`docs/letspicky-yayin.md`](../docs/letspicky-yayin.md). Veri güvenliği
+formu `magaza/veri-guvenligi.csv`'dedir (`node letspicky/araclar/veri-guvenligi.mjs` üretir, `play-istek.txt` ›
+`veriguvenligi uygula` Play'e yazar).
+
 1. Play Console: "Uygulama oluştur" (ad Let's Picky, varsayılan dil tr-TR, ücretsiz). İlk AAB'yi ("LetsPicky-aab"
    artifact'ı) Test › Dahili test'e elle yükleyin. Hizmet hesabına bu uygulama için izin verin (Kullanıcılar ve izinler).
 2. App Store Connect (14 Kasım 2026'da yapıldı): `paket uygula` paket kimliğini kaydetti; "New App" ile kayıt açıldı

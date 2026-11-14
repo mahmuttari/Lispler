@@ -80,7 +80,7 @@ Kullanıcı adı alınmışsa yedekler `@poyraz.workshop` ve `@poyrazworkshopgam
 
 | Hafta | İçerik | Dosya | Metin (`metinler.json`) |
 |---|---|---|---|
-| 1 | Tanıtım videosu (26 sn): YouTube Shorts, TikTok, Reels | `videolar/hayalet-avcilari-tr.mp4`; 2 gün sonra `-en.mp4` | tr › paylasimlar[0], en › paylasimlar[0] |
+| 1 | Tanıtım videosu (30 sn): YouTube Shorts, TikTok, Reels | `videolar/hayalet-avcilari-tr.mp4`; 2 gün sonra `-en.mp4` | tr › paylasimlar[0], en › paylasimlar[0] |
 | 2 | Boss: aynı videonun 9–16. saniyesi, platformun düzenleyicisinde kırpılır; Instagram'a ayrıca görsel | `../reklam/gorseller/tr/boss-1200x1500.jpg` | paylasimlar[1] |
 | 3 | Dünya Turu: videonun 16–23. saniyesi; Instagram'a görsel | `../reklam/gorseller/tr/tur-1200x1500.jpg` | paylasimlar[2] |
 | 4 | Arkadaşlarla oyna: Instagram kaydırmalı gönderi | `../magaza/play/telefon-6-arkadaslar.png` ve `../reklam/gorseller/tr/oyun-1200x1500.jpg` | paylasimlar[3] |
@@ -95,7 +95,7 @@ Kullanıcı adı alınmışsa yedekler `@poyraz.workshop` ve `@poyrazworkshopgam
 
 | Dosya | Üretici |
 |---|---|
-| `videolar/hayalet-avcilari-<dil>.mp4`: 1080×1920, 30 kare/sn, 26 sn; açılış kartı → Yeşil Orman → Mor Şato bossu (yenilir) → Dünya Turu, Türkiye (Efe hayalet) → kapanış kartı ("Google Play'de ücretsiz", "Ara: Hayalet Avcıları"); sessiz ses izi | `node hayalet-avcilari/sosyal/video.mjs [dil…]` (varsayılan tr en; Playwright, Chromium, ffmpeg) |
+| `videolar/hayalet-avcilari-<dil>.mp4`: 1080×1920 (ayrıca `-yatay` 1920×1080, `-kare` 1080×1080; Google Ads için), 30 kare/sn, 30 sn; açılış kartı → Yeşil Orman → köpek pet ve timsahlı göl → Mor Şato bossu (yenilir) → Dünya Turu, Türkiye (Efe hayalet) → kapanış kartı ("Google Play'de ücretsiz", "Ara: Hayalet Avcıları"); sessiz ses izi | `node hayalet-avcilari/sosyal/video.mjs [dil…] [--bicim=dikey,yatay,kare]` (varsayılan tr en; Playwright, Chromium, ffmpeg) |
 | `profil/profil-800.png`, `profil/youtube-kapak-2560x1440.png`: rüzgâr çizgileri ve "POYRAZ WORKSHOP" | `node hayalet-avcilari/sosyal/profil.mjs` |
 | `metinler.json`: profil yazısı, 4 paylaşım × 2 dil, 6 dilde video kartı | Elle |
 

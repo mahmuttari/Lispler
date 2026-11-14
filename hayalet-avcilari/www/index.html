@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#1a0b2e">
+<meta name="theme-color" content="#0c0618">
 <title>Hayalet Avcıları</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -47,7 +47,8 @@
 <!-- ========== ANA MENÜ ========== -->
 <div id="screen-menu" class="screen">
   <div class="menu-bg"></div>
-  <div class="menu-content">
+  <div class="menu-content ana-menu">
+    <div class="menu-sol">
     <h1 class="title-small">👻 Hayalet Avcıları 👻</h1>
     <div class="player-bar">
       <span class="player-tag">👤 <span id="menu-player">Avcı</span></span>
@@ -62,6 +63,8 @@
     <div class="character-preview" id="character-preview"></div>
     <p class="character-name" id="character-name">Kinkin</p>
     <p class="character-stats" id="character-stats"></p>
+    </div>
+    <div class="menu-sag">
     <button class="btn btn-big btn-play" onclick="startGame()">▶ OYNA</button>
     <div class="menu-buttons">
       <button class="btn" onclick="openCharacters()">👥 Karakterler</button>
@@ -80,6 +83,7 @@
       <button class="btn btn-small" onclick="resetData()">🔄 Sıfırla</button>
       <button class="btn btn-small" id="btn-reklam-gizlilik" style="display:none" onclick="reklamGizlilikSecenekleri()">🔒 Gizlilik</button>
     </div>
+    </div>
   </div>
 </div>
 
@@ -88,7 +92,7 @@
   <div class="menu-bg"></div>
   <div class="menu-content">
     <h2>🏆 ŞAMPİYONLAR</h2>
-    <p class="leaderboard-sub">En iyi 10 hayalet avcısı</p>
+    <p class="leaderboard-sub">En iyi 500 hayalet avcısı</p>
     <div class="lb-tabs">
       <button class="lb-tab active" data-src="online" onclick="setLeaderboardSource('online')">🌐 Online</button>
       <button class="lb-tab" data-src="local" onclick="setLeaderboardSource('local')">📱 Bu Cihaz</button>
@@ -100,7 +104,7 @@
       <button class="btn btn-small" onclick="pgsBasarimlar()">🎖 Başarımlar</button>
     </div>
     <button class="btn btn-small" onclick="clearLeaderboard()">🗑 Yerel Listeyi Temizle</button>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
 </div>
 
@@ -113,7 +117,7 @@
       <div class="resource">💚 <span id="char-zumrut">0</span></div>
     </div>
     <div id="character-list" class="character-list"></div>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
 </div>
 
@@ -134,7 +138,7 @@
       <button class="tab-btn" onclick="showShopTab('pets')">🐾 Petler</button>
     </div>
     <div id="shop-content" class="shop-content"></div>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
 </div>
 
@@ -158,7 +162,7 @@
   <!-- Çevrimiçi: host'tan bir süredir görüntü gelmiyor -->
   <div id="bekleme" class="bekleme">⏳ Host bekleniyor…</div>
 
-  <button class="pause-btn" onclick="pauseGame()">⏸</button>
+  <button class="pause-btn" onclick="pauseGame()" aria-label="⏸"><svg viewBox="0 0 18 18" aria-hidden="true"><rect x="3" y="2" width="4.2" height="14" rx="1.4" fill="currentColor"/><rect x="10.8" y="2" width="4.2" height="14" rx="1.4" fill="currentColor"/></svg></button>
 
   <!-- Çevrimiçi Dünya Turu: hayalet olan oyuncu reklam izleyip dirilir (dunya-turu.js › turDirilTeklifi) -->
   <button id="btn-tur-diril" class="btn btn-play diril-btn" style="display:none" onclick="turDirilIzle()">🎬 Reklam izle, diril</button>
@@ -187,8 +191,8 @@
     <p id="pause-kod" class="pause-kod" style="display:none"></p>
     <button class="btn btn-big" onclick="resumeGame()">▶ Devam</button>
     <button id="pause-davet" class="btn" style="display:none" onclick="openInviteModal()">📨 Davet et</button>
-    <button class="btn" onclick="openSoundSettings()">🎚 Ses Ayarları</button>
-    <button class="btn" onclick="quitToMenu()">🏠 Menüye Dön</button>
+    <button class="btn btn-geri" onclick="openSoundSettings()">🎚 Ses Ayarları</button>
+    <button class="btn btn-geri" onclick="quitToMenu()">🏠 Menüye Dön</button>
   </div>
 </div>
 
@@ -198,7 +202,7 @@
     <h2>💔 Canların bitti!</h2>
     <p id="tur-devam-kalan" class="online-sub"></p>
     <button id="btn-tur-devam" class="btn btn-big btn-play" onclick="turDevamIzle()">🎬 Reklam izle, devam et</button>
-    <button class="btn" onclick="turDevamVazgec()">🏁 Oyunu bitir</button>
+    <button class="btn btn-geri" onclick="turDevamVazgec()">🏁 Oyunu bitir</button>
   </div>
 </div>
 
@@ -208,7 +212,7 @@
     <h2>📨 ARKADAŞINI ÇAĞIR</h2>
     <p id="davet-not" class="online-sub"></p>
     <div id="davet-liste" class="arkadas-liste"></div>
-    <button class="btn" onclick="closeInviteModal()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="closeInviteModal()">⬅ Geri</button>
   </div>
 </div>
 
@@ -258,7 +262,7 @@
     </div>
 
     <p class="online-sub" style="font-size:11px;opacity:0.7">Manuel kodu kaybedersen ilerleme kurtarılamaz. Güvenli yere not al.</p>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
 </div>
 
@@ -321,9 +325,10 @@
     </div>
     <button id="btn-tekrar" class="btn btn-big" onclick="tekrarOyna()">🔁 Tekrar Oyna</button>
     <button id="btn-lobiye-don" class="btn btn-big btn-play" style="display:none" onclick="lobiyeDon()">🎮 Lobiye Dön</button>
+    <button class="btn btn-play" id="btn-reklam-ikikat" style="display:none" onclick="odulluIzle('para')">🎬 Reklam izle: 2× 💰</button>
     <button class="btn btn-play" id="btn-reklam-odul" style="display:none" onclick="odulluIzle()">🎬 Reklam izle: +10 💚</button>
-    <button class="btn" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
-    <button class="btn" onclick="quitToMenu()">🏠 Menü</button>
+    <button class="btn btn-geri" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
+    <button class="btn btn-geri" onclick="quitToMenu()">🏠 Menü</button>
   </div>
 </div>
 
@@ -337,7 +342,7 @@
     <button class="btn btn-big" onclick="openCreateRoom()">➕ Oda Kur</button>
     <button class="btn btn-big" onclick="openFriends()">👫 Arkadaşlar</button>
     <p class="online-status" id="online-status"></p>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
 </div>
 
@@ -377,7 +382,7 @@
       <div id="arkadas-engellenen" class="arkadas-liste"></div>
     </details>
     <button id="arkadas-google" class="btn btn-small arkadas-google" onclick="openAccount()" style="display:none">🔐 Arkadaşların kaybolmasın: Google ile giriş yap ›</button>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
 </div>
 
@@ -394,7 +399,7 @@
     <div id="tur-liste" class="tur-liste"></div>
     <div id="tur-pasaport" class="tur-pasaport" style="display:none"></div>
     <button id="tur-basla" class="btn btn-big btn-play" onclick="dunyaTuruBaslat()">▶ Başla</button>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
 </div>
 <!-- Damga ve uçak geçişi perdeleri (oyunun üstünde; dokunuşu geçirir) -->
@@ -423,7 +428,7 @@
       <input id="room-code-input" class="name-input kod-input" type="text" maxlength="7" placeholder="Oda kodu" autocomplete="off" autocapitalize="characters" spellcheck="false">
       <button class="btn btn-play" onclick="kodlaKatil()">🔑 Kodla Katıl</button>
     </div>
-    <button class="btn" onclick="leaveOnlineToOnline()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="leaveOnlineToOnline()">⬅ Geri</button>
   </div>
 </div>
 
@@ -453,7 +458,7 @@
       <button id="oda-ulke-ileri" class="kip-btn" onclick="odaUlkesiKaydir(1)">▶</button>
     </div>
     <button class="btn btn-big btn-play" onclick="submitCreateRoom()">🚀 ODA KUR</button>
-    <button class="btn" onclick="leaveOnlineToOnline()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="leaveOnlineToOnline()">⬅ Geri</button>
   </div>
 </div>
 
@@ -476,7 +481,7 @@
       <button id="lobby-ready-btn" class="btn btn-big" onclick="toggleReady()">✓ HAZIR</button>
       <button id="lobby-start-btn" class="btn btn-big btn-play" onclick="startMpGame()" style="display:none;">▶ BAŞLAT</button>
     </div>
-    <button class="btn" onclick="leaveRoom()">🚪 Odadan Ayrıl</button>
+    <button class="btn btn-geri" onclick="leaveRoom()">🚪 Odadan Ayrıl</button>
   </div>
 </div>
 
@@ -527,6 +532,7 @@
 <script src="kopru.js"></script>
 <script src="cali.js"></script>
 <script src="pet.js"></script>
+<script src="hava.js"></script>
 <script src="ulke-aileleri.js"></script>
 <script src="ulke-objeleri-avrupa.js"></script>
 <script src="ulke-objeleri-afrika.js"></script>

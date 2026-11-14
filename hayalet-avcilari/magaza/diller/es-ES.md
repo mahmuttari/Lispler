@@ -44,8 +44,8 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 ## Sürüm notu
 
-🎬 ¿Sin vidas en la Gira mundial? Mira un anuncio y sigue donde lo dejaste (3 veces por partida).
+🦇 Murciélagos vuelan por el bosque y una nube de tormenta lanza rayos sobre el jefe.
+🎨 Nuevo diseño y 🏆 top 500 de campeones.
+🎬 Mira un anuncio: sigue en la Gira mundial (3 veces por partida) o duplica tus monedas al final.
 🐊 Ahora hay cocodrilos en el agua: ¡si te quedas en la orilla, pueden morderte!
-🌉 Puentes de cuerda colgantes sobre los lagos: cruza rápido, ¡si te entretienes en medio, te caes al agua!
-🐾 ¡Llegan las mascotas: lleva un gato, un perro o un pájaro y atacad juntos a los fantasmas!
-🌿 Escóndete en los arbustos: los fantasmas no te ven; ya no aparecen a tu lado.
+🐾 ¡Llegan las mascotas: lleva un gato, un perro o un pájaro! Los fantasmas también les pegan; cada mascota tiene 5 vidas.

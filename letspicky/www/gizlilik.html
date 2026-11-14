@@ -83,6 +83,12 @@ Gizlilikle ilgili sorularınız ve talepleriniz için:
   <td>Soloda yalnız cihazınızda, uygulama kapanınca gider. Odada oda kaydında durur, odadakiler görür, en geç 24 saat içinde silinir.</td>
 </tr>
 <tr>
+  <td>Cihazın yaklaşık konumu (izin verirseniz)</td>
+  <td>Karar çıkınca yakınınızdaki mekânları uygulamanın içinde listelemek</td>
+  <td>Konum 2 ondalığa yuvarlanır (yaklaşık 1 km) ve yalnız mekân aramak için aşağıdaki servislere gider; hiçbir yerde
+      saklanmaz, odaya yazılmaz. Tam konum cihazınızda kalır ve yalnız uzaklığı hesaplamak için kullanılır.</td>
+</tr>
+<tr>
   <td>Uygulama ayarları (dil, tema, ses), son kullandığınız takma ad, günlük süper istek sayacı</td>
   <td>Uygulamanın tercihlerinizle açılması</td>
   <td>Yalnız cihazınızda (tarayıcı depolaması). Uygulamayı kaldırınca ya da tarayıcı verilerini silince gider.</td>
@@ -90,8 +96,9 @@ Gizlilikle ilgili sorularınız ve talepleriniz için:
 </tbody>
 </table>
 </div>
-<p>Cihazın konumu (GPS), kişiler, fotoğraf, kamera, mikrofon ve reklam kimliği gibi verilere erişilmez.
-Plan yeri cihaz konumundan alınmaz; yalnız sizin yazdığınız yer adı kullanılır. Davet QR kodu cihazınızda üretilir.</p>
+<p>Kesin konum, kişiler, fotoğraf, kamera, mikrofon ve reklam kimliği gibi verilere erişilmez. Yaklaşık konum yalnız
+sonuç ekranında ve izin verirseniz istenir; izni cihaz ayarlarından istediğiniz zaman kapatabilirsiniz. "Nerede, ne
+zaman?" planında cihaz konumu kullanılmaz, yazdığınız yer adı kullanılır. Davet QR kodu cihazınızda üretilir.</p>
 
 <h2>3. Hizmet sağlayıcı</h2>
 <p>Odaların anlık eşitlenmesi için Google'ın <strong>Firebase Realtime Database</strong> ve
@@ -102,9 +109,10 @@ sağlamak için cihazınızın IP adresi gibi teknik bağlantı bilgilerini işl
 <a href="https://open-meteo.com/en/terms" target="_blank" rel="noopener">Open-Meteo</a> (yer araması ve hava tahmini:
 yazdığınız yer adı, seçilen yerin koordinatı ve gün) ve
 <a href="https://wiki.osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">OpenStreetMap Overpass</a>
-(yakındaki mekânlar: seçilen yerin koordinatı ve kartın türü; overpass-api.de, yanıt vermezse aynı veriyi sunan
+(yakındaki mekânlar: seçilen yerin ya da yuvarlanmış konumunuzun koordinatı ve kartın türü; overpass-api.de, yanıt vermezse aynı veriyi sunan
 overpass.private.coffee ve overpass.kumi.systems; bunlar yanıt vermezse aynı veride arama yapan
-<a href="https://photon.komoot.io" target="_blank" rel="noopener">Photon (komoot)</a>: plan yerinin adı ve koordinatı). Bu isteklerde ad, hesap ya da oda bilgisi yoktur;
+<a href="https://photon.komoot.io" target="_blank" rel="noopener">Photon (komoot)</a>: yerin adı ve koordinatı; yuvarlanmış
+konumunuzdan semt adını bulmak için de kullanılır). Bu isteklerde ad, hesap ya da oda bilgisi yoktur;
 hizmetler IP adresi gibi teknik bağlantı bilgilerini işleyebilir. Mekân verisi © OpenStreetMap katkıcıları.</p>
 
 <h2>4. Dış bağlantılar</h2>
@@ -167,10 +175,12 @@ ads, no analytics, no tracking and no in-app purchases.
   <li><strong>Fixed emoji reactions</strong> (👍 🍕 🎬 😂 🔥) — live reactions during a round. Deleted within 24 hours.</li>
   <li><strong>Anonymous user ID (Firebase Authentication) and online status</strong> — so each player can change only their own vote and the room can show who is connected. The ID is random and is not linked to your name, e-mail or phone number.</li>
   <li><strong>"Where and when?" plan</strong> (optional): the place name you type, the coordinates of the chosen place, the day and that day's weather forecast — to show matching ideas, a weather check and nearby places. In solo mode it stays only on your device; in a room it is stored in the room record, visible to the room and deleted within 24 hours.</li>
+  <li><strong>Approximate device location</strong> (only if you allow it) — to list places near you inside the app when a decision is made. It is rounded to 2 decimals (about 1 km) and sent only to the place services below; it is not stored anywhere or written to the room. Your exact location stays on your device and is used only to calculate distances.</li>
   <li><strong>App settings</strong> (language, theme, sound), your last nickname and the daily super-like counter — stored only on your device (browser storage).</li>
 </ul>
-<p>The app does not access device location (GPS), contacts, photos, camera, microphone or the advertising ID.
-The plan place is never taken from device location; only the place name you type is used. The invite QR code is generated on your device.</p>
+<p>The app does not access precise location, contacts, photos, camera, microphone or the advertising ID. Approximate
+location is requested only on the result screen and only if you allow it; you can turn it off in your device settings at
+any time. The "Where and when?" plan does not use device location; it uses the place name you type. The invite QR code is generated on your device.</p>
 
 <h2>3. Service provider</h2>
 <p>Rooms are synchronised with Google's <strong>Firebase Realtime Database</strong> and
@@ -181,9 +191,10 @@ technical connection data such as your IP address. Details:
 <a href="https://open-meteo.com/en/terms" target="_blank" rel="noopener">Open-Meteo</a> (place search and weather forecast:
 the place name you type, the chosen place's coordinates and the day) and
 <a href="https://wiki.osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">OpenStreetMap Overpass</a>
-(nearby places: the chosen place's coordinates and the card type; overpass-api.de, or if it does not answer, the
+(nearby places: the coordinates of the chosen place or of your rounded location, and the card type; overpass-api.de, or if it does not answer, the
 overpass.private.coffee and overpass.kumi.systems servers that serve the same data; if these do not answer,
-<a href="https://photon.komoot.io" target="_blank" rel="noopener">Photon (komoot)</a>, which searches the same data: the plan place name and coordinates). These requests contain no name, account or room data;
+<a href="https://photon.komoot.io" target="_blank" rel="noopener">Photon (komoot)</a>, which searches the same data: the place name and coordinates;
+it also finds the district name for your rounded location). These requests contain no name, account or room data;
 the services may process technical connection data such as your IP address. Place data © OpenStreetMap contributors.</p>
 
 <h2>4. External links</h2>

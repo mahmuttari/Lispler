@@ -41,4 +41,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Kaydırma ve eşleşme anındaki kısa titreşim (navigator.vibrate). -->
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- Kararın yakınındaki mekânları listelemek için yaklaşık konum (yalnız kullanılırken, kesin konum istenmez). -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 </manifest>

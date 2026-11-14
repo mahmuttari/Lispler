@@ -23,7 +23,15 @@ reklam birimi açmaya API vermez. Adımları sahip ya da bilgisayardaki Claude (
   (`smart-measure/ios/admob.properties`); IDFA mesajı yayında, AB onay mesajına eklendi. `app-ads.txt` sitede var.
 - **App Store Connect:** Apple ID `6834697005`, SKU `olcukutusu-ios`; fiyat Ücretsiz, 175 ülke; App Privacy yayında; App Review bilgisi dolu.
 
-Sıradaki: bulut oturumu (abonelikler, mağaza metinleri, görseller, yaş derecesi, iPhone derlemesi), sonra B.
+**Bulut oturumu tamam:** Play'de abonelik `adfree` (aylık 0,99 · yıllık 9,99 USD, etkin), mağaza metni ve görseller;
+üretimde **1.0.0 (2) TASLAK** (NetcadDevelop koşu 43586283451, gerçek AdMob kimlikli AAB). App Store'da metinler, yaş
+derecesi, ekran görüntüleri, iki abonelik; iPhone yapısı 2 işlendi (VALID).
+
+**B (sahibin onayı, 14 Kasım 2026):**
+- **App Store: incelemede.** iOS 1.0.0 (yapı 2) + `…adfree.monthly` + `…adfree.yearly` + "Reklamsız" grubu tek gönderimde,
+  13:54'te (TSİ) API ile gönderildi (NetcadDevelop › `olcu-kutusu/gonder.mjs`, koşu 43587413988; gönderim `10d3e955…`).
+  Dördü de **Waiting for Review** (koşu 43587539016). Version Release: **onaylanınca kendiliğinden** (AFTER_APPROVAL).
+- **Play: tarayıcı adımı bekliyor** (B1). Play API'si hiç yayınlanmamış uygulamada yalnız taslak sürüm kabul eder.
 
 ## Onay satırı (bilgisayardaki oturumun başında sahip yazar; istemediği kalemi siler)
 
@@ -78,12 +86,15 @@ Bitince "B'ye geçilebilir" der.
 
 ## B. Bulut oturumu "B'ye geçilebilir" deyince
 
-1. **Play Console › Ölçü Kutusu:** Kontrol panelinde eksik görev kalmamalı (kalırsa dur ve sahibe yaz) › **Yayınlama genel
-   bakışı** › "Değişiklikleri incelemeye gönder".
-2. **App Store Connect › Ölçü Kutusu › 1.0.0:** Build › yüklenen yapıyı seç; **In-App Purchases and Subscriptions** › iki
-   aboneliği de ekle (`…adfree.monthly`, `…adfree.yearly`); eksik alan uyarısı yoksa **Add for Review** › **Submit for
-   Review**. Uyarı varsa dur ve sahibe yaz.
-3. Sahibe yaz: **"Ölçü Kutusu incelemeye gönderildi"** (hangi mağaza, saat).
+1. **Play Console › MARFEN › Ölçü Kutusu – Terazi, Cetvel** (tek sekme):
+   1. **Kontrol paneli** › "Uygulamanızı ayarlayın": bütün görevler tamam olmalı. Açık görev varsa dur, adını sahibe yaz.
+   2. **Test ve yayınla › Üretim › Sürümler:** taslak **1.0.0 (2)** görünmeli (sürüm kodu 2). Başka sürüm kodu varsa dur.
+   3. **Sürümü düzenle › Sonraki.** Önizleme sayfasında kırmızı hata varsa dur. Sarı uyarılar gönderimi engellemez; sahibe
+      yaz.
+   4. **Kaydet** › **Yayınlama genel bakışı** › "Değişiklikleri incelemeye gönder" › onay penceresinde gönder. (Düğme
+      "Kaydet ve yayınla" diye çıkarsa o.) "Yönetilen yayınlama" ayarına dokunma.
+2. **App Store Connect:** ~~Build, abonelikler, Add for Review › Submit for Review~~ API ile yapıldı (yukarıda, Durum › B).
+3. Sahibe yaz: **"Ölçü Kutusu incelemeye gönderildi"** (hangi mağaza, saat) ve sarı uyarılar.
 
 ## Neden tarayıcı?
 

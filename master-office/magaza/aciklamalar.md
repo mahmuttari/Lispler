@@ -4,12 +4,14 @@
 politikası" satırlarını ve "Kısa açıklama" / "Uzun açıklama" bölümlerini okur (ad ≤30, kısa ≤80, uzun ≤4000 karakter).
 Web sitesi adresi gizlilik politikası adresinden çıkarılır. İngilizce metin `diller/en-US.md`'dedir (aynı biçim +
 "Sürüm notu" bölümü, ≤500 karakter). Gizlilik ve tanıtım sayfası MARFEN uygulama sayfalarındadır (`mahmuttari/mahmuttari.github.io` › `master-office/`).
-Metinler, form cevapları ve görseller `MasterOffice_PlayStore_Paketi`'nden (10 Kasım 2026) **birebir** alındı. Uygulamanın
+Form cevapları ve görseller `MasterOffice_PlayStore_Paketi`'nden (10 Kasım 2026) **birebir** alındı. Ad, kısa ve uzun
+açıklama 14 Kasım 2026'da mağaza görünürlüğü için yeniden yazıldı (sahip: "market görünürlüğünü artıracak metin çalışmalarını
+yap ve yayınla"; gerekçe ve aranan kelimeler `PLAY-YAYIN.md` › "Mağaza görünürlüğü"); içerik 3.5.2'nin özelliklerine sadıktır (hesap / giriş yok). Uygulamanın
 sahibi kullanıcıdır; kaynak kodu hiçbir yerde yoktur.
 
 ## Ortak
 
-- **Uygulama adı:** Master Office
+- **Uygulama adı:** Master Office: PDF Okuyucu
 - **Geliştirici adı:** MARFEN (kuruluş hesabı; Play'de yasal ad da görünür)
 - **Paket adı:** `com.ofivora.app` (sürüm 3.5.1, versionCode 3005001; `../surum.gradle`)
 - **Tür ve kategori:** Uygulama · Verimlilik (Productivity)
@@ -20,31 +22,35 @@ sahibi kullanıcıdır; kaynak kodu hiçbir yerde yoktur.
 
 ## Kısa açıklama
 
-PDF, Word, Excel ve PowerPoint aç; PDF birleştir, böl, imzala ve dönüştür.
+Belge ve PDF okuyucu: Word, Excel aç; PDF düzenle, birleştir, böl ve imzala
 
 ## Uzun açıklama
 
-Master Office: tüm belgelerin tek uygulamada.
+Master Office; PDF okuyucu, belge görüntüleyici ve PDF düzenleyiciyi tek uygulamada toplar.
 
-PDF, Word, Excel, PowerPoint, TXT ve ZIP/RAR dosyalarını hızla aç; PDF'leri birleştir, böl, imzala ve dönüştür. Belgelerin telefonunda açılır, hiçbir yere yüklenmez. Bütün araçlar internet olmadan çalışır.
+PDF, Word (DOC, DOCX, RTF), Excel (XLS, XLSX, CSV), PowerPoint (PPT, PPTX), TXT ve ZIP/RAR dosyalarını hızla aç; PDF birleştir, PDF böl, PDF imzala ve PDF'i Word'e dönüştür. Belgelerin telefonunda açılır, hiçbir yere yüklenmez. Bütün araçlar internet olmadan çalışır.
 
-BELGE GÖRÜNTÜLEME
-• PDF, Word (DOC, DOCX, RTF), Excel (XLS, XLSX, CSV), PowerPoint (PPT, PPTX), TXT ve resimler
+PDF OKUYUCU VE BELGE GÖRÜNTÜLEYİCİ
+• PDF, Word, Excel, PowerPoint, TXT ve resim dosyalarını tek uygulamada aç
 • ZIP ve RAR arşivlerinin içini gör, içindeki belgeleri doğrudan aç
+• Dosyalar sekmesi: telefondaki bütün belgeleri tek listede bul; İndirilenler ve mesajlaşma uygulamalarıyla gelen belgeler dahil
 • Metinde arama, akıcı sayfa geçişi, not alma ve yazdırma
-• Son açılanlar ve Dosyalar listesiyle belgelerine hızla ulaş
+• Son açılanlar listesiyle belgelerine hızla dön
 
-PDF ARAÇLARI
-• PDF Birleştir: dosyaları sırala, kapak sayfası ekle
-• PDF Böl: sayfa aralığına göre ya da her sayfayı ayrı dosya olarak ayır
+PDF DÜZENLEYİCİ
+• PDF birleştirme: dosyaları sırala, kapak sayfası ekle
+• PDF bölme: sayfa aralığına göre ya da her sayfayı ayrı dosya olarak ayır
 • Sayfaları düzenle: döndür, sil, çoğalt, taşı, boş sayfa ekle
-• PDF → Word, Word → PDF, PDF → PowerPoint, PowerPoint → PDF
-• Resimden PDF ve PDF'den resim
 • PDF Lego Modu: sayfayı bloklara ayır; taşı, boyutlandır, düzenle
 
-İMZA, MÜHÜR VE GÜVENLİK
+PDF DÖNÜŞTÜRÜCÜ
+• PDF'den Word'e ve Word'den PDF'e
+• PDF'den PowerPoint'e ve PowerPoint'ten PDF'e
+• Resimden PDF oluştur, PDF sayfalarını resme çevir
+
+PDF İMZALAMA, MÜHÜR VE GÜVENLİK
 • İmza & Mühür sihirbazı: kâğıttaki imzanın fotoğrafını çek, arka planı temizle, şeffaf imza yap; kendi mührünü oluştur
-• İmzanı ve mührünü PDF'e yerleştir
+• İmzanı ve mührünü PDF'e yerleştir; belgeyi telefonda imzala
 • Filigran ekle, PDF'e parola koy
 
 MÜHENDİSLER İÇİN
@@ -54,6 +60,9 @@ MÜHENDİSLER İÇİN
 WORD VE EXCEL DÜZENLEME
 • Word belgelerinde metin düzenleme
 • Excel'de hücre düzenleme, açılır listeler, anında formül hesaplama, sıralama ve filtreleme
+
+KİMLER İÇİN
+Okulda ödev ve ders notu, işte sözleşme, teklif ve fatura, sahada çizim ve metraj: telefona gelen her belgeyi açmak, imzalayıp geri göndermek ya da birkaç PDF'i tek dosyada toplamak için.
 
 PAKETLER
 Belgeleri açmak ve görüntülemek her zaman ücretsizdir. Ücretsiz sürümde reklam gösterilir; belge görüntülerken reklam çıkmaz. Araçlar her gün ücretsiz kullanılabilir: günün ilk kullanımı tam, ikincisi kısıtlıdır.

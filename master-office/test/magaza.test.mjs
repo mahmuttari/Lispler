@@ -36,7 +36,14 @@ test('paket adı ve sürüm', () => {
 test('mağaza metinleri: tr-TR ve en-US, Play sınırları içinde', () => {
   const m = play.magazaMetinleri(oku(MAGAZA, 'aciklamalar.md'), play.dilDosyalari(MAGAZA));
   assert.deepEqual(Object.keys(m.listings).sort(), ['en-US', 'tr-TR']);
-  for (const l of Object.values(m.listings)) assert.equal(l.title, 'Master Office');
+  // Ad: marka + ne yaptığı (14 Kasım 2026, mağaza görünürlüğü; PLAY-YAYIN.md › "Mağaza görünürlüğü")
+  assert.equal(m.listings['tr-TR'].title, 'Master Office: PDF Okuyucu');
+  assert.equal(m.listings['en-US'].title, 'Master Office: PDF Editor');
+  for (const l of Object.values(m.listings)) assert.match(l.title, /^Master Office: \S/);
+  // Kısa açıklama aramadaki ana kelimeleri taşır; uzun açıklama 3.5.2'ye sadık (hesap / giriş yok)
+  assert.match(m.listings['tr-TR'].shortDescription, /PDF okuyucu/);
+  assert.match(m.listings['en-US'].shortDescription, /PDF reader/);
+  for (const l of Object.values(m.listings)) assert.doesNotMatch(l.fullDescription, /oturum aç|giriş yap|hesabınla|sign in|log in/i);
   assert.match(m.details.contactEmail, /^[^@\s]+@[^@\s]+\.[a-z]+$/);
   assert.equal(m.details.contactWebsite, 'https://mahmuttari.github.io/master-office/');
   // Play meta veri kuralları: adda emoji / büyük harf / "en iyi" / "ücretsiz" yok

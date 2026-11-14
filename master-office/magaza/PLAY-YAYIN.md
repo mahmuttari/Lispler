@@ -57,11 +57,36 @@ Kullanıcı onay paketinin hepsini onayladı ("Hepsine onay veriyorum, tam yetki
   "Sayfa" anahtarıyla imzalı olduğu için yeni anahtarla imzalanan sürümden önce Play'den yükleme anahtarı sıfırlaması
   istenir.
 
+## Mağaza görünürlüğü (14 Kasım 2026)
+
+Sahip: "Master Office uygulamamızın market görünürlüğünü artıracak metin çalışmalarını yap ve yayınla."
+
+- **Bulgu (Play araması, 14 Kasım 2026, tr-TR / TR ve en / US):** üst sıralardaki belge ve PDF uygulamalarının hepsi "marka + ne
+  yaptığı" başlığı taşır ("WPS Office-PDF, Word, Sheet, PPT", "MobiOffice: Word, Sheets, PDF", "Belge Okuyucu: PDF, DOC, XLS",
+  "iLovePDF: PDF Düzenle ve Tara", "PDF Okuyucu: PDF Görüntüleyici", "Document Reader - PDF Editor"). Yalnız "Master Office" başlığı
+  "pdf okuyucu", "belge okuyucu", "pdf editor" aramalarında başlıktan hiç eşleşmiyordu; Play'de en ağır alan başlıktır, sonra kısa açıklama.
+- **Yeni metin:** ad tr-TR `Master Office: PDF Okuyucu` (26/30), en-US `Master Office: PDF Editor` (25/30); kısa açıklama tr-TR "Belge ve
+  PDF okuyucu: Word, Excel aç; PDF düzenle, birleştir, böl ve imzala" (75/80), en-US "PDF reader & document viewer: open Word, Excel;
+  merge, split and sign PDFs" (74/80); uzun açıklama aranan işleri doğal cümle ve başlıkla taşır (PDF okuyucu ve belge görüntüleyici,
+  PDF düzenleyici, PDF dönüştürücü, PDF imzalama; "Kimler için" bölümü), anahtar kelime listesi yok (Play meta veri politikası: aldatıcı
+  iddia ve anlamsız kelime yığını yasak). İçerik 3.5.2'ye sadıktır: hesap / giriş yazılmaz (3.6.0+ Play'e gelince eklenir).
+- **Kurallar:** ad ≤ 30, emoji / "en iyi" / "ücretsiz" / "#1" yok (`test/magaza.test.mjs`); başka uygulamanın adı geçmez (Word / Excel /
+  PowerPoint dosya türü olarak). Kaynak: [Google Play meta veri politikası](https://support.google.com/googleplay/android-developer/answer/9898842).
+- **Yayın:** Lispler `main` → NetcadDevelop `master-office-play` › `.github/master-office-istek.txt` › `magaza uygula`. Uygulama Play'de
+  hâlâ **taslak uygulama** (3.5.2 üretimde taslak, 13 Kasım): metin kaydedilir ama mağazada görünmesi Console › Yayın özeti ›
+  "Uygulamayı incelemeye gönder" ve Google'ın onayını bekler (sahibin adımı). Görünürlüğün asıl engeli budur.
+- **Önerilen sonraki adımlar (sahibin kararı):** (1) Varsayılan dil Türkçe: Türkçe ve İngilizce dışındaki dillerde Play sayfayı Türkçe
+  gösterip yalnız otomatik çeviri önerir ([Play Yardım](https://support.google.com/googleplay/android-developer/answer/9844778)); dünya geneli
+  için en-US varsayılan dil daha uygundur (`android/play.mjs › magazaMetinleri` `defaultLanguage` bütün uygulamalarda tr-TR; Master Office
+  için ayrı ayar gerekir). (2) Başka dillerde mağaza sayfası: aramada en büyük kazanç, ama uygulama arayüzü yalnız Türkçe ve İngilizce;
+  açılırsa her dilin metnine "uygulama dili İngilizce ve Türkçe" satırı ve en-US ekran görüntüleri konur, yoksa yükleyip silen kullanıcı
+  ve kötü puan riski var.
+
 ## Sabit bilgiler
 
 | Alan | Değer |
 |---|---|
-| Uygulama adı (mağaza, tr-TR ve en-US) | `Master Office` |
+| Uygulama adı (mağaza) | tr-TR `Master Office: PDF Okuyucu`, en-US `Master Office: PDF Editor` (14 Kasım 2026'dan beri; marka `Master Office` aynı, yukarıda "Mağaza görünürlüğü") |
 | Paket adı | `com.ofivora.app` (uygulamanın içinde sabit; "paket adı kullanılıyor" hatası çıkarsa dur ve kullanıcıya sor) |
 | İlk paket | `3.5.1` (versionCode `3005001`), imzalı AAB `01_Yuklenecek_Uygulama/MasterOffice-3.5.1.aab`. **AdMob TEST kimlikli** (`ca-app-pub-3940256099942544~3347511713`): yalnız dahili test |
 | Yükleme anahtarı | 3.5.1'i imzalayan anahtar (CN=Sayfa; dosyası elde olmayabilir; SHA-256 `40:80:24:0A:…:04:CF:09`). Play Uygulama İmzalama: **Google'ın oluşturduğu anahtar**. Yeniden kurulan sürüm başka anahtarla imzalanırsa Play Console'dan **yükleme anahtarı sıfırlama** istenir |

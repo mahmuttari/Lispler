@@ -190,6 +190,30 @@ test('kamera: canlı önizleme, tepe ve yön denetimleri', () => {
   assert.equal(A.hintFor('height', 0, true).key, 'cm_hint_base_first');
 });
 
+test('kamera: bilinen mesafeyle telefon yüksekliği (h = D · tan θ) ve sınırları', () => {
+  // 2 m ötedeki noktaya 35° aşağı bakış → 1,40 m
+  yakin(A.heightFromKnown(2, { pitch: 35 }).h, 2 * Math.tan(35 * DEG), 1e-12);
+  yakin(A.heightFromKnown(2, { pitch: Math.atan(1.42 / 2) / DEG }).h, 1.42, 1e-12);
+  assert.equal(A.heightFromKnown(2, null).problem, 'NoAim');
+  assert.equal(A.heightFromKnown(0.2, { pitch: 35 }).problem, 'Range');
+  assert.equal(A.heightFromKnown(2, { pitch: 5 }).problem, 'AimLower');
+  assert.equal(A.heightFromKnown(2, { pitch: 88 }).problem, 'AimHigher');
+  assert.equal(A.heightFromKnown(2, { pitch: 35, sp: 1.5 }).problem, 'Moving');
+  const disari = A.heightFromKnown(10, { pitch: 30 });      // 5,77 m: telefon bu yükseklikte tutulamaz
+  assert.equal(disari.problem, 'HeightOut'); yakin(disari.h, 10 * Math.tan(30 * DEG), 1e-12);
+});
+
+test('kamera: yükseklikte tepe tabanın dikey doğrultusunda olmalı (telefon yana çevrilmemeli)', () => {
+  const h = 1.5, taban = { pitch: 20, bearing: 0 }, r = A.floorRange(h, 20);   // ≈ 4,12 m
+  const tepe = (b) => ({ pitch: -10, bearing: b });
+  assert.equal(A.pointProblem('height', [taban], h, tepe(2)), null);              // 14 cm sapma: kabul
+  assert.equal(A.pointProblem('height', [taban], h, tepe(8)), 'NotAbove');        // 58 cm sapma
+  assert.equal(A.pointProblem('height', [taban], h, tepe(359)), null);            // 0/360 sınırı
+  assert.equal(A.pointProblem('height', [{ pitch: 80, bearing: 0 }], h, tepe(25)), null);   // dibinde: 12 cm
+  assert.equal(A.pointProblem('height', [{ pitch: 20, bearing: null }], h, tepe(40)), null); // yön yoksa denetlenmez
+  assert.ok(r > 4);
+});
+
 test('kamera: belirsizlik çakışan noktalarda sıfıra düşmez, yönsüz kipte de doğru', () => {
   const h = 1.5, a = { pitch: 30, bearing: 10 };
   const ayni = A.distanceBetween(h, a, { ...a });

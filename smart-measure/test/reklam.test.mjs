@@ -34,7 +34,9 @@ globalThis.window = {
       NativePurchases: { getPurchases: async () => ({ purchases: [] }) } },
   },
 };
-globalThis.document = { documentElement: { style: { setProperty() {} } }, dispatchEvent() {}, addEventListener() {} };
+const belgeDinleyici = {};
+globalThis.document = { documentElement: { style: { setProperty() {} } }, dispatchEvent() {},
+  addEventListener(ad, f) { (belgeDinleyici[ad] = belgeDinleyici[ad] || []).push(f); } };
 
 const R = await import('../www/js/reklam.js');
 const { SYS } = await import('../www/js/store.js');
@@ -104,6 +106,18 @@ test('banner klavye ve tam ekranda gizlenir, sonra geri gelir', () => {
   R.bannerGizle('tamekran', false);
   assert.deepEqual(kayit.map((c) => c.ad), ['hideBanner']);
   R.bannerGizle('klavye', false);
+  assert.deepEqual(kayit.map((c) => c.ad), ['hideBanner', 'resumeBanner']);
+});
+
+test('banner alt sayfa açıkken gizlenir (alt sayfanın düğmelerini örtmesin), kapanınca geri gelir', () => {
+  kayit.length = 0;
+  const olay = (acik) => (belgeDinleyici['alt-sayfa'] || []).forEach((f) => f({ detail: { acik } }));
+  assert.ok((belgeDinleyici['alt-sayfa'] || []).length >= 1, 'reklam.js "alt-sayfa" olayını dinliyor');
+  olay(true);
+  assert.deepEqual(kayit.map((c) => c.ad), ['hideBanner']);
+  R.bannerGizle('tamekran', true); R.bannerGizle('tamekran', false);
+  assert.deepEqual(kayit.map((c) => c.ad), ['hideBanner'], 'alt sayfa açıkken başka neden kalkınca banner dönmez');
+  olay(false);
   assert.deepEqual(kayit.map((c) => c.ad), ['hideBanner', 'resumeBanner']);
 });
 

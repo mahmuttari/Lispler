@@ -16,11 +16,26 @@ import * as B from '../olcum/birim.js';
 import { topbar, moreButton, paras } from './common.js';
 
 const PROBLEM = { NeedHeight: 'cm_problem_height', AimLower: 'cm_problem_aim_lower', AimHigher: 'cm_problem_aim_higher', NeedBase: 'cm_problem_base_first',
-  TopSteep: 'cm_problem_top_steep', TopLow: 'cm_problem_top_low', Moving: 'cm_problem_steady', NoBearing: 'cm_no_bearing' };
+  TopSteep: 'cm_problem_top_steep', TopLow: 'cm_problem_top_low', Moving: 'cm_problem_steady', NoBearing: 'cm_no_bearing', NotAbove: 'cm_problem_not_above' };
 const STALE_MS = 1500;      // bu kadar süre okuma gelmezse bakış bayattır
 const RESTART_MS = 4000;    // akış kesilince en sık bu aralıkla yeniden başlatılır
 const RESULT_KEY = { distance: 'cm_result_distance', height: 'cm_result_height', width: 'cm_result_width' };
 const HISTORY_KEY = { distance: 'cm_history_distance', height: 'cm_history_height', width: 'cm_history_width' };
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+/** Hedef: ince "+" (kolları 20 px, kesişim tam nişan noktası). Altındaki koyu çizgi her zeminde görünür kılar. */
+export function arti(boy = 44) {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  for (const [k, v] of Object.entries({ viewBox: '0 0 44 44', width: boy, height: boy, 'aria-hidden': 'true', fill: 'none', 'stroke-linecap': 'round' })) svg.setAttribute(k, v);
+  for (const [renk, kalinlik] of [['rgba(0,0,0,.7)', 5], ['currentColor', 2]]) {
+    const p = document.createElementNS(SVG_NS, 'path');
+    p.setAttribute('d', 'M22 2V42M2 22H42');
+    p.setAttribute('stroke', renk);
+    p.setAttribute('stroke-width', kalinlik);
+    svg.append(p);
+  }
+  return svg;
+}
 
 export function render({ params, back }) {
   let mode = ['distance', 'height', 'width'].includes(params.mode) ? params.mode : S.ar.mode;
@@ -39,7 +54,7 @@ export function render({ params, back }) {
   // ---- kamera kutusu
   const video = h('video', { autoplay: true, muted: true, playsinline: true, 'aria-hidden': 'true' });
   video.muted = true;
-  const cross = h('div', { class: 'cross' }, icon('Crosshair', 54));
+  const cross = h('div', { class: 'cross' }, arti());
   const pill = h('div', { class: 'cam-pill hidden' });
   const problem = h('div', { class: 'cam-problem hidden' });
   const torchBtn = iconButton('Flashlight', t('cm_torch'), toggleTorch);
@@ -72,9 +87,27 @@ export function render({ params, back }) {
   ]);
   const help = iconButton('CircleHelp', t('cm_help_title'), () => sheet(t('cm_help_title'), [...paras('cm_help_text', 'cm_approx_note', 'st_acc_camera_text')]));
 
-  const el = h('div', { class: 'screen tool acc-blue' },
-    topbar({ title: `${t('cm_title_ar')} ${t('cm_title_measure')}`, sub: t('cm_subtitle'), onBack: back, actions: [help, more] }),
-    cam, tabs, h('div', { class: 'chips' }, heightChip), bearingNote, hint, actions, resultCard, approx, fsBar);
+  const bar = topbar({ title: `${t('cm_title_ar')} ${t('cm_title_measure')}`, sub: t('cm_subtitle'), onBack: back, actions: [help, more] });
+  const chips = h('div', { class: 'chips' }, heightChip);
+  const el = h('div', { class: 'screen tool ar acc-blue' }, bar, cam, tabs, chips, bearingNote, hint, actions, resultCard, approx, fsBar);
+
+  // ---- yerleşim: nişan alırken kaydırmak gerekmesin. Kamera kutusunun yüksekliğini CSS hesaplar (app.css › .screen.ar .cam):
+  // görünen yükseklik − banner − üst çubuk (--ar-ust) − alttaki denetimler (--ar-alt). Banner yüksekliği değişince CSS kendiliğinden
+  // yeniden hesaplar; denetimlerin yüksekliği (dil, yazı boyu, uyarı satırı) değişince burada ölçülür.
+  const altlar = [tabs, chips, bearingNote, hint, actions];
+  let sonYer = '';
+  function yerlesim() {
+    if (destroyed || document.body.classList.contains('fullscreen')) return;
+    const alt = altlar.reduce((t2, x) => t2 + (x.offsetHeight ? x.offsetHeight + 14 : 0), 0);
+    const ust = Math.round(cam.getBoundingClientRect().top + window.scrollY);
+    if (`${alt}|${ust}` === sonYer) return;      // değişmediyse yazılmaz (gözlenen öğelerin boyu kamera boyuna bağlı değil)
+    sonYer = `${alt}|${ust}`;
+    el.style.setProperty('--ar-alt', `${alt}px`);
+    el.style.setProperty('--ar-ust', `${ust}px`);
+  }
+  const gozlem = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => yerlesim()) : null;
+  if (gozlem) for (const x of [bar, ...altlar]) gozlem.observe(x);
+  window.addEventListener('resize', yerlesim);
 
   // ---- akış
   function stepButton(i, inFs) {
@@ -82,12 +115,12 @@ export function render({ params, back }) {
     const key = f.buttons[i], sub = f.subs[i];
     const isNext = points.length % 2 === i || (mode === 'width' && i === 0);
     return h('button', { class: `act${isNext && points.length < 2 ? ' primary' : ''}`, type: 'button', onclick: () => select(i), onpointerdown: () => arm(i), onpointercancel: () => { armed = null; },
-      disabled: (mode === 'width' && !bearingOk && orientation === 'live') ? true : null },
-    h('span', { text: t(key) }), sub && !inFs ? h('small', { text: t(sub) }) : null);
+      disabled: (mode === 'width' && !bearingOk && orientation === 'live') ? true : null, title: sub && !inFs ? t(sub) : null },
+    h('span', { text: t(key) }));
   }
   function resetButton(inFs) {
-    return h('button', { class: 'act', type: 'button', onclick: () => { points = []; drawAll(); } },
-      h('span', { text: t('cm_btn_reset') }), inFs ? null : h('small', { text: t('cm_sub_reset') }));
+    return h('button', { class: 'act', type: 'button', onclick: () => { points = []; drawAll(); }, title: inFs ? null : t('cm_sub_reset') },
+      h('span', { text: t('cm_btn_reset') }));
   }
   function drawActions() {
     const btns = (inFs) => {
@@ -204,7 +237,8 @@ export function render({ params, back }) {
     if (aim && live && h0() > 0) {
       const pv = A.preview(mode, h0(), points, aim);
       if (pv) text = `${t(RESULT_KEY[mode])}: ${len(pv.value)}`;
-      else if (!A.aimProblem(h0(), aim)) { const r = A.floorRange(h0(), aim.pitch); text = r <= A.MAX_RANGE ? t('cm_live_distance', len(r)) : ''; }
+      // ilk noktadan sonra yalnız sonuç önizlemesi (yükseklikte tepeye nişan alırken zemin uzaklığı göstermek kafa karıştırırdı)
+      else if (!points.length && !A.aimProblem(h0(), aim)) { const r = A.floorRange(h0(), aim.pitch); text = r <= A.MAX_RANGE ? t('cm_live_distance', len(r)) : ''; }
     }
     pill.classList.toggle('hidden', !text);
     if (pill.textContent !== text) pill.textContent = text;
@@ -378,10 +412,44 @@ export function render({ params, back }) {
       h('p', { text: t('cm_height_text') }),
       h('small', { class: 'muted', text: t('cm_height_label') }),
       h('div', { class: 'stepper four' }, stepBtn(steps[0]), stepBtn(steps[1]), val, stepBtn(steps[2]), stepBtn(steps[3])),
+      // önce yenisi açılır, sonra bu kapanır: açık alt sayfa sayısı 0'a düşmez, banner arada bir an görünmez
+      h('button', { class: 'btn block', type: 'button', onclick: () => { knownSheet(); sh.close(); }, text: t('cm_known_button') }),
       h('button', { class: 'btn primary block', type: 'button', text: t('cm_height_save'),
         onclick: () => { S.settings.cameraHeight = v; changed('settings'); sh.close(); drawAll(); } }),
     ];
     sh = sheet(t('cm_height_title'), body, { cls: 'acc-blue' });
+  }
+
+  // ---- bilinen mesafeyle yükseklik: kısa alt sayfa (artı işareti üstünde görünür kalsın), nişan dokunmadan önceki sakin bakış
+  function knownSheet() {
+    const imperial = units() === 'imperial';
+    let d = A.KNOWN.default;
+    const steps = imperial ? [[-12 * 0.0254, '−1 ft'], [-0.0254, '−1 in'], [0.0254, '+1 in'], [12 * 0.0254, '+1 ft']]
+      : [[-0.1, '−10 cm'], [-0.01, '−1 cm'], [0.01, '+1 cm'], [0.1, '+10 cm']];
+    const val = h('span', { class: 'value', 'aria-live': 'polite' });
+    const show = () => { val.textContent = B.phoneHeight(d, units(), getLang()); };
+    const clampD = (x) => Math.round(Math.min(A.KNOWN.max, Math.max(A.KNOWN.min, x)) * 10000) / 10000;
+    const stepBtn = ([dd, label]) => h('button', { class: 'btn', type: 'button', onclick: () => { d = clampD(d + dd); show(); }, text: label });
+    show();
+    let sh;
+    const aimBtn = h('button', { class: 'btn primary block', type: 'button', text: t('cm_known_aim'),
+      onpointerdown: () => arm('bilinen'), onpointercancel: () => { armed = null; },
+      onclick: () => {
+        const r = A.heightFromKnown(d, takeAim('bilinen'));
+        if (r.problem === 'NoAim') { toast(t(orientation === 'missing' ? 'cm_no_orientation' : 'lv_state_no_data')); return; }
+        if (r.problem === 'HeightOut') { toast(t('cm_known_out', B.phoneHeight(r.h, units(), getLang()))); return; }
+        if (r.problem) { toast(t(PROBLEM[r.problem] || 'cm_problem_aim_lower')); return; }
+        S.settings.cameraHeight = Math.round(r.h * 1000) / 1000; changed('settings');
+        native.haptic('success');
+        sh.close(); drawAll();
+        toast(t('cm_known_done', B.phoneHeight(S.settings.cameraHeight, units(), getLang())));
+      } });
+    sh = sheet(t('cm_known_title'), [
+      h('p', { text: t('cm_known_text') }),
+      h('small', { class: 'muted', text: t('cm_known_label') }),
+      h('div', { class: 'stepper four' }, stepBtn(steps[0]), stepBtn(steps[1]), val, stepBtn(steps[2]), stepBtn(steps[3])),
+      aimBtn,
+    ], { cls: 'acc-blue' });
   }
 
   drawAll();
@@ -394,6 +462,6 @@ export function render({ params, back }) {
     onBack: () => { if (fs) { fullscreen(false); return true; } return false; },
     pause: () => { paused = true; stopCamera(); stopSensors(); },
     resume: () => { if (destroyed) return; paused = false; startSensors(); if (camState === 'idle') begin(); },
-    destroy: () => { destroyed = true; stopCamera(); stopSensors(); if (raf) cancelAnimationFrame(raf); fullscreen(false); },
+    destroy: () => { destroyed = true; stopCamera(); stopSensors(); if (raf) cancelAnimationFrame(raf); fullscreen(false); if (gozlem) gozlem.disconnect(); window.removeEventListener('resize', yerlesim); },
   };
 }

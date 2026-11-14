@@ -39,8 +39,29 @@ test('iOS: SKAdNetwork, izleme izni metni ve gizlilik bildiriminde reklam kimli�
   assert.match(plist, /<key>SKAdNetworkIdentifier<\/key>\s*<string>cstr6suwn9\.skadnetwork<\/string>/);
   assert.match(plist, /<key>NSUserTrackingUsageDescription<\/key>\s*<string>[^<]{20,}<\/string>/);
   const gizlilik = oku('ios', 'App', 'App', 'PrivacyInfo.xcprivacy');
-  assert.match(gizlilik, /NSPrivacyCollectedDataTypeDeviceID[\s\S]*NSPrivacyCollectedDataTypePurposeThirdPartyAdvertising/);
-  assert.match(gizlilik, /<key>NSPrivacyTracking<\/key>\s*<true\/>/);
+  // İzleme veri türü düzeyinde beyan edilir: reklam kimliği (Device ID) üçüncü taraf reklam için, izleme amaçlı.
+  const cihaz = /NSPrivacyCollectedDataTypeDeviceID<\/string>((?:(?!<\/dict>)[\s\S])*)<\/dict>/.exec(gizlilik)?.[1] ?? '';
+  assert.match(cihaz, /<key>NSPrivacyCollectedDataTypeTracking<\/key>\s*<true\/>/);
+  assert.match(cihaz, /NSPrivacyCollectedDataTypePurposeThirdPartyAdvertising/);
+});
+
+test('iOS gizlilik bildirimi: NSPrivacyTracking ile NSPrivacyTrackingDomains Apple kuralına uyar (ITMS-91064)', () => {
+  // 14 Kasım 2026: App Store 1.0.0 (2) ve (3)'ü "Invalid Binary" yaptı: ITMS-91064 Invalid tracking information. Apple
+  // kuralı iki yönlü: izleme true ise en az bir izleme alan adı listelenir; alan adı listelenirse izleme true olur.
+  // Google Mobile Ads SDK 13.11.0'ın kendi bildirimi gibi: NSPrivacyTracking false, alan adı yok, izleme yalnız veri türü
+  // düzeyinde (Device ID). Reklam alan adlarını listelemek, izin vermeyen kullanıcıda iOS'un reklam isteklerini
+  // engellemesine yol açar. Kullanıcı izni (ATT) Info.plist'teki NSUserTrackingUsageDescription ile istenmeye devam eder.
+  for (const dosya of [['ios', 'App', 'App', 'PrivacyInfo.xcprivacy']]) {
+    const gizlilik = oku(...dosya);
+    const izleme = /<key>NSPrivacyTracking<\/key>\s*<(true|false)\/>/.exec(gizlilik)?.[1];
+    const alanlar = /<key>NSPrivacyTrackingDomains<\/key>\s*(<array\/>|<array>([\s\S]*?)<\/array>)/.exec(gizlilik);
+    assert.ok(izleme, 'NSPrivacyTracking açıkça yazılı olmalı');
+    assert.ok(alanlar, 'NSPrivacyTrackingDomains yazılı olmalı');
+    const alanSayisi = ((alanlar[2] ?? '').match(/<string>[^<]+<\/string>/g) ?? []).length;
+    assert.equal(izleme === 'true', alanSayisi > 0, `NSPrivacyTracking=${izleme} iken ${alanSayisi} izleme alan adı: ITMS-91064`);
+    assert.equal(izleme, 'false');
+    assert.equal(alanSayisi, 0);
+  }
 });
 
 test('eklenti package.json ve kilit dosyasında; mağaza metinleri artık "reklam yok" demiyor', () => {

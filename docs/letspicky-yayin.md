@@ -25,18 +25,21 @@ Adımları sahip ya da bilgisayardaki Claude (`claude --chrome`) izler.
   OpenStreetMap'ten (Overpass, Photon; uzak aramada Nominatim) gelir. Konum servislere 2 ondalık yuvarlanmış gider,
   mesafe gerçek konumla hesaplanır; Google sonuçlarında "Google Maps" atfı. `letspicky/www` bu dist ile eşlendi
   (`reklam-kimlik.json` korundu).
-- **Web:** yeni dist main'de; **Cloudflare'e yükleme bekliyor**: GitHub'da `CLOUDFLARE_API_TOKEN` sırrı yok ("Let's
-  Picky Web" koşusu 6: "sırrı yok, yayımlanmadı"). Sahip sırrı Yonetmelik-araclari › Settings › Secrets and variables ›
-  Actions'a ekleyince iş akışı yeniden çalıştırılır. letspicky.com'da şu an önceki sürüm var (`/api/places` yok).
+- **Web (14 Kasım 2026, 18:52 UTC):** yeni sürüm letspicky.com'da; `/api/places` 200 (20 mekân), kökensiz istek 403,
+  canlı `index.html` = `letspicky/www`. Yükleme ve doğrulama NetcadDevelop › `claude/letspicky-ios` › "Let's Picky Web
+  (Cloudflare)" iş akışıyla (`.github/letspicky-web-istek.txt`: `dogrula`, `yayinla`, `tani`); Cloudflare belirteci o
+  depodadır, web dosyaları buradaki `letspicky/www`'den alınır. `GOOGLE_MAPS_API_KEY` panelden **Text** türünde eklendi;
+  ilk yükleme yalnız Secret koruduğu için onu düşürmüştü, Yonetmelik-araclari#40'tan beri Text de korunur. Secret'a
+  çevrilmesi önerilir.
 - **Web (önceki):** gizlilik politikası, `app-ads.txt` ve fragman oynatıcısı (`fragman.html`) dahil.
 - **Kod:** Lispler#30 ve Yonetmelik-araclari#5 main'e birleşti. `letspicky-android.yml` main'de yeşil
   (koşu 43592891712), ama AAB Google'ın **test** AdMob kimlikleriyle derlendi: Play'e YÜKLENMEZ. Gerçek kimlikler A1'den
   sonra gelir.
 - **App Store (14 Kasım 2026, 16:58 UTC):** Apple **1.0.0 (3)'ü reddetti**: sürüm `INVALID_BINARY`, gönderim 39eae3e3
   `UNRESOLVED_ISSUES`, öğe `REJECTED` (NetcadDevelop koşu 43618492501). Gerekçe API'de yok: App Store Connect › Uygulama ›
-  Çözüm Merkezi (Resolution Center) ya da Apple'ın e-postası. Mekân bulucuyu içeren yapı 4 (`yukle letspicky`, bu
-  eşlemeden sonraki Lispler main) gerekçe okunduktan sonra; yeniden gönderim (`gonder letspicky uygula`) yalnız sahibin
-  açık onayıyla.
+  Çözüm Merkezi (Resolution Center) ya da Apple'ın e-postası. Mekân bulucuyu içeren **1.0.0 (4)** Lispler main
+  e531fbe'den yüklendi ve VALID (TestFlight; NetcadDevelop koşu 43623752030). Yeniden gönderim (`gonder letspicky
+  uygula`) ret gerekçesi okunduktan sonra, yalnız sahibin açık onayıyla.
 - **App Store (önceki):** 1.0.0 (3) incelemeye gönderilmişti (`WAITING_FOR_REVIEW`, NetcadDevelop koşu 43600776460). Yapı 3 Lispler
   main 2e05246'dan derlendi: Karar Kavanozu, 94 kartın Recraft görseli, kavanoz simgesi; metinler ve iPhone ekran
   görüntüleri yenilendi. Eski görsellerle gönderilen 1.0.0 (2) sahibin onayıyla incelemeden çekildi (`gonder.mjs iptal`).

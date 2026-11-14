@@ -20,11 +20,16 @@ Yeni sürüm: kaynakta `npm run build`, sonra `dist/` → `www/` kopyalanır; `a
 - `.github/workflows/letspicky-android.yml` — her değişiklikte APK; yükleme anahtarı secret'ı varsa imzalı AAB
   ("LetsPicky-aab"). Anahtar `LETSPICKY_KEYSTORE_*`, yoksa Poyraz Workshop'un ortak yükleme anahtarı (`HAYALET_KEYSTORE_*`).
 - `.github/workflows/play-letspicky.yml` — `letspicky/play-istek.txt` komutları (anahtarsız Play kimliği).
-- `.github/workflows/ios-asc.yml` — `ios-ortak/asc-istek.txt`: `paket uygula`, `yukle letspicky` (TestFlight).
+- iOS (App Store Connect + TestFlight): App Store Connect anahtarı ve dağıtım sertifikası bu depoda değil,
+  `mahmuttari/NetcadDevelop`'ta. Komutlar oradaki `.github/letspicky-istek.txt`'ye yazılır (`.github/workflows/letspicky-ios.yml`,
+  dal `claude/letspicky-ios`): `durum`, `paket uygula`, `yukle letspicky`, `metin|yas|gorsel letspicky uygula`. İş bu klasörü
+  ve `ios-ortak/asc.mjs`'i checkout eder; imza elle (kalıcı Apple Distribution sertifikası + App Store profili), çünkü
+  ekipte kayıtlı cihaz olmadığından otomatik imza düşer. App Store metinleri `magaza/app-store.json` → `magaza/APP-STORE.md`.
 
 ## İlk yayın (bir kez, elle)
 
 1. Play Console: "Uygulama oluştur" (ad Let's Picky, varsayılan dil tr-TR, ücretsiz). İlk AAB'yi ("LetsPicky-aab"
    artifact'ı) Test › Dahili test'e elle yükleyin. Hizmet hesabına bu uygulama için izin verin (Kullanıcılar ve izinler).
-2. App Store Connect: `paket uygula` paket kimliğini kaydeder; sonra "Yeni uygulama" (Let's Picky, paket kimliği
-   `com.mahmuttari.letspicky`, SKU `letspicky`). Ardından `yukle letspicky` TestFlight'a yükler.
+2. App Store Connect (14 Kasım 2026'da yapıldı): `paket uygula` paket kimliğini kaydetti; "New App" ile kayıt açıldı
+   (Let's Picky, Türkçe, paket `com.mahmuttari.letspicky`, SKU `letspicky-ios`, Apple ID 6834758192); `yukle letspicky`
+   1.0.0 (1)'i TestFlight'a yükledi. Kalanlar sahibin: App Privacy yanıtları, inceleme bilgileri ve incelemeye gönderme.

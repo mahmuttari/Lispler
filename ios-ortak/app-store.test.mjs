@@ -12,7 +12,7 @@ for (const u of Object.keys(KLASOR)) {
   const m = metinler(u);
 
   test(`${u}: diller, sınırlar, başlıkta emoji yok`, () => {
-    assert.deepEqual(Object.keys(m).sort(), (u === 'smart-measure' ? ['en-US', 'tr'] : Object.keys(YEREL)).sort());
+    assert.deepEqual(Object.keys(m).sort(), (['smart-measure', 'letspicky'].includes(u) ? ['en-US', 'tr'] : Object.keys(YEREL)).sort());
     for (const [y, x] of Object.entries(m)) {
       for (const k of Object.keys(SINIR)) {
         assert.ok(x[k] && x[k].trim(), `${y} ${k} boş`);
@@ -32,20 +32,36 @@ for (const u of Object.keys(KLASOR)) {
     }
   });
 
-  test(`${u}: başka platform adı yok (2.3.10); abonelik açıklaması, EULA ve gizlilik bağlantısı var (3.1.2)`, () => {
+  test(`${u}: başka platform adı yok (2.3.10); abonelikliyse abonelik açıklaması, EULA ve gizlilik bağlantısı var (3.1.2)`, () => {
     const a = ayar(u);
-    assert.match(a.gizlilik, /^https:\/\/mahmuttari\.github\.io\/Lispler\/.+\/gizlilik\.html$/);
-    assert.match(a.destek, /^https:\/\/mahmuttari\.github\.io\/Lispler\//);
+    // Let's Picky'nin kendi alanı var (letspicky.com); öbürleri Lispler'in GitHub Pages sayfaları
+    const alan = u === 'letspicky' ? 'https:\\/\\/letspicky\\.com\\/' : 'https:\\/\\/mahmuttari\\.github\\.io\\/Lispler\\/.+\\/';
+    assert.match(a.gizlilik, new RegExp(`^${alan}gizlilik\\.html$`));
+    assert.match(a.destek, new RegExp(`^${alan}`));
     for (const [y, x] of Object.entries(m)) {
       for (const k of ['ad', 'altBaslik', 'anahtar', 'tanitim', 'aciklama']) assert.doesNotMatch(x[k], /Google[ -]?Play|Play Store|Android|ARCore/i, `${y} ${k}`);
+      assert.doesNotMatch(x.aciklama, /\n{3,}/);
+      if (a.abonelik === false) {
+        assert.ok(!x.aciklama.includes(EULA), `${y}: aboneliksiz uygulamada abonelik açıklaması yok`);
+        continue;
+      }
       assert.ok(x.aciklama.includes(EULA), `${y}: EULA bağlantısı`);
       assert.ok(x.aciklama.includes(a.gizlilik), `${y}: gizlilik bağlantısı`);
       assert.match(x.aciklama, /24/, `${y}: 24 saat önce iptal`);
       assert.match(x.aciklama, /App[ -]Store/, `${y}: App Store hesap ayarları`);
-      assert.doesNotMatch(x.aciklama, /\n{3,}/);
     }
   });
 }
+
+test("Let's Picky: aboneliksiz ve reklamsız; emoji tepkileri cümlesi düz metin; kategori Yaşam Tarzı + Eğlence", () => {
+  const a = ayar('letspicky');
+  assert.equal(a.abonelik, false);
+  assert.deepEqual(a.kategori, ['LIFESTYLE', 'ENTERTAINMENT']);
+  const m = metinler('letspicky');
+  assert.ok(m.tr.aciklama.includes('• Serbest sohbet yok: yalnız birkaç sabit emoji tepkisi.'));
+  assert.ok(m['en-US'].aciklama.includes('• No free-text chat: only a few fixed emoji reactions.'));
+  for (const [y, x] of Object.entries(m)) assert.doesNotMatch(x.aciklama, /\(\s*\)|abonelik|subscription/i, y);
+});
 
 test('Ölçü Kutusu: App Store açıklamasında ışık ölçer yok (iPhone\'da gösterilmez)', () => {
   for (const [y, x] of Object.entries(metinler('smart-measure'))) {
@@ -72,19 +88,26 @@ function jpegBoyut(b) {
   throw new Error('SOF yok');
 }
 
-test('iPhone 6,9″ ekran görüntüleri: her App Store dilinde en az 3, 1320×2868 JPEG (IOS=1 node <klasör>/araclar/magaza-gorsel.mjs)', () => {
+/** App Store Connect'in 6,9″ iPhone yuvasının (API: APP_IPHONE_67) kabul ettiği dikey ölçüler */
+const IPHONE_69 = [[1320, 2868], [1290, 2796], [1260, 2736]];
+
+test('iPhone 6,9″ ekran görüntüleri: her App Store dilinde 3–10 dikey JPEG, 1320×2868 (ya da 1290×2796, 1260×2736) (IOS=1 node <klasör>/araclar/magaza-gorsel.mjs)', () => {
   for (const [u, k] of Object.entries(KLASOR)) {
     for (const y of Object.keys(metinler(u))) {
       const d = new URL(`../${k}/magaza/app-store/${y}/`, import.meta.url);
       const f = fs.existsSync(d) ? fs.readdirSync(d).filter((x) => /^iphone-.*\.jpg$/.test(x)) : [];
       assert.ok(f.length >= 3 && f.length <= 10, `${k} ${y}: ${f.length} görsel`);
-      for (const x of f) assert.deepEqual(jpegBoyut(fs.readFileSync(new URL(x, d))), [1320, 2868], `${k} ${y} ${x}`);
+      for (const x of f) {
+        const [g, h] = jpegBoyut(fs.readFileSync(new URL(x, d)));
+        assert.ok(IPHONE_69.some(([a, b]) => a === g && b === h), `${k} ${y} ${x}: ${g}×${h}`);
+      }
     }
   }
 });
 
-test('abonelik inceleme görseli: her uygulamada 1320×2868 JPEG (node ios-ortak/inceleme-gorsel.mjs)', () => {
-  for (const k of Object.values(KLASOR)) {
+test('abonelik inceleme görseli: aboneliği olan her uygulamada 1320×2868 JPEG (node ios-ortak/inceleme-gorsel.mjs)', () => {
+  for (const [u, k] of Object.entries(KLASOR)) {
+    if (ayar(u).abonelik === false) continue;
     assert.deepEqual(jpegBoyut(fs.readFileSync(new URL(`../${k}/magaza/app-store/inceleme-abonelik.jpg`, import.meta.url))), [1320, 2868], k);
   }
 });

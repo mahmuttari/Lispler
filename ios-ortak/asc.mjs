@@ -13,7 +13,8 @@
  *   node ios-ortak/asc.mjs metin <uygulama> [uygula]     App Store metinleri (ios-ortak/app-store.mjs): ad, alt başlık,
  *                                                   gizlilik adresi, kategori, içerik hakları; sürüm (numara, telif, elle
  *                                                   yayın), açıklama, anahtar sözcükler, tanıtım metni, destek adresi
- *   node ios-ortak/asc.mjs yas <uygulama> [uygula]       yaş derecesi anketi: reklam var, öbür bütün sorular Yok / Hayır (4+)
+ *   node ios-ortak/asc.mjs yas <uygulama> [uygula]       yaş derecesi anketi: reklam var (reklam: false ise yok), öbür bütün
+ *                                                   sorular Yok / Hayır (4+)
  *   node ios-ortak/asc.mjs abonelik <uygulama> [uygula]  reklamsız abonelik: grup, aylık ve yıllık ürün, adlar, inceleme notu ve
  *                                                   inceleme görseli (ios-ortak/inceleme-gorsel.mjs),
  *                                                   ülke erişimi (Çin anakarası hariç), fiyat (ABD 0,99 / 9,99 $, öbür
@@ -23,8 +24,10 @@
  *                                                   değişen yeniden yüklenir, listede olmayan silinir; sıra dosya adına göre
  *   "uygula" yoksa metin / yas / abonelik / gorsel yalnız plan yazdırır; hiçbir şey değişmez.
  *
- * <uygulama>: unitica | calqora | smart-measure | notdefteri | letspicky. İncelemeye gönderme ve satışa açma bu betikte yoktur; ancak
- * kullanıcının açık onayıyla, ayrı komutla yapılır (docs/ios-yayin.md).
+ * <uygulama>: unitica | calqora | smart-measure | notdefteri | letspicky. metin / yas / gorsel, App Store metinleri tanımlı
+ * uygulamalarda (ios-ortak/app-store.mjs › KLASOR; Not Defteri ayrı), abonelik yalnız aboneliği olanlarda çalışır.
+ * İncelemeye gönderme ve satışa açma bu betikte yoktur; ancak kullanıcının açık onayıyla, ayrı komutla yapılır
+ * (docs/ios-yayin.md). Let's Picky'nin anahtarı NetcadDevelop'tadır: komutlar oradaki letspicky-ios.yml'den çalışır.
  *
  * Kimlik: ortam değişkenleri ASC_KEY_ID, ASC_ISSUER_ID, ASC_PRIVATE_KEY (.p8 içeriği), yalnız GitHub Secrets'ta. Betik
  * hiçbirini yazdırmaz. JWT: ES256, 20 dakika (Apple sınırı), audience appstoreconnect-v1.
@@ -35,7 +38,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { admobOku, surumOku } from './kur.mjs';
-import { metinler, ayar } from './app-store.mjs';
+import { metinler, ayar, KLASOR } from './app-store.mjs';
 
 const KOK = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const API = process.env.ASC_API || 'https://api.appstoreconnect.apple.com';
@@ -175,7 +178,7 @@ export async function durum(liste = Object.keys(UYGULAMALAR)) {
     console.log(`\n${u} (${d.paket}, sürüm ${d.surum})`);
     console.log(`  paket kimliği: ${d.paketKayitli ? 'kayıtlı' : 'YOK → node ios-ortak/asc.mjs paket uygula'}`);
     console.log(`  uygulama kaydı: ${d.uygulamaKaydi ? `"${d.uygulamaKaydi}"` : 'YOK → App Store Connect › Apps › + › New App (docs/ios-yayin.md §1 adım 3)'}`);
-    console.log(`  AdMob kimlikleri: ${d.admobTest ? "Google'ın TEST kimlikleri → App Store'a yüklenmez (docs/ios-yayin.md §1 adım 4)" : 'gerçek'}`);
+    console.log(`  AdMob kimlikleri: ${UYGULAMALAR[u].reklam === false ? 'reklam yok' : d.admobTest ? "Google'ın TEST kimlikleri → App Store'a yüklenmez (docs/ios-yayin.md §1 adım 4)" : 'gerçek'}`);
     if (d.surumler) console.log(`  App Store sürümleri: ${d.surumler.join(', ') || 'yok'}`);
     if (d.yapilar) console.log(`  ${d.surum} yapıları: ${d.yapilar.join(', ') || 'yok'}`);
     if (d.abonelikler) console.log(`  abonelikler: ${Object.entries(d.abonelikler).map(([p, v]) => `${p} ${v ? 'var' : 'YOK'}`).join(', ')}`);
@@ -264,9 +267,12 @@ function bitir(uygula) {
   console.log(`\n${uygula ? 'YAZILDI' : 'PLAN'}: ${plan.length} işlem${uygula ? '' : ' (uygulamak için komutun sonuna "uygula")'}`);
   const p = plan; plan = []; return p;
 }
-async function kayitli(u) {
+/** metin, yas, gorsel: App Store metinleri tanımlı uygulamalar (app-store.mjs › KLASOR; Not Defteri ayrı);
+ *  abonelik ayrıca aboneliği olan uygulama ister */
+async function kayitli(u, { abonelikGerekir = false } = {}) {
   uygulamaAdi(u);
-  if (!UYGULAMALAR[u].abonelik) throw new Error(`${u}: bu komut yalnız Unitica, Calqora ve Ölçü Kutusu için (Not Defteri ayrı)`);
+  if (!KLASOR[u]) throw new Error(`${u}: App Store metinleri tanımlı değil (ios-ortak/app-store.mjs › KLASOR; Not Defteri ayrı)`);
+  if (abonelikGerekir && !UYGULAMALAR[u].abonelik) throw new Error(`${u}: aboneliği yok (UYGULAMALAR › abonelik: false)`);
   const app = await uygulamaBul(u);
   if (!app) throw new Error(`${u}: App Store Connect'te uygulama kaydı yok (docs/ios-yayin.md §1 adım 3)`);
   return app;
@@ -330,7 +336,9 @@ export async function metin(u, uygula = false) {
   return bitir(uygula);
 }
 
-// Yaş derecesi anketi (Apple'ın 2025 sonrası soruları). Uygulamalarda reklam var; başka hiçbir içerik yok → 4+.
+// Yaş derecesi anketi (Apple'ın 2025 sonrası soruları). Uygulamalarda reklam var (reklam: false olanda yok); başka hiçbir
+// içerik yok → 4+. Let's Picky: takma ad ve seçenekler yalnız oda kodunu bilenlere görünür (geniş dağıtım, akış, keşfet ve
+// serbest sohbet yok): kullanıcı içeriği, mesajlaşma ve sosyal medya Hayır.
 export const YAS_SIKLIK = ['alcoholTobaccoOrDrugUseOrReferences', 'contests', 'gamblingSimulated', 'gunsOrOtherWeapons',
   'horrorOrFearThemes', 'matureOrSuggestiveThemes', 'medicalOrTreatmentInformation', 'profanityOrCrudeHumor',
   'sexualContentGraphicAndNudity', 'sexualContentOrNudity', 'violenceCartoonOrFantasy', 'violenceRealistic',
@@ -346,13 +354,14 @@ export async function yas(u, uygula = false) {
   const info = await duzenlenenBilgi(app);
   const d = (await get(`/v1/appInfos/${info.id}/ageRatingDeclaration`)).data;
   const a = d.attributes || {};
-  const hedef = { ...Object.fromEntries(YAS_SIKLIK.map((k) => [k, 'NONE'])), ...YAS_EVETHAYIR };
+  const reklam = UYGULAMALAR[u].reklam !== false;
+  const hedef = { ...Object.fromEntries(YAS_SIKLIK.map((k) => [k, 'NONE'])), ...YAS_EVETHAYIR, advertising: reklam };
   const bilinmeyen = Object.keys(a).filter((k) => !(k in hedef) && !YAS_DOKUNMA.has(k));
   if (bilinmeyen.length) console.log(`  not: listede olmayan sorular (dokunulmadı): ${bilinmeyen.join(', ')}`);
   const fark = Object.keys(hedef).filter((k) => a[k] !== hedef[k]);
   if (fark.length) {
     await yaz(uygula, 'PATCH', `/v1/ageRatingDeclarations/${d.id}`, { data: { type: 'ageRatingDeclarations', id: d.id, attributes: hedef } },
-      `yaş derecesi: ${fark.length} soru (reklam: Evet; öbürleri Yok / Hayır)`);
+      `yaş derecesi: ${fark.length} soru (reklam: ${reklam ? 'Evet' : 'Hayır'}; öbürleri Yok / Hayır)`);
   } else console.log('  yaş derecesi: değişiklik yok');
   return bitir(uygula);
 }
@@ -376,7 +385,7 @@ export const FIYAT = { monthly: { donem: 'ONE_MONTH', usd: 0.99 }, yearly: { don
 const HARIC = new Set(['CHN']);
 
 export async function abonelik(u, uygula = false) {
-  const app = await kayitli(u), A = ayar(u), diller = Object.keys(metinler(u));
+  const app = await kayitli(u, { abonelikGerekir: true }), A = ayar(u), diller = Object.keys(metinler(u));
   console.log(`${u}: reklamsız abonelik · ${uygula ? 'UYGULA' : 'PLAN'}`);
   let [grup] = await hepsi(`/v1/apps/${app.id}/subscriptionGroups`);
   if (!grup) {

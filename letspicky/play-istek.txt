@@ -9,4 +9,5 @@
 # (yapıldı, koşu 43600437026) durum → 404 "Package not found": uygulama Play Console'da hâlâ yok (A2 ve A3 bekleniyor)
 
 # 2026-11-17: sahip "Marfen geliştirici hesabından Play Store'a yayınla" dedi. Uygulama oluşturuldu mu? (salt okuma)
-durum
+# (yapıldı, koşu 44200770492) durum → 404 "Package not found": uygulama MARFEN'de yok ya da hizmet hesabı davetli değil
+#   (A2 uygulama oluşturma, A3 ilk AAB taslağı, A4 hizmet hesabı daveti bekleniyor)

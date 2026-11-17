@@ -7,3 +7,6 @@
 
 # 2026-11-14: Lispler#35 birleşti (kavanoz simgesi, Recraft görselleri). Play Console'da uygulama oluşturuldu mu? (salt okuma)
 # (yapıldı, koşu 43600437026) durum → 404 "Package not found": uygulama Play Console'da hâlâ yok (A2 ve A3 bekleniyor)
+
+# 2026-11-17: sahip "Marfen geliştirici hesabından Play Store'a yayınla" dedi. Uygulama oluşturuldu mu? (salt okuma)
+durum

@@ -31,6 +31,12 @@ Adımları sahip ya da bilgisayardaki Claude (`claude --chrome`) izler.
   MARFEN'de yok ya da hizmet hesabı davetli değil. A2, A3 ve A4 bekleniyor. A3'te yüklenecek AAB: Lispler main 170f860,
   "Android (Let's Picky)" koşu 44070965153, artifact **LetsPicky-aab** (`versionCode=1`, `versionName=1.0.0`,
   `admob=ca-app-pub-2417242373034448~3719379342`; 17 Aralık 2026'ya kadar indirilebilir).
+- **Web ve uygulama içeriği (18 Kasım):** animasyonlar (Karar Kavanozu, Kâhin küresi, turnuva kupası, kart dönüşü,
+  3-2-1, zıplayan harita iğnesi) ve GPT ile yenilenen 8 deste kapağı ile 46 kart görseli letspicky.com'da
+  (Yonetmelik-araclari#73). `letspicky/www` bu dist ile eşlendi (`reklam-kimlik.json` korundu). Kalan 48 kart görseli
+  OpenAI kredisi eklenince yenilenir.
+- **Play (18 Kasım, sahip):** uygulama MARFEN'de görünmüyor, hizmet hesabı tanımlı. Yani A2 (uygulama oluşturma) ve A3 (ilk
+  AAB taslağı) bekleniyor. Play komutları beklemeye alındı (`play-istek.txt`).
 - **Play (18 Kasım):** sahip uygulamayı ve ilk AAB'yi MARFEN'de oluşturduğunu, hizmet hesabına hesap düzeyinde yönetici
   yetkisi verdiğini söyledi. `durum` (koşu 44230090982) yine 404 "Package not found"; yazma komutları çalışmadı. Olası
   nedenler: hizmet hesabı izninin yayılması (saatler sürebilir) ya da ilk paketin henüz kaydedilmemiş olması.

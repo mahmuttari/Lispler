@@ -11,3 +11,10 @@
 # 2026-11-17: sahip "Marfen geliştirici hesabından Play Store'a yayınla" dedi. Uygulama oluşturuldu mu? (salt okuma)
 # (yapıldı, koşu 44200770492) durum → 404 "Package not found": uygulama MARFEN'de yok ya da hizmet hesabı davetli değil
 #   (A2 uygulama oluşturma, A3 ilk AAB taslağı, A4 hizmet hesabı daveti bekleniyor)
+
+# 2026-11-18: sahip "ikisi de tamam" dedi (MARFEN'de uygulama ve ilk AAB taslağı; hizmet hesabına hesap düzeyinde
+# yönetici). Önce durum (salt okuma); geçerse mağaza metni, görseller ve veri güvenliği yazılır. İncelemeye gönderme yok.
+durum
+magaza uygula
+gorsel uygula
+veriguvenligi uygula

@@ -18,3 +18,4 @@ durum
 magaza uygula
 gorsel uygula
 veriguvenligi uygula
+# yeniden deneme 2026-11-18 07:53 UTC: hizmet hesabı izninin yayılması bekleniyordu

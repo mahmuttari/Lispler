@@ -1,0 +1,1 @@
+import{M as e,N as t,j as n,jt as r,kt as i}from"./ui-C-6VuumE.js";var a=r(i(),1);function o(){!e.current&&n();let[r]=(0,a.useState)(t.current);return r}export{o as t};

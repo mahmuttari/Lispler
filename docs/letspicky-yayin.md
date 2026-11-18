@@ -10,13 +10,36 @@ Adımları sahip ya da bilgisayardaki Claude (`claude --chrome`) izler.
 |---|---|
 | Ad | Play: **Let's Picky** · App Store: **Let's Picky: Ortak Karar** (kayıtta bu ad var) |
 | Paket / bundle ID | `com.mahmuttari.letspicky` (App Store Connect'te kayıtlı; Play'de ilk paketle kalıcı olur) |
-| Play hesabı | **Sahip seçer** (A2): Poyraz Workshop (öbür Lispler uygulamaları, kapalı test zorunluluğu yok) ya da MARFEN (kuruluş) |
+| Play hesabı | **MARFEN** (kuruluş hesabı; sahip 17 Kasım 2026'da seçti; kapalı test zorunluluğu yok) |
 | Site · gizlilik | `https://letspicky.com` · `https://letspicky.com/gizlilik.html` |
 | Destek e-postası | `letspicky/magaza/aciklamalar.md` › "Destek e-postası" |
 | app-ads.txt | `https://letspicky.com/app-ads.txt` (`pub-2417242373034448`) |
 | AdMob hesabı | `pub-2417242373034448` (Android ve iPhone kimlikleri A1'de açılır) |
 | App Store Connect | Apple ID `6834758192`, SKU `letspicky-ios` |
 | Kaynak kod | `mahmuttari/Yonetmelik-araclari` › `ortakkarar/` (web: letspicky.com) |
+
+## Durum (18 Kasım 2026)
+
+- **App Store:** Apple 1.0.0 (6)'yı **reddetti** (16 Kasım 16:00 UTC). Sürüm `REJECTED`, gönderim 4796162f
+  `UNRESOLVED_ISSUES`, öğe `REJECTED` (NetcadDevelop koşu 44200752736). Apple e-postasında gerekçe yok. Gerekçe yalnız App
+  Store Connect › App Review sayfasındadır (API'de yok). Gerekçe (sahibin ekran görüntüsü, 18 Kasım): **Guideline 4.3
+  Spam (4.3(a), 4.3(b)) ve 4.2.6 App Generation Services**. Apple: önemli değişiklik olmadan yeniden gönderme; uygulama
+  kurallara uyuyorsa iletiye yanıt ver ve 9 soruyu eksiksiz cevapla. Aynı saatte Huhu Yolu ve Ölçü Kutusu da reddedildi
+  (hesap düzeyinde bir örüntü olası). Yol: yeniden gönderim yok; sahip 9 soruya yanıtı App Store Connect › App Review ›
+  "Reply to App Review" ile gönderir (API'de yanıt yok). Yeni yapı (7) Apple'ın cevabından sonra, sahibin onayıyla.
+- **Play:** sahip MARFEN (kuruluş) hesabını seçti. `durum` (koşu 44200770492) yine 404 "Package not found": uygulama
+  MARFEN'de yok ya da hizmet hesabı davetli değil. A2, A3 ve A4 bekleniyor. A3'te yüklenecek AAB: Lispler main 170f860,
+  "Android (Let's Picky)" koşu 44070965153, artifact **LetsPicky-aab** (`versionCode=1`, `versionName=1.0.0`,
+  `admob=ca-app-pub-2417242373034448~3719379342`; 17 Aralık 2026'ya kadar indirilebilir).
+- **Web ve uygulama içeriği (18 Kasım):** animasyonlar (Karar Kavanozu, Kâhin küresi, turnuva kupası, kart dönüşü,
+  3-2-1, zıplayan harita iğnesi) ve GPT ile yenilenen 8 deste kapağı ile 46 kart görseli letspicky.com'da
+  (Yonetmelik-araclari#73). `letspicky/www` bu dist ile eşlendi (`reklam-kimlik.json` korundu). Kalan 48 kart görseli
+  OpenAI kredisi eklenince yenilenir.
+- **Play (18 Kasım, sahip):** uygulama MARFEN'de görünmüyor, hizmet hesabı tanımlı. Yani A2 (uygulama oluşturma) ve A3 (ilk
+  AAB taslağı) bekleniyor. Play komutları beklemeye alındı (`play-istek.txt`).
+- **Play (18 Kasım):** sahip uygulamayı ve ilk AAB'yi MARFEN'de oluşturduğunu, hizmet hesabına hesap düzeyinde yönetici
+  yetkisi verdiğini söyledi. `durum` (koşu 44230090982) yine 404 "Package not found"; yazma komutları çalışmadı. Olası
+  nedenler: hizmet hesabı izninin yayılması (saatler sürebilir) ya da ilk paketin henüz kaydedilmemiş olması.
 
 ## Durum (14 Kasım 2026)
 

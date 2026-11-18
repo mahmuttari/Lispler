@@ -7,3 +7,17 @@
 
 # 2026-11-14: Lispler#35 birleşti (kavanoz simgesi, Recraft görselleri). Play Console'da uygulama oluşturuldu mu? (salt okuma)
 # (yapıldı, koşu 43600437026) durum → 404 "Package not found": uygulama Play Console'da hâlâ yok (A2 ve A3 bekleniyor)
+
+# 2026-11-17: sahip "Marfen geliştirici hesabından Play Store'a yayınla" dedi. Uygulama oluşturuldu mu? (salt okuma)
+# (yapıldı, koşu 44200770492) durum → 404 "Package not found": uygulama MARFEN'de yok ya da hizmet hesabı davetli değil
+#   (A2 uygulama oluşturma, A3 ilk AAB taslağı, A4 hizmet hesabı daveti bekleniyor)
+
+# 2026-11-18: sahip "ikisi de tamam" dedi (MARFEN'de uygulama ve ilk AAB taslağı; hizmet hesabına hesap düzeyinde
+# yönetici). Önce durum (salt okuma); geçerse mağaza metni, görseller ve veri güvenliği yazılır. İncelemeye gönderme yok.
+# durum
+# magaza uygula
+# gorsel uygula
+# veriguvenligi uygula
+# yeniden deneme 2026-11-18 07:53 UTC: hizmet hesabı izninin yayılması bekleniyordu
+# (koşu 44230090982 ve 44262422360) durum → 404 "Package not found". Sahip (18 Kasım): uygulama MARFEN'de görünmüyor,
+#   hizmet hesabı tanımlı. Dört komut beklemede: uygulama oluşturulup ilk AAB taslağı kaydedilince yeniden açılır.

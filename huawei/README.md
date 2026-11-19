@@ -27,6 +27,19 @@ bağlantısı değil, GitHub'ın sunucusu gönderir.
 Huawei telefonlarda Google hizmetleri yoktur: AdMob reklamı gösterilmez, Google Play aboneliği çalışmaz (üyelik ekranı
 "kullanılamıyor" der). Mağaza açıklamalarında Google Play'e değinen cümleler Huawei için çıkarıldı.
 
+## Durum (20 Kasım 2026)
+
+Dört uygulama AppGallery Connect'te oluşturuldu ve incelemeye gönderildi: Kıble Bul (App ID 119881689, 1.2.0), Calqora
+(119883831, 1.1.0), Unitica (119884049, 1.4.0), İz Haritası (119889915, 1.1.0). APK'lar tarayıcıdan, **Play'deki imzalı
+APK'larla** (Poyraz Workshop yükleme anahtarı) yüklendi.
+
+- **İmza:** AppGallery'deki güncellemeler de aynı anahtarla imzalı olmalı. Bu depodaki derlemelerin `*-apk` artifact'ları
+  (veya Play'e giden APK'lar) doğrudur. `derle.sh`'yi DWG anahtarıyla kullanmayın: Huawei imza uyuşmazlığı diye reddeder.
+- **Güncelleme yolları:** (1) AppGallery Connect'te sürüm › Manage packages › Upload ile APK'yı elle yüklemek;
+  (2) Huawei Connect API anahtarı bu deponun secret'larına girilirse `huawei.yml` (`<uygulama> yukle uygula`, sonra `gonder uygula`).
+- NetcadDevelop'taki `lispler-huawei.yml` denemesi kullanılmıyor (Actions bütçesi + imza nedeniyle).
+- Huawei telefonda Google hizmetleri olmadığı için AdMob reklamı ve Google Play aboneliği çalışmaz.
+
 ## Şimdiki düzen: iş NetcadDevelop'tan çalışır, APK orada derlenir
 
 Huawei Connect API anahtarı (`HUAWEI_CONNECT_CLIENT_ID` / `_SECRET`) DWG OfficeZip'in deposu **NetcadDevelop**'ta kayıtlı;

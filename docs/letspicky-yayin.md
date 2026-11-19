@@ -35,9 +35,22 @@ Adımları sahip ya da bilgisayardaki Claude (`claude --chrome`) izler.
   - `gorsel uygula`: iki dilde simge, öne çıkan görsel ve 5 telefon ekran görüntüsü.
   - `veriguvenligi uygula`: Veri güvenliği formu yazıldı (`letspicky/magaza/veri-guvenligi.csv`).
   - İncelemeye gönderilmedi. API taslak uygulamayı gönderemez: gönderim B adımında, Play Console'dan yapılır.
-- **Huawei:** AppGallery Connect'e elle yükleme: aynı koşunun "LetsPicky-aab" ya da "LetsPicky-apk" dosyası. Depoda
-  AppGallery yükleme aracı yok. Kendiliğinden yükleme için sahip AppGallery Connect'te bir API istemcisi açar ve
-  kimliğini ile gizlisini Lispler'in GitHub sırlarına ekler. Sonra iş akışı yazılır.
+- **Huawei (sahip "Huawei'ye de kendin yükle"):** yükleme aracı `huawei/` (`claude/huawei-appgallery` dalındaki 0f44e63
+  değiştirilmeden alındı; `huawei/README.md`). Let's Picky `huawei/uygulamalar.json`'da; App ID paket adıyla bulunur,
+  APK "Android (Let's Picky)" main derlemesinden alınır. `letspicky durum` (koşu 44532735400): Lispler'de
+  `HUAWEI_CONNECT_CLIENT_ID` ve `HUAWEI_CONNECT_CLIENT_SECRET` sırları yok, Huawei'ye istek gitmedi. Sahibin adımları:
+  1. AppGallery Connect › **Users and permissions** › **API key** › **Connect API** › **Create**: ad "Lispler CI",
+     proje **N/A**, rol **App administrator**. Pencerede Client ID ve Key görünür. Sohbete yazılmaz.
+  2. GitHub › Lispler › Settings › Secrets and variables › Actions › **New repository secret**:
+     `HUAWEI_CONNECT_CLIENT_ID` (Client ID) ve `HUAWEI_CONNECT_CLIENT_SECRET` (Key).
+  3. Let's Picky AppGallery Connect'te yoksa, API istemcisiyle aynı hesapta **My apps › New app**: Android, ad
+     **Let's Picky**, paket `com.mahmuttari.letspicky`, varsayılan dil Türkçe. API uygulama oluşturamaz.
+  4. Mağaza metni, görseller, yaş derecelendirmesi, gizlilik etiketleri ve ülkeler AppGallery Connect'te elle girilir.
+     Metin `letspicky/magaza/aciklamalar.md`'den alınır. Yonetmelik-araclari'deki `ortakkarar/store/appgallery.md`
+     eskidir: "Reklam yok" der.
+
+  Sonra bulut oturumu `huawei/istek.txt`'te `letspicky durum` ve `letspicky yukle uygula` satırlarını açar: APK 1.0.0 (2)
+  taslak sürüme bağlanır. `gonder` (incelemeye gönderme) yalnız sahibin açık onayıyla.
 - **Web:** letspicky.com, Yonetmelik-araclari main'e birleşince "Let's Picky Web" iş akışıyla kendiliğinden yayımlanır
   (CLOUDFLARE_API_TOKEN sırrı 18 Kasım'da eklendi).
 

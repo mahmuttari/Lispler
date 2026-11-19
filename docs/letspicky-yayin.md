@@ -18,6 +18,20 @@ Adımları sahip ya da bilgisayardaki Claude (`claude --chrome`) izler.
 | App Store Connect | Apple ID `6834758192`, SKU `letspicky-ios` |
 | Kaynak kod | `mahmuttari/Yonetmelik-araclari` › `ortakkarar/` (web: letspicky.com) |
 
+## Durum (19 Kasım 2026)
+
+- **Yeni sürüm (sahip "Planı uygula"):** `letspicky/www` Yonetmelik-araclari main 7df533a ile eş (Lispler#48): yeni
+  simge ve açılış ekranı (Android mipmap/splash, iOS AppIcon/Splash da), ana sayfa düzeni, ChatGPT arayüz önerileri,
+  "Nerede Ne Yenir?" düzeltmesi, 15 yeni kart görseli. Android sürüm kodu 2'ye çıktı (Lispler#49; sürüm 1.0.0), çünkü
+  önceki bütün AAB'ler versionCode 1 idi.
+- **App Store:** 1.0.0 (7) Lispler main af16586'dan derlendi, TestFlight'ta (VALID; NetcadDevelop koşu 44490615618).
+  İncelemeye gönderilmedi: 1.0.0 reddedildi (4796162f, Guideline 4.3 ve 4.2.6), sahip Apple'a yanıt verdi. Yapı 7
+  sürüme Apple'ın yanıtından sonra ve sahibin açık onayıyla bağlanır.
+- **Play:** API hâlâ 404 (18 Kasım). İlk yükleme Play Console'dan elle: en yeni "LetsPicky-aab" (versionCode 2).
+- **Huawei:** AppGallery Connect'e elle yükleme: aynı koşunun "LetsPicky-aab" ya da "LetsPicky-apk" dosyası.
+- **Web:** letspicky.com, Yonetmelik-araclari main'e birleşince "Let's Picky Web" iş akışıyla kendiliğinden yayımlanır
+  (CLOUDFLARE_API_TOKEN sırrı 18 Kasım'da eklendi).
+
 ## Durum (18 Kasım 2026)
 
 - **App Store:** Apple 1.0.0 (6)'yı **reddetti** (16 Kasım 16:00 UTC). Sürüm `REJECTED`, gönderim 4796162f

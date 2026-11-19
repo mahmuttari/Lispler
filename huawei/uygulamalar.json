@@ -1,0 +1,6 @@
+{
+  "kiblebul": { "ad": "Kıble Bul", "appId": "119881689", "paket": "com.poyrazworkshop.kiblebul", "derleme": "kiblebul-android.yml", "artifact": "KibleBul-apk", "dosya": "KibleBul.apk" },
+  "calqora": { "ad": "Calqora", "appId": "119883831", "paket": "com.poyrazworkshop.calqora", "derleme": "calqora-android.yml", "artifact": "Calqora-apk", "dosya": "Calqora.apk" },
+  "unitica": { "ad": "Unitica", "appId": "119884049", "paket": "com.poyrazworkshop.unitica", "derleme": "unitica-android.yml", "artifact": "Unitica-apk", "dosya": "Unitica.apk" },
+  "iz": { "ad": "İz Haritası", "appId": "", "paket": "com.poyrazworkshop.izharitasi", "derleme": "iz-android.yml", "artifact": "IzHaritasi-apk", "dosya": "IzHaritasi.apk" }
+}

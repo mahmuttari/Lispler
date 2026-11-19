@@ -1,0 +1,47 @@
+# Huawei AppGallery (Kıble Bul, Calqora, Unitica, İz Haritası): Publishing API işleri (huawei/appgallery.mjs).
+# Komutlar huawei/istek.txt'ye yazılır: her satır "<uygulama> <komut> [uygula]" (kiblebul|calqora|unitica|iz ×
+# durum|yukle|gonder), sırayla çalışır, biri hata verirse sonrakiler çalışmaz. "uygula" yoksa yalnız plan yazılır.
+# "yukle" APK'yı main'deki son başarılı Android derlemesinin artifact'ından alır; artifact silinmişse derlemeyi yeniden
+# başlatır (huawei/apk-al.sh). Kimlik yalnız Secrets'ta: HUAWEI_CONNECT_CLIENT_ID, HUAWEI_CONNECT_CLIENT_SECRET.
+# Paketi sunucu yüklediği için yükleme geliştiricinin internet bağlantısına bağlı değildir.
+name: Huawei AppGallery
+
+on:
+  push:
+    paths: ['huawei/istek.txt']
+  workflow_dispatch:
+
+concurrency:
+  group: huawei-appgallery
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: write    # derleme artifact'ını indirmek ve silinmişse derlemeyi yeniden başlatmak için
+
+jobs:
+  huawei:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Komutlar
+        run: |
+          grep -v '^[[:space:]]*#' huawei/istek.txt | tr -d '\r' | sed '/^[[:space:]]*$/d' > "$RUNNER_TEMP/komutlar" || true
+          while IFS= read -r K; do case "$K" in *[!a-z\ ]*) echo "::error::geçersiz komut: $K"; exit 1;; esac; done < "$RUNNER_TEMP/komutlar"
+          echo "Komutlar:"; cat "$RUNNER_TEMP/komutlar"
+      - name: Çalıştır
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HUAWEI_CONNECT_CLIENT_ID: ${{ secrets.HUAWEI_CONNECT_CLIENT_ID }}
+          HUAWEI_CONNECT_CLIENT_SECRET: ${{ secrets.HUAWEI_CONNECT_CLIENT_SECRET }}
+        run: |
+          while IFS= read -r K <&3; do
+            set -- $K
+            echo; echo "════ $K ════"
+            if [ "${2:-}" = yukle ]; then bash huawei/apk-al.sh "$1"; fi
+            node huawei/appgallery.mjs $K
+          done 3< "$RUNNER_TEMP/komutlar"

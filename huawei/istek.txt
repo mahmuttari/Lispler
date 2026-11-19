@@ -1,0 +1,3 @@
+# Huawei AppGallery komutları (.github/workflows/huawei.yml). Her satır: <uygulama> <komut> [uygula]
+# uygulama: kiblebul | calqora | unitica | iz     komut: durum | yukle | gonder
+# "uygula" yoksa yalnız plan yazılır. "gonder uygula" uygulamayı incelemeye gönderir: yalnız sahibin onayıyla yazılır.

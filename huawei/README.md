@@ -27,11 +27,16 @@ bağlantısı değil, GitHub'ın sunucusu gönderir.
 Huawei telefonlarda Google hizmetleri yoktur: AdMob reklamı gösterilmez, Google Play aboneliği çalışmaz (üyelik ekranı
 "kullanılamıyor" der). Mağaza açıklamalarında Google Play'e değinen cümleler Huawei için çıkarıldı.
 
-## Şimdiki düzen: iş NetcadDevelop'tan çalışır
+## Şimdiki düzen: iş NetcadDevelop'tan çalışır, APK orada derlenir
 
 Huawei Connect API anahtarı (`HUAWEI_CONNECT_CLIENT_ID` / `_SECRET`) DWG OfficeZip'in deposu **NetcadDevelop**'ta kayıtlı;
-anahtar MARFEN'in Huawei hesabındaki bütün uygulamaları kapsar. Bu yüzden komutlar NetcadDevelop'taki
-`.github/lispler-huawei-istek.txt`'ye yazılır; oradaki `lispler-huawei.yml` bu klasörü Lispler'den alır, APK'ları açık
-Lispler deposunun artifact'larından indirir (`APK_DEPO=mahmuttari/Lispler`). APK artifact'ları 7 günde silinir: silinmişse
-önce Lispler'de ilgili `*-android.yml` elle çalıştırılır (Actions › Run workflow). Anahtar Lispler'e de girilirse bu
-depodaki `huawei.yml` aynı işi tek başına yapar ve silinmiş artifact için derlemeyi kendisi başlatır.
+anahtar MARFEN'in Huawei hesabındaki bütün uygulamaları kapsar. Sahip 20 Kasım 2026'da işin oradan çalışmasını seçti.
+
+- Komutlar NetcadDevelop'taki `.github/lispler-huawei-istek.txt`'ye yazılır (yalnız `claude/lispler-huawei` dalı);
+  oradaki `lispler-huawei.yml` bu depoyu (`claude/huawei-appgallery` dalı) alır.
+- GitHub başka deponun artifact'larını indirmeye izin vermediği için `yukle`, APK'yı `huawei/derle.sh` ile kaynaktan derler.
+- **İmza:** NetcadDevelop'ta Lispler'in yükleme anahtarı yok; AppGallery APK'ları MARFEN'in DWG OfficeZip anahtarıyla
+  (`DWG_KEYSTORE_*`, takma ad `dwgviewer-upload`) imzalanır. AppGallery'deki her güncelleme de aynı anahtarla, aynı yoldan
+  derlenmelidir; Play sürümleri Poyraz Workshop anahtarıyla kalır. Huawei ile Play arasında çapraz güncelleme olmaz (normal).
+- `apk-al.sh` (artifact'tan alma) anahtar Lispler'e girilirse bu depodaki `huawei.yml` ile kullanılır; o zaman Huawei
+  sürümleri Lispler'in anahtarına geçemez (imza değişmez), `derle.sh` aynı DWG anahtarıyla burada da çalıştırılmalıdır.

@@ -26,3 +26,12 @@ bağlantısı değil, GitHub'ın sunucusu gönderir.
 
 Huawei telefonlarda Google hizmetleri yoktur: AdMob reklamı gösterilmez, Google Play aboneliği çalışmaz (üyelik ekranı
 "kullanılamıyor" der). Mağaza açıklamalarında Google Play'e değinen cümleler Huawei için çıkarıldı.
+
+## Şimdiki düzen: iş NetcadDevelop'tan çalışır
+
+Huawei Connect API anahtarı (`HUAWEI_CONNECT_CLIENT_ID` / `_SECRET`) DWG OfficeZip'in deposu **NetcadDevelop**'ta kayıtlı;
+anahtar MARFEN'in Huawei hesabındaki bütün uygulamaları kapsar. Bu yüzden komutlar NetcadDevelop'taki
+`.github/lispler-huawei-istek.txt`'ye yazılır; oradaki `lispler-huawei.yml` bu klasörü Lispler'den alır, APK'ları açık
+Lispler deposunun artifact'larından indirir (`APK_DEPO=mahmuttari/Lispler`). APK artifact'ları 7 günde silinir: silinmişse
+önce Lispler'de ilgili `*-android.yml` elle çalıştırılır (Actions › Run workflow). Anahtar Lispler'e de girilirse bu
+depodaki `huawei.yml` aynı işi tek başına yapar ve silinmiş artifact için derlemeyi kendisi başlatır.

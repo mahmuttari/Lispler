@@ -27,8 +27,17 @@ Adımları sahip ya da bilgisayardaki Claude (`claude --chrome`) izler.
 - **App Store:** 1.0.0 (7) Lispler main af16586'dan derlendi, TestFlight'ta (VALID; NetcadDevelop koşu 44490615618).
   İncelemeye gönderilmedi: 1.0.0 reddedildi (4796162f, Guideline 4.3 ve 4.2.6), sahip Apple'a yanıt verdi. Yapı 7
   sürüme Apple'ın yanıtından sonra ve sahibin açık onayıyla bağlanır.
-- **Play:** API hâlâ 404 (18 Kasım). İlk yükleme Play Console'dan elle: en yeni "LetsPicky-aab" (versionCode 2).
-- **Huawei:** AppGallery Connect'e elle yükleme: aynı koşunun "LetsPicky-aab" ya da "LetsPicky-apk" dosyası.
+- **Play (13:00 UTC):** uygulama hizmet hesabına görünüyor (`durum`, koşu 44527903832). Sahibin A3 paketi üretimde
+  "1 (1.0.0)" taslağıydı. Sahip "AAB'leri kendin yükle" dedi. Koşu 44528933559:
+  - `yukle uygula`: versionCode 2 (13,0 MB, derleme koşusu 44491518500, içerik main c0ed131 ile aynı) yüklendi. Üretim
+    taslağı artık **1.0.0 (2)**. versionCode 1 paketi Play'de kalır, kanalda değil.
+  - `magaza uygula`: tr-TR "Let's Picky: Ortak Karar", en-US "Let's Picky: Decide Together", e-posta, web sitesi.
+  - `gorsel uygula`: iki dilde simge, öne çıkan görsel ve 5 telefon ekran görüntüsü.
+  - `veriguvenligi uygula`: Veri güvenliği formu yazıldı (`letspicky/magaza/veri-guvenligi.csv`).
+  - İncelemeye gönderilmedi. API taslak uygulamayı gönderemez: gönderim B adımında, Play Console'dan yapılır.
+- **Huawei:** AppGallery Connect'e elle yükleme: aynı koşunun "LetsPicky-aab" ya da "LetsPicky-apk" dosyası. Depoda
+  AppGallery yükleme aracı yok. Kendiliğinden yükleme için sahip AppGallery Connect'te bir API istemcisi açar ve
+  kimliğini ile gizlisini Lispler'in GitHub sırlarına ekler. Sonra iş akışı yazılır.
 - **Web:** letspicky.com, Yonetmelik-araclari main'e birleşince "Let's Picky Web" iş akışıyla kendiliğinden yayımlanır
   (CLOUDFLARE_API_TOKEN sırrı 18 Kasım'da eklendi).
 
@@ -184,7 +193,8 @@ hazır", A3) ve iPhone yapı 2 (`yukle letspicky`, önkontrol test kimliğini re
 
 1. **Play Console › Let's Picky** (tek sekme):
    1. **Kontrol paneli** › "Uygulamanızı ayarlayın": bütün görevler tamam olmalı. Açık görev varsa dur, adını sahibe yaz.
-   2. **Test ve yayınla › Üretim › Sürümler:** taslak **1.0.0 (1)** görünmeli. Başka sürüm kodu varsa dur.
+   2. **Test ve yayınla › Üretim › Sürümler:** taslak **1.0.0 (2)** görünmeli (19 Kasım'da API ile 1.0.0 (1)'in yerine
+      kondu). Başka sürüm kodu varsa dur.
    3. **Sürümü düzenle › Sonraki.** Önizlemede kırmızı hata varsa dur. Sarı uyarılar gönderimi engellemez; sahibe yaz.
    4. **Kaydet** › **Yayınlama genel bakışı** › "Değişiklikleri incelemeye gönder" › onay penceresinde gönder.
 2. **App Store Connect:** sürüm 1.0.0 › Build: **2** (gerçek kimlikli yapı) › Add for Review › **Submit for Review**.

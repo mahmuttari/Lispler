@@ -30,8 +30,11 @@
 # yüklenir. Sahibin 1.0.0 (1) taslağının yerini alır, çünkü A3 taslağı üretimdedir (dahili kanal yerine). versionCode 1
 # paketi Play'de kalır. Sonra 18 Kasım'dan bekleyen mağaza metni, görseller ve veri güvenliği yazılır. Yayınlama ve
 # incelemeye gönderme yok: sürüm durumu draft, ayrıca API taslak uygulamayı incelemeye gönderemez.
-yukle uygula
-magaza uygula
-gorsel uygula
-veriguvenligi uygula
-durum
+# (yapıldı, koşu 44528933559) yukle uygula → AAB (13,0 MB, derleme koşusu 44491518500, commit 5da6e7c) yüklendi;
+#   üretim kanalı "1 (1.0.0)" [1] draft → "1.0.0 (2)" [2] draft. Play'deki paketler: 1, 2.
+# (yapıldı, aynı koşu) magaza uygula → ayrıntılar tr-TR · e-posta · https://letspicky.com/; tr-TR "Let's Picky: Ortak
+#   Karar" (kısa 78, tam 1807 karakter); en-US "Let's Picky: Decide Together" (kısa 77, tam 1830 karakter).
+# (yapıldı, aynı koşu) gorsel uygula → tr-TR ve en-US: icon=1 featureGraphic=1 phoneScreenshots=5.
+# (yapıldı, aynı koşu) veriguvenligi uygula → form yazıldı (764 satır; ad, yaklaşık konum, kilitlenme günlükleri,
+#   performans, etkileşim, kullanıcı içeriği, aygıt kimliği).
+# (yapıldı, aynı koşu) durum → üretimde 1.0.0 (2) taslak; öteki kanallar boş. İncelemeye gönderilmedi.

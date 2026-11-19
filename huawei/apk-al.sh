@@ -23,7 +23,10 @@ indir() {
   return 1
 }
 
-if ! indir; then
+if [ -n "${APK_DIZIN:-}" ] && [ -f "$APK_DIZIN/$DOSYA" ]; then
+  # APK_DIZIN: iş başka depodan çalışırken APK'lar o depoya konmuşsa (çapraz depo artifact indirme izni yok) oradan alınır
+  rm -rf "$D"; mkdir -p "$D"; cp "$APK_DIZIN/$DOSYA" "$D/$DOSYA"; echo "APK: $APK_DIZIN/$DOSYA"
+elif ! indir; then
   if [ "$REPO" != "$GITHUB_REPOSITORY" ]; then
     echo "::error::$REPO'da $ART bulunamadı ya da süresi dolmuş: önce orada $WF elle çalıştırılmalı (Actions › Run workflow)"; exit 1
   fi

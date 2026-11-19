@@ -23,6 +23,15 @@
 #   hizmet hesabı tanımlı. Dört komut beklemede: uygulama oluşturulup ilk AAB taslağı kaydedilince yeniden açılır.
 
 # 2026-11-19: sahip "AAB'leri kendin yükle" dedi. Önce durum (salt okuma): uygulama hizmet hesabına görünüyor mu?
-# Görünürse sıradaki itmede en yeni AAB (versionCode 2, Lispler main c0ed131) dahili kanala TASLAK olarak yüklenir;
-# yayınlama ve incelemeye gönderme yok.
+# (yapıldı, koşu 44527903832) durum → uygulama görünüyor. Üretimde taslak "1 (1.0.0)" [1] (sahibin A3 paketi); beta,
+#   alfa ve dahili kanal boş; Play'deki paket yalnız versionCode 1; tr-TR "Let's Picky", simge/öne çıkan/ekran 0.
+
+# 2026-11-19: en yeni AAB (versionCode 2, 1.0.0; içerik Lispler main c0ed131 ile aynı) ÜRETİM kanalına TASLAK olarak
+# yüklenir. Sahibin 1.0.0 (1) taslağının yerini alır, çünkü A3 taslağı üretimdedir (dahili kanal yerine). versionCode 1
+# paketi Play'de kalır. Sonra 18 Kasım'dan bekleyen mağaza metni, görseller ve veri güvenliği yazılır. Yayınlama ve
+# incelemeye gönderme yok: sürüm durumu draft, ayrıca API taslak uygulamayı incelemeye gönderemez.
+yukle uygula
+magaza uygula
+gorsel uygula
+veriguvenligi uygula
 durum

@@ -19,13 +19,13 @@ function png(dosya) {
   return { w: b.readUInt32BE(16), h: b.readUInt32BE(20), renk: b[25] };
 }
 
-test('paket adı play.mjs, build.gradle ve capacitor.config.json ile aynı; sürüm 1.0.0 (1)', () => {
+test('paket adı play.mjs, build.gradle ve capacitor.config.json ile aynı; sürüm 1.0.0 (2)', () => {
   assert.equal(play.PAKET, 'com.mahmuttari.letspicky');
   assert.equal(play.UYGULAMALAR.letspicky.aab, 'dist/LetsPicky-play.aab');
   const g = fs.readFileSync(path.join(LP, 'android', 'app', 'build.gradle'), 'utf8');
   assert.match(g, /applicationId "com\.mahmuttari\.letspicky"/);
   assert.match(g, /namespace = "com\.mahmuttari\.letspicky"/);
-  assert.deepEqual(play.surumBilgisi(g), { versionCode: 1, versionName: '1.0.0' });
+  assert.deepEqual(play.surumBilgisi(g), { versionCode: 2, versionName: '1.0.0' });
   assert.equal(JSON.parse(fs.readFileSync(path.join(LP, 'capacitor.config.json'), 'utf8')).appId, 'com.mahmuttari.letspicky');
 });
 

@@ -21,3 +21,8 @@
 # yeniden deneme 2026-11-18 07:53 UTC: hizmet hesabı izninin yayılması bekleniyordu
 # (koşu 44230090982 ve 44262422360) durum → 404 "Package not found". Sahip (18 Kasım): uygulama MARFEN'de görünmüyor,
 #   hizmet hesabı tanımlı. Dört komut beklemede: uygulama oluşturulup ilk AAB taslağı kaydedilince yeniden açılır.
+
+# 2026-11-19: sahip "AAB'leri kendin yükle" dedi. Önce durum (salt okuma): uygulama hizmet hesabına görünüyor mu?
+# Görünürse sıradaki itmede en yeni AAB (versionCode 2, Lispler main c0ed131) dahili kanala TASLAK olarak yüklenir;
+# yayınlama ve incelemeye gönderme yok.
+durum

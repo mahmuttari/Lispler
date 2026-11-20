@@ -30,7 +30,7 @@ function olcu(dosya) {
 
 test('paket adı ve sürüm', () => {
   assert.equal(play.PAKET, 'com.ofivora.app');
-  assert.deepEqual(play.surumBilgisi(oku(KOK, 'master-office', 'surum.gradle')), { versionCode: 3005002, versionName: '3.5.2' });
+  assert.deepEqual(play.surumBilgisi(oku(KOK, 'master-office', 'surum.gradle')), { versionCode: 3007002, versionName: '3.7.2' });
 });
 
 test('mağaza metinleri: tr-TR ve en-US, Play sınırları içinde', () => {
@@ -55,21 +55,38 @@ test('sürüm notları ≤ 500 karakter', () => {
   assert.deepEqual(n.map((x) => x.language), ['tr-TR', 'en-US']);
 });
 
-test('Veri güvenliği CSV: yalnız AdMob\'un dört veri türü, hepsi toplanıyor + paylaşılıyor', () => {
+// 3.7.2 (20 Kasım 2026): 3.5.1'in AdMob cevapları + 3.6.0'ın isteğe bağlı hesabı (veri-guvenligi-3.6.0.csv) + MARFEN
+// Abonelik SDK'sı: satın alma bilgisi doğrulama için geliştiricinin sunucusuna gider (satın alma geçmişi, paylaşılmaz) ve
+// SDK'nın anonim müşteri kimliği cihaz kimliğine "uygulama işlevi" amacını ekler.
+test('Veri güvenliği CSV (3.7.2): AdMob\'un dört veri türü + hesap + satın alma geçmişi', () => {
   const o = play.veriGuvenligiOzeti(oku(MAGAZA, 'veri-guvenligi.csv'));
   assert.equal(o.genel.PSL_DATA_COLLECTION_COLLECTS_PERSONAL_DATA, 'TRUE');
   assert.equal(o.genel.PSL_DATA_COLLECTION_ENCRYPTED_IN_TRANSIT, 'TRUE');
-  assert.equal(o.genel.PSL_DATA_COLLECTION_USER_REQUEST_DELETE, 'FALSE');
-  assert.equal(o.genel['PSL_SUPPORTED_ACCOUNT_CREATION_METHODS/PSL_ACM_NONE'], 'TRUE');
-  assert.deepEqual(Object.keys(o.turler).sort(),
-    ['PSL_APPROX_LOCATION', 'PSL_DEVICE_ID', 'PSL_PERFORMANCE_DIAGNOSTICS', 'PSL_USER_INTERACTION']);
-  const amac = ['ADVERTISING', 'ANALYTICS', 'FRAUD_PREVENTION_SECURITY'];
+  assert.equal(o.genel.PSL_DATA_COLLECTION_USER_REQUEST_DELETE, 'TRUE');
+  assert.equal(o.genel['PSL_SUPPORTED_ACCOUNT_CREATION_METHODS/PSL_ACM_OAUTH'], 'TRUE');
+  assert.equal(o.genel['PSL_SUPPORTED_ACCOUNT_CREATION_METHODS/PSL_ACM_NONE'], undefined);
+  assert.equal(o.genel.PSL_ACCOUNT_DELETION_URL, 'https://mahmuttari.github.io/master-office/hesap-silme.html');
+  const admob = ['ADVERTISING', 'ANALYTICS', 'FRAUD_PREVENTION_SECURITY'];
+  const beklenen = {
+    PSL_APPROX_LOCATION: { paylasilan: true, istege: false, amac: admob },
+    PSL_PERFORMANCE_DIAGNOSTICS: { paylasilan: true, istege: false, amac: admob },
+    PSL_USER_INTERACTION: { paylasilan: true, istege: false, amac: admob },
+    PSL_DEVICE_ID: { paylasilan: true, istege: false, amac: ['APP_FUNCTIONALITY', ...admob].sort() },
+    PSL_NAME: { paylasilan: false, istege: true, amac: ['ACCOUNT_MANAGEMENT', 'APP_FUNCTIONALITY'] },
+    PSL_EMAIL: { paylasilan: false, istege: true, amac: ['ACCOUNT_MANAGEMENT', 'APP_FUNCTIONALITY'] },
+    PSL_USER_ACCOUNT: { paylasilan: false, istege: true, amac: ['ACCOUNT_MANAGEMENT', 'APP_FUNCTIONALITY'] },
+    PSL_OTHER_APP_ACTIVITY: { paylasilan: false, istege: true, amac: ['APP_FUNCTIONALITY'] },
+    PSL_PURCHASE_HISTORY: { paylasilan: false, istege: false, amac: ['ANALYTICS', 'APP_FUNCTIONALITY', 'FRAUD_PREVENTION_SECURITY'] },
+  };
+  assert.deepEqual(Object.keys(o.turler).sort(), Object.keys(beklenen).sort());
   for (const [tur, t] of Object.entries(o.turler)) {
-    assert.ok(t.toplanan && t.paylasilan, `${tur}: toplanıyor + paylaşılıyor olmalı`);
+    const b = beklenen[tur];
+    assert.ok(t.toplanan, `${tur}: toplanıyor olmalı`);
+    assert.equal(Boolean(t.paylasilan), b.paylasilan, `${tur}: paylaşma`);
     assert.equal(t.gecici, false, `${tur}: geçici değil`);
-    assert.equal(t.istege, false, `${tur}: zorunlu`);
-    assert.deepEqual([...t.amac].sort(), amac, `${tur}: toplama amacı`);
-    assert.deepEqual([...t.paylasimAmaci].sort(), amac, `${tur}: paylaşma amacı`);
+    assert.equal(t.istege, b.istege, `${tur}: isteğe bağlı mı`);
+    assert.deepEqual([...t.amac].sort(), b.amac, `${tur}: toplama amacı`);
+    if (b.paylasilan) assert.deepEqual([...t.paylasimAmaci].sort(), admob, `${tur}: paylaşma amacı (yalnız AdMob)`);
   }
 });
 

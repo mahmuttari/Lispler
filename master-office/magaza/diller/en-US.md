@@ -57,4 +57,4 @@ Your documents stay on your phone; the app never sends them anywhere. The intern
 
 ## Sürüm notu
 
-The first Google Play release of Master Office: view PDF, Word, Excel, PowerPoint, TXT and ZIP/RAR files; merge, split, sign, stamp and convert PDFs.
+What's new: optionally sync your theme, language, reading and tool settings across your devices with your Google account; your documents are never uploaded. Improved purchase and subscription system: purchases are verified more reliably. Bug fixes.

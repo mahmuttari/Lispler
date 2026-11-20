@@ -1,1 +1,1 @@
-Master Office'in Google Play'deki ilk sürümü: PDF, Word, Excel, PowerPoint, TXT ve ZIP/RAR görüntüleme; PDF birleştirme, bölme, imza, mühür ve dönüştürme araçları.
+Yenilikler: İsteğe bağlı olarak Google hesabınızla tema, dil, okuma ve araç ayarlarınızı cihazlarınız arasında eşitleyebilirsiniz; belgeleriniz hiçbir sunucuya yüklenmez. Satın alma ve abonelik altyapısı iyileştirildi, satın almalar daha güvenilir doğrulanıyor. Hata düzeltmeleri.

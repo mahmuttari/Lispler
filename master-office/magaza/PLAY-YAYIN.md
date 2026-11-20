@@ -199,8 +199,17 @@ satırıyla `yukle yayinla uygula`. Google incelemesi genelde birkaç gün süre
 
 ## Sonraki sürümler
 
-AAB'ler Play Console'dan elle yüklenir (bu depo herkese açıktır; AAB'de kodun eşleme dosyası var); `surum.gradle`,
-`surum-notu.txt` ve `diller/en-US.md › Sürüm notu` güncellenir; onayla `yukle yayinla uygula`.
+AAB bu depoya konmaz (bu depo herkese açıktır; AAB'de kodun eşleme dosyası var): Play Console'dan elle ya da özel daldaki
+Play API iş akışıyla yüklenir. `surum.gradle`, `surum-notu.txt` ve `diller/en-US.md › Sürüm notu` güncellenir; onayla
+`yukle yayinla uygula`.
+
+**3.7.2 (3007002), 20 Kasım 2026** (kullanıcı: "Play'e sen yükle api var"): Play'de 3.5.2'nin yerine geçer.
+- İmzalı AAB özel depodaki Android iş akışından gelir; yükleme anahtarı 3.5.2'ninkiyle aynıdır (SHA-256 `D1:F5:DF:B5:…:68:C7`).
+- Veri güvenliği (`veri-guvenligi.csv`) = 3.6.0'ın hesap cevapları (`veri-guvenligi-3.6.0.csv`, HESAP-3.6.0.md §2) ve MARFEN
+  Abonelik SDK'sı. SDK satın alma bilgisini doğrulama için geliştiricinin sunucusuna gönderir:
+  - **Satın alma geçmişi:** toplanır, paylaşılmaz, zorunlu; amaçlar uygulama işlevi, analiz ve dolandırıcılık önleme.
+  - **Cihaz ya da diğer kimlikler:** SDK'nın anonim müşteri kimliği; amaçlara uygulama işlevi eklenir.
+- Android'de Apple ile giriş düğmesi kapalıdır (`APPLE_SIGN_IN_ANDROID: false`; HESAP-3.6.0.md §5 bitince açılır). Google girişi açıktır.
 
 ## App Store
 

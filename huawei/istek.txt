@@ -7,7 +7,6 @@
 # yüklenen paketle aynı içerik) taslak sürüme bağlanır. "gonder" YOK: incelemeye gönderme yalnız sahibin açık onayıyla.
 # (yapıldı, koşu 44532735400) letspicky durum → HATA: HUAWEI_CONNECT_CLIENT_ID / HUAWEI_CONNECT_CLIENT_SECRET boş (Lispler'de
 #   bu iki sır yok). Huawei'ye istek gitmedi; "letspicky yukle uygula" çalışmadı.
-# Beklemede: sahip API istemcisini açıp iki sırrı ekleyince (README › Bir kez yapılan kurulum) ve Let's Picky
-# AppGallery Connect'te oluşturulunca iki satır yeniden açılır:
-# letspicky durum
-# letspicky yukle uygula
+# 2026-11-20: sahip "Onlar var netcad develop da" dedi: Huawei sırları NetcadDevelop'ta. Let's Picky'nin Huawei işleri
+# oradan çalışır (NetcadDevelop › .github/workflows/letspicky-huawei.yml, istek dosyası .github/letspicky-huawei-istek.txt;
+# araç bu klasördeki appgallery.mjs ve apk-al.sh). Let's Picky için bu dosyaya satır yazılmaz.

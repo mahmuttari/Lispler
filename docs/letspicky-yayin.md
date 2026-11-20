@@ -37,19 +37,23 @@ Adımları sahip ya da bilgisayardaki Claude (`claude --chrome`) izler.
   - İncelemeye gönderilmedi. API taslak uygulamayı gönderemez: gönderim B adımında, Play Console'dan yapılır.
 - **Huawei (sahip "Huawei'ye de kendin yükle"):** yükleme aracı `huawei/` (`claude/huawei-appgallery` dalındaki 0f44e63
   değiştirilmeden alındı; `huawei/README.md`). Let's Picky `huawei/uygulamalar.json`'da; App ID paket adıyla bulunur,
-  APK "Android (Let's Picky)" main derlemesinden alınır. `letspicky durum` (koşu 44532735400): Lispler'de
-  `HUAWEI_CONNECT_CLIENT_ID` ve `HUAWEI_CONNECT_CLIENT_SECRET` sırları yok, Huawei'ye istek gitmedi. Sahibin adımları:
-  1. AppGallery Connect › **Users and permissions** › **API key** › **Connect API** › **Create**: ad "Lispler CI",
-     proje **N/A**, rol **App administrator**. Pencerede Client ID ve Key görünür. Sohbete yazılmaz.
-  2. GitHub › Lispler › Settings › Secrets and variables › Actions › **New repository secret**:
-     `HUAWEI_CONNECT_CLIENT_ID` (Client ID) ve `HUAWEI_CONNECT_CLIENT_SECRET` (Key).
-  3. Let's Picky AppGallery Connect'te yoksa, API istemcisiyle aynı hesapta **My apps › New app**: Android, ad
-     **Let's Picky**, paket `com.mahmuttari.letspicky`, varsayılan dil Türkçe. API uygulama oluşturamaz.
-  4. Mağaza metni, görseller, yaş derecelendirmesi, gizlilik etiketleri ve ülkeler AppGallery Connect'te elle girilir.
-     Metin `letspicky/magaza/aciklamalar.md`'den alınır. Yonetmelik-araclari'deki `ortakkarar/store/appgallery.md`
-     eskidir: "Reklam yok" der.
+  APK "Android (Let's Picky)" main derlemesinden alınır.
+  - Lispler'de Huawei sırları yok (`letspicky durum`, koşu 44532735400). Sahip (20 Kasım): sırlar NetcadDevelop'ta. İş
+    oradan çalışır: NetcadDevelop › `.github/workflows/letspicky-huawei.yml` (dal `claude/letspicky-ios`), istek dosyası
+    `.github/letspicky-huawei-istek.txt`. İş Lispler'i checkout eder ve bu araçla `HUAWEI_CONNECT_CLIENT_ID` /
+    `HUAWEI_CONNECT_CLIENT_SECRET`'i kullanır.
+  - NetcadDevelop koşu 44700955929: Huawei girişi tamam, ama `com.mahmuttari.letspicky` için App ID yok. Let's Picky bu
+    AppGallery Connect hesabında bu paket adıyla kayıtlı değil. Paket gitmedi.
+  - Sahibin adımları:
+    1. API istemcisinin bulunduğu AppGallery Connect hesabında **My apps › New app**: Android, ad **Let's Picky**, paket
+       adı elle `com.mahmuttari.letspicky`, varsayılan dil Türkçe, kategori Yaşam tarzı. API uygulama oluşturamaz.
+       Uygulama zaten varsa ama paket adı girilmemişse, App information sayfasındaki **App ID** sohbete yazılır (gizli
+       değildir).
+    2. Mağaza metni, görseller, yaş derecelendirmesi, gizlilik etiketleri ve ülkeler AppGallery Connect'te elle girilir.
+       Metin `letspicky/magaza/aciklamalar.md`'den alınır. Yonetmelik-araclari'deki `ortakkarar/store/appgallery.md`
+       eskidir: "Reklam yok" der.
 
-  Sonra bulut oturumu `huawei/istek.txt`'te `letspicky durum` ve `letspicky yukle uygula` satırlarını açar: APK 1.0.0 (2)
+  Sonra bulut oturumu NetcadDevelop'taki istek dosyasında `durum` ve `yukle uygula` satırlarını açar: APK 1.0.0 (2)
   taslak sürüme bağlanır. `gonder` (incelemeye gönderme) yalnız sahibin açık onayıyla.
 - **Web:** letspicky.com, Yonetmelik-araclari main'e birleşince "Let's Picky Web" iş akışıyla kendiliğinden yayımlanır
   (CLOUDFLARE_API_TOKEN sırrı 18 Kasım'da eklendi).

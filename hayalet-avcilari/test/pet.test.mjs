@@ -1,6 +1,6 @@
 // Hayalet Avcıları: petler (3.15.0) — çevrimdışı sınama.
 // Kullanıcının isteği: "Saldırabilen pet ekleyelim karakterlerin yanına kedi köpek kuş gibi." Mağazadan alınır, yanına
-// alınan pet oyuncuyu izler ve yakındaki hayalete saldırır. Oyun duraklatılır, petGuncelle elle çağrılır.
+// alınan pet oyuncuyu izler ve yakındaki hayalete saldırır. 3.15.1: "Hayaletler petlere de vursun, köpeklerin 5 canı olsun." Oyun duraklatılır, petGuncelle elle çağrılır.
 // Çalıştırma: node hayalet-avcilari/test/pet.test.mjs   (Playwright + Chromium; ağ ve Firebase gerekmez)
 import http from 'node:http';
 import fs from 'node:fs';
@@ -173,6 +173,63 @@ try {
   sina('çevrimiçi istemcide vuruş kurucuya olay olarak gider', () => {
     assert.ok(saldiri.istemci.olay >= 2); assert.equal(saldiri.istemci.can, 100);
   });
+
+  // 3.15.1: hayaletler petlere vurur; her petin 5 canı var; can bitince bayılır, sonra döner
+  const can = await p.evaluate(() => {
+    const r = {};
+    r.canlar = ['kedi', 'kopek', 'kus'].map((tur) => { const pt = __kur(tur); return [pt.can, pt.maxCan]; });
+    // Değen hayalet 1 can alır; koruma süresinde ikinci darbe yok, sonra yine alır
+    __kur('kopek'); const pt = game.pet;
+    __hayalet(pt.x, pt.y, 1000);
+    petGuncelle(0, 1e6); r.ilk = pt.can;
+    __pet(0.5); r.korumada = pt.can;
+    __pet(1.0); r.korumaSonra = pt.can;
+    // Sersemlemiş hayalet ısırmaz
+    game.ghosts = []; __kur('kopek');
+    const s = __hayalet(game.pet.x, game.pet.y, 1000); s.frozenUntil = 1e12;
+    petGuncelle(0, 1e6); r.sersem = game.pet.can;
+    // Boss 2 can alır
+    game.ghosts = []; __kur('kopek');
+    const bs = __hayalet(game.pet.x, game.pet.y, 1000); bs.isBoss = true;
+    petGuncelle(0, 1e6); r.boss = game.pet.can;
+    // Düşman mermisi: can gider, mermi silinir
+    game.ghosts = []; __kur('kedi');
+    game.enemyProjectiles = [{ x: game.pet.x + 3, y: game.pet.y, vx: 0, vy: 0, life: 3 }];
+    petGuncelle(0, 1e6); r.mermi = { can: game.pet.can, kalan: game.enemyProjectiles.length };
+    // İstemcide mermi kurucuya "mermi" olayıyla bildirilir
+    __kur('kedi'); online.mode = 'client'; online.pendingEvents = []; online.vuranlar = new Set();
+    try {
+      game.enemyProjectiles = [{ x: game.pet.x, y: game.pet.y, vx: 0, vy: 0, life: 3, _idx: 4 }];
+      petGuncelle(0, 1e6);
+      r.istemciMermi = online.pendingEvents.filter((o) => o.type === 'mermi' && o.gi === 4).length;
+    } finally { online.mode = null; online.pendingEvents = []; game.enemyProjectiles = []; }
+    // Can biter: bayılır, saldırmaz, çizilmez; PET_DIRILME sn sonra tam canla döner
+    game.ghosts = []; __kur('kedi');
+    for (let i = 0; i < 5; i++) { game.pet.koruma = 0; petHasar(1); }
+    r.baygin = { can: game.pet.can, baygin: game.pet.baygin > 0 };
+    const h = __hayalet(game.pet.x + 30, game.pet.y, 100); h.frozenUntil = 1e12;
+    __pet(2); r.bayginVurmaz = h.hp;
+    let hata = null; try { render(); } catch (e) { hata = e.message; } r.bayginCizim = hata;
+    game.ghosts = []; __pet(PET_DIRILME);
+    r.donus = { can: game.pet.can, baygin: game.pet.baygin, yakin: Math.hypot(game.pet.x - game.player.x, game.pet.y - game.player.y) < 120 };
+    // Yeni bölümde tam can
+    __kur('kopek'); game.pet.koruma = 0; petHasar(1); petKur(); r.yeniBolum = game.pet.can;
+    // Canı eksik pet kalplerle çizilir
+    __kur('kopek'); game.pet.can = 2; game.pet.koruma = 0; hata = null; try { render(); } catch (e) { hata = e.message; } r.kalp = hata;
+    return r;
+  });
+  sina('bütün petlerin 5 canı var', () => { assert.deepEqual(can.canlar, [[5, 5], [5, 5], [5, 5]]); });
+  sina('değen hayalet petin 1 canını alır; korumada ikinci darbe yok, sonra yine alır', () => {
+    assert.equal(can.ilk, 4); assert.equal(can.korumada, 4); assert.equal(can.korumaSonra, 3);
+  });
+  sina('sersemlemiş hayalet ısırmaz; boss 2 can alır', () => { assert.equal(can.sersem, 5); assert.equal(can.boss, 3); });
+  sina('düşman mermisi pete çarpınca can gider ve mermi silinir', () => { assert.deepEqual(can.mermi, { can: 4, kalan: 0 }); });
+  sina('istemcide pete çarpan mermi kurucuya bildirilir', () => { assert.equal(can.istemciMermi, 1); });
+  sina('canı biten pet bayılır, saldırmaz, çizimde hata yok', () => {
+    assert.deepEqual(can.baygin, { can: 0, baygin: true }); assert.equal(can.bayginVurmaz, 100); assert.equal(can.bayginCizim, null);
+  });
+  sina('bayılan pet PET_DIRILME sn sonra oyuncunun yanında tam canla döner', () => { assert.deepEqual(can.donus, { can: 5, baygin: 0, yakin: true }); });
+  sina('yeni bölümde pet tam canla başlar; eksik can kalplerle çizilir', () => { assert.equal(can.yeniBolum, 5); assert.equal(can.kalp, null); });
 
   // Çizim: üç pet her durumda hatasız; ekran görüntüleri
   const ciz = await p.evaluate(() => {

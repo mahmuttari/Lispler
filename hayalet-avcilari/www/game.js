@@ -318,13 +318,61 @@ let _sonAv = -1, _avZamani = 0;
 // ====== KAYIT SİSTEMİ ======
 const SAVE_KEY = "hayaletAvcilariSave_v1";
 const LEADERBOARD_KEY = "hayaletAvcilariLeaderboard_v1";
-const LEADERBOARD_MAX = 10;
+const LEADERBOARD_MAX = 500; // 3.16.1, kullanıcı: "Şampiyon listesi ilk 500 göstersin" (eskiden 10)
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.15.0";
+const APP_VERSION = "3.17.0";
 const UPDATE_NOTES = {
   // Mağaza notu aynı satırlar; her dilde 500 karakterin altında kalsın diye Dünya Turu'nun satırları (3.14.0) yok
+  // 3.15.0 incelemedeyken 3.15.1 gelebilir: 3.15.0'ın satırları ve düzeltme (mağaza notu aynı satırlar, ≤ 500)
+  // 3.17.0 (kullanıcı: "Yarasalar uçuşsun ormanda. Arada şimşek çakan bulutlar gezinsin. Bosun üzerinde."): 3.16.2
+  // gönderilmeden geldi, onun satırları da var; 🌉 ve 🌿 (3.15.0'dan beri yayında) 500 sınırı için çıktı
+  "3.17.0": [
+    t("🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!"),
+    t("🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi."),
+    t("🎬 Reklam izle: Dünya Turu'nda kaldığın yerden devam et (3 kez) ya da oyun sonunda paranı 2 katına çıkar."),
+    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var."),
+  ],
+  // 3.16.2 (kullanıcının seçimi "2 ve 3"): ödüllü 2× para ve biraz daha sık geçiş reklamı; 🎬 satırı reklamla devamı ve
+  // 2× parayı birlikte söyler (500 karakter sınırı)
+  "3.16.2": [
+    t("🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi."),
+    t("🎬 Reklam izle: Dünya Turu'nda kaldığın yerden devam et (3 kez) ya da oyun sonunda paranı 2 katına çıkar."),
+    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
+    t("🌉 Göllerde sallanan ip köprüler: hızlı geç, ortada oyalanırsan suya düşersin!"),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var."),
+    t("🌿 Çalıya saklan, hayaletler seni göremez; hayaletler artık dibinde doğmaz."),
+  ],
+  // 3.16.1 (kullanıcı: "Şampiyon listesi ilk 500 göstersin"): 3.16.0 incelemedeyken yerini alabilir; 🎨 satırı ikisini birlikte
+  // söyler (500 karakter sınırı)
+  "3.16.1": [
+    t("🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi."),
+    t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
+    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
+    t("🌉 Göllerde sallanan ip köprüler: hızlı geç, ortada oyalanırsan suya düşersin!"),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var."),
+    t("🌿 Çalıya saklan, hayaletler seni göremez; hayaletler artık dibinde doğmaz."),
+  ],
+  // 3.16.0 (kullanıcı: "Oyun arayüzünü, kontrolleri, tuşları, tüm arayüzü daha profesyonel hale getir"): yeni görünüm;
+  // 3.15.1 Play incelemesindeyken yerini aldı, onun satırları da var (🛠️ satırı 500 karakter sınırı için çıktı)
+  "3.16.0": [
+    t("🎨 Yeni görünüm: düğmeler, kontroller ve göstergeler yenilendi."),
+    t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
+    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
+    t("🌉 Göllerde sallanan ip köprüler: hızlı geç, ortada oyalanırsan suya düşersin!"),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var."),
+    t("🌿 Çalıya saklan, hayaletler seni göremez; hayaletler artık dibinde doğmaz."),
+  ],
+  "3.15.1": [
+    t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
+    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
+    t("🌉 Göllerde sallanan ip köprüler: hızlı geç, ortada oyalanırsan suya düşersin!"),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var."),
+    t("🌿 Çalıya saklan, hayaletler seni göremez; hayaletler artık dibinde doğmaz."),
+    t("🛠️ Ayarlardan dönünce oyun artık durmuyor."),
+  ],
   "3.15.0": [
     t("🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez)."),
     t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
@@ -577,50 +625,58 @@ async function submitOnlineScore(entry) {
   }
 }
 
+// 3.16.1: tüm zamanların en iyileri. Eskiden son 200 kayıt (tarihe göre) alınıp içinden ilk 10 seçiliyordu; eski yüksek
+// skorlar listeye giremiyordu. Artık skora göre azalan sırayla sayfa sayfa okunur, her isimden en yüksek skor kalır;
+// `limit` farklı avcıya ulaşınca ya da kayıt bitince durur. Okuma sınırı: en çok SAMPIYON_SAYFA_SAYISI × SAMPIYON_SAYFA belge.
+const SAMPIYON_SAYFA = 300, SAMPIYON_SAYFA_SAYISI = 6;
 async function fetchOnlineLeaderboard(limit) {
   limit = limit || LEADERBOARD_MAX;
-  // Önce tarihe göre azalan sırayla çek, JS tarafında isme göre tekilleştirip skora göre sırala
-  const query = {
-    structuredQuery: {
-      from: [{ collectionId: FIREBASE.collection }],
-      orderBy: [{ field: { fieldPath: "date" }, direction: "DESCENDING" }],
-      limit: 200,
-    }
-  };
+  const tam = (f, ad, varsayilan) => (f[ad] ? parseInt(f[ad].integerValue) : varsayilan);
+  const seen = new Set();
+  const unique = [];
+  let imlec = null;
   try {
-    const res = await fetch(`${FIRESTORE_BASE}:runQuery?key=${FIREBASE.apiKey}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(query),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    const all = data
-      .filter((d) => d.document)
-      .map((d) => {
-        const f = d.document.fields || {};
-        return {
-          name:   f.name   ? f.name.stringValue                : t("Avcı"),
-          level:  f.level  ? parseInt(f.level.integerValue)    : 1,
-          ghosts: f.ghosts ? parseInt(f.ghosts.integerValue)   : 0,
-          para:   f.para   ? parseInt(f.para.integerValue)     : 0,
-          score:  f.score  ? parseInt(f.score.integerValue)    : 0,
-          date:   f.date   ? parseInt(f.date.integerValue)     : 0,
-        };
+    for (let sayfa = 0; sayfa < SAMPIYON_SAYFA_SAYISI && unique.length < limit; sayfa++) {
+      const query = {
+        structuredQuery: {
+          from: [{ collectionId: FIREBASE.collection }],
+          orderBy: [
+            { field: { fieldPath: "score" }, direction: "DESCENDING" },
+            { field: { fieldPath: "__name__" }, direction: "DESCENDING" },
+          ],
+          limit: SAMPIYON_SAYFA,
+        },
+      };
+      if (imlec) query.structuredQuery.startAt = { values: imlec, before: false };
+      const res = await fetch(`${FIRESTORE_BASE}:runQuery?key=${FIREBASE.apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(query),
       });
-    // Aynı isimden tek (en son) kayıt kalsın — tarih sıralı geldiği için ilk görüleni tut
-    const seen = new Set();
-    const unique = [];
-    for (const e of all) {
-      if (!e.name || seen.has(e.name)) continue;
-      seen.add(e.name);
-      unique.push(e);
+      if (!res.ok) return sayfa === 0 ? null : unique.slice(0, limit);
+      const belgeler = (await res.json()).filter((d) => d.document).map((d) => d.document);
+      for (const b of belgeler) {
+        const f = b.fields || {};
+        const e = {
+          name:   f.name ? f.name.stringValue : t("Avcı"),
+          level:  tam(f, "level", 1),
+          ghosts: tam(f, "ghosts", 0),
+          para:   tam(f, "para", 0),
+          score:  tam(f, "score", 0),
+          date:   tam(f, "date", 0),
+        };
+        // Skor sıralı geldiği için bir ismin ilk görülen kaydı en yükseğidir
+        if (!e.name || seen.has(e.name)) continue;
+        seen.add(e.name);
+        unique.push(e);
+      }
+      if (belgeler.length < SAMPIYON_SAYFA) break;
+      const son = belgeler[belgeler.length - 1];
+      imlec = [son.fields.score || { integerValue: "0" }, { referenceValue: son.name }];
     }
-    // Skora göre sırala, ilk N'i döndür
-    unique.sort((a, b) => b.score - a.score);
     return unique.slice(0, limit);
   } catch (e) {
-    return null;
+    return unique.length ? unique.slice(0, limit) : null;
   }
 }
 
@@ -2836,7 +2892,7 @@ function drawPickup(ctx, p) {
     // İçinde aktif karakterin ikonu
     ctx.shadowBlur = 0;
     ctx.fillStyle = "#7c2d12";
-    ctx.font = "bold 14px sans-serif";
+    ctx.font = "800 14px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const ikon = (CHAR_POWERS[game.player && game.player.charKey] || CHAR_POWERS.kinkin).icon;
@@ -2850,7 +2906,7 @@ function drawPickup(ctx, p) {
     ctx.fill();
     ctx.shadowBlur = 0;
     ctx.fillStyle = "#a16207";
-    ctx.font = "bold 11px sans-serif";
+    ctx.font = "800 11px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("$", 0, 1);
@@ -2885,6 +2941,7 @@ function drawPickup(ctx, p) {
 function showScreen(id) {
   document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
+  eskiToastuKapat();
 }
 
 function goToMenu() {
@@ -3611,7 +3668,7 @@ async function ekleriGonder() {
   const simdi = performance.now();
   if (_ekYolda || simdi < _ekBeklet || !online.roomId) return;
   const p = game.player, pet = game.pet, tm = timsahDizisi();
-  const anlik = { pet: pet ? pet.tur : "", px: pet ? Math.round(pet.x) : 0, py: pet ? Math.round(pet.y) : 0, gz: p.gizli && !p.dead ? 1 : 0 };
+  const anlik = { pet: pet && !pet.baygin ? pet.tur : "", px: pet ? Math.round(pet.x) : 0, py: pet ? Math.round(pet.y) : 0, gz: p.gizli && !p.dead ? 1 : 0 };
   const degisen = {};
   for (const k of Object.keys(anlik)) if (_sonEk[k] !== anlik[k]) degisen[k] = anlik[k];
   if (_sonEk.tmImza !== tm.imza) degisen.tm = tm.metin;
@@ -4335,17 +4392,29 @@ function renderLeaderboard(list, sourceLabel) {
 
     container.appendChild(row);
   });
+  // Uzun listede kendi satırına git (ilk 10'da değilse)
+  const ben = list.findIndex((e) => e.name === save.playerName);
+  if (ben >= 10) {
+    const git = document.createElement("button");
+    git.className = "btn-tiny lb-ben";
+    git.textContent = t("📍 Senin sıran: {n}", { n: ben + 1 });
+    git.onclick = () => container.querySelectorAll(".leaderboard-row")[ben].scrollIntoView({ block: "center", behavior: "smooth" });
+    container.prepend(git);
+  }
 }
 
+let sampiyonIstegi = 0; // yalnız en son istenen liste çizilir (yüklenirken sekme değişirse eski yanıt yazmasın)
 async function refreshLeaderboard() {
   const container = document.getElementById("leaderboard-list");
+  const istek = ++sampiyonIstegi;
   if (leaderboardSource === "online") {
     container.innerHTML = `<div class="leaderboard-empty">${t("🌐 Yükleniyor...")}</div>`;
     const online = await fetchOnlineLeaderboard(LEADERBOARD_MAX);
+    if (istek !== sampiyonIstegi) return;
     if (online === null) {
       // İnternet yok ya da hata — yerele düş
       container.innerHTML = `<div class="leaderboard-empty">${t("⚠ İnternete bağlanılamadı, yerel liste gösteriliyor.")}</div>`;
-      setTimeout(() => renderLeaderboard(loadLeaderboard(), "local"), 600);
+      setTimeout(() => { if (istek === sampiyonIstegi) renderLeaderboard(loadLeaderboard(), "local"); }, 600);
       return;
     }
     renderLeaderboard(online, "online");
@@ -4645,7 +4714,7 @@ function refreshShop() {
       const info = document.createElement("div");
       info.className = "item-info";
       const pt = PETLER[key];
-      info.innerHTML = key ? `<div class="item-name">${pt.simge} ${pt.ad}</div><div class="item-desc">${pt.desc}</div>`
+      info.innerHTML = key ? `<div class="item-name">${pt.simge} ${pt.ad} · ❤️ ${pt.can}</div><div class="item-desc">${pt.desc}</div>`
         : `<div class="item-name">${t("Petsiz")}</div><div class="item-desc">${t("Yalnız savaş.")}</div>`;
       item.appendChild(info);
       const btn = document.createElement("button");
@@ -4757,14 +4826,23 @@ function computeStats(charKey) {
 }
 
 // ====== TOAST ======
-let toastTimer;
+let toastTimer, toastZamani = 0;
 function showToast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg;
   t.classList.add("show");
+  toastZamani = performance.now();
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove("show"), 1800);
   audio.toast();
+}
+
+// 3.16.0: ekran ya da pencere değişince önceki ekranın bildirimi yeni ekranın üstünde kalmasın. Ekran değişmeden hemen
+// önce gösterilen bildirim (ör. "kopyalandı", sonra geri dönüş) yeni ekranda kalır.
+function eskiToastuKapat() {
+  if (performance.now() - toastZamani < 300) return;
+  const el = document.getElementById("toast");
+  if (el) el.classList.remove("show");
 }
 
 // ====== OYUN MOTORU ======
@@ -5024,6 +5102,7 @@ function startGame(secenek) {
   ensurePlayerSafe();
   spawnBot();
   petKur(); // yanına alınan pet (pet.js)
+  havaKur(); // yarasalar ve fırtına bulutu (hava.js)
   closeInventory();
   refreshInventoryButton();
   // Dünya Turu'nda önce ülkenin tanıtım satırı; bot bildirimi okunabilsin diye sonra gelir
@@ -5119,6 +5198,7 @@ function setupJoystick() {
     const rect = stick.getBoundingClientRect();
     centerX = rect.left + rect.width / 2;
     centerY = rect.top + rect.height / 2;
+    stick.classList.add("aktif");
     move(e);
   }
 
@@ -5156,6 +5236,7 @@ function setupJoystick() {
       if (!found) return;
     }
     touchId = null;
+    stick.classList.remove("aktif");
     knob.style.transform = "translate(-50%, -50%)";
     game.inputDir.x = 0;
     game.inputDir.y = 0;
@@ -5675,6 +5756,7 @@ function update(dt, now) {
   if (GUNS[game.player.gun]) fireDelay *= GUNS[game.player.gun].delayMul;
   updateBot(dt, now);
   petGuncelle(dt, now); // pet: oyuncuyu izler, yakındaki hayalete saldırır (pet.js)
+  havaGuncelle(dt); // yarasalar ve fırtına bulutu: yalnız görsel (hava.js)
   if (online.mode) uzakPetleriGuncelle(dt);
   if (keys["b"] && game.bot) game.player.botTargetUntil = now + 300; // klavye: B'ye basılıyken Bot'a ateş
   let fireTarget = (!game.player.dead && !game.player.gizli) ? nearestGhost(game.player.range) : null; // çalıda ateş yok
@@ -5865,6 +5947,7 @@ function nextLevel() {
   ensurePlayerSafe();
   spawnBot();
   petKur(); // yanına alınan pet (pet.js)
+  havaKur(); // yarasalar ve fırtına bulutu (hava.js)
   if (online.mode) yenidenDog();
   showToast(bolumBildirimi());
   // Boss bölüm seviyesine göre belli bir süre sonra
@@ -6381,7 +6464,7 @@ function drawBot(ctx, b) {
   ctx.restore();
   // İsim, can çubuğu ve hedef işareti
   ctx.save();
-  ctx.font = "bold 12px sans-serif";
+  ctx.font = "800 12px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
   ctx.textAlign = "center";
   ctx.lineWidth = 3;
   ctx.strokeStyle = "#000";
@@ -6504,7 +6587,7 @@ function render() {
       ctx.fillStyle = "#fde047";
       ctx.strokeStyle = "#000";
       ctx.lineWidth = 3;
-      ctx.font = "bold 12px sans-serif";
+      ctx.font = "800 12px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
       ctx.textAlign = "center";
       ctx.strokeText(etiket, rp.x, rp.y - 50);
       ctx.fillText(etiket, rp.x, rp.y - 50);
@@ -6561,7 +6644,7 @@ function render() {
     ctx.save();
     if (p.text) {
       ctx.fillStyle = p.color;
-      ctx.font = "bold 14px sans-serif";
+      ctx.font = "800 14px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
       ctx.textAlign = "center";
       ctx.globalAlpha = Math.max(0, p.life);
       ctx.fillText(p.text, p.x, p.y);
@@ -6572,8 +6655,10 @@ function render() {
     }
     ctx.restore();
   }
+  havaCiz(ctx); // yarasalar, fırtına bulutu ve şimşek (hava.js)
 
   ctx.restore();
+  havaParlamaCiz(ctx); // şimşeğin ekran parlaması
 }
 
 function updateHUD() {
@@ -6641,6 +6726,7 @@ function pauseGame() {
   davet.style.display = (cevrimici && online.roomId) ? "" : "none";
   davet.disabled = odaDolu();
   document.getElementById("screen-pause").classList.add("active");
+  eskiToastuKapat();
   if (!cevrimici) muzikDuraklat(true); // çevrimiçi menü oyunu durdurmaz, müzik de sürer
 }
 
@@ -6744,7 +6830,8 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   document.getElementById("btn-lobiye-don").style.display = cevrimici ? "" : "none";
   document.getElementById("screen-gameover").classList.add("active");
   if (won) audio.win(); else audio.lose();
-  if (!reklamsiz) reklamOyunBitti({ cevrimici, sureSn: game.oynananSure || 0, kutlama: !cevrimici && (yeniRekor || turBitti) });
+  if (!reklamsiz) reklamOyunBitti({ cevrimici, sureSn: game.oynananSure || 0, kutlama: !cevrimici && (yeniRekor || turBitti), para: finalPara });
+  else { reklam.oyunPara = 0; odulDugmesiniGuncelle(); } // önceki oyunun 2× parası bu ekranda sunulmasın
 }
 
 // ====== BAŞLAT ======
@@ -7138,18 +7225,21 @@ function refreshSoundButtons() {
   });
 }
 
-let _soundReturnScreen = "screen-menu";
+// Açılırken açık olan bütün ekranlar hatırlanır, kapanınca hepsine dönülür. Oyun içinde iki ekran açıktır (oyun +
+// üstünde ⏸ menüsü); 3.15.0'a kadar yalnız ilki hatırlanıyordu: ⏸ menüsü kayboluyor, oyun duraklatılmış kalıyor,
+// "Devam" görünmüyordu (3.15.1, test/ayarlar.test.mjs)
+let _soundReturnScreens = ["screen-menu"];
 function openSoundSettings() {
-  // Hangi ekrandan açıldığını hatırla; kapanınca oraya dönelim
-  const active = document.querySelector(".screen.active");
-  _soundReturnScreen = (active && active.id) || "screen-menu";
+  const acik = [...document.querySelectorAll(".screen.active")].map((s) => s.id).filter((id) => id && id !== "screen-sound");
+  _soundReturnScreens = acik.length ? acik : ["screen-menu"];
   refreshSoundButtons();
   refreshSoundSliders();
   showScreen("screen-sound");
 }
 
 function closeSoundSettings() {
-  showScreen(_soundReturnScreen || "screen-menu");
+  showScreen(_soundReturnScreens[0]);
+  for (const id of _soundReturnScreens.slice(1)) document.getElementById(id).classList.add("active");
 }
 
 function setVolume(cat, valStr) {

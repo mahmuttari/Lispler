@@ -186,6 +186,11 @@ Kampanyalar pazar grubuna göre kurulur, her dil kendi reklam grubunda olur **[K
    - Başlangıç tarihi ileri bir gün seçilir ve kampanya **duraklatılmış** bırakılır.
 9. **Kullanıcı:** açık onay verir, örneğin "ONAY: Hayalet Google Ads, günde 10 $, 14 gün". Kampanyalar ancak bundan
    sonra açılır.
+   - **Onay verildi: 31 Ekim 2026** (sohbette, tam metin "ONAY: Hayalet Google Ads, günde 10 $, 14 gün").
+   - Yayın aralığı **31 Ekim – 13 Kasım 2026** (14 gün). Günde toplam en çok 10 $, 14 günde en çok 140 $.
+   - 7. gün denetimi **6 Kasım 2026** (§3: CPI 0,50 $'ı aşan kampanya durur; bütçe bir seferde en çok %20 değişir).
+   - Açma işini kullanıcının bilgisayarındaki Claude Code (`claude --chrome`) yapar
+     ([`GOOGLE-ADS-KURULUM.md`](GOOGLE-ADS-KURULUM.md) §4). Bulut oturumunun Google Ads hesabına erişimi yok.
 
 ## 5. Kaynaklar
 

@@ -44,8 +44,8 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 
 ## Sürüm notu
 
-🎬 Out of lives on the World Tour? Watch an ad and carry on where you left off (3 times per game).
+🦇 Bats now swoop through the forest, and a thundercloud flashes lightning above the boss!
+🎨 New look and 🏆 a Top 500 champions list.
+🎬 Watch an ad to carry on in the World Tour (3 times per game) or double your coins after a game.
 🐊 Crocodiles now lurk in the water: linger on the shore and they may bite!
-🌉 Swaying rope bridges over the lakes: cross quickly, linger in the middle and you'll fall in!
-🐾 Pets are here: take a cat, dog or bird along and fight ghosts together!
-🌿 Hide in bushes where ghosts can't see you; ghosts no longer spawn right next to you.
+🐾 Pets are here: take a cat, dog or bird along! Ghosts hit them too; each pet has 5 lives.

@@ -31,4 +31,4 @@
 # (yapıldı 2026-11-21, koşu 44909280960: üretim 1.0.2 (3) completed; paketler 1, 2, 3 — 1.0.3 (4) sürüm kodu 4 olmalı) durum
 
 # istek 2026-11-21T13:40:38Z: 1.0.3 (4) çevrimiçi düzeltmesi — imzalı AAB üretime ve incelemeye gönderim (kullanıcı: "tavla uygulaması online çalışmıyor incele ve düzelt sonra da yayınla"; AAB: tavla-android.yml koşu 44909711599, 6dc75cf, admob=gercek, firebase=var)
-yukle yayinla uygula
+# (yapıldı 2026-11-21, koşu 44910049759: AAB versionCode 4 yüklendi, üretim 1.0.2 (3) → 1.0.3 (4) completed, düzenleme onaylandı — incelemeye gönderildi) yukle yayinla uygula

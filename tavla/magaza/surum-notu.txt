@@ -1,1 +1,1 @@
-Çevrimiçi düzeltmesi: Hızlı Eşleşme artık terk edilmiş odalara bağlanmıyor, yalnız gerçekten bekleyen oyuncuyla eşleştiriyor. Bekleme ekranından çıkınca oda kapanıyor; davet odaları başkasına açılmıyor.
+Çevrimiçi düzeltmesi: Hızlı Eşleşme artık terk edilmiş odalara bağlanmıyor ve uzun süre bekleyen oyuncuyu da buluyor. Bekleme ekranından çıkınca oda kapanıyor; arkadaşına gönderdiğin davet odası başkasına açılmıyor.

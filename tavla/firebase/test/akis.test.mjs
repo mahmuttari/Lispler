@@ -9,7 +9,7 @@ import { join, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { initializeTestEnvironment } from '@firebase/rules-unit-testing';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
 
 const KOK = fileURLToPath(new URL('../../www/', import.meta.url));
 const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.json': 'application/json' };
@@ -129,4 +129,35 @@ test('oda, sohbet, şikâyet, engelleme ve hesap silme kurallarla birlikte çal�
     console.log('izin hataları', ali.izinHatalari, ayse.izinHatalari);
     throw e;
   }
+});
+
+test('hızlı eşleşme: terk edilmiş odaya düşülmez, iki oyuncu eşleşir; bekleyen geri dönerse oda silinir', { timeout: 180000 }, async () => {
+  // 10 gün önce açılıp terk edilmiş bekleyen oda (canlı projede 3 tane bulundu, 21 Kasım 2026)
+  await ortam.withSecurityRulesDisabled(async (c) => {
+    await setDoc(doc(c.firestore(), 'rooms', 'olu-oda'), { code: 'OLUX', hostUid: 'gitmis-biri', hostName: 'Hayalet',
+      guestUid: null, guestName: '', state: {}, version: 1, ts: Date.now() - 10 * 86400e3, waiting: true });
+  });
+  const ali = await oyuncu(), ayse = await oyuncu(), can = await oyuncu();
+  await ali.s.locator('.menu-label', { hasText: 'Çevrimiçi' }).click();
+  await ali.s.getByText('🎲 Hızlı Eşleşme').click();
+  await ali.s.getByText('Rakip Aranıyor…').waitFor({ timeout: 20000 });  // ölü odaya katılmadı, kendi odasını açtı
+  const olu = await yonetici(async (d) => (await getDoc(doc(d, 'rooms', 'olu-oda'))).data());
+  assert.equal(olu.guestUid, null, 'terk edilmiş odaya kimse katılmadı');
+
+  await ayse.s.locator('.menu-label', { hasText: 'Çevrimiçi' }).click();
+  await ayse.s.getByText('🎲 Hızlı Eşleşme').click();
+  await ayse.s.getByRole('button', { name: 'Sohbet' }).waitFor({ timeout: 20000 });
+  await ali.s.getByRole('button', { name: 'Sohbet' }).waitFor({ timeout: 20000 });
+
+  // Can bekler, sonra geri oka basar: odası silinmeli (artık "bekleyen" kalmaz)
+  await can.s.locator('.menu-label', { hasText: 'Çevrimiçi' }).click();
+  await can.s.getByText('🎲 Hızlı Eşleşme').click();
+  await can.s.getByText('Rakip Aranıyor…').waitFor({ timeout: 20000 });
+  const bekleyen = async () => yonetici(async (d) => (await getDocs(collection(d, 'rooms'))).docs
+    .filter((x) => x.data().waiting === true && x.id !== 'olu-oda').length);
+  assert.equal(await bekleyen(), 1);
+  await can.s.getByRole('button', { name: 'Menüye dön' }).first().click();
+  await can.s.waitForTimeout(2000);
+  assert.equal(await bekleyen(), 0, 'geri dönen oyuncunun odası silindi');
+  for (const o of [ali, ayse, can]) assert.deepEqual(o.izinHatalari, []);
 });

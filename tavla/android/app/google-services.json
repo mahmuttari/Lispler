@@ -59,6 +59,22 @@
           }
         },
         {
+          "client_id": "238721373618-70atd99ivdunr31kbnrk8rgi3099em6f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.poyrazworkshop.tavla",
+            "certificate_hash": "3202e7316763f3c9ec26bfabe2e57de0cc506397"
+          }
+        },
+        {
+          "client_id": "238721373618-ahel95fkp5gumvk4gel4i06t2hkr181v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.poyrazworkshop.tavla",
+            "certificate_hash": "e7d22325af82b9bccddacb104ccce04c948f0df7"
+          }
+        },
+        {
           "client_id": "238721373618-tpajg3j7l2s8pr2qbc365a7083gprpg8.apps.googleusercontent.com",
           "client_type": 3
         }

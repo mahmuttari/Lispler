@@ -663,3 +663,14 @@ faint ghost shapes far away, darker toward the bottom so white buttons stay read
 
 Hak notu: OpenAI kullanım koşullarına göre üretilen görsellerin hakları kullanıcıya aittir; ticari kullanım serbesttir
 **[K]** (koşullar değişebilir, yayından önce bakılmalı). Gerçek marka logosu ve tanınmış karakter taklidi istenmez.
+
+---
+
+## Yerel Claude'a ChatGPT'yi kullandırmak (isteğe bağlı)
+
+Kullanıcının isteği (21 Kasım 2026): bilgisayardaki Claude Code (`claude --chrome`) ChatGPT'yi tarayıcıda kendisi
+kullansın. Ona verilecek istem kullanıcıya sohbette verildi; özeti: depoyu güncelle → bu dosyayı oku → chatgpt.com'da
+ana istem ve paftaları sırayla iste → her resmi indir, boyutunu (1536×1024) ve saydamlığını denetle → `gorsel/ham/`'a
+pafta adıyla koy → her paftadan sonra commit ve push. Karakter paftalarında (K1–K6) her pafta referansla yan yana
+kullanıcıya gösterilir, onayı olmadan sonrakine geçilmez. Giriş, şifre, ödeme ve ChatGPT'nin görsel sınırı kullanıcıya
+bırakılır.

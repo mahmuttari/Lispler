@@ -1,6 +1,6 @@
 {
   "name": "tavla",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Tavla — sesli yorumculu, çevrimiçi Türk tavlası; Capacitor ile Android (Poyraz Workshop)",
   "scripts": {

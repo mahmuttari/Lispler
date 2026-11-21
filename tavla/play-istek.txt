@@ -22,3 +22,7 @@
 
 # istek 2026-11-06: 1.0.1 (2) avatar düzeltmesi — imzalı AAB üretime TASLAK (kullanıcı: "avatarları kaldır … sonra hemen güncelleme yayınla"); incelemeye gönderme ayrı ONAY ister
 # (yapıldı 2026-11-06, koşu 42231019730: 1.0.1 (2) üretime draft, AAB koşu 42229224540) yukle uygula
+
+# istek 2026-11-21T13:30:26Z: 1.0.2 öncesi durum ve Play imza SHA-1 (salt okuma; kullanıcı: "online çalışmıyor incele ve düzelt sonra da yayınla")
+durum
+imza

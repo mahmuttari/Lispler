@@ -34,6 +34,7 @@ içinde ("Poyraz Workshop 1.0.0 — güvenlik bölümü").
 | T-10 | Düşük (görünüş) | APK simgesinin sağ alt köşesinde görsel üretici filigranı (✦). | `araclar/filigran-temizle.py` ile simge katmanlarından silindi. |
 | T-11 | Bilgi | Uygulama yatay ekrana kilitliydi (`sensorLandscape`); şablonda yoktu. | Manifeste eklendi. |
 | T-12 | Bilgi | Reklam yoktu. | Kullanıcı kararıyla AdMob eklendi (`www/reklam.js`, Kelime Bilcek kuralları; `test/reklam.test.mjs` 9/9). Gerçek kimlikler AdMob'da oluşturulunca girilir; o zamana kadar `admob=ornek`, Play'e yüklenmez. |
+| T-13 | Yüksek (çevrimiçi) | **Hızlı Eşleşme ölü odalara bağlanıyordu (1.0.2'de düzeltildi).** Bekleyen oyuncu geri oka basınca ya da uygulamayı kapatınca odası `waiting: true` kalıyordu; eşleşme rakipsiz ilk bekleyen odaya hiç denetlemeden katıldığı için oyuncu ölü odada sonsuza dek bekliyordu (canlı projede 7–10 günlük 3 oda bulundu, 21 Kasım 2026). Davet odaları da `waiting: true` açıldığı için yabancı biri kapabiliyordu. | Bekleyen kurucu odanın `ts`'sini 20 sn'de bir tazeler; eşleşme yalnız `ts`'si 3 dk içinde olan odalara katılır (saat sapmasına dayanıklı), en tazesini önce dener, aynı anda iki kişi katılırsa sıradakine geçer. Bekleme ekranından rakip gelmeden çıkılınca oda silinir (geri ok, İptal, kapanış). Davet odası `waiting: false`. Sınama: `firebase/test/akis.test.mjs` 2. test (eski kodla kırmızı, yeniyle yeşil). |
 
 ## Açık kalanlar (bilinçli olarak bırakılan ya da kullanıcıda olan)
 

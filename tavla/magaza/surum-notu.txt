@@ -1,1 +1,1 @@
-Yeni avatarlar: pul, zar, kahve fincanı ve çay bardağı. Avatarlar artık uygulamanın içinde çiziliyor; dış hizmete istek gitmiyor. Küçük düzeltmeler.
+Çevrimiçi düzeltmesi: Hızlı Eşleşme artık terk edilmiş odalara bağlanmıyor, yalnız gerçekten bekleyen oyuncuyla eşleştiriyor. Bekleme ekranından çıkınca oda kapanıyor; davet odaları başkasına açılmıyor.

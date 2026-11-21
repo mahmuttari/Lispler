@@ -29406,7 +29406,7 @@ function Ey(e) {
 // Küçültülmüş Firebase işlevleri: X = Firestore, Lv = Auth, q = doc, td = collection, ff = getDoc,
 // pf = getDocs, mf = setDoc, gf = deleteDoc, _f = addDoc, Jd = query, Xd = where, Rd = serverTimestamp.
 // ═══════════════════════════════════════════════════════════════════════════════════════════════
-var TV_SURUM = `1.0.1`,
+var TV_SURUM = `1.0.2`,
   TV_GIZLILIK = `https://mahmuttari.github.io/Lispler/tavla/gizlilik.html`,
   TV_HESAP_SILME = `https://mahmuttari.github.io/Lispler/tavla/hesap-silme.html`,
   TV_ILETISIM = `poyrazworkshop7@gmail.com`,
@@ -34270,13 +34270,22 @@ async function bC(e) {
   let t = await pf(Jd(td(X, `rooms`), Xd(`code`, `==`, e)));
   return t.empty ? null : t.docs[0];
 }
+// T-13 (1.0.2): Hızlı eşleşme yalnız kurucusu hâlâ bekleyen odalara katılır. Bekleyen kurucu odanın ts'sini 20 sn'de bir
+// tazeler (PC › nabız); ts'si TV_NABIZ_PENCERE'den eski oda terk edilmiştir (uygulama kapandı, geri oka basıldı).
+// Pencere telefon saatleri arasındaki birkaç dakikalık sapmaya dayanıklı olacak kadar geniştir. En taze oda önce denenir.
+var TV_NABIZ_MS = 20 * 1e3,
+  TV_NABIZ_PENCERE = 3 * 60 * 1e3;
+function tvOdaCanliMi(e, t = Date.now()) {
+  return Math.abs(t - (Number(e?.ts) || 0)) < TV_NABIZ_PENCERE;
+}
 async function xC(e) {
   let t = await pf(Jd(td(X, `rooms`), Xd(`waiting`, `==`, !0)));
-  for (let n of t.docs) {
-    let t = n.data();
-    if (t.hostUid !== e && !t.guestUid && !tvEngelliMi(t.hostUid)) return n;
-  }
-  return null;
+  return t.docs
+    .filter((t) => {
+      let n = t.data();
+      return n.hostUid !== e && !n.guestUid && !tvEngelliMi(n.hostUid) && tvOdaCanliMi(n);
+    })
+    .sort((e, t) => (Number(t.data().ts) || 0) - (Number(e.data().ts) || 0));
 }
 async function SC(e, t) {
   await zv();
@@ -34288,7 +34297,8 @@ async function SC(e, t) {
     { code: r.code, version: i }
   );
 }
-async function CC(e) {
+// e: rumuz; t: hızlı eşleşmeye açık mı (davet odası değildir: başkası kapmasın)
+async function CC(e, bekle = !0) {
   await zv();
   let t = Bv(),
     n = RS(),
@@ -34304,7 +34314,7 @@ async function CC(e) {
       version: 1,
       ts: Date.now(),
       voiceConsent: { host: !1, guest: !1, requestedBy: null },
-      waiting: !0,
+      waiting: bekle,
       createdAt: Rd(),
     }),
     { code: n, ref: r }
@@ -35111,8 +35121,17 @@ function PC({ onJoin: e, onBack: t, myName: n }) {
       let t = !1,
         n = OC(a, (n) => {
           !n || t || (n.guestJoined && ((t = !0), e(a, Q, n.version)));
-        });
-      return () => n();
+        }),
+        // T-13: nabız (oda canlı görünsün) ve rakip gelmeden ekrandan çıkılırsa oda silinir (geri ok, İptal, kapanış)
+        i = setInterval(() => {
+          t ||
+            bC(a)
+              .then((e) => e && !e.data().guestUid && e.data().hostUid === Bv() && hf(e.ref, { ts: Date.now() }))
+              .catch(() => {});
+        }, TV_NABIZ_MS);
+      return () => {
+        (n(), clearInterval(i), t || wC(a).catch(() => {}));
+      };
     }, [r, a, e]),
     (0, Z.jsxs)(`div`, {
       className: `screen lobby-screen`,
@@ -35158,12 +35177,15 @@ function PC({ onJoin: e, onBack: t, myName: n }) {
                               (f(!0), u(``));
                               try {
                                 await zv();
-                                let t = await xC(Bv());
-                                if (t) {
-                                  let { code: r, version: i } = await SC(t, n);
-                                  (f(!1), e(r, $, i));
-                                  return;
-                                }
+                                // aynı odaya aynı anda iki kişi katılırsa ikincisi kurallarca reddedilir: sıradakini dene
+                                for (let t of await xC(Bv()))
+                                  try {
+                                    let { code: r, version: i } = await SC(t, n);
+                                    (f(!1), e(r, $, i));
+                                    return;
+                                  } catch (e) {
+                                    console.warn(`[Eşleşme] oda alınamadı, sıradaki deneniyor:`, e?.message || e);
+                                  }
                                 let { code: r } = await CC(n);
                                 (o(r), i(`matchmaking`));
                               } catch (e) {
@@ -36887,7 +36909,7 @@ function VC() {
     },
     pe = async (e) => {
       try {
-        let { code: t } = await CC(u),
+        let { code: t } = await CC(u, !1),
           n = await dx({ toUid: e.uid, toName: e.name, roomCode: t, fromName: u });
         C({ toUid: e.uid, toName: e.name, inviteId: n, roomCode: t });
       } catch (e) {

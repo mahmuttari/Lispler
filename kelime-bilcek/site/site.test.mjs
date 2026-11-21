@@ -49,6 +49,6 @@ test('hesap silme: uygulama içi yol ve e-posta yolu; uygulamadaki düğmeyle ay
   assert.match(h, /🗑️ Hesabı Sil/);
   assert.match(h, /mailto:poyrazworkshop7@gmail\.com/);
   const oyun = fs.readFileSync(path.join(KOK, 'www', 'index.html'), 'utf8');
-  assert.match(oyun, /id="deleteAccountBtn"[^>]*>🗑️ Hesabı Sil</);
+  assert.match(oyun, /id="deleteAccountBtn"[^>]*>[\s\S]{0,120}?Hesabı Sil</, 'oyundaki düğme (çöp kutusu simgesi + Hesabı Sil)');
   assert.match(oyun, /kelime-bilcek\.web\.app\/hesap-silme\.html/);
 });

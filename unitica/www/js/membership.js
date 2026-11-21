@@ -1,14 +1,15 @@
 // The ad-free membership sheet: what it gives, the two plans with the store's own prices, subscribe / restore / manage.
 // The logic is plans.js, the store side billing.js. Prices are never typed in here: while the store has not answered the plans show "…".
+// iPhone (App Review 3.1.2): the renewal terms of the App Store and links to the privacy policy and the licence agreement (EULA) under the button.
 import { t } from './i18n.js';
 import { icon, esc, $$ } from './dom.js';
 import { openSheet, toast } from './sheet.js';
 import { state, onChange } from './state.js';
-import { SUBSCRIPTION, MANAGE_URL } from './config.js';
+import { SUBSCRIPTION, MANAGE_URL, MANAGE_URL_IOS, PRIVACY_URL, EULA_URL } from './config.js';
 import * as billing from './billing.js';
 import { isAdFree, subscribe, restore, yearlySaving, percent, rememberPlans } from './plans.js';
 import { uyelikGoruldu } from './reklam.js';
-import { isNative } from './native.js';
+import { isNative, isIOS } from './native.js';
 
 export function openMembership() {
   uyelikGoruldu();
@@ -16,6 +17,9 @@ export function openMembership() {
 
   const priceOf = plan => (plans && plans[plan] ? plans[plan].priceString : '…');
   const perText = plan => t(plan === 'yearly' ? 'member.perYear' : 'member.perMonth', { price: priceOf(plan) });
+  const manageUrl = isIOS ? MANAGE_URL_IOS : MANAGE_URL;
+  const legal = isIOS ? `<p class="note legal-links"><a href="${esc(PRIVACY_URL)}" target="_blank" rel="noopener noreferrer">${esc(t('about.privacy'))}</a>
+      · <a href="${esc(EULA_URL)}" target="_blank" rel="noopener noreferrer">${esc(t('member.eula'))}</a></p>` : '';
 
   const planHtml = plan => {
     const save = plan === 'yearly' && plans && plans.monthly && plans.yearly ? yearlySaving(plans.monthly.amount, plans.yearly.amount) : 0;
@@ -35,8 +39,9 @@ export function openMembership() {
       body.innerHTML = `<div class="member-hero">${icon('sparkles')}<p>${esc(t('member.active'))}</p></div>
         ${ticks}
         ${plan ? `<p class="status">${esc(t('member.activePlan', { plan }))}</p>` : ''}
-        <a class="btn-primary wide" data-manage href="${esc(MANAGE_URL)}" target="_blank" rel="noopener noreferrer">${esc(t('member.manage'))}</a>
-        ${restoreBtn}`;
+        <a class="btn-primary wide" data-manage href="${esc(manageUrl)}" target="_blank" rel="noopener noreferrer">${esc(t('member.manage'))}</a>
+        ${restoreBtn}
+        ${legal}`;
       return;
     }
     const ready = !loading && available && plans && plans[chosen];
@@ -48,6 +53,7 @@ export function openMembership() {
       <button type="button" class="btn-primary wide" data-buy ${ready && !busy ? '' : 'disabled'}>${esc(t('member.cta'))}</button>
       <p class="status">${esc(t('member.status'))}</p>
       <p class="note">${esc(t('member.terms'))}</p>
+      ${legal}
       ${restoreBtn}`;
   }
 
@@ -81,7 +87,10 @@ export function openMembership() {
         if (plan) { chosen = plan.dataset.plan; for (const b of $$('.plan', panel)) b.setAttribute('aria-checked', String(b === plan)); render(); return; }
         if (ev.target.closest('[data-buy]')) onBuy();
         else if (ev.target.closest('[data-restore]')) onRestore();
-        else if (ev.target.closest('[data-manage]') && !isNative) {   // the browser mock: "Google Play" cancels the mock subscription
+        else if (ev.target.closest('[data-manage]') && isIOS) {   // Apple's own subscription page inside the app; the web page if it will not open
+          ev.preventDefault();
+          billing.manage().then(ok => { if (!ok) window.open(MANAGE_URL_IOS, '_blank'); });
+        } else if (ev.target.closest('[data-manage]') && !isNative) {   // the browser mock: the store's page cancels the mock subscription
           ev.preventDefault();
           billing.mockCancel();
           restore().then(render);

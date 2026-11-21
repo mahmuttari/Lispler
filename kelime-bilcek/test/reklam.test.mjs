@@ -179,3 +179,39 @@ test('oyun.js: reklam yalnız lobiye dönüşte ve ekran değişiminde çağrıl
   assert.match(o, /\$\("againBtn"\)\.addEventListener\("click", async \(\) => \{[\s\S]{0,300}reklamLobiyeDonus\(\)/);
   assert.equal((o.match(/showInterstitial|showBanner/g) || []).length, 0, 'oyun.js doğrudan reklam göstermez');
 });
+
+test('1.0.1: banner açılırken maça geçilirse banner maçta kalmaz (yarış koşulu, K-24)', async () => {
+  const R = yeniModul();
+  await R.reklamBaslat();
+  const ad = globalThis.Capacitor.Plugins.AdMob;
+  const bitis = []; // native tarafta işlemlerin BİTİŞ sırası: son biten banner'ın durumunu belirler
+  let bitir;
+  ad.showBanner = async () => { await new Promise((r) => { bitir = r; }); bitis.push('goster'); };
+  ad.hideBanner = async () => { bitis.push('gizle'); };
+  const lobi = R.reklamEkranDegisti('lobbyScreen');
+  await new Promise((r) => setTimeout(r, 10));
+  const mac = R.reklamEkranDegisti('gameScreen'); // showBanner henüz bitmedi
+  await new Promise((r) => setTimeout(r, 10));
+  bitir();
+  await lobi; await mac;
+  assert.deepEqual(bitis, ['goster', 'gizle'], 'son işlem gizleme olmalı (maçta banner yok)');
+  assert.equal(R.reklam.bannerGorunur, false);
+});
+
+test('1.0.1: banner açılamazsa sonsuz yeniden deneme olmaz', async () => {
+  const R = yeniModul();
+  await R.reklamBaslat();
+  globalThis.Capacitor.Plugins.AdMob.showBanner = async () => { cagrilar.push({ ad: 'showBanner' }); throw new Error('yok'); };
+  await R.reklamEkranDegisti('lobbyScreen');
+  assert.equal(say('showBanner'), 1);
+  assert.equal(R.reklam.bannerGorunur, false);
+});
+
+test('1.0.1: gösterilemeyen geçiş reklamı sayılmaz (K-25)', async () => {
+  const R = yeniModul();
+  await R.reklamBaslat();
+  for (let i = 0; i < 4; i++) R.reklamMacBitti();
+  globalThis.Capacitor.Plugins.AdMob.showInterstitial = async () => { cagrilar.push({ ad: 'showInterstitial' }); throw new Error('gösterilemedi'); };
+  assert.equal(await R.reklamLobiyeDonus(), false);
+  assert.deepEqual(R.reklamKaydiOku().son, [], 'başarısız gösterim süre ve saatlik hakkı yemez');
+});

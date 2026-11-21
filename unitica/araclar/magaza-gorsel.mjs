@@ -10,6 +10,8 @@
 //   magaza/play[/<dil>]/tanitim-gorseli-1024x500.png  ad, o dildeki bir satır ve 2. ekrandan bir kesit; 24 bit PNG
 //
 //   node unitica/araclar/magaza-gorsel.mjs [dil …]     (dil verilmezse hepsi; ör. "tr-TR ar")
+//   IOS=1 node unitica/araclar/magaza-gorsel.mjs        App Store (iPhone 6,9″): 1320×2868 (440×956, 3×), magaza/app-store/<App Store
+//                                                     dili>/iphone-1…6-*.jpg; simge ve tanıtım görseli üretilmez
 import fs from 'node:fs';
 import path from 'node:path';
 import { KOK, WWW, sunucuAc, tarayici, ornekDurum } from './sunucu.mjs';
@@ -18,6 +20,11 @@ import { KOK, WWW, sunucuAc, tarayici, ornekDurum } from './sunucu.mjs';
 export const DILLER = { 'tr-TR': 'tr', 'en-US': 'en', 'de-DE': 'de', 'fr-FR': 'fr', 'es-ES': 'es', 'it-IT': 'it', 'pt-BR': 'pt', 'ru-RU': 'ru', ar: 'ar', 'ja-JP': 'ja', 'ko-KR': 'ko' };
 export const EKRANLAR = ['telefon-1-ana.png', 'telefon-2-donusum.png', 'telefon-3-kategoriler.png', 'telefon-4-gecmis.png', 'telefon-5-favoriler.png', 'telefon-6-koyu-tema.png'];
 const PLAY = path.join(KOK, 'magaza', 'play');
+const IOS = process.env.IOS === '1';
+const AS_DIL = { 'tr-TR': 'tr', 'it-IT': 'it', 'ru-RU': 'ru', ar: 'ar-SA', 'ja-JP': 'ja', 'ko-KR': 'ko' };   // Play dili → App Store dili
+const ad = (f) => (IOS ? f.replace('telefon-', 'iphone-').replace(/\.png$/, '.jpg') : f);
+// App Store görselleri JPEG (saydamlık kanalı yok, depoda küçük)
+const BICIM = IOS ? { type: 'jpeg', quality: 82 } : {};
 const RES = path.join(KOK, 'android', 'app', 'src', 'main', 'res', 'mipmap-xxxhdpi');
 const veri = (f) => `data:image/png;base64,${fs.readFileSync(f).toString('base64')}`;
 
@@ -27,7 +34,7 @@ const { adres, kapat } = await sunucuAc();
 const b = await tarayici();
 
 async function sayfa(dil, tema) {
-  const ctx = await b.newContext({ viewport: { width: 360, height: 640 }, deviceScaleFactor: 3, colorScheme: tema, locale: dil, timezoneId: 'Europe/Istanbul' });
+  const ctx = await b.newContext({ viewport: IOS ? { width: 440, height: 956 } : { width: 360, height: 640 }, deviceScaleFactor: 3, colorScheme: tema, locale: dil, timezoneId: 'Europe/Istanbul' });
   // ekrandaki saat ve "x dk önce" yazıları her seferinde aynı çıksın
   const simdi = new Date('2026-10-27T14:30:00+03:00').getTime();
   const p = await ctx.newPage();
@@ -51,9 +58,9 @@ const kaydir = (p, secici, ust = 8) => p.evaluate(([s, u]) => {
 }, [secici, ust]);
 
 async function ekranlar(oyun, dil) {
-  const hedef = oyun === 'tr-TR' ? PLAY : path.join(PLAY, oyun);
+  const hedef = IOS ? path.join(KOK, 'magaza', 'app-store', AS_DIL[oyun] || oyun) : oyun === 'tr-TR' ? PLAY : path.join(PLAY, oyun);
   fs.mkdirSync(hedef, { recursive: true });
-  const cek = async (p, ad) => { await p.screenshot({ path: path.join(hedef, ad) }); };
+  const cek = async (p, f) => { await p.screenshot({ path: path.join(hedef, ad(f)), ...BICIM }); };
   {
     const { ctx, p, hatalar } = await sayfa(dil, 'light');
     await cek(p, EKRANLAR[0]);
@@ -134,14 +141,16 @@ async function tanitim(oyun, dil, hedef) {
 }
 
 try {
-  fs.mkdirSync(PLAY, { recursive: true });
-  await simge();
-  console.log('  simge-512.png');
+  if (!IOS) {
+    fs.mkdirSync(PLAY, { recursive: true });
+    await simge();
+    console.log('  simge-512.png');
+  }
   for (const oyun of secim) {
     const dil = DILLER[oyun];
     const hedef = await ekranlar(oyun, dil);
-    await tanitim(oyun, dil, hedef);
-    console.log(`  ${oyun}: ${EKRANLAR.length} ekran + tanıtım görseli`);
+    if (!IOS) await tanitim(oyun, dil, hedef);
+    console.log(`  ${oyun}: ${EKRANLAR.length} ekran${IOS ? ` (App Store, ${path.relative(KOK, hedef)})` : ' + tanıtım görseli'}`);
   }
 } finally {
   await b.close();

@@ -32,6 +32,10 @@ test('zincir: "ğ" ile biten kelimeden sonra önceki harf istenir', () => {
   const kelimeler = { a: { text: 'elma', valid: true, ts: 1 }, b: { text: 'armut', valid: true, ts: 2 }, c: { text: 'tuz', valid: false, ts: 3 } };
   assert.equal(K.getChainNextLetter(kelimeler), 't');
   assert.equal(K.getChainNextLetter({}), null);
+  // 1.0.1: aynı zaman damgasında sıra belirli (her istemcide aynı harf)
+  const esit = { x: { text: 'masa', valid: true, ts: 5 }, y: { text: 'kalem', valid: true, ts: 5 } };
+  const esit2 = { y: { text: 'kalem', valid: true, ts: 5 }, x: { text: 'masa', valid: true, ts: 5 } };
+  assert.equal(K.getChainNextLetter(esit), K.getChainNextLetter(esit2));
   assert.equal(K.getChainNextLetter(null), null);
 });
 
@@ -73,6 +77,8 @@ test('kelime biçimi: 2–30 harf, Türkçe harf, boşluk ve tire', () => {
   assert.equal(K.kelimeBicimiGecerli('x'.repeat(31)), false);
   assert.equal(K.kelimeBicimiGecerli('<script>'), false);
   assert.equal(K.kelimeBicimiGecerli('elma1'), false);
+  assert.equal(K.kelimeBicimiGecerli('- -'), false, '1.0.1: harfsiz girdi');
+  assert.equal(K.kelimeBicimiGecerli('a -'), false);
 });
 
 test('kullanıcı adı: 3–14 küçük harf ya da rakam', () => {

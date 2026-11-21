@@ -2,13 +2,14 @@
 
 Bulunduğun yerden Mekke'deki Kâbe'nin yönünü pusula, harita ve mesafeyle gösteren Android uygulaması (Poyraz Workshop).
 Gerçek kuzey düzeltmesi (Dünya Manyetik Modeli 2025), doğruluk göstergesi ve parazit uyarısı, kalibrasyon yardımcısı;
-NASA uydu görüntüsünde Kâbe'ye en kısa yol; yaklaşık 34.000 şehirde internetsiz arama ve koordinat girişi; 11 dil
+NASA uydu görüntüsünde Kâbe'ye en kısa yol; yakındaki cami ve mescitler (internetsiz liste, sokak haritası, yol tarifi);
+pusula düzeltmesi; yaklaşık 34.000 şehirde internetsiz arama ve koordinat girişi; 11 dil
 (Arapça sağdan sola). Web kodu (`www/`) **Capacitor 8** ile paketlenir; pusula yerel bir eklentiden okunur.
 
 | | |
 |---|---|
 | Paket | `com.poyrazworkshop.kiblebul` (Play anahtarı `kiblebul`, `android/play.mjs`) |
-| Sürüm | 1.1.0 (versionCode 1) — Poyraz Workshop'taki ilk sürüm |
+| Sürüm | 1.2.0 (versionCode 2) — Camiler sekmesi ve yeni pusula (aşağıda "1.2.0") · önceki: 1.1.0 (1), Poyraz Workshop'taki ilk sürüm |
 | Diller | tr, en, de, fr, es, pt, it, ru, ja, ko, ar (uygulama ve mağaza; telefondaki ad dile göre: Kıble Bul, Qibla Finder, اتجاه القبلة…) |
 | Reklam | AdMob, yalnız Android uygulaması — aşağıda "Reklam kuralları" |
 | Abonelik | "Reklamsız Üyelik": ürün `adfree`, temel planlar `monthly` / `yearly` ([`magaza/fiyatlandirma.md`](magaza/fiyatlandirma.md)) |
@@ -40,7 +41,11 @@ kible-bul/
 │   ├── js/reklam-kimlik.js      OTOMATİK (araclar/kimlik.mjs)
 │   ├── js/billing.js, premium.js, ui-premium.js   Play aboneliği (@capgo/native-purchases)
 │   ├── js/compass.js            yerel pusula eklentisi, yoksa tarayıcının yön olayları
-│   └── data/                    şehirler (GeoNames) ve 10 dilde adları, ülke sınırları (Natural Earth)
+│   ├── js/quality.js, heading.js  pusula güveni (alan vektörü, eğim, hata tahmini), gösterilen yön + pusula düzeltmesi
+│   ├── js/mosques.js, ui-mosques.js  Camiler: veri tabanı, arama, süreler, Google Haritalar bağlantıları; ekran
+│   ├── js/ui-correction.js      Ayarlar › Pusula düzeltmesi
+│   └── data/                    şehirler (GeoNames) ve 10 dilde adları, ülke sınırları (Natural Earth),
+│                                mosques.bin (cami ve mescitler, OpenStreetMap'ten, ODbL)
 ├── android/                     Capacitor 8 projesi (`npx cap add android` + özelleştirme)
 │   ├── gradle.properties        AdMob kimlikleri
 │   └── app/src/main/java/com/poyrazworkshop/kiblebul/
@@ -55,7 +60,7 @@ kible-bul/
 │   └── ortak.mjs                ikisinin ortak parçaları (sunucu, NASA karo önbelleği, Capacitor taklidi)
 ├── magaza/                      aciklamalar.md, diller/ (10 dil), PLAY-YAYIN.md, DEGERLENDIRME.md, fiyatlandirma.md,
 │                                surum-notu.txt, veri-guvenligi.csv, play/ (görseller, dil klasörleri)
-├── test/                        node:test (CI): kible, reklam, odeme, magaza
+├── test/                        node:test (CI): kible, reklam, odeme, magaza, klasor (klasor/: masaüstü projesinin sınamaları)
 ├── KAYNAK.txt                   özgün APK (Drive kimliği, SHA-256, sertifika)
 └── play-istek.txt               Google Play API komutları (play-kiblebul.yml)
 ```
@@ -98,6 +103,28 @@ ile üretildi; tema, izinler (yalnız yaklaşık konum), dikey yön, `allowBacku
 | Ayarlar | — | gerekiyorsa "Reklam gizlilik seçenekleri" |
 | Abonelik yönetimi | Play'in genel abonelik listesi | bu ürünün sayfası (`sku=adfree&package=…`), Play Store uygulamasında |
 | Fiyat | mağaza fiyatı gelmezse $0.99/$9.99 yazıyordu | uygulamada yalnız mağaza fiyatı; gelmezse "—" ve düğme kapalı (yedek fiyat yalnız tarayıcı taklidinde) |
+
+## 1.2.0 (versionCode 2): masaüstündeki geliştirme klasörüyle birleştirme
+
+Kıble Bul masaüstünde ayrı bir klasörde (`Desktop\KibleBul\KibleBul`, paket `com.kiblebul.app`, 1.1.1) geliştirilmeye
+devam etmişti. 1.2.0 o klasörün `app/` kodunu bu Play sürümüyle birleştirir; ortak ata özgün 1.0.1 APK'sıdır
+(`KAYNAK.txt`), birleştirme dosya dosya üç yönlü yapıldı.
+
+- **Klasörden gelenler:** Camiler sekmesi (yakındaki cami ve mescitler; liste ve OpenStreetMap sokak haritası; yürüyerek /
+  otobüsle / arabayla yol tarifi Google Haritalar'da; `geo:` ile başka harita uygulamaları; `@capacitor/app-launcher`),
+  pusula güveni (eklenti alan vektörü `b` ve dönme vektörünün hata tahmini `hacc` yollar; yatay alan, eğim ve şiddet
+  WMM'yle karşılaştırılır), 5 sn'lik algılayıcı bekçisi, 15 sn susan pusula uyarısı, Ayarlar › Pusula düzeltmesi,
+  hizalama histerezisi (3° / 5°), Pusula bilgisinde ek satırlar ve "Değerleri kopyala", koordinat ayrıştırma düzeltmesi,
+  abone kullanıcıda Ayarlar'a "null" yazısı düşmesi.
+- **Bu sürümden kalanlar:** paket, imza, AdMob reklamı ve kuralları, reklamsız üyelik, UMP, gizlilik politikası bağlantısı,
+  geliştirici satırı, `KibleYerelPlugin`, `MainActivity`, R8 kapalı.
+- **Alınmayanlar:** klasörün kendi tam ekran reklamı (`ads.js`, `ui-ad.js`; orada da kapalıydı).
+- **Kaldırılan:** Hakkında'daki geoterva.com satırı (kullanıcı 23.10.2026: uygulamanın GeoTerva ile ilgisi yok); yerine
+  "© OpenStreetMap" atfı.
+- Uygulama içi gizlilik metni (11 dil) ve `app/kible-bul/gizlilik.html` Camiler'in OpenStreetMap karolarını ve yol tarifi
+  bağlantılarını anlatır. Veri güvenliğinde yeni veri türü yok (`magaza/aciklamalar.md`).
+- **ODbL:** `www/data/mosques.bin` OpenStreetMap'ten türetilmiş bir veri tabanıdır; bu depo herkese açık olduğu için
+  türetilmiş veri tabanı da burada açıkça sunulmuş olur. Listeyi yenilemek masaüstü klasöründeki `tools/gen_mosques.mjs` ile.
 
 ## 1.1.0'da düzeltilen hatalar
 

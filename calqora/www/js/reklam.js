@@ -1,8 +1,9 @@
 /* ============================================================
-   CALQORA — REKLAMLAR (Google AdMob, yalnız Android uygulaması)
+   CALQORA — REKLAMLAR (Google AdMob, Android ve iPhone uygulaması)
    @capacitor-community/admob eklentisi window.Capacitor.Plugins.AdMob olarak gelir. Masaüstü tarayıcıda eklenti yoktur:
-   bu dosyadaki her şey sessizce devre dışı kalır. Kimlikler reklam-kimlik.js'ten (android/gradle.properties'ten üretilir);
-   hata ayıklama derlemesinde (Capacitor.DEBUG) her zaman Google'ın test kimlikleri. Sınama: test/reklam.test.mjs.
+   bu dosyadaki her şey sessizce devre dışı kalır. Kimlikler reklam-kimlik.js'ten, platforma göre (android/gradle.properties
+   ve ios/admob.properties'ten üretilir; AdMob'da iki platform ayrı uygulamadır); hata ayıklama derlemesinde
+   (Capacitor.DEBUG) her zaman Google'ın test kimlikleri. Sınama: test/reklam.test.mjs, iPhone: test/ios.test.mjs.
 
    Kurallar (uzman kararı, 2026-10; 1.0.0'daki GeoTerva tam ekran ev reklamının yerine):
    - Reklamsız üye: AdMob SDK'sı HİÇ başlatılmaz, UMP de sorulmaz. Reklamlar ancak Google Play "üye değil" dedikten (ya da
@@ -11,6 +12,9 @@
    - Önce UMP: requestConsentInfo → gerekiyorsa showConsentForm → yalnız canRequestAds ise initialize. Reklam içerik
      derecesi en çok G ("General": genel izleyici). UMP gizlilik seçenekleri girişi istiyorsa Ayarlar'da
      "Reklam gizlilik seçenekleri" satırı çıkar (ui-settings.js).
+   - iPhone: UMP'den sonra, initialize'dan önce izleme izni (ATT). AdMob'da IDFA açıklama mesajı yayındaysa UMP onu ve
+     Apple'ın iznini kendisi gösterir; değilse ve izin hiç sorulmadıysa burada sorulur. Verilmezse reklam yine gösterilir,
+     yalnız kişiselleştirilmez.
    - Banner: altta uyarlanabilir sabit (anchored adaptive) banner, kendi şeridinde. Sayfanın altına banner yüksekliği
      kadar boşluk bırakılır (--ad-h, css/app.css "reklam şeridi"): banner hiçbir düğmenin üstüne binmez. Yazılım klavyesi
      açıkken gizlenir, kapanınca geri gelir.
@@ -22,6 +26,7 @@
    - Açılış reklamı (app open) ve ödüllü reklam yok.
    ============================================================ */
 import { REKLAM_KIMLIK, TEST_KIMLIK } from './reklam-kimlik.js';
+import { isIOS } from './native.js';
 
 export const KURAL = {
   ilkSureMs: 3 * 60e3,      // oturumun ilk 3 dakikasında geçiş reklamı yok
@@ -65,7 +70,7 @@ function kayitYaz(k) {
 
 const pencere = typeof window !== 'undefined' ? window : null;
 const admob = () => (pencere && pencere.Capacitor && pencere.Capacitor.Plugins && pencere.Capacitor.Plugins.AdMob) || null;
-const kimlik = () => (pencere && pencere.Capacitor && pencere.Capacitor.DEBUG ? TEST_KIMLIK : REKLAM_KIMLIK);
+const kimlik = () => (pencere && pencere.Capacitor && pencere.Capacitor.DEBUG ? TEST_KIMLIK : REKLAM_KIMLIK)[isIOS ? 'ios' : 'android'];
 
 const r = {
   istendi: false,          // baslat() çağrıldı (üye değil)
@@ -119,6 +124,14 @@ export async function reklamlariBaslat() {
   await onayVeBaslat(ad);
 }
 
+// iPhone: Apple'ın izleme izni (ATT) hiç sorulmadıysa sorar; yanıt ne olursa olsun reklam sürer
+async function izlemeIzni(ad) {
+  try {
+    const { status } = await ad.trackingAuthorizationStatus();
+    if (status === 'notDetermined') await ad.requestTrackingAuthorization();
+  } catch (e) { /* eklenti yanıt vermedi: izin sorulmadan devam */ }
+}
+
 async function onayVeBaslat(ad) {
   try {
     let bilgi = await ad.requestConsentInfo();
@@ -129,6 +142,7 @@ async function onayVeBaslat(ad) {
     r.izin = !!bilgi.canRequestAds;
     if (!r.izin) { reklamlariKaldir(); return; }
     if (!r.hazir) {
+      if (isIOS) await izlemeIzni(ad);
       // Derece initialize'da RequestConfiguration'a yazılır ve sonraki bütün isteklere uygulanır; eklenti yalnız tam "General" yazımını tanır
       await ad.initialize({ maxAdContentRating: 'General' });
       if (r.durduruldu) return;

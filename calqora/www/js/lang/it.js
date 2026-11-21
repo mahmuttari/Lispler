@@ -110,6 +110,7 @@ export default {
     "p.b1": "Nessuna pubblicità in nessuna schermata",
     "p.b2": "Sostiene lo sviluppo futuro",
     "p.b3": "Annullabile in qualsiasi momento su Google Play",
+    "p.b3.ios": "Annullabile in qualsiasi momento nelle impostazioni dell’App Store",
     "p.monthly": "Mensile",
     "p.yearly": "Annuale",
     "p.perMonth": "{0} / mese",
@@ -123,7 +124,10 @@ export default {
     "p.thanks": "Grazie per il supporto!",
     "p.loading": "Caricamento dei prezzi…",
     "p.unavailable": "Google Play non è disponibile su questo dispositivo, quindi qui non è possibile avviare un abbonamento.",
+    "p.unavailable.ios": "L’App Store non è disponibile su questo dispositivo, quindi qui non è possibile avviare un abbonamento.",
     "p.terms": "Il pagamento viene addebitato sull’account Google Play. L’abbonamento si rinnova automaticamente al prezzo indicato finché non viene annullato su Google Play. È possibile annullarlo in qualsiasi momento.",
+    "p.terms.ios": "Il pagamento viene addebitato sull’account Apple alla conferma dell’acquisto. L’abbonamento si rinnova automaticamente al prezzo indicato se non viene annullato almeno 24 ore prima della fine del periodo in corso; il rinnovo viene addebitato nelle ultime 24 ore del periodo. Dopo l’acquisto è possibile gestirlo o annullarlo nelle impostazioni dell’account App Store.",
+    "p.eula": "Termini d’uso (EULA)",
     "p.cancelled": "Acquisto annullato",
     "p.failed": "Impossibile completare l’acquisto",
     "p.restored": "Abbonamento ripristinato",
@@ -141,6 +145,7 @@ export default {
     "s.privacy": "Informativa sulla privacy",
     "s.privacyOpen": "Visualizza",
     "p.noPrices": "Impossibile caricare i prezzi da Google Play. Controlla la connessione e riprova.",
+    "p.noPrices.ios": "Impossibile caricare i prezzi dall’App Store. Controlla la connessione e riprova.",
   },
   // category names
   cats: {

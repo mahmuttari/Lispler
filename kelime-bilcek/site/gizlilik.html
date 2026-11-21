@@ -11,7 +11,7 @@
 <main>
 <nav><a href="index.html">Kelime Bilcek</a><a href="gizlilik.html">Gizlilik Politikası</a><a href="hesap-silme.html">Hesap Silme</a><a href="#en">English</a></nav>
 <h1>Gizlilik Politikası</h1>
-<p class="date">Geliştirici: Poyraz Workshop · Son güncelleme: 4 Kasım 2026</p>
+<p class="date">Geliştirici: Poyraz Workshop · Son güncelleme: 9 Kasım 2026</p>
 <p>Bu politika, Poyraz Workshop ("biz") tarafından yayınlanan Kelime Bilcek oyununun ("Oyun") hangi verileri nasıl
 işlediğini açıklar. Oyunda gerçek parayla satın alma yoktur; Android uygulaması Google AdMob reklamları gösterir
 (bkz. 4. bölüm).</p>
@@ -33,6 +33,7 @@ oyunculara göstermez, oyun veritabanına yazmaz.</p>
       arkadaşlarınızın listesinde yer alır.</li>
   <li><b>Çevrimiçi durumu ve kategori tercihleri:</b> kullanıcı adınızı bilen oyuncular görebilir (davet ve kategori
       eşleştirmesi için).</li>
+  <li><b>Yapay zekâya karşı maçlar</b> yalnız telefonunuzda oynanır; sunucuya maç kaydı yazılmaz ve Şampiyonlar'a sayılmaz.</li>
   <li><b>Maçlar:</b> eşleşme kuyruğunda kullanıcı adınız, seçtiğiniz mod ve zaman (eşleşince silinir); maç odasında iki
       oyuncunun kullanıcı adı ve kimliği, yazılan kelimeler ve skorlar (yalnız iki oyuncu görür). Maç bitip lobiye
       dönülünce oda silinir; yarıda kalan odalar hesabınızı sildiğinizde silinir.</li>
@@ -44,8 +45,10 @@ politikası: <a href="https://policies.google.com/privacy">policies.google.com/p
 <p>Yazdığınız kelime oyunun kendi listesinde yoksa denetlenmek üzere gönderilir:</p>
 <ul>
   <li><b>Cloudflare Workers ve Workers AI:</b> kelime ve kategori adı, giriş yaptığınızı kanıtlayan Firebase kimlik jetonuyla
-      birlikte. Hizmetimiz kelimeyi saklamaz; Cloudflare hizmeti sunmak için IP adresi gibi teknik kayıtlar tutabilir
-      (<a href="https://www.cloudflare.com/privacypolicy/">cloudflare.com/privacypolicy</a>).</li>
+      birlikte. Aynı kelimenin yeniden sorulmaması için <b>kelime, kategori ve kararı</b> (geçerli/geçersiz) Cloudflare'de en çok
+      90 gün saklanır; bu kayıtta kimin yazdığı, kullanıcı kimliği ya da IP adresi yoktur. Cloudflare hizmeti sunmak için IP
+      adresi gibi teknik kayıtlar tutabilir (<a href="https://www.cloudflare.com/privacypolicy/">cloudflare.com/privacypolicy</a>).
+      Denetlenen kelimeler ve kararları aynı amaçla telefonunuzda da saklanır (en çok 1500 kayıt).</li>
   <li><b>Türk Dil Kurumu sözlüğü (sozluk.gov.tr):</b> yalnız kelime; istek doğrudan cihazınızdan gider.</li>
 </ul>
 
@@ -92,7 +95,7 @@ your Google name, e-mail, photo URL and a user ID; the game never shows them to 
 signed-in players), friends list and invites (visible only to you), online status and category preferences, the
 matchmaking queue entry and match rooms (usernames, words and scores, visible only to the two players; deleted after the
 match). Words not in the game's own list are checked by our Cloudflare Worker (Cloudflare Workers AI; word, category
-and your Firebase ID token; the word is not stored) and by the Turkish Language Association dictionary (sozluk.gov.tr;
+and your Firebase ID token; word, category and verdict are cached for up to 90 days without any user ID or IP address) and by the Turkish Language Association dictionary (sozluk.gov.tr;
 the word only). The Android app shows Google AdMob ads only after a match and in the lobby/leaderboard, never during a
 match; AdMob may process your advertising ID, IP address, device data and approximate location, and asks for consent in
 the EEA, UK and Switzerland. We do not sell data. Delete your account in the app (tap your username › Delete account)

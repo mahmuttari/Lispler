@@ -29,7 +29,7 @@
              play-kelime.yml "yukle" komutu bu paketi reddeder. -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-2417242373034448~2767489822"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

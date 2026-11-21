@@ -1,0 +1,15 @@
+{
+	"appId": "com.mahmuttari.letspicky",
+	"appName": "Let's Picky",
+	"webDir": "www",
+	"backgroundColor": "#f5f3ff",
+	"android": {
+		"allowMixedContent": false
+	},
+	"plugins": {
+		"SystemBars": {
+			"insetsHandling": "native",
+			"initialViewportFitValueHint": "cover"
+		}
+	}
+}

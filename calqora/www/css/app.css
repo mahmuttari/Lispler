@@ -265,6 +265,8 @@ html[dir="rtl"] .langrow svg { transform: none; }
 .pill:disabled { opacity: .5; }
 .prem .terms { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.45; text-align: center; }
 .prem .center { text-align: center; }
+.prem .legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 8px; margin-top: 8px; }
+.prem .legal .pill { min-height: 44px; background: none; }
 .okcard b { color: var(--ok); font-size: 17px; }
 .prem .merr { font-size: 14px; }
 

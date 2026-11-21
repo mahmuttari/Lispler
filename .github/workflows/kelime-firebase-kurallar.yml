@@ -34,7 +34,10 @@ jobs:
         run: |
           npm ci
           npm run vendor
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
+          # Sistem paketleri (apt): çalıştırıcıda Chrome'un gerektirdikleri çoğunlukla kurulu. Ubuntu paket sunucuları
+          # erişilemezse (Kasım 2026'da tekrarlayan DNS hatası) iş durmasın; tarayıcı açılamazsa testler zaten kırmızı olur.
+          npx playwright install-deps chromium || echo "::warning::playwright install-deps başarısız (apt); kurulu paketlerle devam"
       - working-directory: kelime-bilcek/firebase
         run: npm ci
       - name: Kural testleri

@@ -1,0 +1,68 @@
+# Tavla — haftalık şikâyet özeti (tavla/firebase/sikayetler.mjs). Firestore `reports` koleksiyonunu SALT OKUMA ile sayar
+# (yalnız status, reason, createdAt; mesaj, not, rumuz, kimlik okunmaz) ve tek bir açık "Tavla şikâyet özeti" issue'suna
+# yorum yazar. Yorum depo sahibini anar: GitHub bunu sahibin bildirim e-postasına gönderir (gizli anahtar gerekmez).
+# Depo herkese açık: özet yalnız sayı içerir. Karar ve yaptırım insanındır (tavla/firebase/README.md › Moderasyon).
+# Kimlik anahtarsız: Play/Firebase işleriyle aynı Workload Identity hizmet hesabı (projede roles/firebase.admin).
+# Tetikleyiciler: her pazartesi 06:00 UTC (09:00 TSİ) ve elle; bu dosya ya da betik değişince yalnız loga yazar (issue yok).
+name: Şikâyet özeti (Tavla)
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+  push:
+    paths: ['.github/workflows/tavla-sikayet-ozeti.yml', 'tavla/firebase/sikayetler.mjs']
+
+concurrency:
+  group: tavla-sikayet-ozeti
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+  id-token: write
+
+env:
+  BASLIK: Tavla şikâyet özeti (haftalık)
+  ANILAN: mahmuttari
+
+jobs:
+  ozet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Kimlik bilgisi
+        run: grep -E '^(PLAY_WIF_PROVIDER|PLAY_SERVICE_ACCOUNT)=' android/play-kimlik.env >> "$GITHUB_ENV"
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.PLAY_WIF_PROVIDER }}
+          service_account: ${{ env.PLAY_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform
+      - name: Özeti çıkar (salt okuma)
+        env:
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+          OZET_DOSYASI: ${{ runner.temp }}/ozet.md
+        run: |
+          node tavla/firebase/sikayetler.mjs
+          echo "────────"; cat "$OZET_DOSYASI"
+          cat "$OZET_DOSYASI" >> "$GITHUB_STEP_SUMMARY"
+      - name: Issue'ya yaz (zamanlanmış ya da elle çalışmada)
+        if: github.event_name != 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OZET_DOSYASI: ${{ runner.temp }}/ozet.md
+        run: |
+          NO=$(gh issue list -R "$GITHUB_REPOSITORY" --state open --search "\"$BASLIK\" in:title" --json number,title \
+               -q "map(select(.title == \"$BASLIK\")) | .[0].number // empty")
+          if [ -z "$NO" ]; then
+            URL=$(gh issue create -R "$GITHUB_REPOSITORY" --title "$BASLIK" --body "Her pazartesi Tavla şikâyet özeti buraya yorum olarak yazılır (\`.github/workflows/tavla-sikayet-ozeti.yml\`). Yalnız sayılar; ayrıntı Firebase konsolunda, adımlar \`tavla/firebase/README.md\` › Moderasyon. Bu issue'yu kapatmayın.")
+            NO=${URL##*/}
+          fi
+          gh issue comment "$NO" -R "$GITHUB_REPOSITORY" --body-file "$OZET_DOSYASI"
+          echo "issue #$NO"

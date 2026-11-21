@@ -5,6 +5,9 @@
 // C. Sahte Capacitor eklentileriyle reklam ve abonelik akışı: UMP önce, initialize sonra ve "General"; banner şeridi sayfayı
 //    yukarı iter, klavyede gizlenir; geçiş reklamı yalnız kurallara uyan sekme değişiminde; üyede AdMob hiç başlamaz;
 //    satın alma adfree/yearly/subs ile çağrılır ve banner'ı kaldırır; AB onayı reddedilince reklam istenmez.
+// D. iPhone (sahte eklentiler, platform 'ios'): UMP → izleme izni (ATT) → initialize; iPhone reklam kimlikleri; App Store ürünü
+//    <paket>.adfree.yearly; abonelik sayfasında Apple'ın yenileme koşulları, gizlilik ve EULA bağlantıları; "Yönet" Apple'ın
+//    sayfasını açar; hiçbir ekranda "Google Play" yok. TR açık 390 px ve AR koyu 340 px.
 import assert from 'node:assert/strict';
 import { sunucuAc, tarayici, ornekDurum, sahteYerel } from './sunucu.mjs';
 
@@ -98,10 +101,11 @@ try {
     assert.ok(a.indexOf('requestConsentInfo') < a.indexOf('initialize'), 'UMP initialize\'dan önce');
     assert.equal(k.find((c) => c.ad === 'initialize').arg.maxAdContentRating, 'General');
     const sb = k.find((c) => c.ad === 'showBanner').arg;
-    assert.equal(sb.adId, KIMLIK.REKLAM_KIMLIK.banner);
+    assert.equal(sb.adId, KIMLIK.REKLAM_KIMLIK.android.banner);
     assert.equal(sb.adSize, 'ADAPTIVE_BANNER');
     assert.equal(sb.position, 'BOTTOM_CENTER');
-    assert.equal(k.find((c) => c.ad === 'prepareInterstitial').arg.adId, KIMLIK.REKLAM_KIMLIK.gecis);
+    assert.equal(k.find((c) => c.ad === 'prepareInterstitial').arg.adId, KIMLIK.REKLAM_KIMLIK.android.gecis);
+    assert.ok(!adlar(k).includes('requestTrackingAuthorization'), 'Android\'de izleme izni sorulmaz');
     assert.ok(!a.includes('showInterstitial'), 'açılışta geçiş reklamı yok');
     const alt = await p.evaluate(() => ({ tab: document.querySelector('.tabbar').getBoundingClientRect().bottom, h: innerHeight,
       ad: getComputedStyle(document.documentElement).getPropertyValue('--ad-h').trim() }));
@@ -194,6 +198,72 @@ try {
     assert.equal(await s2.p.textContent('.promo small'), 'Remove all ads');
     await s2.p.click('[data-act="member"]'); await s2.p.waitForTimeout(500);
     assert.ok(await s2.p.isDisabled('[data-buy]'));
+    assert.deepEqual([...hatalar, ...s2.hatalar], []);
+    await s2.ctx.close();
+  });
+  // ---------------------------------------------------------------- D. iPhone
+  const GP = /Google[ -]?Play/i;
+  const gorunenMetin = (p) => p.evaluate(() => document.body.innerText);
+  for (const g of [{ dil: 'tr' }, { dil: 'ar', tema: 'dark', en: 340 }]) {
+    const yer = `D iPhone ${g.dil} ${g.tema || 'light'} ${g.en || 390}`;
+    await sina(`${yer}: UMP → ATT → initialize, iPhone kimlikleri, App Store ürünü, Apple koşulları ve bağlantıları`, async () => {
+      const { p, ctx, hatalar } = await sayfa({ ...g, yerel: { platform: 'ios' } });
+      await p.waitForFunction(() => window.__kayit.some((c) => c.ad === 'prepareInterstitial'));
+      let k = await p.evaluate(() => window.__kayit);
+      const a = adlar(k);
+      assert.ok(a.indexOf('requestConsentInfo') < a.indexOf('trackingAuthorizationStatus'), 'önce UMP');
+      assert.ok(a.indexOf('trackingAuthorizationStatus') < a.indexOf('requestTrackingAuthorization'), 'izin durumu sorulur');
+      assert.ok(a.indexOf('requestTrackingAuthorization') < a.indexOf('initialize'), 'ATT initialize\'dan önce');
+      assert.equal(k.find((c) => c.ad === 'showBanner').arg.adId, KIMLIK.REKLAM_KIMLIK.ios.banner);
+      assert.equal(k.find((c) => c.ad === 'prepareInterstitial').arg.adId, KIMLIK.REKLAM_KIMLIK.ios.gecis);
+      assert.notEqual(KIMLIK.REKLAM_KIMLIK.ios.banner, KIMLIK.REKLAM_KIMLIK.android.banner);
+      const gp = k.find((c) => c.ad === 'getPurchases').arg;
+      assert.equal(gp.onlyCurrentEntitlements, true, 'yalnız bu Apple hesabının geçerli hakları');
+      await tumEkranlar(p, yer);
+      await sekme(p, 'more');
+      await p.click('[data-act="about"]'); await p.waitForTimeout(450);
+      assert.doesNotMatch(await gorunenMetin(p), GP, 'Hakkında: Google Play geçmemeli');
+      assert.match(await gorunenMetin(p), /App Store/);
+      await altSayfaKapat(p);
+      await p.click('[data-act="member"]');
+      await p.waitForFunction(() => /399,99/.test(document.querySelector('.plan[data-plan="yearly"]').textContent));
+      assert.deepEqual((await p.evaluate(() => window.__kayit)).find((c) => c.ad === 'getProducts').arg.productIdentifiers,
+        ['com.poyrazworkshop.unitica.adfree.monthly', 'com.poyrazworkshop.unitica.adfree.yearly']);
+      const uyelik = await gorunenMetin(p);
+      assert.doesNotMatch(uyelik, GP, 'Üyelik: Google Play geçmemeli');
+      assert.match(uyelik, /24/, 'Apple: yenilemeden en az 24 saat önce iptal');
+      assert.equal(await p.getAttribute('.legal-links a[href*="gizlilik"]', 'href'), 'https://mahmuttari.github.io/Lispler/unitica/gizlilik.html');
+      assert.equal(await p.getAttribute('.legal-links a[href*="apple.com"]', 'href'), 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/');
+      assert.ok(await p.isVisible('[data-restore]'), 'geri yükleme düğmesi');
+      await denetle(p, `${yer} üyelik`);
+      await p.click('[data-buy]');
+      await p.waitForFunction(() => window.__kayit.some((c) => c.ad === 'removeBanner'));
+      k = await p.evaluate(() => window.__kayit);
+      const al = k.find((c) => c.ad === 'purchaseProduct').arg;
+      assert.equal(al.productIdentifier, 'com.poyrazworkshop.unitica.adfree.yearly');
+      assert.equal(al.planIdentifier, undefined, 'iPhone\'da temel plan yok');
+      assert.equal(await p.getAttribute('[data-manage]', 'href'), 'https://apps.apple.com/account/subscriptions');
+      await p.click('[data-manage]'); await p.waitForTimeout(100);
+      assert.ok(adlar(await p.evaluate(() => window.__kayit)).includes('manageSubscriptions'), 'Apple\'ın abonelik sayfası');
+      assert.doesNotMatch(await gorunenMetin(p), GP);
+      assert.deepEqual(hatalar, [], `${yer}: konsol hatası`);
+      await ctx.close();
+    });
+  }
+
+  await sina('D3 iPhone: izin önceden verilmiş/reddedilmişse yeniden sorulmaz; üye açılışta App Store\'dan tanınır', async () => {
+    const { p, ctx, hatalar } = await sayfa({ dil: 'en', yerel: { platform: 'ios', att: 'denied' } });
+    await p.waitForFunction(() => window.__kayit.some((c) => c.ad === 'initialize'));
+    assert.ok(!adlar(await p.evaluate(() => window.__kayit)).includes('requestTrackingAuthorization'));
+    await ctx.close();
+    const s2 = await sayfa({ dil: 'en', yerel: { platform: 'ios', uye: true } });
+    await s2.p.waitForFunction(() => window.__kayit.some((c) => c.ad === 'getPurchases'));
+    await s2.p.waitForTimeout(400);
+    const a = adlar(await s2.p.evaluate(() => window.__kayit));
+    for (const x of ['requestConsentInfo', 'trackingAuthorizationStatus', 'initialize', 'showBanner']) assert.ok(!a.includes(x), `${x} çağrılmamalı`);
+    await sekme(s2.p, 'more');
+    await s2.p.click('[data-act="member"]'); await s2.p.waitForTimeout(400);
+    assert.match(await gorunenMetin(s2.p), /Yearly|yearly/, 'etkin plan App Store\'un ürününden');
     assert.deepEqual([...hatalar, ...s2.hatalar], []);
     await s2.ctx.close();
   });

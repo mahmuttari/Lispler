@@ -13,7 +13,10 @@ okur). Pano ile:
 
 1. https://dash.cloudflare.com → **Workers & Pages** → `floral-wave-f116` → **Edit code**.
 2. Editördeki her şeyi silip `kelime-bilcek/worker/worker.js`'in **tamamını** yapıştırın → **Deploy**.
-3. Denetim: tarayıcıda `https://floral-wave-f116.mahmuttari.workers.dev/` açılınca
+3. **v3.2 ortak önbellek (bir kez):** aynı Worker › **Settings › Bindings › Add › KV namespace** → değişken adı
+   `SOZLUK`, depo `kelime-bilcek-sozluk` → Deploy. Bağlanmazsa Worker Cloudflare Cache API ile (veri merkezi başına)
+   önbellekler; KV ile önbellek küresel ve kalıcı olur (maliyet hesabı: `../DENETIM.md` › 1.0.2).
+4. Denetim: tarayıcıda `https://floral-wave-f116.mahmuttari.workers.dev/` açılınca
    `{"gecerli":false,"sebep":"Yalnız POST"}` görünmeli; jetonsuz POST `401 Giriş gerekli` döner.
 
 Sıra önemli değil: 1.0.0 uygulaması jetonu her istekte gönderir; v4.11 hiç yayınlanmadığı için eski istemci yok.

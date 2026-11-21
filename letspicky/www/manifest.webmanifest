@@ -1,0 +1,19 @@
+{
+  "name": "Let's Picky — 30 saniyede ortak karar",
+  "short_name": "Let's Picky",
+  "description": "Ne yesek, ne izlesek, nereye gitsek? Oda kur, kartları kaydır, 30 saniyede ortak karar ver.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e0b1f",
+  "theme_color": "#7c3aed",
+  "lang": "tr",
+  "categories": ["lifestyle", "entertainment", "social"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

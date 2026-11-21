@@ -64,11 +64,11 @@ test('girdi sınırı: uzun kelime, bilinmeyen kategori, büyük gövde, bozuk J
   assert.equal(aiCagri, 0);
 });
 
-test('karar: iki hakem de evet → kabul; biri hayır → ret; Zincir modu', async () => {
+test('karar: hakem evet → kabul; hayır → ret; Zincir modu', async () => {
   const t = await jeton();
   let r = await (await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: 'Masa' }, { token: t }), env())).json();
   assert.equal(r.gecerli, true);
-  assert.equal(aiCagri, 2);
+  assert.equal(aiCagri, 1, 'v3.2: tek çağrı');
   r = await (await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: 'roket' }, { token: t }), env('{"gecerli": false, "sebep": "değil"}'))).json();
   assert.equal(r.gecerli, false);
   r = await (await worker.fetch(istek({ kategori: '', kelime: 'kalem' }, { token: t }), env())).json();
@@ -97,4 +97,61 @@ test('CORS: yalnız uygulama ve site kökenleri; * yok', async () => {
   assert.equal(on.status, 204);
   assert.match(on.headers.get('Access-Control-Allow-Headers'), /Authorization/);
   assert.equal((await worker.fetch(istek(null, { method: 'GET' }), env())).status, 405);
+});
+
+test('v3.1: Google anahtarı yenilenince yeni kid bir kez yeniden çekilir', async () => {
+  const eskiFetch = globalThis.fetch;
+  let cekim = 0;
+  globalThis.fetch = async () => {
+    cekim++;
+    const keys = cekim === 1 ? [{ ...jwk, kid: 'eski-kid' }] : [jwk]; // ilk çekimde yeni anahtar yok
+    return new Response(JSON.stringify({ keys }), { headers: { 'Cache-Control': 'public, max-age=20000' } });
+  };
+  try {
+    assert.equal((await kimlikDogrula(await jeton())).sub, 'oyuncu1');
+    assert.equal(cekim, 2);
+  } finally { globalThis.fetch = eskiFetch; }
+});
+
+test('v3.1: harfsiz kelime ve büyük bildirilen gövde reddedilir', async () => {
+  const t = await jeton();
+  assert.equal((await worker.fetch(istek({ kategori: '', kelime: '- -' }, { token: t }), env())).status, 400);
+  const r = new Request('https://w.example/', { method: 'POST', headers: { Authorization: `Bearer ${t}`, 'Content-Length': '999999', Origin: 'https://localhost' }, body: '{}' });
+  assert.equal((await worker.fetch(r, env())).status, 413);
+});
+
+function sahteKV() {
+  const m = new Map();
+  return { m, get: async (k, tur) => (m.has(k) ? (tur === 'json' ? JSON.parse(m.get(k)) : m.get(k)) : null), put: async (k, v) => { m.set(k, v); } };
+}
+
+test('v3.2: ortak önbellek — aynı kelime/kategori yapay zekâya bir kez sorulur', async () => {
+  const t = await jeton();
+  const e = { ...env(), SOZLUK: sahteKV() };
+  const r1 = await (await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: 'Masa' }, { token: t }), e)).json();
+  const r2 = await (await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: '  masa ' }, { token: t }), e)).json();
+  assert.equal(aiCagri, 1);
+  assert.equal(r1.gecerli, true); assert.equal(r2.gecerli, true); assert.equal(r2.onbellek, true);
+  assert.ok(e.SOZLUK.m.has('v1|Ev ve Yaşam|masa'));
+  // başka kategori ayrı sorulur
+  await worker.fetch(istek({ kategori: 'Hobi ve Eğlence', kelime: 'masa' }, { token: t }), e);
+  assert.equal(aiCagri, 2);
+  // 1.0.4: şapkalı yazım aynı kayda düşer (istemcinin normalizeWord'ü gibi â→a, î→i, û→u)
+  const r3 = await (await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: 'Hâlı' }, { token: t }), e)).json();
+  const r4 = await (await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: 'halı' }, { token: t }), e)).json();
+  assert.equal(aiCagri, 3); assert.equal(r4.onbellek, true); assert.equal(r3.gecerli, r4.gecerli);
+});
+
+test('v3.2: yapay zekâ yanıt veremezse önbelleğe yazılmaz', async () => {
+  const t = await jeton();
+  const e = { AI: { run: async () => { aiCagri++; return { response: 'bozuk' }; } }, SOZLUK: sahteKV() };
+  const r = await worker.fetch(istek({ kategori: '', kelime: 'kalem' }, { token: t }), e);
+  assert.equal(r.status, 502);
+  assert.equal(e.SOZLUK.m.size, 0);
+});
+
+test('v3.2: IKI_HAKEM=1 eski iki çağrılı kararı geri getirir', async () => {
+  const t = await jeton();
+  await worker.fetch(istek({ kategori: 'Ev ve Yaşam', kelime: 'sandalye' }, { token: t }), { ...env(), IKI_HAKEM: '1' });
+  assert.equal(aiCagri, 2);
 });

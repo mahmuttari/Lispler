@@ -43,10 +43,189 @@ CI'da ilk koşular (commit b6dbe16): Denetim 41827897508 ✓, Firebase kurallar�
 | K-16 | Düşük (görünüş) | APK'daki uyarlanabilir simge Cordova'nın varsayılan robotuydu; Capacitor projesinde varsayılan açılış görseli. | Simgeler ve açılış görseli `icon.jpg`'den üretildi; Play simgesi 512×512. | — |
 | K-17 | Düşük (erişilebilirlik) | Kategori rozeti kontrastı yetersiz (axe "serious"); profil açan kullanıcı adı `span` (klavyeyle açılmıyor) ve dar ekranda başlığa biniyordu; animasyonlar hareket azaltma tercihini yok sayıyordu. | Rozet rengi koyulaştırıldı; `button` + `aria-label`; dar ekranda sağa yaslanır; `prefers-reduced-motion`. bütün düğmelere `type="button"`; `span` içindeki `div`'ler düzeltildi. | axe-core, html-validate |
 
+## 1.0.6 — Arkadaşını davet et ve değerlendirme (12 Kasım 2026)
+
+**Neden:** Kullanıcı isteği. Play aramasında yeni bir uygulamayı yükselten indirme ve puandır. Oyun "bilcek" ve tam adla 1. sırada çıkıyor, ama "kelime bilcek" ve genel aramalarda ilk 30–50'de yok (12 Kasım ölçümü, play.google.com, tr/TR).
+
+**Ne değişti** (`www/tanitim.js`):
+- **Paylaşım düğmeleri:**
+  - Lobide "Arkadaşını Davet Et".
+  - Maç sonunda "Arkadaşına Meydan Oku" (kazanınca skorlu metin, ör. "6-4 kazandım!") ya da "Arkadaşını Davet Et".
+  - Telefonun paylaşım menüsü (Capacitor Share 8.0.3) mağaza bağlantısıyla açılır. Web'de `navigator.share` kullanılır, yoksa bağlantı panoya kopyalanır.
+- **Değerlendirme:** Google Play'in uygulama içi değerlendirme penceresi (`@capacitor-community/in-app-review` 8.0.0, Play In-App Review). Ne zaman istenir:
+  - yalnız kazanılan bir maçtan lobiye dönerken;
+  - en az 3 bitmiş maçtan sonra;
+  - o anda geçiş reklamı gösterilmediyse;
+  - iki istek arası ≥ 30 gün, toplamda ≤ 3 kez.
+
+  Google'ın kuralı gereği önceden "puan verir misin?" diye sorulmaz. Pencereyi gösterip göstermemeye Play karar verir.
+- **Eklenti sürümleri:** Sabitlendi (`--save-exact`). İkisi de Capacitor ekibinin bakımında ve iki haftadan eski: Share 8.0.3 (2 Ekim 2026), In-App Review 8.0.0 (26 Aralık 2025).
+- **Veri güvenliği:** Değişmedi. Paylaşımda veri bize gelmez. Değerlendirmeyi Google Play kendisi işler.
+
+**Sınama:**
+- `test/tanitim.test.mjs` 5: kurallar, sayaç, web'de istenmemesi, paylaşım metni ve mağaza adresi.
+- `test/arayuz.test.mjs`:
+  - web ve telefon (eklenti taklidi) paylaşımı;
+  - değerlendirme akışı: ilk 3 maçta yok, kaybedince yok, kazanınca bir kez, 30 gün içinde tekrar yok.
+
+## 1.0.5 — Oyunun kendi klavyesi (11 Kasım 2026)
+
+**Neden:** Kullanıcı isteği. Telefon klavyeleri (Gboard, Samsung) yazarken kelime önerir ve otomatik tamamlar; oyuncu
+düşünmeden kategoriye uyan kelimeyi seçebiliyordu. Kopyala-yapıştır da açıktı.
+
+**Ne değişti** (`www/klavye.js`, `index.html`, `style.css`):
+- Kelime kutusu `readonly` ve `inputmode="none"`. Telefonun klavyesi, öneri çubuğu ve yapıştırma maçta hiç açılmaz.
+- Ekranın altında, telefon klavyesi gibi tam genişlikte, tam Türkçe Q (QWERTY) klavyesi var; q, w ve x dahil (kullanıcı isteği). Telefonlardaki Türkçe Q ile aynı düzen; en uzun satır 12 tuş, 360 px'lik telefonda tuş ~26 px.
+- Boşluk tuşu var; sözlükteki 1.440 girişin 329'u birden çok kelimeli. Sil tuşu basılı tutulunca art arda siler.
+- Basınca hafif titreşim (8 ms).
+- Sıra rakipteyken ya da kelime denetlenirken tuşlar kapalı.
+- Web sürümünde bilgisayarın fiziksel klavyesi de yazar: harfler, Sil, boşluk, Enter. Türkçe büyük/küçük harf doğru: I → ı, İ → i.
+- Panel açıkken maç ekranı panelin üstüne sığar: logo ve kural kartı gizlenir, kelime listesi kalan yeri doldurur. Önceden telefon klavyesi listeyi örtüyordu.
+- Klavyede tire yok. Sözlükteki 4 tireli giriş ("e-posta" gibi) "e posta" ve "eposta" biçimlerinde de bulunur.
+
+**Sınama:**
+- `test/klavye.test.mjs` 4: QWERTY düzeni, sözlükteki her harfin klavyede olması, tuş mantığı, Türkçe harf eşlemesi, tireli kelimeler.
+- `test/arayuz.test.mjs`:
+  - Bütün maç testleri artık gerçek oyuncu gibi tuşlara basarak oynanıyor.
+  - Yeni test: kutu salt okunur; panel ekranın altında; tuş ≥ 27 px (390 px ekranda); sıra rakipteyken tuşlar kapalı; tuş + Sil + fiziksel klavye + Enter ile kelime gönderilir; maçtan çıkınca panel kapanır.
+- `test/akis.test.mjs` (iki oyunculu, emülatörde) tuşlarla yazıyor.
+
+## 1.0.4 — Evren ile tarama (10 Kasım 2026)
+
+**Düzeltme:** 1.0.1 ve 1.0.2'de "Evren" yerine yanlışlıkla Gemini kullanılmıştı. Evren, `evren-llmapi.ssyz.org.tr`
+adresindeki OpenAI uyumlu servis. Kod (bot modu ve yeni görünüm dahil) `araclar/model-tarama.py evren a|b` ile
+**DeepSeek V4.1 Flash**'a gönderildi. Modelin düşünme kipi 16 bin jetonluk bütçenin tamamını harcadığı için
+kapatıldı (`chat_template_kwargs.thinking=false`); açmak için `DUSUN=1`. Depo herkese açık ve gönderilen kodda kişisel veri yok.
+
+| Parça | Bulgu | Doğrulanan | Yanlış alarm nedenleri |
+|---|---|---|---|
+| a (oyun.js + kurallar) | 25 | 2 | Kendi kendini yalanlayan maddeler ("…bu tamam, değişiklik gerekmez"), `onDisconnect` silmesini tehlike sanması, bilinçli tasarım (istemci otoriteli sonuç) |
+| b (bot, reklam, kelime, Worker, kurallar, manifest) | 25 | 3 (küçük) | RTDB'de üst düğümün `.write` kuralı alt düğümün iznini engeller sanması (kurallar.test 25/25 aksini gösteriyor), `"General"` değerini geçersiz sanması, başlatıcı etkinliğinde `exported=true`'yu açık sanması, sınırlı hız haritasını sızıntı sanması |
+
+| No | Önem | Bulgu | Düzeltme | Kaynak | Sınama |
+|---|---|---|---|---|---|
+| K-29 | Yüksek (adalet) | Kelime, davet ve kuyruk zaman damgaları **cihaz saatiyle** yazılıyordu. Zincir'de sıra ve son harf, Hızlı'da "ilk yazan kapar" (çalma) bu zamana göre belirlenir. Saati geride olan oyuncunun kelimesi öne sıralanıyor, yanlış harf isteniyor ya da kelime haksızca kapılıyordu. Davetin süresi de karşı cihazın saatiyle ölçüldüğü için davet erken düşebiliyordu. | Bütün oyun zamanları `nowServer()` ile yazılıyor (Firebase `.info/serverTimeOffset`). Eşit zamanda sıralama push anahtarına göre. | Evren (DeepSeek), elle genişletildi | arayuz.test: 1 saat kaymış saatte kelime sunucu saatinde (eski kodda kırmızı) |
+| K-30 | Orta | Hızlı modda listede olmayan kelimenin denetimi round bitene kadar sürerse kelime **sonraki rounda** yazılıyordu: başka kategoride sayılabiliyordu. Oyuncu bu arada yeni maça geçtiyse kelime **yeni odaya** gidiyordu. | Kelime yalnız aynı odanın aynı roundunda ve round sürerken yazılır. Değilse "sayılmadı" bildirimi gösterilir. | Evren (DeepSeek) | arayuz.test: geç dönen denetim (eski kodda kırmızı) |
+| K-31 | Düşük | Yapay zekâ maçında, bildirimi sıradayken kapatılan dinleyici yine de çağrılıyordu. Botun sırası değilse transaction boşuna yazılıyor ve bildirim tetikleniyordu. | `YerelOda` dinleyicinin hâlâ kayıtlı olduğunu denetler. Değişiklik yoksa transaction iptal edilir. | Evren (DeepSeek) | bot.test (eski kodda kırmızı) |
+| K-32 | Düşük (maliyet) | Worker önbellek anahtarında şapkalı harfler düzleşmiyordu: "hâlı" ile "halı" yapay zekâya ayrı ayrı soruluyordu. | Worker'ın `normalizeWord`'ü istemciyle aynı (â→a, î→i, û→u). | Evren (DeepSeek) | worker.test |
+| — | — | Davet kabulünde gönderen `inv.fromUid` diye okunuyordu (alan `from`). Yedek okuma çalıştığı için hata yoktu, gereksiz bir okuma vardı. | `inv.from`. | Evren (DeepSeek) | — |
+
+**Maliyet modeli, Evren ile ikinci görüş:**
+- GLM 5.3 iki denemede de yanıt veremedi. İlkinde düşünme bütçeyi bitirdi, ikincisinde 502 döndü. İnceleme DeepSeek V4.1 Flash ile yapıldı.
+- 12 maddenin çoğu yanlış alarm:
+  - Ücretsiz nöron kotası doğru uygulanıyor; günlük aşım 30 ile çarpılıyor.
+  - Blaze'de eşzamanlı bağlantı ücreti yok.
+  - Bot kelimeleri yapay zekâya gitmiyor.
+  - Tek çağrı, aynı boyuttaki iki çağrının tam yarısı.
+- Gerçek eksik iki kalem modele eklendi (`araclar/maliyet.py`): Workers Paid kapsamını aşan **Worker istekleri** (ayda 10 M dahil, sonrası 0,30 $/M) ve **KV okuma/yazma** ücretleri (10 M okuma ve 1 M yazma dahil).
+- Hesap kontrol edildi: Workers Paid aboneliği açık.
+- Etkisi:
+  - 10.000 maç/gün, iyileştirilmiş düzen: 771 → 790 $/ay.
+  - 100.000 maç/gün, %95 önbellek: 1.461 → 1.594 $/ay (133 $'ı istek + KV).
+- Yapay zekâya karşı oyunda değişiklik yok denecek kadar az.
+
+**Canlı ortam (10 Kasım 2026):**
+- Worker `floral-wave-f116` v3.2 Cloudflare API ile yüklendi. Bağlamalar: `AI`, KV `SOZLUK`, sırlar `ANTHROPIC_API_KEY` ve `FIREBASE_API_KEY`.
+- Denetim sonuçları: jetonsuz POST 401, GET 405, OPTIONS 204 (`https://localhost` CORS).
+- Firebase projesi **Blaze** planında; Spark'ın 100 eşzamanlı bağlantı sınırı kalktı.
+- 1.0.4 ile Worker v3.3 (K-32) yüklendi.
+
+## 1.0.3 — Yeni görünüm (9 Kasım 2026)
+
+Kullanıcı isteği: "butonlar ince cılız olmasın, güzel bir görünüme kavuştur tüm oyunu". Yön `ui-ux-pro-max` tasarım
+sistemi önerisinden (oyunlar için "claymorphism": kalın, 3 boyutlu, yuvarlak; Fredoka + Nunito) koyu tema ve simgedeki
+ateş/buz/altın kimliğiyle uyarlandı.
+
+- **Düğmeler:** en az 58 px (küçük 48 px), 18 px köşe, 6 px alt gölge, basınca çökme; birincil ateş, onay yeşil, tehlike
+  kırmızı, ikincil kenarlıklı mor; "Maçı Terk Et" ve "Hesabı Sil" artık dikkat dağıtmayan çerçeveli tehlike düğmesi.
+- **Yazı tipi:** Fredoka (başlık, düğme, sayı) ve Nunito (metin), SIL OFL 1.1, `@fontsource-variable`; yalnız latin ve
+  latin-ext (Türkçe) alt kümeleri cihazda (`www/vendor/fonts`, 124 KB; `araclar/vendor.mjs`).
+- **Simgeler:** emoji yerine Lucide SVG (ISC), sayfaya gömülü küme (`araclar/ikonlar.mjs`, 33 simge, 7,5 KB).
+- **Ekranlar:** lobide renkli simge kutulu büyük kart + 2×2 kutucuk ızgarası, 76 px mod seçici; bot zorluk kartları;
+  bekleme ekranlarında halka animasyonu; maçta yuvarlak sayaç, iri kelime balonları, büyük giriş alanı; sonuç ekranında
+  büyük skor; pencerelerde bulanık arka plan; bildirim hapı.
+- **Erişilebilirlik:** metin kontrastı ≥ 4,5:1, büyük kalın düğme metni ≥ 3:1, dokunma hedefi ≥ 44 px, görünür odak
+  halkası, hareket azaltma; axe-core ağır ihlal yok, Lighthouse dört kategoride 1,00.
+- Ekran görüntüsü aracı `araclar/ekranlar.mjs` (16 ekran); mağaza görselleri yeni görünümle yeniden üretildi.
+
+## 1.0.2 — Maliyet hesabı, yapay zekâya karşı mod ve tasarruf (9 Kasım 2026)
+
+### Maliyet (aylık, USD) — `araclar/maliyet.py`
+
+Fiyatlar: Workers AI 0,011 $/1.000 nöron, günde 10.000 nöron ücretsiz, Llama 3.3 70B fp8-fast 26.668 nöron/M giriş ve
+204.805 nöron/M çıkış token'ı, Workers Paid 5 $/ay (Cloudflare resmî sayfası); Firebase RTDB Spark 100 eşzamanlı bağlantı /
+10 GB indirme, Blaze 1 $/GB indirme; Google girişi 50.000 aylık aktif kullanıcıya kadar ücretsiz; AdMob Türkiye eCPM geçiş
+1,5–4 $, banner 0,10–0,45 $ (Gemini'nin Google aramasıyla bulduğu sektör/forum verisi, güven orta). Ölçüm: emülatörde bir
+kısa Zincir maçı oyuncu başına 6–7 KB indirdi. Varsayımlar: Hızlı maçta 80, Tenis'te 15, Zincir'de 10 kelime yerel
+listede yok ve denetime gider; mod karışımı %50/%30/%20; maç başına 0,5 geçiş + 2 banner gösterimi. Hesabı Gemini denetledi
+(matematik hatası yok; veritabanı payı ihtiyatlı; ortak önbellek ve Spark bağlantı sınırı önerisi alındı).
+
+| Günlük maç | 1.0.1 düzeni | 1.0.2 (önbellek %95 + tek çağrı) | Reklam geliri |
+|---|---|---|---|
+| 100 | 52 $ | 0 $ | 3 $ |
+| 1.000 | 507 $ | 14 $ | 34 $ |
+| 10.000 (10.000 kişi × 1) | 5.068 $ | 139 $ | 345 $ |
+| 100.000 | 50.756 $ | 1.525 $ | 3.450 $ |
+
+1.0.1'de bir çok oyunculu maç ortalama 1.532 nöron (0,017 $) harcıyordu: reklam gelirinin (~0,001 $) 17 katı. Günde
+10.000 ücretsiz nöron ~6 maça yetiyordu. Veritabanı bu ölçekte 0–11 $/ay; asıl kalem kelime hakemi.
+
+**Sınır:** Firebase Spark'ta en çok 100 eşzamanlı bağlantı var. Kullanıcı sayısı büyüyünce oyun bağlanamaz: Blaze planına
+(kullandıkça öde; bu ölçekte birkaç dolar) geçilmeli. Günde ~6 maçtan fazlası için Cloudflare Workers Paid (5 $/ay) gerekir.
+
+### Yapılanlar
+
+- **Yapay zekâya karşı** (`www/bot.js`): rakip "Bilcek" kelimelerini cihazdaki kategori sözlüğünden (Zincir'de bütün
+  kategorilerin tek kelimelik girişleri, ~1.000+) seçer; Kolay/Orta/Zor hız, bilinen kelime oranı ve takılma olasılığıyla
+  ayrılır. Maç çok oyunculu motorla aynen oynanır; Firebase odası yerine bellekteki `YerelOda` kullanılır. Bot için
+  yapay zekâ ve veritabanı maliyeti yok; maç istatistiğe ve Şampiyonlar'a sayılmaz. Bağlantı yoksa kategori tercihi 2 sn
+  bekleyip bütün kategorilerle başlar.
+- **Worker v3.2:** ortak önbellek (`v1|kategori|kelime` → karar; KV `kelime-bilcek-sozluk` bağlıysa küresel, değilse
+  Cache API; 90 gün) ve tek katı hakem çağrısı (eski iki çağrı: `IKI_HAKEM=1`). Kısmi ya da hatalı yanıt önbelleğe
+  yazılmaz. **Cloudflare'e yüklenmeli ve KV bağlanmalı** (`worker/README.md`).
+- **Cihaz önbelleği:** telefonda denetlenen kelimeler (en çok 1.500) yeniden sorulmaz.
+- Gizlilik sayfası: kelime/kategori/karar 90 gün (kullanıcı kimliği ve IP olmadan) ve cihaz önbelleği yazıldı.
+
+Sınama: `test/bot.test.mjs` 6/6, `test/arayuz.test.mjs` 8/8 (tarayıcıda Zincir ve Hızlı bot maçı), `worker/worker.test.mjs`
+13/13 (önbellek, tek çağrı, hatalı yanıtın yazılmaması).
+
+## 1.0.1 — NVIDIA ve Gemini ile tarama (9 Kasım 2026)
+
+Kod (oyun.js, reklam.js, kelime.js, index.html, kurallar, Worker, manifest) iki ücretsiz modele aynı istemle gönderildi:
+NVIDIA `nemotron-3.5-lightning-30b-a3b` (integrate.api.nvidia.com) ve Google `gemini-3.5-flash`. Depo herkese açık,
+kişisel veri yok. Betik bulut oturumunun karalama alanında; proxy 60 sn sessizlikte bağlantıyı kestiği için yanıtlar
+akışla (düşünce özetleri dahil) alındı, gövde ~140 KB sınırı yüzünden kod iki parçada gönderildi.
+
+| Model | Bulgu | Doğrulanan | Yanlış alarm nedenleri |
+|---|---|---|---|
+| Gemini | 30 | 9 | "tanımsız işlev" (kelime.js ayrı parçadaydı), silmede `.validate` çalışır sanması, alt düğüm `.write` yetkisini görmemesi, hesap silmenin zaten sildiği veriler |
+| NVIDIA | 26 | 1 (+1 Gemini ile ortak) | Capacitor kökenini `http://localhost` sanması, kodda olan `onDisconnect` iptalini ve oda silmeyi görmemesi, belirsiz "yarış" iddiaları |
+
+Ayrıca bu inceleme sırasında modellerin kaçırdığı bir hata bulundu (K-20).
+
+| No | Önem | Bulgu | Düzeltme | Kaynak | Sınama |
+|---|---|---|---|---|---|
+| K-20 | Yüksek | Hızlı eşleşmede kuyruktaki her değişiklik `tryMatch`'i yeniden başlatıyordu; önceki deneme bitmeden ikincisi başka bir rakibi daha alıp **ikinci oda** kurabiliyordu (3+ kişilik kuyrukta bir oyuncu boş odaya düşer). | Aynı anda tek deneme (`eslesiyor`). | inceleme | akis.test |
+| K-21 | Orta | Rakip kuyruk kaydını alıp oda kuramazsa (ağ hatası) oyuncu arama ekranında sonsuza kadar kalıyordu. | Kayıt 8 sn kuyrukta yoksa ve odaya çağrılmadıysa yeniden sıraya girer. | Gemini | kod incelemesi |
+| K-22 | Düşük | Eşleşme ararken çıkışta kuyruk dinleyicisi ve kaydı kalıyordu; listeden çıkarılan arkadaşın çevrimiçi dinleyicisi kapanmıyordu. | `detachAllListeners` kuyruğu kapatır/siler; `renderFriends` eski dinleyicileri kapatır. | Gemini | — |
+| K-23 | Orta | Tenis ve Zincir'de kelime denetlenirken "Gönder" kapanıyor ama **Enter açık**: sıra geçtikten sonra ikinci kelime yazılabiliyordu. | Denetim sürerken gönderim yok sayılır. | NVIDIA + Gemini | — |
+| K-24 | Yüksek (politika) | Lobiden maça hızlı geçişte `showBanner` bitmeden `hideBanner` çağrılıp önce bitebiliyordu: **banner maç ekranında kalıyordu** ("maç sırasında reklam yok" kuralı). | Banner işlemleri sıraya girer, her adım o anki ekranı denetler; hata olursa döngüye girmez. | Gemini | reklam.test (eski kodda kırmızı) |
+| K-25 | Düşük | Gösterilemeyen geçiş reklamı da gösterilmiş sayılıyor, 5 dk ve saatlik hakkı yiyordu. | Sayaç yalnız başarılı gösterimden sonra yazılır. | Gemini | reklam.test |
+| K-26 | Orta (hile) | Sayaç kuralı yalnız üst sınır koyuyordu: oyuncu **yenilgi sayısını düşürebiliyor** ya da sayacı tek tek silebiliyordu. | Sayaç yalnız artar (+0/+1); tek sayaç ve `stats` düğümü silinemez (hesap silmedeki toplu silme sürer). | Gemini | kurallar.test 25/25 |
+| K-27 | Düşük | Yalnız tire ve boşluktan oluşan girdi ("- -") kelime biçimini geçiyordu; Zincir'de aynı zaman damgalı kelimelerde sıradaki harf istemciye göre değişebiliyordu. | En az iki harf şartı (istemci + Worker); ikincil sıralama. | Gemini | kelime.test, worker.test |
+| K-28 | Orta | Worker: Google imza anahtarlarını yenileyince yeni `kid` önbellekte yoktu, geçerli jetonlar 6 saate kadar 401 alabiliyordu; gövde boyutu okunmadan önce denetlenmiyordu. | v3.1: bilinmeyen `kid`'de anahtarlar bir kez yeniden çekilir (dakikada en çok bir); `Content-Length` > 1 KB ise okunmadan 413. **Cloudflare'e yüklenmeli** (`worker/README.md`). | Gemini | worker.test 10/10 |
+
+Bilinçli olarak bırakılanlar (aşağıdaki "Açık kalanlar"da zaten var): istemci otoriteli maç sonucu ve oda verisi, onaysız
+arkadaş ekleme, başkasının kuyruk kaydını silebilme (eşleşme yöntemi), AI yanıt vermezse TDK'ya düşme (sunucu kapalıyken
+oyun oynanabilsin diye).
+
+Telefondaki eski sürüm (v4.11, ayrı paket) Şampiyonlar'da `permission_denied at /users` verir: 4 Kasım'da yayınlanan sıkı
+kurallar herkesin `users` ağacını okumayı kapattı (K-02). 1.0.x listeyi `leaderboard` düğümünden okur; eski uygulama
+kaldırılmalıdır.
+
 ## Açık kalanlar (bilinçli olarak bırakılan ya da kullanıcıda olan)
 
-- **Worker yayını:** `worker/worker.js` Cloudflare'e yüklenene kadar eski Worker herkese açık kalır (`worker/README.md`).
-- **İstemci otoriteli tasarım:** Spark planında Cloud Functions yok; maç sonucu ve sayaçlar istemciden yazılır. Kurallar
+- **İstemci otoriteli tasarım:** Cloud Functions kullanılmıyor (proje Blaze'de, yazılabilir); maç sonucu ve sayaçlar istemciden yazılır. Kurallar
   her yazımda en çok +1'e izin verir ama değiştirilmiş bir istemci tekrar tekrar +1 yazabilir; oda üyeleri oda
   verisini istediği gibi yazabilir (rakip hile yapabilir). Çözüm sunucu tarafı hakemlik (Blaze + Functions) ister.
 - **Arkadaş ekleme onaysızdır** (v4.11 tasarımı): kullanıcı adını bilen herkes sizi listesine ekleyebilir; böylece

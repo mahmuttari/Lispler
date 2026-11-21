@@ -4,6 +4,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
+import { readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { join, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -41,7 +42,8 @@ async function sayfaAc(genislik = 800, yukseklik = 390) {
 
 test('menü açılır, alt bilgi sürümü gösterir, hata ayıklama kalıntısı yok', async () => {
   const { s, hatalar } = await sayfaAc();
-  await s.getByText('Tavla 1.0.0 · Poyraz Workshop').waitFor();
+  const surum = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
+  await s.getByText(`Tavla ${surum} · Poyraz Workshop`).waitFor();
   assert.equal(await s.getByText('pas-and-play').count(), 0);
   const tasma = await s.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
   assert.equal(tasma, false, 'yatay taşma');

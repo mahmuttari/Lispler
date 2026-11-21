@@ -5,9 +5,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { SUBSCRIPTION, MANAGE_URL, PACKAGE, PRIVACY_URL, GEOTERVA_URL, EMAIL } from '../www/js/config.js';
+import { SUBSCRIPTION, MANAGE_URL, PACKAGE, PRIVACY_URL, GEOTERVA_URL, EMAIL, IOS_PRODUCTS, MANAGE_URL_IOS, EULA_URL } from '../www/js/config.js';
 import { purchaseError } from '../www/js/billing.js';
-import { entitled, yearlySaving } from '../www/js/plans.js';
+import { entitled, activePlan, yearlySaving } from '../www/js/plans.js';
 import { _packs } from '../www/js/i18n.js';
 import { CATEGORIES, category, unitOf, convert } from '../www/js/units.js';
 
@@ -56,6 +56,27 @@ test('hak: yalnız adfree ürünü ve satın alınmış durumda ("1"); yıllık 
   assert.equal(yearlySaving(1, 13), 0, 'yıllık pahalıysa indirim yazılmaz');
 });
 
+test('App Store: dönem başına ürün; hak geçerli, iade edilmemiş işlemde ya da ödeme yeniden denenirken (ek süre)', () => {
+  assert.deepEqual(IOS_PRODUCTS, { monthly: 'com.poyrazworkshop.unitica.adfree.monthly', yearly: 'com.poyrazworkshop.unitica.adfree.yearly' });
+  assert.equal(MANAGE_URL_IOS, 'https://apps.apple.com/account/subscriptions');
+  assert.equal(EULA_URL, 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/');
+  const y = { productIdentifier: IOS_PRODUCTS.yearly, isActive: true, expirationDate: '2027-10-31T10:00:00Z', subscriptionState: 'subscribed' };
+  assert.equal(entitled([y]), true);
+  assert.equal(activePlan([y]), 'yearly');
+  assert.equal(activePlan([{ ...y, productIdentifier: IOS_PRODUCTS.monthly }]), 'monthly');
+  assert.equal(entitled([{ ...y, isActive: false, subscriptionState: 'expired' }]), false, 'süresi dolmuş');
+  assert.equal(entitled([{ ...y, revocationDate: '2026-11-02T09:00:00Z' }]), false, 'iade edilmiş');
+  assert.equal(entitled([{ ...y, isActive: false, subscriptionState: 'inGracePeriod' }]), true, 'Apple ödemeyi yeniden denerken üyelik sürer');
+  assert.equal(entitled([{ ...y, productIdentifier: 'com.poyrazworkshop.unitica.baska' }]), false);
+  assert.equal(activePlan([{ productIdentifier: 'adfree', purchaseState: '1' }]), null, 'Play temel planı söylemez');
+  const b = fs.readFileSync(path.join(WWW, 'js', 'billing.js'), 'utf8');
+  assert.match(b, /onlyCurrentEntitlements: true/, 'iPhone: Transaction.all değil, bu Apple hesabının geçerli hakları');
+  assert.match(b, /productIdentifier: IOS_PRODUCTS\[plan\]/);
+  // iPhone ret iletileri (NativePurchasesPlugin+PurchaseHandling.swift)
+  assert.equal(purchaseError(new Error('User cancelled')), 'cancelled');
+  assert.equal(purchaseError(new Error('Transaction pending')), 'pending');
+});
+
 test('11 dil: her dilde İngilizcedeki bütün anahtarlar, aynı yer tutucular; kodda kullanılan her anahtar var', () => {
   const en = _packs.en.text;
   assert.deepEqual(Object.keys(_packs).sort(), ['ar', 'de', 'en', 'es', 'fr', 'it', 'ja', 'ko', 'pt', 'ru', 'tr']);
@@ -79,7 +100,20 @@ test('11 dil: her dilde İngilizcedeki bütün anahtarlar, aynı yer tutucular; 
   for (const [dil, p] of Object.entries(_packs)) {
     assert.match(p.text['about.offline'], /AdMob/, `${dil}: about.offline reklamı anmalı`);
     assert.match(p.text['about.offline'], /Google[ -]Play/, `${dil}: about.offline aboneliği anmalı`);
+    // iPhone karşılıkları (t() iPhone'da ".ios" ikizini seçer): App Store, Google Play değil (App Review 2.3.10)
+    for (const k of Object.keys(p.text).filter((x) => x.endsWith('.ios'))) {
+      assert.ok(k.slice(0, -4) in p.text, `${dil} ${k}: ikizi yok`);
+      assert.doesNotMatch(p.text[k], /Google[ -]?Play|Android/, `${dil} ${k}`);
+    }
+    assert.match(p.text['about.offline.ios'], /AdMob/);
+    assert.match(p.text['about.offline.ios'], /App[ -]Store/);
+    assert.match(p.text['member.terms.ios'], /24/, `${dil}: Apple, yenilemeden en az 24 saat önce iptal koşulunu ister (3.1.2)`);
+    assert.match(p.text['member.none.ios'], /Apple/);
   }
+  assert.deepEqual(Object.keys(en).filter((x) => x.endsWith('.ios')).sort(),
+    ['about.offline.ios', 'member.loading.ios', 'member.none.ios', 'member.pending.ios', 'member.terms.ios', 'member.unavailable.ios']);
+  // ikizi olmayan Google Play metni kalmadı
+  for (const [k, v] of Object.entries(en)) if (/Google[ -]?Play/.test(v)) assert.ok(`${k}.ios` in en, `${k}: iPhone karşılığı yok`);
   // Türkçe ve Arapça karakterler \uXXXX kaçışına dönmemiş olmalı
   for (const f of fs.readdirSync(path.join(WWW, 'js', 'lang'))) assert.doesNotMatch(fs.readFileSync(path.join(WWW, 'js', 'lang', f), 'utf8'), /\\u0[0-9a-f]{3}/i, f);
 });
@@ -113,10 +147,11 @@ test('CSP özgün kadar sıkı: ağ yalnız kendi kökü (AdMob ve Play yerli ko
   assert.doesNotMatch(csp, /https?:/, 'CSP dışarıya açılmamalı');
 });
 
-test('eklentiler sabit sürümlü: özgünün @capacitor/app\'i + AdMob 8.x + native-purchases', () => {
+test('eklentiler sabit sürümlü: özgünün @capacitor/app\'i + AdMob 8.x + native-purchases; Android ve iOS', () => {
   const p = JSON.parse(oku('package.json'));
   assert.deepEqual(Object.keys(p.dependencies).sort(),
-    ['@capacitor-community/admob', '@capacitor/android', '@capacitor/app', '@capacitor/core', '@capgo/native-purchases']);
+    ['@capacitor-community/admob', '@capacitor/android', '@capacitor/app', '@capacitor/core', '@capacitor/ios', '@capgo/native-purchases']);
+  assert.equal(p.dependencies['@capacitor/ios'], p.dependencies['@capacitor/core'], 'Capacitor çekirdeği ve iOS aynı sürüm');
   for (const [ad, s] of Object.entries({ ...p.dependencies, ...p.devDependencies })) assert.match(s, /^\d+\.\d+\.\d+$/, `${ad} sürümü sabit değil: ${s}`);
   assert.match(p.dependencies['@capacitor-community/admob'], /^8\./);
   const kilit = JSON.parse(oku('package-lock.json'));

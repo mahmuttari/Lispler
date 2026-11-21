@@ -89,6 +89,5 @@ işaretlenir (PLAY-YAYIN.md › 6).
 | Tanılama | AdMob: SDK başarımı | Zorunlu | aynı (paylaşılır) |
 | Cihaz veya diğer kimlikler | AdMob: reklam kimliği | Zorunlu | aynı (paylaşılır) |
 
-Toplanmayanlar: kesin konum, rehber, fotoğraf; analiz ya da çökme raporu SDK'sı yok. Avatar görseli
-api.dicebear.com'dan kullanıcı kimliğinin tek yönlü özetiyle istenir (kimlik ve rumuz gönderilmez; hizmet yalnız IP
-adresini görür); Play'in tanımında bu bir paylaşım sayılmaz, gizlilik politikasında yazılıdır.
+Toplanmayanlar: kesin konum, rehber, fotoğraf; analiz ya da çökme raporu SDK'sı yok. Avatarlar 1.0.1'den
+beri uygulamanın içinde çizilir (pul, zar, fincan, çay bardağı; insan figürü yok); dış hizmete istek gitmez.

@@ -25,9 +25,9 @@
           ".validate": "newData.isBoolean()"
         },
         "stats": {
-          ".write": "auth != null && auth.uid === $uid",
           "$alan": {
-            ".validate": "$alan.matches(/^(totalGames|wins|losses|ties|(sim|duel|chain)(Games|Wins))$/) && newData.isNumber() && newData.val() >= 0 && ((!data.exists() && newData.val() <= 1) || (data.exists() && newData.val() <= data.val() + 1))"
+            ".write": "auth != null && auth.uid === $uid && newData.exists()",
+            ".validate": "$alan.matches(/^(totalGames|wins|losses|ties|(sim|duel|chain)(Games|Wins))$/) && newData.isNumber() && ((!data.exists() && newData.val() >= 0 && newData.val() <= 1) || (data.exists() && newData.val() >= data.val() && newData.val() <= data.val() + 1))"
           }
         },
         "categoryPrefs": {
@@ -93,12 +93,14 @@
         "wins"
       ],
       "$uid": {
-        ".write": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && !newData.exists()",
         "name": {
-          ".validate": "newData.isString() && newData.val() === root.child('users').child($uid).child('name').val()"
+          ".validate": "newData.isString() && newData.val() === root.child('users').child($uid).child('name').val()",
+          ".write": "auth != null && auth.uid === $uid && newData.exists()"
         },
         "$alan": {
-          ".validate": "$alan.matches(/^(totalGames|wins|losses|ties|(sim|duel|chain)(Games|Wins))$/) && newData.isNumber() && newData.val() >= 0 && ((!data.exists() && newData.val() <= 1) || (data.exists() && newData.val() <= data.val() + 1))"
+          ".write": "auth != null && auth.uid === $uid && newData.exists()",
+          ".validate": "$alan.matches(/^(totalGames|wins|losses|ties|(sim|duel|chain)(Games|Wins))$/) && newData.isNumber() && ((!data.exists() && newData.val() >= 0 && newData.val() <= 1) || (data.exists() && newData.val() >= data.val() && newData.val() <= data.val() + 1))"
         }
       }
     },

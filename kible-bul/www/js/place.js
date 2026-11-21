@@ -1,7 +1,8 @@
 // The place the Qibla is measured from: the phone's own position (GPS) or a place the user chose. Everything else listens to onPlace.
 import { S, save } from './state.js';
 import { qiblaBearing, kaabaDistanceKm, atKaaba } from './qibla.js';
-import { declination, expectedFieldUt } from './wmm.js';
+import { field } from './wmm.js';
+import { norm360 } from './qibla.js';
 import { getPosition } from './native.js';
 import { ensureCities, nearestPlace, localName } from './cities.js';
 import { t, countryName } from './i18n.js';
@@ -14,12 +15,17 @@ export let gps = { status: 'idle' };   // idle | busy | ok | denied | disabled |
 const setGps = status => { gps = { status }; emit(); };
 
 let cache = null;
-/** { lat, lon, name, cc, mode, bearing, km, decl (magnetic declination), fieldUt (the Earth's field there, microtesla), atKaaba } for the current place, or null before there is one */
+/**
+ * { lat, lon, name, cc, mode, bearing (from TRUE north), magBearing (the same direction from MAGNETIC north: what a compass needle shows), km, decl (magnetic declination), fieldUt (the Earth's field there,
+ * microtesla), expected: { h, z (down), f, incl } (the same field split into its horizontal and vertical parts, microtesla, and the dip angle in degrees), atKaaba } for the current place, or null before there is one
+ */
 export function info() {
   const p = S.place;
   if (!p) return null;
   if (!cache || cache.lat !== p.lat || cache.lon !== p.lon) {
-    cache = { lat: p.lat, lon: p.lon, bearing: qiblaBearing(p.lat, p.lon), km: kaabaDistanceKm(p.lat, p.lon), decl: declination(p.lat, p.lon), fieldUt: expectedFieldUt(p.lat, p.lon), atKaaba: atKaaba(p.lat, p.lon) };
+    const fl = field(p.lat, p.lon), bearing = qiblaBearing(p.lat, p.lon);
+    cache = { lat: p.lat, lon: p.lon, bearing, magBearing: norm360(bearing - fl.decl), km: kaabaDistanceKm(p.lat, p.lon), decl: fl.decl, fieldUt: fl.f / 1000,
+      expected: { h: fl.h / 1000, z: fl.z / 1000, f: fl.f / 1000, incl: fl.incl }, atKaaba: atKaaba(p.lat, p.lon) };
   }
   return { ...cache, mode: p.mode, name: p.name || '', cc: p.cc || '' };
 }

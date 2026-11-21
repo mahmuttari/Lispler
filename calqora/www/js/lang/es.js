@@ -110,6 +110,7 @@ export default {
     "p.b1": "Sin anuncios en ninguna pantalla",
     "p.b2": "Apoya el desarrollo",
     "p.b3": "Cancela cuando quieras en Google Play",
+    "p.b3.ios": "Cancela cuando quieras en los ajustes de la App Store",
     "p.monthly": "Mensual",
     "p.yearly": "Anual",
     "p.perMonth": "{0} / mes",
@@ -123,7 +124,10 @@ export default {
     "p.thanks": "¡Gracias por tu apoyo!",
     "p.loading": "Cargando precios…",
     "p.unavailable": "Google Play no está disponible en este dispositivo, por lo que no se puede iniciar una suscripción aquí.",
+    "p.unavailable.ios": "La App Store no está disponible en este dispositivo, por lo que no se puede iniciar una suscripción aquí.",
     "p.terms": "El pago se carga en tu cuenta de Google Play. La suscripción se renueva automáticamente al precio indicado hasta que la canceles en Google Play. Puedes cancelarla en cualquier momento.",
+    "p.terms.ios": "El pago se carga a tu cuenta de Apple al confirmar la compra. La suscripción se renueva automáticamente al precio indicado salvo que la canceles al menos 24 horas antes de que termine el período actual; la renovación se cobra en las últimas 24 horas del período. Puedes gestionarla o cancelarla en los ajustes de tu cuenta de App Store después de la compra.",
+    "p.eula": "Términos de uso (EULA)",
     "p.cancelled": "Compra cancelada",
     "p.failed": "No se pudo completar la compra",
     "p.restored": "Suscripción restaurada",
@@ -141,6 +145,7 @@ export default {
     "s.privacy": "Política de privacidad",
     "s.privacyOpen": "Ver",
     "p.noPrices": "No se pudieron cargar los precios de Google Play. Comprueba tu conexión e inténtalo de nuevo.",
+    "p.noPrices.ios": "No se pudieron cargar los precios de la App Store. Comprueba tu conexión e inténtalo de nuevo.",
   },
   // category names
   cats: {

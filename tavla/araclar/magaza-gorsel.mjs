@@ -28,7 +28,7 @@ const tarayici = await chromium.launch();
 
 async function sayfa(ayarlar = {}) {
   const s = await tarayici.newPage({ viewport: { width: 960, height: 540 }, deviceScaleFactor: 2 });
-  // Avatar (api.dicebear.com, rastgele tohum) açık kalır; Google/Firebase kapalı
+  // Avatarlar uygulama içinde çizilir (1.0.1); Google/Firebase kapalı
   await s.route(/googleapis|gstatic|google\.com|firebaseapp/, (r) => r.abort());
   await s.addInitScript((a) => { for (const [k, v] of Object.entries(a)) localStorage.setItem(k, v); }, {
     tavla_rumuz: 'Kahveci', tavla_mac_hedefi: '5', ...ayarlar,

@@ -110,6 +110,7 @@ export default {
     "p.b1": "모든 화면에서 광고 제거",
     "p.b2": "앞으로의 개발 지원",
     "p.b3": "Google Play에서 언제든지 해지할 수 있어요",
+    "p.b3.ios": "App Store 설정에서 언제든지 해지할 수 있어요",
     "p.monthly": "월간",
     "p.yearly": "연간",
     "p.perMonth": "{0} / 월",
@@ -123,7 +124,10 @@ export default {
     "p.thanks": "응원해 주셔서 감사합니다!",
     "p.loading": "가격을 불러오는 중…",
     "p.unavailable": "이 기기에서는 Google Play를 사용할 수 없어 여기서 구독을 시작할 수 없어요.",
+    "p.unavailable.ios": "이 기기에서는 App Store를 사용할 수 없어 여기서 구독을 시작할 수 없어요.",
     "p.terms": "결제 금액은 Google Play 계정으로 청구됩니다. 구독은 Google Play에서 해지하기 전까지 표시된 가격으로 자동 갱신됩니다. 언제든지 해지할 수 있습니다.",
+    "p.terms.ios": "결제 금액은 구매를 확인할 때 Apple 계정으로 청구됩니다. 현재 기간이 끝나기 최소 24시간 전에 해지하지 않으면 구독은 표시된 가격으로 자동 갱신되며, 갱신 요금은 기간 종료 전 24시간 이내에 청구됩니다. 구매 후 App Store 계정 설정에서 구독을 관리하거나 해지할 수 있습니다.",
+    "p.eula": "이용 약관(EULA)",
     "p.cancelled": "구매가 취소되었어요",
     "p.failed": "구매를 완료하지 못했어요",
     "p.restored": "멤버십을 복원했어요",
@@ -141,6 +145,7 @@ export default {
     "s.privacy": "개인정보 처리방침",
     "s.privacyOpen": "보기",
     "p.noPrices": "Google Play에서 가격을 불러오지 못했어요. 연결을 확인하고 다시 시도해 주세요.",
+    "p.noPrices.ios": "App Store에서 가격을 불러오지 못했어요. 연결을 확인하고 다시 시도해 주세요.",
   },
   // category names
   cats: {

@@ -49,6 +49,17 @@ function layer(el, onClose) {
   return entry;
 }
 
+// Açık alt sayfa sayısı: ilki açılınca ve sonuncusu kapanınca "alt-sayfa" olayı (reklam.js banner'ı gizler; alt sayfa
+// ekranın en altına açılır ve AdMob banner'ı sayfanın üstünde durduğu için düğmelerini örterdi)
+let altSayfa = 0;
+function altSayfaDegisti(fark) {
+  const once = altSayfa > 0;
+  altSayfa = Math.max(0, altSayfa + fark);
+  if (once === altSayfa > 0) return;
+  document.body.classList.toggle('altsayfa', altSayfa > 0);   // kısa bildirim alt sayfanın düğmelerini örtmesin (app.css)
+  document.dispatchEvent(new CustomEvent('alt-sayfa', { detail: { acik: altSayfa > 0 } }));
+}
+
 /** Alt sayfa: başlık, içerik, kapat düğmesi. Dönen nesnenin close() ile kapanır. */
 export function sheet(title, body, { onClose, cls = '' } = {}) {
   let entry;
@@ -58,7 +69,8 @@ export function sheet(title, body, { onClose, cls = '' } = {}) {
     h('div', { class: 'sheet-body' }, body));
   const wrap = h('div', { class: 'scrim' }, panel);
   wrap.addEventListener('click', (e) => { if (e.target === wrap) entry.close(); });
-  entry = layer(wrap, onClose);
+  altSayfaDegisti(1);
+  entry = layer(wrap, () => { altSayfaDegisti(-1); if (onClose) onClose(); });
   setTimeout(() => { const f = panel.querySelector('button:not(.icon-btn), input, [tabindex]'); (f || panel).focus?.(); }, 60);
   return entry;
 }

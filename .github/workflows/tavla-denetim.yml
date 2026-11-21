@@ -37,6 +37,9 @@ jobs:
         run: npm test
       - name: Veri güvenliği CSV'si tabloyla aynı mı
         run: node tavla/araclar/veri-guvenligi.mjs --denetle
+      - name: Şikâyet özeti (salt okuma, sahte ağ)
+        working-directory: tavla/firebase
+        run: npm run test:sikayet
       - name: Firestore kuralları (emülatör)
         working-directory: tavla/firebase
         run: npm test

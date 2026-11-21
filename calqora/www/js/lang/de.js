@@ -110,6 +110,7 @@ export default {
     "p.b1": "Auf keinem Bildschirm Werbung",
     "p.b2": "Unterstützt die Weiterentwicklung",
     "p.b3": "Jederzeit in Google Play kündbar",
+    "p.b3.ios": "Jederzeit in den App-Store-Einstellungen kündbar",
     "p.monthly": "Monatlich",
     "p.yearly": "Jährlich",
     "p.perMonth": "{0} / Monat",
@@ -123,7 +124,10 @@ export default {
     "p.thanks": "Vielen Dank für Ihre Unterstützung!",
     "p.loading": "Preise werden geladen…",
     "p.unavailable": "Google Play ist auf diesem Gerät nicht verfügbar, daher kann hier kein Abonnement gestartet werden.",
+    "p.unavailable.ios": "Der App Store ist auf diesem Gerät nicht verfügbar, daher kann hier kein Abonnement gestartet werden.",
     "p.terms": "Die Zahlung wird Ihrem Konto bei Google Play belastet. Das Abonnement verlängert sich automatisch zum angezeigten Preis, bis Sie es in Google Play kündigen. Sie können jederzeit kündigen.",
+    "p.terms.ios": "Die Zahlung wird bei Bestätigung des Kaufs über Ihren Apple Account abgebucht. Das Abonnement verlängert sich automatisch zum angezeigten Preis, wenn es nicht spätestens 24 Stunden vor Ablauf des aktuellen Zeitraums gekündigt wird; die Verlängerung wird innerhalb der letzten 24 Stunden des Zeitraums berechnet. Sie können das Abonnement nach dem Kauf in den Einstellungen Ihres App-Store-Accounts verwalten oder kündigen.",
+    "p.eula": "Nutzungsbedingungen (EULA)",
     "p.cancelled": "Kauf abgebrochen",
     "p.failed": "Der Kauf konnte nicht abgeschlossen werden",
     "p.restored": "Mitgliedschaft wiederhergestellt",
@@ -141,6 +145,7 @@ export default {
     "s.privacy": "Datenschutzerklärung",
     "s.privacyOpen": "Anzeigen",
     "p.noPrices": "Die Preise konnten nicht von Google Play geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+    "p.noPrices.ios": "Die Preise konnten nicht aus dem App Store geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
   },
   // category names
   cats: {

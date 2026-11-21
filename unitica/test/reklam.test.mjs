@@ -8,7 +8,7 @@ import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { KURAL, DOGAL_DURAK, gecisUygunMu, gosterildi, kayitTemizle, yeniOturumMu } from '../www/js/reklam-kural.js';
 import { REKLAM_KIMLIK } from '../www/js/reklam-kimlik.js';
-import { kimlikOku, kimlikDosyasi, GRADLE, CIKTI } from '../araclar/kimlik.mjs';
+import { kimlikOku, kimlikDosyasi, GRADLE, IOS, CIKTI } from '../araclar/kimlik.mjs';
 
 const UN = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dk = 60e3;
@@ -19,11 +19,19 @@ const durum = (ek = {}) => ({ simdi: T0 + 20 * dk, oturumBasi: T0, eski: 'histor
   yol: 'tab', klavye: false, altSayfa: false, uyelikGoruldu: 0, ...ek });
 const bos = kayitTemizle(null);
 
-test('AdMob kimlikleri: tek kaynak gradle.properties; reklam-kimlik.js onun üretimi; manifest yer tutucudan', () => {
+test('AdMob kimlikleri: kaynak gradle.properties (Android) ve ios/admob.properties; reklam-kimlik.js onların üretimi', () => {
   const g = fs.readFileSync(GRADLE, 'utf8');
   const k = kimlikOku(g);
-  assert.equal(fs.readFileSync(CIKTI, 'utf8'), kimlikDosyasi(k), 'reklam-kimlik.js eski: node unitica/araclar/kimlik.mjs');
-  assert.deepEqual(REKLAM_KIMLIK, { banner: k.banner, gecis: k.gecis });
+  const i = kimlikOku(fs.readFileSync(IOS, 'utf8'), 'admob.properties');
+  assert.equal(fs.readFileSync(CIKTI, 'utf8'), kimlikDosyasi(k, i), 'reklam-kimlik.js eski: node unitica/araclar/kimlik.mjs');
+  assert.deepEqual(REKLAM_KIMLIK, { android: { banner: k.banner, gecis: k.gecis }, ios: { banner: i.banner, gecis: i.gecis } });
+  // iPhone: AdMob'da ayrı uygulama; gerçek kimlikler gelene kadar Google'ın iOS test birimleri (uyarlanabilir banner, geçiş)
+  for (const x of [i.app, i.banner, i.gecis]) assert.match(x, /^ca-app-pub-(3940256099942544|2417242373034448)[~/]\d+$/);
+  assert.notEqual(i.app, k.app, 'iPhone ve Android aynı AdMob uygulaması olamaz');
+  if (i.app.startsWith('ca-app-pub-3940256099942544')) {
+    assert.deepEqual([i.app, i.banner, i.gecis], ['ca-app-pub-3940256099942544~1458002511', 'ca-app-pub-3940256099942544/2435281174',
+      'ca-app-pub-3940256099942544/4411468910']);
+  }
   const yayinci = /^ca-app-pub-(\d+)[~/]\d+$/;
   for (const x of [k.app, k.banner, k.gecis]) assert.match(x, yayinci);
   const no = new Set([k.app, k.banner, k.gecis].map((x) => yayinci.exec(x)[1]));
@@ -126,4 +134,9 @@ test('GeoTerva ev reklamı ve zamanlayıcısı kaldırıldı; açılış ve öd�
   assert.ok(govde.indexOf('requestConsentInfo') < govde.indexOf('ad.initialize('), 'UMP önce');
   assert.ok(govde.indexOf('canRequestAds') < govde.indexOf('ad.initialize('), 'reklam istenemiyorsa başlatma yok');
   assert.match(govde, /isAdFree\(\)/, 'üyede başlatma yok');
+  // iPhone: izleme izni (ATT) UMP'den sonra, initialize'dan önce; kimlikler platforma göre
+  assert.ok(govde.indexOf('canRequestAds') < govde.indexOf('izlemeIzni(ad)') && govde.indexOf('izlemeIzni(ad)') < govde.indexOf('ad.initialize('), 'ATT sırası');
+  assert.match(r, /if \(status === 'notDetermined'\) await ad\.requestTrackingAuthorization\(\)/);
+  assert.match(r, /REKLAM_KIMLIK\[isIOS \? 'ios' : 'android'\]/);
+  assert.doesNotMatch(r, /REKLAM_KIMLIK\.(banner|gecis)/);
 });

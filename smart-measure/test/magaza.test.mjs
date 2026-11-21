@@ -24,7 +24,7 @@ test('paket adı ve sürüm: play.mjs, build.gradle, capacitor.config.json, pack
   assert.equal(play.PAKET, 'com.poyrazworkshop.smartmeasure');
   const g = fs.readFileSync(path.join(SM, 'android', 'app', 'build.gradle'), 'utf8');
   assert.match(g, /applicationId "com\.poyrazworkshop\.smartmeasure"/);
-  assert.deepEqual(play.surumBilgisi(g), { versionCode: 1, versionName: '1.0.0' });
+  assert.deepEqual(play.surumBilgisi(g), { versionCode: 2, versionName: '1.0.0' });   // 1 Play'de ilk taslakta kaldı (14 Kasım 2026)
   assert.equal(JSON.parse(fs.readFileSync(path.join(SM, 'capacitor.config.json'), 'utf8')).appId, play.PAKET);
   assert.equal(JSON.parse(fs.readFileSync(path.join(SM, 'package.json'), 'utf8')).version, '1.0.0');
   const v = fs.readFileSync(path.join(SM, 'android', 'variables.gradle'), 'utf8');
@@ -34,7 +34,7 @@ test('paket adı ve sürüm: play.mjs, build.gradle, capacitor.config.json, pack
 test('mağaza metinleri Play sınırlarında; tr-TR ve en-US; ad kuralları; reklam ve doğruluk açıkça yazılı', () => {
   const m = play.magazaMetinleri(fs.readFileSync(path.join(MAGAZA, 'aciklamalar.md'), 'utf8'), play.dilDosyalari(MAGAZA));
   assert.deepEqual(Object.keys(m.listings), ['tr-TR', 'en-US']);
-  assert.equal(m.details.contactEmail, 'mahmuttari@gmail.com');
+  assert.equal(m.details.contactEmail, 'info@marfen.com.tr');
   assert.equal(m.details.contactWebsite, 'https://mahmuttari.github.io/Lispler/smart-measure/');
   for (const [dil, l] of Object.entries(m.listings)) {
     assert.ok(l.title.length <= 30 && l.shortDescription.length <= 80 && l.fullDescription.length <= 4000, dil);
@@ -62,7 +62,7 @@ test('gizlilik ve tanıtım sayfası: AdMob, UMP, Play Faturalandırma, kamera, 
   assert.match(md, /Gizlilik politikası:\*\* https:\/\/mahmuttari\.github\.io\/Lispler\/smart-measure\/gizlilik\.html/);
   const g = fs.readFileSync(path.join(SM, '..', 'app', 'smart-measure', 'gizlilik.html'), 'utf8');
   for (const s of ['Gizlilik Politikası', 'AdMob', 'Reklam gizlilik seçenekleri', 'Google Play Faturalandırma', 'Kamera:', 'Mikrofon:',
-    'kaydedilmez', 'Tüm verileri sil', 'Privacy Policy (English)', 'mahmuttari@gmail.com', 'Poyraz Workshop']) assert.ok(g.includes(s), s);
+    'kaydedilmez', 'Tüm verileri sil', 'Privacy Policy (English)', 'info@marfen.com.tr', 'MARFEN', 'iPhone', 'App Tracking Transparency', 'App Store']) assert.ok(g.includes(s), s);
   assert.ok(fs.existsSync(path.join(SM, '..', 'app', 'smart-measure', 'index.html')));
   const ic = png(path.join(SM, '..', 'app', 'smart-measure', 'icon-192.png'));
   assert.deepEqual([ic.w, ic.h], [192, 192]);

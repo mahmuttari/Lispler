@@ -98,7 +98,13 @@ function normalizeWord(w){
 
 const CATEGORY_LOOKUP = {};
 Object.keys(CATEGORY_WORDS).forEach(cat => {
-  CATEGORY_LOOKUP[cat] = new Set(CATEGORY_WORDS[cat].map(normalizeWord));
+  // 1.0.5: oyun klavyesinde tire yok; "e-posta" "e posta" ve "eposta" diye de bulunur
+  const set = new Set();
+  CATEGORY_WORDS[cat].map(normalizeWord).forEach(w => {
+    set.add(w);
+    if(w.includes("-")){ set.add(w.replace(/-/g, " ")); set.add(w.replace(/-/g, "")); }
+  });
+  CATEGORY_LOOKUP[cat] = set;
 });
 
 function isInCategory(category, word){
@@ -144,7 +150,8 @@ function getChainNextLetter(wordsObj){
   if(!wordsObj) return null;
   const arr = Object.values(wordsObj).filter(w => w && w.valid === true);
   if(arr.length === 0) return null;
-  arr.sort((a,b) => (b.ts||0) - (a.ts||0));
+  // 1.0.1: aynı zaman damgasında iki istemci aynı sırayı görsün (kelimeye göre ikincil sıralama)
+  arr.sort((a,b) => ((b.ts||0) - (a.ts||0)) || String(a.text).localeCompare(String(b.text), "tr"));
   return chainLetterFor(arr[0].text);
 }
 function isWordInLocalDict(word){
@@ -159,7 +166,9 @@ function isWordInLocalDict(word){
 const KELIME_EN_UZUN = 30;
 function kelimeBicimiGecerli(raw){
   const s = String(raw == null ? "" : raw).trim();
-  return s.length >= 2 && s.length <= KELIME_EN_UZUN && /^[a-zA-ZçğıöşüâîûÇĞİÖŞÜÂÎÛ\s-]+$/.test(s);
+  // 1.0.1: en az iki harf şart (yalnız tire ve boşluktan oluşan "- -" geçiyordu)
+  return s.length >= 2 && s.length <= KELIME_EN_UZUN && /^[a-zA-ZçğıöşüâîûÇĞİÖŞÜÂÎÛ\s-]+$/.test(s)
+    && (s.match(/[a-zA-ZçğıöşüâîûÇĞİÖŞÜÂÎÛ]/g) || []).length >= 2;
 }
 
 /* Kullanıcı adı: 3–14 küçük harf/rakam (veritabanı kuralı da aynısını ister: firebase/database.rules.json) */

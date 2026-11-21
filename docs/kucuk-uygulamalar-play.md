@@ -96,8 +96,8 @@ kimlikleriyle derlendi" uyarısı **olmamalı**). Her koşunun **Artifacts** bö
 ### 2. Play Console: dört uygulamayı oluştur
 **Ölçü Kutusu MARFEN hesabında oluşturulur (30 Ekim 2026):** kullanıcı Hayalet ve Kıble Bul dışındaki Poyraz Workshop uygulamalarını
 MARFEN hesabına taşımaya karar verdi ([`marfen-hesap-aktarim.md`](marfen-hesap-aktarim.md)). Play'de henüz olmayan
-Ölçü Kutusu aktarılmaz. Aşağıdaki adımlar onun için **MARFEN** hesabında, hesap kuruluşa çevrildikten en az 72 saat
-sonra yapılır. 4. adımdaki hizmet hesabı izni de MARFEN hesabında verilir. Unitica ve Calqora Poyraz Workshop'ta
+Ölçü Kutusu aktarılmaz. Aşağıdaki adımlar onun için **MARFEN** hesabında yapılır (MARFEN kuruluş hesabına geçti;
+bekleme süresi yok, kapalı test şartı yok). 4. adımdaki hizmet hesabı izni de MARFEN hesabında verilir. Unitica ve Calqora Poyraz Workshop'ta
 oluşturuldu ve sonra aktarılır; Kıble Bul Poyraz Workshop'ta kalır.
 
 **Smart Measure'ın mağaza adı Ölçü Kutusu oldu (28 Ekim 2026):** Play'de "Smart Measure" adında, aynı yöntemle

@@ -1,6 +1,6 @@
 // Kelime Bilcek — uçtan uca akış: gerçek www/ kodu + sıkı kurallar, Firebase emülatöründe (Auth + Realtime Database).
 // İki tarayıcı sayfası (Ali, Ayşe) anonim girişle (emülatör) oynar: kullanıcı adı, arkadaş ekleme, hızlı eşleşme
-// (Zincir), kelime yazma, terk, sonuç, Şampiyonlar, biten odanın silinmesi, hesap silme.
+// (Zincir), oyunun klavyesiyle kelime yazma (1.0.5), terk, sonuç, Şampiyonlar, biten odanın silinmesi, hesap silme.
 // Çalıştırma: kelime-bilcek/firebase içinde `npm run test:akis` (emulators:exec database,auth). Google ile giriş
 // emülatörde yapılamadığı için oturum signInAnonymously ile açılır; hesap silmedeki yeniden doğrulama taklit edilir.
 import { test, before, after } from 'node:test';
@@ -35,12 +35,13 @@ async function oyuncu(ad) {
   // Kuralın reddettiği her yazım/okuma konsolda "permission_denied" olarak görünür; hiçbiri olmamalı
   s.on('console', (m) => { if (/permission[_ ]denied/i.test(m.text())) hatalar.push(`${ad}: ${m.text().slice(0, 200)}`); });
   await s.route((u) => !u.href.startsWith(`http://127.0.0.1:${sunucu.address().port}/`) && !u.href.includes(RTDB) && !u.href.includes(AUTH), (r) => r.abort());
-  // Firebase'i emülatöre yönelt: oyun.js'teki initializeApp satırı değiştirilir (dosya diskte değişmez)
+  // Firebase'i emülatöre yönelt: oyun.js'teki initializeApp satırı değiştirilir (dosya diskte değişmez).
+  // 1.0.5: emülatörün altta sabit uyarı şeridi kapatılır; yoksa ekranın altındaki oyun klavyesinin üstüne biner.
   await s.route('**/oyun.js', async (r) => {
     let js = fs.readFileSync(path.join(WWW, 'oyun.js'), 'utf8');
     js = js.replace('firebase.initializeApp(firebaseConfig);',
       `firebaseConfig.projectId = "demo-kelime-bilcek"; firebaseConfig.databaseURL = "https://${NS}.europe-west1.firebasedatabase.app";
-       firebase.initializeApp(firebaseConfig); firebase.auth().useEmulator("http://${AUTH}"); firebase.database().useEmulator("${RTDB.split(':')[0]}", ${RTDB.split(':')[1]});`);
+       firebase.initializeApp(firebaseConfig); firebase.auth().useEmulator("http://${AUTH}", { disableWarnings: true }); firebase.database().useEmulator("${RTDB.split(':')[0]}", ${RTDB.split(':')[1]});`);
     await r.fulfill({ status: 200, contentType: 'text/javascript', body: js });
   });
   await s.goto(`http://127.0.0.1:${sunucu.address().port}/index.html`);
@@ -100,10 +101,12 @@ test('hızlı eşleşme (Zincir): iki oyuncu aynı odada oynar, terk, sonuç ve 
   const sira = await ali.evaluate(() => (currentRoundData.turn === mySlot ? 'ali' : 'ayse'));
   const ilk = sira === 'ali' ? ali : ayse;
   const ikinci = sira === 'ali' ? ayse : ali;
-  await ilk.fill('#wordInput', 'elma');
+  // 1.0.5: kelime kutusu salt okunur; oyunun klavyesinden yazılır
+  const tusla = async (s, k) => { for (const h of k) await s.click(`#klavye [data-tus="${h}"]`); };
+  await tusla(ilk, 'elma');
   await ilk.click('#sendBtn');
   await ikinci.waitForFunction(() => currentRoundData && currentRoundData.turn === mySlot, null, { timeout: 10000 });
-  await ikinci.fill('#wordInput', 'armut');
+  await tusla(ikinci, 'armut');
   await ikinci.click('#sendBtn');
   await ilk.waitForFunction(() => Object.keys(currentRoundData.words || {}).length === 2, null, { timeout: 10000 });
   const odaId = await ali.evaluate(() => roomId);

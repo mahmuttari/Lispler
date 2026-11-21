@@ -3,6 +3,9 @@
 // ve EN koyu tema 340 px; ayrıca tersleri. Her ekran iki ortamda açılır:
 //   yalın   eklentisiz masaüstü tarayıcı: sensör, kamera, mikrofon yok → "sensör yok / izin" durumları
 //   sahte   araclar/sahte-cihaz.mjs: sensörler, sahte kamera, mikrofon düzeyi
+//   iphone  aynı sahte cihaz, platform 'ios' (yalnız TR açık 390 ve EN koyu 340): ekranda Google Play / ARCore / AndroidX ve
+//           ışık ölçer yok (iOS ortam ışığı sensörünü açmaz);
+//           abonelik sayfasında App Store fiyatları, Apple'ın yenileme koşulları (24 saat), gizlilik ve EULA bağlantıları
 // Her ekranda alt sayfalar ve menüler de açılır. Aranan: sayfa hatası, konsol hatası/uyarısı, yatay taşma, ekranda
 // çevrilmemiş anahtar (ör. "lv_state_level"), "undefined" / "null" / "NaN" metni.
 //
@@ -50,10 +53,11 @@ let ekranSayisi = 0;
 const tarayici = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
 try {
   for (const g of GORUNUMLER) {
-    for (const ortam of ['yalin', 'sahte']) {
+    const ortamlar = ['yalin', 'sahte', ...(g.w === 390 && g.dil === 'tr' || g.w === 340 && g.dil === 'en' ? ['iphone'] : [])];
+    for (const ortam of ortamlar) {
       const b = await tarayici.newContext({ viewport: { width: g.w, height: 760 }, colorScheme: g.tema, locale: g.dil === 'tr' ? 'tr-TR' : 'en-US' });
-      if (ortam === 'sahte') await b.addInitScript(sahteCihaz, {});
-      const depo = ortam === 'sahte' ? ornekDepo(g.dil, g.tema) : { settings: { theme: g.tema, language: g.dil, units: 'metric', cameraHeight: null } };
+      if (ortam !== 'yalin') await b.addInitScript(sahteCihaz, ortam === 'iphone' ? { platform: 'ios' } : {});
+      const depo = ortam !== 'yalin' ? ornekDepo(g.dil, g.tema) : { settings: { theme: g.tema, language: g.dil, units: 'metric', cameraHeight: null } };
       await b.addInitScript((d) => { if (!sessionStorage.getItem('kuruldu')) { localStorage.setItem('smartmeasure.v1', d); sessionStorage.setItem('kuruldu', '1'); } }, JSON.stringify(depo));
       const p = await b.newPage();
       let yer = '';
@@ -76,12 +80,24 @@ try {
         if (r.genis.length) sorunlar.push(`${ad}: ekrandan taşan öğe ${r.genis.join(', ')}`);
         if (r.anahtar.length) sorunlar.push(`${ad}: çevrilmemiş anahtar ${[...new Set(r.anahtar)].join(', ')}`);
         if (r.bos.length) sorunlar.push(`${ad}: ${[...new Set(r.bos)].join(', ')} metni`);
+        if (ortam === 'iphone') {
+          const m = await p.evaluate(() => document.body.innerText);
+          const yasak = /Google[ -]?Play|ARCore|AndroidX|Light meter|Light sensor|Illuminance|Işık [Öö]lçer|Işık sensörü|Aydınlanma|\blux\b|\blüks\b/;
+          if (yasak.test(m)) sorunlar.push(`${ad}: iPhone'da gösterilmemesi gereken metin: ${m.match(yasak)[0]}`);
+        }
       };
       for (const [rota, katmanlar] of ROTALAR) {
         yer = `${g.dil}/${g.tema}/${g.w}/${ortam}/${rota}`;
         await p.goto(`${ADRES}#/${rota}`);
         await p.waitForTimeout(rota.startsWith('home') || rota.startsWith('level') || rota.startsWith('ar') || rota.startsWith('sensors') ? 2900 : 500);
         await denetle(yer);
+        if (ortam === 'iphone' && rota === 'premium') {
+          const d = await p.evaluate(() => ({ m: document.body.innerText, bag: document.querySelectorAll('.legal-links .btn').length }));
+          if (!/249,99/.test(d.m)) sorunlar.push(`${yer}: App Store fiyatı yok`);
+          if (!/24/.test(d.m) || !/Apple/.test(d.m)) sorunlar.push(`${yer}: Apple'ın yenileme koşulları yok`);
+          if (d.bag !== 2) sorunlar.push(`${yer}: gizlilik ve EULA bağlantıları ${d.bag}`);
+          await p.screenshot({ path: path.join(process.env.EKRAN || '/tmp', `smartmeasure-ios-${g.dil}.png`), fullPage: true }).catch(() => {});
+        }
         for (const [rol, ad] of katmanlar) {
           const dugme = p.getByRole(rol, { name: ad[g.dil], exact: true }).first();
           if (!(await dugme.count())) { sorunlar.push(`${yer}: düğme yok "${ad[g.dil]}"`); continue; }
@@ -105,4 +121,4 @@ if (sorunlar.length) {
   console.log(`\n${sorunlar.length} sorun (${ekranSayisi} görünüm)`);
   process.exit(1);
 }
-console.log(`TAMAM: ${ekranSayisi} görünüm (2 dil × 4 görünüm × 2 ortam), hata yok, taşma yok, çevrilmemiş anahtar yok`);
+console.log(`TAMAM: ${ekranSayisi} görünüm (2 dil × 4 görünüm × 2 ortam + iPhone 2 görünüm), hata yok, taşma yok, çevrilmemiş anahtar yok`);

@@ -110,6 +110,7 @@ export default {
     "p.b1": "No ads on any screen",
     "p.b2": "Supports further development",
     "p.b3": "Cancel at any time in Google Play",
+    "p.b3.ios": "Cancel at any time in your App Store settings",
     "p.monthly": "Monthly",
     "p.yearly": "Yearly",
     "p.perMonth": "{0} / month",
@@ -123,7 +124,10 @@ export default {
     "p.thanks": "Thank you for your support!",
     "p.loading": "Loading prices…",
     "p.unavailable": "Google Play is not available on this device, so a subscription cannot be started here.",
+    "p.unavailable.ios": "The App Store is not available on this device, so a subscription cannot be started here.",
     "p.terms": "Payment is charged to your Google Play account. The subscription renews automatically at the price shown until you cancel it in Google Play. You can cancel at any time.",
+    "p.terms.ios": "Payment is charged to your Apple Account when you confirm the purchase. The subscription renews automatically at the price shown unless it is cancelled at least 24 hours before the end of the current period; the renewal is charged within the last 24 hours of the period. You can manage or cancel it in your App Store account settings after purchase.",
+    "p.eula": "Terms of Use (EULA)",
     "p.cancelled": "Purchase cancelled",
     "p.failed": "The purchase could not be completed",
     "p.restored": "Membership restored",
@@ -141,6 +145,7 @@ export default {
     "s.privacy": "Privacy policy",
     "s.privacyOpen": "View",
     "p.noPrices": "Prices could not be loaded from Google Play. Check your connection and try again.",
+    "p.noPrices.ios": "Prices could not be loaded from the App Store. Check your connection and try again.",
   },
   // category names
   cats: {

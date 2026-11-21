@@ -3,6 +3,7 @@
 //   cat    names of the 26 categories (Turkish and English come from units.js)
 //   atoms  the vocabulary of the unit names, see names.js (Turkish and English names come from units.js)
 //   dir    'ltr' | 'rtl'        decimal  the decimal mark a new user starts with
+// On the iPhone a key with an ".ios" twin (member.terms.ios ...) shows the twin: the App Store texts instead of the Google Play ones.
 import tr from './lang/tr.js';
 import en from './lang/en.js';
 import de from './lang/de.js';
@@ -16,6 +17,7 @@ import it from './lang/it.js';
 import ko from './lang/ko.js';
 import { compose } from './names.js';
 import { foldText } from './units.js';
+import { isIOS } from './native.js';
 
 const PACKS = { tr, en, de, fr, es, pt, ru, ja, ar, it, ko };
 
@@ -53,7 +55,8 @@ export function deviceLang() {
 
 /** t('card.title', { cat: 'Uzunluk' }) */
 export function t(key, vars) {
-  let s = PACKS[lang].text[key];
+  let s = isIOS ? PACKS[lang].text[key + '.ios'] : undefined;
+  if (s === undefined) s = PACKS[lang].text[key];
   if (s === undefined) s = en.text[key];
   if (s === undefined) return key;
   return vars ? s.replace(/\{(\w+)\}/g, (_, k) => (vars[k] === undefined ? '' : vars[k])) : s;

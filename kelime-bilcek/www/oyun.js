@@ -148,18 +148,45 @@ async function aiValidateWord(category, word){
 }
 
 /* Birleşik validator: yerel pre-check → AI → TDK fallback */
+/* 1.0.2: cihaz önbelleği — bu cihazda denetlenmiş kelime yeniden sorulmaz (en çok 1500 kayıt, localStorage).
+   Yalnız kesin sonuçlar yazılır (yapay zekâ evet/hayır ya da TDK evet); bağlantı hatası yazılmaz. */
+const DENETIM_ONBELLEK_ANAHTARI = "kb_denetim_v1";
+const DENETIM_ONBELLEK_EN_COK = 1500;
+function denetimOnbellegi(){
+  try{ const o = JSON.parse(localStorage.getItem(DENETIM_ONBELLEK_ANAHTARI) || "{}"); return (o && typeof o === "object") ? o : {}; }
+  catch(e){ return {}; }
+}
+function denetimAnahtari(category, word){ return (category || "zincir") + "|" + normalizeWord(word); }
+function denetimOku(category, word){
+  const v = denetimOnbellegi()[denetimAnahtari(category, word)];
+  return typeof v === "boolean" ? v : null;
+}
+function denetimYaz(category, word, sonuc){
+  try{
+    const o = denetimOnbellegi();
+    o[denetimAnahtari(category, word)] = !!sonuc;
+    const anahtarlar = Object.keys(o);
+    for(let i = 0; i < anahtarlar.length - DENETIM_ONBELLEK_EN_COK; i++) delete o[anahtarlar[i]];
+    localStorage.setItem(DENETIM_ONBELLEK_ANAHTARI, JSON.stringify(o));
+  }catch(e){ /* depolama yoksa önbelleksiz devam */ }
+}
+
 async function validateWordSmart(category, word){
   // 1. Yerel hızlı kontrol
   const pre = localCategoryPreCheck(category, word);
   if(pre === true){ return true; }
   if(pre === false){ return false; }
-  // 2. AI
+  // 2. Bu cihazın önbelleği (1.0.2)
+  const onceki = denetimOku(category, word);
+  if(onceki !== null) return onceki;
+  // 3. AI
   const ai = await aiValidateWord(category, word);
-  if(ai === true) return true;
+  if(ai === true){ denetimYaz(category, word, true); return true; }
   // Kategori varsa AI otoritedir (HAYIR dediyse reddet)
   // Zincir modunda (kategori yok) cömert davran: AI HAYIR dese bile TDK'ya bak
-  if(category && ai === false) return false;
+  if(category && ai === false){ denetimYaz(category, word, false); return false; }
   const tdk = await isValidTurkishWord(word);
+  if(tdk === true || (tdk === false && ai === false)) denetimYaz(category, word, tdk === true);
   return tdk === true;
 }
 
@@ -216,7 +243,7 @@ function makeMatchInit(cats, mode){
   return { mode: mode || "sim", totalRounds: totalR, p1Wins: 0, p2Wins: 0, ties: 0, completedRounds: [], categories: cats };
 }
 function makeRound1(cats, mode){
-  const r = { number: 1, category: (mode === "chain" ? null : cats[0]), phase: "thinking", phaseStartTime: Date.now(), words: {} };
+  const r = { number: 1, category: (mode === "chain" ? null : cats[0]), phase: "thinking", phaseStartTime: nowServer(), words: {} };
   if(mode === "duel" || mode === "chain"){
     r.turn = Math.random() < 0.5 ? "p1" : "p2";
     r.turnStart = null;
@@ -353,6 +380,7 @@ let currentMatchData = null;
 let phaseTickInterval = null;
 let pendingPhaseAdvance = false;
 let selectedMode = "sim"; // "sim" veya "duel"
+let sonMac = null; // 1.0.6: son biten maç {kazandi, ben, rakip} — paylaşım metni ve değerlendirme penceresi
 let serverTimeOffset = 0;  // Firebase server clock - client clock farkı (ms)
 function nowServer(){ return Date.now() + serverTimeOffset; }
 const TOTAL_ROUNDS_SIM = 10;
@@ -366,7 +394,7 @@ const ENDED_MS = 5000;
 
 /* ===== DOM kısayolları ===== */
 const $ = id => document.getElementById(id);
-const SCREENS = ["loadingScreen","authScreen","usernameScreen","lobbyScreen","roomCodeScreen","friendsScreen","addFriendScreen","searchingScreen","inviteSentScreen","waitingScreen","gameScreen","endScreen","leaderboardScreen","categoriesScreen"];
+const SCREENS = ["loadingScreen","authScreen","usernameScreen","lobbyScreen","roomCodeScreen","friendsScreen","addFriendScreen","searchingScreen","inviteSentScreen","waitingScreen","gameScreen","endScreen","leaderboardScreen","categoriesScreen","botScreen"];
 
 function show(id){
   SCREENS.forEach(s => { const el=$(s); if(el) el.classList.add("hidden"); });
@@ -486,6 +514,10 @@ function detachAllListeners(){
       if(friendsListener) db.ref(`users/${myUid}/friends`).off("value", friendsListener);
       // v4.11 dinleyiciyi kapatmak yerine çağırıyordu; arkadaşların çevrimiçi dinleyicileri açık kalıyordu (K-09)
       Object.entries(friendsOnlineListeners || {}).forEach(([uid, fn]) => { try{ db.ref(`users/${uid}/online`).off("value", fn); }catch(e){} });
+      // 1.0.1: eşleşme ararken çıkış yapılınca kuyruk dinleyicisi açık kalıyordu (K-22)
+      if(inMatchmaking) db.ref(`matchmaking/queue/${myUid}`).remove().catch(()=>{});
+      inMatchmaking = false;
+      detachQueue();
       db.ref(`users/${myUid}/online`).set(false).catch(()=>{});
     }
   }catch(e){ console.warn("detachAllListeners:", e.message); }
@@ -496,7 +528,7 @@ function detachAllListeners(){
 /* Biten maçın odası silinir (v4.11'de odalar veritabanında sonsuza kadar kalıyordu: kullanıcı adları ve yazılan
    kelimeler dahil; DENETIM.md › K-10). İki oyuncudan önce dönen siler; öteki için silme zararsızdır. */
 function odayiTemizle(ref){
-  if(!ref || !myUid) return;
+  if(!ref || !myUid || ref instanceof YerelOda) return; // bot odası bellekte: silinecek kayıt yok
   const rid = ref.key;
   ref.once("value").then(s => {
     const c = s.val();
@@ -597,8 +629,10 @@ $("soundToggleBtn").addEventListener("click", () => {
 $("usernameBack").addEventListener("click", resetUsernameScreen);
 
 function updateSoundToggleBtn(){
-  const btn = $("soundToggleBtn");
-  if(btn) btn.textContent = soundEnabled ? "🔊 Sesler: Açık" : "🔇 Sesler: Kapalı";
+  // 1.0.3: düğme SVG simge + metin taşır; yalnız metin ve simge değişir
+  const yazi = $("soundToggleText"), ikon = $("soundIkon");
+  if(yazi) yazi.textContent = soundEnabled ? "Sesler: Açık" : "Sesler: Kapalı";
+  if(ikon) ikon.setAttribute("href", soundEnabled ? "#i-volume-2" : "#i-volume-x");
 }
 updateSoundToggleBtn();
 // Overlay arkaplanına tıklayınca kapansın
@@ -702,7 +736,7 @@ function onLoggedIn(){
   inviteListener = db.ref(`users/${myUid}/invite`).on("value", snap => {
     const inv = snap.val();
     if(!inv) { hideInvitePopup(); return; }
-    if(Date.now() - inv.ts > INVITE_EXPIRE_MS){
+    if(nowServer() - inv.ts > INVITE_EXPIRE_MS){
       // Süresi geçmiş, sil
       db.ref(`users/${myUid}/invite`).remove();
       return;
@@ -734,6 +768,11 @@ function onLoggedIn(){
    LOBBY NAVIGATION
    ============================================================ */
 $("quickMatchBtn").addEventListener("click", startQuickMatch);
+$("botBtn").addEventListener("click", () => {
+  $("botModAdi").textContent = { sim: "Hızlı", duel: "Sıra Beklicek", chain: "Zincir" }[selectedMode] || "Hızlı";
+  show("botScreen");
+});
+document.querySelectorAll(".bot-zorluk").forEach(b => b.addEventListener("click", () => startBotMatch(b.dataset.zorluk)));
 $("friendsBtn").addEventListener("click", () => show("friendsScreen"));
 $("roomCodeBtn").addEventListener("click", () => show("roomCodeScreen"));
 $("categoriesBtn").addEventListener("click", openCategoriesScreen);
@@ -832,24 +871,26 @@ $("leaveWaitBtn").addEventListener("click", leaveAndReset);
 $("leaveBtn").addEventListener("click", forfeitGame);
 $("againBtn").addEventListener("click", async () => {
   const bitenOda = roomRef;
+  const mac = sonMac; sonMac = null;
   resetGameState();
   show("lobbyScreen");
   odayiTemizle(bitenOda);
-  await reklamLobiyeDonus(); // maç bitti: kurallar uygunsa geçiş reklamı (reklam.js)
+  const reklamGosterildi = await reklamLobiyeDonus(); // maç bitti: kurallar uygunsa geçiş reklamı (reklam.js)
+  // 1.0.6: reklam gösterilmediyse ve maç kazanıldıysa, kurallar uygunsa Play'in değerlendirme penceresi (tanitim.js)
+  if(!reklamGosterildi) await degerlendirmeIste(!!(mac && mac.kazandi));
 });
+// 1.0.6: arkadaşını davet et (lobi) ve maç sonunda meydan oku (tanitim.js)
+async function paylasDugmesi(skor){
+  const sonuc = await oyunuPaylas(skor);
+  if(sonuc === "kopyalandi") showToast("Bağlantı kopyalandı, arkadaşına gönder", true);
+}
+$("shareBtn").addEventListener("click", () => paylasDugmesi());
+$("endShareBtn").addEventListener("click", () => paylasDugmesi(sonMac && sonMac.kazandi ? sonMac : null));
 $("sendBtn").addEventListener("click", submitWord);
-$("wordInput").addEventListener("keydown", e => { if(e.key==="Enter") submitWord(); });
+klavyeKur(submitWord); // 1.0.5: oyunun kendi klavyesi (klavye.js); Enter ve fiziksel klavye de oradan
 $("acceptInviteBtn").addEventListener("click", acceptInvite);
 $("declineInviteBtn").addEventListener("click", declineInvite);
 
-// Chat'e tıklayınca input'a focus (klavyeyi yeniden açar — bu user gesture içinde olduğu için Android'de çalışır)
-$("wordsChat").addEventListener("click", () => {
-  if(!currentRoundData || currentRoundData.phase !== "active") return;
-  const w = $("wordInput");
-  if(w && !w.disabled){
-    try{ w.focus(); }catch(e){}
-  }
-});
 
 document.querySelectorAll("[data-back]").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -879,10 +920,16 @@ function attachFriends(){
 function renderFriends(){
   const list = $("friendsList");
   const uids = Object.keys(friendsData);
+  // 1.0.1: listeden çıkan arkadaşın çevrimiçi dinleyicisi kapatılır (önceden açık kalıyordu; K-22)
+  Object.keys(friendsOnlineListeners).forEach(uid => {
+    if(friendsData[uid]) return;
+    try{ db.ref(`users/${uid}/online`).off("value", friendsOnlineListeners[uid]); }catch(e){}
+    delete friendsOnlineListeners[uid];
+  });
   $("friendsCount").textContent = uids.length;
   $("friendsCount").classList.toggle("hidden", uids.length === 0);
   if(uids.length === 0){
-    list.innerHTML = '<div class="empty">Henüz arkadaşın yok.<br>"+ Arkadaş Ekle" ile başla.</div>';
+    list.innerHTML = '<div class="empty">Henüz arkadaşın yok.<br>"Arkadaş Ekle" ile başla.</div>';
     return;
   }
   list.innerHTML = "";
@@ -895,8 +942,8 @@ function renderFriends(){
       <span class="dot"></span>
       <span class="nm">${escapeHtml(name)}</span>
       <span class="actions">
-        <button class="btn small success" data-act="invite" data-uid="${uid}" data-name="${escapeHtml(name)}">Davet</button>
-        <button class="btn small danger" data-act="remove" data-uid="${uid}" data-name="${escapeHtml(name)}">✕</button>
+        <button type="button" class="btn small success" data-act="invite" data-uid="${uid}" data-name="${escapeHtml(name)}"><svg class="ikon" aria-hidden="true"><use href="#i-gamepad-2"/></svg>Davet</button>
+        <button type="button" class="btn small secondary ikon-dugme" data-act="remove" data-uid="${uid}" data-name="${escapeHtml(name)}" aria-label="${escapeHtml(name)} arkadaşlıktan çıkar"><svg class="ikon" aria-hidden="true"><use href="#i-x"/></svg></button>
       </span>`;
     list.appendChild(row);
     // Online status dinle
@@ -995,7 +1042,7 @@ async function inviteFriend(friendUid, friendName){
       from: myUid,
       fromName: myName,
       roomId: newRoomId,
-      ts: Date.now()
+      ts: nowServer()
     });
     pendingInviteRoomId = newRoomId;
     pendingInviteToUid = friendUid;
@@ -1065,7 +1112,7 @@ async function acceptInvite(){
   try{
     // Odaya p2 olarak gir + oyunu başlat
     const ref = db.ref(`rooms/${inv.roomId}`);
-    const fromUid = inv.fromUid || (await ref.child("p1/uid").once("value")).val();
+    const fromUid = inv.from || (await ref.child("p1/uid").once("value")).val();
     const pool = fromUid ? await buildMatchPool(myUid, fromUid) : null;
     const result = await ref.transaction(c => {
       if(!c) return;
@@ -1120,7 +1167,7 @@ async function startQuickMatch(){
   // Kuyruğa gir (mod bilgisi de eklenir — sadece aynı modda olanlar eşleşir)
   const myEntry = db.ref(`matchmaking/queue/${myUid}`);
   try{
-    await myEntry.set({ name: myName, ts: Date.now(), mode: selectedMode });
+    await myEntry.set({ name: myName, ts: nowServer(), mode: selectedMode });
     myEntry.onDisconnect().remove();
   }catch(e){
     console.error(e); showToast("Sıraya girilemedi"); show("lobbyScreen");
@@ -1128,14 +1175,18 @@ async function startQuickMatch(){
     return;
   }
 
-  // Birini bul ve odamı oluştur, diğerini joinRoom ile çağır
+  // Birini bul ve odamı oluştur, diğerini joinRoom ile çağır.
+  // 1.0.1: aynı anda tek deneme. Kuyruktaki her değişiklik tryMatch'i yeniden başlatıyordu; önceki deneme bitmeden
+  // ikincisi başka bir rakibi daha alıp ikinci bir oda kurabiliyordu (DENETIM.md › K-20).
+  let eslesiyor = false;
   const tryMatch = async () => {
-    if(!inMatchmaking) return;
+    if(!inMatchmaking || eslesiyor) return;
+    eslesiyor = true;
     try{
       const snap = await db.ref("matchmaking/queue").once("value");
       const queue = snap.val() || {};
       const candidates = Object.entries(queue)
-        .filter(([uid, d]) => uid !== myUid && d && d.mode === selectedMode && (Date.now() - d.ts < QUEUE_STALE_MS))
+        .filter(([uid, d]) => uid !== myUid && d && d.mode === selectedMode && (nowServer() - d.ts < QUEUE_STALE_MS))
         .sort((a,b) => a[1].ts - b[1].ts);
       if(candidates.length === 0){ return; } // aynı modda kimse yok
       const [otherUid, otherData] = candidates[0];
@@ -1177,14 +1228,32 @@ async function startQuickMatch(){
       joinRoomById(newRoomId);
     }catch(e){
       console.error("match err", e);
+    }finally{
+      eslesiyor = false;
     }
+  };
+
+  // 1.0.1: rakibim kuyruk kaydımı aldı ama oda kuramadıysa (ağ hatası) arama ekranında sonsuza kadar kalıyordum.
+  // Kaydım 8 sn kuyrukta yoksa ve odaya çağrılmadıysam yeniden sıraya girerim (K-21).
+  let kayipZamanlayici = null;
+  const kaydimiDenetle = (queue) => {
+    if(!inMatchmaking){ clearTimeout(kayipZamanlayici); kayipZamanlayici = null; return; }
+    if(queue && queue[myUid]){ clearTimeout(kayipZamanlayici); kayipZamanlayici = null; return; }
+    if(kayipZamanlayici) return;
+    kayipZamanlayici = setTimeout(() => {
+      kayipZamanlayici = null;
+      if(!inMatchmaking) return;
+      myEntry.set({ name: myName, ts: nowServer(), mode: selectedMode }).catch(()=>{});
+    }, 8000);
   };
 
   // Hemen bir dene + her kuyruk değişiminde tekrar dene
   setTimeout(tryMatch, 600);
   if(queueListener) db.ref("matchmaking/queue").off("value", queueListener);
-  queueListener = db.ref("matchmaking/queue").on("value", () => {
-    if(inMatchmaking) tryMatch();
+  queueListener = db.ref("matchmaking/queue").on("value", snap => {
+    if(!inMatchmaking) return;
+    kaydimiDenetle(snap.val());
+    tryMatch();
   });
 }
 
@@ -1197,6 +1266,36 @@ async function cancelQuickMatch(){
   detachQueue();
   try{ await db.ref(`matchmaking/queue/${myUid}`).remove(); }catch(e){}
   show("lobbyScreen");
+}
+
+/* ============================================================
+   YAPAY ZEKÂYA KARŞI (1.0.2): oda bellekte (YerelOda), rakip bot.js
+   ============================================================ */
+function botOdasiMi(){ return !!(roomRef && typeof YerelOda !== "undefined" && roomRef instanceof YerelOda); }
+
+async function startBotMatch(zorluk){
+  if(!myUid || roomRef) return;
+  const mode = selectedMode;
+  // Kategori tercihleri Firebase'den; bağlantı yoksa okuma hiç bitmeyebilir: 2 sn sonra bütün kategorilerle başlanır
+  const prefs = mode === "chain" ? null
+    : await Promise.race([fetchCategoryPrefs(myUid), new Promise(r => setTimeout(() => r(null), 2000))]);
+  const pool = (prefs && prefs.length) ? prefs : CATEGORIES.slice();
+  const cats = pickMatchCategories(mode, pool);
+  const rid = "bot_" + Math.random().toString(36).slice(2, 10);
+  const veri = {
+    status: "playing",
+    p1: { uid: myUid, name: myName },
+    p2: { uid: "bilcek", name: BOT.ad[zorluk] || BOT.ad.orta },
+    mode, match: makeMatchInit(cats, mode), round: makeRound1(cats, mode),
+    createdAt: Date.now(), winner: null, reason: null
+  };
+  roomId = rid;
+  roomRef = new YerelOda(rid, veri);
+  mySlot = "p1";
+  await roomRef.child("round/phaseStartTime").set(SV.TIMESTAMP);
+  botBaslat(roomRef, zorluk);
+  subscribeRoom(); // önce abone ol: ilk çizimde rakip adı hazır olsun (renderRoom ekranı kendisi açar)
+  SFX.matchFound();
 }
 
 /* ============================================================
@@ -1286,7 +1385,7 @@ async function joinRoomById(rid){
    ============================================================ */
 function subscribeRoom(){
   // Katıldığım odaların listesi: hesap silinince bu odalar da silinir (hesabiSil)
-  if(myUid && roomId) db.ref(`users/${myUid}/odalar/${roomId}`).set(true).catch(()=>{});
+  if(myUid && roomId && !botOdasiMi()) db.ref(`users/${myUid}/odalar/${roomId}`).set(true).catch(()=>{});
   if(roomListener) roomRef.off("value", roomListener);
   roomListener = roomRef.on("value", snap => {
     const d = snap.val();
@@ -1367,14 +1466,14 @@ function renderRoom(d){
           wIn.disabled = false;
           sBtn.disabled = false;
           wIn.placeholder = mode === "chain" && nextL
-            ? "'" + nextL.toLocaleUpperCase("tr-TR") + "' ile başlayan kelime yaz..."
-            : "Kelimeyi yaz, Enter ile gönder...";
+            ? nextL.toLocaleUpperCase("tr-TR") + " ile başla…"
+            : "Kelimeyi yaz…";
         } else {
           const oppName = opp?.name || "rakip";
           text.textContent = "⏳ " + oppName + " yazıyor..." + (mode === "chain" ? letterHint : "");
           wIn.disabled = true;
           sBtn.disabled = true;
-          wIn.placeholder = oppName + " yazıyor, sıranı bekle...";
+          wIn.placeholder = "Sıranı bekle…";
           wIn.value = "";
         }
         // Chain modunda kelime sayısı göster (kim kaç kelime yazdı)
@@ -1392,7 +1491,7 @@ function renderRoom(d){
         text.textContent = "✍️ YAZ! YAZ! YAZ!";
         wIn.disabled = false;
         sBtn.disabled = false;
-        wIn.placeholder = "Kelimeyi yaz, Enter ile gönder...";
+        wIn.placeholder = "Kelimeyi yaz…";
         $("liveScores").classList.remove("hidden");
       }
     } else if(round.phase === "ended"){
@@ -1421,7 +1520,7 @@ function renderRoom(d){
     // Words (chat)
     const wordsObj = round.words || {};
     const words = Object.entries(wordsObj).map(([id, w]) => ({...w, id}))
-      .sort((a, b) => (a.ts || 0) - (b.ts || 0));
+      .sort((a, b) => ((a.ts || 0) - (b.ts || 0)) || (a.id < b.id ? -1 : 1));
 
     const chat = $("wordsChat");
     const oldCount = chat.childElementCount;
@@ -1482,14 +1581,17 @@ function renderRoom(d){
     else if(d.winner === "tie") SFX.message();
     else SFX.lose();
     // Stats kaydet (her oyuncu kendi sonucunu yazar)
-    recordMatchResult(d.winner, (d.match && d.match.mode) || "sim").catch(()=>{});
+    if(!botOdasiMi()) recordMatchResult(d.winner, (d.match && d.match.mode) || "sim").catch(()=>{}); // bot maçı sayılmaz
     reklamMacBitti();
+    tanitimMacBitti(); // 1.0.6: değerlendirme penceresi için biten maç sayısı
     show("endScreen");
     const me = mySlot === "p1" ? d.p1 : d.p2;
     const opp = mySlot === "p1" ? d.p2 : d.p1;
     const m = d.match || {};
     const meWins = mySlot === "p1" ? (m.p1Wins || 0) : (m.p2Wins || 0);
     const oppWins = mySlot === "p1" ? (m.p2Wins || 0) : (m.p1Wins || 0);
+    sonMac = { kazandi: d.winner === mySlot, ben: meWins, rakip: oppWins };
+    $("endShareText").textContent = sonMac.kazandi ? "Arkadaşına Meydan Oku" : "Arkadaşını Davet Et";
 
     const won = d.winner === mySlot;
     const tied = d.winner === "tie";
@@ -1592,10 +1694,10 @@ async function advanceToActive(){
     await roomRef.transaction(c => {
       if(!c || !c.round || c.round.phase !== "thinking") return c;
       c.round.phase = "active";
-      c.round.phaseStartTime = Date.now();
+      c.round.phaseStartTime = nowServer();
       const m = c.match && c.match.mode;
       if(m === "duel" || m === "chain"){
-        c.round.turnStart = Date.now();
+        c.round.turnStart = nowServer();
         needsTurnStart = true;
       }
       return c;
@@ -1644,7 +1746,7 @@ async function endRoundTurnTimeout(){
         if(winner === "p1") c.match.p1Wins = (c.match.p1Wins || 0) + 1;
         else if(winner === "p2") c.match.p2Wins = (c.match.p2Wins || 0) + 1;
         c.round.phase = "ended";
-        c.round.phaseStartTime = Date.now();
+        c.round.phaseStartTime = nowServer();
         c.round.roundWinner = winner;
         c.round.reason = "timeout";
         c.round.p1Score = p1Score;
@@ -1671,7 +1773,7 @@ async function switchTurn(){
       if(m !== "duel" && m !== "chain") return c;
       if(c.round.turn !== mySlot) return c;
       c.round.turn = mySlot === "p1" ? "p2" : "p1";
-      c.round.turnStart = Date.now();
+      c.round.turnStart = nowServer();
       return c;
     });
     try{ await roomRef.child("round/turnStart").set(SV.TIMESTAMP); }catch(e){}
@@ -1686,7 +1788,7 @@ async function endActiveRound(){
       // (sim mode için skor hesaplaması)
       const wordsObj = c.round.words || {};
       // Zaman sırasına göre işle, ilk yazan claim eder
-      const sortedKeys = Object.keys(wordsObj).sort((a, b) => (wordsObj[a].ts || 0) - (wordsObj[b].ts || 0));
+      const sortedKeys = Object.keys(wordsObj).sort((a, b) => ((wordsObj[a].ts || 0) - (wordsObj[b].ts || 0)) || (a < b ? -1 : 1));
       const claimedBy = {};
       const p1Set = new Set(), p2Set = new Set();
       sortedKeys.forEach(key => {
@@ -1718,7 +1820,7 @@ async function endActiveRound(){
       else c.match.ties = (c.match.ties || 0) + 1;
 
       c.round.phase = "ended";
-      c.round.phaseStartTime = Date.now();
+      c.round.phaseStartTime = nowServer();
       c.round.roundWinner = winner;
       c.round.p1Score = p1Score;
       c.round.p2Score = p2Score;
@@ -1752,7 +1854,7 @@ async function startNextRound(){
       const next = (c.round.number || 0) + 1;
       const cats = (c.match && c.match.categories) || [];
       const cat = cats[next - 1] || CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
-      const newRound = { number: next, category: cat, phase: "thinking", phaseStartTime: Date.now(), words: {} };
+      const newRound = { number: next, category: cat, phase: "thinking", phaseStartTime: nowServer(), words: {} };
       if(c.match && c.match.mode === "duel"){
         // Sırayı değiştir
         newRound.turn = (c.round.turn === "p1" ? "p2" : "p1");
@@ -1766,8 +1868,11 @@ async function startNextRound(){
   pendingPhaseAdvance = false;
 }
 
+// 1.0.1: Tenis ve Zincir'de kelime denetlenirken "Gönder" kapanıyordu ama Enter açıktı; aynı sırada ikinci bir kelime
+// gönderilebiliyordu (sıra geçtikten sonra yazılan kelime). Denetim sürerken yeni gönderim yok sayılır (K-23).
+let kelimeDenetleniyor = false;
 async function submitWord(){
-  if(!roomRef || gameEnded) return;
+  if(!roomRef || gameEnded || kelimeDenetleniyor) return;
   if(!currentRoundData || currentRoundData.phase !== "active") return;
   const mode = currentMatchData?.mode || "sim";
 
@@ -1806,6 +1911,7 @@ async function submitWord(){
     let valid = isWordInLocalDict(raw);
     if(!valid){
       $("sendBtn").disabled = true;
+      kelimeDenetleniyor = true;
       // wordInput KASTEN disable EDİLMİYOR — klavye kapanmasın
       showToast("Kontrol ediliyor...");
       let aiResult;
@@ -1813,12 +1919,12 @@ async function submitWord(){
         aiResult = await validateWordSmart(null, raw); // Zincir modunda kategori yok, sadece "Türkçe mi?"
       } finally {
         $("sendBtn").disabled = false;
+        kelimeDenetleniyor = false;
       }
       if(aiResult !== true){
         showToast("'" + raw + "' geçerli bir kelime değil");
         vibrate([90,50,90]);
         SFX.error();
-        try{ $("wordInput").focus(); }catch(e){}
         return;
       }
       valid = true;
@@ -1827,7 +1933,7 @@ async function submitWord(){
     $("wordInput").value = "";
     try{
       const wordRef = roomRef.child("round/words").push();
-      await wordRef.set({ text: raw, by: mySlot, valid: true, ts: Date.now() });
+      await wordRef.set({ text: raw, by: mySlot, valid: true, ts: nowServer() });
     }catch(e){ console.error(e); showToast("Yazma hatası"); return; }
     vibrate(30);
     SFX.success();
@@ -1837,7 +1943,7 @@ async function submitWord(){
 
   // === HIZLI / TENİS ===
   $("wordInput").value = "";
-  const submissionTs = Date.now();
+  const submissionTs = nowServer();
   const norm = normalizeWord(raw);
   const wordsObj = currentRoundData.words || {};
   let isDup;
@@ -1850,8 +1956,14 @@ async function submitWord(){
 
   const inLocal = !isDup && currentCategory && isInCategory(currentCategory, raw);
 
-  // Final state ile push — flash YOK
+  // Final state ile push — flash YOK. Denetim sürerken round bittiyse ya da oyuncu maçtan çıktıysa kelime atılır
+  // (yoksa sonraki rounda ya da başka odaya yazılırdı).
+  const yazilanOda = roomRef, yazilanRound = currentRoundData.number;
   const pushFinal = async (validResult, usedTdk) => {
+    if(roomRef !== yazilanOda || !currentRoundData || currentRoundData.number !== yazilanRound || currentRoundData.phase !== "active"){
+      if(validResult) showToast("'" + raw + "' süre dolduktan sonra onaylandı, sayılmadı");
+      return;
+    }
     try{
       const wRef = roomRef.child("round/words").push();
       const entry = { text: raw, by: mySlot, valid: validResult, ts: submissionTs };
@@ -1878,6 +1990,7 @@ async function submitWord(){
     // Listede yok → AI'ya kategori-uygunluk sor (TDK fallback dahil)
     if(mode === "duel"){
       $("sendBtn").disabled = true;
+      kelimeDenetleniyor = true;
       // wordInput KASTEN disable EDİLMİYOR — klavye kapanmasın
       showToast("Kontrol ediliyor...");
       let aiResult;
@@ -1885,6 +1998,7 @@ async function submitWord(){
         aiResult = await validateWordSmart(currentCategory, raw);
       } finally {
         $("sendBtn").disabled = false;
+        kelimeDenetleniyor = false;
       }
       await pushFinal(aiResult === true, aiResult === true);
     } else {
@@ -1895,7 +2009,6 @@ async function submitWord(){
         .catch(() => pushFinal(false, false));
     }
   }
-  setTimeout(() => { try{ $("wordInput").focus(); }catch(e){} }, 30);
 }
 
 async function endGame(winnerSlot, reason){
@@ -1933,6 +2046,7 @@ function leaveAndReset(){
 
 function resetGameState(){
   stopPhaseTicker();
+  botDurdur();
   if(roomRef && roomListener) roomRef.off("value", roomListener);
   roomRef = null; roomListener = null; mySlot = null; roomId = null;
   gameEnded = false;
@@ -1940,6 +2054,7 @@ function resetGameState(){
   currentRoundData = null;
   currentMatchData = null;
   pendingPhaseAdvance = false;
+  kelimeDenetleniyor = false;
   $("wordInput").value = "";
   $("roomInput").value = "";
   $("wordsChat").innerHTML = "";

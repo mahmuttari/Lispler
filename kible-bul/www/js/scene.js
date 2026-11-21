@@ -8,6 +8,18 @@ const rng = seed => () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 // a person seen from the front: a shadow, a robe (shoulders, then straight down), a head and a white cap
 const PERSON = `<g id="person"><ellipse cx="0" cy="1" rx="4" ry="1.2" fill="#000" opacity=".28"/><path d="M-3.6 0 Q-4.2 -8.5 -2 -11.5 Q0 -12.4 2 -11.5 Q4.2 -8.5 3.6 0 Z" fill="#f4efe2"/><path d="M1 -11.4 Q4.2 -8.5 3.6 0 L1.6 0 Q2.2 -8 1 -11.4 Z" fill="#cfc7b0" opacity=".7"/><circle cx="0" cy="-14" r="2.3" fill="#d3a47c"/><path d="M-2.4 -14.6 Q0 -17.2 2.4 -14.6 Q0 -15.6 -2.4 -14.6 Z" fill="#f4efe2"/></g>`;
 
+// The Kaaba is drawn at translate(78 380) scale(2.4) (art.js, a 100 x 100 box): its front bottom edge D(14,78) - C(52,86) - F(88,76) lands here, in scene coordinates.
+// A person standing behind that edge is hidden by the cube (so those are drawn BEFORE it), one in front of it is drawn after it - but nobody may stand in front of the
+// cube so close that the figure reaches up over its wall (that looked like pilgrims stuck on the Kaaba).
+const BASE = [[111.6, 567.2], [202.8, 586.4], [289.2, 562.4]];
+const baseY = x => (x <= BASE[0][0] ? BASE[0][1]
+  : x >= BASE[2][0] ? BASE[2][1]
+    : x <= BASE[1][0] ? BASE[0][1] + (BASE[1][1] - BASE[0][1]) * (x - BASE[0][0]) / (BASE[1][0] - BASE[0][0])
+      : BASE[1][1] + (BASE[2][1] - BASE[1][1]) * (x - BASE[1][0]) / (BASE[2][0] - BASE[1][0]));
+const overCube = x => x > BASE[0][0] - 6 && x < BASE[2][0] + 6;
+const PERSON_HEIGHT = 17.5;       // the figure is about this tall in its own units (PERSON below)
+
+/** -> { back, front }: the markup of the people behind the Kaaba (drawn before it) and of those beside and in front of it (drawn after it) */
 function crowd() {
   const rnd = rng(7);
   const people = [];
@@ -23,7 +35,16 @@ function crowd() {
   }
   people.sort((a, b) => a.y - b.y);
   // one drawing of a person (PERSON, in the defs), placed many times: a few hundred <use> instead of a thousand shapes keeps the page light
-  return people.map(p => `<use href="#person" transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) scale(${(p.k * 0.82).toFixed(2)})"/>`).join('');
+  const use = p => `<use href="#person" transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) scale(${(p.k * 0.82).toFixed(2)})"/>`;
+  const back = [], front = [];
+  for (const p of people) {
+    if (!overCube(p.x)) { front.push(p); continue; }                       // beside the cube: nothing can overlap it
+    const base = baseY(p.x), height = PERSON_HEIGHT * p.k * 0.82;
+    if (p.y < base) back.push(p);                                         // behind the cube: the cube hides what it covers
+    else if (p.y - height >= base - 3) front.push(p);                      // far enough in front: stands on the floor before the wall
+    // else: right at the foot of the wall, the figure would climb up the cube: left out
+  }
+  return { back: back.map(use).join(''), front: front.map(use).join('') };
 }
 
 function minaret(x, base, h, w) {
@@ -52,6 +73,7 @@ function lantern(x, y, s = 1) {
 }
 
 export function sceneMarkup() {
+  const people = crowd();
   const stars = [];
   const rnd = rng(11);
   for (let i = 0; i < 40; i++) stars.push(`<circle cx="${(rnd() * 390).toFixed(0)}" cy="${(rnd() * 210).toFixed(0)}" r="${(0.4 + rnd() * 1.1).toFixed(1)}" fill="#fff" opacity="${(0.2 + rnd() * 0.5).toFixed(2)}"/>`);
@@ -91,9 +113,10 @@ export function sceneMarkup() {
   <g opacity=".5" mask="url(#reflMask)" transform="translate(0 1168) scale(1 -1)"><g transform="translate(78 380) scale(2.4)">${kaabaMarkup('3d')}</g></g>
   <path d="M0 600 H390 M0 650 H390 M0 715 H390 M0 790 H390" stroke="#fff" stroke-opacity=".05"/>
   <ellipse cx="195" cy="578" rx="170" ry="34" fill="#ffe7a6" opacity=".12"/>
+  ${people.back}
   <!-- the Kaaba, large -->
   <g transform="translate(78 380) scale(2.4)">${kaabaMarkup('3d')}</g>
-  ${crowd()}
+  ${people.front}
   <!-- the arch: the dark vignette outside it, then its gold lines, then the crescent -->
   <path d="M0 0H390V844H0Z M66 844 V300 C66 205 140 165 195 74 C250 165 324 205 324 300 V844Z" fill="#031a12" opacity=".62" fill-rule="evenodd"/>
   <path d="M66 844 V300 C66 205 140 165 195 74 C250 165 324 205 324 300 V844" fill="none" stroke="url(#gold)" stroke-width="3.2"/>

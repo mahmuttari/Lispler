@@ -62,6 +62,13 @@ istemcisi google-services.json'a girer). Eklenmezse Play'den kurulan uygulamada 
 
 ## Moderasyon (şikâyetler)
 
+**Haftalık özet:** `.github/workflows/tavla-sikayet-ozeti.yml` her pazartesi 06:00 UTC'de (09:00 TSİ) `sikayetler.mjs` ile
+`reports` koleksiyonunu **salt okuma** ile sayar (yalnız `status`, `reason`, `createdAt`; mesaj, not, rumuz ve kimlik okunmaz)
+ve depodaki tek açık "Tavla şikâyet özeti (haftalık)" issue'suna yorum yazar. Yorum @mahmuttari'yi anar; GitHub bunu bildirim
+e-postası olarak gönderir. Depo herkese açık olduğu için yorumda yalnız sayılar (bekleyen, nedenlere göre dağılım, en eski
+bekleyenin yaşı, son 7 gün) vardır. Özet hiçbir şeyi değiştirmez; karar aşağıdaki adımlarla konsoldan verilir. Elle:
+Actions › "Şikâyet özeti (Tavla)" › Run workflow. Test: `npm run test:sikayet`.
+
 1. https://console.firebase.google.com → `tavla-online-oyundar` → Firestore → `reports` → `status == yeni` olanlar.
    Kayıtta neden, not, şikâyet edilenin kullanıcı kimliği (`againstUid`), rumuzu ve o odadaki son 20 mesajı vardır.
 2. Karar (DSA m.17 düzeni: insan kararı, gerekçeli):

@@ -1,8 +1,8 @@
-// Reklamsız abonelik: kimde var, satın alma, geri yükleme. Doğruluğun kaynağı Google Play'dir; son yanıt saklanır
+// Reklamsız abonelik: kimde var, satın alma, geri yükleme. Doğruluğun kaynağı mağazadır (Google Play ya da App Store); son yanıt saklanır
 // (çevrimdışıyken de bilinsin) ve yalnız mağazanın gerçek yanıtı aboneliği yeniden kapatabilir.
 import { SYS, saveSys } from './store.js';
 import * as billing from './billing.js';
-import { openUrl, isNative } from './native.js';
+import { openUrl, isNative, isIOS } from './native.js';
 
 export const isPremium = () => !!(SYS.premium && SYS.premium.active);
 export const plan = () => (SYS.premium && SYS.premium.plan) || null;
@@ -20,7 +20,7 @@ function set(active, p) {
 /** Mağazaya sorar; yanıt yoksa (çevrimdışı) durum değişmez. */
 export async function refresh() {
   const r = await billing.ownedPurchases();
-  if (r.ok) set(billing.entitled(r.purchases), null);
+  if (r.ok) set(billing.entitled(r.purchases), billing.activePlan(r.purchases));
   return r.ok;
 }
 
@@ -42,12 +42,13 @@ export async function restore() {
   const r = await billing.ownedPurchases();
   if (!r.ok) return 'failed';
   const e = billing.entitled(r.purchases);
-  set(e, null);
+  set(e, billing.activePlan(r.purchases));
   return e ? 'restored' : 'none';
 }
 
-/** Play Store'un abonelik sayfası; dönüşte refresh() değişikliği alır. */
+/** Mağazanın abonelik sayfası (iPhone'da Apple'ın uygulama içi sayfası); dönüşte refresh() değişikliği alır. */
 export function manage() {
   if (!isNative) { billing.mockCancel(); refresh(); return; }
+  if (isIOS) { billing.manage().then((ok) => { if (!ok) openUrl(billing.MANAGE_URL_IOS); }); return; }
   openUrl(billing.MANAGE_URL);
 }

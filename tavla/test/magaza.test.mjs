@@ -49,6 +49,13 @@ test('gizlilik ve hesap silme sayfaları var, adresler her yerde aynı', () => {
   assert.match(sil, /Poyraz Workshop/); assert.match(sil, /Tavla/); assert.match(sil, /poyrazworkshop7@gmail\.com/);
 });
 
+test('avatarlar uygulama içinde çizilir: dış avatar servisi ve insan figürlü stil yok (T-08)', () => {
+  const js = oku('www/assets/index-BLMBGPAE.js');
+  assert.doesNotMatch(js, /api\.dicebear\.com|`avataaars`|`lorelei`|`micah`|`bottts`/);
+  assert.match(js, /data:image\/svg\+xml/);
+  for (const ad of ['Pul', 'Zar', 'Kahve', 'Çay']) assert.ok(js.includes(`name: \`${ad}\``), ad);
+});
+
 test('sürüm numarası uygulamada, package.json\'da ve Gradle\'da aynı', () => {
   const vn = oku('android/app/build.gradle').match(/versionName '([^']+)'/)[1];
   assert.equal(JSON.parse(oku('package.json')).version, vn);

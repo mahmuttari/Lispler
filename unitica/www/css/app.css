@@ -272,6 +272,8 @@ html.kb .tabbar { display: none; }
 .note { margin-top: 10px; font-size: 13px; line-height: 1.45; color: var(--muted); }
 .status { margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
 .link-quiet { display: block; margin: 10px auto 0; padding: 8px 12px; font-weight: 600; color: var(--accent); }
+.legal-links { text-align: center; }
+.legal-links a { display: inline-block; min-height: 44px; padding: 12px 6px; font-weight: 600; color: var(--accent); }
 
 :root[dir="rtl"] .hero-art { transform: scaleX(-1); }
 :root[dir="rtl"] .go { transform: scaleX(-1); }

@@ -1,12 +1,11 @@
 // Fixed settings of the app: the ad-free membership, the map, the compass, the About page.
 // (The ads of the free version are Google AdMob: js/reklam.js; their unit ids js/reklam-kimlik.js.)
 
-// The About page: developer, contact, privacy policy (GitHub Pages of the Lispler repository) and the GeoTerva link
+// The About page: developer, contact and privacy policy (GitHub Pages of the Lispler repository)
 export const ABOUT = {
   developer: 'Poyraz Workshop',
   email: 'mahmuttari@gmail.com',
   privacyUrl: 'https://mahmuttari.github.io/Lispler/kible-bul/gizlilik.html',
-  geoterva: 'https://geoterva.com',
 };
 
 
@@ -25,5 +24,13 @@ export const MAP = {
   maxZoom: 8,
 };
 
-// The phone points at the Qibla when its heading is within this many degrees of it
-export const ALIGN_DEG = 3;
+// The street map of the mosque screen: OpenStreetMap's standard tiles (the app shows the credit; light use only - if that ever stops being enough, change this address
+// to another tile service)
+export const STREET_MAP = { tiles: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', maxZoom: 19 };
+
+// The phone points at the Qibla when its heading is within ALIGN_DEG degrees of it; once it does, it keeps doing so until it is more than ALIGN_LEAVE_DEG away
+// (so that a heading that trembles at the limit does not make the picture flicker and the phone buzz again and again)
+export const ALIGN_DEG = 3, ALIGN_LEAVE_DEG = 5;
+
+// The compass is taken as silent when the sensor has not reported for this long
+export const STALE_MS = 15000;

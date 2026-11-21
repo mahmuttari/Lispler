@@ -11,7 +11,7 @@ import { topbar } from './common.js';
 import { applyTheme, applyLanguage } from '../app.js';
 
 export const PRIVACY_URL = 'https://mahmuttari.github.io/Lispler/smart-measure/gizlilik.html';
-export const EMAIL = 'mahmuttari@gmail.com';
+export const EMAIL = 'info@marfen.com.tr';
 
 export function render({ go, back, params }) {
   const section = (id, titleKey, ...kids) => h('div', { id: id ? `s-${id}` : null, style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
@@ -55,11 +55,11 @@ export function render({ go, back, params }) {
       row('Level', t('st_dev_gravity'), yn(s.gravity)),
       row('RotateCw', t('st_dev_gyroscope'), yn(s.gyroscope)),
       row('Crosshair', t('st_dev_rotation'), yn(s.rotationVector || s.gameRotationVector)),
-      row('Sun', t('st_dev_light'), yn(s.light)),
+      native.isIOS ? null : row('Sun', t('st_dev_light'), yn(s.light)),   // iPhone'da ışık ölçer yok
       row('Mic', t('st_dev_microphone'), yn(c.microphone)),
       row('Camera', t('st_dev_camera'), yn(c.rearCamera)),
       row('Flashlight', t('st_dev_flash'), yn(c.flash)),
-      row('Box', t('st_dev_arcore'), yn(c.arcore)),
+      native.isIOS ? null : row('Box', t('st_dev_arcore'), yn(c.arcore)),   // Google Play Hizmetleri; iPhone'da yok
       row('Smartphone', t('st_dev_display'), null, null, d.widthPx ? t('st_dev_display_value', d.widthPx, d.heightPx, num(d.xdpi, 0), num(d.ydpi, 0), mm(d.widthPx, d.xdpi), mm(d.heightPx, d.ydpi)) : '—'));
   });
 
@@ -82,7 +82,7 @@ export function render({ go, back, params }) {
   const about = section('about', 'st_section_about',
     row('Crown', t('st_premium_title'), isPremium() ? t('pr_active') : null, () => go('premium')),
     h('div', { class: 'row' }, icon('Info', 20), h('span', { class: 'row-text' }, h('span', { text: t('app_name') })), version),
-    row('Sparkles', t('st_developer'), 'Poyraz Workshop'),
+    row('Sparkles', t('st_developer'), 'MARFEN'),
     row('ExternalLink', t('st_contact'), EMAIL, () => native.openUrl(`mailto:${EMAIL}`)),
     row('ExternalLink', 'GeoTerva', 'geoterva.com', () => native.openUrl('https://geoterva.com')),
     row('Library', t('st_licenses'), null, () => sheet(t('st_licenses'), [h('p', { text: t('st_licenses_text') })])));

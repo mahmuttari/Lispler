@@ -1,0 +1,5 @@
+// Master Office — Play'e yüklenecek AAB'nin sürümü. Kaynak kodu özel depodadır; imzalı AAB orada derlenir ve özel bir
+// dalda durur (bu depo herkese açık olduğu için AAB buraya konmaz). android/play.mjs "yukle" komutu sürümü buradan okur ve
+// yüklenen AAB'ninkiyle karşılaştırır. Yeni AAB gelince iki satır birlikte güncellenir; test/magaza.test.mjs aynı değeri bekler.
+versionCode 3007002
+versionName '3.7.2'

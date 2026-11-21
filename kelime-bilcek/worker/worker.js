@@ -1,5 +1,5 @@
 /**
- * Kelime Bilcek — AI Kelime Hakemi v3 (Cloudflare Worker "floral-wave-f116")
+ * Kelime Bilcek — AI Kelime Hakemi v3.3 (Cloudflare Worker "floral-wave-f116")
  * ----------------------------------------------------------------------------
  * v2'ye göre değişenler (kelime-bilcek/DENETIM.md › K-03, K-07):
  *   - Yalnız Firebase'e giriş yapmış oyuncuya yanıt verir: "Authorization: Bearer <Firebase ID token>".
@@ -10,8 +10,9 @@
  *   - CORS yalnız uygulamanın ve sitenin kökenleri (Capacitor: https://localhost).
  *   - "Başka kategorinin listesinde varsa reddet" adımı kaldırıldı: listeler örtüşüyor, doğru kelimeler düşüyordu.
  *     Kategori listesindeki kelimeler istemcide kabul edilir (www/kelime.js), buraya hiç gelmez.
- * Karar: Workers AI "@cf/meta/llama-3.3-70b-instruct-fp8-fast" iki kez (hakem + şüpheci) sorulur; ikisi de evet
- * derse kabul.
+ * Karar (v3.2): Workers AI "@cf/meta/llama-3.3-70b-instruct-fp8-fast" bir kez, katı hakem istemiyle sorulur; sonuç ortak
+ * önbelleğe yazılır (KV "SOZLUK" bağlıysa küresel, değilse Cache API), aynı kelime/kategori bir daha sorulmaz. Maliyet
+ * hesabı: DENETIM.md › 1.0.2. Eski iki çağrılı karar için Worker değişkeni IKI_HAKEM=1.
  *
  * Sözleşme: POST { kategori: string, kelime: string } → { gecerli: boolean, sebep: string }
  * Bağlama: Workers AI (değişken adı AI). Sınama: node --test kelime-bilcek/worker/worker.test.mjs
@@ -38,12 +39,14 @@ export const KATEGORILER = [
 ];
 
 function normalizeWord(w) {
-  return String(w || "").trim().toLocaleLowerCase("tr-TR").replace(/\s+/g, " ");
+  // 1.0.4: istemciyle aynı (www/kelime.js): şapkalı harfler düzleşir, "hâlı" ile "halı" aynı önbellek kaydına düşer
+  return String(w || "").trim().toLocaleLowerCase("tr-TR").replace(/â/g, "a").replace(/î/g, "i").replace(/û/g, "u").replace(/\s+/g, " ");
 }
 
 export function kelimeGecerliBicim(k) {
   const s = String(k || "").trim();
-  return s.length >= 2 && s.length <= SINIR.kelimeEnUzun && /^[a-zA-ZçğıöşüâîûÇĞİÖŞÜÂÎÛ\s-]+$/.test(s);
+  return s.length >= 2 && s.length <= SINIR.kelimeEnUzun && /^[a-zA-ZçğıöşüâîûÇĞİÖŞÜÂÎÛ\s-]+$/.test(s)
+    && (s.match(/[a-zA-ZçğıöşüâîûÇĞİÖŞÜÂÎÛ]/g) || []).length >= 2; // en az iki harf (v3.1)
 }
 
 // ---------- CORS ve yanıt ----------
@@ -62,7 +65,8 @@ function jsonResponse(request, obj, status = 200) {
 
 // ---------- Firebase ID token doğrulama ----------
 let anahtarOnbellegi = { anahtarlar: null, bitis: 0 };
-export function _anahtarOnbelleginiSifirla() { anahtarOnbellegi = { anahtarlar: null, bitis: 0 }; }
+let sonZorlaCekim = 0;
+export function _anahtarOnbelleginiSifirla() { anahtarOnbellegi = { anahtarlar: null, bitis: 0 }; sonZorlaCekim = 0; }
 
 function b64url(s) {
   const t = s.replace(/-/g, "+").replace(/_/g, "/");
@@ -71,9 +75,9 @@ function b64url(s) {
 }
 function b64urlJson(s) { return JSON.parse(new TextDecoder().decode(b64url(s))); }
 
-async function googleAnahtarlari() {
+async function googleAnahtarlari(zorla = false) {
   const simdi = Date.now();
-  if (anahtarOnbellegi.anahtarlar && simdi < anahtarOnbellegi.bitis) return anahtarOnbellegi.anahtarlar;
+  if (!zorla && anahtarOnbellegi.anahtarlar && simdi < anahtarOnbellegi.bitis) return anahtarOnbellegi.anahtarlar;
   const r = await fetch(JWK_URL);
   if (!r.ok) throw new Error("anahtarlar alınamadı: " + r.status);
   const { keys } = await r.json();
@@ -93,7 +97,12 @@ export async function kimlikDogrula(jeton, simdiSn = Math.floor(Date.now() / 100
     if (yuk.aud !== PROJE || yuk.iss !== `https://securetoken.google.com/${PROJE}`) return null;
     if (typeof yuk.sub !== "string" || !yuk.sub || yuk.sub.length > 128) return null;
     if (!(yuk.exp > simdiSn) || !(yuk.iat <= simdiSn + 300) || !(yuk.auth_time <= simdiSn + 300)) return null;
-    const jwk = (await googleAnahtarlari()).find((k) => k.kid === baslik.kid);
+    let jwk = (await googleAnahtarlari()).find((k) => k.kid === baslik.kid);
+    // v3.1: Google anahtarları yenilediyse önbellekte yeni kid yoktur; bir kez yeniden çek (en çok dakikada bir)
+    if (!jwk && Date.now() - sonZorlaCekim > 60e3) {
+      sonZorlaCekim = Date.now();
+      jwk = (await googleAnahtarlari(true)).find((k) => k.kid === baslik.kid);
+    }
     if (!jwk) return null;
     const anahtar = await crypto.subtle.importKey("jwk", { kty: jwk.kty, n: jwk.n, e: jwk.e, alg: "RS256", ext: true },
       { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]);
@@ -117,6 +126,33 @@ function hizSiniriAsildi(uid, simdi = Date.now()) {
   return false;
 }
 
+// ---------- Ortak önbellek (v3.2) ----------
+// KV bağlıysa (değişken adı SOZLUK) küresel ve kalıcı; değilse Cloudflare Cache API (veri merkezi başına, ek kurulum yok).
+export const ONBELLEK_SN = 90 * 24 * 3600;
+export function onbellekAnahtari(kategori, kelime) { return `v1|${kategori || "zincir"}|${kelime}`; }
+function onbellekUrl(anahtar) { return "https://onbellek.kelime-bilcek.invalid/" + encodeURIComponent(anahtar); }
+async function onbellekOku(env, anahtar) {
+  try {
+    if (env.SOZLUK) return await env.SOZLUK.get(anahtar, "json");
+    if (typeof caches !== "undefined") {
+      const r = await caches.default.match(new Request(onbellekUrl(anahtar)));
+      return r ? await r.json() : null;
+    }
+  } catch (e) { /* önbellek yoksa yapay zekâya sorulur */ }
+  return null;
+}
+async function onbellekYaz(env, ctx, anahtar, sonuc) {
+  const deger = { gecerli: !!sonuc.gecerli, sebep: String(sonuc.sebep || "").slice(0, 120) };
+  let is = null;
+  if (env.SOZLUK) is = env.SOZLUK.put(anahtar, JSON.stringify(deger), { expirationTtl: ONBELLEK_SN });
+  else if (typeof caches !== "undefined") {
+    is = caches.default.put(new Request(onbellekUrl(anahtar)), new Response(JSON.stringify(deger), {
+      headers: { "Content-Type": "application/json", "Cache-Control": `public, max-age=${ONBELLEK_SN}` } }));
+  }
+  if (!is) return;
+  if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(is.catch(() => {})); else await is.catch(() => {});
+}
+
 // ---------- LLM ----------
 function buildMessages(kategori, kelime, persona) {
   const systemBase = `Sen Türkçe bir kelime oyunu hakemisin. Görevin: verilen kelimenin verilen kategoriye AİT olup olmadığını kesin olarak değerlendirmek.
@@ -132,7 +168,9 @@ KATI KURALLAR:
 {"gecerli": true|false, "sebep": "tek cümle Türkçe açıklama (en fazla 60 karakter)"}`;
   const personaHint = persona === "skeptic"
     ? "\n\nÖNEMLİ: Şüpheciyi temsil ediyorsun. Kategoriye ait olduğuna %100 emin olmadığın sürece REDDET."
-    : "\n\nÖNEMLİ: Adil bir hakem ol. Açıkça kategorinin üyesi olan kelimeleri kabul et, olmayanları reddet.";
+    : persona === "strict"
+      ? "\n\nÖNEMLİ: Tek hakem sensin. Kelime kategorinin açık ve yaygın bir üyesiyse kabul et; tereddüt ediyorsan REDDET."
+      : "\n\nÖNEMLİ: Adil bir hakem ol. Açıkça kategorinin üyesi olan kelimeleri kabul et, olmayanları reddet.";
   return [
     { role: "system", content: systemBase + personaHint },
     { role: "user", content: `Kategori: ${kategori}\nKelime: ${kelime}\n\nSadece JSON cevap ver.` },
@@ -171,7 +209,7 @@ async function callLLM(env, messages, temperature) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: corsBasliklari(request) });
     if (request.method !== "POST") return jsonResponse(request, { gecerli: false, sebep: "Yalnız POST" }, 405);
 
@@ -181,6 +219,9 @@ export default {
     if (hizSiniriAsildi(kimlik.sub)) return jsonResponse(request, { gecerli: false, sebep: "Çok fazla istek" }, 429);
     if (!env.AI) return jsonResponse(request, { gecerli: false, sebep: "Worker AI binding eksik" }, 500);
 
+    // v3.1: gövde okunmadan önce bildirilen boyut denetlenir (büyük gövde belleğe alınmaz)
+    const bildirilen = Number(request.headers.get("Content-Length") || 0);
+    if (bildirilen > SINIR.govdeBayt) return jsonResponse(request, { gecerli: false, sebep: "İstek çok büyük" }, 413);
     const metin = await request.text();
     if (new TextEncoder().encode(metin).length > SINIR.govdeBayt) return jsonResponse(request, { gecerli: false, sebep: "İstek çok büyük" }, 413);
     let body;
@@ -196,27 +237,34 @@ export default {
     }
     const lower = normalizeWord(kelime);
 
-    // ===== ZİNCİR MODU (kategori yok): gerçek Türkçe kelime mi? =====
-    if (!kategori) {
-      const [r1, r2] = await Promise.all([callLLM(env, buildChainMessages(lower), 0), callLLM(env, buildChainMessages(lower), 0.4)]);
-      if (r1 === null && r2 === null) return jsonResponse(request, { gecerli: false, sebep: "Değerlendirme yapılamadı" }, 502);
-      const karar = r1?.gecerli === true && r2?.gecerli === true;
-      const sebep = karar ? (r1?.sebep || r2?.sebep || "Geçerli Türkçe kelime") : (r1?.sebep || r2?.sebep || "Türkçe kelime olarak doğrulanamadı");
-      return jsonResponse(request, { gecerli: karar, sebep });
-    }
+    // ===== v3.2: ortak önbellek — aynı kelime/kategori yapay zekâya bir kez sorulur =====
+    const anahtar = onbellekAnahtari(kategori, lower);
+    const kayitli = await onbellekOku(env, anahtar);
+    if (kayitli) return jsonResponse(request, { ...kayitli, onbellek: true });
 
-    // ===== KATEGORİ: iki bağımsız LLM, ikisi de evet derse kabul =====
-    const [judge, skeptic] = await Promise.all([
-      callLLM(env, buildMessages(kategori, lower, "judge"), 0),
-      callLLM(env, buildMessages(kategori, lower, "skeptic"), 0.3),
-    ]);
-    if (judge === null && skeptic === null) return jsonResponse(request, { gecerli: false, sebep: "Değerlendirme yapılamadı" }, 502);
-    const karar = judge?.gecerli === true && skeptic?.gecerli === true;
-    let sebep;
-    if (karar) sebep = judge?.sebep || skeptic?.sebep || "Kategoriye uygun";
-    else if (judge?.gecerli === false) sebep = judge.sebep || "Kategoriye uygun değil";
-    else if (skeptic?.gecerli === false) sebep = skeptic.sebep || "Kategoriye uygun değil";
-    else sebep = "Kategoriye uygunluğu doğrulanamadı";
-    return jsonResponse(request, { gecerli: karar, sebep });
+    const iki = env.IKI_HAKEM === "1"; // eski davranış: iki bağımsız çağrı, ikisi de evet derse kabul
+    let sonuc;
+    if (!kategori) {
+      // ===== ZİNCİR MODU (kategori yok): gerçek Türkçe kelime mi? =====
+      const cagri = [callLLM(env, buildChainMessages(lower), 0)];
+      if (iki) cagri.push(callLLM(env, buildChainMessages(lower), 0.4));
+      const r = await Promise.all(cagri);
+      if (r.every((x) => x === null)) return jsonResponse(request, { gecerli: false, sebep: "Değerlendirme yapılamadı" }, 502);
+      const karar = r.every((x) => x?.gecerli === true);
+      const ilk = r.find((x) => x) || {};
+      sonuc = { gecerli: karar, sebep: ilk.sebep || (karar ? "Geçerli Türkçe kelime" : "Türkçe kelime olarak doğrulanamadı") };
+    } else {
+      // ===== KATEGORİ: v3.2 tek katı hakem (iki = hakem + şüpheci) =====
+      const cagri = [callLLM(env, buildMessages(kategori, lower, iki ? "judge" : "strict"), 0)];
+      if (iki) cagri.push(callLLM(env, buildMessages(kategori, lower, "skeptic"), 0.3));
+      const r = await Promise.all(cagri);
+      if (r.every((x) => x === null)) return jsonResponse(request, { gecerli: false, sebep: "Değerlendirme yapılamadı" }, 502);
+      const karar = r.every((x) => x?.gecerli === true);
+      const ret = r.find((x) => x?.gecerli === false);
+      sonuc = { gecerli: karar, sebep: karar ? (r[0]?.sebep || "Kategoriye uygun") : (ret?.sebep || "Kategoriye uygunluğu doğrulanamadı") };
+      if (r.some((x) => x === null)) return jsonResponse(request, sonuc); // kısmi yanıt: önbelleğe yazılmaz
+    }
+    await onbellekYaz(env, ctx, anahtar, sonuc);
+    return jsonResponse(request, sonuc);
   },
 };

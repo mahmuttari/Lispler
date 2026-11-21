@@ -10,7 +10,7 @@
 <main>
 <nav><a href="index.html">Kıble Bul</a><a href="gizlilik.html">Gizlilik Politikası</a><a href="#en">English</a></nav>
 <h1>Gizlilik Politikası</h1>
-<p class="date">Son güncelleme: 27 Ekim 2026</p>
+<p class="date">Son güncelleme: 8 Kasım 2026</p>
 
 <p>Bu politika, <b>Poyraz Workshop</b> ("biz") tarafından Android için yayınlanan <b>Kıble Bul</b> (Qibla Finder,
 paket <code>com.poyrazworkshop.kiblebul</code>) uygulamasının ("Uygulama") hangi verileri nasıl işlediğini açıklar.
@@ -18,22 +18,23 @@ Uygulama bulunduğunuz yerden Mekke'deki Kâbe'nin yönünü pusula, harita ve m
 yoktur; konumunuz bize gelmez. Uygulama ücretsizdir, Google AdMob reklamları gösterir (bkz. 4. bölüm) ve reklamları
 kaldıran isteğe bağlı bir abonelik sunar (bkz. 5. bölüm).</p>
 
-<div class="box"><b>Kısaca:</b> Konumunuz yaklaşık konumdur ve yalnız telefonunuzda kıble yönünü hesaplamak için
-kullanılır; Uygulama onu bize ya da reklam sağlayıcısına göndermez. İnternete yalnız haritanın uydu görüntüsü
-karoları için istek (NASA'nın sunucusu baktığınız bölgeyi görür) ve reklam gider.</div>
+<div class="box"><b>Kısaca:</b> Konumunuz yaklaşık konumdur ve yalnız telefonunuzda kıble yönünü hesaplamak ve yakınınızdaki camileri bulmak için
+kullanılır; Uygulama onu bize ya da reklam sağlayıcısına göndermez. İnternete yalnız harita karoları için istek (uydu haritası için NASA'nın, Camiler
+ekranındaki sokak haritası için OpenStreetMap'in sunucusu baktığınız bölgeyi görür) ve reklam gider.</div>
 
 <h2>1. Cihazınızda kalan veriler</h2>
 <ul>
   <li><b>Seçili yer:</b> kıblenin hesaplandığı yer (telefonun konumu ya da sizin seçtiğiniz şehir veya girdiğiniz
       koordinat): enlem, boylam, yer adı, ülke kodu, zamanı.</li>
   <li><b>Son yerler:</b> elle seçtiğiniz en çok 8 yer.</li>
-  <li><b>Ayarlar:</b> dil, pusula stili, gece modu, derece ölçeği, Kâbe görseli, kuzey türü, titreşim, harita türü.</li>
+  <li><b>Ayarlar:</b> dil, pusula stili, gece modu, derece ölçeği, Kâbe görseli, kuzey türü, titreşim, pusula düzeltmesi, harita türü.</li>
   <li><b>Üyelik durumu</b> (Google Play'in son yanıtı) ve <b>reklam sayaçları</b> (son bir saatteki tam ekran
       reklamların zamanı: sıklık sınırı için).</li>
 </ul>
 <p>Bu veriler yalnız Uygulamanın kendi deposundadır; Google yedeğine <b>girmez</b> (<code>allowBackup="false"</code>).
 Uygulamayı kaldırmak ya da Android ayarlarından verisini silmek hepsini siler. Şehir listesi (yaklaşık 34.000 yer) ve
-dünya manyetik modeli Uygulamanın içindedir; şehir araması internete gitmez.</p>
+dünya manyetik modeli Uygulamanın içindedir; şehir araması internete gitmez. Yakındaki cami ve mescitlerin listesi de (OpenStreetMap verisinden, © OpenStreetMap katkıcıları, ODbL)
+Uygulamanın içindedir; cami araması da internete gitmez.</p>
 
 <h2>2. İzinler</h2>
 <ul>
@@ -57,6 +58,15 @@ dünya manyetik modeli Uygulamanın içindedir; şehir araması internete gitmez
       karoların en yakın düzeyi bile yaklaşık 150 km genişliğindedir, yani yalnız yaklaşık bir bölge görünür. Harita
       ekranını açmazsanız karo isteği yapılmaz. NASA'nın gizlilik bildirimi:
       <a href="https://www.nasa.gov/privacy/">nasa.gov/privacy</a></li>
+  <li><b>Sokak haritası karoları:</b> Camiler ekranındaki sokak haritasının karoları OpenStreetMap'in karo sunucusundan
+      (<code>tile.openstreetmap.org</code>) istenir. Her karo isteğinde IP adresiniz ve baktığınız bölge bu sunucuya gider.
+      Bu sokak haritası sokak düzeyine kadar yakınlaşabildiği için bölge, konumunuzun ya da seçtiğiniz caminin çevresinde
+      birkaç yüz metre kadar küçük olabilir. Sokak haritasını açmazsanız karo isteği yapılmaz. OpenStreetMap Foundation
+      gizlilik politikası: <a href="https://osmfoundation.org/wiki/Privacy_Policy">osmfoundation.org/wiki/Privacy_Policy</a></li>
+  <li><b>Camilere yol tarifi:</b> Camiler ekranında bir caminin sayfasındaki yürüyerek / otobüsle / arabayla ve
+      "Haritada göster" düğmeleri caminin koordinatlarıyla bir Google Haritalar adresi, "Diğer harita uygulamaları" düğmesi
+      telefonunuzun yüklü harita uygulamalarına sunduğu bir <code>geo:</code> bağlantısı açar; elle seçilmiş bir yer (telefonun konumu değil)
+      kullanıldığında başlangıç noktasının koordinatları da eklenir. Bu yalnız sizin dokunuşunuzla olur.</li>
   <li><b>Reklamlar:</b> 4. bölüm.</li>
   <li><b>Yol Tarifi:</b> Harita ekranındaki "Yol Tarifi" düğmesine dokunursanız seçili yerin koordinatı ve Kâbe'nin
       konumu bir Google Haritalar adresiyle telefonunuzun tarayıcısında ya da harita uygulamasında açılır. Bu yalnız
@@ -85,7 +95,7 @@ olup olmadığını sorar ve yanıtı telefonda saklar. Reklamsız üyelikte AdM
 <a href="https://policies.google.com/privacy">policies.google.com/privacy</a></p>
 
 <h2>6. Paylaşım</h2>
-<p>Verilerinizi satmayız ve bir sunucuda toplamayız. Yalnız 3. bölümdeki harita karosu istekleri, 4. bölümdeki reklam
+<p>Verilerinizi satmayız ve bir sunucuda toplamayız. Yalnız 3. bölümdeki harita karosu istekleri ve sizin dokunuşunuzla açılan yol tarifi bağlantıları, 4. bölümdeki reklam
 verileri ve 5. bölümdeki Google Play abonelik sorgusu cihazınızdan çıkar.</p>
 
 <h2>7. Doğruluk</h2>
@@ -109,10 +119,12 @@ Uygulamayı kaldırarak silersiniz; reklam verileri için Google'ın yukarıdaki
 of the Kaaba in Mecca with a compass, a map and the distance. There is no account and we have no server.</p>
 <p><b>Location:</b> the app asks only for <b>approximate location</b> (<code>ACCESS_COARSE_LOCATION</code>; precise location
 is never requested), only while it is on screen, never in the background. It is used <b>only on your phone</b> to work out
-the Qibla angle, the distance and the magnetic declination; the app does not send it to us or to the ad provider. Without
-the permission you can search for a city or type coordinates. The chosen place, up to 8 recent places, your settings, the
+the Qibla angle, the distance and the magnetic declination and to find the mosques near you; the app does not send it to us or to the ad provider. Without
+the permission you can search for a city or type coordinates. The chosen place, up to 8 recent places, your settings (including the compass correction), the
 membership state and the ad counters stay only in the app's storage on the phone, excluded from Google backup; uninstalling
-the app removes them. The city list (about 34,000 places) is inside the app; searching never goes online. Compass sensor
+the app removes them. The city list (about 34,000 places) is inside the app; searching never goes online. The list of nearby mosques and prayer
+rooms (from OpenStreetMap data, © OpenStreetMap contributors, ODbL) is inside the app too; searching it never goes
+online. Compass sensor
 readings never leave the phone.</p>
 <p><b>Map tiles:</b> the satellite picture of the Map screen is requested tile by tile from NASA's GIBS service
 (<code>gibs.earthdata.nasa.gov</code>). NASA's server receives your IP address and the area you look at; when the map
@@ -120,6 +132,15 @@ opens it shows the area from your place to the Kaaba, so this includes the regio
 about 150 km wide, so only an approximate region). No tiles are requested unless you open the Map screen. If you tap
 <b>Directions</b>, the chosen place's coordinates and the Kaaba's are opened as a Google Maps address in your browser or
 map app, only on your tap.</p>
+<p><b>Street map and directions to mosques:</b> the street map of the Mosques screen is requested tile by tile from
+OpenStreetMap's tile server (<code>tile.openstreetmap.org</code>). Each tile request sends your IP address and the area you
+look at to that server. Because this street map can zoom in to street level, the area can be as small as a few hundred
+metres, around your location or around the chosen mosque. No street-map tiles are requested unless you open that map.
+OpenStreetMap Foundation privacy policy:
+<a href="https://osmfoundation.org/wiki/Privacy_Policy">osmfoundation.org/wiki/Privacy_Policy</a>. On a mosque's page the
+buttons for directions on foot / by bus / by car and "Show in Maps" open a Google Maps address with the mosque's
+coordinates, and "Other map apps" opens a <code>geo:</code> link that the phone offers to your installed maps apps; when you use a place chosen by hand (not
+the phone's location) the starting point's coordinates are added too. This happens only when you tap.</p>
 <p><b>Ads:</b> the app shows Google AdMob ads: a banner in its own strip at the bottom that never covers the content and,
 only after a completed place search or when you leave the map and at most every 4 minutes, a full-screen ad; never while
 the compass or the calibration is running. Ad content is limited to general audiences (G) and sensitive categories such as

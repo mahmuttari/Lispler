@@ -3,9 +3,12 @@ const cap = typeof window !== 'undefined' ? window.Capacitor : undefined;
 export const isNative = !!(cap && cap.isNativePlatform && cap.isNativePlatform());
 /** a debuggable build (assembleDebug): the ads use Google's test units there */
 export const isDebugBuild = !!(isNative && cap.DEBUG);
+/** 'android' | 'ios' | 'web' (desktop browser) */
+export const platform = isNative && cap.getPlatform ? cap.getPlatform() : 'web';
+export const isIOS = platform === 'ios';
 const plug = name => (cap.Plugins && cap.Plugins[name]) || cap.registerPlugin(name);
 
-/** a native plugin by name (AdMob, NativePurchases): null outside the Android app */
+/** a native plugin by name (AdMob, NativePurchases): null outside the Android / iPhone app */
 export const plugin = name => {
   if (!isNative) return null;
   try { return plug(name); } catch (e) { return null; }

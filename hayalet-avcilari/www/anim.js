@@ -271,3 +271,93 @@ function avciNefes(now, yuruyor) {
   if (yuruyor || animAzHareket()) return 0;
   return Math.sin(now / 1000 * 2.2) * 0.018;
 }
+
+// ---- Kasırga (3.18.0) ----
+// Kullanıcı: "tornado efekti çok güzel olsun, hayaletleri savura savura yok etsin". Oyuncunun çevresinde iki hortum
+// döner; yerde rüzgâr halkası, havada yapraklar ve toz uçuşur. İlk 0,3 sn belirir, son 0,5 sn kaybolur.
+const KASIRGA_SURE_MS = 8000;
+
+// Tek hortum: tabandan yukarı genişleyen, kıvrılan halkalar ve yarı saydam gövde
+function hortumCiz(ctx, x, y, t, olcek, alfa, az) {
+  const boy = 64 * olcek, n = 10;
+  const kay = (k) => (az ? 0 : Math.sin(t * 5 + k * 4.2) * 7 * k * olcek);
+  // Gövde: yarı saydam huni
+  ctx.save();
+  const gr = ctx.createLinearGradient(x, y, x, y - boy);
+  gr.addColorStop(0, `rgba(196, 181, 253, ${0.10 * alfa})`);
+  gr.addColorStop(1, `rgba(237, 233, 254, ${0.32 * alfa})`);
+  ctx.fillStyle = gr;
+  ctx.beginPath();
+  for (let i = 0; i <= n; i++) { const k = i / n; ctx.lineTo(x + kay(k) - (4 + k * 22) * olcek, y - k * boy); }
+  for (let i = n; i >= 0; i--) { const k = i / n; ctx.lineTo(x + kay(k) + (4 + k * 22) * olcek, y - k * boy); }
+  ctx.closePath();
+  ctx.fill();
+  // Dönen halkalar (yarım yaylar, her biri farklı fazda)
+  for (let i = 0; i <= n; i++) {
+    const k = i / n;
+    const rx = (4 + k * 22) * olcek, ry = rx * 0.3;
+    const bas = (az ? 0 : t * 10) + i * 0.9;
+    ctx.globalAlpha = alfa * (0.45 + 0.45 * (1 - k * 0.6));
+    ctx.strokeStyle = i % 2 ? "#f5f3ff" : "#c4b5fd";
+    ctx.lineWidth = (1.6 + k * 1.8) * olcek;
+    ctx.beginPath();
+    ctx.ellipse(x + kay(k), y - k * boy, rx, ry, 0, bas, bas + Math.PI * 1.25);
+    ctx.stroke();
+  }
+  // Tabanda toz
+  ctx.globalAlpha = alfa * 0.35;
+  ctx.fillStyle = "#ddd6fe";
+  ctx.beginPath();
+  ctx.ellipse(x, y + 2 * olcek, 14 * olcek, 4.5 * olcek, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function kasirgaCiz(ctx, px, py, now, bitis) {
+  const az = animAzHareket();
+  const bas = bitis - KASIRGA_SURE_MS;
+  const alfa = Math.max(0, Math.min(1, (now - bas) / 300, (bitis - now) / 500));
+  if (alfa <= 0) return;
+  const t = now / 1000;
+  ctx.save();
+  // Yerde rüzgâr halkası: dönen kesik yaylar
+  const R = (typeof KASIRGA_R === "number" ? KASIRGA_R : 130);
+  for (let h = 0; h < 3; h++) {
+    const r = R * (0.62 + h * 0.17);
+    const don = az ? h : t * (3.2 - h * 0.6) + h * 2;
+    ctx.globalAlpha = alfa * (0.38 - h * 0.08);
+    ctx.strokeStyle = h === 1 ? "#ede9fe" : "#a78bfa";
+    ctx.lineWidth = 3 - h * 0.6;
+    for (let j = 0; j < 3; j++) {
+      const a0 = don + j * (Math.PI * 2 / 3);
+      ctx.beginPath();
+      ctx.ellipse(px, py + 10, r, r * 0.42, 0, a0, a0 + 1.1);
+      ctx.stroke();
+    }
+  }
+  // Uçuşan yapraklar ve toz: farklı yarıçap ve yükseklikte döner
+  for (let i = 0; i < 12; i++) {
+    const a = (az ? 0 : t * (2.6 + (i % 3) * 0.7)) + i * 0.52;
+    const r = R * (0.45 + ((i * 37) % 50) / 100);
+    const yuk = 10 + ((i * 53) % 40);
+    const x = px + Math.cos(a) * r, y = py + 10 + Math.sin(a) * r * 0.42 - yuk;
+    ctx.globalAlpha = alfa * 0.85;
+    if (i % 3 === 0) {
+      ctx.fillStyle = i % 2 ? "#84cc16" : "#a16207";
+      ctx.beginPath();
+      ctx.ellipse(x, y, 4, 2, a * 2, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.fillStyle = "#f5f3ff";
+      ctx.beginPath();
+      ctx.arc(x, y, 1.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  // İki hortum oyuncunun çevresinde karşılıklı döner
+  const yorunge = az ? 0 : t * 2.2;
+  const hortumlar = [0, Math.PI].map((f) => ({ x: px + Math.cos(yorunge + f) * R * 0.66, y: py + 12 + Math.sin(yorunge + f) * R * 0.66 * 0.42 }));
+  hortumlar.sort((a, b) => a.y - b.y); // arkadaki önce
+  for (const h of hortumlar) hortumCiz(ctx, h.x, h.y, t, 1, alfa, az);
+  ctx.restore();
+}

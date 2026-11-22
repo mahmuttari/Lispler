@@ -328,13 +328,14 @@ const UPDATE_NOTES = {
   // 3.15.0 incelemedeyken 3.15.1 gelebilir: 3.15.0'ın satırları ve düzeltme (mağaza notu aynı satırlar, ≤ 500)
   // 3.17.0 (kullanıcı: "Yarasalar uçuşsun ormanda. Arada şimşek çakan bulutlar gezinsin. Bosun üzerinde."): 3.16.2
   // gönderilmeden geldi, onun satırları da var; 🌉 ve 🌿 (3.15.0'dan beri yayında) 500 sınırı için çıktı
-  // 3.18.0 (kullanıcı: "Animasyonlar ekleyebilirsin, statik olmak zorunda değil"): kod animasyonları (anim.js);
-  // 🎬 (3.16.2'den beri yayında) 500 sınırı için çıktı
+  // 3.18.0 (kullanıcı: "Animasyonlar ekleyebilirsin, statik olmak zorunda değil"; "tornado efekti çok güzel olsun,
+  // hayaletleri savura savura yok etsin"): kod animasyonları (anim.js) ve yeni kasırga; 🎬 ve 🐊 (yayında) 500 sınırı
+  // için çıktı
   "3.18.0": [
     t("✨ Hayaletler canlandı: süzülüyor, göz kırpıyor, vurulunca parlıyor, puf diye dağılıyor; paralar dönüyor!"),
+    t("🌪️ Kasırga yenilendi: hayaletleri içine çekip döndürüyor ve savuruyor!"),
     t("🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!"),
     t("🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi."),
-    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
     t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var."),
   ],
   "3.17.0": [
@@ -1064,7 +1065,7 @@ const WEAPONS = {
   bomba:    { name: t("Bomba"),       icon: "💣", cost: 80,  desc: t("200 px alandaki tüm hayaletlere 10 hasar."), max: 9 },
   dondurma: { name: t("Dondurma"),    icon: "❄️", cost: 100, desc: t("Tüm hayaletleri 5 sn dondurur."),          max: 9 },
   simsek:   { name: t("Şimşek"),      icon: "⚡", cost: 60,  desc: t("Ekrandaki tüm hayaletlere 3 hasar."),       max: 9 },
-  kasirga:  { name: t("Kasırga"),     icon: "🌪️", cost: 120, desc: t("8 sn etrafında dönen kalkan, dokunan ölür."), max: 9 },
+  kasirga:  { name: t("Kasırga"),     icon: "🌪️", cost: 120, desc: t("8 sn kasırga: yakındaki hayaletleri içine çeker, döndürür, savurur."), max: 9 },
   ilkyrd:   { name: t("İlk Yardım"),  icon: "❤️", cost: 50,  desc: t("Anında 2 can yeniler (max'ı geçemez)."),   max: 9 },
   roket:    { name: t("Roket"),       icon: "🚀", cost: 90,  desc: t("En yakın hayalete 25 hasar."),              max: 9 },
   gorunmez: { name: t("Görünmezlik"), icon: "🕵", cost: 70,  desc: t("5 sn hayaletler seni göremez."),            max: 9 },
@@ -1358,8 +1359,13 @@ function updateEffects(dt) {
     const e = game.effects[i];
     e.life -= dt;
     if (e.type === "ghostFade") {
-      // Ruh çıkıyor gibi yukarı süzül
+      // Ruh çıkıyor gibi yukarı süzül; kasırgada ölen dönerek dışarı savrulur ve yavaşlar
       e.y -= 45 * dt;
+      if (e.savrul) {
+        e.x += e.vx * dt; e.y += e.vy * dt;
+        const sur = Math.max(0, 1 - 2.6 * dt); e.vx *= sur; e.vy *= sur;
+        e.don += e.donHiz * dt;
+      }
       if (e.life <= 0) game.effects.splice(i, 1);
     } else if (e.type === "spark") {
       // Hayalet hala canlıysa konumu takip et
@@ -1440,6 +1446,7 @@ function drawGhostFades(ctx) {
     const k = 1 - alpha;
     ctx.save();
     ctx.globalAlpha = alpha * 0.7;
+    if (e.don) { ctx.translate(e.x, e.y); ctx.rotate(e.don); ctx.translate(-e.x, -e.y); } // kasırgada savrulan
     if (typeof olumDonusumu === "function") olumDonusumu(ctx, e, k); // uzayarak dumana dönüşür
     drawGhost(ctx, e);
     ctx.restore();
@@ -2553,6 +2560,11 @@ function drawGhost(ctx, g) {
     ctx.translate(0, an.dy);
     if (an.alfa < 1) ctx.globalAlpha *= an.alfa;
     ctx.scale(an.sx, an.sy);
+  }
+  if (kasirgadaMi(g)) {
+    // Kasırgaya kapılan hayalet havaya kalkar ve takla atarak döner
+    ctx.translate(0, -7 * s);
+    ctx.rotate(animSimdi / 1000 * 7 + (g.__faz || 0));
   }
 
   // Tonlama (HP'ye göre renk)
@@ -3866,7 +3878,9 @@ function durumGeldi(st) {
 
 // İstemci: hayalet durumdan düştü (öldü) — solma izi, parçacık; ben vurduysam yakaladıklarıma sayılır
 function hayaletGitti(g) {
-  game.effects.push({ type: "ghostFade", x: g.x, y: g.y, size: g.size || 40, hp: 0, maxHp: g.maxHp || 1, isBoss: !!g.isBoss, life: 1, maxLife: 1 });
+  const iz = { type: "ghostFade", x: g.x, y: g.y, size: g.size || 40, hp: 0, maxHp: g.maxHp || 1, isBoss: !!g.isBoss, life: 1, maxLife: 1 };
+  kasirgaSavur(iz, g);
+  game.effects.push(iz);
   spawnDeathParticles(g.x, g.y);
   if (g.isBoss) { showToast(t("👑 BOSS YENİLDİ! Kalan hayaletleri temizle!")); audio.bossDie(); }
   const vurus = online.vurduklarim.get(g._idx);
@@ -5364,8 +5378,46 @@ function enYakinHedef(g, hedefler) {
   return en;
 }
 
-const KASIRGA_R = 110;
-const KASIRGA_DPS = 8;
+const KASIRGA_R = 130;           // 3.18.0: 110'du; hayaletler biraz daha uzaktan içine çekilir
+const KASIRGA_DPS = 8;           // boss'a (yakalanmaz, yerinde hasar alır)
+const KASIRGA_YAKALA_DPS = 3;    // yakalanan hayalete: hemen ölmesin, birkaç tur dönüp savrulsun
+const KASIRGA_DONUS = 3.4;       // rad/sn; yörüngede dönüş hızı (içe yaklaştıkça artar)
+const KASIRGA_CEKIM = 2.4;       // yörünge yarıçapına yaklaşma hızı
+const KASIRGA_YORUNGE = [58, 92]; // px; yakalanan hayaletin döndüğü yarıçap aralığı (oyuncuya değmez)
+
+// Kasırga (3.18.0, kullanıcı: "hayaletleri savura savura yok etsin veya hasar versin"): yakalanan hayalet oyuncunun
+// çevresinde döner, içe çekilir, hasar alır; temas hasarı veremez ve ateş edemez. Yalnız host ve tek kişilik oyunda
+// konum değişir (çevrimiçi istemcide hasar host'a gider, dönme görüntüsü yerel çizilir).
+function kasirgaDondur(g, dt) {
+  const P = game.player;
+  let y = g.kasirgaYorunge;
+  if (!y) {
+    y = g.kasirgaYorunge = { a: Math.atan2(g.y - P.y, g.x - P.x), r: Math.hypot(g.x - P.x, g.y - P.y) || 1,
+      hedefR: KASIRGA_YORUNGE[0] + Math.random() * (KASIRGA_YORUNGE[1] - KASIRGA_YORUNGE[0]) };
+  }
+  y.a += KASIRGA_DONUS * dt * (1 + Math.max(0, KASIRGA_R - y.r) / KASIRGA_R);
+  y.r += (y.hedefR - y.r) * Math.min(1, KASIRGA_CEKIM * dt);
+  const nx = P.x + Math.cos(y.a) * y.r, ny = P.y + Math.sin(y.a) * y.r;
+  if (!collidesWalls(nx, ny, g.r)) { g.x = nx; g.y = ny; }
+  else { y.a = Math.atan2(g.y - P.y, g.x - P.x); y.r = Math.hypot(g.x - P.x, g.y - P.y) || 1; } // duvara takıldı: yerinden devam
+}
+
+// Bu hayalet yerel oyuncunun kasırgasında mı (çizim ve ölüm savrulması için; istemcide de çalışır)
+function kasirgadaMi(g) {
+  if (!g || g.isBoss || !game.player || game.player.dead) return false;
+  if (g.kasirgaYorunge) return true;
+  if (!((game.player.kasirgaUntil || 0) > performance.now())) return false;
+  const dx = g.x - game.player.x, dy = g.y - game.player.y;
+  return dx * dx + dy * dy < KASIRGA_R * KASIRGA_R;
+}
+
+// Kasırgada ölen hayaletin solan izi dönerek dışarı savrulur
+function kasirgaSavur(e, g) {
+  if (!kasirgadaMi(g)) return;
+  const a = Math.atan2(g.y - game.player.y, g.x - game.player.x) + 0.6; // dışa ve dönüş yönüne
+  e.vx = Math.cos(a) * 460; e.vy = Math.sin(a) * 460;
+  e.don = 0; e.donHiz = 16; e.savrul = true;
+}
 
 // Engele değen adım yüzey boyunca kayar (3.13.0: engeller eğri; eksen eksen denemek eğride ve sınırın mazgal
 // başlarında takılıyordu). Hedef engele girerse uzaklık alanının eğiminden (yüzey normali) batma kadar dışarı itilir;
@@ -5544,6 +5596,16 @@ function update(dt, now) {
       }
       continue;
     }
+
+    // Kasırga: yakındaki hayaleti içine çeker ve döndürür (boss yakalanmaz, aşağıda yerinde hasar alır)
+    if (playerKasirga && !g.isBoss && !game.player.dead) {
+      const kx = g.x - game.player.x, ky = g.y - game.player.y;
+      if (g.kasirgaYorunge || kx * kx + ky * ky < KASIRGA_R * KASIRGA_R) {
+        kasirgaDondur(g, dt);
+        g.hp -= KASIRGA_YAKALA_DPS * dt;
+        continue; // yakalanan hayalet kovalamaz, değemez, ateş edemez
+      }
+    } else if (g.kasirgaYorunge) delete g.kasirgaYorunge; // kasırga bitti: kaldığı yerden kovalamaya döner
 
     // En yakın hedefi kovalar; hedef yoksa (görünmezlik, herkes hayalet) rastgele dolaşır
     const hedef = enYakinHedef(g, hedefler);
@@ -5752,7 +5814,7 @@ function update(dt, now) {
           const d = Math.hypot(g.x - game.player.x, g.y - game.player.y);
           let dmg = 0;
           if (fanatik && d < 110) dmg += game.player.damage;
-          if (kasirga && d < KASIRGA_R) dmg += KASIRGA_DPS * 0.5;
+          if (kasirga && d < KASIRGA_R) dmg += (g.isBoss ? KASIRGA_DPS : KASIRGA_YAKALA_DPS) * 0.5;
           if (dmg > 0) { uzaktanVur(g, dmg); spawnHitParticles(g.x, g.y); any = true; }
         }
         if (fanatik) {
@@ -5956,20 +6018,7 @@ function update(dt, now) {
     if (game.ghosts[i].hp <= 0) killGhost(game.ghosts[i], i);
   }
 
-  // Kasırga görseli (8 sn boyunca dönen halka parçacıkları)
-  if ((game.player.kasirgaUntil || 0) > now) {
-    if (Math.random() < 0.6) {
-      const a = Math.random() * Math.PI * 2;
-      const r = 95 + Math.random() * 25;
-      game.particles.push({
-        x: game.player.x + Math.cos(a) * r,
-        y: game.player.y + Math.sin(a) * r,
-        vx: Math.cos(a + Math.PI / 2) * 140,
-        vy: Math.sin(a + Math.PI / 2) * 140,
-        life: 0.35, color: "#a78bfa",
-      });
-    }
-  }
+  // Kasırga görseli render'da çizilir (anim.js kasirgaCiz: dönen hortumlar, rüzgâr halkası, uçuşan yapraklar)
 
   // Kamera takibi
   game.camera.x = game.player.x - game.W / 2;
@@ -6137,8 +6186,8 @@ function spawnGhost() {
 }
 
 function killGhost(g, idx) {
-  // Solan iz: ölen hayaletin silüeti 1 sn boyunca yavaş kaybolur
-  game.effects.push({
+  // Solan iz: ölen hayaletin silüeti 1 sn boyunca yavaş kaybolur (kasırgada ölen dönerek savrulur)
+  const iz = {
     type: "ghostFade",
     x: g.x, y: g.y,
     size: g.size,
@@ -6146,7 +6195,9 @@ function killGhost(g, idx) {
     maxHp: g.maxHp,
     isBoss: !!g.isBoss,
     life: 1, maxLife: 1,
-  });
+  };
+  kasirgaSavur(iz, g);
+  game.effects.push(iz);
   game.ghosts.splice(idx, 1);
   spawnDeathParticles(g.x, g.y);
   const bana = !g.uzakVurdu; // son vuruş başka oyuncudansa o kendine sayar (hayaletGitti)
@@ -6615,6 +6666,9 @@ function render() {
   // Bomba/roket görselleri (hayaletlerin üstünde)
   drawEffects(ctx);
   if (typeof animEfektleriCiz === "function") animEfektleriCiz(ctx); // toplama halkası, boss iniş dalgası (anim.js)
+  if (typeof kasirgaCiz === "function" && !game.player.dead && (game.player.kasirgaUntil || 0) > performance.now()) {
+    kasirgaCiz(ctx, game.player.x, game.player.y, performance.now(), game.player.kasirgaUntil);
+  }
 
   // Diğer oyuncular (multiplayer)
   if (online.mode) {

@@ -21,6 +21,19 @@ Bulut Claude'un notu: kullanıcı animasyon paftalarının üretilmesini istedi.
 
 Uygulama simgesi (I1) kullanıcının kararıyla oyuna alındı ("geç").
 
+### Animasyon ilerlemesi (yerel Claude)
+
+ANİMASYON İSTEMİ aynı ChatGPT sohbetinde gönderildi ("ready").
+
+| Pafta | Durum | Not |
+|---|---|---|
+| N01 | tamam | Süzülme döngüsü, 4. karede göz kırpma |
+| N02 | tamam | Yok olma "puf" |
+| N03 | tamam | Atıcı hayalet saldırısı |
+| N04 | sürüyor | 1. denemede gri sisli arka plan; düzeltme istendi |
+| N05–N13 | bekliyor | |
+| KS1–KS6 | bekliyor | N'lerden sonra; her biri kullanıcı onayıyla |
+
 ChatGPT görsel sınırına takılınmadı. Güvenlik nedeniyle reddedilen hücre olmadı (boss kıyafetleri dahil).
 
 ## Bütün paftalarda denetlenenler

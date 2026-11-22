@@ -127,7 +127,7 @@ function temaZeminiCiz(ctx, n, x, y, w, h) {
 
 // ---- Hayaletler ----
 // Kutu (s birimi; x, y, w, h): bugünkü kod çiziminin kapladığı alan. Boss kutusu tacı ve haleyi de içerir.
-const HAYALET_KUTU = { normal: [-20, -25, 40, 49], boss: [-23, -41, 46, 64] };
+const HAYALET_KUTU = { normal: [-20, -25, 40, 49], boss: [-23, -41, 46, 64], ulke: [-31, -45, 62, 70] }; // ulke: kıyafetli boss geniş
 
 function hayaletResmiAnahtari(g) {
   if (g.isBoss) return "hayalet-boss";
@@ -136,14 +136,15 @@ function hayaletResmiAnahtari(g) {
   return "hayalet-normal";
 }
 
-// drawGhost çağırır (gövde, yüz ve atış parıltısı yerine). Çizdiyse true; Dünya Turu bossu (kostümlü) kod çizimiyle.
-function hayaletResmiCiz(ctx, g, s, renk, donmus, an) {
-  const k = hayaletResmiAnahtari(g);
+// drawGhost çağırır (gövde, yüz ve atış parıltısı yerine). Çizdiyse true. ulkeKod: Dünya Turu bossu (ülke kıyafetli);
+// o ülkenin boss resmi (U paftaları, boss-<KOD>) yoksa false döner ve kıyafet kodla çizilir.
+function hayaletResmiCiz(ctx, g, s, renk, donmus, an, ulkeKod = null) {
+  const k = ulkeKod ? `boss-${ulkeKod}` : hayaletResmiAnahtari(g);
   if (!gorsel(k)) return false;
   let kaynak = gorsel(k);
   if (donmus) kaynak = gorselRenkli(k, "#bae6fd");
   else if (k === "hayalet-normal" && renk !== "#a78bfa") kaynak = gorselRenkli(k, renk); // can kademesi rengi kalır
-  const [x, y, w, h] = HAYALET_KUTU[g.isBoss ? "boss" : "normal"];
+  const [x, y, w, h] = HAYALET_KUTU[ulkeKod ? "ulke" : g.isBoss ? "boss" : "normal"];
   resmiKutuyaCiz(ctx, kaynak, x * s, y * s, w * s, h * s, true);
   if (an && an.beyaz > 0) {
     ctx.save();

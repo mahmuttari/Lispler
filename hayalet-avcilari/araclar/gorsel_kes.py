@@ -48,6 +48,24 @@ DOKU_KARISIM = 0.28  # kenarın bu oranı karşı kenarla yumuşak geçişle har
 # Su lav gibi görünürse oyuncu ikisini karıştırır: Volkan suyu kod çizimiyle (sıcak su) kalır.
 DOKU_HARIC = {'tema5-su'}
 
+# Dünya Turu paftaları (U01–U26): her paftada iki ülke, 3. ve 6. hücre ülkenin bossu (kıyafetli hayalet). Hangi
+# hücrenin hangi ülke olduğu istem dosyasından okunur ("Cell 3: Türkiye (TR) BOSS: …"). Anahtar: boss-<KOD>.
+# Ülke objeleri (1, 2, 4, 5) bağlanmaz: engel olarak çarpışma biçimleri kod çizimine göre; resim o biçime oturmaz.
+ISTEM = os.path.join(KOK, 'gorsel', 'CHATGPT-ISTEMI.md')
+BOSS_BOYUT = 256
+
+
+def ulke_bosslari():
+    """İstem dosyasından {pafta: {hücre_no: ülke_kodu}} (yalnız BOSS hücreleri)."""
+    import re
+    metin = open(ISTEM, encoding='utf-8').read()
+    sonuc = {}
+    for m in re.finditer(r'^### (U\d\d) .*?(?=^### |\Z)', metin, re.S | re.M):
+        for h in re.finditer(r'^Cell (\d): [^\n(]*\(([A-Z]{2})\) BOSS', m.group(0), re.M):
+            sonuc.setdefault(m.group(1), {})[int(h.group(1))] = h.group(2)
+    return sonuc
+
+
 # Oyunda bağlı olanlar (timsah, köprü ve oyuncu ruhu kendi animasyonlarını kodla çizer; kare kare paftaları gelince)
 KULLANILAN = set(BOYUT) - {'oyuncu-ruh', 'bot'}
 # Atıcı hayaletin yanındaki mor küre silinir (oyun mermiyi ve atış öncesi parıltıyı kendisi çizer): sol yarı aynalanır.
@@ -180,6 +198,28 @@ def kes():
             liste[anahtar] = [hucre.width, hucre.height]
         print(f'✓ {pafta}')
     tema_dokulari(liste)
+    for pafta, hucreler in ulke_bosslari().items():
+        yol = os.path.join(HAM, f'{pafta}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGBA')
+        if resim.size != (1536, 1024):
+            sys.exit(f'{pafta}: boyut {resim.size}, 1536 × 1024 olmalı')
+        for no, kod in hucreler.items():
+            i = no - 1
+            x0, y0 = (i % 3) * 512, (i // 3) * 512
+            hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
+            kutu = hucre.getbbox()
+            if not kutu:
+                sys.exit(f'{pafta} hücre {no} (boss {kod}) boş')
+            hucre = hucre.crop(kutu)
+            oran = BOSS_BOYUT / max(hucre.size)
+            if oran < 1:
+                hucre = hucre.resize((max(1, round(hucre.width * oran)), max(1, round(hucre.height * oran))), Image.LANCZOS)
+            anahtar = f'boss-{kod}'
+            hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=88, method=6)
+            liste[anahtar] = [hucre.width, hucre.height]
+        print(f'✓ {pafta} (boss: {", ".join(hucreler.values())})')
     with open(os.path.join(CIKTI, 'liste.js'), 'w', encoding='utf-8') as f:
         f.write('// Üretilen dosya: araclar/gorsel_kes.py. Elle düzenleme.\n')
         f.write('// ChatGPT paftalarından kesilen görseller: anahtar → [genişlik, yükseklik] (px)\n')

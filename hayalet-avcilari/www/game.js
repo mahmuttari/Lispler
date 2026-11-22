@@ -2585,8 +2585,9 @@ function drawGhost(ctx, g) {
   const isFrozen = (g.frozenUntil || 0) > performance.now();
   if (isFrozen) bodyColor = "#bae6fd";
 
-  // ChatGPT görseli varsa (gorsel.js) gövde, yüz ve atış parıltısı resimden; yoksa ya da Dünya Turu bossu ise kod çizimi
-  const resimli = !kostum && typeof hayaletResmiCiz === "function" && hayaletResmiCiz(ctx, g, s, bodyColor, isFrozen, an);
+  // ChatGPT görseli varsa (gorsel.js) gövde, yüz ve atış parıltısı resimden; yoksa kod çizimi. Dünya Turu bossu ülkesinin
+  // kıyafetli resmiyle (U paftaları), o ülkenin resmi yoksa kıyafet kodla
+  const resimli = typeof hayaletResmiCiz === "function" && hayaletResmiCiz(ctx, g, s, bodyColor, isFrozen, an, kostum ? turUlke.kod : null);
   if (!resimli) {
     // Vücut
     ctx.fillStyle = bodyColor;

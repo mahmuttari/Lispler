@@ -452,7 +452,10 @@ olmak zorunda değil, kendin önerilerde de bulunabilirsin."* İki katman:
    30'un altına düşürüyordu); karartma (%24) dokuya gömülü. Su: `suTabani` engelin teması için dokuyu kullanır, doku
    sonradan yüklenirse su önbelleği yeniden çizilir. Gelmeyen temada eski düz renk, ızgara ve mavi su. Volkan'ın su
    hücresi lav olarak çizildiği için kullanılmaz (Volkan'da lav ayrı, can yakan tuzak; su lav gibi görünmesin). Duvarlar ve
-   objeler kod çizimiyle kalır (çarpışma biçimine oturan, derinlikli çizimler). Timsah, köprü ve oyuncu ruhu
+   objeler kod çizimiyle kalır (çarpışma biçimine oturan, derinlikli çizimler).
+   **Dünya Turu bossları (U01–U26):** her paftanın 3. ve 6. hücresi ülkenin kıyafetli bossu (`boss-<KOD>`; hangi
+   hücrenin hangi ülke olduğu `CHATGPT-ISTEMI.md`'den okunur). O ülkenin resmi varsa boss resimden, yoksa bugünkü
+   kıyafet kod çizimi. Ülke objeleri bağlanmaz (engel; çarpışma biçimi kod çizimine göre). Timsah, köprü ve oyuncu ruhu
    kendi kod animasyonlarıyla kalır (kare kare paftaları gelince). `test/gorsel.test.mjs` (29 sınama: liste ve disk aynı,
    boyutlar, her işlev resimle ve resimsiz, renk kademesi, eşya simgeleri, kare süresi).
 3. **ChatGPT kare kare animasyonları (sonra).** `gorsel/CHATGPT-ISTEMI.md` → "Animasyon paftaları" (N01–N13): hayalet

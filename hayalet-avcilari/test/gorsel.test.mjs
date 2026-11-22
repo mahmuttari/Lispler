@@ -139,6 +139,29 @@ try {
     assert.ok(gelen >= 1, 'hiç tema dokusu yok');
   });
   sina('tema dokusu dikişsiz (sol ve sağ kenar sütunu ortalama 12\'den az farklı)', () => { assert.ok(tema.dikis < 12, String(tema.dikis)); });
+
+  // Dünya Turu bossu: ülkesinin kıyafetli resmi (boss-<KOD>) varsa resimden, yoksa kıyafet kodla
+  const tur = await p.evaluate((liste) => {
+    const c = document.createElement('canvas'); c.width = c.height = 200; const x = c.getContext('2d');
+    const asil = x.drawImage.bind(x); let ad = []; x.drawImage = (im, ...a) => { ad.push(im.src || 'tuval'); return asil(im, ...a); };
+    const sonuc = {};
+    startGame(); game.paused = true; game.dunyaTuru = true;
+    for (const u of ULKELER) {
+      game.level = u.sira; ad = [];
+      x.save(); drawGhost(x, { x: 100, y: 110, size: 80, hp: 9, maxHp: 9, isBoss: true, __dogus: -1e9 }); x.restore();
+      sonuc[u.kod] = { resim: !!liste[`boss-${u.kod}`], cizilen: ad.some((s) => s.includes(`boss-${u.kod}.webp`)), baska: ad.filter((s) => /hayalet-boss/.test(s)).length };
+    }
+    game.dunyaTuru = false; game.level = 1;
+    return sonuc;
+  }, LISTE);
+  sina('Dünya Turu bossu ülkesinin kıyafetli resmiyle; resmi olmayan ülkede kıyafet kodla (taçlı boss resmi hiç)', () => {
+    const resimli = Object.entries(tur).filter(([, v]) => v.resim);
+    assert.ok(resimli.length >= 1, 'hiç ülke boss resmi yok');
+    for (const [kod, v] of Object.entries(tur)) {
+      assert.equal(v.cizilen, v.resim, `${kod}: resim ${v.resim}, çizilen ${v.cizilen}`);
+      assert.equal(v.baska, 0, `${kod}: taçlı boss resmi kullanıldı`);
+    }
+  });
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);

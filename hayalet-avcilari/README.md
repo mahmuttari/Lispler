@@ -450,7 +450,8 @@ olmak zorunda değil, kendin önerilerde de bulunabilirsin."* İki katman:
    oyunda 256 birimlik döşeme). Zemin: Dünya Turu zemini gibi desen ekranın piksel ölçeğinde bir kez hazırlanır, piksele
    hizalı döşenir ve yalnız ekrandaki alan boyanır (her karede yeniden ölçeklenen desen 4× yavaş işlemcide kare hızını
    30'un altına düşürüyordu); karartma (%24) dokuya gömülü. Su: `suTabani` engelin teması için dokuyu kullanır, doku
-   sonradan yüklenirse su önbelleği yeniden çizilir. Gelmeyen temada eski düz renk, ızgara ve mavi su. Duvarlar ve
+   sonradan yüklenirse su önbelleği yeniden çizilir. Gelmeyen temada eski düz renk, ızgara ve mavi su. Volkan'ın su
+   hücresi lav olarak çizildiği için kullanılmaz (Volkan'da lav ayrı, can yakan tuzak; su lav gibi görünmesin). Duvarlar ve
    objeler kod çizimiyle kalır (çarpışma biçimine oturan, derinlikli çizimler). Timsah, köprü ve oyuncu ruhu
    kendi kod animasyonlarıyla kalır (kare kare paftaları gelince). `test/gorsel.test.mjs` (29 sınama: liste ve disk aynı,
    boyutlar, her işlev resimle ve resimsiz, renk kademesi, eşya simgeleri, kare süresi).

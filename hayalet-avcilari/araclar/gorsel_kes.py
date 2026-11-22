@@ -44,6 +44,9 @@ TEMA_HUCRE = {'zemin': 0, 'su': 2}
 DOKU = 512          # px; oyunda 256 birimlik döşeme (2× ekranda net)
 DOKU_KENAR = 6      # ChatGPT'nin hücre kenarında bıraktığı ince çizgi kırpılır
 DOKU_KARISIM = 0.28  # kenarın bu oranı karşı kenarla yumuşak geçişle harmanlanır
+# Kullanılmayan dokular: Volkan'ın "su" hücresi lav olarak çizildi; Volkan bölümünde lav ayrı, can yakan bir tuzak.
+# Su lav gibi görünürse oyuncu ikisini karıştırır: Volkan suyu kod çizimiyle (sıcak su) kalır.
+DOKU_HARIC = {'tema5-su'}
 
 # Oyunda bağlı olanlar (timsah, köprü ve oyuncu ruhu kendi animasyonlarını kodla çizer; kare kare paftaları gelince)
 KULLANILAN = set(BOYUT) - {'oyuncu-ruh', 'bot'}
@@ -137,6 +140,8 @@ def tema_dokulari(liste):
             sys.exit(f'T{n}: boyut {resim.size}, 1536 × 1024 olmalı')
         for tur, i in TEMA_HUCRE.items():
             x0 = i * 512
+            if f'tema{n}-{tur}' in DOKU_HARIC:
+                continue
             hucre = resim.crop((x0 + DOKU_KENAR, DOKU_KENAR, x0 + 512 - DOKU_KENAR, 512 - DOKU_KENAR))
             doku = dikissiz(hucre).resize((DOKU, DOKU), Image.LANCZOS)
             anahtar = f'tema{n}-{tur}'

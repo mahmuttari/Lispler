@@ -37,6 +37,14 @@ BOYUT = {
     'esya-bomba': 128, 'esya-dondurma': 128, 'esya-simsek': 128, 'esya-kasirga': 128, 'esya-ilkyrd': 128,
     'esya-roket': 128, 'esya-gorunmez': 128, 'bot': 160,
 }
+# Tema paftaları (T1–T6): 1. hücre zemin, 3. hücre su dokusu. Dikişsiz hâle getirilip DOKU px'e küçültülür
+# (anahtar: tema<n>-zemin, tema<n>-su). Duvar ve objeler kod çizimiyle kalır: çarpışma biçimlerine oturan, derinlikli
+# ayrıntılı çizimler; düz doku onların yerini tutmaz.
+TEMA_HUCRE = {'zemin': 0, 'su': 2}
+DOKU = 512          # px; oyunda 256 birimlik döşeme (2× ekranda net)
+DOKU_KENAR = 6      # ChatGPT'nin hücre kenarında bıraktığı ince çizgi kırpılır
+DOKU_KARISIM = 0.28  # kenarın bu oranı karşı kenarla yumuşak geçişle harmanlanır
+
 # Oyunda bağlı olanlar (timsah, köprü ve oyuncu ruhu kendi animasyonlarını kodla çizer; kare kare paftaları gelince)
 KULLANILAN = set(BOYUT) - {'oyuncu-ruh', 'bot'}
 # Atıcı hayaletin yanındaki mor küre silinir (oyun mermiyi ve atış öncesi parıltıyı kendisi çizer): sol yarı aynalanır.
@@ -102,6 +110,41 @@ def en_buyuk_parca(hucre):
     return hucre
 
 
+def dikissiz(doku):
+    """Kenarları karşı kenarla birleşen doku: yarım kaydırılmış kopya (kenarları süreklidir) kenarlarda, asıl resim
+    ortada; aradaki bant yumuşak geçişle harmanlanır."""
+    import numpy as np
+    a = np.asarray(doku.convert('RGB'), dtype=np.float32)
+    h, w, _ = a.shape
+    b = np.roll(np.roll(a, h // 2, axis=0), w // 2, axis=1)
+    def egri(n):
+        x = np.arange(n, dtype=np.float32)
+        d = np.minimum(x, n - 1 - x) / (n * DOKU_KARISIM)
+        d = np.clip(d, 0, 1)
+        return d * d * (3 - 2 * d)  # smoothstep: kenarda 0, içeride 1
+    m = np.minimum.outer(egri(h), egri(w))[:, :, None]
+    c = a * m + b * (1 - m)
+    return Image.fromarray(np.clip(c + 0.5, 0, 255).astype(np.uint8), 'RGB')
+
+
+def tema_dokulari(liste):
+    for n in range(1, 7):
+        yol = os.path.join(HAM, f'T{n}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGBA')
+        if resim.size != (1536, 1024):
+            sys.exit(f'T{n}: boyut {resim.size}, 1536 × 1024 olmalı')
+        for tur, i in TEMA_HUCRE.items():
+            x0 = i * 512
+            hucre = resim.crop((x0 + DOKU_KENAR, DOKU_KENAR, x0 + 512 - DOKU_KENAR, 512 - DOKU_KENAR))
+            doku = dikissiz(hucre).resize((DOKU, DOKU), Image.LANCZOS)
+            anahtar = f'tema{n}-{tur}'
+            doku.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=84, method=6)
+            liste[anahtar] = [DOKU, DOKU]
+        print(f'✓ T{n} (zemin, su)')
+
+
 def kes():
     os.makedirs(CIKTI, exist_ok=True)
     liste = {}
@@ -131,6 +174,7 @@ def kes():
             hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=88, method=6)
             liste[anahtar] = [hucre.width, hucre.height]
         print(f'✓ {pafta}')
+    tema_dokulari(liste)
     with open(os.path.join(CIKTI, 'liste.js'), 'w', encoding='utf-8') as f:
         f.write('// Üretilen dosya: araclar/gorsel_kes.py. Elle düzenleme.\n')
         f.write('// ChatGPT paftalarından kesilen görseller: anahtar → [genişlik, yükseklik] (px)\n')

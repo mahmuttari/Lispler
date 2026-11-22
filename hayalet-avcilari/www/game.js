@@ -6653,6 +6653,13 @@ function render() {
   // Zemin: Dünya Turu'nda ailenin deseni (dunya-turu.js turZeminCiz), değilse bölüm temasının rengi ve ızgara
   if (!(window.turZeminCiz && turZeminCiz(ctx))) {
     const th = getTheme();
+    // ChatGPT zemin dokusu (gorsel.js temaZeminiCiz) varsa dikişsiz döşenir; yalnız ekranda görünen alan boyanır
+    const zx = Math.max(0, Math.floor(game.camera.x)), zy = Math.max(0, Math.floor(game.camera.y));
+    const zw = Math.min(game.worldW, Math.ceil(game.camera.x + game.W) + 2) - zx;
+    const zh = Math.min(game.worldH, Math.ceil(game.camera.y + game.H) + 2) - zy;
+    if (typeof temaZeminiCiz === "function" && temaZeminiCiz(ctx, LEVEL_THEMES.indexOf(th) + 1, zx, zy, zw, zh)) {
+      // zemin çizildi
+    } else {
     ctx.fillStyle = th.floor;
     ctx.fillRect(0, 0, game.worldW, game.worldH);
 
@@ -6665,6 +6672,7 @@ function render() {
     }
     for (let y = 0; y < game.worldH; y += gridSize) {
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(game.worldW, y); ctx.stroke();
+    }
     }
   }
 

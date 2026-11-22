@@ -444,7 +444,14 @@ olmak zorunda değil, kendin önerilerde de bulunabilirsin."* İki katman:
    atıcı, mini, boss; can kademesi ve donma rengi resmin rengi değiştirilerek, vurulma parlaması beyaz siluetle; Dünya
    Turu bossu kostümüyle kod çizimi), para, elmas, zümrüt, kalp, güç yıldızı, beş silah, kedi/köpek/kuş, yarasa, fırtına
    bulutu, çalı ve silah çubuğu ile dükkândaki eşya simgeleri. Karakterler bağlı değil: K paftalarında silah ele gömülü;
-   oyunda silahı kod çizer. Elleri boş paftalar (KS1–KS6) istendi, gelince bağlanacak. Timsah, köprü ve oyuncu ruhu
+   oyunda silahı kod çizer. Elleri boş paftalar (KS1–KS6) istendi, gelince bağlanacak.
+   **Tema dokuları (T1–T6):** paftanın zemin ve su hücresi kenar çizgisi kırpılıp dikişsiz yapılır (yarım kaydırılmış
+   kopya kenarlarda, asıl resim ortada, aradaki bant yumuşak geçişle) ve 512 px WebP olur (`tema<n>-zemin`, `tema<n>-su`;
+   oyunda 256 birimlik döşeme). Zemin: Dünya Turu zemini gibi desen ekranın piksel ölçeğinde bir kez hazırlanır, piksele
+   hizalı döşenir ve yalnız ekrandaki alan boyanır (her karede yeniden ölçeklenen desen 4× yavaş işlemcide kare hızını
+   30'un altına düşürüyordu); karartma (%24) dokuya gömülü. Su: `suTabani` engelin teması için dokuyu kullanır, doku
+   sonradan yüklenirse su önbelleği yeniden çizilir. Gelmeyen temada eski düz renk, ızgara ve mavi su. Duvarlar ve
+   objeler kod çizimiyle kalır (çarpışma biçimine oturan, derinlikli çizimler). Timsah, köprü ve oyuncu ruhu
    kendi kod animasyonlarıyla kalır (kare kare paftaları gelince). `test/gorsel.test.mjs` (29 sınama: liste ve disk aynı,
    boyutlar, her işlev resimle ve resimsiz, renk kademesi, eşya simgeleri, kare süresi).
 3. **ChatGPT kare kare animasyonları (sonra).** `gorsel/CHATGPT-ISTEMI.md` → "Animasyon paftaları" (N01–N13): hayalet

@@ -14,7 +14,10 @@ function gorselYukle() {
     if (GORSEL[k]) continue;
     const im = new Image();
     im.decoding = "async";
-    im.onload = () => { GORSEL[k] = im; };
+    im.onload = () => {
+      GORSEL[k] = im;
+      if (k.endsWith("-su") && typeof window.engelSuOnbellegiSil === "function") window.engelSuOnbellegiSil();
+    };
     im.src = `gorsel/${k}.webp`;
   }
 }
@@ -64,6 +67,62 @@ function gorselRenkli(k, renk, kip = "renk") {
   x.drawImage(im, 0, 0);
   _gorselRenk[anahtar] = c;
   return c;
+}
+
+// ---- Tema dokuları (T1–T6): zemin ve su ----
+// n: 1-6 (LEVEL_THEMES sırası), tur: "zemin" | "su". Döşeme oyunda TEMA_DOKU_BIRIM birim. Yoksa null (kod çizimi).
+const TEMA_DOKU_BIRIM = 256;
+const _temaDesen = {};
+// Su: engelin önbellek tuvaline bir kez çizilir (engeller.js suTabani); desen yerel birimde, ölçeği tuval verir
+function temaDeseni(n, tur) {
+  const k = `tema${n}-${tur}`;
+  if (_temaDesen[k]) return _temaDesen[k];
+  const im = gorsel(k);
+  if (!im) return null;
+  const desen = document.createElement("canvas").getContext("2d").createPattern(im, "repeat");
+  if (desen && desen.setTransform && typeof DOMMatrix === "function") {
+    const o = TEMA_DOKU_BIRIM / im.naturalWidth;
+    desen.setTransform(new DOMMatrix([o, 0, 0, o, 0, 0]));
+  }
+  return (_temaDesen[k] = desen);
+}
+window.temaDeseni = temaDeseni;
+
+// Zemin: her karede bütün ekrana döşenir. Dünya Turu zemini gibi (dunya-turu.js turZeminCiz) desen ekranın piksel
+// ölçeğinde bir kez hazırlanır ve piksele hizalı döşenir; her karede yeniden ölçekleme olmaz (kare hızı). Karartma
+// (karakterler öne çıksın) dokuya gömülür. Çizdiyse true.
+let _zeminDesen = null;
+function temaZeminiCiz(ctx, n, x, y, w, h) {
+  const im = gorsel(`tema${n}-zemin`);
+  if (!im) return false;
+  const donusum = typeof DOMMatrix === "function" && typeof CanvasPattern !== "undefined" && !!CanvasPattern.prototype.setTransform
+    && typeof ctx.getTransform === "function";
+  const m = donusum ? ctx.getTransform() : null;
+  const hizali = !!m && m.b === 0 && m.c === 0 && m.a === m.d && m.a > 0;
+  const s = hizali ? m.a : 1, anahtar = `${n}|${s}|${hizali}`;
+  if (!_zeminDesen || _zeminDesen.anahtar !== anahtar) {
+    _zeminDesen = { anahtar, desen: null, k: 1 };
+    try {
+      const px = Math.max(1, Math.round(TEMA_DOKU_BIRIM * s)), c = document.createElement("canvas");
+      c.width = px; c.height = px;
+      const cx = c.getContext("2d");
+      cx.drawImage(im, 0, 0, px, px);
+      cx.fillStyle = "rgba(0, 0, 0, 0.24)"; cx.fillRect(0, 0, px, px);
+      _zeminDesen.k = px / TEMA_DOKU_BIRIM;
+      _zeminDesen.desen = ctx.createPattern(c, "repeat");
+    } catch (_) { _zeminDesen.desen = null; }
+  }
+  const desen = _zeminDesen.desen;
+  if (!desen) return false;
+  if (donusum) {
+    const k = _zeminDesen.k;
+    desen.setTransform(new DOMMatrix(hizali
+      ? [1 / k, 0, 0, 1 / k, (Math.round(m.e) - m.e) / m.a, (Math.round(m.f) - m.f) / m.d]
+      : [1 / k, 0, 0, 1 / k, 0, 0]));
+  }
+  ctx.fillStyle = desen;
+  ctx.fillRect(x, y, w, h);
+  return true;
 }
 
 // ---- Hayaletler ----

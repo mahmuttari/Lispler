@@ -28,8 +28,9 @@ const LISTE = JSON.parse(listeKaynak.match(/= (\{.*\});/)[1]);
 const dosyalar = fs.readdirSync(path.join(WWW, 'gorsel')).filter((f) => f.endsWith('.webp'));
 sina('liste.js ile diskteki WebP dosyaları aynı', () => { assert.deepEqual(dosyalar.map((f) => f.slice(0, -5)).sort(), Object.keys(LISTE).sort()); });
 const toplam = dosyalar.reduce((t, f) => t + fs.statSync(path.join(WWW, 'gorsel', f)).size, 0);
-sina('görseller küçük: toplam 2 MB, her kenar en çok 256 px', () => {
-  assert.ok(toplam < 2 * 1024 * 1024, String(toplam)); for (const [k, [w, h]] of Object.entries(LISTE)) assert.ok(w <= 256 && h <= 256, k);
+sina('görseller küçük: toplam 2 MB, her kenar en çok 256 px (tema dokuları 512)', () => {
+  assert.ok(toplam < 2 * 1024 * 1024, String(toplam));
+  for (const [k, [w, h]] of Object.entries(LISTE)) { const en = k.startsWith('tema') ? 512 : 256; assert.ok(w <= en && h <= en, k); }
 });
 
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
@@ -100,6 +101,44 @@ try {
     assert.equal(r.cubuk, true); assert.ok(r.cubukAlt.length > 0); assert.equal(r.emojiyeDon, true);
   });
   sina('40 hayalet + 20 toplanabilir resimle bir kare 12 ms\'den kısa', () => { assert.ok(r.kareMs < 12, String(r.kareMs)); });
+
+  // Tema dokuları: gelen temada zemin ve su resimle (desen), gelmeyende kod çizimi
+  const tema = await p.evaluate((liste) => {
+    const o = {}; const cagri = [];
+    const asil = window.temaDeseni; window.temaDeseni = (n, tur) => { const d = asil(n, tur); cagri.push(`${n}-${tur}-${d ? 'var' : 'yok'}`); return d; };
+    const zeminAsil = temaZeminiCiz; temaZeminiCiz = (ctx, n, ...k) => { const d = zeminAsil(ctx, n, ...k); cagri.push(`${n}-zemin-${d ? 'var' : 'yok'}`); return d; };
+    const dene = (lv) => {
+      startGame(); game.paused = true; while (game.level < lv) nextLevel(); game.paused = true;
+      cagri.length = 0; window.engelSuOnbellegiSil(); render();
+      for (const w of game.waters || []) { // oyun yalnız ekrandaki gölü boyar: kamera her gölün üstüne gider
+        game.camera.x = Math.max(0, w.x + w.w / 2 - game.W / 2); game.camera.y = Math.max(0, w.y + w.h / 2 - game.H / 2);
+        for (let i = 0; i < 3; i++) render();
+      }
+      return [...new Set(cagri)];
+    };
+    // render() zemin için temaZeminiCiz'i (game.js), su için window.temaDeseni'ni (engeller.js) çağırır
+    for (let n = 1; n <= 6; n++) o[n] = { zemin: !!liste[`tema${n}-zemin`], su: !!liste[`tema${n}-su`], cagri: dene(n) };
+    temaZeminiCiz = zeminAsil; window.temaDeseni = asil;
+    o.dikis = (() => { // dikişsiz: dokunun sol ve sağ kenar sütunu birbirine yakın
+      const k = Object.keys(liste).find((x) => x.startsWith('tema')); if (!k) return 0;
+      const im = GORSEL[k], c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight;
+      const x = c.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, c.width, c.height).data;
+      let fark = 0; for (let y = 0; y < c.height; y++) { const a = (y * c.width) * 4, b = (y * c.width + c.width - 1) * 4; fark += Math.abs(d[a] - d[b]) + Math.abs(d[a + 1] - d[b + 1]) + Math.abs(d[a + 2] - d[b + 2]); }
+      return fark / c.height / 3;
+    })();
+    return o;
+  }, LISTE);
+  sina('gelen temalarda zemin ve su dokusu kullanılır, gelmeyenlerde kod çizimi', () => {
+    let gelen = 0;
+    for (let n = 1; n <= 6; n++) {
+      const t = tema[n];
+      if (t.zemin) { gelen++; assert.ok(t.cagri.includes(`${n}-zemin-var`), `T${n} zemin: ${t.cagri}`); }
+      else assert.ok(!t.cagri.some((c) => c.startsWith(`${n}-zemin-var`)), `T${n} zemin yok ama kullanıldı`);
+      if (t.su) assert.ok(t.cagri.includes(`${n}-su-var`), `T${n} su: ${t.cagri}`);
+    }
+    assert.ok(gelen >= 1, 'hiç tema dokusu yok');
+  });
+  sina('tema dokusu dikişsiz (sol ve sağ kenar sütunu ortalama 12\'den az farklı)', () => { assert.ok(tema.dikis < 12, String(tema.dikis)); });
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);

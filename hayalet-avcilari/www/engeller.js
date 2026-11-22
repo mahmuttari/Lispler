@@ -346,12 +346,15 @@
   // Su: tema kıyısı (kiyiCiz), koyu kenar, mavi; renk geçişi dünya y'sinde (0 → SU_BOY) olduğu için kesişen göller
   // tek göl gibi birleşir
   const SU_BOY = 1200;
+  // Su boyanırken engelin teması (engelBoya verir): ChatGPT su dokusu (gorsel.js temaDeseni) varsa o kullanılır
+  let _boyaTema = null;
   function suTabani(ctx, w, h, r, B, kiyiCiz, kenarRengi = "#0b2a55") {
     if (kiyiCiz) kiyiCiz();
     doldur(ctx, B, kenarRengi, 0, 0, 2);
+    const desen = typeof _boyaTema === "number" && typeof window.temaDeseni === "function" ? window.temaDeseni(_boyaTema + 1, "su") : null;
     const oy = B.oy || 0, g = ctx.createLinearGradient(0, -oy, 0, SU_BOY - oy);
     g.addColorStop(0, "#2b8fe6"); g.addColorStop(1, "#0f4fae");
-    doldur(ctx, B, g);
+    doldur(ctx, B, desen || g);
     kirp(ctx, B, () => { for (const q of B) if (q.t !== "k") elips(ctx, q.x - (q.r || q.rx) * 0.3, q.y - (q.r || q.ry) * 0.45, (q.r || q.rx) * 0.45, 3, "rgba(255,255,255,0.12)"); });
   }
   // Diken plakası (bütün temalarda): kırmızı kenar, taş zemin, metal sivri uçlar
@@ -572,8 +575,12 @@
   // Engeli ctx'e yerel koordinatta çizer; canlı katman noktalarını döndürür. Rastgele dizi biçiminkinden ayrı tohumdan.
   function engelBoya(ctx, o) {
     const [ciz, palet] = ressam(o);
-    return ciz(ctx, o.w, o.h, engelRastgele((o.tohum ^ 0x5bd1e995) >>> 0), palet, o.bicim) || [];
+    _boyaTema = o.tema;
+    try { return ciz(ctx, o.w, o.h, engelRastgele((o.tohum ^ 0x5bd1e995) >>> 0), palet, o.bicim) || []; }
+    finally { _boyaTema = null; }
   }
+  // Tema dokusu sonradan yüklenince (gorsel.js) suların önbellek resmi yeniden çizilsin
+  window.engelSuOnbellegiSil = () => { for (const o of ((typeof game !== "undefined" && game.waters) || [])) o._resim = null; };
   // Engelin önbellek resmi { c: tuval, canli: noktalar }; ölçek değişmişse yeniden çizilir. Tuval oluşturulamazsa null
   // (çağıran o karede doğrudan çizer).
   let _boyanan = 0; // bu karede çizilen resim (engelleriCiz sıfırlar; ısınma bütçesi için)

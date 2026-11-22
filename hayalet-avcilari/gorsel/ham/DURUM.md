@@ -7,9 +7,13 @@ Son güncelleme: 22 Kasım 2026 (yerel Claude Code, ChatGPT'yi Chrome'da kullana
 **45 paftanın hepsi bitti ve bu klasörde.** K1–K6, H1, P1–P4, T1–T6, U01–U26, I1, A1.
 Karakter paftalarını (K1–K6) kullanıcı tek tek referansla karşılaştırıp onayladı.
 
-## Sıradaki iş (kullanıcının kararı, 22 Kasım 2026: "animasyon üret")
+## Sıradaki iş: görselleri oyuna bağlamak (bulut oturumu)
 
-Bulut Claude'un notu: kullanıcı animasyon paftalarının üretilmesini istedi. Sıra:
+**Yerel Claude'un üretim işi bitti (22 Kasım 2026):** 45 durağan pafta + N01–N13 + KS1–KS6 bu klasörde, hepsi denetlendi
+ve push edildi; ayrıntılar aşağıda. Kalan iş `../CHATGPT-ISTEMI.md` → "Bitince Claude'un yapacakları" (kesme, WebP,
+`gorsel.js`, çizim işlevlerine bağlama, testler). Yerel Claude oyun koduna dokunmadı.
+
+Aşağıdaki iki madde tamamlandı:
 
 1. **N01–N13 animasyon paftaları** (`../CHATGPT-ISTEMI.md` → "Animasyon paftaları"): önce "ANİMASYON İSTEMİ"ni bir
    kez gönder, sonra her paftayı istemde yazan onaylı paftayı (`H1.png`, `P1.png`, `P2.png`, `P3.png`, `P4.png`)

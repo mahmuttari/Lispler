@@ -220,6 +220,17 @@ const PET_KUTU = { kedi: [-24, -31, 48, 42], kopek: [-21, -21, 52, 33], kus: [-2
 function petResmi(ctx, tur, s, durum = {}) {
   const { yurume = 0, saldiri = 0, kanat = 0, zaman = 0 } = durum;
   const kutu = PET_KUTU[tur];
+  // ChatGPT yürüyüş / kanat kareleri (N10, N11): adım ve kanat evresi kod animasyonuyla aynı ritimde
+  const evre = tur === "kus" ? kanat * 22 / (Math.PI * 2) : yurume * 16 / (Math.PI * 2);
+  const kare = kutu && typeof animDongu === "function" ? animDongu(tur, evre, 3) : 0;
+  if (kare) {
+    ctx.save();
+    ctx.translate(saldiri * 5 * s, 0);
+    animGovdeCiz(ctx, tur, kare, kutu[0] * s, kutu[1] * s, kutu[2] * s, kutu[3] * s, true);
+    ctx.restore();
+    petSaldiriIzi(ctx, tur, s, saldiri);
+    return;
+  }
   if (kutu && typeof gorsel === "function" && gorsel(`pet-${tur}`)) {
     // ChatGPT görseli (gorsel.js): yürürken sallanır, kuş kanat çırparken hafifçe kabarır, saldırırken öne atılır
     ctx.save();

@@ -28,8 +28,8 @@ const LISTE = JSON.parse(listeKaynak.match(/= (\{.*\});/)[1]);
 const dosyalar = fs.readdirSync(path.join(WWW, 'gorsel')).filter((f) => f.endsWith('.webp'));
 sina('liste.js ile diskteki WebP dosyaları aynı', () => { assert.deepEqual(dosyalar.map((f) => f.slice(0, -5)).sort(), Object.keys(LISTE).sort()); });
 const toplam = dosyalar.reduce((t, f) => t + fs.statSync(path.join(WWW, 'gorsel', f)).size, 0);
-sina('görseller küçük: toplam 2 MB, her kenar en çok 256 px (tema dokuları 512, menü arka planı 1152)', () => {
-  assert.ok(toplam < 2 * 1024 * 1024, String(toplam));
+sina('görseller küçük: toplam 4 MB, her kenar en çok 256 px (tema dokuları 512, menü arka planı 1152)', () => {
+  assert.ok(toplam < 4 * 1024 * 1024, String(toplam));
   for (const [k, [w, h]] of Object.entries(LISTE)) { const en = k.startsWith('tema') ? 512 : k === 'menu-arka' ? 1152 : 256; assert.ok(w <= en && h <= en, k); }
 });
 
@@ -62,6 +62,9 @@ try {
       'yarasa': () => yarasaCiz(x, { x: 100, y: 100, yon: 1, boy: 1, kanat: 1 }),
       'bulut': () => bulutCiz(x, { x: 100, y: 100, cakti: 0.1, boss: false }),
       'çalı': () => caliCiz(x, { x: 100, y: 100, tohum: 1 }, 0, 0.5),
+      ...Object.fromEntries(['kinkin', 'kornet', 'kent', 'gul', 'beti', 'sercin'].map((k) => [`karakter ${k}`, () => drawCharacter(x, k, 0, 100, 110, 70)])),
+      'timsah (atılış)': () => timsahCiz(x, { x: 100, y: 100, a: Math.PI, t: TIMSAH.uyari + TIMSAH.atilma * 0.5 }),
+      'kasırga hortumu': () => hortumCiz(x, 100, 120, 1.2, 1, 1, false),
     };
     o.resimli = {}; o.hata = [];
     const sayimla = (ad, fn) => { say = 0; x.save(); try { fn(); } catch (e) { o.hata.push(`${ad}: ${e.message}`); } x.restore(); return say; };
@@ -94,6 +97,48 @@ try {
   for (const ad of Object.keys(r.resimli)) {
     sina(`${ad}: resim varken resimden, yokken koddan çizilir`, () => { assert.ok(r.resimli[ad] >= 1, `resimli ${r.resimli[ad]}`); assert.equal(r.kodla[ad], 0, `kodla ${r.kodla[ad]}`); });
   }
+  // Animasyon kareleri ve karakterler
+  const an = await p.evaluate(() => {
+    const o = {};
+    const BEKLENEN = { 'hayalet-suzul': 6, 'hayalet-puf': 6, 'atici-saldiri': 6, 'boss-bekle': 3, 'boss-kukre': 3, 'boss-yenilgi': 6,
+      para: 6, elmas: 3, zumrut: 3, vurus: 3, patlama: 3, buz: 3, kasirga: 3, kedi: 3, kopek: 3, kus: 3, yarasa: 3, timsah: 6,
+      'kalp-topla': 3, 'yildiz-topla': 3 };
+    o.eksikAnim = Object.entries(BEKLENEN).filter(([ad, n]) => animHazir(ad) !== n).map(([ad, n]) => `${ad}:${animHazir(ad)}/${n}`);
+    o.govde = Object.keys(BEKLENEN).filter((ad) => !(ANIM_GOVDE[ad] && ANIM_GOVDE[ad].length === 4));
+    const c = document.createElement('canvas'); c.width = c.height = 240; const x = c.getContext('2d');
+    let say = 0; const asil = x.drawImage.bind(x); x.drawImage = (...a) => { say++; return asil(...a); };
+    // Karakter: resim kod çiziminin boyunda; yürürken bacaklar ayrı (3 parça), Kenit'te (cüppe) tek parça
+    o.boy = []; o.yuruyus = {};
+    for (const k of Object.keys(GORSEL_LISTESI).filter((k) => k.startsWith('kar-'))) {
+      const [, ck, i] = k.split('-'); const kk = karakterKodKutusu(ck, +i);
+      if (!(kk.alt > 30 && kk.alt < 60 && kk.ust < -25 && kk.ust > -90)) o.boy.push(`${k}: ${kk.ust}..${kk.alt}`);
+    }
+    for (const k of ['kinkin', 'kent', 'fanatik']) { say = 0; x.save(); drawCharacter(x, k, 0, 120, 140, 70, 0, 0.13); x.restore(); o.yuruyus[k] = say; }
+    // Ölüm kareleri: normal ve boss resimden; Dünya Turu bossu kodla
+    o.puf = olumAnimCiz(x, { x: 100, y: 100, size: 40, maxHp: 1, life: 0.5, maxLife: 1 }, 0.5);
+    o.bossYenilgi = olumAnimCiz(x, { x: 100, y: 100, size: 80, isBoss: true, life: 0.5, maxLife: 1 }, 0.5);
+    game.dunyaTuru = true; o.turBossu = olumAnimCiz(x, { x: 100, y: 100, size: 80, isBoss: true }, 0.5); game.dunyaTuru = false;
+    // Efekt kareleri: animEfektleri listesindeki "kare" efekti resimden çizilir, süresi bitince silinir
+    animEfektleri.length = 0; animEfektEkle('kare', 50, 50, { ad: 'vurus', sure: 0.3, boyut: 30, now: 1000 });
+    say = 0; animEfektleriCiz(x, 1100); o.kareEfekt = say; animEfektleriCiz(x, 1500); o.kareBitti = animEfektleri.length;
+    // Toplama: kalp ve yıldızda kare efekti, parada halka
+    toplamaEfekti({ kind: 'kalp', x: 0, y: 0 }); toplamaEfekti({ kind: 'para', x: 0, y: 0 });
+    o.toplama = animEfektleri.map((e) => e.tur + (e.ad ? ':' + e.ad : '')); animEfektleri.length = 0;
+    // Atıcı: şarjda küre karesi (2-5), dururken 1
+    const g = { x: 0, y: 0, hp: 2, maxHp: 2, size: 40, isShooter: true, canShoot: true, fireRate: 2400, nextShot: performance.now() + 100000, __dogus: -1e9 };
+    say = 0; x.save(); drawGhost(x, g); x.restore(); o.atici = say;
+    return o;
+  });
+  sina('20 animasyonun bütün kareleri yüklü ve gövde kutuları var', () => { assert.deepEqual(an.eksikAnim, []); assert.deepEqual(an.govde, []); });
+  sina('karakter resmi kod çiziminin boyunda ve ayak hizasında', () => { assert.deepEqual(an.boy, []); });
+  sina('yürürken bacaklar ayrı çizilir (3 parça); Kenit\'in cüppesi tek parça', () => {
+    assert.ok(an.yuruyus.kinkin >= 3, String(an.yuruyus.kinkin)); assert.ok(an.yuruyus.fanatik >= 3, String(an.yuruyus.fanatik)); assert.equal(an.yuruyus.kent, 1);
+  });
+  sina('ölen hayalet ve boss "puf" kareleriyle; Dünya Turu bossu kodla', () => { assert.equal(an.puf, true); assert.equal(an.bossYenilgi, true); assert.equal(an.turBossu, false); });
+  sina('efekt kareleri çizilir, süresi bitince silinir; kalpte toplama karesi, parada halka', () => {
+    assert.equal(an.kareEfekt, 1); assert.equal(an.kareBitti, 0); assert.deepEqual(an.toplama, ['kare:kalp-topla', 'topla']);
+  });
+  sina('atıcı hayalet kare kare çizilir', () => { assert.ok(an.atici >= 1, String(an.atici)); });
   sina('hayaletin can kademesi rengi ve donma rengi resimde de görünür; renkli kopya önbellekte', () => {
     assert.equal(r.onbellek, true); assert.equal(r.sariMi, true); assert.equal(r.buzMu, true);
   });

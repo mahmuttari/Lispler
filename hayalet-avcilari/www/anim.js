@@ -219,23 +219,31 @@ const TOPLA_RENK = { para: "255, 209, 102", elmas: "96, 165, 250", zumrut: "16, 
 
 function animEfektEkle(tur, x, y, secenek = {}) {
   if (animEfektleri.length > 60) animEfektleri.shift(); // taşmasın
-  animEfektleri.push({ tur, x, y, bas: secenek.now ?? performance.now(), renk: secenek.renk || "255, 255, 255", olcek: secenek.olcek || 1 });
+  animEfektleri.push({ tur, x, y, bas: secenek.now ?? performance.now(), renk: secenek.renk || "255, 255, 255", olcek: secenek.olcek || 1,
+    ad: secenek.ad, sure: secenek.sure, boyut: secenek.boyut });
 }
 
 function toplamaEfekti(p) {
   if (!p) return;
+  // Kalp ve güç yıldızı: ChatGPT toplama kareleri (N13) hazırsa onlar, değilse renkli halka
+  const ad = p.kind === "kalp" ? "kalp-topla" : p.kind === "guc" ? "yildiz-topla" : null;
+  if (ad && typeof animHazir === "function" && animHazir(ad)) { animEfektEkle("kare", p.x, p.y, { ad, sure: 0.45, boyut: 52 }); return; }
   animEfektEkle("topla", p.x, p.y, { renk: TOPLA_RENK[p.kind] || "255, 255, 255" });
 }
 
 function animEfektleriCiz(ctx, now = performance.now()) {
   for (let i = animEfektleri.length - 1; i >= 0; i--) {
     const e = animEfektleri[i];
-    const sure = e.tur === "dalga" ? ANIM.dalgaSn : ANIM.toplaSn;
+    const sure = e.tur === "dalga" ? ANIM.dalgaSn : e.tur === "kare" ? (e.sure || 0.4) : ANIM.toplaSn;
     const k = (now - e.bas) / 1000 / sure;
     if (k >= 1 || k < -1) { animEfektleri.splice(i, 1); continue; }
     if (k < 0) continue;
     ctx.save();
-    if (e.tur === "topla") {
+    if (e.tur === "kare") {
+      // ChatGPT efekt kareleri (vuruş, patlama, buz, toplama): kare hazır değilse hiç çizilmez
+      const kare = typeof animBirKez === "function" ? animBirKez(e.ad, k) : 0;
+      if (kare) { const b = e.boyut || 40; animCiz(ctx, e.ad, kare, e.x - b / 2, e.y - b / 2, b, b); }
+    } else if (e.tur === "topla") {
       const r = 6 + animYumusak(k) * 18;
       ctx.globalAlpha = 1 - k;
       ctx.strokeStyle = `rgb(${e.renk})`;
@@ -280,6 +288,15 @@ const KASIRGA_SURE_MS = 8000;
 // Tek hortum: tabandan yukarı genişleyen, kıvrılan halkalar ve yarı saydam gövde
 function hortumCiz(ctx, x, y, t, olcek, alfa, az) {
   const boy = 64 * olcek, n = 10;
+  // ChatGPT kasırga kareleri (N09 alt sıra) hazırsa onlar
+  const kare = typeof animDongu === "function" ? animDongu("kasirga", az ? 0 : t + x * 0.001, 10) : 0;
+  if (kare) {
+    ctx.save();
+    ctx.globalAlpha *= alfa;
+    animGovdeCiz(ctx, "kasirga", kare, x - 34 * olcek, y - 66 * olcek, 68 * olcek, 70 * olcek, true);
+    ctx.restore();
+    return;
+  }
   const kay = (k) => (az ? 0 : Math.sin(t * 5 + k * 4.2) * 7 * k * olcek);
   // Gövde: yarı saydam huni
   ctx.save();

@@ -141,11 +141,40 @@ function hayaletResmiAnahtari(g) {
 function hayaletResmiCiz(ctx, g, s, renk, donmus, an, ulkeKod = null) {
   const k = ulkeKod ? `boss-${ulkeKod}` : hayaletResmiAnahtari(g);
   if (!gorsel(k)) return false;
-  let kaynak = gorsel(k);
-  if (donmus) kaynak = gorselRenkli(k, "#bae6fd");
-  else if (k === "hayalet-normal" && renk !== "#a78bfa") kaynak = gorselRenkli(k, renk); // can kademesi rengi kalır
   const [x, y, w, h] = HAYALET_KUTU[ulkeKod ? "ulke" : g.isBoss ? "boss" : "normal"];
-  resmiKutuyaCiz(ctx, kaynak, x * s, y * s, w * s, h * s, true);
+  const now = performance.now();
+  // Kare kare animasyon (N01, N03, N04): hazırsa durağan resmin yerine; anahtar ve kare
+  let ad = null, kare = 0;
+  if (!ulkeKod) {
+    if (k === "hayalet-normal") { ad = "hayalet-suzul"; kare = animDongu(ad, now / 1000 + (g.__faz || 0), 7); }
+    else if (k === "hayalet-atici") {
+      ad = "atici-saldiri";
+      const sarj = (an && an.sarj) || 0;
+      const atisSonrasi = g.fireRate && typeof g.nextShot === "number" ? now - (g.nextShot - g.fireRate) : 1e9;
+      const n = animHazir(ad);
+      kare = !n ? 0 : sarj > 0 ? 2 + Math.min(3, Math.floor(sarj * 4)) : atisSonrasi >= 0 && atisSonrasi < 320 ? 6 : 1;
+    } else if (k === "hayalet-boss") {
+      const sarj = (an && an.sarj) || 0;
+      if (sarj > 0 && animHazir("boss-kukre")) { ad = "boss-kukre"; kare = animBirKez(ad, sarj); }
+      else { ad = "boss-bekle"; kare = animDongu(ad, now / 1000, 4); }
+    }
+  }
+  const renkli = (anahtar) => donmus ? gorselRenkli(anahtar, "#bae6fd")
+    : (k === "hayalet-normal" && renk !== "#a78bfa") ? gorselRenkli(anahtar, renk) : gorsel(anahtar); // can kademesi rengi
+  if (kare) {
+    const ka = `an-${ad}-${kare}`;
+    animGovdeCiz(ctx, ad, kare, x * s, y * s, w * s, h * s, true, renkli(ka));
+    if (an && an.beyaz > 0) {
+      ctx.save();
+      ctx.globalAlpha *= an.beyaz * 0.75;
+      animGovdeCiz(ctx, ad, kare, x * s, y * s, w * s, h * s, true, gorselRenkli(ka, "#ffffff", "doldur"));
+      ctx.restore();
+    }
+    // Atıcı ve boss karelerinde küre ve kükreme var: kodun atış parıltısı çizilmez
+    if (an && ad === "hayalet-suzul" && typeof hayaletSarjCiz === "function") hayaletSarjCiz(ctx, s, an.sarj, g.isBoss);
+    return true;
+  }
+  resmiKutuyaCiz(ctx, renkli(k), x * s, y * s, w * s, h * s, true);
   if (an && an.beyaz > 0) {
     ctx.save();
     ctx.globalAlpha *= an.beyaz * 0.75;
@@ -153,6 +182,25 @@ function hayaletResmiCiz(ctx, g, s, renk, donmus, an, ulkeKod = null) {
     ctx.restore();
   }
   if (an && typeof hayaletSarjCiz === "function") hayaletSarjCiz(ctx, s, an.sarj, g.isBoss);
+  return true;
+}
+
+// Ölen hayaletin "puf" animasyonu (N02; boss için N05). drawGhostFades çağırır; çizdiyse true (kod puf'u çizilmez).
+// Dünya Turu bossu (kıyafetli) kod animasyonuyla.
+function olumAnimCiz(ctx, e, k) {
+  const boss = !!e.isBoss;
+  if (boss && typeof game !== "undefined" && game.dunyaTuru) return false;
+  const ad = boss ? "boss-yenilgi" : "hayalet-puf";
+  const kare = animBirKez(ad, k);
+  if (!kare) return false;
+  const s = (e.size || 40) / 40;
+  const [x, y, w, h] = HAYALET_KUTU[boss ? "boss" : "normal"];
+  ctx.save();
+  ctx.translate(e.x, e.y);
+  if (e.don) ctx.rotate(e.don);
+  if (k > 0.8) ctx.globalAlpha *= (1 - k) / 0.2;
+  animGovdeCiz(ctx, ad, kare, x * s, y * s, w * s, h * s, true);
+  ctx.restore();
   return true;
 }
 
@@ -168,3 +216,112 @@ function esyaSimgesiHTML(key, emoji, ad = "") {
 }
 
 gorselYukle();
+
+// ---- Kare kare animasyonlar (N01–N13; an-<ad>-<n>.webp) ----
+// Bir animasyon ancak bütün kareleri yüklenince kullanılır; değilse çağıran kod animasyonuna (anim.js) düşer.
+const _animSayi = {};
+function animSayisi(ad) {
+  if (_animSayi[ad] !== undefined) return _animSayi[ad];
+  let n = 0;
+  while (typeof GORSEL_LISTESI === "object" && GORSEL_LISTESI && GORSEL_LISTESI[`an-${ad}-${n + 1}`]) n++;
+  return (_animSayi[ad] = n);
+}
+function animHazir(ad) {
+  const n = animSayisi(ad);
+  for (let i = 1; i <= n; i++) if (!gorsel(`an-${ad}-${i}`)) return 0;
+  return n;
+}
+// Döngü: sn saniyede fps hızında 1..n; bir kez: k (0-1) ilerlemesine göre 1..n. Hazır değilse 0.
+function animDongu(ad, sn, fps) { const n = animHazir(ad); return n ? 1 + (Math.floor(sn * fps) % n + n) % n : 0; }
+function animBirKez(ad, k) { const n = animHazir(ad); return n ? 1 + Math.max(0, Math.min(n - 1, Math.floor(k * n))) : 0; }
+function animCiz(ctx, ad, i, x, y, w, h, alt = false) {
+  const im = i ? gorsel(`an-${ad}-${i}`) : null;
+  if (!im) return false;
+  resmiKutuyaCiz(ctx, im, x, y, w, h, alt);
+  return true;
+}
+
+// ---- Karakterler (KS1–KS6; kar-<anahtar>-<kostüm>.webp) ----
+// Resim, aynı karakterin kod çiziminin boyunda ve ayak hizasında çizilir (oranlar oyunla aynı kalır). Yürürken resmin
+// bacak bölümü ikiye ayrılıp sırayla kaldırılır (kod yürüyüşünün aynısı); silahı drawCharacter kodla çizer.
+const _karKutu = {};
+const _karBacak = {};
+let _karKodla = false;
+// Kod çiziminin dikey kapsamı (s = 1 biriminde): { ust, alt }. Gölge ve yarı saydam hale sayılmaz.
+function karakterKodKutusu(charKey, idx) {
+  const k = `${charKey}|${idx}`;
+  if (_karKutu[k]) return _karKutu[k];
+  const W = 200, H = 240, OY = 130;
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d");
+  _karKodla = true;
+  try { drawCharacter(x, charKey, idx, W / 2, OY, 100); } finally { _karKodla = false; }
+  const d = x.getImageData(0, 0, W, H).data;
+  let ust = H, alt = 0;
+  for (let yy = 0; yy < H; yy++) for (let xx = 0; xx < W; xx++) if (d[(yy * W + xx) * 4 + 3] > 120) { if (yy < ust) ust = yy; if (yy > alt) alt = yy; }
+  if (alt <= ust) { ust = OY - 40; alt = OY + 42; }
+  return (_karKutu[k] = { ust: ust - OY, alt: alt + 1 - OY });
+}
+// Resimde bacakların yeri: { oran: bacakların başladığı yükseklik (0-1), ayir: iki bacağı ayıran sütun (0-1) }.
+// Bacakların arasında saydam boşluk yok (koyu kontur çizgisi ayırır): eksen en alttaki dolu bölgenin ortası; bacakların
+// tepesi, alttan yukarı çıkarken dolu genişliğin %30'dan fazla arttığı satır (gövdenin başladığı yer). Bulunamazsa null.
+function karakterBacaklari(anahtar, im) {
+  if (_karBacak[anahtar] !== undefined) return _karBacak[anahtar];
+  let sonuc = null;
+  try {
+    const W = im.naturalWidth, H = im.naturalHeight;
+    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    const x = c.getContext("2d"); x.drawImage(im, 0, 0);
+    const d = x.getImageData(0, 0, W, H).data;
+    const aralik = (yy) => {
+      let sol = -1, sag = -1;
+      for (let xx = 0; xx < W; xx++) if (d[(yy * W + xx) * 4 + 3] >= 128) { if (sol < 0) sol = xx; sag = xx; }
+      return sol < 0 ? null : [sol, sag];
+    };
+    const alt = aralik(Math.floor(H * 0.96));
+    if (alt) {
+      const bacakGen = alt[1] - alt[0] + 1, eksen = (alt[0] + alt[1]) / 2;
+      for (let yy = Math.floor(H * 0.96); yy > H * 0.5; yy--) {
+        const a = aralik(yy);
+        if (a && a[1] - a[0] + 1 > bacakGen * 1.3) {
+          const oran = (yy + 1) / H;
+          if (oran > 0.55 && oran < 0.95) sonuc = { oran, ayir: eksen / W };
+          break;
+        }
+      }
+    }
+  } catch (_) { sonuc = null; }
+  return (_karBacak[anahtar] = sonuc);
+}
+// drawCharacter çağırır (gölgeden sonra, gövde yerine). Çizdiyse true.
+function karakterResmiCiz(ctx, charKey, idx, s, swing) {
+  if (_karKodla) return false;
+  const anahtar = `kar-${charKey}-${idx}`;
+  const im = gorsel(anahtar);
+  if (!im) return false;
+  const kk = karakterKodKutusu(charKey, idx);
+  const h = (kk.alt - kk.ust) * s, w = h * im.naturalWidth / im.naturalHeight;
+  const x0 = -w / 2, y0 = kk.alt * s - h;
+  const bacak = swing && charKey !== "kent" ? karakterBacaklari(anahtar, im) : null; // Kenit: cüppe, bacak yok
+  if (!bacak) { ctx.drawImage(im, x0, y0, w, h); return true; }
+  const iw = im.naturalWidth, ih = im.naturalHeight, kes = bacak.oran, ky = ih * kes, ax = iw * bacak.ayir, wx = w * bacak.ayir;
+  const kalkSol = Math.max(0, swing) * 4 * s, kalkSag = Math.max(0, -swing) * 4 * s;
+  ctx.drawImage(im, 0, ky, ax, ih - ky, x0, y0 + h * kes - kalkSol, wx, h * (1 - kes) - kalkSol * 0.6);
+  ctx.drawImage(im, ax, ky, iw - ax, ih - ky, x0 + wx, y0 + h * kes - kalkSag, w - wx, h * (1 - kes) - kalkSag * 0.6);
+  ctx.drawImage(im, 0, 0, iw, ky, x0, y0, w, h * kes);
+  return true;
+}
+
+// Animasyon karesini gövdesi (ilk karenin dolu alanı, ANIM_GOVDE) (x, y, w, h) kutusuna oturacak biçimde çizer; karenin
+// gövde dışındaki efektleri (küre, ses halkası, duman) kutunun dışına taşabilir. kaynak: renkli kopya için (isteğe bağlı).
+function animGovdeCiz(ctx, ad, i, x, y, w, h, alt = true, kaynak = null) {
+  const im = kaynak || (i ? gorsel(`an-${ad}-${i}`) : null);
+  if (!im) return false;
+  const W = im.naturalWidth || im.width, H = im.naturalHeight || im.height;
+  const g = (typeof ANIM_GOVDE === "object" && ANIM_GOVDE && ANIM_GOVDE[ad]) || [0, 0, 1, 1];
+  const bw = g[2] * W, bh = g[3] * H;
+  const o = Math.min(w / bw, h / bh);
+  const bx = x + (w - bw * o) / 2, by = alt ? y + h - bh * o : y + (h - bh * o) / 2;
+  ctx.drawImage(im, bx - g[0] * W * o, by - g[1] * H * o, W * o, H * o);
+  return true;
+}

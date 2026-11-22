@@ -152,8 +152,14 @@ function yarasaCiz(ctx, b) {
   ctx.save();
   ctx.translate(b.x, b.y);
   ctx.scale(b.yon, 1);
+  const kare = typeof animHazir === "function" && animHazir("yarasa") ? (cirp > 0.33 ? 1 : cirp < -0.33 ? 3 : 2) : 0;
+  if (kare) { // ChatGPT kanat kareleri (N11): yukarı, düz, aşağı
+    animGovdeCiz(ctx, "yarasa", kare, -2.3 * s, -0.95 * s, 4.6 * s, 1.6 * s, false);
+    ctx.restore();
+    return;
+  }
   if (typeof gorsel === "function" && gorsel("yarasa")) {
-    // ChatGPT görseli: kanat çırpışı dikey basılmayla (kare kare animasyon N11 gelince değişecek)
+    // ChatGPT görseli: kanat çırpışı dikey basılmayla (kare kareler yoksa)
     ctx.scale(1, 0.72 + 0.28 * Math.abs(cirp));
     gorselKutuya(ctx, "yarasa", -2.3 * s, -0.95 * s, 4.6 * s, 1.6 * s);
     ctx.restore();

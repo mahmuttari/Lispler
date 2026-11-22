@@ -334,7 +334,7 @@ const UPDATE_NOTES = {
   "3.18.0": [
     t("✨ Hayaletler canlandı: süzülüyor, göz kırpıyor, vurulunca parlıyor, puf diye dağılıyor; paralar dönüyor!"),
     t("🌪️ Kasırga yenilendi: hayaletleri içine çekip döndürüyor ve savuruyor!"),
-    t("🎨 Hayaletler, petler, silahlar ve eşyalar yepyeni çizimlerle!"),
+    t("🎨 Karakterler, hayaletler, petler ve eşyalar yepyeni çizimlerle; kare kare animasyonlar!"),
     t("🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!"),
     t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var."),
   ],
@@ -1225,6 +1225,7 @@ function useWeapon(key) {
       }
       // Patlama halkası (büyüyen)
       game.effects.push({ type: "boom", x: px, y: py, r: 0, rMax: r, life: 0.55, maxLife: 0.55 });
+      if (typeof animEfektEkle === "function") animEfektEkle("kare", px, py, { ad: "patlama", sure: 0.6, boyut: 180 }); // N08
       for (let i = 0; i < 24; i++) {
         const a = Math.random() * Math.PI * 2;
         const sp = 120 + Math.random() * 160;
@@ -1248,6 +1249,7 @@ function useWeapon(key) {
         game.particles.push({ x: px, y: py, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.8, color: "#bae6fd" });
       }
       showFloat(t("❄️ Donduruldu!"), px, py - 36);
+      if (typeof animEfektEkle === "function") animEfektEkle("kare", px, py, { ad: "buz", sure: 0.6, boyut: 220 }); // N09
       audio.unlock();
       break;
     }
@@ -1444,6 +1446,7 @@ function drawGhostFades(ctx) {
     if (e.type !== "ghostFade") continue;
     const alpha = Math.max(0, e.life / e.maxLife);
     const k = 1 - alpha;
+    if (typeof olumAnimCiz === "function" && olumAnimCiz(ctx, e, k)) continue; // ChatGPT "puf" kareleri (N02, N05)
     ctx.save();
     ctx.globalAlpha = alpha * 0.7;
     if (e.don) { ctx.translate(e.x, e.y); ctx.rotate(e.don); ctx.translate(-e.x, -e.y); } // kasırgada savrulan
@@ -1637,6 +1640,13 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
   ctx.beginPath();
   ctx.ellipse(0, 45 * s, 22 * s, 7 * s, 0, 0, Math.PI * 2);
   ctx.fill();
+
+  // ChatGPT karakter resmi (elleri boş, KS paftaları; gorsel.js): gövde resimden, silah koddan (nişan, geri tepme)
+  if (typeof karakterResmiCiz === "function" && karakterResmiCiz(ctx, charKey, costumeIdx, s, swing)) {
+    karakterSilahiCiz(ctx, charKey, c, s, swing, aimRaise, shootRecoil, gunKey);
+    ctx.restore();
+    return;
+  }
 
   // Mark için sırt çantası askıları (vücudun arkasında)
   if (charKey === "mark") {
@@ -2107,6 +2117,21 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
   }
 
   ctx.restore();
+}
+
+// Resimli karakterde silah: kod çizimindeki gibi (envanter silahı, yoksa karakterin kendi silahı; Kenit'te bıçak,
+// Beti'de yalnız envanter silahı)
+function karakterSilahiCiz(ctx, charKey, c, s, swing, aimRaise, shootRecoil, gunKey) {
+  if (gunKey) { drawGunInHand(ctx, gunKey, s, swing, aimRaise, shootRecoil); return; }
+  if (charKey === "beti") return;
+  if (charKey === "kent") {
+    ctx.fillStyle = c.color.weapon;
+    ctx.fillRect(28 * s, -6 * s, 4 * s, 22 * s);
+    ctx.fillStyle = "#451a03";
+    ctx.fillRect(26 * s, 14 * s, 8 * s, 6 * s);
+    return;
+  }
+  drawCharWeapon(ctx, charKey, s, swing, aimRaise, shootRecoil);
 }
 
 // Hayalet olan oyuncunun görüntüsü (çevrimiçi oyunda ölen oyuncu): karakter bir kez ayrı bir tuvale çizilip mavi tonla
@@ -2973,6 +2998,13 @@ function drawPickup(ctx, p) {
     // Dönen para (anim.js): kenardan görünürken incelir, arka yüzde simge yok
     const don = typeof paraDonusu === "function" ? paraDonusu(performance.now(), p.x) : { sx: 1, on: true };
     ctx.scale(don.sx, 1);
+    const paraKare = typeof animDongu === "function" ? animDongu("para", performance.now() / 1000 + p.x * 0.01, 10) : 0;
+    if (paraKare) { // ChatGPT dönme kareleri (N06): ölçekle dönme yerine
+      ctx.scale(1 / don.sx, 1);
+      animGovdeCiz(ctx, "para", paraKare, -9.5, -9.5, 19, 19, false);
+      ctx.restore();
+      return;
+    }
     if (typeof gorsel === "function" && gorsel("para")) {
       gorselKutuya(ctx, "para", -9.5, -9.5, 19, 19);
       if (!don.on) { ctx.fillStyle = "rgba(161, 98, 7, 0.35)"; ctx.beginPath(); ctx.arc(0, 0, 9, 0, Math.PI * 2); ctx.fill(); } // arka yüz
@@ -2993,6 +3025,9 @@ function drawPickup(ctx, p) {
       ctx.textBaseline = "middle";
       ctx.fillText("$", 0, 1);
     }
+  } else if ((p.kind === "elmas" || p.kind === "zumrut") && typeof animDongu === "function" && animDongu(p.kind, 0, 1)) {
+    // ChatGPT parıltı kareleri (N07)
+    animGovdeCiz(ctx, p.kind, animDongu(p.kind, performance.now() / 1000 + p.x * 0.013, 5), -10, -12, 20, 24, false);
   } else if (p.kind === "elmas" && typeof gorselKutuya === "function" && gorselKutuya(ctx, "elmas", -10, -12, 20, 24)) {
     if (typeof mucevherParilti === "function") mucevherParilti(ctx, performance.now(), p.x);
   } else if (p.kind === "zumrut" && typeof gorselKutuya === "function" && gorselKutuya(ctx, "zumrut", -10, -12, 20, 24)) {
@@ -6340,6 +6375,7 @@ function showFloat(text, x, y) {
 }
 
 function spawnHitParticles(x, y) {
+  if (typeof animEfektEkle === "function") animEfektEkle("kare", x, y, { ad: "vurus", sure: 0.22, boyut: 26 }); // N08
   for (let i = 0; i < 5; i++) {
     const a = Math.random() * Math.PI * 2;
     const s = 50 + Math.random() * 80;

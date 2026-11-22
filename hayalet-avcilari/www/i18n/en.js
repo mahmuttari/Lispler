@@ -115,7 +115,7 @@ I18N.en = {
   "🎖 Başarımlar": "🎖 Achievements",
   "🎚 Ses": "🎚 Sound",
   "🎚 Ses Ayarları": "🎚 Sound Settings",
-  "🎨 Hayaletler, petler, silahlar ve eşyalar yepyeni çizimlerle!": "🎨 Ghosts, pets, weapons and items have brand-new artwork!",
+  "🎨 Karakterler, hayaletler, petler ve eşyalar yepyeni çizimlerle; kare kare animasyonlar!": "🎨 Brand-new artwork for heroes, ghosts, pets and items, with frame-by-frame animations!",
   "🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi.": "🎨 New look and 🏆 a Top 500 champions list.",
   "🎨 Yeni görünüm: düğmeler, kontroller ve göstergeler yenilendi.": "🎨 New look: cleaner buttons, controls and HUD.",
   "🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez).": "🎬 Out of lives on the World Tour? Watch an ad and carry on where you left off (3 times per game).",

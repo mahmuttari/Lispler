@@ -444,7 +444,18 @@ olmak zorunda değil, kendin önerilerde de bulunabilirsin."* İki katman:
    atıcı, mini, boss; can kademesi ve donma rengi resmin rengi değiştirilerek, vurulma parlaması beyaz siluetle; Dünya
    Turu bossu kostümüyle kod çizimi), para, elmas, zümrüt, kalp, güç yıldızı, beş silah, kedi/köpek/kuş, yarasa, fırtına
    bulutu, çalı ve silah çubuğu ile dükkândaki eşya simgeleri. Karakterler bağlı değil: K paftalarında silah ele gömülü;
-   oyunda silahı kod çizer. Elleri boş paftalar (KS1–KS6) istendi, gelince bağlanacak.
+   oyunda silahı kod çizer. **Karakterler (KS1–KS6, elleri boş):** `kar-<anahtar>-<kostüm>`; resim aynı karakterin
+   kod çiziminin boyunda ve ayak hizasında çizilir (`karakterKodKutusu`: kod çizimi bir kez görünmez tuvale çizilip
+   dikey kapsamı ölçülür), silahı kod çizer (envanter silahı, karakterin silahı; Kenit'te bıçak). Yürürken bacak bölümü
+   (alttan yukarı dolu genişliğin %30 arttığı satıra kadar) eksenden ikiye ayrılıp sırayla kaldırılır; Kenit'in cüppesi
+   tek parça. Bot kod çiziminde.
+   **Kare kare animasyonlar (N01–N13):** `an-<ad>-<n>`; bir animasyonun kareleri aynı birleşik kutudan kesilir, ilk
+   karenin dolu alanı gövde kutusu olarak `ANIM_GOVDE`'ye yazılır (`animGovdeCiz` gövdeyi oyun kutusuna oturtur, küre,
+   ses halkası, duman gibi efektler dışa taşar). Bağlananlar: normal hayalet süzülme döngüsü (can kademesi rengiyle),
+   ölüm "puf"u (boss için yenilgi; Dünya Turu bossu kodla), atıcının saldırısı (şarja göre), boss bekleme ve kükreme,
+   para dönmesi, elmas ve zümrüt parıltısı, vuruş kıvılcımı, bomba patlaması, buz patlaması, kasırga hortumu, kedi ve
+   köpek yürüyüşü, kuş ve yarasa kanadı, timsah (dalga, gözler, baş, kapma, batış; sola atılan aynalanır), kalp ve
+   güç yıldızı toplama. Bir animasyonun bütün kareleri yüklenmeden kullanılmaz; yoksa kod animasyonu (anim.js).
    **Tema dokuları (T1–T6):** paftanın zemin ve su hücresi kenar çizgisi kırpılıp dikişsiz yapılır (yarım kaydırılmış
    kopya kenarlarda, asıl resim ortada, aradaki bant yumuşak geçişle) ve 512 px WebP olur (`tema<n>-zemin`, `tema<n>-su`;
    oyunda 256 birimlik döşeme). Zemin: Dünya Turu zemini gibi desen ekranın piksel ölçeğinde bir kez hazırlanır, piksele

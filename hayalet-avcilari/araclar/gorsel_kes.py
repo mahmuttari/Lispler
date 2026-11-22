@@ -66,6 +66,100 @@ def ulke_bosslari():
     return sonuc
 
 
+# Elleri boş karakter paftaları (KS1–KS6): karakter <anahtar>-<kostüm sırası>. Oyunda kod çiziminin boyuna ve ayak
+# hizasına ölçeklenir (gorsel.js karakterResmiCiz); silahı kod çizer. Bot (KS6 5. hücre) kod çiziminde kalır.
+KARAKTER = {
+    'KS1': [('kinkin', 0), ('kinkin', 1), ('kinkin', 2), ('veryi', 0), ('veryi', 1), ('veryi', 2)],
+    'KS2': [('kornet', 0), ('kornet', 1), ('kornet', 2), ('mark', 0), ('mark', 1), ('mark', 2)],
+    'KS3': [('kent', 0), ('kent', 1), ('kent', 2), ('ponko', 0), ('ponko', 1), ('ponko', 2)],
+    'KS4': [('gul', 0), ('gul', 1), ('gul', 2), ('rani', 0), ('rani', 1), ('rani', 2)],
+    'KS5': [('beti', 0), ('beti', 1), ('beti', 2), ('fanatik', 0), ('fanatik', 1), ('fanatik', 2)],
+    'KS6': [('silsen', 0), ('silsen', 1), ('sercin', 0), ('sercin', 1), None, None],
+}
+KARAKTER_BOYUT = 256
+
+# Animasyon paftaları (N01–N13): her animasyonun kareleri an-<ad>-<n>.webp. Bir animasyonun bütün kareleri aynı
+# kutudan kesilir (karelerin birleşik dolu alanı): ChatGPT'nin çizdiği hareket (atılma, uzama) korunur, kare boyu aynı
+# kalır. hucreler: 1-6 sırası; boyut: en uzun kenar (px).
+ANIMASYON = {
+    'N01': [('hayalet-suzul', [1, 2, 3, 4, 5, 6], 160)],
+    'N02': [('hayalet-puf', [1, 2, 3, 4, 5, 6], 192)],
+    'N03': [('atici-saldiri', [1, 2, 3, 4, 5, 6], 192)],
+    'N04': [('boss-bekle', [1, 2, 3], 256), ('boss-kukre', [4, 5, 6], 256)],
+    'N05': [('boss-yenilgi', [1, 2, 3, 4, 5, 6], 256)],
+    'N06': [('para', [1, 2, 3, 4, 5, 6], 96)],
+    'N07': [('elmas', [1, 2, 3], 96), ('zumrut', [4, 5, 6], 96)],
+    'N08': [('vurus', [1, 2, 3], 128), ('patlama', [4, 5, 6], 256)],
+    'N09': [('buz', [1, 2, 3], 256), ('kasirga', [4, 5, 6], 192)],
+    'N10': [('kedi', [1, 2, 3], 160), ('kopek', [4, 5, 6], 160)],
+    'N11': [('kus', [1, 2, 3], 128), ('yarasa', [4, 5, 6], 128)],
+    'N12': [('timsah', [1, 2, 3, 4, 5, 6], 192)],
+    'N13': [('kalp-topla', [1, 2, 3], 160), ('yildiz-topla', [4, 5, 6], 160)],
+}
+
+
+def karakterler(liste):
+    for pafta, hucreler in KARAKTER.items():
+        yol = os.path.join(HAM, f'{pafta}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGBA')
+        if resim.size != (1536, 1024):
+            sys.exit(f'{pafta}: boyut {resim.size}, 1536 × 1024 olmalı')
+        for i, h in enumerate(hucreler):
+            if not h:
+                continue
+            x0, y0 = (i % 3) * 512, (i // 3) * 512
+            hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
+            kutu = hucre.getbbox()
+            if not kutu:
+                sys.exit(f'{pafta} hücre {i + 1} boş')
+            hucre = hucre.crop(kutu)
+            oran = KARAKTER_BOYUT / max(hucre.size)
+            if oran < 1:
+                hucre = hucre.resize((max(1, round(hucre.width * oran)), max(1, round(hucre.height * oran))), Image.LANCZOS)
+            anahtar = f'kar-{h[0]}-{h[1]}'
+            hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=88, method=6)
+            liste[anahtar] = [hucre.width, hucre.height]
+        print(f'✓ {pafta} (karakter)')
+
+
+ANIM_GOVDE = {}  # ad → ilk karenin dolu alanı, birleşik kutuya oranla [x, y, w, h]: oyun gövdeyi bu kutuya oturtur
+
+
+def animasyonlar(liste):
+    for pafta, animler in ANIMASYON.items():
+        yol = os.path.join(HAM, f'{pafta}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGBA')
+        if resim.size != (1536, 1024):
+            sys.exit(f'{pafta}: boyut {resim.size}, 1536 × 1024 olmalı')
+        for ad, hucreler, en in animler:
+            kareler = []
+            for no in hucreler:
+                i = no - 1
+                x0, y0 = (i % 3) * 512, (i // 3) * 512
+                kareler.append(soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512))))
+            kutular = [k.getbbox() for k in kareler if k.getbbox()]
+            if not kutular:
+                sys.exit(f'{pafta} {ad}: kareler boş')
+            birlesik = (min(b[0] for b in kutular), min(b[1] for b in kutular), max(b[2] for b in kutular), max(b[3] for b in kutular))
+            w, h = birlesik[2] - birlesik[0], birlesik[3] - birlesik[1]
+            ilk = kareler[0].getbbox() or birlesik
+            ANIM_GOVDE[ad] = [round((ilk[0] - birlesik[0]) / w, 4), round((ilk[1] - birlesik[1]) / h, 4),
+                              round((ilk[2] - ilk[0]) / w, 4), round((ilk[3] - ilk[1]) / h, 4)]
+            oran = min(1, en / max(w, h))
+            for n, k in enumerate(kareler, 1):
+                kare = k.crop(birlesik)
+                if oran < 1:
+                    kare = kare.resize((max(1, round(w * oran)), max(1, round(h * oran))), Image.LANCZOS)
+                anahtar = f'an-{ad}-{n}'
+                kare.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=86, method=6)
+                liste[anahtar] = [kare.width, kare.height]
+        print(f'✓ {pafta} (animasyon: {", ".join(a[0] for a in animler)})')
+
+
 # Oyunda bağlı olanlar (timsah, köprü ve oyuncu ruhu kendi animasyonlarını kodla çizer; kare kare paftaları gelince)
 KULLANILAN = set(BOYUT) - {'oyuncu-ruh', 'bot'}
 # Atıcı hayaletin yanındaki mor küre silinir (oyun mermiyi ve atış öncesi parıltıyı kendisi çizer): sol yarı aynalanır.
@@ -198,6 +292,8 @@ def kes():
             liste[anahtar] = [hucre.width, hucre.height]
         print(f'✓ {pafta}')
     tema_dokulari(liste)
+    karakterler(liste)
+    animasyonlar(liste)
     # Menü arka planı (A1, 1024 × 1536 dikey, opak): ana menü ve açılış ekranında (style.css), 768 px genişlikte
     yol = os.path.join(HAM, 'A1.png')
     if os.path.exists(yol):
@@ -232,6 +328,8 @@ def kes():
         f.write('// Üretilen dosya: araclar/gorsel_kes.py. Elle düzenleme.\n')
         f.write('// ChatGPT paftalarından kesilen görseller: anahtar → [genişlik, yükseklik] (px)\n')
         f.write('const GORSEL_LISTESI = ' + json.dumps(liste, ensure_ascii=False, indent=0, sort_keys=True).replace('\n', ' ') + ';\n')
+        f.write('// Animasyonların gövde kutusu (ilk kare, birleşik kare kutusuna oranla [x, y, w, h])\n')
+        f.write('const ANIM_GOVDE = ' + json.dumps(ANIM_GOVDE, ensure_ascii=False, sort_keys=True) + ';\n')
     toplam = sum(os.path.getsize(os.path.join(CIKTI, f'{k}.webp')) for k in liste)
     print(f'{len(liste)} görsel, {toplam / 1024:.0f} KB')
 

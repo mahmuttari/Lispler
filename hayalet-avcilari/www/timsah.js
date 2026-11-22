@@ -232,7 +232,32 @@ function uzakTimsahlariAl(metin) {
   return out;
 }
 
+// ChatGPT timsah kareleri (N12: dalga, gözler, baş, açık ağız, kapma, batış). Kareler yandan çizildiği için döndürülmez;
+// sola atılan timsah aynalanır, baş atılış yönünde ilerler. Hazır değilse false (kod çizimi).
+function timsahKareCiz(ctx, tm) {
+  if (typeof animHazir !== "function" || !animHazir("timsah")) return false;
+  const { uyari, atilma, batis } = TIMSAH;
+  let kare, ilerle = 0, alfa = 1;
+  if (tm.tur === "sus") {
+    const u = tm.t / TIMSAH.susSure;
+    kare = 2; alfa = Math.min(1, u * 5, (1 - u) * 5);
+  } else {
+    const z = tm.t;
+    if (z < uyari) { const u = z / uyari; kare = u < 0.5 ? 1 : 2; alfa = Math.min(1, u * 3 + 0.3); }
+    else if (z < uyari + atilma) { const u = (z - uyari) / atilma; kare = u < 0.3 ? 3 : u < 0.8 ? 4 : 5; ilerle = u * 32; }
+    else { const u = Math.min(1, (z - uyari - atilma) / batis); kare = 6; ilerle = 32 * (1 - u); alfa = 1 - u; }
+  }
+  ctx.save();
+  ctx.translate(tm.x + Math.cos(tm.a) * ilerle, tm.y + Math.sin(tm.a) * ilerle);
+  if (Math.cos(tm.a) < 0) ctx.scale(-1, 1);
+  ctx.globalAlpha *= Math.max(0, alfa);
+  animCiz(ctx, "timsah", kare, -40, -30, 80, 56);
+  ctx.restore();
+  return true;
+}
+
 function timsahCiz(ctx, tm) {
+  if (timsahKareCiz(ctx, tm)) return;
   {
     ctx.save();
     ctx.translate(tm.x, tm.y);

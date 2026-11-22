@@ -115,7 +115,7 @@ I18N.zh = {
   "🎖 Başarımlar": "🎖 成就",
   "🎚 Ses": "🎚 音效",
   "🎚 Ses Ayarları": "🎚 声音设置",
-  "🎨 Hayaletler, petler, silahlar ve eşyalar yepyeni çizimlerle!": "🎨 幽灵、宠物、武器和道具都换上了全新画面！",
+  "🎨 Karakterler, hayaletler, petler ve eşyalar yepyeni çizimlerle; kare kare animasyonlar!": "🎨 角色、幽灵、宠物和道具全新画面，还有逐帧动画！",
   "🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi.": "🎨 全新外观，🏆 冠军榜显示前500名。",
   "🎨 Yeni görünüm: düğmeler, kontroller ve göstergeler yenilendi.": "🎨 全新外观：按钮、操控和界面指示焕然一新。",
   "🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez).": "🎬 环游世界中生命耗尽？看一段广告即可从原处继续（每局3次）。",

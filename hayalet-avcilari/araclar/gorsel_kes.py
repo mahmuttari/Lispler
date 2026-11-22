@@ -198,6 +198,14 @@ def kes():
             liste[anahtar] = [hucre.width, hucre.height]
         print(f'✓ {pafta}')
     tema_dokulari(liste)
+    # Menü arka planı (A1, 1024 × 1536 dikey, opak): ana menü ve açılış ekranında (style.css), 768 px genişlikte
+    yol = os.path.join(HAM, 'A1.png')
+    if os.path.exists(yol):
+        arka = Image.open(yol).convert('RGB')
+        arka = arka.resize((768, round(arka.height * 768 / arka.width)), Image.LANCZOS)
+        arka.save(os.path.join(CIKTI, 'menu-arka.webp'), 'WEBP', quality=80, method=6)
+        liste['menu-arka'] = [arka.width, arka.height]
+        print('✓ A1 (menü arka planı)')
     for pafta, hucreler in ulke_bosslari().items():
         yol = os.path.join(HAM, f'{pafta}.png')
         if not os.path.exists(yol):

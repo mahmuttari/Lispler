@@ -89,6 +89,16 @@ html, body {
   z-index: 0;
 }
 
+/* Ana menü ve açılış: ChatGPT menü arka planı (A1: ay ışığında şato, aşağı doğru koyulaşır). Resim yüklenemezse
+   altındaki renk geçişleri görünür. Resmin kendi yıldızları var, CSS yıldızları bu iki ekranda kapalı. */
+#screen-menu .menu-bg, .welcome-bg {
+  background:
+    linear-gradient(180deg, rgba(12, 6, 24, 0) 45%, rgba(12, 6, 24, 0.55) 100%),
+    url("gorsel/menu-arka.webp") center 32% / cover no-repeat,
+    linear-gradient(180deg, #1d0f38 0%, var(--zemin-0) 100%);
+}
+#screen-menu .menu-bg::after, .welcome-bg::after { display: none; }
+
 /* Seyrek yıldızlar (emoji deseni yerine; durağan) */
 .welcome-bg::after, .menu-bg::after {
   content: "";

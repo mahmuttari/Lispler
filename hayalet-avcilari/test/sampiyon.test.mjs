@@ -86,7 +86,9 @@ try {
     const ben = document.querySelector('#leaderboard-list .lb-ben');
     const benSatir = document.querySelector('#leaderboard-list .leaderboard-row.is-me');
     ben && ben.click();
-    await new Promise((r) => setTimeout(r, 800));
+    // Yumuşak kaydırma yavaş makinede 800 ms'yi aşabilir: satır görünene kadar en çok 4 sn bekle
+    const gorunurMu = () => { const k = document.getElementById('leaderboard-list').getBoundingClientRect(), r = benSatir.getBoundingClientRect(); return r.top >= k.top && r.bottom <= k.bottom; };
+    for (let i = 0; i < 40 && !gorunurMu(); i++) await new Promise((r) => setTimeout(r, 100));
     const kutu = document.getElementById('leaderboard-list').getBoundingClientRect(), sr = benSatir.getBoundingClientRect();
     return { satir: satirlar.length, sonSira: satirlar[499].querySelector('.lb-rank').textContent, alt: document.querySelector('.leaderboard-sub').textContent,
       ben: ben && ben.textContent, gorunur: sr.top >= kutu.top && sr.bottom <= kutu.bottom, tasma: document.documentElement.scrollWidth - innerWidth };

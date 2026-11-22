@@ -69,6 +69,7 @@ I18N.en = {
   "✨ Galaksi Sihirbazı": "✨ Galaxy Wizard",
   "✨ Gökkuşağı Lolipop": "✨ Rainbow Lollipop",
   "✨ Hayalet Lordu": "✨ Ghost Lord",
+  "✨ Hayaletler canlandı: süzülüyor, göz kırpıyor, vurulunca parlıyor, puf diye dağılıyor; paralar dönüyor!": "✨ The ghosts came alive: they float, blink, flash when hit and vanish in a puff; coins spin!",
   "✨ Kraliçe": "✨ Queen",
   "✨ Pırıltı": "✨ Sparkle",
   "❄️ Donduruldu!": "❄️ Frozen!",

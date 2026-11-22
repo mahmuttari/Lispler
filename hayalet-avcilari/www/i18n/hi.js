@@ -69,6 +69,7 @@ I18N.hi = {
   "✨ Galaksi Sihirbazı": "✨ गैलेक्सी जादूगर",
   "✨ Gökkuşağı Lolipop": "✨ इंद्रधनुष लॉलीपॉप",
   "✨ Hayalet Lordu": "✨ भूतों का लॉर्ड",
+  "✨ Hayaletler canlandı: süzülüyor, göz kırpıyor, vurulunca parlıyor, puf diye dağılıyor; paralar dönüyor!": "✨ भूत अब जीवंत हैं: वे तैरते हैं, पलकें झपकाते हैं, चोट लगने पर चमकते हैं और धुएँ के गुबार में गायब हो जाते हैं; सिक्के घूमते हैं!",
   "✨ Kraliçe": "✨ रानी",
   "✨ Pırıltı": "✨ चमक",
   "❄️ Donduruldu!": "❄️ जम गए!",

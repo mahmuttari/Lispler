@@ -69,6 +69,7 @@ I18N.es = {
   "✨ Galaksi Sihirbazı": "✨ Mago Galáctico",
   "✨ Gökkuşağı Lolipop": "✨ Piruleta Arcoíris",
   "✨ Hayalet Lordu": "✨ Señor Fantasma",
+  "✨ Hayaletler canlandı: süzülüyor, göz kırpıyor, vurulunca parlıyor, puf diye dağılıyor; paralar dönüyor!": "✨ ¡Los fantasmas cobran vida: flotan, parpadean, brillan al recibir un golpe y se esfuman en una nube; las monedas giran!",
   "✨ Kraliçe": "✨ Reina",
   "✨ Pırıltı": "✨ Destello",
   "❄️ Donduruldu!": "❄️ ¡Congelados!",

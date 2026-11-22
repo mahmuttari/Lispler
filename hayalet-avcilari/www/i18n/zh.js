@@ -69,6 +69,7 @@ I18N.zh = {
   "✨ Galaksi Sihirbazı": "✨ 银河魔法师",
   "✨ Gökkuşağı Lolipop": "✨ 彩虹棒棒糖",
   "✨ Hayalet Lordu": "✨ 幽灵领主",
+  "✨ Hayaletler canlandı: süzülüyor, göz kırpıyor, vurulunca parlıyor, puf diye dağılıyor; paralar dönüyor!": "✨ 幽灵活起来了：它们会飘动、眨眼，被击中时会闪光，消失时化作一团烟雾；金币也会旋转！",
   "✨ Kraliçe": "✨ 女王",
   "✨ Pırıltı": "✨ 闪闪亮",
   "❄️ Donduruldu!": "❄️ 冻住了！",

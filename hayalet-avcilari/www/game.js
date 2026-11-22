@@ -322,12 +322,21 @@ const LEADERBOARD_MAX = 500; // 3.16.1, kullanıcı: "Şampiyon listesi ilk 500 
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.17.0";
+const APP_VERSION = "3.18.0";
 const UPDATE_NOTES = {
   // Mağaza notu aynı satırlar; her dilde 500 karakterin altında kalsın diye Dünya Turu'nun satırları (3.14.0) yok
   // 3.15.0 incelemedeyken 3.15.1 gelebilir: 3.15.0'ın satırları ve düzeltme (mağaza notu aynı satırlar, ≤ 500)
   // 3.17.0 (kullanıcı: "Yarasalar uçuşsun ormanda. Arada şimşek çakan bulutlar gezinsin. Bosun üzerinde."): 3.16.2
   // gönderilmeden geldi, onun satırları da var; 🌉 ve 🌿 (3.15.0'dan beri yayında) 500 sınırı için çıktı
+  // 3.18.0 (kullanıcı: "Animasyonlar ekleyebilirsin, statik olmak zorunda değil"): kod animasyonları (anim.js);
+  // 🎬 (3.16.2'den beri yayında) 500 sınırı için çıktı
+  "3.18.0": [
+    t("✨ Hayaletler canlandı: süzülüyor, göz kırpıyor, vurulunca parlıyor, puf diye dağılıyor; paralar dönüyor!"),
+    t("🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!"),
+    t("🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi."),
+    t("🐊 Sulardan timsah çıkıyor: kıyıda oyalananı ısırabilir!"),
+    t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var."),
+  ],
   "3.17.0": [
     t("🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!"),
     t("🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi."),
@@ -1428,10 +1437,13 @@ function drawGhostFades(ctx) {
   for (const e of game.effects) {
     if (e.type !== "ghostFade") continue;
     const alpha = Math.max(0, e.life / e.maxLife);
+    const k = 1 - alpha;
     ctx.save();
     ctx.globalAlpha = alpha * 0.7;
+    if (typeof olumDonusumu === "function") olumDonusumu(ctx, e, k); // uzayarak dumana dönüşür
     drawGhost(ctx, e);
     ctx.restore();
+    if (typeof olumPufuCiz === "function") olumPufuCiz(ctx, e, k);
   }
 }
 
@@ -1609,6 +1621,9 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
   ctx.save();
   ctx.translate(x, y - bob);
   ctx.rotate(torsoLean);
+  // Dururken hafif nefes (anim.js): ayak hizası sabit, gövde çok az uzayıp kısalır
+  const nefes = typeof avciNefes === "function" ? avciNefes(performance.now(), isWalking) : 0;
+  if (nefes) { ctx.translate(0, 45 * s); ctx.scale(1 - nefes * 0.5, 1 + nefes); ctx.translate(0, -45 * s); }
 
   // Gölge
   ctx.fillStyle = "rgba(0,0,0,0.3)";
@@ -2505,6 +2520,10 @@ function drawGhost(ctx, g) {
   ctx.save();
   ctx.translate(g.x, g.y);
   const s = size / 40;
+  // Kod animasyonu (anim.js): süzülme, doğuş, vurulma, göz kırpma; yalnız görüntü
+  const animSimdi = performance.now();
+  const an = typeof hayaletAnim === "function" ? hayaletAnim(g, animSimdi) : null;
+  if (an && an.inis) animEfektEkle("dalga", g.x, g.y + 22 * s, { renk: "248, 113, 113", olcek: s * 0.9 });
   // Dünya Turu bossu ülkenin geleneksel kıyafetini giyer (kostumler.js); kayıt bozuksa bugünkü taçlı kırmızı boss
   const turUlke = g.isBoss && game.dunyaTuru ? turUlkesi() : null;
   const kostum = turUlke && kostumGecerliMi(turUlke.kostum) ? turUlke.kostum : null;
@@ -2529,6 +2548,13 @@ function drawGhost(ctx, g) {
   ctx.ellipse(0, 22 * s, 18 * s, 5 * s, 0, 0, Math.PI * 2);
   ctx.fill();
 
+  if (an) {
+    hayaletDogusGirdabi(ctx, g, s, animSimdi);
+    ctx.translate(0, an.dy);
+    if (an.alfa < 1) ctx.globalAlpha *= an.alfa;
+    ctx.scale(an.sx, an.sy);
+  }
+
   // Tonlama (HP'ye göre renk)
   let bodyColor;
   if (g.isBoss) bodyColor = kostum ? "#ede9fe" : "#dc2626";
@@ -2550,16 +2576,26 @@ function drawGhost(ctx, g) {
   const wave = 4;
   for (let i = wave; i >= 0; i--) {
     const wx = -18 * s + (i / wave) * 36 * s;
-    const wy = (i % 2 === 0 ? 14 : 22) * s;
+    const wy = (i % 2 === 0 ? 14 : 22) * s + (an && an.dalga ? Math.sin(an.dalga + i * 1.3) * 1.6 * s : 0);
     ctx.lineTo(wx, wy);
   }
   ctx.lineTo(-18 * s, 18 * s);
   ctx.closePath();
   ctx.fill();
+  if (an && an.beyaz > 0) {
+    // Vurulma parlaması: gövde kısa bir an beyaza döner
+    ctx.save();
+    ctx.globalAlpha *= an.beyaz * 0.75;
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+    ctx.restore();
+  }
   if (kostum) bossKostumuCiz(ctx, s, kostum, kostumZamani, "govde");
 
   // Boss tacı (Dünya Turu'nda yerine ülkenin başlığı gelir)
   if (g.isBoss && !kostum) {
+    ctx.save();
+    if (an) ctx.translate(0, an.tacDy * s); // taç hafifçe sallanır
     ctx.fillStyle = "#ffd166";
     ctx.strokeStyle = "#a16207";
     ctx.lineWidth = 1.8 * s;
@@ -2580,13 +2616,19 @@ function drawGhost(ctx, g) {
     ctx.beginPath();
     ctx.arc(0, -29 * s, 2.5 * s, 0, Math.PI * 2);
     ctx.fill();
+    ctx.restore();
   }
 
-  // Gözler
+  // Gözler (kırparken ince çizgi)
   ctx.fillStyle = g.isBoss ? "#fde047" : "#222";
   ctx.beginPath();
-  ctx.arc(-6 * s, -5 * s, 3 * s, 0, Math.PI * 2);
-  ctx.arc(6 * s, -5 * s, 3 * s, 0, Math.PI * 2);
+  if (an && an.kirp) {
+    ctx.ellipse(-6 * s, -5 * s, 3.2 * s, 0.9 * s, 0, 0, Math.PI * 2);
+    ctx.ellipse(6 * s, -5 * s, 3.2 * s, 0.9 * s, 0, 0, Math.PI * 2);
+  } else {
+    ctx.arc(-6 * s, -5 * s, 3 * s, 0, Math.PI * 2);
+    ctx.arc(6 * s, -5 * s, 3 * s, 0, Math.PI * 2);
+  }
   ctx.fill();
 
   // Ağız
@@ -2594,6 +2636,7 @@ function drawGhost(ctx, g) {
   ctx.beginPath();
   ctx.ellipse(0, 3 * s, g.isBoss ? 5 * s : 3 * s, g.isBoss ? 5 * s : 4 * s, 0, 0, Math.PI * 2);
   ctx.fill();
+  if (an) hayaletSarjCiz(ctx, s, an.sarj, g.isBoss); // atıştan önce ağzın önünde büyüyen küre
   if (kostum) bossKostumuCiz(ctx, s, kostum, kostumZamani, "bas");
 
   // HP barı
@@ -2898,18 +2941,23 @@ function drawPickup(ctx, p) {
     const ikon = (CHAR_POWERS[game.player && game.player.charKey] || CHAR_POWERS.kinkin).icon;
     ctx.fillText(ikon, 0, 1);
   } else if (p.kind === "para") {
-    ctx.fillStyle = "#ffd166";
+    // Dönen para (anim.js): kenardan görünürken incelir, arka yüzde simge yok
+    const don = typeof paraDonusu === "function" ? paraDonusu(performance.now(), p.x) : { sx: 1, on: true };
+    ctx.scale(don.sx, 1);
+    ctx.fillStyle = don.on ? "#ffd166" : "#f2b84b";
     ctx.shadowColor = "#ffd166";
     ctx.shadowBlur = 8;
     ctx.beginPath();
     ctx.arc(0, 0, 8, 0, Math.PI * 2);
     ctx.fill();
     ctx.shadowBlur = 0;
-    ctx.fillStyle = "#a16207";
-    ctx.font = "800 11px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("$", 0, 1);
+    if (don.on) {
+      ctx.fillStyle = "#a16207";
+      ctx.font = "800 11px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("$", 0, 1);
+    }
   } else if (p.kind === "elmas") {
     ctx.fillStyle = "#60a5fa";
     ctx.shadowColor = "#60a5fa";
@@ -2921,6 +2969,7 @@ function drawPickup(ctx, p) {
     ctx.lineTo(-8, 0);
     ctx.closePath();
     ctx.fill();
+    if (typeof mucevherParilti === "function") mucevherParilti(ctx, performance.now(), p.x);
   } else if (p.kind === "zumrut") {
     ctx.fillStyle = "#10b981";
     ctx.shadowColor = "#10b981";
@@ -2933,6 +2982,7 @@ function drawPickup(ctx, p) {
     ctx.lineTo(-8, -3);
     ctx.closePath();
     ctx.fill();
+    if (typeof mucevherParilti === "function") mucevherParilti(ctx, performance.now(), p.x + 7);
   }
   ctx.restore();
 }
@@ -6177,6 +6227,7 @@ function killGhost(g, idx) {
 }
 
 function collectPickup(p) {
+  if (typeof toplamaEfekti === "function") toplamaEfekti(p);
   if (p.kind === "para") {
     game.runPara += p.value;
     showFloat(`+${p.value} 💰`, p.x, p.y);
@@ -6563,6 +6614,7 @@ function render() {
 
   // Bomba/roket görselleri (hayaletlerin üstünde)
   drawEffects(ctx);
+  if (typeof animEfektleriCiz === "function") animEfektleriCiz(ctx); // toplama halkası, boss iniş dalgası (anim.js)
 
   // Diğer oyuncular (multiplayer)
   if (online.mode) {

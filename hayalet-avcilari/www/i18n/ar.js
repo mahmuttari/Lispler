@@ -69,6 +69,7 @@ I18N.ar = {
   "✨ Galaksi Sihirbazı": "✨ ساحر المجرة",
   "✨ Gökkuşağı Lolipop": "✨ مصاصة قوس قزح",
   "✨ Hayalet Lordu": "✨ سيد الأشباح",
+  "✨ Hayaletler canlandı: süzülüyor, göz kırpıyor, vurulunca parlıyor, puf diye dağılıyor; paralar dönüyor!": "✨ الأشباح صارت حيّة: تطفو وترمش وتومض عند إصابتها وتختفي في نفخة دخان، والعملات تدور!",
   "✨ Kraliçe": "✨ الملكة",
   "✨ Pırıltı": "✨ بريق",
   "❄️ Donduruldu!": "❄️ تجمّدوا!",

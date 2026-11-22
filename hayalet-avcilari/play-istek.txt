@@ -79,3 +79,7 @@
 
 # istek 2026-11-04: 3.17.0 (55) üretime yükle, %100 yayın (status completed, kademeli değil), incelemeye gönder; yayındaki 3.16.1 (53)'ün yerini alır (kullanıcının açık onayıyla: "gönder"); AAB: hayalet-android koşusu 41869190255 (bu dal, commit 6d2181a, versionCode 55, Poyraz Workshop yükleme anahtarı); yarasalar ve fırtına bulutu, 2× para, geçiş reklamı ayarı, çevrimiçi sonuçta ödüllü düğme yok; sürüm notu 7 dilde magaza/
 # (yapıldı 2026-11-04, koşu 41870132061: AAB 55 (koşu 41869190255, commit 6d2181a) yüklendi, üretim 3.16.1 (53) → 3.17.0 (55) completed (%100), düzenleme onaylandı, incelemeye gönderildi) yukle yayinla uygula
+
+# istek 2026-11-22: 3.18.0 (56) üretime yükle, %100 yayın (status completed, kademeli değil), incelemeye gönder; yayındaki 3.17.0 (55)'in yerini alır (kullanıcının açık onayıyla: "gönder"); AAB: hayalet-android koşusu 45057582753 (bu dal, commit 71c5bbd, versionCode 56, Poyraz Workshop yükleme anahtarı); ChatGPT ile yeni çizimler (karakterler, hayaletler, petler, eşyalar, tema dokuları, 51 ülke bossu, menü arka planı), kare kare animasyonlar, yeni kasırga; sürüm notu 7 dilde magaza/ (en uzun es 498/500 UTF-16). Ardından mağaza görselleri: yeni uygulama simgesi (magaza/play/simge-512.png; öne çıkan görsel ve ekran görüntüleri aynı)
+yukle yayinla uygula
+gorsel uygula

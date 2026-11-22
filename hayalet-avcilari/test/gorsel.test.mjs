@@ -1,0 +1,113 @@
+// Hayalet Avcıları: ChatGPT görselleri (3.18.0) — çevrimdışı sınama.
+// Kural: her çizim işlevi önce resmi dener; resim yoksa bugünkü kod çizimi çalışır. Görseller araclar/gorsel_kes.py ile
+// gorsel/ham/ paftalarından kesilir.
+// Çalıştırma: node hayalet-avcilari/test/gorsel.test.mjs   (Playwright + Chromium; ağ gerekmez)
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+const WWW = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'www');
+const PW = process.env.PLAYWRIGHT_MODULE || '/opt/node22/lib/node_modules/playwright/index.mjs';
+const { chromium } = await import(pathToFileURL(PW).href);
+const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.woff2': 'font/woff2', '.webp': 'image/webp', '.m4a': 'audio/mp4' };
+const sunucu = http.createServer((q, r) => {
+  const f = path.join(WWW, decodeURIComponent(new URL(q.url, 'http://x').pathname).replace(/^\/+/, '') || 'index.html');
+  if (!f.startsWith(WWW) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end(); }
+  r.writeHead(200, { 'content-type': TUR[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(r);
+}).listen(0);
+const adres = `http://127.0.0.1:${sunucu.address().port}/index.html`;
+const sonuclar = [];
+function sina(ad, fn) {
+  try { fn(); sonuclar.push(`✓ ${ad}`); } catch (e) { sonuclar.push(`✗ ${ad}: ${e.message.split('\n')[0]}`); }
+}
+// Diskteki görseller ve liste
+const listeKaynak = fs.readFileSync(path.join(WWW, 'gorsel', 'liste.js'), 'utf8');
+const LISTE = JSON.parse(listeKaynak.match(/= (\{.*\});/)[1]);
+const dosyalar = fs.readdirSync(path.join(WWW, 'gorsel')).filter((f) => f.endsWith('.webp'));
+sina('liste.js ile diskteki WebP dosyaları aynı', () => { assert.deepEqual(dosyalar.map((f) => f.slice(0, -5)).sort(), Object.keys(LISTE).sort()); });
+const toplam = dosyalar.reduce((t, f) => t + fs.statSync(path.join(WWW, 'gorsel', f)).size, 0);
+sina('görseller küçük: toplam 2 MB, her kenar en çok 256 px', () => {
+  assert.ok(toplam < 2 * 1024 * 1024, String(toplam)); for (const [k, [w, h]] of Object.entries(LISTE)) assert.ok(w <= 256 && h <= 256, k);
+});
+
+const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
+const hatalar = [];
+const p = await b.newPage({ viewport: { width: 844, height: 390 } });
+p.on('pageerror', (e) => hatalar.push(e.message));
+await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
+await p.goto(adres, { waitUntil: 'load' });
+await p.waitForFunction(() => typeof hayaletResmiCiz === 'function' && typeof startGame === 'function');
+await p.waitForFunction((n) => Object.keys(GORSEL).length === n, Object.keys(LISTE).length, { timeout: 10000 });
+try {
+  const r = await p.evaluate((liste) => {
+    const o = {};
+    o.boyut = Object.entries(liste).filter(([k, [w, h]]) => GORSEL[k].naturalWidth !== w || GORSEL[k].naturalHeight !== h).map(([k]) => k);
+    startGame(); game.paused = true;
+    // Her çizim işlevi resmi kullanıyor mu: drawImage sayılır
+    const c = document.createElement('canvas'); c.width = c.height = 200; const x = c.getContext('2d');
+    let say = 0; const asil = x.drawImage.bind(x); x.drawImage = (...a) => { say++; return asil(...a); };
+    const sinan = {
+      'hayalet (normal)': () => drawGhost(x, { x: 100, y: 100, hp: 1, maxHp: 1, size: 40, __dogus: -1e9 }),
+      'hayalet (atıcı)': () => drawGhost(x, { x: 100, y: 100, hp: 2, maxHp: 2, size: 40, isShooter: true, __dogus: -1e9 }),
+      'hayalet (mini)': () => drawGhost(x, { x: 100, y: 100, hp: 1, maxHp: 1, size: 26, fromBoss: true, __dogus: -1e9 }),
+      'hayalet (boss)': () => drawGhost(x, { x: 100, y: 100, hp: 9, maxHp: 9, size: 80, isBoss: true, __dogus: -1e9 }),
+      'hayalet (donmuş)': () => drawGhost(x, { x: 100, y: 100, hp: 2, maxHp: 2, size: 40, frozenUntil: performance.now() + 1e6, __dogus: -1e9 }),
+      ...Object.fromEntries(['para', 'elmas', 'zumrut', 'kalp', 'guc'].map((k) => [`toplanabilir ${k}`, () => drawPickup(x, { x: 100, y: 100, kind: k, value: 1, life: 10 })])),
+      ...Object.fromEntries(['baloncuk', 'lazer', 'yesil', 'pompali', 'bazuka'].map((k) => [`silah ${k}`, () => drawGunShape(x, k, 2)])),
+      ...Object.fromEntries(['kedi', 'kopek', 'kus'].map((k) => [`pet ${k}`, () => petResmi(x, k, 1, { yurume: 0.3, saldiri: 0.5 })])),
+      'yarasa': () => yarasaCiz(x, { x: 100, y: 100, yon: 1, boy: 1, kanat: 1 }),
+      'bulut': () => bulutCiz(x, { x: 100, y: 100, cakti: 0.1, boss: false }),
+      'çalı': () => caliCiz(x, { x: 100, y: 100, tohum: 1 }, 0, 0.5),
+    };
+    o.resimli = {}; o.hata = [];
+    const sayimla = (ad, fn) => { say = 0; x.save(); try { fn(); } catch (e) { o.hata.push(`${ad}: ${e.message}`); } x.restore(); return say; };
+    for (const [ad, fn] of Object.entries(sinan)) o.resimli[ad] = sayimla(ad, fn);
+    // Resimler yokken (pafta gelmedi, dosya yüklenemedi) aynı işlevler kod çizimiyle, drawImage olmadan çalışır
+    const yedek = { ...GORSEL }; for (const k of Object.keys(GORSEL)) delete GORSEL[k];
+    o.kodla = {};
+    for (const [ad, fn] of Object.entries(sinan)) o.kodla[ad] = sayimla(ad, fn);
+    Object.assign(GORSEL, yedek);
+    // Renk önbelleği ve can kademesi rengi
+    const sari = gorselRenkli('hayalet-normal', '#fde68a'); o.onbellek = sari === gorselRenkli('hayalet-normal', '#fde68a');
+    const ort = (cv) => { const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data; let r = 0, g = 0, bb = 0, n = 0; for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 200) { r += d[i]; g += d[i + 1]; bb += d[i + 2]; n++; } return [r / n, g / n, bb / n]; };
+    const [sr, sg, sb] = ort(sari); o.sariMi = sr > sb + 30 && sg > sb + 20;
+    const buz = ort(gorselRenkli('hayalet-normal', '#bae6fd')); o.buzMu = buz[2] > buz[0] + 20;
+    // Silah çubuğu ve dükkân simgeleri resimli
+    ensureAmmoStock(game.player.charKey).kasirga = 2; game.running = true; refreshWeaponBar();
+    o.cubuk = !!document.querySelector('#weapon-bar .weapon-slot img.esya-resim[src="gorsel/esya-kasirga.webp"]');
+    o.cubukAlt = (document.querySelector('#weapon-bar img.esya-resim') || {}).alt || '';
+    o.emojiyeDon = esyaSimgesiHTML('yokboyle', '🧪') === '🧪';
+    // Kare süresi: 40 hayalet + 20 para resimle
+    game.ghosts = []; game.pickups = [];
+    for (let i = 0; i < 40; i++) game.ghosts.push({ x: game.player.x - 300 + (i % 12) * 50, y: game.player.y - 150 + Math.floor(i / 12) * 60, r: 22, speed: 0, hp: 1 + (i % 5), maxHp: 1 + (i % 5), size: 40, isShooter: i % 7 === 0 });
+    for (let i = 0; i < 20; i++) game.pickups.push({ kind: ['para', 'elmas', 'zumrut', 'kalp'][i % 4], value: 1, x: game.player.x - 300 + i * 30, y: game.player.y + 120, life: 10 });
+    game.camera.x = game.player.x - game.W / 2; game.camera.y = game.player.y - game.H / 2;
+    render(); const t0 = performance.now(); for (let i = 0; i < 60; i++) render(); o.kareMs = (performance.now() - t0) / 60;
+    return o;
+  }, LISTE);
+  sina('her görsel yüklenir, boyutu listeyle aynı', () => { assert.deepEqual(r.boyut, []); });
+  sina('hatasız çizim (resimli ve resimsiz)', () => { assert.deepEqual(r.hata, []); });
+  for (const ad of Object.keys(r.resimli)) {
+    sina(`${ad}: resim varken resimden, yokken koddan çizilir`, () => { assert.ok(r.resimli[ad] >= 1, `resimli ${r.resimli[ad]}`); assert.equal(r.kodla[ad], 0, `kodla ${r.kodla[ad]}`); });
+  }
+  sina('hayaletin can kademesi rengi ve donma rengi resimde de görünür; renkli kopya önbellekte', () => {
+    assert.equal(r.onbellek, true); assert.equal(r.sariMi, true); assert.equal(r.buzMu, true);
+  });
+  sina('silah çubuğunda eşya resmi (ad alt metinde); resmi olmayan eşya emojiye döner', () => {
+    assert.equal(r.cubuk, true); assert.ok(r.cubukAlt.length > 0); assert.equal(r.emojiyeDon, true);
+  });
+  sina('40 hayalet + 20 toplanabilir resimle bir kare 12 ms\'den kısa', () => { assert.ok(r.kareMs < 12, String(r.kareMs)); });
+  sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
+} catch (e) {
+  sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);
+} finally {
+  await b.close();
+  sunucu.close();
+}
+sonuclar.forEach((s) => console.log(s));
+const kalan = sonuclar.filter((s) => s.startsWith('✗'));
+assert.equal(kalan.length, 0, `${kalan.length} sınama başarısız`);
+console.log(`TAMAM: ${sonuclar.length} sınama`);

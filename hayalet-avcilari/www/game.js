@@ -334,8 +334,8 @@ const UPDATE_NOTES = {
   "3.18.0": [
     t("✨ Hayaletler canlandı: süzülüyor, göz kırpıyor, vurulunca parlıyor, puf diye dağılıyor; paralar dönüyor!"),
     t("🌪️ Kasırga yenilendi: hayaletleri içine çekip döndürüyor ve savuruyor!"),
+    t("🎨 Hayaletler, petler, silahlar ve eşyalar yepyeni çizimlerle!"),
     t("🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!"),
-    t("🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi."),
     t("🐾 Petler geldi: kedi, köpek ya da kuşunu yanına al! Hayaletler de onlara vurur; her petin 5 canı var."),
   ],
   "3.17.0": [
@@ -1176,7 +1176,7 @@ function refreshWeaponBar() {
     const btn = document.createElement("button");
     btn.className = "weapon-slot";
     btn.title = `${w.name}: ${w.desc}`;
-    btn.innerHTML = `<span>${w.icon}</span><span class="badge">${count}</span>`;
+    btn.innerHTML = `<span>${typeof esyaSimgesiHTML === "function" ? esyaSimgesiHTML(key, w.icon, w.name) : w.icon}</span><span class="badge">${count}</span>`;
     const trigger = (e) => { e.preventDefault(); e.stopPropagation(); useWeapon(key); };
     btn.addEventListener("touchstart", trigger, { passive: false });
     btn.addEventListener("click", trigger);
@@ -2458,7 +2458,12 @@ function drawFeather(ctx, x, y, len) {
 }
 
 // Envanter silahları: sapı aşağıda, namlusu sağa bakan "L" biçimi (çizimlerdeki gibi). Birim: s.
+// Silahların kod çizimindeki kutusu (s birimi; x, y, w, h): resim bu kutuya sığdırılır
+const SILAH_KUTU = { baloncuk: [-2, -6, 21, 15], lazer: [-2, -5, 25, 14], yesil: [-1, -5, 16, 13], pompali: [-4, -6, 28, 15], bazuka: [-6, -8, 30, 18] };
+
 function drawGunShape(ctx, gunKey, s) {
+  const kutuR = SILAH_KUTU[gunKey];
+  if (kutuR && typeof gorselKutuya === "function" && gorselKutuya(ctx, `silah-${gunKey}`, kutuR[0] * s, kutuR[1] * s, kutuR[2] * s, kutuR[3] * s)) return;
   const kutu = (renk, x, y, w, h, kenar = "#0f172a") => {
     ctx.fillStyle = renk;
     ctx.fillRect(x * s, y * s, w * s, h * s);
@@ -2580,76 +2585,80 @@ function drawGhost(ctx, g) {
   const isFrozen = (g.frozenUntil || 0) > performance.now();
   if (isFrozen) bodyColor = "#bae6fd";
 
-  // Vücut
-  ctx.fillStyle = bodyColor;
-  ctx.beginPath();
-  ctx.arc(0, -5 * s, 18 * s, Math.PI, 0);
-  ctx.lineTo(18 * s, 18 * s);
-  const wave = 4;
-  for (let i = wave; i >= 0; i--) {
-    const wx = -18 * s + (i / wave) * 36 * s;
-    const wy = (i % 2 === 0 ? 14 : 22) * s + (an && an.dalga ? Math.sin(an.dalga + i * 1.3) * 1.6 * s : 0);
-    ctx.lineTo(wx, wy);
-  }
-  ctx.lineTo(-18 * s, 18 * s);
-  ctx.closePath();
-  ctx.fill();
-  if (an && an.beyaz > 0) {
-    // Vurulma parlaması: gövde kısa bir an beyaza döner
-    ctx.save();
-    ctx.globalAlpha *= an.beyaz * 0.75;
-    ctx.fillStyle = "#ffffff";
-    ctx.fill();
-    ctx.restore();
-  }
-  if (kostum) bossKostumuCiz(ctx, s, kostum, kostumZamani, "govde");
-
-  // Boss tacı (Dünya Turu'nda yerine ülkenin başlığı gelir)
-  if (g.isBoss && !kostum) {
-    ctx.save();
-    if (an) ctx.translate(0, an.tacDy * s); // taç hafifçe sallanır
-    ctx.fillStyle = "#ffd166";
-    ctx.strokeStyle = "#a16207";
-    ctx.lineWidth = 1.8 * s;
+  // ChatGPT görseli varsa (gorsel.js) gövde, yüz ve atış parıltısı resimden; yoksa ya da Dünya Turu bossu ise kod çizimi
+  const resimli = !kostum && typeof hayaletResmiCiz === "function" && hayaletResmiCiz(ctx, g, s, bodyColor, isFrozen, an);
+  if (!resimli) {
+    // Vücut
+    ctx.fillStyle = bodyColor;
     ctx.beginPath();
-    const cw = 20 * s;
-    ctx.moveTo(-cw, -22 * s);
-    ctx.lineTo(-cw + 2 * s, -34 * s);
-    ctx.lineTo(-cw / 2, -28 * s);
-    ctx.lineTo(0, -38 * s);
-    ctx.lineTo(cw / 2, -28 * s);
-    ctx.lineTo(cw - 2 * s, -34 * s);
-    ctx.lineTo(cw, -22 * s);
+    ctx.arc(0, -5 * s, 18 * s, Math.PI, 0);
+    ctx.lineTo(18 * s, 18 * s);
+    const wave = 4;
+    for (let i = wave; i >= 0; i--) {
+      const wx = -18 * s + (i / wave) * 36 * s;
+      const wy = (i % 2 === 0 ? 14 : 22) * s + (an && an.dalga ? Math.sin(an.dalga + i * 1.3) * 1.6 * s : 0);
+      ctx.lineTo(wx, wy);
+    }
+    ctx.lineTo(-18 * s, 18 * s);
     ctx.closePath();
     ctx.fill();
-    ctx.stroke();
-    // Mücevher
-    ctx.fillStyle = "#ef4444";
+    if (an && an.beyaz > 0) {
+      // Vurulma parlaması: gövde kısa bir an beyaza döner
+      ctx.save();
+      ctx.globalAlpha *= an.beyaz * 0.75;
+      ctx.fillStyle = "#ffffff";
+      ctx.fill();
+      ctx.restore();
+    }
+    if (kostum) bossKostumuCiz(ctx, s, kostum, kostumZamani, "govde");
+
+    // Boss tacı (Dünya Turu'nda yerine ülkenin başlığı gelir)
+    if (g.isBoss && !kostum) {
+      ctx.save();
+      if (an) ctx.translate(0, an.tacDy * s); // taç hafifçe sallanır
+      ctx.fillStyle = "#ffd166";
+      ctx.strokeStyle = "#a16207";
+      ctx.lineWidth = 1.8 * s;
+      ctx.beginPath();
+      const cw = 20 * s;
+      ctx.moveTo(-cw, -22 * s);
+      ctx.lineTo(-cw + 2 * s, -34 * s);
+      ctx.lineTo(-cw / 2, -28 * s);
+      ctx.lineTo(0, -38 * s);
+      ctx.lineTo(cw / 2, -28 * s);
+      ctx.lineTo(cw - 2 * s, -34 * s);
+      ctx.lineTo(cw, -22 * s);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      // Mücevher
+      ctx.fillStyle = "#ef4444";
+      ctx.beginPath();
+      ctx.arc(0, -29 * s, 2.5 * s, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Gözler (kırparken ince çizgi)
+    ctx.fillStyle = g.isBoss ? "#fde047" : "#222";
     ctx.beginPath();
-    ctx.arc(0, -29 * s, 2.5 * s, 0, Math.PI * 2);
+    if (an && an.kirp) {
+      ctx.ellipse(-6 * s, -5 * s, 3.2 * s, 0.9 * s, 0, 0, Math.PI * 2);
+      ctx.ellipse(6 * s, -5 * s, 3.2 * s, 0.9 * s, 0, 0, Math.PI * 2);
+    } else {
+      ctx.arc(-6 * s, -5 * s, 3 * s, 0, Math.PI * 2);
+      ctx.arc(6 * s, -5 * s, 3 * s, 0, Math.PI * 2);
+    }
     ctx.fill();
-    ctx.restore();
-  }
 
-  // Gözler (kırparken ince çizgi)
-  ctx.fillStyle = g.isBoss ? "#fde047" : "#222";
-  ctx.beginPath();
-  if (an && an.kirp) {
-    ctx.ellipse(-6 * s, -5 * s, 3.2 * s, 0.9 * s, 0, 0, Math.PI * 2);
-    ctx.ellipse(6 * s, -5 * s, 3.2 * s, 0.9 * s, 0, 0, Math.PI * 2);
-  } else {
-    ctx.arc(-6 * s, -5 * s, 3 * s, 0, Math.PI * 2);
-    ctx.arc(6 * s, -5 * s, 3 * s, 0, Math.PI * 2);
+    // Ağız
+    ctx.fillStyle = g.isBoss ? "#7f1d1d" : "#222";
+    ctx.beginPath();
+    ctx.ellipse(0, 3 * s, g.isBoss ? 5 * s : 3 * s, g.isBoss ? 5 * s : 4 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    if (an) hayaletSarjCiz(ctx, s, an.sarj, g.isBoss); // atıştan önce ağzın önünde büyüyen küre
+    if (kostum) bossKostumuCiz(ctx, s, kostum, kostumZamani, "bas");
   }
-  ctx.fill();
-
-  // Ağız
-  ctx.fillStyle = g.isBoss ? "#7f1d1d" : "#222";
-  ctx.beginPath();
-  ctx.ellipse(0, 3 * s, g.isBoss ? 5 * s : 3 * s, g.isBoss ? 5 * s : 4 * s, 0, 0, Math.PI * 2);
-  ctx.fill();
-  if (an) hayaletSarjCiz(ctx, s, an.sarj, g.isBoss); // atıştan önce ağzın önünde büyüyen küre
-  if (kostum) bossKostumuCiz(ctx, s, kostum, kostumZamani, "bas");
 
   // HP barı
   if (hp < maxHp) {
@@ -2918,31 +2927,38 @@ function drawPickup(ctx, p) {
     ctx.arc(0, 0, 22, 0, Math.PI * 2);
     ctx.fill();
     // Kalp gövdesi
-    ctx.shadowColor = "#fca5a5";
-    ctx.shadowBlur = 14;
-    ctx.fillStyle = "#ef4444";
-    drawHeart(ctx, 0, -3, 11);
-    // Parlama
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = "rgba(255,255,255,0.7)";
-    drawHeart(ctx, -3, -5, 3);
+    if (!(typeof gorselKutuya === "function" && gorselKutuya(ctx, "kalp", -12, -13, 24, 22))) {
+      ctx.shadowColor = "#fca5a5";
+      ctx.shadowBlur = 14;
+      ctx.fillStyle = "#ef4444";
+      drawHeart(ctx, 0, -3, 11);
+      // Parlama
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      drawHeart(ctx, -3, -5, 3);
+    }
   } else if (p.kind === "guc") {
     // Dönen güç yıldızı + karakter ikonu
     const t = performance.now() / 300;
     ctx.save();
-    ctx.rotate(t);
-    ctx.fillStyle = "#fde047";
-    ctx.shadowColor = "#fde047";
-    ctx.shadowBlur = 18;
-    ctx.beginPath();
-    for (let i = 0; i < 5; i++) {
-      const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
-      const a2 = a + Math.PI / 5;
-      ctx.lineTo(Math.cos(a) * 14, Math.sin(a) * 14);
-      ctx.lineTo(Math.cos(a2) * 6, Math.sin(a2) * 6);
+    if (typeof gorsel === "function" && gorsel("guc")) {
+      ctx.rotate(Math.sin(t) * 0.35); // resim: sallanır (tam dönünce yıldızın şimşeği baş aşağı kalıyor)
+      gorselKutuya(ctx, "guc", -17, -17, 34, 34);
+    } else {
+      ctx.rotate(t);
+      ctx.fillStyle = "#fde047";
+      ctx.shadowColor = "#fde047";
+      ctx.shadowBlur = 18;
+      ctx.beginPath();
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
+        const a2 = a + Math.PI / 5;
+        ctx.lineTo(Math.cos(a) * 14, Math.sin(a) * 14);
+        ctx.lineTo(Math.cos(a2) * 6, Math.sin(a2) * 6);
+      }
+      ctx.closePath();
+      ctx.fill();
     }
-    ctx.closePath();
-    ctx.fill();
     ctx.restore();
     // İçinde aktif karakterin ikonu
     ctx.shadowBlur = 0;
@@ -2956,6 +2972,12 @@ function drawPickup(ctx, p) {
     // Dönen para (anim.js): kenardan görünürken incelir, arka yüzde simge yok
     const don = typeof paraDonusu === "function" ? paraDonusu(performance.now(), p.x) : { sx: 1, on: true };
     ctx.scale(don.sx, 1);
+    if (typeof gorsel === "function" && gorsel("para")) {
+      gorselKutuya(ctx, "para", -9.5, -9.5, 19, 19);
+      if (!don.on) { ctx.fillStyle = "rgba(161, 98, 7, 0.35)"; ctx.beginPath(); ctx.arc(0, 0, 9, 0, Math.PI * 2); ctx.fill(); } // arka yüz
+      ctx.restore();
+      return;
+    }
     ctx.fillStyle = don.on ? "#ffd166" : "#f2b84b";
     ctx.shadowColor = "#ffd166";
     ctx.shadowBlur = 8;
@@ -2970,6 +2992,10 @@ function drawPickup(ctx, p) {
       ctx.textBaseline = "middle";
       ctx.fillText("$", 0, 1);
     }
+  } else if (p.kind === "elmas" && typeof gorselKutuya === "function" && gorselKutuya(ctx, "elmas", -10, -12, 20, 24)) {
+    if (typeof mucevherParilti === "function") mucevherParilti(ctx, performance.now(), p.x);
+  } else if (p.kind === "zumrut" && typeof gorselKutuya === "function" && gorselKutuya(ctx, "zumrut", -10, -12, 20, 24)) {
+    if (typeof mucevherParilti === "function") mucevherParilti(ctx, performance.now(), p.x + 7);
   } else if (p.kind === "elmas") {
     ctx.fillStyle = "#60a5fa";
     ctx.shadowColor = "#60a5fa";
@@ -4683,7 +4709,8 @@ function refreshShop() {
 
       const icon = document.createElement("div");
       icon.className = "item-icon";
-      icon.textContent = w.icon;
+      if (typeof esyaSimgesiHTML === "function") icon.innerHTML = esyaSimgesiHTML(key, w.icon, w.name); // resim ya da emoji
+      else icon.textContent = w.icon;
       item.appendChild(icon);
 
       const info = document.createElement("div");

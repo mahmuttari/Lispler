@@ -783,6 +783,8 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
   padding: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
+.weapon-slot .esya-resim { width: 70%; height: 70%; object-fit: contain; pointer-events: none; }
+.shop-item .item-icon .esya-resim { width: 40px; height: 40px; object-fit: contain; vertical-align: middle; }
 .weapon-slot:active {
   transform: scale(0.92);
   background: rgba(255, 201, 77, 0.3);

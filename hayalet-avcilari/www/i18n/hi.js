@@ -115,6 +115,7 @@ I18N.hi = {
   "🎖 Başarımlar": "🎖 उपलब्धियाँ",
   "🎚 Ses": "🎚 आवाज़",
   "🎚 Ses Ayarları": "🎚 आवाज़ सेटिंग्स",
+  "🎨 Hayaletler, petler, silahlar ve eşyalar yepyeni çizimlerle!": "🎨 भूत, पालतू, हथियार और चीज़ें अब बिल्कुल नए चित्रों में!",
   "🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi.": "🎨 नया रूप और 🏆 टॉप 500 चैंपियन सूची।",
   "🎨 Yeni görünüm: düğmeler, kontroller ve göstergeler yenilendi.": "🎨 नया रूप: बटन, कंट्रोल और संकेतक नए हुए।",
   "🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez).": "🎬 विश्व यात्रा में जानें खत्म? विज्ञापन देखो और वहीं से जारी रखो (हर खेल में 3 बार)।",

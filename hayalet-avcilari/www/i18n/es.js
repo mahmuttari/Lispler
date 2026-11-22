@@ -115,6 +115,7 @@ I18N.es = {
   "🎖 Başarımlar": "🎖 Logros",
   "🎚 Ses": "🎚 Sonido",
   "🎚 Ses Ayarları": "🎚 Ajustes de sonido",
+  "🎨 Hayaletler, petler, silahlar ve eşyalar yepyeni çizimlerle!": "🎨 ¡Fantasmas, mascotas, armas y objetos con dibujos totalmente nuevos!",
   "🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi.": "🎨 Nuevo diseño y 🏆 top 500 de campeones.",
   "🎨 Yeni görünüm: düğmeler, kontroller ve göstergeler yenilendi.": "🎨 Nuevo diseño de botones y controles.",
   "🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez).": "🎬 ¿Sin vidas en la Gira mundial? Mira un anuncio y sigue donde lo dejaste (3 veces por partida).",

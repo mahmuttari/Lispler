@@ -115,6 +115,7 @@ I18N.ar = {
   "🎖 Başarımlar": "🎖 الإنجازات",
   "🎚 Ses": "🎚 الصوت",
   "🎚 Ses Ayarları": "🎚 إعدادات الصوت",
+  "🎨 Hayaletler, petler, silahlar ve eşyalar yepyeni çizimlerle!": "🎨 الأشباح والحيوانات الأليفة والأسلحة والأدوات برسومات جديدة كليًا!",
   "🎨 Yeni görünüm ve 🏆 ilk 500 şampiyon listesi.": "🎨 مظهر جديد و🏆 قائمة أفضل 500 بطل.",
   "🎨 Yeni görünüm: düğmeler, kontroller ve göstergeler yenilendi.": "🎨 مظهر جديد: أزرار وأدوات تحكم ومؤشرات أوضح.",
   "🎬 Dünya Turu'nda canların bitince reklam izle, kaldığın yerden devam et (oyun başına 3 kez).": "🎬 نفدت أرواحك في جولة حول العالم؟ شاهد إعلانًا وتابع من حيث توقفت (3 مرات في كل لعبة).",

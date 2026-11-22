@@ -152,6 +152,13 @@ function yarasaCiz(ctx, b) {
   ctx.save();
   ctx.translate(b.x, b.y);
   ctx.scale(b.yon, 1);
+  if (typeof gorsel === "function" && gorsel("yarasa")) {
+    // ChatGPT görseli: kanat çırpışı dikey basılmayla (kare kare animasyon N11 gelince değişecek)
+    ctx.scale(1, 0.72 + 0.28 * Math.abs(cirp));
+    gorselKutuya(ctx, "yarasa", -2.3 * s, -0.95 * s, 4.6 * s, 1.6 * s);
+    ctx.restore();
+    return;
+  }
   ctx.fillStyle = "#14091f";
   ctx.beginPath(); // kanatlar: çırpınca yukarı-aşağı
   ctx.moveTo(-2, 0);
@@ -179,6 +186,14 @@ function bulutCiz(ctx, bl) {
   ctx.beginPath(); ctx.ellipse(0, bl.boss ? HAVA.bossUst + 30 : 150, 70, 16, 0, 0, Math.PI * 2); ctx.fill();
   const parca = [[-46, 6, 26], [-18, -10, 34], [16, -14, 32], [44, 2, 26], [0, 10, 30], [-30, 16, 22], [30, 16, 22]];
   const aydinlik = bl.cakti > 0 ? 1 : 0;
+  if (typeof gorsel === "function" && gorsel("bulut")) {
+    // ChatGPT görseli: hafifçe kabarır; şimşek çakınca aydınlanır
+    ctx.scale(1 + Math.sin(zaman * 1.3) * 0.02, 1 + Math.cos(zaman * 1.1) * 0.025);
+    gorselKutuya(ctx, "bulut", -76, -50, 152, 96);
+    if (aydinlik) { ctx.globalAlpha = 0.55; resmiKutuyaCiz(ctx, gorselRenkli("bulut", "#e0e7ff", "doldur"), -76, -50, 152, 96); }
+    ctx.restore();
+    return;
+  }
   ctx.fillStyle = aydinlik ? "#9ca3c7" : "#3b3f5c";
   for (const [x, y, r] of parca) {
     ctx.beginPath(); ctx.arc(x + Math.sin(zaman + x) * 1.5, y, r, 0, Math.PI * 2); ctx.fill();

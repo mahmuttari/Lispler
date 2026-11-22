@@ -68,7 +68,11 @@ function bossOlc(secenek) {
   const yakin = (d, i, r, g, b, tol) => Math.abs(d[i] - r) <= tol && Math.abs(d[i + 1] - g) <= tol && Math.abs(d[i + 2] - b) <= tol && d[i + 3] > 200;
   function ciz(s) {
     ctx.clearRect(0, 0, 200, 200);
+    // Kod çiziminin renkleri ölçülür: ChatGPT boss resmi (gorsel.js) bu sınamada kapalı; Dünya Turu bossu zaten kodla çizilir
+    const resimler = typeof GORSEL === 'object' ? { ...GORSEL } : {};
+    if (typeof GORSEL === 'object') for (const k of Object.keys(GORSEL)) delete GORSEL[k];
     drawGhost(ctx, { x: 100, y: 110, size: 40 * s, hp: 10, maxHp: 10, isBoss: true, __dogus: -1e9 }); // iniş animasyonu bitmiş boss (anim.js)
+    if (typeof GORSEL === 'object') Object.assign(GORSEL, resimler);
     const d = ctx.getImageData(0, 0, 200, 200).data;
     let tac = 0;
     for (let y = Math.floor(110 - 34 * s); y <= Math.ceil(110 - 22 * s); y++) {

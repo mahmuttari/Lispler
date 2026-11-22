@@ -214,11 +214,44 @@ function kusCiz(ctx, s, kanat, saldiri) {
 }
 
 // Petin kendisi (merkez 0,0; sağa bakar); mağaza simgesi de bunu kullanır
+// Resim kutuları (s birimi; x, y, w, h): kod çiziminin kapladığı alan, alt kenar ayak hizası
+const PET_KUTU = { kedi: [-24, -31, 48, 42], kopek: [-21, -21, 52, 33], kus: [-21, -15, 45, 24] };
+
 function petResmi(ctx, tur, s, durum = {}) {
   const { yurume = 0, saldiri = 0, kanat = 0, zaman = 0 } = durum;
+  const kutu = PET_KUTU[tur];
+  if (kutu && typeof gorsel === "function" && gorsel(`pet-${tur}`)) {
+    // ChatGPT görseli (gorsel.js): yürürken sallanır, kuş kanat çırparken hafifçe kabarır, saldırırken öne atılır
+    ctx.save();
+    if (tur === "kus") ctx.scale(1, 1 + Math.sin(kanat * 22) * 0.06);
+    else ctx.rotate(Math.sin(yurume * 16) * 0.07);
+    ctx.translate(saldiri * 5 * s, 0);
+    gorselKutuya(ctx, `pet-${tur}`, kutu[0] * s, kutu[1] * s, kutu[2] * s, kutu[3] * s, true);
+    ctx.restore();
+    petSaldiriIzi(ctx, tur, s, saldiri);
+    return;
+  }
   if (tur === "kedi") kediCiz(ctx, s, yurume, saldiri);
   else if (tur === "kopek") kopekCiz(ctx, s, yurume, saldiri, zaman);
   else kusCiz(ctx, s, kanat, saldiri);
+}
+
+// Saldırı izi resimli petlerde de görünsün: kedide pençe, köpekte havlama, kuşta gaga darbesi
+function petSaldiriIzi(ctx, tur, s, saldiri) {
+  if (!(saldiri > 0)) return;
+  ctx.save();
+  ctx.lineWidth = 2.5 * s;
+  if (tur === "kedi") {
+    ctx.strokeStyle = `rgba(255,255,255,${saldiri})`;
+    for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(26 * s, (-16 + i * 6) * s); ctx.lineTo(36 * s, (-10 + i * 6) * s); ctx.stroke(); }
+  } else if (tur === "kopek") {
+    ctx.strokeStyle = `rgba(253,224,71,${saldiri})`;
+    ctx.beginPath(); ctx.arc(32 * s, -8 * s, 9 * s, -0.9, 0.9); ctx.stroke();
+  } else {
+    ctx.strokeStyle = `rgba(255,255,255,${saldiri})`;
+    ctx.beginPath(); ctx.arc(28 * s, -6 * s, 6 * s, -0.8, 0.8); ctx.stroke();
+  }
+  ctx.restore();
 }
 
 // render() oyuncudan önce (kara petleri) ve sonra (kuş) çağırır

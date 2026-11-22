@@ -37,7 +37,7 @@ aslına uygun kalınacak. Bu yüzden:
    yeniden ürettir; kesme işi bu düzene göre yapılır.
 5. Bitince (ya da bir grup bitince) Claude'a **"görseller hazır"** de.
 
-Toplam 45 pafta; ardından 13 animasyon paftası (N01–N13, aşağıda), asıl iş bittikten sonra. ChatGPT'nin günlük görsel sınırı varsa birkaç güne yayılabilir; sıra önemli değil, önce K, H, P ve T
+Toplam 45 pafta; T paftalarından hemen sonra 6 elleri boş karakter paftası (KS1–KS6), asıl iş bitince 13 animasyon paftası (N01–N13), ikisi de aşağıda. ChatGPT'nin günlük görsel sınırı varsa birkaç güne yayılabilir; sıra önemli değil, önce K, H, P ve T
 paftaları önerilir (oyunun her bölümünde görünenler).
 
 ---
@@ -645,6 +645,80 @@ faint ghost shapes far away, darker toward the bottom so white buttons stay read
 ```
 
 ---
+
+## Elleri boş karakter paftaları (KS1–KS6): T paftalarından hemen sonra
+
+Neden (22 Kasım 2026, Claude): K1–K6 paftalarında avcılar silahı elinde çizildi. Oyunda ise silahı kod çizer: dükkândan
+alınan silaha göre değişir, hedefe döner, ateşte geri teper. Silahı resme gömülü karakter kullanılırsa ekranda iki silah
+görünür ve silah animasyonu kaybolur. Bu yüzden onaylı K paftalarının **aynısı, yalnız elleri boş** istenir; karakterler
+oyuna bu paftalarla bağlanır, silahı kod çizmeye devam eder. Tasarım değişmez: tek fark eldeki eşyanın kalkması.
+
+**Sıra:** T1–T6'dan hemen sonra, U paftalarından önce (karakterler oyunun her anında görünür). Her pafta için onaylı
+K paftası referans olarak eklenir: KS1 için `gorsel/ham/K1.png` … KS6 için `gorsel/ham/K6.png`. Karşılaştırma ve onay
+K paftalarındaki gibi: Claude yan yana koyar, şekil ya da renk değişmişse yeniden ürettirilir.
+
+### KS İSTEMİ (KS1'den önce bir kez)
+
+```
+New task type: EMPTY-HANDS CHARACTER SHEETS (codes KS1–KS6). All format and style rules from the start still apply.
+For each KS sheet I attach the matching approved K sheet. Redraw it EXACTLY — same six cells, same characters, same
+pose, size, position, proportions, colors, outline and shading — with ONE change only: remove the item or weapon held
+in the hand (knife, gun, bow and arrow, slingshot, nunchaku, wand, feather, staff…). The hand stays where it is, as the
+same simple rounded block in the character's skin or sleeve color. Do not add anything in its place. Everything else is
+pixel-for-pixel the same design. Confirm with "ready".
+```
+
+### KS1 — Elleri boş: Kinkin ve Veryi
+
+Referans: `gorsel/ham/K1.png`
+
+```
+Sheet KS1: the attached sheet K1, all six cells, exactly the same but with empty hands (remove the held item).
+```
+
+### KS2 — Elleri boş: Kornet ve Marli
+
+Referans: `gorsel/ham/K2.png`
+
+```
+Sheet KS2: the attached sheet K2, all six cells, exactly the same but with empty hands (remove the held item).
+```
+
+### KS3 — Elleri boş: Kenit ve Ponko
+
+Referans: `gorsel/ham/K3.png`
+
+```
+Sheet KS3: the attached sheet K3, all six cells, exactly the same but with empty hands (remove the knife and the gun).
+The hat with the rifle on top of the cowboys (cells 4-6) is part of the hat: keep the hat exactly as it is.
+```
+
+### KS4 — Elleri boş: Güllu ve Rani
+
+Referans: `gorsel/ham/K4.png`
+
+```
+Sheet KS4: the attached sheet K4, all six cells, exactly the same but with empty hands (remove the bow with its arrow
+and the slingshot).
+```
+
+### KS5 — Elleri boş: Beri ve Fanatik
+
+Referans: `gorsel/ham/K5.png`
+
+```
+Sheet KS5: the attached sheet K5, all six cells, exactly the same but with empty hands (remove the held item and the
+red nunchaku). Keep the black belt.
+```
+
+### KS6 — Elleri boş: Silsen ve Serçin
+
+Referans: `gorsel/ham/K6.png`
+
+```
+Sheet KS6: the attached sheet K6, cells 1-4 only, exactly the same but with empty hands (remove the flower wand and the
+feather). Cell 5: the robot Bot exactly as in cell 5, without its gun. Cell 6: (empty).
+```
 
 ## Animasyon paftaları (N01–N13): 45 pafta bittikten sonra
 

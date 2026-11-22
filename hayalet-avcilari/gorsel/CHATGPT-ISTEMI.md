@@ -37,7 +37,7 @@ aslına uygun kalınacak. Bu yüzden:
    yeniden ürettir; kesme işi bu düzene göre yapılır.
 5. Bitince (ya da bir grup bitince) Claude'a **"görseller hazır"** de.
 
-Toplam 45 pafta. ChatGPT'nin günlük görsel sınırı varsa birkaç güne yayılabilir; sıra önemli değil, önce K, H, P ve T
+Toplam 45 pafta; ardından 13 animasyon paftası (N01–N13, aşağıda), asıl iş bittikten sonra. ChatGPT'nin günlük görsel sınırı varsa birkaç güne yayılabilir; sıra önemli değil, önce K, H, P ve T
 paftaları önerilir (oyunun her bölümünde görünenler).
 
 ---
@@ -642,6 +642,196 @@ same style as the sheets, centered, the ghost fills ~60% (Android safe zone), no
 Menu background: EXCEPTION to the grid rules — one opaque portrait image, 1024 x 1536 px.
 A calm haunted night sky over a soft silhouette of hills and a small castle, purple-indigo tones, a few stars,
 faint ghost shapes far away, darker toward the bottom so white buttons stay readable. No text, no characters in front.
+```
+
+---
+
+## Animasyon paftaları (N01–N13): 45 pafta bittikten sonra
+
+Kullanıcının isteği (22 Kasım 2026): *"Devam eden işi bozmadan animasyonlar ekleyebilirsin; GPT'de oluşturup statik
+olmak zorunda değil, kendin önerilerde de bulunabilirsin."*
+
+**Sıra:** Bu paftalar 45 paftalık asıl iş (K, H, P, T, U, I1, A1) **bittikten sonra** istenir; asıl işin sırası
+değişmez. Her animasyon paftası, daha önce onaylanmış durağan paftayı referans alır; o pafta `gorsel/ham/`'da yoksa
+animasyon paftası bekler.
+
+**Neden karakterler (K1–K6) için kare kare animasyon yok:** Karakterler özgün tasarım. otuzu aşkın kostümün her birini ChatGPT'ye
+birkaç pozda yeniden çizdirmek, kareden kareye küçük tasarım kaymalarına yol açar. Avcıların yürüyüşü kodla yapılır:
+onaylı resmin bacak bölümü ikiye ayrılıp sırayla kaldırılır, gövde hafifçe salınır (bugünkü kod yürüyüşünün aynısı).
+Böylece tasarım hiç değişmeden karakterler yürür.
+
+**Kare kuralı (Claude'un kesiminde):** Her paftada 6 kare var. "Tek animasyon" yazan paftada kareler 1→6 sırasıyla
+oynar; "üst sıra / alt sıra" yazan paftada her sıra ayrı bir 3 karelik animasyondur. Claude kareleri keserken her
+karenin dolu bölgesini bulup alt-orta noktasına (yaratıklar) ya da merkezine (efektler) hizalar; ChatGPT'nin küçük
+kaymaları böylece düzelir. Oynatma hızları `www/anim.js` tablosunda.
+
+### ANİMASYON İSTEMİ (N01'den önce bir kez)
+
+```
+New task type: ANIMATION SHEETS (codes N01–N13). All format and style rules from the start still apply
+(1536 x 1024, transparent, 3 x 2 grid of 512 px cells, no text, no shadow, dark outline, lighting top-left).
+Additional rules for animation sheets:
+- Every cell is ONE FRAME of an animation. Frames play in cell order: 1, 2, 3, 4, 5, 6.
+- If a sheet says "top row" and "bottom row", each row is a separate 3-frame animation (cells 1-2-3 and 4-5-6).
+- The subject must look EXACTLY like the attached approved sprite: same design, colors, outline and proportions.
+- Keep the subject the SAME SIZE and in the SAME PLACE in every frame (same center, same bottom line); only the
+  described motion changes. Do not zoom, crop or move the camera between frames.
+- "Loop" animations: the last frame must flow smoothly back into the first one.
+- Effects (smoke, sparkles, rings, sparks) stay inside the cell with the usual 24 px margin.
+Confirm with "ready".
+```
+
+### N01 — Normal hayalet: süzülme döngüsü (tek animasyon, döngü)
+
+Referans: `gorsel/ham/H1.png` (hücre 1)
+
+```
+Sheet N01: the normal ghost (cell 1 of the attached sheet), a 6-frame LOOP of it floating in place.
+Frames 1-6: the wavy bottom edge ripples like cloth in a soft breeze (the wave travels from left to right across the
+frames), the body squashes very slightly (frame 1 tallest, frame 4 a little wider and shorter). In frame 4 the eyes
+are closed (a blink), in all other frames open. Same position and size in every frame.
+```
+
+### N02 — Hayalet: yok olma "puf" (tek animasyon, bir kez)
+
+Referans: `gorsel/ham/H1.png` (hücre 1)
+
+```
+Sheet N02: the normal ghost (cell 1 of the attached sheet) being defeated, 6 frames played once.
+Frame 1: the ghost with a surprised face, eyes wide. Frame 2: it stretches upward, thinner and taller.
+Frame 3: its lower half dissolves into soft lavender smoke wisps. Frame 4: mostly smoke now, the face fading,
+small white sparkles appear. Frame 5: a round puff of lavender smoke with a few stars. Frame 6: only a few small
+fading sparkles and a thin smoke ring. No gore, cute and satisfying.
+```
+
+### N03 — Atıcı hayalet: saldırı (tek animasyon, bir kez)
+
+Referans: `gorsel/ham/H1.png` (hücre 2)
+
+```
+Sheet N03: the shooter ghost (cell 2 of the attached sheet) attacking, 6 frames played once, facing right.
+Frame 1: idle, angry eyes, NO orb. Frame 2: it leans back, gathering power, a tiny purple spark in front of it.
+Frame 3: the purple energy orb grows to small size just in front of its body. Frame 4: the orb is at full size,
+glowing. Frame 5: it lunges forward and the orb is released to the right, still touching the ghost.
+Frame 6: it settles back to idle, NO orb. The orb never leaves the cell.
+```
+
+### N04 — Bölüm boss'u: bekleme ve kükreme (üst sıra / alt sıra)
+
+Referans: `gorsel/ham/H1.png` (hücre 4)
+
+```
+Sheet N04: the red crowned boss ghost (cell 4 of the attached sheet). Two 3-frame animations, same size and place.
+Top row (cells 1-3), LOOP "idle": the boss breathes slowly, the crown bobs up and down a little, the red aura pulses
+(small, medium, small).
+Bottom row (cells 4-6), played once, "roar": cell 4 mouth opening, cell 5 mouth wide open with glowing yellow eyes
+and two red sound rings around it, cell 6 mouth closing, rings fading.
+```
+
+### N05 — Bölüm boss'u: yenilgi (tek animasyon, bir kez)
+
+Referans: `gorsel/ham/H1.png` (hücre 4)
+
+```
+Sheet N05: the red crowned boss ghost (cell 4 of the attached sheet) being defeated, 6 frames played once.
+Frame 1: hit, eyes squeezed shut, body flashes slightly white. Frame 2: the crown pops up off its head.
+Frame 3: the boss spins dizzily, little stars around its head, crown in the air. Frame 4: the boss shrinks and starts
+to burst into red and gold sparkles. Frame 5: a bright round burst of red-gold sparkles, the crown falling.
+Frame 6: only the golden crown, tilted, with a few last sparkles. Fun, not scary.
+```
+
+### N06 — Para: dönme (tek animasyon, döngü)
+
+Referans: `gorsel/ham/P2.png` (hücre 3)
+
+```
+Sheet N06: the golden ghost coin (cell 3 of the attached sheet) spinning around its vertical axis, 6-frame LOOP.
+Frame 1: front face. Frame 2: turned 45°. Frame 3: almost edge-on (thin golden ellipse). Frame 4: back side turned
+45° (plain golden back with a small star). Frame 5: almost edge-on again. Frame 6: turning back toward the front.
+A small white shine moves across the coin. Same center and height in every frame.
+```
+
+### N07 — Elmas ve zümrüt: parıltı (üst sıra / alt sıra, döngü)
+
+Referans: `gorsel/ham/P2.png` (hücre 4 ve 5)
+
+```
+Sheet N07: two 3-frame LOOPS, same size and place.
+Top row (cells 1-3): the blue diamond (cell 4 of the attached sheet); a white four-point twinkle star moves across
+its facets (left, middle, right), the diamond itself never changes.
+Bottom row (cells 4-6): the green emerald (cell 5 of the attached sheet), the same twinkle animation.
+```
+
+### N08 — Vuruş kıvılcımı ve bomba patlaması (üst sıra / alt sıra, bir kez)
+
+Referans: `gorsel/ham/P4.png` (hücre 1, bomba)
+
+```
+Sheet N08: two 3-frame effects played once, centered in their cells.
+Top row (cells 1-3) "hit spark": a small bright yellow-white star burst. Cell 1 small, cell 2 biggest with short
+rays, cell 3 breaking into a few tiny sparks.
+Bottom row (cells 4-6) "bomb explosion" for the bomb item (cell 1 of the attached sheet): cell 4 a white-yellow flash,
+cell 5 a big round cartoon explosion with an orange core and purple-grey smoke puffs, cell 6 smoke puffs drifting
+apart and fading. Cartoony, no fire realism.
+```
+
+### N09 — Buz patlaması ve kasırga (üst sıra bir kez / alt sıra döngü)
+
+Referans: `gorsel/ham/P4.png` (hücre 2 ve 4)
+
+```
+Sheet N09: two 3-frame animations, centered in their cells.
+Top row (cells 1-3), played once, "freeze burst" in the style of the freeze item (cell 2 of the attached sheet):
+cell 1 a small ice crystal, cell 2 light-blue ice shards bursting outward in a ring, cell 3 shards fading into
+snowflakes.
+Bottom row (cells 4-6), LOOP, "tornado" in the style of the tornado item (cell 4 of the attached sheet): a small
+swirling tornado, the swirl rotating between frames, a few leaves and dust bits circling it.
+```
+
+### N10 — Kedi ve köpek: yürüyüş (üst sıra / alt sıra, döngü)
+
+Referans: `gorsel/ham/P1.png` (hücre 1 ve 2)
+
+```
+Sheet N10: two 3-frame walk LOOPS, facing right, same size and bottom line in every frame.
+Top row (cells 1-3): the orange cat (cell 1 of the attached sheet) walking: cell 1 front paws forward, cell 2 paws
+together, body slightly up, cell 3 back paws forward; the tail sways.
+Bottom row (cells 4-6): the brown dog (cell 2 of the attached sheet) walking the same way; the floppy ears bounce and
+the tail wags.
+```
+
+### N11 — Kuş ve yarasa: kanat çırpma (üst sıra / alt sıra, döngü)
+
+Referans: `gorsel/ham/P1.png` (hücre 3 ve 5)
+
+```
+Sheet N11: two 3-frame flapping LOOPS, facing right, same center in every frame.
+Top row (cells 1-3): the blue bird (cell 3 of the attached sheet): wings up, wings level, wings down.
+Bottom row (cells 4-6): the purple bat (cell 5 of the attached sheet): wings up, wings level, wings down; its red
+eyes stay visible.
+```
+
+### N12 — Timsah: yükselip kapma (tek animasyon, bir kez)
+
+Referans: `gorsel/ham/P1.png` (hücre 4)
+
+```
+Sheet N12: the crocodile in water (cell 4 of the attached sheet), 6 frames played once, same water spot.
+Frame 1: only small ripples on dark water. Frame 2: two eyes rise out of the water. Frame 3: the head rises,
+mouth closed. Frame 4: jaws wide open. Frame 5: jaws snap shut with a small splash. Frame 6: the head sinks,
+ripples spreading. Cartoony, no blood.
+```
+
+### N13 — Toplama patlamaları: kalp ve güç yıldızı (üst sıra / alt sıra, bir kez)
+
+Referans: `gorsel/ham/P2.png` (hücre 6) ve `gorsel/ham/P3.png` (hücre 1)
+
+```
+Sheet N13: two 3-frame "collected" effects played once, centered.
+Top row (cells 1-3): the red heart pickup (cell 6 of the P2 sheet) being collected: cell 1 the heart squashes
+wide, cell 2 it pops into five small hearts flying outward, cell 3 the small hearts fading with sparkles.
+Bottom row (cells 4-6): the golden power star (cell 1 of the P3 sheet) being collected: cell 4 the star grows and
+glows, cell 5 a burst of golden rays and the star breaking into small stars, cell 6 the small stars fading.
 ```
 
 ---

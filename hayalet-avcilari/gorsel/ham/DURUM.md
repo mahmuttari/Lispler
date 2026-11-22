@@ -1,14 +1,21 @@
 # ChatGPT görsel üretimi: durum
 
-Son güncelleme: 22 Kasım 2026, 10:15 (yerel Claude Code, ChatGPT'yi Chrome'da kullanarak).
+Son güncelleme: 22 Kasım 2026 (yerel Claude Code, ChatGPT'yi Chrome'da kullanarak).
 
-## Nerede kalındı
+## Sonuç
 
-**T1 paftasında durdu.** İlk T1 geldi ama 1–3. hücredeki dokular hücreyi kenardan kenara doldurmuyordu
-(yaklaşık 10 px saydam boşluk). ChatGPT'den düzeltmesi istendi, bu sırada Chrome yanıt vermez oldu.
-Düzeltilmiş T1 henüz indirilmedi, `ham/` klasöründe T1 yok.
+**45 paftanın hepsi bitti ve bu klasörde.** K1–K6, H1, P1–P4, T1–T6, U01–U26, I1, A1.
+Karakter paftalarını (K1–K6) kullanıcı tek tek referansla karşılaştırıp onayladı.
 
-Sıradaki: T1 (düzeltme sonucu), T2–T6, U01–U26, I1, A1. Animasyon paftaları (N01–N13) 45 pafta bittikten sonra.
+Animasyon paftaları (N01–N13, `../CHATGPT-ISTEMI.md` → "Animasyon paftaları") henüz istenmedi; kullanıcının
+verdiği 45 paftalık listede yoktu, onun kararını bekliyor.
+
+ChatGPT görsel sınırına takılınmadı. Güvenlik nedeniyle reddedilen hücre olmadı (boss kıyafetleri dahil).
+
+## Bütün paftalarda denetlenenler
+
+PNG; 1536×1024 (I1 1024×1024, A1 1024×1536); saydam arka plan (T paftalarının 1–3. hücreleri, I1 ve A1 opak);
+yazı, rakam ve çerçeve yok; hiçbir nesne hücre sınırını aşmıyor (her sınırda dolu piksel sayıldı, sıfır).
 
 ## Paftalar
 
@@ -20,17 +27,45 @@ Sıradaki: T1 (düzeltme sonucu), T2–T6, U01–U26, I1, A1. Animasyon paftalar
 | K4 | tamam | Kullanıcı onayladı |
 | K5 | yeniden üretildi | 2. deneme: Beri'nin renkli burun noktası eklendi; kullanıcı onayladı |
 | K6 | tamam | Kullanıcı onayladı |
-| H1 | yeniden üretildi | 1. denemede gri sisli yarı saydam arka plan ve hücre çizgileri vardı |
+| H1 | yeniden üretildi | 1. denemede gri sisli arka plan ve hücre çizgileri vardı |
 | P1 | yeniden üretildi | 1. deneme referansı düz kopyalamıştı; dış çizgi, gölge eklendi, yarasa açıldı |
 | P2 | tamam | |
 | P3 | tamam | |
 | P4 | tamam | |
-| T1 | bekliyor | Düzeltme istendi, sonuç alınmadı (yukarıya bakın) |
-| T2–T6 | bekliyor | |
-| U01–U26 | bekliyor | |
-| I1, A1 | bekliyor | |
-
-ChatGPT görsel sınırına takılınmadı, güvenlik nedeniyle reddedilen hücre olmadı.
+| T1 | yeniden üretildi | 3 deneme; üst sıra (dokular) 3. denemeden, alt sıra (nesneler) 1. denemeden birleştirildi |
+| T2 | tamam | |
+| T3 | tamam | |
+| T4 | tamam | |
+| T5 | yeniden üretildi | 1. deneme baştan sona yarı saydamdı, alt sırada beyaz zemin vardı |
+| T6 | tamam | |
+| U01 | yeniden üretildi | Bosslar beyaz-mor hayaletti; H1 eklenerek kırmızı boss gövdesi istendi (sonraki U'larda da tuttu) |
+| U02 | yeniden üretildi | Gri sisli arka plan; guguklu saatte rakam olmaması istendi |
+| U03 | tamam | |
+| U04 | tamam | |
+| U05 | tamam | |
+| U06 | yeniden üretildi | Nesneler hücre sınırlarını aşıyordu |
+| U07 | tamam | |
+| U08 | tamam | |
+| U09 | tamam | |
+| U10 | tamam | |
+| U11 | tamam | |
+| U12 | yeniden üretildi | 1, 4, 5. hücrelerde arka plan manzarası vardı; boss sınırı aşıyordu |
+| U13 | tamam | |
+| U14 | tamam | |
+| U15 | yeniden üretildi | Gri sisli arka plan ve hücre çizgileri |
+| U16 | yeniden üretildi | Nesneler hücre sınırlarını aşıyordu |
+| U17 | yeniden üretildi | Boss yüzü öfkeli ve dişliydi; boss hücreleri 2. denemeden, diğerleri 1. denemeden birleştirildi |
+| U18 | tamam | |
+| U19 | tamam | |
+| U20 | tamam | |
+| U21 | yeniden üretildi | Fener püskülü ve gat şapkası satır sınırını aşıyordu |
+| U22 | tamam | |
+| U23 | tamam | |
+| U24 | tamam | |
+| U25 | yeniden üretildi | Lama ve Şeker Somunu sahneleri boss hücrelerine taşıyordu |
+| U26 | yeniden üretildi | Gri sisli arka plan, alt sıra gri; buzul ve Caminito kare sahne gibiydi |
+| I1 | tamam | ChatGPT 1254×1254 üretti, 1024×1024'e küçültüldü |
+| A1 | tamam | |
 
 ## Kesim için notlar
 
@@ -38,3 +73,8 @@ ChatGPT görsel sınırına takılınmadı, güvenlik nedeniyle reddedilen hücr
 - K4: Gullu hücrelerinde (1–3) alt boşluk 24 yerine 21–22 px.
 - K6: Bot avcılarla aynı boyda çizildi (referansta daha küçük); oyundaki boyuna ölçeklenmeli.
 - Karakter boyları paftadan paftaya 290–400 px arasında değişiyor; kesimde saydam kenar kırpılıp ölçeklenmeli.
+- T paftaları: dokular (1–3. hücre) sağ-sol yönde iyi döşeniyor; bazılarında (T1, T5, T6) üst-alt kenar birleşiminde
+  hafif renk farkı var. Kesimde kenarlar karıştırılarak (ör. yarım kaydırıp sınırı yumuşatarak) döşenebilir yapılmalı.
+- T2: dokuların alt kenarı 1 px satır sınırına taşıyor (kenar yumuşatması); kesimde kırpılır.
+- U paftalarında bazı nesneler 24 px kenar boşluğunun biraz altında (en az 1–10 px) ama hiçbiri hücre sınırını aşmıyor.
+- I1: opak kare simge; Android uyarlanır simgesi için ayrıca ön plan ve arka plan katmanlarına ayrılması gerekebilir.

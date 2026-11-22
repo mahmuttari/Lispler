@@ -41,7 +41,23 @@ Uygulama simgesi (I1) kullanıcının kararıyla oyuna alındı ("geç").
 | N11 | tamam | Kuş ve yarasa kanat çırpma |
 | N12 | tamam | Timsah yükselip kapma |
 | N13 | tamam | Kalp ve güç yıldızı toplama; son kareler yarı saydam (soluyor) |
-| KS1–KS6 | bekliyor | Kullanıcı henüz istemedi; her biri kullanıcı onayıyla |
+
+### Elleri boş karakter paftaları (yerel Claude)
+
+**KS1–KS6 bitti** (6/6). KS İSTEMİ aynı sohbette gönderildi; her pafta onaylı K paftası eklenerek istendi, K ile üst-alt
+karşılaştırılıp kullanıcıya gösterildi ve **hepsini kullanıcı onayladı**. Hepsi 1536×1024, saydam, hücre sınırında sıfır
+dolu piksel; karakterlerin sol/üst kenarı K paftasıyla aynı yerde (en çok 3 px fark, KS4'te Güllu 9 px yukarıdan başlıyor).
+
+| Pafta | Durum | Not |
+|---|---|---|
+| KS1 | tamam | 6. hücrede (Veryi, Bronze) gömlek ~%15 daha açık; kullanıcı böyle onayladı |
+| KS2 | yeniden üretildi | 1. denemede ChatGPT K2'de olmayan kollar eklemişti; 2. denemede Kornet'e kol eklenmedi, Marli'nin sağ kolu yanda blok |
+| KS3 | tamam | Bıçak ve tabanca kalktı; şapkadaki tüfek şapkanın parçası olarak kaldı |
+| KS4 | tamam | Yay ve sapan kalktı; Güllu ~%3 daha uzun |
+| KS5 | tamam | Nunçaku kalktı, siyah kuşak duruyor; Beri değişmedi |
+| KS6 | tamam | Çiçek asa, tüy ve Bot'un silahı kalktı; 6. hücre boş; 1–3. hücrede gömlekler ~%10 daha koyu, kullanıcı böyle onayladı |
+
+Not: Kornet'te (KS2 1–3) görünen bir el yok; silah kodla çizilirken tutma noktası gerekirse kodda verilmeli.
 
 ChatGPT görsel sınırına takılınmadı. Güvenlik nedeniyle reddedilen hücre olmadı (boss kıyafetleri dahil).
 

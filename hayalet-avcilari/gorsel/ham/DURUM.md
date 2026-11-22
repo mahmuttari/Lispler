@@ -7,8 +7,19 @@ Son güncelleme: 22 Kasım 2026 (yerel Claude Code, ChatGPT'yi Chrome'da kullana
 **45 paftanın hepsi bitti ve bu klasörde.** K1–K6, H1, P1–P4, T1–T6, U01–U26, I1, A1.
 Karakter paftalarını (K1–K6) kullanıcı tek tek referansla karşılaştırıp onayladı.
 
-Animasyon paftaları (N01–N13, `../CHATGPT-ISTEMI.md` → "Animasyon paftaları") henüz istenmedi; kullanıcının
-verdiği 45 paftalık listede yoktu, onun kararını bekliyor.
+## Sıradaki iş (kullanıcının kararı, 22 Kasım 2026: "animasyon üret")
+
+Bulut Claude'un notu: kullanıcı animasyon paftalarının üretilmesini istedi. Sıra:
+
+1. **N01–N13 animasyon paftaları** (`../CHATGPT-ISTEMI.md` → "Animasyon paftaları"): önce "ANİMASYON İSTEMİ"ni bir
+   kez gönder, sonra her paftayı istemde yazan onaylı paftayı (`H1.png`, `P1.png`, `P2.png`, `P3.png`, `P4.png`)
+   ekleyerek iste; `N01.png` … `N13.png` olarak bu klasöre koy, her paftadan sonra commit ve push. Kareler aynı boyda
+   ve aynı yerde olmalı; kayan ya da tasarımı değişen pafta yeniden ürettirilir.
+2. **KS1–KS6 elleri boş karakter paftaları** (`../CHATGPT-ISTEMI.md` → "Elleri boş karakter paftaları"): karakterler
+   oyuna bunlarla bağlanacak. K paftalarındaki gibi her biri referansla yan yana kullanıcıya gösterilir, onayı
+   olmadan sonrakine geçilmez.
+
+Uygulama simgesi (I1) kullanıcının kararıyla oyuna alındı ("geç").
 
 ChatGPT görsel sınırına takılınmadı. Güvenlik nedeniyle reddedilen hücre olmadı (boss kıyafetleri dahil).
 

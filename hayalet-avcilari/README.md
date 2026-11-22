@@ -457,7 +457,10 @@ olmak zorunda değil, kendin önerilerde de bulunabilirsin."* İki katman:
    hücrenin hangi ülke olduğu `CHATGPT-ISTEMI.md`'den okunur). O ülkenin resmi varsa boss resimden, yoksa bugünkü
    kıyafet kod çizimi. Ülke objeleri bağlanmaz (engel; çarpışma biçimi kod çizimine göre). 51 ülkenin hepsi resimli.
    **Menü arka planı (A1):** ay ışığında şato; ana menü ve açılış ekranında (`menu-arka.webp`, 768 px, ~20 KB). Resim
-   yüklenemezse eski renk geçişleri görünür. Uygulama simgesi (I1) henüz değiştirilmedi (karar kullanıcıda). Timsah, köprü ve oyuncu ruhu
+   yüklenemezse eski renk geçişleri görünür.
+   **Uygulama simgesi (I1):** kullanıcının kararıyla ("geç", 22 Kasım 2026) yeni simge: `araclar/simge_uret.py`
+   Android simgelerini (kare, yuvarlak, uyarlanabilir katmanlar), açılış resimlerini, web simgelerini ve Play mağaza
+   simgesini (`magaza/play/simge-512.png`) üretir. Mağaza simgesi Play'e sürümle birlikte, "gönder" onayıyla gider. Timsah, köprü ve oyuncu ruhu
    kendi kod animasyonlarıyla kalır (kare kare paftaları gelince). `test/gorsel.test.mjs` (29 sınama: liste ve disk aynı,
    boyutlar, her işlev resimle ve resimsiz, renk kademesi, eşya simgeleri, kare süresi).
 3. **ChatGPT kare kare animasyonları (sonra).** `gorsel/CHATGPT-ISTEMI.md` → "Animasyon paftaları" (N01–N13): hayalet

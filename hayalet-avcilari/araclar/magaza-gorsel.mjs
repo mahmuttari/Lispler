@@ -1,6 +1,7 @@
 // Play mağaza görselleri: her dil için 7 telefon ekran görüntüsü (1080×1920) ve tanıtım görseli (1024×500).
 // 3.13.0: oyun ve boss kareleri yeni engelleri gösterir (Yeşil Orman, Mor Şato), menüde kupa, 6. kare Arkadaşlar.
 // 3.14.0: 7. kare Dünya Turu (Japonya, kimonolu boss); tanıtım görselinin alt yazısında 🌍 Dünya turu.
+// 3.18.0: ChatGPT görselleri (www/gorsel/*.webp) yüklenmeden kare alınmaz; simge yeni (icon-1024.png).
 // Kullanım: node hayalet-avcilari/araclar/magaza-gorsel.mjs [play-dili…]   (Playwright + Chromium gerekir)
 // Çıktı: tr-TR → magaza/play/, diğerleri → magaza/play/<play-dili>/ (android/play.mjs gorsel bu klasörleri yükler)
 import http from 'node:http';
@@ -25,7 +26,7 @@ const DILLER = {
 };
 const secim = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(DILLER);
 
-const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.m4a': 'audio/mp4' };
+const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp', '.woff2': 'font/woff2', '.m4a': 'audio/mp4' };
 const sunucu = http.createServer((q, r) => {
   const f = path.join(WWW, decodeURIComponent(new URL(q.url, 'http://x').pathname).replace(/^\/+/, '') || 'index.html');
   if (!f.startsWith(WWW) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end(); }
@@ -45,6 +46,8 @@ try {
     await p.route(/gstatic\.com|googleapis|firebase/, (r) => r.abort());
     await p.goto(adres, { waitUntil: 'load' });
     await p.waitForTimeout(800);
+    // Bütün ChatGPT görselleri yüklensin (karakter, hayalet, animasyon kareleri, tema dokuları, menü arka planı)
+    await p.waitForFunction(() => typeof GORSEL === 'object' && Object.keys(GORSEL).length >= Object.keys(GORSEL_LISTESI).length, null, { timeout: 30000 });
     await p.evaluate(() => {
       save.playerName = 'Kiki'; save.para = 1250; save.elmas = 14; save.zumrut = 6; save.kupa = 3; save.highestLevel = 7; persistSave();
       try { localStorage.setItem(VERSION_KEY, APP_VERSION); } catch (_) {}

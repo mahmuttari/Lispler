@@ -23,16 +23,25 @@ Uygulama simgesi (I1) kullanıcının kararıyla oyuna alındı ("geç").
 
 ### Animasyon ilerlemesi (yerel Claude)
 
-ANİMASYON İSTEMİ aynı ChatGPT sohbetinde gönderildi ("ready").
+**N01–N13 bitti** (13/13). Hepsi 1536×1024, saydam, hücre sınırında sıfır dolu piksel; kareler aynı merkezde
+(merkez sapması en çok ±30 px, kesimde alt-orta/merkez hizalamasıyla düzelir).
 
 | Pafta | Durum | Not |
 |---|---|---|
 | N01 | tamam | Süzülme döngüsü, 4. karede göz kırpma |
 | N02 | tamam | Yok olma "puf" |
 | N03 | tamam | Atıcı hayalet saldırısı |
-| N04 | sürüyor | 1. denemede gri sisli arka plan; düzeltme istendi |
-| N05–N13 | bekliyor | |
-| KS1–KS6 | bekliyor | N'lerden sonra; her biri kullanıcı onayıyla |
+| N04 | yeniden üretildi | 2 denemede gri sis; 3. denemede parıltı yerine düz kırmızı halka/yaylarla temiz |
+| N05 | tamam | Boss yenilgisi, son karede yalnız taç |
+| N06 | tamam | Dönen para (arkada yıldız) |
+| N07 | tamam | Elmas ve zümrüt parıltısı, taşlar karelerde birebir aynı |
+| N08 | tamam | Vuruş kıvılcımı, bomba patlaması |
+| N09 | tamam | Buz patlaması, kasırga |
+| N10 | tamam | Kedi ve köpek yürüyüşü |
+| N11 | tamam | Kuş ve yarasa kanat çırpma |
+| N12 | tamam | Timsah yükselip kapma |
+| N13 | tamam | Kalp ve güç yıldızı toplama; son kareler yarı saydam (soluyor) |
+| KS1–KS6 | bekliyor | Kullanıcı henüz istemedi; her biri kullanıcı onayıyla |
 
 ChatGPT görsel sınırına takılınmadı. Güvenlik nedeniyle reddedilen hücre olmadı (boss kıyafetleri dahil).
 

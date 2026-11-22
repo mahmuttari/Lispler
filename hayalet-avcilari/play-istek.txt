@@ -84,4 +84,4 @@
 # (yapıldı 2026-11-22, koşu 45064056595: AAB 56 (koşu 45057582753, commit 71c5bbd) yüklendi, üretim 3.17.0 (55) → 3.18.0 (56) completed (%100), düzenleme onaylandı, incelemeye gönderildi; ardından 7 dilde yeni simge yüklendi (öne çıkan görsel ve 7 ekran görüntüsü eski dosyalarla), düzenleme onaylandı) yukle yayinla uygula, gorsel uygula
 
 # istek 2026-11-22: mağaza görselleri 3.18.0'ın yeni görünümüyle (kullanıcı: "ekran görüntüleri ve tanıtım görselleri neden değişmiyor?"; araclar/magaza-gorsel.mjs ile 7 dilde yeniden üretildi: ChatGPT karakterleri, hayaletler, tema dokuları, menü arka planı, yeni simgeli tanıtım görseli); yalnız mağaza görselleri, sürüme dokunmaz
-gorsel uygula
+# (yapıldı 2026-11-22, koşu 45064973939: 7 dilde simge, tanıtım görseli ve 7 ekran görüntüsü yeni görünümle yüklendi, düzenleme onaylandı) gorsel uygula

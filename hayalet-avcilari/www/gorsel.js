@@ -223,6 +223,111 @@ function esyaSimgesiHTML(key, emoji, ad = "") {
   return emoji;
 }
 
+// Eşya simgesinin genel hâli (3.20.0): "esya-" öneki olmadan her anahtar için. GORSEL_LISTESI[key] varsa
+// <img class="ui-simge">, yoksa emoji (alt metin: ad, esyaSimgesiHTML gibi kaçışlı).
+function uiSimgeHTML(key, emoji, ad = "") {
+  if (typeof GORSEL_LISTESI === "object" && GORSEL_LISTESI && GORSEL_LISTESI[key]) {
+    const guvenliAd = String(ad).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    return `<img class="ui-simge" src="gorsel/${key}.webp" alt="${guvenliAd}" draggable="false">`;
+  }
+  return emoji;
+}
+
+// ---- Canlı karakter önizlemesi (3.20.0) ----
+// Bütün önizlemeler (açılış karşılıyıcısı, menü kareti...) TEK paylaşımlı requestAnimationFrame döngüsünde
+// çizilir (~30 kare/sn üst sınır). Karakter drawCharacter ile çizilir (game.js'de; yalnız çizim anında çağrılır,
+// yüklenirken asla). Dururken nefes kareleri oynar (walkPhase 0); opts.atis !== false ise her 2.6 sn'de bir kısa
+// atış: geri tepme 1'den başlayıp 0.35 sn'de doğrusal sıfıra iner (3D atış kareleri 7-8 görünür).
+// Gizli kap çizilmez (el.offsetParent null; ekran kapalı), DOM'dan çıkarılan önizlemenin kaydı silinir. Kayıt
+// kalmayınca döngü durur, sonraki kayıtta yeniden başlar. Az hareket tercihi (prefers-reduced-motion) varsa döngü
+// kurulmaz: önizleme bir kez atışsız çizilir ve yalnız "gorsel-yuklendi" olayında yeniden çizilir.
+const _onizlemeler = [];
+let _onizlemeRaf = 0;
+let _onizlemeSonKare = 0;
+const _onizlemeAzHareket = typeof window.matchMedia === "function"
+  && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function canliOnizleme(el, charKey, costumeIdx, opts = {}) {
+  if (!el) return null;
+  let o = _onizlemeler.find((k) => k.el === el);
+  let cv = el.querySelector("canvas.canli-onizleme");
+  if (!cv) { // menü her açılışta yenilenir: aynı kaptaki tuvali yeniden kullan
+    cv = document.createElement("canvas");
+    cv.className = "canli-onizleme";
+    el.appendChild(cv);
+  }
+  if (!o) {
+    o = { el, cv, ctx: cv.getContext("2d") };
+    _onizlemeler.push(o);
+  }
+  o.charKey = charKey;
+  o.costumeIdx = costumeIdx;
+  o.atis = opts.atis !== false;
+  o.sonAtis = performance.now(); // ilk atış kayıttan 2.6 sn sonra
+  if (_onizlemeAzHareket) canliOnizlemeCiz(o, o.sonAtis, true);
+  else if (!_onizlemeRaf) _onizlemeRaf = requestAnimationFrame(canliOnizlemeDongu);
+  return cv;
+}
+
+// Bir önizlemeyi çizer: tuval kabın CSS kutusu × devicePixelRatio (üst sınır 2; kutu gizliyken 0 olur, çizilmez).
+// Karakter kutun ortasında, ayakları h*0.62 hizasında; boy min(w, h/1.15)*0.9 (şapka ve ayaklar sığar).
+function canliOnizlemeCiz(o, an, hareketsiz = false) {
+  if (!o.el.isConnected || !o.cv.isConnected || o.el.offsetParent === null) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.max(1, Math.round(o.el.clientWidth * dpr));
+  const h = Math.max(1, Math.round(o.el.clientHeight * dpr));
+  if (o.cv.width !== w || o.cv.height !== h) { o.cv.width = w; o.cv.height = h; }
+  if (typeof drawCharacter !== "function") return; // game.js henüz yüklenmedi
+  let geriTepme = 0;
+  if (o.atis && !hareketsiz) {
+    if (an - o.sonAtis >= 2600) o.sonAtis = an; // yeni atış
+    const gecen = an - o.sonAtis;
+    if (gecen < 350) geriTepme = 1 - gecen / 350; // 1 → 0 doğrusal
+  }
+  o.ctx.clearRect(0, 0, w, h);
+  drawCharacter(o.ctx, o.charKey, o.costumeIdx, w / 2, h * 0.62, Math.min(w, h / 1.15) * 0.9, 0, 0, 0, geriTepme);
+}
+
+function canliOnizlemeDongu(an) {
+  _onizlemeRaf = 0;
+  if (an - _onizlemeSonKare >= 1000 / 30 - 1) { // ~30 kare/sn üst sınır
+    _onizlemeSonKare = an;
+    for (let i = _onizlemeler.length - 1; i >= 0; i--) {
+      const o = _onizlemeler[i];
+      if (!o.el.isConnected || !o.cv.isConnected) { _onizlemeler.splice(i, 1); continue; } // DOM'dan çıktı
+      canliOnizlemeCiz(o, an);
+    }
+  }
+  if (_onizlemeler.length) _onizlemeRaf = requestAnimationFrame(canliOnizlemeDongu); // kayıt kalmadıysa döngü durur
+}
+
+// Kayıtlı önizleme sayısı (sınama için); çağrılınca DOM'dan çıkmış kayıtlar da silinir
+function canliOnizlemeSayisi() {
+  for (let i = _onizlemeler.length - 1; i >= 0; i--) {
+    const o = _onizlemeler[i];
+    if (!o.el.isConnected || !o.cv.isConnected) _onizlemeler.splice(i, 1);
+  }
+  return _onizlemeler.length;
+}
+
+// el'in altındaki (kendisi dahil) önizlemelerin kaydını ve tuvalini kaldırır
+function canliOnizlemeTemizle(el) {
+  for (let i = _onizlemeler.length - 1; i >= 0; i--) {
+    const o = _onizlemeler[i];
+    if (!el || o.el === el || el.contains(o.el)) {
+      o.cv.remove();
+      _onizlemeler.splice(i, 1);
+    }
+  }
+}
+
+// Az hareket tercihi: döngü yok; görseller gelince (tek olay) kayıtlı önizlemeler bir kez yeniden çizilir
+window.addEventListener("gorsel-yuklendi", () => {
+  if (!_onizlemeAzHareket) return;
+  const an = performance.now();
+  for (const o of _onizlemeler) canliOnizlemeCiz(o, an, true);
+});
+
 gorselYukle();
 
 // ---- Kare kare animasyonlar (N01–N13; an-<ad>-<n>.webp) ----

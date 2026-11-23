@@ -1717,3 +1717,13 @@ details.arkadas-bolum > summary::-webkit-details-marker { display: none; }
   z-index: 20;
   white-space: nowrap;
 }
+
+/* 3.20.0 arayüz */
+/* Genel simge (uiSimgeHTML): metin içinde emoji yerine geçen küçük resim */
+.ui-simge { width: 1.3em; height: 1.3em; vertical-align: -0.25em; object-fit: contain; }
+
+/* Canlı karakter önizlemesi (canliOnizleme): tuval kabı doldurur; boyutunu kod kaptan alır */
+.canli-onizleme { width: 100%; height: 100%; display: block; }
+
+/* Açılış ekranı grup resmi (giris-kahraman; pafta gelince canlı önizlemenin yerine geçer) */
+.giris-kahraman { width: 100%; height: 100%; object-fit: contain; display: block; }

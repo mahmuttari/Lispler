@@ -4611,13 +4611,18 @@ function clearLeaderboard() {
 }
 
 // ====== AÇILIŞ EKRANI KARAKTER ÇİZİMİ ======
+// Kinkin canlı önizlemeyle çizilir (gorsel.js canliOnizleme). Eskiden açılışta bir kez data URL'e çizilirdi;
+// 3D kareler henüz yüklenmediği için eski düz çizim görünürdü. "giris-kahraman" (ileride gelecek grup paftası)
+// listede varsa onun resmi gösterilir.
 function drawGreeter() {
   const el = document.getElementById("kinkin-greeter");
-  const cv = document.createElement("canvas");
-  cv.width = 200; cv.height = 220;
-  const ctx = cv.getContext("2d");
-  drawCharacter(ctx, "kinkin", 0, 100, 130, 180);
-  el.style.backgroundImage = `url(${cv.toDataURL()})`;
+  if (!el) return;
+  if (typeof GORSEL_LISTESI === "object" && GORSEL_LISTESI && GORSEL_LISTESI["giris-kahraman"]) {
+    canliOnizlemeTemizle(el);
+    el.innerHTML = `<img class="giris-kahraman" src="gorsel/giris-kahraman.webp" alt="${escapeHtml(t("Hayalet Avcıları"))}" draggable="false">`;
+    return;
+  }
+  canliOnizleme(el, "kinkin", 0);
 }
 
 // ====== MENÜ ======
@@ -4628,19 +4633,11 @@ function refreshMenu() {
   document.getElementById("menu-zumrut").textContent = save.zumrut;
   document.getElementById("menu-kupa").textContent = save.kupa || 0;
 
-  // Karakter önizleme
+  // Karakter önizleme: canlı (gorsel.js canliOnizleme); eskiden data URL'e bir kez çizilirdi
   const charKey = save.selectedChar;
   const c = CHARACTERS[charKey];
   const costumeIdx = save.selectedCostume[charKey];
-  const cv = document.createElement("canvas");
-  cv.width = 160; cv.height = 180;
-  const ctx = cv.getContext("2d");
-  drawCharacter(ctx, charKey, costumeIdx, 80, 110, 160);
-  const preview = document.getElementById("character-preview");
-  preview.style.backgroundImage = `url(${cv.toDataURL()})`;
-  preview.style.backgroundSize = "contain";
-  preview.style.backgroundRepeat = "no-repeat";
-  preview.style.backgroundPosition = "center";
+  canliOnizleme(document.getElementById("character-preview"), charKey, costumeIdx);
 
   document.getElementById("character-name").textContent = c.name;
   const stats = computeStats(charKey);

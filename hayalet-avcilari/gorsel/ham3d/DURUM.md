@@ -27,5 +27,5 @@ yukarıya oturtulur. Dosyalar 1536 × 1024, saydam.
 | D04 | **tamam** | Güllu (kız, kare taç, yay) ve Rani (kız, topuzlar, sapan); 1. denemede kullanıcı onayladı |
 | D05 | **tamam** | Beri (kız; kullanıcının isteğiyle lolipop kafa yerine şeker temalı insan kız, eskisini yalnız bere ve tokayla anımsatır, silahsız) ve Fanatik (erkek, karateci, nunçaku); kullanıcı onayladı |
 | D06 | **tamam** | Silsen (kız, diz boyu elbise ve tayt, çiçekli bayrak asa), Serçin (kız, gaga maskesi; Kanatlı Kedi'de gaga yok), Bot; 6. hücre boş. ChatGPT'nin iki seçeneğinden 1.'yi kullanıcı seçti |
-| A01–A34 | sürüyor: 20/34 | animasyon (yürüyüş 1-4, nefes 5-6, atış 7-8), 4 × 2 hücre 384 × 512; hazır: A01, A02, A03, A04, A05, A06, A07, A08, A09, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20 |
+| A01–A34 | sürüyor: 21/34 | animasyon (yürüyüş 1-4, nefes 5-6, atış 7-8), 4 × 2 hücre 384 × 512; hazır: A01, A02, A03, A04, A05, A06, A07, A08, A09, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20, A21 |
 | W1–W3 | bekliyor | silahlar |

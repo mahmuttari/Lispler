@@ -5,7 +5,7 @@ Kullanıcının isteği (23 Kasım 2026): karakterler ChatGPT ile mevcut görün
 
 ## Kullanıcının sabit kuralları (23 Kasım 2026, tüm karakterler için)
 
-- Cinsiyetler belirgin. **Kinkin ve Veryi erkek** (her kostümde; "Pembe Prenses" pembe prens olarak çizildi). Bazı
+- Cinsiyetler belirgin. **Kinkin, Veryi ve Kornet erkek; Marli kız** (her kostümde; "Pembe Prenses" pembe prens olarak çizildi). Bazı
   karakterler kız olabilir.
 - Açık kostüm yok: dekolte, askı ve kolsuz üst yok; kollar en az dirseğe, bacaklar en az dize kadar kapalı; göğüs
   görünmez.
@@ -17,12 +17,13 @@ Kullanıcının isteği (23 Kasım 2026): karakterler ChatGPT ile mevcut görün
 ## İşleme
 
 ChatGPT'nin çıktısında saydamlığı neredeyse sıfır lekeler (alfa ≤ 16) silinir, alfa ≥ 241 tam opak yapılır. ChatGPT
-boyu dinlemediği için her hücredeki karakter 420 px boya ölçeklenir, yatayda ortalanır, ayakları hücre altından 24 px
+boyu dinlemediği için karakterler ölçeklenir (D02'den itibaren bütün paftaya tek ölçek: en uzun karakter 420 px, karakterlerin birbirine göre boyu korunur; D01'de her hücre ayrı 420 px), yatayda ortalanır, ayakları hücre altından 24 px
 yukarıya oturtulur. Dosyalar 1536 × 1024, saydam.
 
 | Pafta | Durum | Not |
 |---|---|---|
 | D01 | **tamam** | Kinkin ve Veryi; 3. denemede kullanıcı onayladı |
-| D02–D06 | bekliyor | tasarım; her biri kullanıcı onayıyla |
+| D02 | **tamam** | Kornet (erkek, tüylü yaratık) ve Marli (kız); 1. denemede kullanıcı onayladı |
+| D03–D06 | bekliyor | tasarım; her biri kullanıcı onayıyla |
 | A01–A34 | bekliyor | animasyon (yürüyüş 1-4, nefes 5-6, atış 7-8) |
 | W1–W3 | bekliyor | silahlar |

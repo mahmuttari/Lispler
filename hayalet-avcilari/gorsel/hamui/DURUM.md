@@ -17,6 +17,10 @@ Karakter kuralları `../ham3d/DURUM.md` ile aynıdır.
 | U09 | Giriş ekranı kahraman resmi (dikey) | bekliyor |
 | U10 | Oyun sonu ve olay amblemleri | bekliyor |
 
+Üretim (23 Kasım 2026, yerel Claude): tek ChatGPT sohbeti, ARAYÜZ ANA İSTEMİ bir kez gönderildi. Paftalar ChatGPT'nin
+verdiği PNG olarak, işlenmeden kaydedilir (1536 × 1024, RGBA). Arka planda alfa 1–16 arası hafif bir pus kalır;
+`araclar/gorsel_kes.py` kesimde alfa < 40'ı zaten siler.
+
 ## Ek animasyon paftaları (kayıt yeri `gorsel/ham/`)
 
 | Pafta | İçerik | Durum |

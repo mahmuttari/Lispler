@@ -1,6 +1,7 @@
 // Hayalet Avcıları: 3D görünümlü karakterler ve silahlar (A/W paftaları; gorsel.js, game.js) — çevrimdışı sınama.
 // Paftalar kesildi (www/gorsel/k3-*.webp, s3-*.webp): gerçek karelerle yüklenme ve çizim sınanır; kare seçimi ve resim
-// yokluğunda koda dönüş sayfada sahte resimlerle (canvas → toDataURL → GORSEL). Çalıştırma: node hayalet-avcilari/test/gorsel3d.test.mjs (Playwright + Chromium)
+// yokluğunda koda dönüş sayfada sahte resimlerle (canvas → toDataURL → GORSEL). Sola bakışta yatay aynalama (bakisSol)
+// ve oyun döngüsündeki bakış yönü de sınanır. Çalıştırma: node hayalet-avcilari/test/gorsel3d.test.mjs (Playwright + Chromium)
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -87,7 +88,41 @@ try {
     assert.ok(yokken.doluPiksel > 100, String(yokken.doluPiksel));
   });
 
-  // 3) Sahte 3D kareler: drawCharacter durumuna göre kareyi seçer; alt-orta ayak hizasında, kod çiziminin boyunda çizer
+  // 3) Bakış yönü: 3D kareler yandan, sağa dönük çizildi; sola bakarken (bakisSol) karakter ve silah yatay aynalanır.
+  // scale'i saran sahte işlevle aynalama, drawImage sayısıyla resim çizimi sınanır (gerçek k3 kareleri sayfada yüklü).
+  const bakis = await p.evaluate(() => {
+    const o = {};
+    const ciz = (bakisSol) => { // drawCharacter'ın scale ve drawImage çağrıları
+      const c = document.createElement('canvas'); c.width = c.height = 240; const x = c.getContext('2d');
+      const scaleler = []; const asilScale = x.scale.bind(x);
+      x.scale = (a, b) => { scaleler.push([a, b]); return asilScale(a, b); };
+      let say = 0; const asil = x.drawImage.bind(x);
+      x.drawImage = (...a) => { say++; return asil(...a); };
+      x.save(); drawCharacter(x, 'kinkin', 0, 120, 150, 70, 0, 0, 0, 0, '', bakisSol); x.restore();
+      return { scaleler, say };
+    };
+    o.sola = ciz(true);   // gerçek k3 kareleri ve s3 silahı yüklü: gövde (+ silah) resimle çizilir
+    o.saga = ciz(false);
+    // 3D kareler geçici silinirken (KS resmi / kod çizimi önden çizilir): bakisSol aynalama yapmaz; sonra geri konur
+    const kayit = {};
+    for (const k of Array.from({ length: 8 }, (_, i) => `k3-kinkin-0-${i + 1}`)) if (GORSEL[k]) { kayit[k] = GORSEL[k]; delete GORSEL[k]; }
+    o.ks = ciz(true);
+    Object.assign(GORSEL, kayit);
+    o.geriKondi = karakter3dHazir('kinkin', 0);
+    return o;
+  });
+  const aynaladi = (r) => r.scaleler.some((s) => s[0] === -1 && s[1] === 1);
+  sina('bakisSol true iken 3D kare çiziminde yatay aynalama (scale(-1, 1)) yapılır ve resim çizilir', () => {
+    assert.equal(aynaladi(bakis.sola), true);
+    assert.ok(bakis.sola.say >= 1, String(bakis.sola.say));
+  });
+  sina('bakisSol false iken scale(-1, 1) yapılmaz', () => { assert.equal(aynaladi(bakis.saga), false); });
+  sina('KS/kod çiziminde (3D kareler yokken) bakisSol true olsa da aynalama yapılmaz; kareler geri konur', () => {
+    assert.equal(aynaladi(bakis.ks), false);
+    assert.equal(bakis.geriKondi, true);
+  });
+
+  // 4) Sahte 3D kareler: drawCharacter durumuna göre kareyi seçer; alt-orta ayak hizasında, kod çiziminin boyunda çizer
   const sahte = await p.evaluate(async () => {
     const o = {};
     const kareler = [];
@@ -144,7 +179,7 @@ try {
   });
   sina('test sonunda sahte anahtarlar silinir', () => { assert.equal(sahte.temiz, true); });
 
-  // 4) Sahte silah resmi: drawCharWeapon resimle çizer, ateşte namlu alevi karesi de gelir; resim silinince koda döner
+  // 5) Sahte silah resmi: drawCharWeapon resimle çizer, ateşte namlu alevi karesi de gelir; resim silinince koda döner
   const silah = await p.evaluate(async () => {
     const o = {};
     const c = document.createElement('canvas'); c.width = 60; c.height = 30;
@@ -174,6 +209,37 @@ try {
     assert.ok(silah.alevli[1].includes('an-vurus-1'), silah.alevli[1]);
   });
   sina('resim silinince kod çizimine döner (drawImage çağrılmaz)', () => { assert.deepEqual(silah.kodaDondu, []); });
+
+  // 6) Oyun döngüsü: bakış yönü ateşte hedefe, yürürken hareket yönüne bakar; dikey yürüyüş son yönü bozmaz (titreme yok)
+  const dongu = await p.evaluate(() => {
+    const o = {};
+    startGame(); game.paused = true;
+    game.spawnTimer = 1e9; game.bot = null; game.ghosts = []; game.player.invuln = 0;
+    game.camera.x = game.player.x - game.W / 2; game.camera.y = game.player.y - game.H / 2;
+    const adim = () => { for (let i = 0; i < 3; i++) update(1 / 30, performance.now()); };
+    const hayaletKoy = (dx) => { // oyuncunun belirttiği yanına dayanıklı bir hayalet koy
+      game.ghosts = [{ x: game.player.x + dx, y: game.player.y, r: 22, speed: 0, hp: 999, maxHp: 999, size: 40 }];
+      game.lastFire = 1e9; // bu sinamada atış yapılmaz
+      adim();
+    };
+    hayaletKoy(-150); o.hedefSol = game.player.bakisSol;
+    hayaletKoy(150); o.hedefSag = game.player.bakisSol;
+    game.ghosts = []; game.player.bakisSol = false;
+    game.inputDir.x = -1; game.inputDir.y = 0; adim();
+    o.solaYurudu = game.player.bakisSol;
+    game.inputDir.x = 0; game.inputDir.y = -1; adim();
+    o.dikeyYuruyus = game.player.bakisSol;
+    game.inputDir.x = 0; game.inputDir.y = 0;
+    return o;
+  });
+  sina('oyun döngüsü: soldaki hayalete bakınca sola, sağdakine sağa döner', () => {
+    assert.equal(dongu.hedefSol, true);
+    assert.equal(dongu.hedefSag, false);
+  });
+  sina('sola yürüyünce sola bakar; dikey yürüyüş bakış yönünü değiştirmez (son yön korunur)', () => {
+    assert.equal(dongu.solaYurudu, true);
+    assert.equal(dongu.dikeyYuruyus, true);
+  });
 
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {

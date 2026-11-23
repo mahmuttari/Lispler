@@ -322,7 +322,7 @@ const LEADERBOARD_MAX = 500; // 3.16.1, kullanıcı: "Şampiyon listesi ilk 500 
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.18.0";
+const APP_VERSION = "3.19.0";
 const UPDATE_NOTES = {
   // Mağaza notu aynı satırlar; her dilde 500 karakterin altında kalsın diye Dünya Turu'nun satırları (3.14.0) yok
   // 3.15.0 incelemedeyken 3.15.1 gelebilir: 3.15.0'ın satırları ve düzeltme (mağaza notu aynı satırlar, ≤ 500)
@@ -331,6 +331,15 @@ const UPDATE_NOTES = {
   // 3.18.0 (kullanıcı: "Animasyonlar ekleyebilirsin, statik olmak zorunda değil"; "tornado efekti çok güzel olsun,
   // hayaletleri savura savura yok etsin"): kod animasyonları (anim.js) ve yeni kasırga; 🎬 ve 🐊 (yayında) 500 sınırı
   // için çıktı
+  // 3.19.0 (kullanıcı: "karakterleri mevcut görünümlerinden esinlenerek tamamen baştan oluşturt, 3D olsun, animasyonlu
+  // duruş, hareket ve atış"): 3D görünümlü karakterler ve silahlar (ChatGPT; kod Evren); 🐾 (yayında) 500 sınırı için çıktı
+  "3.19.0": [
+    t("🎮 Avcılar 3D görünümle yepyeni: nefes alıyor, yürüyor, ateş edince geri tepiyor; silahlar da yenilendi!"),
+    t("✨ Hayaletler canlandı: süzülüyor, göz kırpıyor, vurulunca parlıyor, puf diye dağılıyor; paralar dönüyor!"),
+    t("🌪️ Kasırga yenilendi: hayaletleri içine çekip döndürüyor ve savuruyor!"),
+    t("🎨 Hayaletler, petler ve eşyalar yepyeni çizimlerle; kare kare animasyonlar!"),
+    t("🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!"),
+  ],
   "3.18.0": [
     t("✨ Hayaletler canlandı: süzülüyor, göz kırpıyor, vurulunca parlıyor, puf diye dağılıyor; paralar dönüyor!"),
     t("🌪️ Kasırga yenilendi: hayaletleri içine çekip döndürüyor ve savuruyor!"),
@@ -1612,7 +1621,7 @@ const UPGRADES = {
 };
 
 // ====== ÇİZİM YARDIMCILARI ======
-function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPhase = 0, aimRaise = 0, shootRecoil = 0, gunKey = "") {
+function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPhase = 0, aimRaise = 0, shootRecoil = 0, gunKey = "", bakisSol = null) {
   if (!CHARACTERS[charKey] || !COSTUMES[charKey]) charKey = "kinkin"; // yeni sürümden gelen oyuncunun karakteri bende yoksa
   const c = CHARACTERS[charKey];
   const cos = COSTUMES[charKey][costumeIdx] || COSTUMES[charKey][0];
@@ -1642,10 +1651,19 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
   ctx.fill();
 
   // ChatGPT 3D karakter kareleri (A paftaları, gorsel.js): gövde kare kare resimden, silah koddan (nişan, geri tepme)
-  if (typeof karakter3dCiz === "function" && karakter3dCiz(ctx, charKey, costumeIdx, s, { yuruyor: isWalking, walkPhase, shootRecoil, zamanSn: performance.now() / 1000 })) {
-    karakterSilahiCiz(ctx, charKey, c, s, swing, aimRaise, shootRecoil, gunKey);
-    ctx.restore();
-    return;
+  // Kareler yandan, sağa dönük çizildi: sola bakarken (bakisSol) karakter ve silah birlikte yatay aynalanır. bakisSol
+  // null ise faceDir'den karar verilir (cos < 0). Aynalama karakter3dCiz çağrısından önce kurulmalı (karakter3dHazir ile
+  // önceden sınanır); gölge bu bloktan önce çizildiği için aynalanmaz. KS resimleri ve kod çizimi önden, aynalanmaz.
+  if (typeof karakter3dCiz === "function" && typeof karakter3dHazir === "function" && karakter3dHazir(charKey, costumeIdx)) {
+    const solaBakar = bakisSol === null ? Math.cos(faceDir) < 0 : !!bakisSol;
+    if (solaBakar) { ctx.save(); ctx.scale(-1, 1); }
+    if (karakter3dCiz(ctx, charKey, costumeIdx, s, { yuruyor: isWalking, walkPhase, shootRecoil, zamanSn: performance.now() / 1000 })) {
+      karakterSilahiCiz(ctx, charKey, c, s, swing, aimRaise, shootRecoil, gunKey);
+      if (solaBakar) ctx.restore();
+      ctx.restore();
+      return;
+    }
+    if (solaBakar) ctx.restore();
   }
 
   // ChatGPT karakter resmi (elleri boş, KS paftaları; gorsel.js): gövde resimden, silah koddan (nişan, geri tepme)
@@ -4270,6 +4288,10 @@ function uzaktakiAtislar(dt, simdi) {
       if (d < en) { en = d; hedef = g; }
     }
     rp.aimRaise = hedef ? Math.min(1, (rp.aimRaise || 0) + dt * 6) : Math.max(0, (rp.aimRaise || 0) - dt * 4);
+    // 3D karelerin bakış yönü (yerel hesaplanır, ağa gitmez): hedef varsa hedefe bak; yoksa yürüme yönü,
+    // yalnız belirgin yatay hareketle değişir (|cos| > 0.2), dururken son yön korunur
+    if (hedef) rp.bakisSol = hedef.x < rp.x;
+    else if (Math.abs(Math.cos(rp.facing || 0)) > 0.2) rp.bakisSol = Math.cos(rp.facing || 0) < 0;
     rp.recoil = Math.max(0, (rp.recoil || 0) - dt * 6);
     if (hedef && simdi - (rp.sonAtis || 0) >= c.baseFireDelay) {
       rp.sonAtis = simdi;
@@ -5247,6 +5269,7 @@ function startGame(secenek) {
     charKey: charKey,
     costumeIdx: save.selectedCostume[charKey],
     facing: 0,
+    bakisSol: false, // 3D kareler sağa dönük: sola bakarken yatay aynalanır (ateşte hedefe, yoksa yürüme yönüne bakar)
     waterImmune: !!CHARACTERS[charKey].waterImmune,
     power: null,
     aimRaise: 0,
@@ -5555,6 +5578,8 @@ function update(dt, now) {
     let mx = dirX, my = dirY;
     if (mag > 1) { mx /= mag; my /= mag; }
     game.player.facing = Math.atan2(my, mx);
+    // 3D karelerin bakış yönü: yalnız belirgin yatay hareketle değişsin (|cos| > 0.2), dururken son yön korunur
+    if (Math.abs(Math.cos(game.player.facing)) > 0.2) game.player.bakisSol = Math.cos(game.player.facing) < 0;
     if (isSpectator) {
       // Hayalet: duvar/su/hazard collide yok, biraz hızlı uçar
       const sp = game.player.speed * 1.4;
@@ -5977,6 +6002,7 @@ function update(dt, now) {
   }
   // Silah yükseltme/indirme animasyonu: hedef varken yukarı çekilir, yoksa iner
   if (fireTarget) {
+    game.player.bakisSol = fireTarget.x < game.player.x; // 3D kareler: ateş edilen hedefe bak
     game.player.aimRaise = Math.min(1, (game.player.aimRaise || 0) + dt * 6);
   } else {
     game.player.aimRaise = Math.max(0, (game.player.aimRaise || 0) - dt * 4);
@@ -6787,7 +6813,7 @@ function render() {
         ctx.save();
         if (rp.invisible) ctx.globalAlpha = 0.4;
         drawCharacter(ctx, rp.charKey || "kinkin", rp.costumeIdx || 0, rp.x, rp.y, 70, rp.facing || 0, rp.yurume || 0,
-          rp.aimRaise || 0, rp.recoil || 0);
+          rp.aimRaise || 0, rp.recoil || 0, "", !!rp.bakisSol);
         ctx.restore();
       }
       // İsim etiketi (host'un adında taç)
@@ -6837,10 +6863,10 @@ function render() {
     } else if (isInvisible) {
       ctx.save();
       ctx.globalAlpha = 0.4;
-      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun);
+      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol);
       ctx.restore();
     } else {
-      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun);
+      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol);
     }
   }
   if (batma) ctx.restore();

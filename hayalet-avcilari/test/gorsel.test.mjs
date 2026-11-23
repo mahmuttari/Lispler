@@ -28,8 +28,8 @@ const LISTE = JSON.parse(listeKaynak.match(/= (\{.*\});/)[1]);
 const dosyalar = fs.readdirSync(path.join(WWW, 'gorsel')).filter((f) => f.endsWith('.webp'));
 sina('liste.js ile diskteki WebP dosyaları aynı', () => { assert.deepEqual(dosyalar.map((f) => f.slice(0, -5)).sort(), Object.keys(LISTE).sort()); });
 const toplam = dosyalar.reduce((t, f) => t + fs.statSync(path.join(WWW, 'gorsel', f)).size, 0);
-sina('görseller küçük: toplam 4 MB, her kenar en çok 256 px (tema dokuları 512, menü arka planı 1152)', () => {
-  assert.ok(toplam < 4 * 1024 * 1024, String(toplam));
+sina('görseller küçük: toplam 7 MB, her kenar en çok 256 px (tema dokuları 512, menü arka planı 1152)', () => {
+  assert.ok(toplam < 7 * 1024 * 1024, String(toplam));
   for (const [k, [w, h]] of Object.entries(LISTE)) { const en = k.startsWith('tema') ? 512 : k === 'menu-arka' ? 1152 : 256; assert.ok(w <= en && h <= en, k); }
 });
 
@@ -113,7 +113,10 @@ try {
       const [, ck, i] = k.split('-'); const kk = karakterKodKutusu(ck, +i);
       if (!(kk.alt > 30 && kk.alt < 60 && kk.ust < -25 && kk.ust > -90)) o.boy.push(`${k}: ${kk.ust}..${kk.alt}`);
     }
+    // Gerçek 3D kareler (k3/s3) yüklenmişken kar- paftasının bacak bölünmesini sınamak için geçici kaldırılıyor
+    const uclu = {}; for (const k of Object.keys(GORSEL)) if (/^(k3|s3)-/.test(k)) { uclu[k] = GORSEL[k]; delete GORSEL[k]; }
     for (const k of ['kinkin', 'kent', 'fanatik']) { say = 0; x.save(); drawCharacter(x, k, 0, 120, 140, 70, 0, 0.13); x.restore(); o.yuruyus[k] = say; }
+    Object.assign(GORSEL, uclu); // geri koy
     // Ölüm kareleri: normal ve boss resimden; Dünya Turu bossu kodla
     o.puf = olumAnimCiz(x, { x: 100, y: 100, size: 40, maxHp: 1, life: 0.5, maxLife: 1 }, 0.5);
     o.bossYenilgi = olumAnimCiz(x, { x: 100, y: 100, size: 80, isBoss: true, life: 0.5, maxLife: 1 }, 0.5);

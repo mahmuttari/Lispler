@@ -1,6 +1,6 @@
 // Hayalet Avcıları: 3D görünümlü karakterler ve silahlar (A/W paftaları; gorsel.js, game.js) — çevrimdışı sınama.
-// Paftalar (gorsel/ham3d) gelmeden oyun bugünkü çizimle çalışır; kare seçimi ve resimli çizim sayfada sahte resimlerle
-// sınanır (canvas → toDataURL → GORSEL). Çalıştırma: node hayalet-avcilari/test/gorsel3d.test.mjs (Playwright + Chromium)
+// Paftalar kesildi (www/gorsel/k3-*.webp, s3-*.webp): gerçek karelerle yüklenme ve çizim sınanır; kare seçimi ve resim
+// yokluğunda koda dönüş sayfada sahte resimlerle (canvas → toDataURL → GORSEL). Çalıştırma: node hayalet-avcilari/test/gorsel3d.test.mjs (Playwright + Chromium)
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -61,15 +61,19 @@ try {
     for (const k of kare.negatif) assert.ok(Number.isInteger(k) && k >= 1 && k <= 4, String(k));
   });
 
-  // 2) 3D resim yokken (pafta gelmedi): karakter3dCiz false, drawCharacter bugünkü çizimle hatasız çizer
+  // 2) 3D resim yokken (pafta gelmedi): karakter3dCiz false, drawCharacter bugünkü çizimle hatasız çizer.
+  // Gerçek k3/s3 resimleri yüklüyken sinama için GORSEL'den geçici kaldırılıp sonda geri konur
   const yokken = await p.evaluate(() => {
     const o = {};
+    const kayit = {};
+    for (const k of ['s3-kinkin', ...Array.from({ length: 8 }, (_, i) => `k3-kinkin-0-${i + 1}`)]) if (GORSEL[k]) { kayit[k] = GORSEL[k]; delete GORSEL[k]; }
     o.hazir = karakter3dHazir('kinkin', 0);
     o.silah = silah3d('kinkin');
     const c = document.createElement('canvas'); c.width = c.height = 200; const x = c.getContext('2d');
     o.cizdi = karakter3dCiz(x, 'kinkin', 0, 1, { yuruyor: false, walkPhase: 0, shootRecoil: 0, zamanSn: 0 });
     o.hata = null;
     try { drawCharacter(x, 'kinkin', 0, 100, 110, 70); } catch (e) { o.hata = e.message; }
+    Object.assign(GORSEL, kayit); // geri koy
     const d = x.getImageData(0, 0, 200, 200).data; let dolu = 0;
     for (let i = 3; i < d.length; i += 4) if (d[i] > 0) dolu++;
     o.doluPiksel = dolu;
@@ -98,6 +102,8 @@ try {
     }
     for (let n = 1; n <= 8; n++) GORSEL[`k3-kinkin-0-${n}`] = kareler[n - 1];
     o.hazir = karakter3dHazir('kinkin', 0);
+    // Gövde karesiyle tek drawImage kalması için gerçek s3 silah resmi geçici kaldırılıyor (sonda geri konur)
+    const asilSilah = GORSEL['s3-kinkin']; if (asilSilah) delete GORSEL['s3-kinkin'];
     const Donem = 2 * Math.PI / 12;
     const ciz = (walkPhase, aimRaise = 0, shootRecoil = 0) => { // drawCharacter'ın drawImage'a girdiği resim ve kutu
       const c = document.createElement('canvas'); c.width = c.height = 240; const x = c.getContext('2d');
@@ -117,6 +123,7 @@ try {
     const r = ciz(0), h0 = (kk.alt - kk.ust) * s * 1.06;
     o.say = r.say;
     o.hiza = [Math.abs(r.kutu[0] * 2 + r.kutu[2]), Math.abs(r.kutu[1] + r.kutu[3] - kk.alt * s), Math.abs(r.kutu[3] - h0)];
+    if (asilSilah) GORSEL['s3-kinkin'] = asilSilah; // geri koy
     // Temizlik: sahte anahtarları sil
     for (let n = 1; n <= 8; n++) delete GORSEL[`k3-kinkin-0-${n}`];
     o.temiz = !GORSEL['k3-kinkin-0-1'] && karakter3dHazir('kinkin', 0) === false;

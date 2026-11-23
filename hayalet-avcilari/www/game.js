@@ -2174,8 +2174,9 @@ function hayaletOyuncuCiz(ctx, charKey, costumeIdx, x, y, alpha) {
   ctx.restore();
 }
 
-// 3D silah resimlerinin uzunluğu (s birimi; W paftaları, gorsel.js): resim tutma yerinden namlu ucuna kadar bu uzunlukta
-const SILAH3D_UZUNLUK = { kinkin: 20, veryi: 30, mark: 24, ponko: 20, gul: 30, rani: 20, fanatik: 24, kornet: 36, kent: 14, silsen: 30, sercin: 24 };
+// 3D silah resimlerinin uzunluğu (s birimi; W paftaları, gorsel.js): resim tutma yerinden namlu ucuna kadar bu uzunlukta.
+// Güllu'nun yayı paftada dik durur (47 × 192): uzunluk resmin genişliğidir, boyu (49) kod yayınınki kadardır.
+const SILAH3D_UZUNLUK = { kinkin: 20, veryi: 30, mark: 24, ponko: 20, gul: 12, rani: 20, fanatik: 24, kornet: 36, kent: 14, silsen: 30, sercin: 24 };
 
 // Karaktere özel silah çizimleri — her biri sağ elin hizasında, walkPhase ile hafif sallanır.
 // aimRaise (0..1): hedef yokken silah aşağıda, varken yukarıda. shootRecoil (0..1): atış geri tepmesi.
@@ -2190,8 +2191,9 @@ function drawCharWeapon(ctx, charKey, s, swing, aimRaise = 0, shootRecoil = 0) {
   ctx.translate(18 * s, 2 * s);
   ctx.rotate(baseRot);
   ctx.translate(-18 * s, -2 * s);
-  // ChatGPT 3D silah resmi (W paftaları, gorsel.js): tutma yeri elde, namlu sağa; ateş anında namlu alevi
-  if (typeof silah3d === "function" && silah3d(charKey)) {
+  // ChatGPT 3D silah resmi (W paftaları, gorsel.js): tutma yeri elde, namlu sağa; ateş anında namlu alevi.
+  // _karKodla (gorsel.js) karakterKodKutusu ölçerken kod silahı çizilir: kutu silah resimleri yüklü olsa da değişmesin
+  if (typeof silah3d === "function" && silah3d(charKey) && !_karKodla) {
     const uzunluk = SILAH3D_UZUNLUK[charKey] || 22;
     ctx.translate(26 * s, 8 * s);
     ctx.rotate(sway);

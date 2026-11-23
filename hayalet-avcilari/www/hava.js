@@ -83,9 +83,12 @@ function simsekCak(bulut, hedef) {
   h.simsekler.push({ noktalar, kol, omur: HAVA.simsekSure });
   if (!havaAzHareket()) h.parlama = Math.max(h.parlama, 0.16);
   bulut.cakti = 0.25;
-  if (typeof audio !== "undefined" && audio.noise) {
+  if (typeof audio !== "undefined") {
     const v = audio._v ? audio._v("sfx") : 1;
-    setTimeout(() => audio.noise(0.9, 0.12 * v), 140); // ışıktan biraz sonra gürültü
+    setTimeout(() => { // ışıktan biraz sonra gök gürültüsü
+      if (typeof audio.gok === "function") audio.gok();
+      else if (audio.noise) audio.noise(0.9, 0.12 * v);
+    }, 140);
   }
 }
 

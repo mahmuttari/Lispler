@@ -100,7 +100,8 @@ function suyaDus(k) {
   game._kopruDurma = 0;
   game._kopruUyardi = false;
   showFloat(t("💦 Suya düştün!"), p.x, p.y - 30);
-  audio.noise(0.35, 0.14 * (audio._v ? audio._v("sfx") : 1));
+  if (typeof audio.kopru === "function") audio.kopru();
+  else audio.noise(0.35, 0.14 * (audio._v ? audio._v("sfx") : 1));
   navigator.vibrate?.(60);
   // Timsah köprünün bir yanından, oyuncuya dönük
   const yan = Math.random() < 0.5 ? -1 : 1;

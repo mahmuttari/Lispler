@@ -67,8 +67,13 @@ function kiyidaNokta(o, x, y) {
 
 function timsahSesi(tur) {
   const v = audio._v ? audio._v("sfx") : 1;
-  if (tur === "cik") audio.noise(0.25, 0.10 * v);
-  else audio.beep(140, 0.09, "square", 0.16 * v);
+  if (tur === "cik") {
+    if (typeof audio.timsahCik === "function") audio.timsahCik();
+    else audio.noise(0.25, 0.10 * v);
+  } else {
+    if (typeof audio.timsahIsir === "function") audio.timsahIsir();
+    else audio.beep(140, 0.09, "square", 0.16 * v);
+  }
 }
 
 function timsahSifirla() {

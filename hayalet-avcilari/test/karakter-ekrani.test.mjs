@@ -88,7 +88,125 @@ try {
     assert.equal(menuKareti, true);
   });
 
+  // 1) Kart ızgarası: 12 kart; ad, unvan, güç rozeti; kilitli kartta maliyet
+  await p.evaluate(() => openCharacters());
+  await p.waitForFunction(() => document.querySelectorAll('#character-list .char-card').length === 12);
+  const kartlar = await p.evaluate(() => [...document.querySelectorAll('#character-list .char-card')].map((c) => ({
+    key: c.dataset.key,
+    ad: (c.querySelector('.char-ad') || {}).textContent || '',
+    unvan: (c.querySelector('.char-unvan') || {}).textContent || '',
+    guc: !!c.querySelector('.char-guc'),
+    kilit: (c.querySelector('.char-durum.kilit') || {}).textContent || '',
+  })));
+  sina('1) 12 karakter kartı ad, unvan ve güç rozetiyle çizilir', () => {
+    assert.equal(kartlar.length, 12);
+    for (const k of kartlar) {
+      assert.ok(k.ad.trim(), `${k.key}: ad yok`);
+      assert.ok(k.unvan.trim(), `${k.key}: unvan yok`);
+      assert.equal(k.guc, true, `${k.key}: güç rozeti yok`);
+    }
+    assert.ok(kartlar.some((k) => k.kilit.trim().startsWith('💚 ')), 'kilitli kartta 💚 maliyet yok');
+  });
+
+  // 2) Panel: 4 stat çubuğu 0-100%; en güçlü karakter o statta %100
+  await p.click('.char-card[data-key="fanatik"]');
+  await p.waitForSelector('#character-detail.open');
+  const statlar = await p.evaluate(() => [...document.querySelectorAll('#character-detail .stat-dolu')].map((el) => ({
+    k: el.dataset.stat, w: parseFloat(el.style.width),
+  })));
+  sina('2) panelde 4 stat çubuğu 0-100% arasında', () => {
+    assert.equal(statlar.length, 4);
+    for (const s of statlar) assert.ok(s.w >= 0 && s.w <= 100, `${s.k}: ${s.w}`);
+  });
+  const fanatikHasar = statlar.find((s) => s.k === 'hasar');
+  sina('2) en güçlü karakter (Fanatik hasar) çubuğu %100', () => { assert.equal(round1(fanatikHasar.w), 100); });
+  const sercinHiz = await p.evaluate(() => {
+    karakterDetayAc('sercin');
+    const el = document.querySelector('#character-detail .stat-dolu[data-stat="hiz"]');
+    return parseFloat(el.style.width);
+  });
+  sina('2) en hızlı karakter (Serçin hız) çubuğu %100', () => { assert.equal(round1(sercinHiz), 100); });
+
+  // 3) ‹ › gezinme adı değiştirir; ✕ ve Escape kapatır
+  const adOnce = await p.textContent('#char-detay-ad');
+  await p.click('.char-detay-sonraki');
+  const adSonra = await p.textContent('#char-detay-ad');
+  sina('3) › düğmesi karakteri değiştirir', () => { assert.notEqual(adSonra.trim(), adOnce.trim()); });
+  await p.click('.char-detay-kapat');
+  const kapandi = await p.evaluate(() => document.getElementById('character-detail').hidden);
+  sina('3) ✕ düğmesi paneli kapatır', () => { assert.equal(kapandi, true); });
+  await p.evaluate(() => karakterDetayAc('kinkin'));
+  await p.waitForSelector('#character-detail.open');
+  await p.keyboard.press('Escape');
+  const escapeKapandi = await p.evaluate(() => document.getElementById('character-detail').hidden);
+  sina('3) Escape paneli kapatır', () => { assert.equal(escapeKapandi, true); });
+
+  // 4) Satın alma: 999 zümrüt, onay kabul, karakter sahipli+seçili, zümrüt düşer, menü yeni karakter
+  const kentCost = await p.evaluate(() => CHARACTERS.kent.cost);
+  await p.evaluate(() => { save.zumrut = 999; karakterDetayAc('kent'); });
+  await p.waitForSelector('#character-detail.open');
+  p.once('dialog', (d) => d.accept());
+  await p.click('#character-detail .char-eylem');
+  await p.waitForFunction(() => save.unlockedChars.kent === true && save.selectedChar === 'kent');
+  const satin = await p.evaluate(() => ({ zumrut: save.zumrut, secili: save.selectedChar, sahip: save.unlockedChars.kent }));
+  sina('4) satın alınca karakter sahipli ve seçili, zümrüt maliyet kadar düşer', () => {
+    assert.equal(satin.zumrut, 999 - kentCost);
+    assert.equal(satin.secili, 'kent');
+    assert.equal(satin.sahip, true);
+  });
+  const menuSecim = await p.evaluate(() => { goToMenu(); return { secili: save.selectedChar, ad: document.getElementById('character-name').textContent.trim() }; });
+  sina('4) menü önizlemesi yeni karakteri gösterir', () => {
+    assert.equal(menuSecim.secili, 'kent');
+    assert.equal(menuSecim.ad, 'Kenit');
+  });
+
+  // 5) Yetersiz zümrüt: uyarı çıkar, hiçbir şey değişmez
+  await p.evaluate(() => { save.zumrut = 0; openCharacters(); karakterDetayAc('fanatik'); });
+  await p.waitForSelector('#character-detail.open');
+  await p.click('#character-detail .char-eylem');
+  const yetersiz = await p.waitForFunction(() => {
+    const t = document.getElementById('toast');
+    const metin = t.textContent.trim();
+    return metin.includes('Yeterli zümrüt yok') ? { metin, sahip: !!save.unlockedChars.fanatik, secili: save.selectedChar, zumrut: save.zumrut } : false;
+  }, null, { timeout: 3000 }).then((h) => h.jsonValue());
+  sina('5) yetersiz zümrütta uyarı çıkar ve durum değişmez', () => {
+    assert.ok(yetersiz.metin.includes('Yeterli zümrüt yok 💚'), yetersiz.metin);
+    assert.equal(yetersiz.sahip, false);
+    assert.equal(yetersiz.secili, 'kent');
+    assert.equal(yetersiz.zumrut, 0);
+  });
+
+  // 6) Kostüm çipi: sahip olunan seçer, olmayan seçmez
+  await p.evaluate(() => {
+    save.unlockedCostumes.kinkin = [0, 1];
+    save.selectedCostume.kinkin = 0;
+    save.selectedChar = 'kinkin';
+    karakterDetayAc('kinkin');
+  });
+  await p.waitForSelector('#character-detail.open');
+  await p.click('#character-detail .char-kostum[data-costume="1"]');
+  const kostum1 = await p.evaluate(() => save.selectedCostume.kinkin);
+  sina('6) sahip olunan kostüm çipi kostümü seçer', () => { assert.equal(kostum1, 1); });
+  await p.click('#character-detail .char-kostum[data-costume="2"]');
+  const kostum2 = await p.evaluate(() => save.selectedCostume.kinkin);
+  sina('6) sahip olunmayan kostüm çipi kostümü seçmez', () => { assert.equal(kostum2, 1); });
+
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
+
+  // 10) Arapça, 340×740: panel açılır ve yatay taşma olmaz
+  const p2 = await b.newPage({ viewport: { width: 340, height: 740 } });
+  await p2.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'ar'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+  await p2.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
+  await p2.goto(adres, { waitUntil: 'load' });
+  await p2.waitForFunction(() => typeof karakterDetayAc === 'function' && typeof openCharacters === 'function');
+  await p2.evaluate(() => { openCharacters(); karakterDetayAc('fanatik'); });
+  await p2.waitForSelector('#character-detail.open');
+  const genislik = await p2.evaluate(() => ({ dir: document.documentElement.dir, scroll: document.documentElement.scrollWidth }));
+  sina('10) Arapça 340 px: panel açılır ve yatay taşma yok', () => {
+    assert.equal(genislik.dir, 'rtl');
+    assert.ok(genislik.scroll <= 340, `scrollWidth ${genislik.scroll}`);
+  });
+  await p2.close();
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);
 } finally {

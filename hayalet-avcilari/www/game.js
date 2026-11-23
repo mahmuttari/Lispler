@@ -4646,6 +4646,52 @@ function refreshMenu() {
   rozetiGuncelle(); // 👫 düğmesindeki istek + davet sayısı (arkadaslar.js)
 }
 
+// ====== KARAKTERLER EKRANI (3.20.0) ======
+// Kart ızgarası + ayrıntı paneli. Kart dokunuşu artık satın alma/seçme yapmaz; yalnız paneli açar.
+// Satın alma ve seçme tek yerde: karakterAlVeyaSec (kart ve panel düğmesi buradan çağırır).
+let charDetayKey = null;   // açık panelin karakteri; null ise panel kapalı
+let charDetayKostum = 0;   // panelde önizlenen kostüm sırası
+
+function karakterZorlukYildiz(n) {
+  const d = Math.max(1, Math.min(3, n || 1));
+  return "★".repeat(d) + "☆".repeat(3 - d);
+}
+
+function karakterZorlukAd(n) {
+  return t(n === 1 ? "Kolay" : n === 2 ? "Orta" : "Usta");
+}
+
+// Stat çubuklarının ortak ölçeği: bütün karakterlerin en yüksek değeri (computeStats yükseltmeleri de içerir)
+function karakterStatEnBuyuk() {
+  const en = { speed: 0, damage: 0, fireRate: 0, range: 0 };
+  Object.keys(CHARACTERS).forEach((k) => {
+    const s = computeStats(k);
+    en.speed = Math.max(en.speed, s.speed);
+    en.damage = Math.max(en.damage, s.damage);
+    en.fireRate = Math.max(en.fireRate, 1000 / s.fireDelay);
+    en.range = Math.max(en.range, s.range);
+  });
+  return en;
+}
+
+// Kart resmi: GORSEL kart resmi yüklendiyse <img>, yoksa drawCharacter ile statik tuval
+function karakterKartResmi(key) {
+  const im = typeof gorsel === "function" ? gorsel(`kart-${key}`) : null;
+  if (im) {
+    const el = document.createElement("img");
+    el.className = "char-kart-resim";
+    el.src = `gorsel/kart-${key}.webp`;
+    el.alt = "";
+    el.draggable = false;
+    return el;
+  }
+  const cv = document.createElement("canvas");
+  cv.className = "char-kart-tuval";
+  cv.width = 160; cv.height = 180;
+  drawCharacter(cv.getContext("2d"), key, save.selectedCostume[key] || 0, 80, 120, 160);
+  return cv;
+}
+
 function refreshCharacters() {
   document.getElementById("char-zumrut").textContent = save.zumrut;
   const list = document.getElementById("character-list");
@@ -4653,62 +4699,270 @@ function refreshCharacters() {
 
   Object.keys(CHARACTERS).forEach((key) => {
     const c = CHARACTERS[key];
-    const unlocked = save.unlockedChars[key];
+    const detay = (typeof KARAKTER_DETAY === "object" && KARAKTER_DETAY[key]) || {};
+    const power = CHAR_POWERS[key] || { name: "", icon: "✨" };
+    const unlocked = !!save.unlockedChars[key];
     const selected = save.selectedChar === key;
 
-    const card = document.createElement("div");
-    card.className = "char-card" + (selected ? " selected" : "") + (!unlocked ? " locked" : "");
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "char-card" + (selected ? " selected" : "") + (unlocked ? "" : " locked");
+    card.dataset.key = key;
 
-    const cv = document.createElement("canvas");
-    cv.width = 80; cv.height = 90;
-    const ctx = cv.getContext("2d");
-    drawCharacter(ctx, key, save.selectedCostume[key] || 0, 40, 60, 80);
     const img = document.createElement("div");
     img.className = "char-img";
-    img.style.backgroundImage = `url(${cv.toDataURL()})`;
-    img.style.backgroundSize = "contain";
-    img.style.backgroundRepeat = "no-repeat";
-    img.style.backgroundPosition = "center";
+    img.appendChild(karakterKartResmi(key));
     card.appendChild(img);
 
     const label = document.createElement("div");
-    label.className = "char-label";
+    label.className = "char-ad";
     label.textContent = c.name;
     card.appendChild(label);
 
-    const info = document.createElement("div");
-    info.className = "char-cost";
-    if (!unlocked) info.textContent = `💚 ${c.cost}`;
-    else if (selected) info.textContent = t("✓ Seçili");
-    else info.textContent = t("Tıkla seç");
-    card.appendChild(info);
+    const unvan = document.createElement("div");
+    unvan.className = "char-unvan";
+    unvan.textContent = detay.unvan || c.desc;
+    card.appendChild(unvan);
 
-    card.onclick = () => {
-      if (unlocked) {
+    const rozet = document.createElement("div");
+    rozet.className = "char-rozet";
+    const guc = document.createElement("span");
+    guc.className = "char-guc";
+    guc.innerHTML = uiSimgeHTML(`guc-${key}`, power.icon, power.name);
+    rozet.appendChild(guc);
+    const yildiz = document.createElement("span");
+    yildiz.className = "char-yildiz";
+    yildiz.textContent = karakterZorlukYildiz(detay.zorluk);
+    rozet.appendChild(yildiz);
+    card.appendChild(rozet);
+
+    const durum = document.createElement("div");
+    durum.className = "char-durum";
+    if (!unlocked) {
+      durum.classList.add("kilit");
+      durum.textContent = `💚 ${c.cost}`;
+    } else if (selected) {
+      durum.classList.add("secili");
+      durum.textContent = t("✓ Seçili");
+    }
+    card.appendChild(durum);
+
+    card.addEventListener("click", () => karakterDetayAc(key));
+    list.appendChild(card);
+  });
+
+  // Panel açıksa yerinde tazelenir (satın alma, seçme, görsel yüklemesi sonrası)
+  if (charDetayKey && CHARACTERS[charDetayKey]) karakterDetayCiz();
+}
+
+function karakterDetayAc(key) {
+  if (!CHARACTERS[key]) return;
+  charDetayKey = key;
+  charDetayKostum = save.selectedCostume[key] || 0;
+  const panel = document.getElementById("character-detail");
+  if (panel) {
+    panel.hidden = false;
+    panel.classList.add("open");
+  }
+  karakterDetayCiz();
+}
+
+function karakterDetayKapat() {
+  charDetayKey = null;
+  const panel = document.getElementById("character-detail");
+  if (panel) {
+    panel.hidden = true;
+    panel.classList.remove("open");
+    canliOnizlemeTemizle(panel);
+    panel.innerHTML = "";
+  }
+}
+
+function karakterDetayGez(yon) {
+  const anahtarlar = Object.keys(CHARACTERS);
+  const i = anahtarlar.indexOf(charDetayKey);
+  if (i < 0) return;
+  const yeni = anahtarlar[(i + yon + anahtarlar.length) % anahtarlar.length];
+  charDetayKey = yeni;
+  charDetayKostum = save.selectedCostume[yeni] || 0;
+  karakterDetayCiz();
+}
+
+// Mağazayı kostümler sekmesinde açar (paneldeki "Mağazada aç" bağlantısı)
+function karakterMagazaKostum() {
+  karakterDetayKapat();
+  showScreen("screen-shop");
+  showShopTab("costumes");
+}
+
+// Satın alma/seçme: eski kart davranışının tek yeri (aynı bildirim metinleri korunur)
+function karakterAlVeyaSec(key) {
+  const c = CHARACTERS[key];
+  if (!c) return;
+  if (!save.unlockedChars[key]) {
+    if (save.zumrut >= c.cost) {
+      if (confirm(t("{ad} {n} 💚 zümrüt karşılığında alınsın mı?", { ad: c.name, n: c.cost }))) {
+        save.zumrut -= c.cost;
+        save.unlockedChars[key] = true;
         save.selectedChar = key;
         persistSave();
         refreshCharacters();
-        showToast(t("{ad} seçildi!", { ad: c.name }));
-      } else {
-        if (save.zumrut >= c.cost) {
-          if (confirm(t("{ad} {n} 💚 zümrüt karşılığında alınsın mı?", { ad: c.name, n: c.cost }))) {
-            save.zumrut -= c.cost;
-            save.unlockedChars[key] = true;
-            save.selectedChar = key;
-            persistSave();
-            refreshCharacters();
-            showToast(t("🎉 {ad} açıldı!", { ad: c.name }));
-            audio.unlock();
-          }
-        } else {
-          showToast(t("Yeterli zümrüt yok 💚"));
-        }
+        refreshMenu();
+        showToast(t("🎉 {ad} açıldı!", { ad: c.name }));
+        audio.unlock();
       }
-    };
-
-    list.appendChild(card);
-  });
+    } else {
+      showToast(t("Yeterli zümrüt yok 💚"));
+    }
+    return;
+  }
+  if (save.selectedChar !== key) {
+    save.selectedChar = key;
+    persistSave();
+    refreshCharacters();
+    refreshMenu();
+    showToast(t("{ad} seçildi!", { ad: c.name }));
+  }
 }
+
+function karakterDetayCiz() {
+  const panel = document.getElementById("character-detail");
+  if (!panel || !charDetayKey || !CHARACTERS[charDetayKey]) return;
+  const key = charDetayKey;
+  const c = CHARACTERS[key];
+  const detay = (typeof KARAKTER_DETAY === "object" && KARAKTER_DETAY[key]) || {};
+  const power = CHAR_POWERS[key] || { name: "", icon: "✨", duration: 0 };
+  const unlocked = !!save.unlockedChars[key];
+  const selected = save.selectedChar === key;
+
+  const s = computeStats(key);
+  const en = karakterStatEnBuyuk();
+  const atisHizi = 1000 / s.fireDelay;
+  const statlar = [
+    { k: "hiz", ad: t("Hız"), deger: s.speed, en: en.speed, metin: s.speed.toFixed(1) },
+    { k: "hasar", ad: t("Hasar"), deger: s.damage, en: en.damage, metin: String(s.damage) },
+    { k: "atis", ad: t("Atış hızı"), deger: atisHizi, en: en.fireRate, metin: atisHizi.toFixed(1) },
+    { k: "menzil", ad: t("Menzil"), deger: s.range, en: en.range, metin: String(Math.round(s.range)) },
+  ];
+  const statHTML = statlar.map((st) => {
+    const yuzde = st.en > 0 ? Math.max(0, Math.min(100, (st.deger / st.en) * 100)) : 0;
+    return `<div class="stat-satir"><span class="stat-ad">${escapeHtml(st.ad)}</span>` +
+      `<span class="stat-cubuk"><span class="stat-dolu" data-stat="${st.k}" style="width:${yuzde.toFixed(1)}%"></span></span>` +
+      `<span class="stat-deger">${escapeHtml(st.metin)}</span></div>`;
+  }).join("");
+
+  canliOnizlemeTemizle(panel);
+  panel.innerHTML =
+    `<div class="char-detay-kart">` +
+      `<button type="button" class="char-detay-kapat" aria-label="${escapeHtml(t("Kapat"))}">✕</button>` +
+      `<div class="char-detay-ust">` +
+        `<button type="button" class="char-detay-gezin char-detay-onceki" aria-label="${escapeHtml(t("Önceki karakter"))}">‹</button>` +
+        `<div class="char-detay-onizleme"></div>` +
+        `<button type="button" class="char-detay-gezin char-detay-sonraki" aria-label="${escapeHtml(t("Sonraki karakter"))}">›</button>` +
+      `</div>` +
+      `<h3 class="char-detay-ad" id="char-detay-ad">${escapeHtml(c.name)}</h3>` +
+      `<p class="char-detay-unvan">${escapeHtml(detay.unvan || "")}</p>` +
+      `<p class="char-detay-zorluk"><span>${escapeHtml(t("Zorluk"))}</span> ` +
+        `<span class="char-yildiz">${karakterZorlukYildiz(detay.zorluk)}</span> ` +
+        `<span>${escapeHtml(karakterZorlukAd(detay.zorluk))}</span></p>` +
+      `<div class="char-kostumlar"></div>` +
+      `<div class="char-statlar">${statHTML}</div>` +
+      `<div class="char-guc-kutu"><div class="char-guc-baslik">` +
+        `<span class="char-guc">${uiSimgeHTML(`guc-${key}`, power.icon, power.name)}</span>` +
+        `<strong>${escapeHtml(power.name)}</strong>` +
+        `<span class="char-guc-sure">${escapeHtml(t("{n} sn", { n: power.duration / 1000 }))}</span></div>` +
+        `<p>${escapeHtml(detay.guc || "")}</p></div>` +
+      `<div class="char-bilgi">` +
+        `<p><strong>${escapeHtml(t("Silah"))}:</strong> ${escapeHtml(detay.silah || "")}</p>` +
+        `<p class="char-hikaye">${escapeHtml(detay.hikaye || "")}</p>` +
+        `<p class="char-ipucu">💡 ${escapeHtml(detay.ipucu || "")}</p></div>` +
+      `<button type="button" class="btn btn-big char-eylem"></button>` +
+    `</div>`;
+
+  canliOnizleme(panel.querySelector(".char-detay-onizleme"), key, charDetayKostum);
+
+  // Kostüm çipleri: sahip olunanlar önizlenir/seçilir, olmayanlar yalnız önizlenir
+  const chipKap = panel.querySelector(".char-kostumlar");
+  (COSTUMES[key] || []).forEach((cos, idx) => {
+    const sahip = idx === 0 || (save.unlockedCostumes[key] || []).includes(idx);
+    const giyili = (save.selectedCostume[key] || 0) === idx;
+    const chip = document.createElement("div");
+    chip.className = "char-kostum" + (charDetayKostum === idx ? " onizle" : "") +
+      (giyili ? " giyili" : "") + (sahip ? "" : " kilitli");
+    chip.dataset.costume = String(idx);
+    chip.setAttribute("role", "button");
+    chip.setAttribute("tabindex", "0");
+    const cv = document.createElement("canvas");
+    cv.width = 48; cv.height = 56;
+    drawCharacter(cv.getContext("2d"), key, idx, 24, 38, 52);
+    chip.appendChild(cv);
+    const ad = document.createElement("span");
+    ad.className = "char-kostum-ad";
+    ad.textContent = cos.name;
+    chip.appendChild(ad);
+    if (!sahip) {
+      const fiyat = document.createElement("span");
+      fiyat.className = "char-kostum-fiyat";
+      fiyat.textContent = `💎 ${cos.cost}`; // mağaza kostümleri elmasla satılır
+      chip.appendChild(fiyat);
+      const bag = document.createElement("span");
+      bag.className = "char-kostum-magaza";
+      bag.setAttribute("role", "link");
+      bag.setAttribute("tabindex", "0");
+      bag.textContent = t("Mağazada aç");
+      bag.addEventListener("click", (e) => { e.stopPropagation(); karakterMagazaKostum(); });
+      bag.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); karakterMagazaKostum(); }
+      });
+      chip.appendChild(bag);
+    }
+    chip.addEventListener("click", () => {
+      charDetayKostum = idx;
+      if (sahip && unlocked) {
+        save.selectedCostume[key] = idx;
+        persistSave();
+        refreshCharacters();
+        refreshMenu();
+      } else {
+        karakterDetayCiz();
+      }
+    });
+    chip.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); chip.click(); }
+    });
+    chipKap.appendChild(chip);
+  });
+
+  panel.querySelector(".char-detay-kapat").addEventListener("click", karakterDetayKapat);
+  panel.querySelector(".char-detay-onceki").addEventListener("click", () => karakterDetayGez(-1));
+  panel.querySelector(".char-detay-sonraki").addEventListener("click", () => karakterDetayGez(1));
+  const eylem = panel.querySelector(".char-eylem");
+  if (!unlocked) {
+    eylem.textContent = t("💚 {n} ile aç", { n: c.cost });
+    if (save.zumrut < c.cost) eylem.classList.add("yetersiz");
+    eylem.addEventListener("click", () => karakterAlVeyaSec(key));
+  } else if (!selected) {
+    eylem.textContent = t("Seç");
+    eylem.addEventListener("click", () => karakterAlVeyaSec(key));
+  } else {
+    eylem.textContent = t("✓ Seçili");
+    eylem.disabled = true;
+  }
+}
+
+// Escape paneli kapatır (masaüstü klavye); Android geri tuşu için oyunda ayrı bir işleyici yok.
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && charDetayKey) {
+    e.stopPropagation();
+    karakterDetayKapat();
+  }
+});
+
+// Görseller yüklenince açık ekranın kartları (ve paneli) yeniden çizilir: kart-* resimleri <img> olur
+window.addEventListener("gorsel-yuklendi", () => {
+  const ekran = document.getElementById("screen-characters");
+  if (ekran && ekran.classList.contains("active")) refreshCharacters();
+});
 
 let currentShopTab = "upgrades";
 function showShopTab(tab) {

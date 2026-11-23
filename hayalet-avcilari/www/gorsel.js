@@ -325,3 +325,60 @@ function animGovdeCiz(ctx, ad, i, x, y, w, h, alt = true, kaynak = null) {
   ctx.drawImage(im, bx - g[0] * W * o, by - g[1] * H * o, W * o, H * o);
   return true;
 }
+
+// ---- 3D görünümlü karakterler (A paftaları; k3-<karakter>-<kostüm>-<n>.webp) ----
+// Kareler: 1-4 yürüyüş döngüsü, 5-6 duruş nefesi, 7-8 atış (toparlanma, geri tepme). 8 kare aynı kutudan kesildiği
+// için karakter kareden kareye zıplamaz; gövde kod çiziminin boyunda ve ayak hizasında çizilir, silahı kod çizer.
+// SAF işlev (DOM yok): duruma göre kare numarası (1-8). Yürüyüş ritmi oyunun salınımıyla aynı (Math.sin(walkPhase*12)):
+// walkPhase'in bir tam dönüsü (2π/12) yürüyüş döngüsünün bir turudur.
+function karakter3dKare(durum) {
+  if (durum.shootRecoil > 0.55) return 8;  // geri tepme
+  if (durum.shootRecoil > 0.05) return 7;  // toparlanma
+  if (durum.yuruyor) {
+    const dongu = durum.walkPhase * 12 / (2 * Math.PI);
+    return 1 + ((Math.floor(dongu * 4) % 4) + 4) % 4; // negatife karşı güvenli mod
+  }
+  return 5 + ((Math.floor(durum.zamanSn / 0.55) % 2) + 2) % 2; // nefes: 5 ↔ 6
+}
+// Karakterin 8 karesi de yüklüyse true (eksik kareyle yarı yolda kalmasın; pafta gelmediyse false)
+function karakter3dHazir(charKey, idx) {
+  for (let n = 1; n <= 8; n++) if (!gorsel(`k3-${charKey}-${idx}-${n}`)) return false;
+  return true;
+}
+// drawCharacter çağırır (gölgeden sonra, gövde yerine). Kareyi karakter3dKare seçer; boy ve ayak hizası kod çiziminin
+// (karakterKodKutusu): resmin alt-ortası (0, kk.alt * s) noktasına gelir. Çizdiyse true.
+function karakter3dCiz(ctx, charKey, idx, s, durum) {
+  if (_karKodla) return false;
+  if (!karakter3dHazir(charKey, idx)) return false;
+  const kare = karakter3dKare(durum);
+  const im = gorsel(`k3-${charKey}-${idx}-${kare}`);
+  if (!im) return false;
+  const kk = karakterKodKutusu(charKey, idx);
+  const h = (kk.alt - kk.ust) * s * 1.06; // 3D kareler biraz uzun: saç ve taca yer kalsın
+  const w = h * im.naturalWidth / im.naturalHeight;
+  ctx.drawImage(im, -w / 2, kk.alt * s - h, w, h);
+  return true;
+}
+
+// ---- 3D silahlar (W paftaları; s3-<anahtar>.webp) ----
+// Karakter silahları s3-<karakter>, dükkân silahları s3-<silah>. Resim yoksa null (kod çizimi çalışır).
+function silah3d(key) {
+  return gorsel(`s3-${key}`);
+}
+// Resmi tutma yeri (sol kenarın ortası) (0, 0)'a gelecek, namlu sağa bakacak biçimde çizer; genişlik uzunluk * s,
+// yükseklik orantılı. Çizdiyse true.
+function silah3dCiz(ctx, key, s, uzunluk) {
+  const im = silah3d(key);
+  if (!im) return false;
+  const w = uzunluk * s, h = w * im.naturalHeight / im.naturalWidth;
+  ctx.drawImage(im, 0, -h / 2, w, h);
+  return true;
+}
+// Namlu alevi (vurus kareleri, N08): ateşin ilk anında (shootRecoil > 0.6) namlu ucunda (x), sönerken kare ilerler.
+// Kare 0 ise (animasyon yüklü değil) çizilmez.
+function namluAlevi(ctx, s, shootRecoil, x) {
+  if (shootRecoil <= 0.6) return;
+  const kare = animBirKez("vurus", 1 - shootRecoil);
+  if (!kare) return;
+  animCiz(ctx, "vurus", kare, x - 8 * s, -8 * s, 16 * s, 16 * s);
+}

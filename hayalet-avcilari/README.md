@@ -413,6 +413,17 @@ hatırlanır, kapanınca hepsine dönülür. Sınama `test/ayarlar.test.mjs` (d�
 Ayarları → TAMAM → ⏸ menüsü görünür → bir kez Devam → oyun akar; art arda iki kez; ana menüden açılınca ana menüye dönüş.
 Sürüm notuna "🛠️ Ayarlardan dönünce oyun artık durmuyor." satırı eklendi (3.15.0'ın satırlarıyla; en uzun es 491/500).
 
+## 3D görünümlü karakterler (hazırlık, 23 Kasım 2026)
+
+Kullanıcının isteği: *"Yerel oturumu kullanarak ChatGPT ile karakterleri mevcut görünümlerinden esinlenerek tamamen baştan
+oluşturt, 3D olsun oyun, animasyonlu bir duruşları olsun, hareketleri, atışları animasyonlu olsun, kodlama için sadece
+Evren kullan."* Seçim: 3D görünümlü (2.5D; ChatGPT 3D model üretemez). İstemler `gorsel/CHATGPT-ISTEMI-3D.md`
+(D01–D06 tasarım, A01–A34 kostüm animasyonları, W1–W3 silahlar), paftalar `gorsel/ham3d/`. Altyapı kodu Evren'e
+(opencode, GLM 5.3) yazdırıldı, Claude inceledi ve test etti: `gorsel_kes.py` (karakterler3d, silahlar3d),
+`gorsel.js` (karakter3dKare: atış 8/7, yürüyüş 1-4, nefes 5-6; karakter3dCiz, silah3dCiz, namluAlevi), `game.js`
+(drawCharacter, drawCharWeapon, drawGunShape, drawGunInHand kancaları), `test/gorsel3d.test.mjs` (13 sınama). Paftalar
+gelene kadar oyun KS karakterleriyle çalışır.
+
 ## 3.18.0: animasyonlar
 
 Kullanıcının isteği (22 Kasım 2026): *"Devam eden işi bozmadan animasyonlar ekleyebilirsin; GPT'de oluşturup statik

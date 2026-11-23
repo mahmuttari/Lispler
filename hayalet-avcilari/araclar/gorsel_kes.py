@@ -160,6 +160,96 @@ def animasyonlar(liste):
         print(f'✓ {pafta} (animasyon: {", ".join(a[0] for a in animler)})')
 
 
+# 3D görünümlü karakterler (CHATGPT-ISTEMI-3D.md): animasyon paftaları A01–A34 (gorsel/ham3d), her kostüm için bir
+# pafta. Izgara 4 sütun × 2 satır, hücre 384 × 512; kare 1-4 yürüyüş, 5-6 nefes, 7-8 atış. Karelerin hepsi 8 karenin
+# dolu alanlarının BİRLEŞİMİNDEN kesilir: ayak hizası ve karakterin yeri kareden kareye korunur, boyu değişmez (oyunda
+# karakter kareden kareye zıplamaz). Pafta tablosundaki adlar oyundaki anahtarlardır (Marli → mark, Kenit → kent,
+# Güllu → gul, Beri → beti).
+HAM3D = os.path.join(KOK, 'gorsel', 'ham3d')
+KARAKTER3D = {
+    'A01': ('kinkin', 0), 'A02': ('kinkin', 1), 'A03': ('kinkin', 2),
+    'A04': ('veryi', 0), 'A05': ('veryi', 1), 'A06': ('veryi', 2),
+    'A07': ('kornet', 0), 'A08': ('kornet', 1), 'A09': ('kornet', 2),
+    'A10': ('mark', 0), 'A11': ('mark', 1), 'A12': ('mark', 2),
+    'A13': ('kent', 0), 'A14': ('kent', 1), 'A15': ('kent', 2),
+    'A16': ('ponko', 0), 'A17': ('ponko', 1), 'A18': ('ponko', 2),
+    'A19': ('gul', 0), 'A20': ('gul', 1), 'A21': ('gul', 2),
+    'A22': ('rani', 0), 'A23': ('rani', 1), 'A24': ('rani', 2),
+    'A25': ('beti', 0), 'A26': ('beti', 1), 'A27': ('beti', 2),
+    'A28': ('fanatik', 0), 'A29': ('fanatik', 1), 'A30': ('fanatik', 2),
+    'A31': ('silsen', 0), 'A32': ('silsen', 1),
+    'A33': ('sercin', 0), 'A34': ('sercin', 1),
+}
+KARAKTER3D_YUKSEKLIK = 256  # px; kare yüksekliği bu değeri geçmeyecek (hepsi aynı oranla küçültülür)
+
+
+def karakterler3d(liste):
+    """A paftalarını (gorsel/ham3d) keser: k3-<karakter>-<kostüm>-<n>.webp (n: 1-8). Pafta gelmemişse sessizce atlanır."""
+    for pafta, (karakter, kostum) in KARAKTER3D.items():
+        yol = os.path.join(HAM3D, f'{pafta}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGBA')
+        if resim.size != (1536, 1024):
+            sys.exit(f'{pafta}: boyut {resim.size}, 1536 × 1024 olmalı')
+        kareler = []
+        for n in range(1, 9):
+            x0, y0 = ((n - 1) % 4) * 384, ((n - 1) // 4) * 512
+            kare = soluklari_sil(resim.crop((x0, y0, x0 + 384, y0 + 512)))
+            if not kare.getbbox():
+                sys.exit(f'{pafta} kare {n} boş')
+            kareler.append(kare)
+        kutular = [k.getbbox() for k in kareler]
+        birlesik = (min(b[0] for b in kutular), min(b[1] for b in kutular),
+                    max(b[2] for b in kutular), max(b[3] for b in kutular))
+        w, h = birlesik[2] - birlesik[0], birlesik[3] - birlesik[1]
+        oran = min(1, KARAKTER3D_YUKSEKLIK / h)
+        for n, kare in enumerate(kareler, 1):
+            k = kare.crop(birlesik)
+            if oran < 1:
+                k = k.resize((max(1, round(w * oran)), max(1, round(h * oran))), Image.LANCZOS)
+            anahtar = f'k3-{karakter}-{kostum}-{n}'
+            k.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=88, method=6)
+            liste[anahtar] = [k.width, k.height]
+        print(f'✓ {pafta} (3D karakter)')
+
+
+# 3D silah paftaları (W1–W3): ızgara 3 sütun × 2 satır, 512 px hücre; namlu sağa, tutma yeri solda. Karakter silahları
+# s3-<karakter>, dükkân silahları s3-<silah> anahtarıyla kaydedilir (None: hücre boş).
+SILAH3D = {
+    'W1': ['kinkin', 'veryi', 'mark', 'ponko', 'gul', 'rani'],
+    'W2': ['fanatik', 'kornet', 'kent', 'silsen', 'sercin', None],
+    'W3': ['baloncuk', 'lazer', 'yesil', 'pompali', 'bazuka', None],
+}
+SILAH3D_KENAR = 192  # px; en uzun kenar bu değeri geçmeyecek
+
+
+def silahlar3d(liste):
+    """W paftalarını (gorsel/ham3d) keser: s3-<anahtar>.webp. Pafta gelmemişse sessizce atlanır."""
+    for pafta, anahtarlar in SILAH3D.items():
+        yol = os.path.join(HAM3D, f'{pafta}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGBA')
+        if resim.size != (1536, 1024):
+            sys.exit(f'{pafta}: boyut {resim.size}, 1536 × 1024 olmalı')
+        for i, ad in enumerate(anahtarlar):
+            if not ad:
+                continue
+            x0, y0 = (i % 3) * 512, (i // 3) * 512
+            hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
+            kutu = hucre.getbbox()
+            if not kutu:
+                sys.exit(f'{pafta} hücre {i + 1} boş')
+            hucre = hucre.crop(kutu)
+            oran = min(1, SILAH3D_KENAR / max(hucre.size))
+            if oran < 1:
+                hucre = hucre.resize((max(1, round(hucre.width * oran)), max(1, round(hucre.height * oran))), Image.LANCZOS)
+            hucre.save(os.path.join(CIKTI, f's3-{ad}.webp'), 'WEBP', quality=88, method=6)
+            liste[f's3-{ad}'] = [hucre.width, hucre.height]
+        print(f'✓ {pafta} (3D silah)')
+
+
 # Oyunda bağlı olanlar (timsah, köprü ve oyuncu ruhu kendi animasyonlarını kodla çizer; kare kare paftaları gelince)
 KULLANILAN = set(BOYUT) - {'oyuncu-ruh', 'bot'}
 # Atıcı hayaletin yanındaki mor küre silinir (oyun mermiyi ve atış öncesi parıltıyı kendisi çizer): sol yarı aynalanır.
@@ -292,6 +382,8 @@ def kes():
             liste[anahtar] = [hucre.width, hucre.height]
         print(f'✓ {pafta}')
     tema_dokulari(liste)
+    karakterler3d(liste)
+    silahlar3d(liste)
     karakterler(liste)
     animasyonlar(liste)
     # Menü arka planı (A1, 1024 × 1536 dikey, opak): ana menü ve açılış ekranında (style.css), 768 px genişlikte

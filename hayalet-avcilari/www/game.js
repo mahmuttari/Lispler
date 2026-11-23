@@ -1641,6 +1641,13 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
   ctx.ellipse(0, 45 * s, 22 * s, 7 * s, 0, 0, Math.PI * 2);
   ctx.fill();
 
+  // ChatGPT 3D karakter kareleri (A paftaları, gorsel.js): gövde kare kare resimden, silah koddan (nişan, geri tepme)
+  if (typeof karakter3dCiz === "function" && karakter3dCiz(ctx, charKey, costumeIdx, s, { yuruyor: isWalking, walkPhase, shootRecoil, zamanSn: performance.now() / 1000 })) {
+    karakterSilahiCiz(ctx, charKey, c, s, swing, aimRaise, shootRecoil, gunKey);
+    ctx.restore();
+    return;
+  }
+
   // ChatGPT karakter resmi (elleri boş, KS paftaları; gorsel.js): gövde resimden, silah koddan (nişan, geri tepme)
   if (typeof karakterResmiCiz === "function" && karakterResmiCiz(ctx, charKey, costumeIdx, s, swing)) {
     karakterSilahiCiz(ctx, charKey, c, s, swing, aimRaise, shootRecoil, gunKey);
@@ -2125,6 +2132,8 @@ function karakterSilahiCiz(ctx, charKey, c, s, swing, aimRaise, shootRecoil, gun
   if (gunKey) { drawGunInHand(ctx, gunKey, s, swing, aimRaise, shootRecoil); return; }
   if (charKey === "beti") return;
   if (charKey === "kent") {
+    // 3D bıçak resmi (W2 paftası, gorsel.js) varsa omuz pivotuyla nişan da yapar; yoksa kod çizimindeki dik bıçak
+    if (typeof silah3d === "function" && silah3d("kent")) { drawCharWeapon(ctx, "kent", s, swing, aimRaise, shootRecoil); return; }
     ctx.fillStyle = c.color.weapon;
     ctx.fillRect(28 * s, -6 * s, 4 * s, 22 * s);
     ctx.fillStyle = "#451a03";
@@ -2165,6 +2174,9 @@ function hayaletOyuncuCiz(ctx, charKey, costumeIdx, x, y, alpha) {
   ctx.restore();
 }
 
+// 3D silah resimlerinin uzunluğu (s birimi; W paftaları, gorsel.js): resim tutma yerinden namlu ucuna kadar bu uzunlukta
+const SILAH3D_UZUNLUK = { kinkin: 20, veryi: 30, mark: 24, ponko: 20, gul: 30, rani: 20, fanatik: 24, kornet: 36, kent: 14, silsen: 30, sercin: 24 };
+
 // Karaktere özel silah çizimleri — her biri sağ elin hizasında, walkPhase ile hafif sallanır.
 // aimRaise (0..1): hedef yokken silah aşağıda, varken yukarıda. shootRecoil (0..1): atış geri tepmesi.
 function drawCharWeapon(ctx, charKey, s, swing, aimRaise = 0, shootRecoil = 0) {
@@ -2178,6 +2190,16 @@ function drawCharWeapon(ctx, charKey, s, swing, aimRaise = 0, shootRecoil = 0) {
   ctx.translate(18 * s, 2 * s);
   ctx.rotate(baseRot);
   ctx.translate(-18 * s, -2 * s);
+  // ChatGPT 3D silah resmi (W paftaları, gorsel.js): tutma yeri elde, namlu sağa; ateş anında namlu alevi
+  if (typeof silah3d === "function" && silah3d(charKey)) {
+    const uzunluk = SILAH3D_UZUNLUK[charKey] || 22;
+    ctx.translate(26 * s, 8 * s);
+    ctx.rotate(sway);
+    silah3dCiz(ctx, charKey, s, uzunluk);
+    namluAlevi(ctx, s, shootRecoil, uzunluk * s);
+    ctx.restore();
+    return;
+  }
   switch (charKey) {
     case "kinkin": {
       // Enerji tabancası (gümüş gövde + camgöbeği çekirdek)
@@ -2486,7 +2508,12 @@ function drawFeather(ctx, x, y, len) {
 // Silahların kod çizimindeki kutusu (s birimi; x, y, w, h): resim bu kutuya sığdırılır
 const SILAH_KUTU = { baloncuk: [-2, -6, 21, 15], lazer: [-2, -5, 25, 14], yesil: [-1, -5, 16, 13], pompali: [-4, -6, 28, 15], bazuka: [-6, -8, 30, 18] };
 
+// Dükkân silahlarının 3D resim uzunluğu (s birimi; W3 paftası, gorsel.js)
+const SILAH3D_DUKKAN = { baloncuk: 21, lazer: 25, yesil: 16, pompali: 28, bazuka: 30 };
+
 function drawGunShape(ctx, gunKey, s) {
+  // ChatGPT 3D silah resmi (W3 paftası, gorsel.js): tutma yeri (0, 0)'da, namlu sağa bakar
+  if (typeof silah3d === "function" && silah3d(gunKey)) { silah3dCiz(ctx, gunKey, s, SILAH3D_DUKKAN[gunKey] || 22); return; }
   const kutuR = SILAH_KUTU[gunKey];
   if (kutuR && typeof gorselKutuya === "function" && gorselKutuya(ctx, `silah-${gunKey}`, kutuR[0] * s, kutuR[1] * s, kutuR[2] * s, kutuR[3] * s)) return;
   const kutu = (renk, x, y, w, h, kenar = "#0f172a") => {
@@ -2538,6 +2565,8 @@ function drawGunInHand(ctx, gunKey, s, swing, aimRaise = 0, shootRecoil = 0) {
   ctx.translate(26 * s, 8 * s);
   ctx.rotate(swing * 0.06);
   drawGunShape(ctx, gunKey, s * 0.9);
+  // 3D dükkân silahının ateş alevi (W3 paftası, gorsel.js): namlu ucunda
+  if (typeof silah3d === "function" && silah3d(gunKey)) namluAlevi(ctx, s * 0.9, shootRecoil, (SILAH3D_DUKKAN[gunKey] || 22) * s * 0.9);
   ctx.restore();
 }
 

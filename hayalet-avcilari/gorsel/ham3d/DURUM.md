@@ -19,6 +19,27 @@ ChatGPT'nin çıktısında saydamlığı neredeyse sıfır lekeler (alfa ≤ 16)
 boyu dinlemediği için karakterler ölçeklenir (D02'den itibaren bütün paftaya tek ölçek: en uzun karakter 420 px, karakterlerin birbirine göre boyu korunur; D01'de her hücre ayrı 420 px), yatayda ortalanır, ayakları hücre altından 24 px
 yukarıya oturtulur. Dosyalar 1536 × 1024, saydam.
 
+A ve W paftaları ölçeklenmedi (ChatGPT'nin boyutu korunur). Sisli zemin gelen paftalarda (A09, A14, A18, W1) hücre
+sınırlarındaki en yüksek alfanın biraz üstü silinip kenar geçişi yeniden ölçeklendi; sınırı taşan karelerde (A14, A15,
+A26'nın 7. karesi) kare 10–12 px sağa kaydırıldı; W1'in yayı, W2'nin asası ve tüyü, W3'ün baloncuk tabancası ve
+bazukası 24 px kenar boşluğu için hücrede ortalandı ya da orantılı küçültüldü.
+
+## Oyuna bağlayacak oturum için notlar
+
+- **A01–A34**: 4 × 2 hücre, hücre 384 × 512. 1-4 yürüyüş, 5-6 nefes, 7-8 atış. Bir pafta içinde boy farkı ≤ %6, ayak
+  hizası ≤ 13 px oynar; paftalar arasında ayak boşluğu 24–57 px değişir, bu yüzden her pafta kendi ortak kutusundan
+  kesilmeli. Eller her karede boş; atışta sağ kol göğüs hizasında öne uzanır (silah oradan çizilir).
+- **Kostüm sırası** oyundaki sırayla aynı: A01–A03 Kinkin 0-2, A04–A06 Veryi, A07–A09 Kornet, A10–A12 Marli, A13–A15
+  Kenit, A16–A18 Ponko, A19–A21 Güllu, A22–A24 Rani, A25–A27 Beri, A28–A30 Fanatik, A31–A32 Silsen, A33–A34 Serçin.
+- **Beri'nin silahı yok** (oyunda da yalnız envanter silahı); D05'te eli boş. **Bot** yalnız D06 5. hücrede, animasyon
+  paftası yok.
+- **W1**: 1 Kinkin enerji tabancası, 2 Veryi çekici, 3 Marli arbaleti, 4 Ponko revolveri, 5 Güllu yayı (dik duruyor,
+  kiriş solda), 6 Rani sapanı. **W2**: 1 Fanatik nunçakusu, 2 Kornet asası, 3 Kenit hançeri, 4 Silsen bayrak asası,
+  5 Serçin tüyü, 6 boş. **W3**: 1 Baloncuk, 2 Kırmızı Lazer, 3 Yeşil İkiz, 4 Saçma Topu, 5 Bazuka, 6 boş. Hepsi
+  yandan, namlu sağa, kabza solda.
+- W2 ve W3 ayrı bir ChatGPT sohbetinde (W1 örnek eklenerek) üretildi; ilk sohbette W2 üç kez beyaz ya da boyalı dama
+  zeminli gelmişti. Üslup W1 ile aynı.
+
 | Pafta | Durum | Not |
 |---|---|---|
 | D01 | **tamam** | Kinkin ve Veryi; 3. denemede kullanıcı onayladı |

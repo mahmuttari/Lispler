@@ -8,7 +8,9 @@ kullanıcının kararı "kodlama için sadece Evren kullan". Resim gelmezse oyun
 
 ## Yerel Claude için iş sırası
 
-1. ChatGPT'de **yeni bir sohbet** aç ve aşağıdaki **ARAYÜZ ANA İSTEMİ**'ni bir kez gönder.
+0. **İlk iş yön paftalarıdır (Y01–Y34, dosyanın sonunda).** Onları 3D karakter sohbetinde ya da yeni bir sohbette
+   (önce `CHATGPT-ISTEMI-3D.md`'deki 3D ANA İSTEM, sonra YÖN İSTEMİ) üret; U ve N paftalarına onlar bitince geç.
+1. U paftaları için ChatGPT'de **yeni bir sohbet** aç ve aşağıdaki **ARAYÜZ ANA İSTEMİ**'ni bir kez gönder.
 2. Her paftaya üslup referansı olarak **onaylı D paftalarından birini** ekle:
    - U01 için `ham3d/D01.png`, `D02.png` ve `D03.png`;
    - U02 için `ham3d/D04.png`, `D05.png` ve `D06.png`;
@@ -24,7 +26,8 @@ kullanıcının kararı "kodlama için sadece Evren kullan". Resim gelmezse oyun
    - makyaj yok; oranlar genç kahraman oranı.
 6. Giriş, şifre, ödeme ve ChatGPT'nin görsel sınırı kullanıcıya bırakılır. Oyun koduna dokunma.
 
-Toplam **17 pafta**: 10 arayüz paftası (U01–U10) ve 7 ek animasyon paftası (N14–N20, aşağıda). Sınır dolarsa ertesi
+Toplam **51 pafta**: **önce 34 yön paftası (Y01–Y34, en altta, öncelikli)**, sonra 10 arayüz paftası (U01–U10) ve 7 ek
+animasyon paftası (N14–N20). Sınır dolarsa ertesi
 gün kalınan yerden devam edilir.
 
 ---
@@ -306,3 +309,91 @@ into small drops (cell 6).
 `araclar/gorsel_kes.py` bu paftaları `an-simsek`, `an-roket`, `an-duman`, `an-sifa`, `an-gorunmez`, `an-guc-patlama`,
 `an-guc-aura`, `an-mermi-enerji`, `an-mermi-baloncuk`, `an-seviye`, `an-hasar`, `an-donma`, `an-cozulme` karelerine keser
 (tablo `ANIMASYON`). Resim gelene kadar oyun aynı aksiyonları kodla çizilen animasyonla gösterir.
+
+---
+
+## ÖNCELİKLİ: Yön paftaları (Y01–Y34): dört yöne yürüyüş, silah elde
+
+Kullanıcı tanıtım videosunu izledikten sonra şunu dedi (23 Kasım 2026): *"karakter yine tek yönde duruyor; ileri, geri,
+aşağı, yukarı yürüyüşü ayrı ayrı olmalıydı. Silah elinde olmalıydı."* A paftalarında karakter hep 3/4 önden, sağa bakar
+ve eli boştur. Silahı oyun ayrıca çizdiği için silah elde durmaz, kalçanın yanında havada kalır. Y paftaları bu iki
+sorunu çözer: her kostüm üç yönde yürür ve **imza silahı elindedir**. Sola yürüyüşü oyun sağ yürüyüşü aynalayarak yapar.
+
+**Bu paftalar U ve N paftalarından önce üretilir** (kullanıcının gördüğü asıl sorun bu). Her paftaya onaylı D
+paftasını ve aynı kostümün A paftasını (`gorsel/ham3d/A..png`) ekle. Kaydetme yeri `gorsel/ham3d/Y01.png` … `Y34.png`.
+Y01'i kullanıcıya göster; onay gelmeden devam etme. Sonrakilerde yön, silah ve boy tutarlılığını sen denetle.
+Yanlış yöne bakan, silahı elinden düşen ya da boyu değişen kareler varsa paftayı yeniden ürettir.
+
+### YÖN İSTEMİ (Y01'den önce bir kez)
+
+```
+New task type: DIRECTION SHEETS for the approved 3D characters (codes Y01–Y34). All style rules still apply, EXCEPT:
+the character now HOLDS ITS SIGNATURE WEAPON in the hand in every frame (named in each request).
+- Grid: 4 columns x 3 rows, each cell 384 px wide x 341 px tall (whole image 1536 x 1024, transparent).
+  Row 1 = cells 1-4, row 2 = cells 5-8, row 3 = cells 9-12. No grid lines.
+- Same character, same costume, same size in every frame, exactly as in the attached approved design and animation
+  sheets. Feet always on the same baseline, 16 px above the bottom of each cell; body centered in the cell; the whole
+  character and weapon fully inside the cell with at least 12 px margin.
+- Row 1 (cells 1-4): WALKING TO THE RIGHT, pure side view (profile, facing right). The weapon is held in the front hand,
+  pointing right (forward), at chest height, grip clearly inside the closed hand.
+- Row 2 (cells 5-8): WALKING DOWN TOWARD THE VIEWER, front view (face and chest toward the camera, seen slightly from
+  above). The weapon is held in the right hand (viewer's left side), pointing forward/down toward the viewer.
+- Row 3 (cells 9-12): WALKING UP AWAY FROM THE VIEWER, back view (we see the back of the head, hair, backpack or cloak).
+  The weapon is held in the right hand (viewer's right side), pointing up/away, partly visible beside the body.
+- In every row the 4 frames are a WALK CYCLE loop: right leg forward, legs passing (body slightly up), left leg
+  forward, legs passing (body slightly up). The arm without the weapon swings; the weapon arm stays steady.
+- The weapon never leaves the hand, never floats, and keeps the same size and design in all 12 frames.
+Confirm with "ready".
+```
+
+Her pafta isteği: `Sheet Y..: direction sheet for hunter <karakter>, costume "<kostüm>", holding <silah> — design: cell
+N of the attached approved sheet D0x; same costume as the attached animation sheet A...` Onaylı D paftasını ve A paftasını
+ekle.
+
+| Kod | Karakter | Kostüm | Tasarım hücresi | Elindeki silah |
+|---|---|---|---|---|
+| Y01 | Kinkin | Mavi (blue outfit, brown hair) | D01 hücre 1 | his silver energy pistol |
+| Y02 | Kinkin | Pembe Prenses (pink outfit, golden hair) | D01 hücre 2 | his silver energy pistol |
+| Y03 | Kinkin | Altın Efsane (gold outfit, cream hair) | D01 hücre 3 | his silver energy pistol |
+| Y04 | Veryi | Klasik (brown outfit, dark brown hair) | D01 hücre 4 | his huge studded war hammer |
+| Y05 | Veryi | Asker (green soldier outfit, black hair) | D01 hücre 5 | his huge studded war hammer |
+| Y06 | Veryi | Bronz Şampiyon (bronze outfit, golden hair) | D01 hücre 6 | his huge studded war hammer |
+| Y07 | Kornet | Mor (purple fluffy body, white skull-like face) | D02 hücre 1 | his crystal staff |
+| Y08 | Kornet | Şeker (mint fluffy body) | D02 hücre 2 | his crystal staff |
+| Y09 | Kornet | Galaksi Sihirbazı (sky-blue fluffy body, lilac accents) | D02 hücre 3 | his crystal staff |
+| Y10 | Marli | Yeşil (green outfit, brown hair, backpack) | D02 hücre 4 | her compact crossbow |
+| Y11 | Marli | Mavi (blue outfit, dark hair, backpack) | D02 hücre 5 | her compact crossbow |
+| Y12 | Marli | Altın Maceracı (gold outfit, auburn hair, backpack) | D02 hücre 6 | her compact crossbow |
+| Y13 | Kenit | Karanlık (black hooded cloak, glowing red eyes) | D03 hücre 1 | his small dagger |
+| Y14 | Kenit | Kanlı (dark red hooded cloak) | D03 hücre 2 | his small dagger |
+| Y15 | Kenit | Hayalet Lordu (deep purple hooded cloak) | D03 hücre 3 | his small dagger |
+| Y16 | Ponko | Kırmızı (red shirt, wide cowboy hat) | D03 hücre 4 | his cowboy revolver |
+| Y17 | Ponko | Sarı (orange shirt, cowboy hat) | D03 hücre 5 | his cowboy revolver |
+| Y18 | Ponko | Altın Şapka (yellow shirt, golden cowboy hat) | D03 hücre 6 | his cowboy revolver |
+| Y19 | Güllu | Pembe (pink outfit, golden crown, bangs) | D04 hücre 1 | her tall bow |
+| Y20 | Güllu | Mor (purple outfit, crown) | D04 hücre 2 | her tall bow |
+| Y21 | Güllu | Kraliçe (light pink outfit, crown, golden hair) | D04 hücre 3 | her tall bow |
+| Y22 | Rani | Turkuaz (turquoise outfit, black side buns) | D04 hücre 4 | her Y-shaped slingshot |
+| Y23 | Rani | Limon (lime outfit, black buns) | D04 hücre 5 | her Y-shaped slingshot |
+| Y24 | Rani | Pırıltı (yellow outfit, purple buns) | D04 hücre 6 | her Y-shaped slingshot |
+| Y25 | Beri | Şeker (red-pink body, purple-white lollipop head) | D05 hücre 1 | her swirly lollipop wand |
+| Y26 | Beri | Çikolata (brown body, orange-white lollipop head) | D05 hücre 2 | her swirly lollipop wand |
+| Y27 | Beri | Gökkuşağı Lolipop (cyan body, pink-white lollipop head) | D05 hücre 3 | her swirly lollipop wand |
+| Y28 | Fanatik | Beyaz Gi (white karate gi, red headband, black belt) | D05 hücre 4 | his red nunchaku |
+| Y29 | Fanatik | Kırmızı Gi (red gi, black belt) | D05 hücre 5 | his red nunchaku |
+| Y30 | Fanatik | Ejder Ustası (dark navy gi, golden hair) | D05 hücre 6 | his red nunchaku |
+| Y31 | Silsen | Bahar (green dress, brown hair) | D06 hücre 1 | her flower flag wand |
+| Y32 | Silsen | Lale (red dress, black hair) | D06 hücre 2 | her flower flag wand |
+| Y33 | Serçin | Serçe (mustard outfit, black hair, little beak mask) | D06 hücre 3 | her big striped feather |
+| Y34 | Serçin | Kanatlı Kedi (orange outfit, cat ears, small white wings) | D06 hücre 4 | her big striped feather |
+
+Örnek istek (Y01):
+
+```
+Sheet Y01: direction sheet for hunter Kinkin, costume "Mavi (blue outfit, brown hair)", holding his silver energy pistol — design: cell 1 of the attached approved sheet D01; same costume as the attached animation sheet A01.
+```
+
+Bulut Claude'un yapacakları: `gorsel_kes.py` Y paftalarını keser (`k4-<karakter>-<kostüm>-<yön>-<n>`; yön `yan`, `on`,
+`arka`; n 1-4), oyun karakterin hareket ve nişan yönüne göre satırı seçer, sola giderken yan satırı aynalar. Ateşte
+karakter geri teper ve namlu alevi silahın ucunda çıkar. Mağaza silahı takılıysa mermi ve ses o silahın olur. Y paftası
+gelmeyen kostüm bugünkü A kareleriyle oynar.

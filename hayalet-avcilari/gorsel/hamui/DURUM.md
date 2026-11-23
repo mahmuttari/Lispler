@@ -28,3 +28,7 @@ Karakter kuralları `../ham3d/DURUM.md` ile aynıdır.
 | N18 | Enerji mermisi, baloncuk mermisi | bekliyor |
 | N19 | Bölüm atlama, hasar alma | bekliyor |
 | N20 | Donma, çözülme | bekliyor |
+
+## Yön paftaları (öncelikli; kayıt yeri `gorsel/ham3d/`)
+
+Y01–Y34: her kostüm için dört yöne yürüyüş, silah elde. Durum: bekliyor (Y01 kullanıcı onayına sunulacak).

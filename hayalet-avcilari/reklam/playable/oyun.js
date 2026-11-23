@@ -32,9 +32,8 @@
   document.documentElement.lang = DIL;
 
   // Paketlenen görsel anahtarları.
-  var ANAHTARLAR = ['s3-kinkin', 'tema2-zemin'];
+  var ANAHTARLAR = ['kinkin-dur', 'kinkin-kos', 'tema2-zemin'];
   var i;
-  for (i = 1; i <= 8; i++) ANAHTARLAR.push('k3-kinkin-0-' + i);
   for (i = 1; i <= 6; i++) ANAHTARLAR.push('an-hayalet-suzul-' + i);
   for (i = 1; i <= 6; i++) ANAHTARLAR.push('an-hayalet-puf-' + i);
   for (i = 1; i <= 6; i++) ANAHTARLAR.push('an-atici-saldiri-' + i);
@@ -60,6 +59,7 @@
   var ctx = tuval.getContext('2d');
   var G = { w: 320, h: 480, dpr: 1 };
   var zeminDesen = null;
+  var HUD_ALT = 56;
 
   var canlarEl = document.getElementById('canlar');
   var paraEl = document.getElementById('para');
@@ -146,6 +146,24 @@
   function oyuncuBoy() {
     return sinirla(Math.min(G.w * 0.34, G.h * 0.18), 58, 360);
   }
+  // Kinkin'in çizilecek karesi: koşarken tabanca çekilmiş koşu, dururken bekleme.
+  function spriteBilgi() {
+    var kos = O.oyuncu.yurume > 0;
+    var anahtar = kos ? 'kinkin-kos' : 'kinkin-dur';
+    var im = GORSEL[anahtar];
+    var oran = (im && im.naturalWidth > 0 && im.naturalHeight > 0) ? im.naturalWidth / im.naturalHeight : 0.5;
+    return {
+      kos: kos,
+      anahtar: anahtar,
+      oran: oran,
+      ayakX: kos ? 0.47 : 0.42,
+      tipX: kos ? 0.95 : 0.99,
+      tipY: kos ? 0.34 : 0.305
+    };
+  }
+  function oyuncuYariGenislik() {
+    return oyuncuBoy() * spriteBilgi().oran * 0.5;
+  }
   function hayaletBoy() {
     return sinirla(Math.min(G.w * 0.20, G.h * 0.115), 40, 230);
   }
@@ -160,13 +178,17 @@
     tuval.height = Math.round(G.h * G.dpr);
     tuval.style.width = G.w + 'px';
     tuval.style.height = G.h + 'px';
+    var ustEl = document.getElementById('ust');
+    if (ustEl) {
+      var ud = ustEl.getBoundingClientRect();
+      if (ud && isFinite(ud.bottom) && ud.bottom > 0) HUD_ALT = ud.bottom;
+    }
     if (!O.basladi) {
       O.oyuncu.x = G.w * 0.5;
       O.oyuncu.y = G.h * 0.56;
-    } else {
-      O.oyuncu.x = sinirla(O.oyuncu.x, G.w * 0.08, G.w * 0.92);
-      O.oyuncu.y = sinirla(O.oyuncu.y, G.h * 0.12, G.h * 0.9);
     }
+    O.oyuncu.x = sinirla(O.oyuncu.x, oyuncuYariGenislik(), G.w - oyuncuYariGenislik());
+    O.oyuncu.y = sinirla(O.oyuncu.y, HUD_ALT + oyuncuBoy() + 6, G.h - 8);
     zeminDesen = null;
   }
   window.addEventListener('resize', boyutlandir);
@@ -344,8 +366,9 @@
         p.y += jy * hiz * dt;
       }
     }
-    p.x = sinirla(p.x, G.w * 0.08, G.w * 0.92);
-    p.y = sinirla(p.y, G.h * 0.12, G.h * 0.9);
+    var yari = oyuncuYariGenislik();
+    p.x = sinirla(p.x, yari, G.w - yari);
+    p.y = sinirla(p.y, HUD_ALT + oyuncuBoy() + 6, G.h - 8);
 
     if (hareket) {
       p.yurume += dt * 8;
@@ -376,9 +399,16 @@
     }
   }
 
+  // Silahın ucu: sprite'ın ayak çapasına göre verilen oran; sola bakışta x aynalanır.
   function namluKonumu() {
     var p = O.oyuncu;
-    return { x: p.x + p.yuz * oyuncuBoy() * 0.12, y: p.y - oyuncuBoy() * 0.52 };
+    var boy = oyuncuBoy();
+    var s = spriteBilgi();
+    var en = boy * s.oran;
+    return {
+      x: p.x + p.yuz * (s.tipX - s.ayakX) * en,
+      y: p.y - (1 - s.tipY) * boy
+    };
   }
 
   function atesEt(hedef) {
@@ -397,7 +427,7 @@
       aci: aci
     });
     p.atesKalan = 0.18;
-    p.geriTepme = 0.14;
+    p.geriTepme = 0.1;
     p.namlu = 0.22;
     if (Math.abs(hedef.x - p.x) > 3) p.yuz = hedef.x > p.x ? 1 : -1;
   }
@@ -405,7 +435,7 @@
   function hasarAl() {
     if (O.oyuncu.olumsuz > 0 || O.evre === 'bitis') return;
     O.can -= 1;
-    O.oyuncu.olumsuz = 1;
+    O.oyuncu.olumsuz = 1.6;
     canlariYaz();
     if (O.can <= 0) {
       O.can = 0;
@@ -574,8 +604,8 @@
         h.x += Math.cos(h.t * 1.8 + h.donus) * 12 * dt;
       }
 
-      var dokunma = mesafe(O.oyuncu.x, O.oyuncu.y - oyuncuBoy() * 0.3, h.x, h.y);
-      if (dokunma < oyuncuBoy() * 0.28 + h.boy * 0.3) {
+      var dokunma = mesafe(O.oyuncu.x, O.oyuncu.y - oyuncuBoy() * 0.45, h.x, h.y);
+      if (dokunma < oyuncuBoy() * 0.30) {
         pufEkle(h.x, h.y, h.boy, 0.8);
         O.hayaletler.splice(j, 1);
         hasarAl();

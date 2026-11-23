@@ -24,7 +24,7 @@ KINKIN_GORSEL = [
 ]
 
 # Oyunda kullanılan dosya anahtarları.
-ANAHTARLAR = ["kinkin-dur", "kinkin-kos", "tema2-zemin"]
+ANAHTARLAR = ["tema2-zemin"]
 ANAHTARLAR += ["an-hayalet-suzul-%d" % i for i in range(1, 7)]
 ANAHTARLAR += ["an-hayalet-puf-%d" % i for i in range(1, 7)]
 ANAHTARLAR += ["an-atici-saldiri-%d" % i for i in range(1, 7)]
@@ -102,6 +102,7 @@ def zip_uret():
 
 def main():
     temizle_ve_hazirla()
+    kinkin_gorselleri_uret()
     gorselleri_kopyala()
     html_ve_js_kopyala()
     adlar = zip_uret()

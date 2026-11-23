@@ -13,7 +13,7 @@ Karakter kuralları `../ham3d/DURUM.md` ile aynıdır.
 | U05 | Geliştirme simgeleri | üretildi (1. deneme, referans D01; ChatGPT'nin iki seçeneğinden 2.'si: daha iri simgeler, zırhlı eldiven); toplu gösterim bekleniyor |
 | U06 | Para ve ödüller | üretildi (1. deneme, referans D01); toplu gösterim bekleniyor |
 | U07 | Menü simgeleri 1 | üretildi (1. deneme, referans D01); Güllu'nun tacı sivri (D04'te kare taç); 2. ve 6. hücre sol kenara 3–6 px; toplu gösterim bekleniyor |
-| U08 | Menü simgeleri 2 | bekliyor |
+| U08 | Menü simgeleri 2 | üretildi (1. deneme, referans D01); Güllu'nun tacı sivri; 1. hücrede el sol kenara 18 px; toplu gösterim bekleniyor |
 | U09 | Giriş ekranı kahraman resmi (dikey) | bekliyor |
 | U10 | Oyun sonu ve olay amblemleri | bekliyor |
 

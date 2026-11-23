@@ -6,7 +6,7 @@ Karakter kuralları `../ham3d/DURUM.md` ile aynıdır.
 
 | Pafta | İçerik | Durum |
 |---|---|---|
-| U01 | Kahraman kartları 1-6 | bekliyor |
+| U01 | Kahraman kartları 1-6 | üretildi (1. deneme, referans D01–D03), kullanıcı onayı bekleniyor |
 | U02 | Kahraman kartları 7-12 | bekliyor |
 | U03 | Güç rozetleri 1-6 | bekliyor |
 | U04 | Güç rozetleri 7-12 | bekliyor |
@@ -16,6 +16,10 @@ Karakter kuralları `../ham3d/DURUM.md` ile aynıdır.
 | U08 | Menü simgeleri 2 | bekliyor |
 | U09 | Giriş ekranı kahraman resmi (dikey) | bekliyor |
 | U10 | Oyun sonu ve olay amblemleri | bekliyor |
+
+Üretim (23 Kasım 2026, yerel Claude): tek ChatGPT sohbeti, ARAYÜZ ANA İSTEMİ bir kez gönderildi. Paftalar ChatGPT'nin
+verdiği PNG olarak, işlenmeden kaydedilir (1536 × 1024, RGBA). Arka planda alfa 1–16 arası hafif bir pus kalır;
+`araclar/gorsel_kes.py` kesimde alfa < 40'ı zaten siler.
 
 ## Ek animasyon paftaları (kayıt yeri `gorsel/ham/`)
 

@@ -6,7 +6,7 @@ Karakter kuralları `../ham3d/DURUM.md` ile aynıdır.
 
 | Pafta | İçerik | Durum |
 |---|---|---|
-| U01 | Kahraman kartları 1-6 | bekliyor |
+| U01 | Kahraman kartları 1-6 | üretildi (1. deneme, referans D01–D03), kullanıcı onayı bekleniyor |
 | U02 | Kahraman kartları 7-12 | bekliyor |
 | U03 | Güç rozetleri 1-6 | bekliyor |
 | U04 | Güç rozetleri 7-12 | bekliyor |

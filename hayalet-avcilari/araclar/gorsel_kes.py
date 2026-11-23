@@ -95,6 +95,14 @@ ANIMASYON = {
     'N11': [('kus', [1, 2, 3], 128), ('yarasa', [4, 5, 6], 128)],
     'N12': [('timsah', [1, 2, 3, 4, 5, 6], 192)],
     'N13': [('kalp-topla', [1, 2, 3], 160), ('yildiz-topla', [4, 5, 6], 160)],
+    # 3.20.0 ek animasyonlar (CHATGPT-ISTEMI-ARAYUZ.md › N14–N20): ek cephane, güç, mermi, olaylar
+    'N14': [('simsek', [1, 2, 3, 4, 5, 6], 256)],
+    'N15': [('roket', [1, 2, 3], 128), ('duman', [4, 5, 6], 128)],
+    'N16': [('sifa', [1, 2, 3], 192), ('gorunmez', [4, 5, 6], 192)],
+    'N17': [('guc-patlama', [1, 2, 3], 256), ('guc-aura', [4, 5, 6], 192)],
+    'N18': [('mermi-enerji', [1, 2, 3], 64), ('mermi-baloncuk', [4, 5, 6], 64)],
+    'N19': [('seviye', [1, 2, 3], 256), ('hasar', [4, 5, 6], 160)],
+    'N20': [('donma', [1, 2, 3], 160), ('cozulme', [4, 5, 6], 160)],
 }
 
 

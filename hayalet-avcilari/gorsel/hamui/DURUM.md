@@ -16,3 +16,15 @@ Karakter kuralları `../ham3d/DURUM.md` ile aynıdır.
 | U08 | Menü simgeleri 2 | bekliyor |
 | U09 | Giriş ekranı kahraman resmi (dikey) | bekliyor |
 | U10 | Oyun sonu ve olay amblemleri | bekliyor |
+
+## Ek animasyon paftaları (kayıt yeri `gorsel/ham/`)
+
+| Pafta | İçerik | Durum |
+|---|---|---|
+| N14 | Şimşek çarpması | bekliyor |
+| N15 | Roket uçuşu, duman izi | bekliyor |
+| N16 | Şifa, görünmezlik | bekliyor |
+| N17 | Güç açılışı, güç halesi | bekliyor |
+| N18 | Enerji mermisi, baloncuk mermisi | bekliyor |
+| N19 | Bölüm atlama, hasar alma | bekliyor |
+| N20 | Donma, çözülme | bekliyor |

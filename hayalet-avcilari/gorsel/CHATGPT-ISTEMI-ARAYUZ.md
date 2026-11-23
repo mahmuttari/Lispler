@@ -24,7 +24,8 @@ kullanıcının kararı "kodlama için sadece Evren kullan". Resim gelmezse oyun
    - makyaj yok; oranlar genç kahraman oranı.
 6. Giriş, şifre, ödeme ve ChatGPT'nin görsel sınırı kullanıcıya bırakılır. Oyun koduna dokunma.
 
-Toplam **10 pafta**. Sınır dolarsa ertesi gün kalınan yerden devam edilir.
+Toplam **17 pafta**: 10 arayüz paftası (U01–U10) ve 7 ek animasyon paftası (N14–N20, aşağıda). Sınır dolarsa ertesi
+gün kalınan yerden devam edilir.
 
 ---
 
@@ -206,3 +207,102 @@ Cell 6: "Gift": a wrapped present box with a ghost-shaped bow
 
 Simge yardımcısı (`esyaSimgesiHTML` gibi) resim varsa `<img>`, yoksa bugünkü emojiyi basar. Kod Evren'e yazdırılır,
 Claude inceler ve test eder.
+
+---
+
+## Ek animasyon paftaları (N14–N20): ek cephane, güçler, mermiler, olaylar
+
+Kullanıcının isteği (23 Kasım 2026): *"Oyun içi tüm aksiyonlar animasyonlu olsun, ek cephane atışları vs."* Bu paftalar
+N01–N13 ile aynı kuraldadır (`CHATGPT-ISTEMI.md` › ANİMASYON İSTEMİ): 3 × 2 ızgara, her hücre bir kare; "üst sıra / alt
+sıra" yazan paftada her sıra ayrı 3 karelik animasyondur. **Bu paftalar U paftalarıyla aynı sohbette üretilebilir.**
+Üslup referansı olarak `gorsel/ham/N08.png` ve `gorsel/ham/N09.png`'yi ekle (oyundaki efektlerle aynı çizgi). Kayıt:
+`gorsel/ham/<KOD>.png` (N01–N13'ün yanına). Sıra: U paftaları bittikten sonra ya da sınır dolarsa ertesi gün.
+
+İlk N paftasından önce bir kez gönder:
+
+```
+New task type: ANIMATION SHEETS (codes N14–N20), the same rules as the earlier effect sheets I attach (N08, N09):
+1536 x 1024, transparent, 3 x 2 grid of 512 px cells, no text, no shadow, cartoony effect style of the attached sheets.
+- Every cell is ONE FRAME. Frames play in cell order. If a sheet says "top row" and "bottom row", each row is a separate
+  3-frame animation (cells 1-2-3 and 4-5-6).
+- Keep the subject the SAME SIZE and in the SAME PLACE in every frame (same center); only the described motion changes.
+- "Loop" animations: the last frame flows smoothly back into the first one.
+- Everything stays inside its cell with 24 px empty margin.
+Confirm with "ready".
+```
+
+### N14 — Şimşek çarpması (tek animasyon, bir kez)
+
+```
+Sheet N14: a cartoon lightning strike hitting the ground at the bottom center of the cell, 6 frames played once.
+Frame 1: a thin bright line starts at the top of the cell. Frame 2: a jagged yellow-white lightning bolt reaches the
+bottom. Frame 3: the bolt is thickest, a round white flash where it hits. Frame 4: the bolt flickers thinner, small
+electric sparks jump out sideways at the impact point. Frame 5: only short broken bolt pieces and sparks remain.
+Frame 6: a few tiny fading sparks and a small puff of smoke at the bottom.
+```
+
+### N15 — Roket: uçuş ve duman izi (üst sıra döngü / alt sıra bir kez)
+
+```
+Sheet N15: two 3-frame animations, centered.
+Top row (cells 1-3), LOOP: a chunky cartoon toy rocket flying to the RIGHT (nose pointing right), red body, white fins,
+small window; the orange-yellow flame at its tail flickers: short, long, medium. Rocket in the same place every frame.
+Bottom row (cells 4-6), played once: a round grey-white smoke puff of a rocket trail: cell 4 small and dense, cell 5
+bigger and softer, cell 6 large, thin and almost gone.
+```
+
+### N16 — Şifa ve görünmezlik (üst sıra / alt sıra, bir kez)
+
+```
+Sheet N16: two 3-frame effects played once, centered.
+Top row (cells 1-3) "healing": soft pink-green glow rising: cell 1 a small glow ring at the bottom with two tiny hearts,
+cell 2 the ring widens, small hearts and plus-shaped sparkles float upward, cell 3 the sparkles reach the top and fade.
+Bottom row (cells 4-6) "turning invisible": a swirl of pale-lilac sparkles: cell 4 a dense sparkly cloud, cell 5 the
+cloud spreads out into a ring of glitter, cell 6 a few faint sparkles fading.
+```
+
+### N17 — Güç açılışı ve güç halesi (üst sıra bir kez / alt sıra döngü)
+
+Oyun bu iki animasyonu her karakterin rengine boyar; bu yüzden **beyaz-açık sarı** çizilir.
+
+```
+Sheet N17: two 3-frame animations, centered, drawn in WHITE and PALE YELLOW only (the game tints them per character).
+Top row (cells 1-3), played once, "power activation": cell 1 a bright small star flash, cell 2 a big expanding energy
+ring with short rays, cell 3 the ring thin and wide, breaking into small sparkles.
+Bottom row (cells 4-6), LOOP, "power aura": a flat glowing oval aura seen from slightly above (like a magic circle on the
+ground) with small sparkles rising from its edge; the sparkles move up between frames, the oval gently pulses.
+```
+
+### N18 — Mermiler (üst sıra / alt sıra, döngü)
+
+```
+Sheet N18: two 3-frame LOOPS of small projectiles, centered, flying to the RIGHT.
+Top row (cells 1-3) "energy shot": a glowing round cyan-white energy ball with a short tapered tail to the left; the
+glow pulses and two tiny sparkles orbit it.
+Bottom row (cells 4-6) "bubble shot": a shiny light-blue soap bubble with a white highlight; it wobbles (round, a bit
+wide, a bit tall) and the rainbow sheen on it moves.
+```
+
+### N19 — Bölüm atlama ve hasar alma (üst sıra / alt sıra, bir kez)
+
+```
+Sheet N19: two 3-frame effects played once, centered.
+Top row (cells 1-3) "level up": cell 1 a golden upward arrow appears with a small glow, cell 2 the arrow rises with a
+burst of golden stars and rays behind it, cell 3 stars spread out and fade, the arrow glowing softly.
+Bottom row (cells 4-6) "player hurt": a cartoon impact: cell 4 a small red-white jagged impact star, cell 5 the star
+biggest with short red streaks, cell 6 breaking into tiny red sparks. Cartoony, no blood.
+```
+
+### N20 — Donma ve çözülme (üst sıra / alt sıra, bir kez)
+
+```
+Sheet N20: two 3-frame effects played once, centered, about the size of a small ghost.
+Top row (cells 1-3) "freezing": light-blue ice crystals growing from the edges into a rounded translucent ice block
+(cell 3: a full ice block shape, empty inside, so the game can draw the ghost behind it).
+Bottom row (cells 4-6) "thawing": the ice block cracks (cell 4), breaks into chunks (cell 5), chunks fall and melt
+into small drops (cell 6).
+```
+
+`araclar/gorsel_kes.py` bu paftaları `an-simsek`, `an-roket`, `an-duman`, `an-sifa`, `an-gorunmez`, `an-guc-patlama`,
+`an-guc-aura`, `an-mermi-enerji`, `an-mermi-baloncuk`, `an-seviye`, `an-hasar`, `an-donma`, `an-cozulme` karelerine keser
+(tablo `ANIMASYON`). Resim gelene kadar oyun aynı aksiyonları kodla çizilen animasyonla gösterir.

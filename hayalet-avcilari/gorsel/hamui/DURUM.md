@@ -7,7 +7,7 @@ Karakter kuralları `../ham3d/DURUM.md` ile aynıdır.
 | Pafta | İçerik | Durum |
 |---|---|---|
 | U01 | Kahraman kartları 1-6 | **tamam**: 1. denemede kullanıcı onayladı (referans D01–D03) |
-| U02 | Kahraman kartları 7-12 | bekliyor |
+| U02 | Kahraman kartları 7-12 | üretildi (1. deneme, referans D04–D06), kullanıcı onayı bekleniyor; Fanatik'in rüzgâr halkası sol kenara 24 px'ten yakın |
 | U03 | Güç rozetleri 1-6 | bekliyor |
 | U04 | Güç rozetleri 7-12 | bekliyor |
 | U05 | Geliştirme simgeleri | bekliyor |

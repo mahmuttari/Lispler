@@ -762,59 +762,50 @@
   function oyuncuCiz() {
     var p = O.oyuncu;
     var boy = oyuncuBoy();
-    var kare;
-    if (p.atesKalan > 0) {
-      kare = p.atesKalan > 0.09 ? 8 : 7;
-    } else if (p.yurume > 0) {
-      kare = 1 + (Math.floor(p.yurume) % 4);
-    } else {
-      kare = 5 + (Math.floor(O.saat * 2) % 2);
-    }
-    var anahtar = 'k3-kinkin-0-' + kare;
+    var s = spriteBilgi();
+    var en = boy * s.oran;
+    var kos = s.kos;
+    var geri = p.geriTepme > 0 ? boy * 0.03 : 0;
+    var bob = kos ? Math.abs(Math.sin(O.saat * 14)) * boy * 0.04 : 0;
+    var egim = kos ? 0.05 : 0;
+    var nefes = kos ? 1 : 1 + Math.sin(O.saat * 3) * 0.015;
+    var gozuken = !(p.olumsuz > 0 && Math.floor(p.olumsuz * 12) % 2 === 0);
+    var x0 = p.x - p.yuz * geri;
 
-    ctx.save();
-    if (p.olumsuz > 0 && Math.floor(p.olumsuz * 12) % 2 === 0) ctx.globalAlpha = 0.35;
     // Gölge
+    ctx.save();
+    if (!gozuken) ctx.globalAlpha = 0.35;
     ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
     ctx.beginPath();
     ctx.ellipse(p.x, p.y + 2, boy * 0.28, boy * 0.08, 0, 0, Math.PI * 2);
     ctx.fill();
-    if (!resimCiz(anahtar, p.x, p.y - boy * 0.44, boy, p.yuz < 0, 0)) {
+    ctx.restore();
+
+    // Kinkin silahıyla birlikte tek parça; ayak çapası sabit.
+    if (resimHazir(s.anahtar)) {
+      ctx.save();
+      if (!gozuken) ctx.globalAlpha = 0.35;
+      ctx.translate(x0, p.y - bob);
+      ctx.scale(p.yuz, nefes);
+      if (egim) ctx.rotate(egim);
+      ctx.drawImage(GORSEL[s.anahtar], -s.ayakX * en, -boy, en, boy);
+      ctx.restore();
+    } else {
+      ctx.save();
+      if (!gozuken) ctx.globalAlpha = 0.35;
       ctx.fillStyle = '#7dd3fc';
       ctx.beginPath();
       ctx.arc(p.x, p.y - boy * 0.4, boy * 0.28, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
     }
-    ctx.restore();
 
-    // Silah: tutma yeri sol kenar ortası, nişan hedefe döner.
-    var n = namluKonumu();
-    var nisan = hedefBul(false);
-    var aci;
-    if (nisan) aci = Math.atan2(nisan.y - n.y, nisan.x - n.x);
-    else aci = p.yuz > 0 ? 0 : Math.PI;
-    var geri = p.geriTepme > 0 ? 7 : 0;
-    var sx = n.x - Math.cos(aci) * geri;
-    var sy = n.y - Math.sin(aci) * geri;
-    var uzun = boy * 0.62;
-    ctx.save();
-    ctx.translate(sx, sy);
-    ctx.rotate(aci);
-    if (Math.cos(aci) < 0) ctx.scale(1, -1);
-    if (resimHazir('s3-kinkin')) {
-      var gim = GORSEL['s3-kinkin'];
-      var gen = uzun * gim.naturalHeight / gim.naturalWidth;
-      ctx.drawImage(gim, 0, -gen / 2, uzun, gen);
-    }
-    ctx.restore();
-
-    // Namlu kıvılcımı
+    // Namlu kıvılcımı, silahın ucunda.
     if (p.namlu > 0) {
+      var n = namluKonumu();
       var oran = 1 - p.namlu / 0.22;
       var vkare = sinirla(Math.floor(oran * 3) + 1, 1, 3);
-      var mx = n.x + Math.cos(aci) * uzun * 0.9;
-      var my = n.y + Math.sin(aci) * uzun * 0.9;
-      resimCiz('an-vurus-' + vkare, mx, my, boy * 0.26, false, 0);
+      resimCiz('an-vurus-' + vkare, n.x, n.y, boy * 0.18, false, 0);
     }
   }
 
@@ -1015,7 +1006,9 @@
     },
     konum: function () {
       return { x: O.oyuncu.x, y: O.oyuncu.y };
-    }
+    },
+    oyuncuBoy: function () { return oyuncuBoy(); },
+    hudAlt: function () { return HUD_ALT; }
   };
 
   // ---------- Açılış ----------

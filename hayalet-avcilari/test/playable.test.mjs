@@ -63,6 +63,13 @@ await sina('ZIP < 1 MB, dosya sayısı < 512, kökte index.html', () => {
   }
 });
 
+await sina('pakette silahlı Kinkin görselleri var, ayrı silah yok', () => {
+  const adlar = zipDosyalari(ZIP);
+  assert.ok(adlar.includes('gorsel/kinkin-dur.webp'), 'kinkin-dur.webp yok');
+  assert.ok(adlar.includes('gorsel/kinkin-kos.webp'), 'kinkin-kos.webp yok');
+  assert.ok(!adlar.some((ad) => /(^|\/)s3-kinkin\.webp$/.test(ad)), 's3-kinkin.webp hâlâ pakette');
+});
+
 const indexHtml = fs.readFileSync(path.join(PLAYABLE, 'index.html'), 'utf8');
 const oyunJs = fs.readFileSync(path.join(PLAYABLE, 'oyun.js'), 'utf8');
 
@@ -124,7 +131,7 @@ await sayfa.addInitScript(() => {
 });
 await sayfa.route(/tpc\.googlesyndication\.com/, (r) => r.abort());
 await sayfa.goto(adres, { waitUntil: 'load' });
-await sayfa.waitForFunction(() => window.__playable && window.__gorseller && Object.keys(window.__gorseller).length > 40, null, { timeout: 15000 });
+await sayfa.waitForFunction(() => window.__playable && window.__gorseller && Object.keys(window.__gorseller).length > 30, null, { timeout: 15000 });
 
 await sina('sayfa hatasız açılıyor, bütün görseller yüklendi', async () => {
   await sayfa.waitForFunction(() => {
@@ -156,6 +163,20 @@ await sina('fare ile sürükleme karakteri hareket ettirir, evre oyun olur', asy
   assert.ok(hareketFarki > 8, 'Hareket: ' + hareketFarki.toFixed(1));
   const evre = await sayfa.evaluate(() => window.__playable.durum().evre);
   assert.equal(evre, 'oyun');
+});
+
+await sina('en üste sürükleyince oyuncu HUD altında tam görünür', async () => {
+  await sayfa.mouse.move(180, 400);
+  await sayfa.mouse.down();
+  await sayfa.mouse.move(180, 340, { steps: 6 });
+  await sayfa.waitForTimeout(2000);
+  await sayfa.mouse.up();
+  const m = await sayfa.evaluate(() => ({
+    y: window.__playable.konum().y,
+    boy: window.__playable.oyuncuBoy(),
+    hud: window.__playable.hudAlt()
+  }));
+  assert.ok(m.y - m.boy >= m.hud - 0.5, `y-boy ${m.y - m.boy} < hud ${m.hud}`);
 });
 
 await sina('hızlandırınca hayaletler ölür ve para artar', async () => {

@@ -17,9 +17,14 @@ BETIK_KLASORU = Path(__file__).resolve().parent
 DIST = KOK / "dist" / "playable"
 ZIP_YOLU = KOK / "dist" / "HayaletAvcilari-playable.zip"
 
+# Kinkin'in silahıyla birlikte hazır ChatGPT görselleri: kaynak yol, çıktı anahtarı.
+KINKIN_GORSEL = [
+    ("ham3d/D01.png", "kinkin-dur"),
+    ("hamui/U01.png", "kinkin-kos"),
+]
+
 # Oyunda kullanılan dosya anahtarları.
-ANAHTARLAR = ["s3-kinkin", "tema2-zemin"]
-ANAHTARLAR += ["k3-kinkin-0-%d" % i for i in range(1, 9)]
+ANAHTARLAR = ["kinkin-dur", "kinkin-kos", "tema2-zemin"]
 ANAHTARLAR += ["an-hayalet-suzul-%d" % i for i in range(1, 7)]
 ANAHTARLAR += ["an-hayalet-puf-%d" % i for i in range(1, 7)]
 ANAHTARLAR += ["an-atici-saldiri-%d" % i for i in range(1, 7)]

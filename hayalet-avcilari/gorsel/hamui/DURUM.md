@@ -11,7 +11,7 @@ Karakter kuralları `../ham3d/DURUM.md` ile aynıdır.
 | U03 | Güç rozetleri 1-6 | üretildi (1. deneme, referans D01); toplu gösterim bekleniyor |
 | U04 | Güç rozetleri 7-12 | üretildi (1. deneme, referans D01; ChatGPT'nin iki seçeneğinden 2.'si: kafatassız bomba, beş lolipop); toplu gösterim bekleniyor |
 | U05 | Geliştirme simgeleri | üretildi (1. deneme, referans D01; ChatGPT'nin iki seçeneğinden 2.'si: daha iri simgeler, zırhlı eldiven); toplu gösterim bekleniyor |
-| U06 | Para ve ödüller | bekliyor |
+| U06 | Para ve ödüller | üretildi (1. deneme, referans D01); toplu gösterim bekleniyor |
 | U07 | Menü simgeleri 1 | bekliyor |
 | U08 | Menü simgeleri 2 | bekliyor |
 | U09 | Giriş ekranı kahraman resmi (dikey) | bekliyor |

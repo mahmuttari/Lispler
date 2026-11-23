@@ -41,6 +41,24 @@ def temizle_ve_hazirla():
     ZIP_YOLU.parent.mkdir(parents=True, exist_ok=True)
 
 
+def kinkin_gorselleri_uret():
+    for kaynak_yol, anahtar in KINKIN_GORSEL:
+        kaynak = KOK / "gorsel" / kaynak_yol
+        if not kaynak.exists():
+            print("HATA: eksik görsel dosyası: " + str(kaynak))
+            sys.exit(1)
+        with Image.open(kaynak) as ham:
+            hucre = ham.convert("RGBA").crop((0, 0, 512, 512))
+            alfa = hucre.getchannel("A").point(lambda a: 0 if a < 40 else a)
+            hucre.putalpha(alfa)
+            kirpik = hucre.getbbox()
+            if kirpik:
+                hucre = hucre.crop(kirpik)
+            yeni_en = max(1, round(hucre.width * 256.0 / hucre.height))
+            hucre = hucre.resize((yeni_en, 256), Image.LANCZOS)
+            hucre.save(DIST / "gorsel" / (anahtar + ".webp"), quality=88)
+
+
 def gorselleri_kopyala():
     eksik = []
     for anahtar in ANAHTARLAR:

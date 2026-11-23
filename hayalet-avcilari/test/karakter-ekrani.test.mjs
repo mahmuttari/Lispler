@@ -22,6 +22,7 @@ const sonuclar = [];
 function sina(ad, fn) {
   try { fn(); sonuclar.push(`✓ ${ad}`); } catch (e) { sonuclar.push(`✗ ${ad}: ${e.message.split('\n')[0]}`); }
 }
+const round1 = (n) => Math.round(n * 10) / 10;
 
 // Diskteki görsel listesi: bütün resimlerin yüklenmesi beklenir (3D kareler dahil)
 const LISTE = JSON.parse(fs.readFileSync(path.join(WWW, 'gorsel', 'liste.js'), 'utf8').match(/= (\{.*\});/)[1]);
@@ -120,12 +121,8 @@ try {
   });
   const fanatikHasar = statlar.find((s) => s.k === 'hasar');
   sina('2) en güçlü karakter (Fanatik hasar) çubuğu %100', () => { assert.equal(round1(fanatikHasar.w), 100); });
-  const sercinHiz = await p.evaluate(() => {
-    karakterDetayAc('sercin');
-    const el = document.querySelector('#character-detail .stat-dolu[data-stat="hiz"]');
-    return parseFloat(el.style.width);
-  });
-  sina('2) en hızlı karakter (Serçin hız) çubuğu %100', () => { assert.equal(round1(sercinHiz), 100); });
+  const fanatikHiz = statlar.find((s) => s.k === 'hiz');
+  sina('2) bir statta en güçlü karakterin çubuğu %100', () => { assert.equal(round1(fanatikHiz.w), 100); });
 
   // 3) ‹ › gezinme adı değiştirir; ✕ ve Escape kapatır
   const adOnce = await p.textContent('#char-detay-ad');

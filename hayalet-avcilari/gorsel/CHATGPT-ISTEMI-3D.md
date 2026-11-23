@@ -22,6 +22,12 @@ atışları animasyonlu olsun."* Kullanıcının seçimi: **3D görünümlü (2.
 
 Toplam **43 pafta** (6 tasarım + 34 animasyon + 3 silah). Sınır dolarsa ertesi gün kalınan yerden devam edilir.
 
+**Kullanıcının D01 incelemesinde koyduğu sabit kurallar (23 Kasım 2026)** ChatGPT sohbetine D01 düzeltmesiyle
+gönderildi ve her paftada kontrol edilir: cinsiyetler belirgin (Kinkin ve Veryi erkek); dekolte, askı, kolsuz üst
+yok; kollar en az dirseğe, bacaklar en az dize kadar kapalı; göğüs görünmez; makyaj yok. Tasarım paftalarında
+karakterler imza silahını 3D olarak elinde tutar; oranlar daha az bebeksi (baş boyun ~%30'u); yüz kendinden emin ve
+güler yüzlü. Ayrıntı: `ham3d/DURUM.md`.
+
 ---
 
 ## 3D ANA İSTEM (yeni sohbette bir kez)

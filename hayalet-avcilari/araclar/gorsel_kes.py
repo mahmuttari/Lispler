@@ -18,6 +18,7 @@ from PIL import Image
 
 KOK = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 HAM = os.path.join(KOK, 'gorsel', 'ham')
+HAMUI = os.path.join(KOK, 'gorsel', 'hamui')
 CIKTI = os.path.join(KOK, 'www', 'gorsel')
 
 # Pafta → hücre anahtarları (None: kullanılmaz). Anahtar → en uzun kenar (px).
@@ -258,6 +259,118 @@ def silahlar3d(liste):
         print(f'✓ {pafta} (3D silah)')
 
 
+# Arayüz paftaları (gorsel/hamui, CHATGPT-ISTEMI-ARAYUZ.md): ızgara 3 sütun × 2 satır, 512 px hücre. Değer: (en uzun
+# kenar, hücre anahtarları 1-6). U09 ayrı: tek dikey resim (1024 × 1536) ayrı tabloda.
+ARAYUZ = {
+    'U01': (320, ['kart-kinkin', 'kart-veryi', 'kart-kornet', 'kart-mark', 'kart-kent', 'kart-ponko']),
+    'U02': (320, ['kart-gul', 'kart-rani', 'kart-beti', 'kart-fanatik', 'kart-silsen', 'kart-sercin']),
+    'U03': (160, ['guc-kinkin', 'guc-veryi', 'guc-kornet', 'guc-mark', 'guc-kent', 'guc-ponko']),
+    'U04': (160, ['guc-gul', 'guc-rani', 'guc-beti', 'guc-fanatik', 'guc-silsen', 'guc-sercin']),
+    'U05': (128, ['gel-hiz', 'gel-hasar', 'gel-atis', 'gel-menzil', 'gel-can', 'gel-miknatis']),
+    'U06': (128, ['ui-para', 'ui-elmas', 'ui-zumrut', 'ui-kupa', 'ui-madalya', 'ui-sandik']),
+    'U07': (128, ['ui-oyna', 'ui-karakterler', 'ui-magaza', 'ui-sampiyon', 'ui-dunya', 'ui-online']),
+    'U08': (128, ['ui-arkadas', 'ui-hesap', 'ui-ses', 'ui-dil', 'ui-basarim', 'ui-ayar']),
+    'U10': (256, ['ui-zafer', 'ui-yenilgi', 'ui-rekor', 'ui-boss', 'ui-seviye', 'ui-hediye']),
+}
+ARAYUZ_TEK = {'U09': ('giris-kahraman', 768)}  # anahtar, en çok genişlik (px)
+
+
+def arayuz(liste):
+    """U paftalarını (gorsel/hamui) keser: kart-*, guc-*, gel-*, ui-* ve giriş kahramanı. Pafta yoksa sessizce atlanır."""
+    for pafta, (en, anahtarlar) in ARAYUZ.items():
+        yol = os.path.join(HAMUI, f'{pafta}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGBA')
+        if resim.size != (1536, 1024):
+            sys.exit(f'{pafta}: boyut {resim.size}, 1536 × 1024 olmalı')
+        for i, anahtar in enumerate(anahtarlar):
+            x0, y0 = (i % 3) * 512, (i // 3) * 512
+            hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
+            kutu = hucre.getbbox()
+            if not kutu:
+                sys.exit(f'{pafta} hücre {i + 1} ({anahtar}) boş')
+            hucre = hucre.crop(kutu)
+            oran = min(1, en / max(hucre.size))
+            if oran < 1:
+                hucre = hucre.resize((max(1, round(hucre.width * oran)), max(1, round(hucre.height * oran))), Image.LANCZOS)
+            hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=88, method=6)
+            liste[anahtar] = [hucre.width, hucre.height]
+        print(f'✓ {pafta} (arayüz)')
+    for pafta, (anahtar, en) in ARAYUZ_TEK.items():
+        yol = os.path.join(HAMUI, f'{pafta}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGBA')
+        if resim.size != (1024, 1536):
+            sys.exit(f'{pafta}: boyut {resim.size}, 1024 × 1536 olmalı')
+        kutu = soluklari_sil(resim).getbbox()
+        if not kutu:
+            sys.exit(f'{pafta} boş')
+        resim = resim.crop(kutu)
+        oran = min(1, en / resim.width)
+        if oran < 1:
+            resim = resim.resize((max(1, round(resim.width * oran)), max(1, round(resim.height * oran))), Image.LANCZOS)
+        resim.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=88, method=6)
+        liste[anahtar] = [resim.width, resim.height]
+        print(f'✓ {pafta} (giriş kahramanı)')
+
+
+NAMUL_UCU = {}  # k4-<karakter>-<kostüm> → yan karelerin namlu ucu, dört kare [fx, fy] (kırpılmış kareye oranla)
+YONLER = ('yan', 'on', 'arka')
+
+
+def _namlu_ucu(kare):
+    """20%–60% yükseklik bandındaki en sağdaki alfa > 200 pikselin oranı; yoksa None."""
+    px = kare.getchannel('A').load()
+    w, h = kare.size
+    y0, y1 = max(0, round(h * 0.2)), min(h, round(h * 0.6))
+    for x in range(w - 1, -1, -1):
+        uygun = [y for y in range(y0, y1) if px[x, y] > 200]
+        if uygun:
+            y = max(uygun, key=lambda yy: px[x, yy])
+            return [round(x / w, 4), round(y / h, 4)]
+    return None
+
+
+def karakterler_yon(liste):
+    """Y paftalarını (gorsel/ham3d) keser: k4-<karakter>-<kostüm>-<yon>-<n>.webp. Izgara 4 sütun × 3 satır (384 × 341,
+    son satır 342 px); satırlar yan/on/arka, dört yürüyüş karesi. On iki kare birleşik kutudan kesilir."""
+    for pafta, (karakter, kostum) in KARAKTER3D.items():
+        ad = f'Y{pafta[1:]}'
+        yol = os.path.join(HAM3D, f'{ad}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGBA')
+        if resim.size != (1536, 1024):
+            sys.exit(f'{ad}: boyut {resim.size}, 1536 × 1024 olmalı')
+        kareler = []
+        for r in range(3):
+            y0 = r * 341
+            for c in range(4):
+                kare = soluklari_sil(resim.crop((c * 384, y0, c * 384 + 384, min(y0 + 341, 1024))))
+                if not kare.getbbox():
+                    sys.exit(f'{ad} {YONLER[r]} kare {c + 1} boş')
+                kareler.append(kare)
+        kutular = [k.getbbox() for k in kareler]
+        birlesik = (min(b[0] for b in kutular), min(b[1] for b in kutular),
+                    max(b[2] for b in kutular), max(b[3] for b in kutular))
+        w, h = birlesik[2] - birlesik[0], birlesik[3] - birlesik[1]
+        oran = min(1, KARAKTER3D_YUKSEKLIK / h)
+        uc = []
+        for i, kare in enumerate(kareler):
+            k = kare.crop(birlesik)
+            if i < 4:
+                uc.append(_namlu_ucu(k) or [0.0, 0.0])
+            if oran < 1:
+                k = k.resize((max(1, round(w * oran)), max(1, round(h * oran))), Image.LANCZOS)
+            anahtar = f'k4-{karakter}-{kostum}-{YONLER[i // 4]}-{i % 4 + 1}'
+            k.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=88, method=6)
+            liste[anahtar] = [k.width, k.height]
+        NAMUL_UCU[f'k4-{karakter}-{kostum}'] = uc
+        print(f'✓ {ad} (yön karakter)')
+
+
 # Oyunda bağlı olanlar (timsah, köprü ve oyuncu ruhu kendi animasyonlarını kodla çizer; kare kare paftaları gelince)
 KULLANILAN = set(BOYUT) - {'oyuncu-ruh', 'bot'}
 # Atıcı hayaletin yanındaki mor küre silinir (oyun mermiyi ve atış öncesi parıltıyı kendisi çizer): sol yarı aynalanır.
@@ -392,6 +505,8 @@ def kes():
     tema_dokulari(liste)
     karakterler3d(liste)
     silahlar3d(liste)
+    arayuz(liste)
+    karakterler_yon(liste)
     karakterler(liste)
     animasyonlar(liste)
     # Menü arka planı (A1, 1024 × 1536 dikey, opak): ana menü ve açılış ekranında (style.css), 768 px genişlikte
@@ -430,6 +545,8 @@ def kes():
         f.write('const GORSEL_LISTESI = ' + json.dumps(liste, ensure_ascii=False, indent=0, sort_keys=True).replace('\n', ' ') + ';\n')
         f.write('// Animasyonların gövde kutusu (ilk kare, birleşik kare kutusuna oranla [x, y, w, h])\n')
         f.write('const ANIM_GOVDE = ' + json.dumps(ANIM_GOVDE, ensure_ascii=False, sort_keys=True) + ';\n')
+        f.write('// Yön paftalarında yan karelerin namlu ucu (kırpılmış kareye oranla [fx, fy], dört kare)\n')
+        f.write('const NAMLU_UCU = ' + json.dumps(NAMUL_UCU, ensure_ascii=False, sort_keys=True) + ';\n')
     toplam = sum(os.path.getsize(os.path.join(CIKTI, f'{k}.webp')) for k in liste)
     print(f'{len(liste)} görsel, {toplam / 1024:.0f} KB')
 

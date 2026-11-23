@@ -3,3 +3,4 @@ android/keystore.properties
 *.jks
 *.keystore
 dist/
+__pycache__/

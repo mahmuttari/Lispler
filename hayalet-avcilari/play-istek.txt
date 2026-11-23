@@ -85,3 +85,7 @@
 
 # istek 2026-11-22: mağaza görselleri 3.18.0'ın yeni görünümüyle (kullanıcı: "ekran görüntüleri ve tanıtım görselleri neden değişmiyor?"; araclar/magaza-gorsel.mjs ile 7 dilde yeniden üretildi: ChatGPT karakterleri, hayaletler, tema dokuları, menü arka planı, yeni simgeli tanıtım görseli); yalnız mağaza görselleri, sürüme dokunmaz
 # (yapıldı 2026-11-22, koşu 45064973939: 7 dilde simge, tanıtım görseli ve 7 ekran görüntüsü yeni görünümle yüklendi, düzenleme onaylandı) gorsel uygula
+
+# istek 2026-11-23: 3.19.0 (57) üretime yükle, %100 yayın (status completed, kademeli değil), incelemeye gönder; incelemedeki 3.18.0 (56)'nın yerini alır (kullanıcının açık onayıyla: "gönder"); AAB: hayalet-android koşusu 45139625645 (bu dal, commit 534056e, versionCode 57, Poyraz Workshop yükleme anahtarı); 3D görünümlü karakterler ve silahlar, hedefe ve yürüme yönüne dönme; sürüm notu 7 dilde magaza/ (en uzun hi 471/500). Ardından mağaza görselleri yeni karakterlerle (7 dil)
+yukle yayinla uygula
+gorsel uygula

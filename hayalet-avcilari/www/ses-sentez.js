@@ -1,5 +1,5 @@
 /* ============================================================
-   HAYALET AVCILARI — ZENGİN SENTEZ SES EFEKTLERİ (3.18.0)
+   HAYALET AVCILARI — ZENGİN SENTEZ SES EFEKTLERİ (3.20.0)
    İnce bip seslerinin yerine oyun kalitesinde, sentezlenmiş efektler.
    Ses dosyası yok: her efekt bir kez OfflineAudioContext ile AudioBuffer'a
    render edilir, önbelleğe alınır ve çalınır. Kayıtlı hayalet sesleri

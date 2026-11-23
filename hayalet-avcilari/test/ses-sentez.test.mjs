@@ -53,12 +53,15 @@ try {
     };
   });
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
+  // index.html ses-sentez.js'i game.js'ten sonra yükler; sınama önceki yöntemleri yakalayabilmek için o yüklemeyi
+  // engeller ve betiği aşağıda kendisi ekler
+  await p.route(/\/ses-sentez\.js$/, (r) => r.abort());
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForTimeout(300);
 
   // ses-sentez.js'ten ÖNCEKİ ses yöntemleri (kayıtlı hayalet sesleri değişmemeli)
   await p.evaluate(() => { window.__eskiSmall = audio.smallGhost; window.__eskiBig = audio.bigGhost; });
-  await p.addScriptTag({ url: '/ses-sentez.js' });
+  await p.addScriptTag({ url: '/ses-sentez.js?sinama=1' });
   await p.evaluate(() => audio.init());
 
   // 1) bütün efektler render edilsin

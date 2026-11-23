@@ -7,6 +7,7 @@
 
 const GORSEL = {};          // anahtar → yüklenmiş HTMLImageElement
 const _gorselRenk = {};     // "anahtar|renk|kip" → renklendirilmiş tuval (önbellek)
+let _gorselOlayZamanlayici = 0; // "gorsel-yuklendi" olayı: gecikmeli TEK zamanlayıcı (150 ms)
 
 function gorselYukle() {
   if (typeof GORSEL_LISTESI !== "object" || !GORSEL_LISTESI) return;
@@ -17,6 +18,13 @@ function gorselYukle() {
     im.onload = () => {
       GORSEL[k] = im;
       if (k.endsWith("-su") && typeof window.engelSuOnbellegiSil === "function") window.engelSuOnbellegiSil();
+      // Görseller ardı ardına yüklenir: her yükleme sayacı yeniden kurar, 150 ms sessizlikten sonra
+      // TEK "gorsel-yuklendi" olayı gelir (arayüz bekleyenleri tek başına haberdar eder).
+      clearTimeout(_gorselOlayZamanlayici);
+      _gorselOlayZamanlayici = setTimeout(() => {
+        _gorselOlayZamanlayici = 0;
+        window.dispatchEvent(new Event("gorsel-yuklendi"));
+      }, 150);
     };
     im.src = `gorsel/${k}.webp`;
   }

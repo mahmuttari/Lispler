@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="ad.orientation" content="portrait">
+<script type="text/javascript" src="https://tpc.googlesyndication.com/pagead/gadgets/html5/api/exitapi.js"></script>
+<title>Hayalet Avcıları</title>
+<style>
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #0b1020;
+    color: #f8fafc;
+    font-family: "Baloo 2", system-ui, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+  #oyun-tuvali {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 1;
+  }
+  #arayuz {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  #ust {
+    position: absolute;
+    top: max(10px, env(safe-area-inset-top));
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  #canlar {
+    font-size: clamp(18px, 5vw, 28px);
+    line-height: 1;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+  }
+  #para {
+    margin-left: auto;
+    font-size: clamp(15px, 4.2vw, 24px);
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(8, 13, 28, 0.55);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+  }
+  .dugme {
+    pointer-events: auto;
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 800;
+    color: #ffffff;
+    touch-action: manipulation;
+  }
+  #indir {
+    pointer-events: auto;
+    font-size: clamp(12px, 3.6vw, 17px);
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #38bdf8, #0284c7);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  #ipucu {
+    position: absolute;
+    left: 50%;
+    top: 66%;
+    width: min(86vw, 420px);
+    transform: translate(-50%, -50%);
+    text-align: center;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.9);
+  }
+  #ipucu.gizli {
+    display: none;
+  }
+  #ipucu-yazi {
+    font-size: clamp(16px, 4.8vw, 30px);
+    font-weight: 800;
+    line-height: 1.2;
+    color: #f8fafc;
+  }
+  #ipucu-el {
+    margin-top: 6px;
+    font-size: clamp(34px, 11vw, 66px);
+    line-height: 1;
+    animation: dokun 1.1s ease-in-out 0s 4 alternate;
+  }
+  #ipucu.salla #ipucu-el {
+    animation: salla 0.5s ease-in-out 0s 2;
+  }
+  #buyuk-yazi {
+    position: absolute;
+    left: 50%;
+    top: 28%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(26px, 9vw, 52px);
+    font-weight: 800;
+    color: #fde047;
+    text-shadow: 0 0 16px rgba(253, 224, 71, 0.7), 0 4px 10px rgba(0, 0, 0, 0.9);
+    opacity: 0;
+    transition: opacity 0.15s linear;
+    white-space: nowrap;
+  }
+  #buyuk-yazi.gorunur {
+    opacity: 1;
+  }
+  #bitis {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(4, 8, 20, 0.8);
+    pointer-events: auto;
+  }
+  #bitis[hidden] {
+    display: none;
+  }
+  #bitis-kutu {
+    width: min(92vw, 420px);
+    max-height: 92vh;
+    overflow: auto;
+    text-align: center;
+    padding: 22px 18px 18px;
+    border-radius: 24px;
+    border: 2px solid rgba(125, 211, 252, 0.35);
+    background: linear-gradient(180deg, #16233f 0%, #0b1327 100%);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    animation: kutu-gel 0.35s ease-out 0s 1, kutu-parla 1.2s ease-in-out 0.35s 3;
+  }
+  #bitis-simge {
+    width: 82px;
+    height: 82px;
+    border-radius: 20px;
+    display: block;
+    margin: 0 auto 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  }
+  #bitis-baslik {
+    margin: 0 0 4px;
+    font-size: clamp(23px, 6.8vw, 36px);
+    font-weight: 800;
+    line-height: 1.1;
+    color: #f8fafc;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+  }
+  #bitis-alt {
+    margin: 0 0 10px;
+    font-size: clamp(14px, 4vw, 19px);
+    font-weight: 700;
+    line-height: 1.3;
+    color: #cbd5e1;
+  }
+  #bitis-para {
+    margin: 0 0 14px;
+    font-size: clamp(18px, 5vw, 26px);
+    font-weight: 800;
+    color: #fde047;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  }
+  #cta {
+    display: block;
+    width: 100%;
+    min-height: 60px;
+    border-radius: 16px;
+    font-size: clamp(18px, 5.2vw, 25px);
+    letter-spacing: 0.5px;
+    background: linear-gradient(180deg, #4ade80, #16a34a);
+    box-shadow: 0 8px 0 #14532d, 0 12px 24px rgba(34, 197, 94, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.4);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+  }
+  #cta:active {
+    transform: translateY(3px);
+    box-shadow: 0 5px 0 #14532d, 0 8px 16px rgba(34, 197, 94, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.4);
+  }
+  #tekrar {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    min-height: 42px;
+    border-radius: 12px;
+    font-size: clamp(14px, 4vw, 18px);
+    background: rgba(148, 163, 184, 0.18);
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    color: #e2e8f0;
+  }
+  #tekrar[hidden] {
+    display: none;
+  }
+  @keyframes dokun {
+    from { transform: translateY(0) scale(1); }
+    to { transform: translateY(-14px) scale(1.08); }
+  }
+  @keyframes salla {
+    0% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(-12px) rotate(-12deg); }
+    50% { transform: translateX(10px) rotate(10deg); }
+    75% { transform: translateX(-6px) rotate(-6deg); }
+    100% { transform: translateX(0) rotate(0deg); }
+  }
+  @keyframes kutu-gel {
+    from { opacity: 0; transform: scale(0.86) translateY(16px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes kutu-parla {
+    0% { box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 rgba(74, 222, 128, 0); }
+    50% { box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 26px rgba(74, 222, 128, 0.45); }
+    100% { box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 rgba(74, 222, 128, 0); }
+  }
+</style>
+</head>
+<body>
+<canvas id="oyun-tuvali"></canvas>
+<div id="arayuz">
+  <div id="ust">
+    <div id="canlar">❤️❤️❤️</div>
+    <div id="para">💰 0</div>
+    <button id="indir" class="dugme" type="button">İNDİR</button>
+  </div>
+  <div id="ipucu">
+    <div id="ipucu-yazi">Parmağını sürükle, hayaletleri avla!</div>
+    <div id="ipucu-el">👆</div>
+  </div>
+  <div id="buyuk-yazi"></div>
+  <div id="bitis" hidden>
+    <div id="bitis-kutu">
+      <img id="bitis-simge" src="gorsel/simge.png" alt="">
+      <h1 id="bitis-baslik">Hayalet Avcıları</h1>
+      <p id="bitis-alt"></p>
+      <div id="bitis-para">💰 0</div>
+      <button id="cta" class="dugme" type="button">ÜCRETSİZ OYNA</button>
+      <button id="tekrar" class="dugme" type="button">Tekrar</button>
+    </div>
+  </div>
+</div>
+<script src="oyun.js"></script>
+</body>
+</html>

@@ -582,6 +582,7 @@ I18N.en = {
   "Lolipop bereli Beri, şeker fabrikasının en neşeli avcısıdır. Suya bile aldırmaz; göllerin içinden yürüyüp şekerden toplarıyla hayaletleri tatlı tatlı uğurlar.": "Beri, the cheeriest hunter at the candy factory, wears a lollipop beret. She doesn't even mind water; she walks through lakes and sends ghosts off sweetly with her candy balls.",
   "Lolipop canavarı! Suyun içinden geçer.": "Lollipop monster! Walks right over water.",
   "Lolipop Yağmuru": "Lollipop Rain",
+  "Lolipop Yağmuru: 15 saniye boyunca her atışta beş yöne şeker topu saçar.": "Lollipop Rain: For 15 seconds, each shot scatters candy balls in five directions.",
   "Longyili hayalet": "Longyi ghost",
   "lotus göleti ve tavus kuşları": "lotus pond and peacocks",
   "Lungili hayalet": "Lungi ghost",

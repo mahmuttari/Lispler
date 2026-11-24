@@ -1,5 +1,5 @@
-🎮 Avcılar 3D görünümle yepyeni: nefes alıyor, yürüyor, ateş edince geri tepiyor; silahlar da yenilendi!
-✨ Hayaletler canlandı: süzülüyor, göz kırpıyor, vurulunca parlıyor, puf diye dağılıyor; paralar dönüyor!
-🌪️ Kasırga yenilendi: hayaletleri içine çekip döndürüyor ve savuruyor!
-🎨 Hayaletler, petler ve eşyalar yepyeni çizimlerle; kare kare animasyonlar!
-🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!
+🧊 Avcılar artık gerçek 3D: her yöne dönüyor, yürüyor, koşuyor; silah hep elinde!
+👥 Yeni Karakterler ekranı: her avcının hikâyesi, gücü, yetenekleri ve kostümleri tek panelde.
+⚡ Ek silahlar ve güçler animasyonlu: yıldırım, roket dumanı, buz bloğu, güç halesi!
+🔊 Bütün ses efektleri yenilendi; her mağaza silahının kendi atış sesi var.
+⚙️ Ses ayarlarında yeni "3D karakterler" düğmesi; yavaş telefonda 3D kendiliğinden kapanır.

@@ -1221,14 +1221,16 @@ function refreshWeaponBar() {
   if (!bar) return;
   if (!game || !game.player || !game.running) { bar.innerHTML = ""; return; }
   const stock = ensureAmmoStock(game.player.charKey);
+  const oldu = !!game.player.dead;
   bar.innerHTML = "";
   Object.keys(WEAPONS).forEach((key) => {
     const count = stock[key] || 0;
     const w = WEAPONS[key];
     const btn = document.createElement("button");
-    btn.className = "weapon-slot" + (count <= 0 ? " ae-pasif" : "");
+    const pasif = count <= 0 || oldu;
+    btn.className = "weapon-slot" + (pasif ? " ae-pasif" : "");
     btn.dataset.weapon = key;
-    btn.setAttribute("aria-disabled", count <= 0 ? "true" : "false");
+    btn.setAttribute("aria-disabled", pasif ? "true" : "false");
     btn.title = `${w.name}: ${w.desc}`;
     btn.innerHTML = `<span>${typeof esyaSimgesiHTML === "function" ? esyaSimgesiHTML(key, w.icon, w.name) : w.icon}</span><span class="badge">${count}</span>`;
     if (typeof aeRozetPop === "function") aeRozetPop(key, btn.querySelector(".badge"), count); // stok değişince rozet zıplar
@@ -1246,6 +1248,7 @@ function refreshWeaponBar() {
 
 function useWeapon(key) {
   if (!game || !game.player || !game.running || game.paused) return;
+  if (game.player.dead) return; // hayalet (seyirci) silah kullanamaz
   const w = WEAPONS[key];
   if (!w) return;
   const stock = ensureAmmoStock(game.player.charKey);
@@ -4027,6 +4030,7 @@ function durumGeldi(st) {
   const simdi = performance.now();
   online.sonDurum = simdi;
   if (!st) return;
+  if (game.baslangicBolum == null && typeof st.lvl === "number") game.baslangicBolum = st.lvl; // ilk durum: katıldığı bölüm
   const turdaUygulandi = game.dunyaTuru && turDurumGeldi(st); // damga, tur sonu ve müzik (dunya-turu.js)
   if (!turdaUygulandi && typeof st.lvl === "number" && st.lvl !== game.level) clientApplyLevel(st.lvl);
   game.bossDefeated = !!st.bd;
@@ -4089,6 +4093,11 @@ function hayaletGitti(g) {
   const vurus = online.vurduklarim.get(g._idx);
   online.vurduklarim.delete(g._idx);
   if (vurus && performance.now() - vurus < 3000) {
+    // Güllü: benim vuruşumla ölen hayalet patlar; hasarı host uygular
+    const cp = getActivePower();
+    if (!g.isBoss && cp && cp.type === "gul") {
+      online.pendingEvents.push({ type: "areaDmg", x: g.x, y: g.y, r: 90, dmg: Math.max(1, game.player.damage), by: online.uid });
+    }
     game.totalCaught++;
     pgsHayalet(game.totalCaught);
     audio.kill();
@@ -4270,8 +4279,16 @@ function applyHostEvent(ev) {
     const until = performance.now() + (ev.duration || 5000);
     for (const g of game.ghosts) g.frozenUntil = until;
   } else if (ev.type === "rocketShot") {
-    // İstemci roket attı — host hayata geçirir
-    const hedef = hayaletBul(ev.gi);
+    // İstemci roket attı — host hayata geçirir. Hedef host'ta ölmüşse en yakın hayalet (300 px içinde) seçilir.
+    let hedef = hayaletBul(ev.gi);
+    if (!hedef) {
+      let enIyi = null, enIyiD2 = 300 * 300;
+      for (const g of game.ghosts) {
+        const dx = g.x - (ev.x || 0), dy = g.y - (ev.y || 0), d2 = dx * dx + dy * dy;
+        if (d2 < enIyiD2) { enIyiD2 = d2; enIyi = g; }
+      }
+      hedef = enIyi;
+    }
     if (hedef) {
       const dxr = hedef.x - (ev.x || 0), dyr = hedef.y - (ev.y || 0);
       const dist = Math.hypot(dxr, dyr) || 1;
@@ -4286,6 +4303,19 @@ function applyHostEvent(ev) {
         life: dist / sp + 0.5,
         uzak: true,
       });
+    } else {
+      // Hedef yok: yalnız olay noktasındaki çarpma hasarı (yakında hayalet yoksa hiçbir şey olmaz)
+      const sr = 110, sr2 = sr * sr;
+      for (let i = game.ghosts.length - 1; i >= 0; i--) {
+        const g = game.ghosts[i];
+        const dx = g.x - (ev.x || 0), dy = g.y - (ev.y || 0);
+        if (dx * dx + dy * dy < sr2) {
+          g.hp -= 12;
+          g.uzakVurdu = true;
+          spawnHitParticles(g.x, g.y);
+          if (g.hp <= 0) killGhost(g, i);
+        }
+      }
     }
   }
 }
@@ -4319,7 +4349,7 @@ function flushOnlineRewards() {
   if (game.runPara)   save.para   += game.runPara;
   if (game.runElmas)  save.elmas  += game.runElmas;
   if (game.runZumrut) save.zumrut += game.runZumrut;
-  if (!game.dunyaTuru && game.level > save.highestLevel) save.highestLevel = game.level;
+  if (!game.dunyaTuru && game.baslangicBolum === 1 && game.level > save.highestLevel) save.highestLevel = game.level;
   game.runPara = 0; game.runElmas = 0; game.runZumrut = 0;
   persistSave();
 }
@@ -5614,6 +5644,7 @@ function startGame(secenek) {
   game.spawnTimer = 0;
   game.dunyaTuru = !!(secenek && secenek.tur);
   game.level = game.dunyaTuru ? ulkeSirada(secenek.ulke).sira : 1;
+  game.baslangicBolum = online.mode === "client" ? null : 1; // ortadan katılan istemci: ilk gelen durumun bölümü
   game.turBaslangic = game.level; // Dünya Turu: tamamlanma ödülü bu oyunda geçilen ülkelerden
   game.turOrtadan = game.dunyaTuru && !!secenek.ortadan; // çevrimiçi turda ortadan katılan: tanıtım ve müzik ilk durumla
   game.turBitti = false;
@@ -6109,8 +6140,8 @@ function update(dt, now) {
     }
     // Donmuş hayalet: hareket yok, hasar yok, kasırga + temas dışında her şey atlanır
     if ((g.frozenUntil || 0) > now) {
-      // Kasırga donmuş hayaleti de ezsin
-      if (playerKasirga) {
+      // Kasırga donmuş hayaleti de ezsin (hayalet oyuncu kasırga kullanamaz)
+      if (playerKasirga && !game.player.dead) {
         const ddx = g.x - game.player.x, ddy = g.y - game.player.y;
         if (ddx * ddx + ddy * ddy < KASIRGA_R * KASIRGA_R) g.hp -= (g.isBoss ? KASIRGA_DPS : KASIRGA_YAKALA_DPS) * dt;
       }
@@ -6182,8 +6213,8 @@ function update(dt, now) {
       if (g.detourTime > 0) g.detourTime = 0;
     }
 
-    // Kasırga: oyuncuya yakın hayaletlere DPS
-    if (playerKasirga) {
+    // Kasırga: oyuncuya yakın hayaletlere DPS (hayalet oyuncu kasırga kullanamaz)
+    if (playerKasirga && !game.player.dead) {
       const ddx = g.x - game.player.x, ddy = g.y - game.player.y;
       if (ddx * ddx + ddy * ddy < KASIRGA_R * KASIRGA_R) g.hp -= KASIRGA_DPS * dt;
     }
@@ -6251,8 +6282,8 @@ function update(dt, now) {
     }
   }
 
-  // Aktif güç efektleri (timer'lar)
-  if (power && power.type === "fanatik") {
+  // Aktif güç efektleri (timer'lar). Hayalet (ölü) oyuncunun Fanatik hortumu hasar vermez.
+  if (power && power.type === "fanatik" && !game.player.dead) {
     game.pulseTimer = (game.pulseTimer || 0) + dt;
     if (game.pulseTimer >= 0.5) {
       game.pulseTimer = 0;
@@ -6301,10 +6332,14 @@ function update(dt, now) {
     if (game.player.invuln > 0) game.player.invuln -= dt;
     const cpower = getActivePower();
     const cghostMode = cpower && cpower.type === "kent";
-    const cinvisible = (game.player.invisibleUntil || 0) > now;
+    const cinvisible = (game.player.invisibleUntil || 0) > now || !!game.player.gizli; // çalıda saklanma: gizli gibi
+    const ckasirga = (game.player.kasirgaUntil || 0) > now;
     if (!game.player.dead && !cghostMode && !cinvisible && game.player.invuln <= 0) {
       for (const g of game.ghosts) {
-        if (Math.hypot(g.x - game.player.x, g.y - game.player.y) < g.r + game.player.r) {
+        if ((g.frozenUntil || 0) > now) continue; // donmuş hayalet değemez
+        const dg = Math.hypot(g.x - game.player.x, g.y - game.player.y);
+        if (ckasirga && !g.isBoss && dg < KASIRGA_R) continue; // kasırgaya yakalanan hayalet değemez
+        if (dg < g.r + game.player.r) {
           damagePlayer();
           break;
         }
@@ -6770,14 +6805,16 @@ function killGhost(g, idx) {
   if (bana) { game.totalCaught++; pgsHayalet(game.totalCaught); }
   audio.kill();
 
-  // Patlama gücü: çevreye AOE hasar
+  // Patlama gücü: çevreye AOE hasar (yalnız öldüren yerel oyuncunun Güllü gücü varsa)
+  const patlasin = !g._explodedFrom;
+  delete g._explodedFrom; // işaret yalnız aynı patlamada zinciri engeller, kalıcı değil
   const power = getActivePower();
-  if (power && power.type === "gul" && !g._explodedFrom) {
+  if (bana && power && power.type === "gul" && patlasin) {
     for (const other of game.ghosts) {
       if (other === g) continue;
       if (Math.hypot(other.x - g.x, other.y - g.y) < 90) {
         other.hp -= Math.max(1, game.player.damage);
-        other._explodedFrom = true; // zincir patlama olmasın
+        if (other.hp <= 0) other._explodedFrom = true; // yalnız bu patlamada ölen zincirlemesin
       }
     }
     // Patlama görseli
@@ -6799,8 +6836,11 @@ function killGhost(g, idx) {
   if (Math.random() < 0.04 + game.level * 0.005) {
     game.pickups.push({ x: g.x - 10, y: g.y, kind: "zumrut", value: 1 });
   }
-  // Bazen güç yıldızı (%4)
-  if (!getActivePower() && Math.random() < 0.04) {
+  // Bazen güç yıldızı (%4). Çevrimiçinde kurucunun kendi gücüne değil, yalnız şansa ve haritada başka
+  // güç yıldızı olmamasına bakılır (tek kişilik oyunda eski kural korunur).
+  const gucYerde = game.pickups.some((p) => p.kind === "guc");
+  const gucDuser = online.mode ? (!gucYerde && Math.random() < 0.04) : (!getActivePower() && Math.random() < 0.04);
+  if (gucDuser) {
     game.pickups.push({ x: g.x, y: g.y - 10, kind: "guc" });
   }
 }
@@ -7535,12 +7575,13 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   // Bonus para: geçilen bölüm başına 50. Dünya Turu'nda bu oyunda geçilen ülkeler sayılır (ortadan başlayan oyuncu
   // geçmediği ülkelerin ödülünü almaz; son ülke bitince o da sayılır)
   // (eski sürümlü kurucuyla 52, 53… bölüm oynanabilir: ülke sayısı 51'de sınırlı)
-  const gecilen = tur ? Math.max(0, Math.min(game.level, ULKE_SAYISI) - (game.turBaslangic || game.level) + (turBitti ? 1 : 0)) : game.level - 1;
+  const gecilen = tur ? Math.max(0, Math.min(game.level, ULKE_SAYISI) - (game.turBaslangic || game.level) + (turBitti ? 1 : 0)) : Math.max(0, game.level - (game.baslangicBolum || 1));
   const completionBonus = gecilen * 50;
   const finalPara = game.runPara + completionBonus;
 
-  // Yüksek bölüm rekoru (yeni rekor sevinç anıdır: geçiş reklamı gösterilmez)
-  const yeniRekor = !tur && game.level > save.highestLevel;
+  // Yüksek bölüm rekoru (yeni rekor sevinç anıdır: geçiş reklamı gösterilmez). Ortadan katılan istemci rekor kırmaz.
+  const rekorKirilir = game.baslangicBolum === 1;
+  const yeniRekor = !tur && rekorKirilir && game.level > save.highestLevel;
   if (yeniRekor) save.highestLevel = game.level;
 
   save.para += finalPara;
@@ -7550,10 +7591,11 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   if (kupa) save.kupa = (save.kupa || 0) + 1;
   persistSave();
 
-  // Şampiyon listesine ekle (yerel + buluta)
+  // Şampiyon listesine ekle (yerel + buluta). Ortadan katılan istemci kayıtlı seviyeden yukarı yazmaz.
+  const entryLevel = rekorKirilir ? game.level : Math.max(1, save.highestLevel || 1);
   const entry = {
     name: save.playerName || t("Avcı"),
-    level: game.level,
+    level: entryLevel,
     ghosts: game.totalCaught,
     para: finalPara,
     date: Date.now(),

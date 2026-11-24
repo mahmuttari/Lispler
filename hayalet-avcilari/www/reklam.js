@@ -200,7 +200,8 @@ function odulluKapandi() {
     save.reklam.sure = 0; // kendi isteğiyle reklam izleyene bir sonraki geçiş reklamı için süre yeniden başlar
     persistSave();
     const el = document.getElementById("final-para");
-    if (el) el.textContent = String(Number(el.textContent || 0) + reklam.oyunPara);
+    if (typeof odulSayaclariniBitir === "function") odulSayaclariniBitir(); // oyun sonu sayacı sürüyorsa önce bitir
+    if (el) { const yeni = Number(el.dataset.son || el.textContent || 0) + reklam.oyunPara; el.dataset.son = String(yeni); el.textContent = String(yeni); }
     showToast(t("💰 +{n} para kazandın!", { n: reklam.oyunPara }));
   } else if (reklam.odulKazanildi && !paraOdulu && !reklam.odulKullanildi) {
     reklam.odulKazanildi = false;

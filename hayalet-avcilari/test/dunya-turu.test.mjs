@@ -213,7 +213,7 @@ try {
     game.runPara = 0; game.runElmas = 0; game.runZumrut = 0;
     endGame(false);
     const r = { lb: lb === JSON.stringify(loadLeaderboard()), hlOnce: hl, hlSonra: save.highestLevel, submit: _sahte.submit, pgsBitti: _sahte.pgsBitti,
-      acik: save.dunyaTuru.acik, sira: document.getElementById('gameover-rank').textContent, para: document.getElementById('final-para').textContent,
+      acik: save.dunyaTuru.acik, sira: document.getElementById('gameover-rank').textContent, para: (document.getElementById('final-para').dataset.son ?? document.getElementById('final-para').textContent),
       reklam: _sahte.reklam.slice(-1)[0] };
     tekrarOyna();
     r.tekrar = { level: game.level, tur: game.dunyaTuru, running: game.running };

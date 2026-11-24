@@ -174,14 +174,14 @@ try {
     startGame(); game.player.invuln = 1e9;
     game.level = 3; save.highestLevel = 99; game.runPara = 40; game.oynananSure = 50;
     endGame(false); await bekle(50);
-    const kazanc = Number(document.getElementById('final-para').textContent);
+    const kazanc = Number((document.getElementById('final-para').dataset.son ?? document.getElementById('final-para').textContent));
     r.ilk = { dugme: gorunur('btn-reklam-ikikat'), zumrut: gorunur('btn-reklam-odul'), kazanc, oyunPara: reklam.oyunPara };
     const once = save.para;
     // Yarıda kapatılan reklam ödül vermez, düğme reklam yeniden yüklenince yine çıkar
     odulluIzle('para'); await bekle(20); window.__olay('onRewardedVideoAdDismissed'); await bekle(50);
     r.yarida = { para: save.para - once, dugme: gorunur('btn-reklam-ikikat') };
     odulluIzle('para'); await bekle(20); window.__olay('onRewardedVideoAdReward'); window.__olay('onRewardedVideoAdDismissed'); await bekle(50);
-    r.tam = { para: save.para - once, ekran: Number(document.getElementById('final-para').textContent), dugme: gorunur('btn-reklam-ikikat'),
+    r.tam = { para: save.para - once, ekran: Number((document.getElementById('final-para').dataset.son ?? document.getElementById('final-para').textContent)), dugme: gorunur('btn-reklam-ikikat'),
       zumrutDugme: gorunur('btn-reklam-odul'), kalici: JSON.parse(localStorage.getItem(SAVE_KEY)).para === save.para };
     // Para kazanılmayan oyunda düğme yok
     startGame(); game.player.invuln = 1e9; game.level = 1; game.runPara = 0; game.oynananSure = 50;

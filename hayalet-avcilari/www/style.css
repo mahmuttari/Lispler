@@ -1859,3 +1859,46 @@ details.arkadas-bolum > summary::-webkit-details-marker { display: none; }
 
 /* 3.20.0 arayüz */
 .ui-simge { width: 1.3em; height: 1.3em; vertical-align: -0.25em; object-fit: contain; }
+
+/* 3.20.0 animasyon ekleri: cephane düğmesi, rozet popu, güç zaman halkası, HUD sayaç zıplaması */
+.weapon-slot.ae-pasif {
+  opacity: 0.42;
+  filter: grayscale(0.7);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.weapon-slot.ae-bas { animation: aeDugmeBas 0.16s ease-out; }
+@keyframes aeDugmeBas {
+  0% { transform: scale(1); }
+  45% { transform: scale(0.86); }
+  100% { transform: scale(1); }
+}
+.weapon-slot .badge.ae-rozet-pop { animation: aeRozetPop 0.28s ease-out; }
+@keyframes aeRozetPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.55); background: #fff7cc; }
+  100% { transform: scale(1); }
+}
+.power-bar .power-ring {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 17px;
+  border-radius: 50%;
+  position: relative;
+  background:
+    radial-gradient(circle at center, rgba(10, 5, 24, 0.95) 58%, transparent 60%),
+    conic-gradient(#fde047 calc(var(--ae-p, 1) * 360deg), rgba(255, 255, 255, 0.18) 0);
+}
+body.is-tablet .power-bar .power-ring { width: 32px; height: 32px; font-size: 21px; }
+.ae-pop { animation: aeHudPop 0.32s ease-out; }
+@keyframes aeHudPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.22); }
+  100% { transform: scale(1); }
+}
+.lives.ae-pop, .coin.ae-pop, .score.ae-pop { display: inline-block; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) {
+  .weapon-slot.ae-bas, .weapon-slot .badge.ae-rozet-pop, .ae-pop { animation: none; }
+}

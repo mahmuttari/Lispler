@@ -764,16 +764,22 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
 .pause-btn:active { transform: translateX(-50%) scale(0.92); background: rgba(10, 5, 24, 0.9); }
 
 /* ====== CEPHANE SLOTLARI ====== */
+/* Silah çubuğu: envanter düğmesinin yanından içeri doğru yatay sarar; yerleşimi game.js
+   (layoutWeaponBar) ölçerek verir, böylece HUD'un ve joystick'in üstüne binmez. Arapçada aynalanır. */
 .weapon-bar {
   position: absolute;
   bottom: calc(32px + var(--alt));
-  left: calc(16px + var(--sol));
+  inset-inline-start: calc(16px + var(--sol));
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 10px;
   z-index: 11;
   touch-action: manipulation;
 }
+/* Yer darsa düğmeler küçülür; yine de 44 px dokunma alanının altına inmez. */
+.weapon-bar.dar { gap: 6px; }
+.weapon-bar.dar .weapon-slot { width: 46px; height: 46px; font-size: 22px; border-radius: 14px; }
 .weapon-slot {
   position: relative;
   width: 58px;
@@ -820,7 +826,7 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
 .inv-btn {
   position: absolute;
   bottom: calc(32px + var(--alt));
-  left: calc(86px + var(--sol));
+  inset-inline-start: calc(16px + var(--sol));
   width: 58px;
   height: 58px;
   background-color: rgba(10, 5, 24, 0.75);
@@ -853,7 +859,7 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
 .inv-panel {
   position: absolute;
   bottom: calc(100px + var(--alt));
-  left: calc(16px + var(--sol));
+  inset-inline-start: calc(16px + var(--sol));
   max-width: calc(100vw - 32px);
   display: none;
   flex-wrap: wrap;
@@ -892,9 +898,9 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
 .inv-empty { max-width: 170px; align-self: center; color: #fde68a; font-size: 12px; font-weight: 700; }
 
 @media (orientation: landscape) and (min-width: 700px) {
-  .inv-btn { bottom: calc(44px + var(--alt)); left: calc(104px + var(--sol)); width: 64px; height: 64px; }
-  .inv-panel { bottom: calc(118px + var(--alt)); left: calc(24px + var(--sol)); }
-  .weapon-bar { bottom: calc(44px + var(--alt)); left: calc(24px + var(--sol)); }
+  .inv-btn { bottom: calc(44px + var(--alt)); inset-inline-start: calc(24px + var(--sol)); width: 64px; height: 64px; }
+  .inv-panel { bottom: calc(118px + var(--alt)); inset-inline-start: calc(24px + var(--sol)); }
+  .weapon-bar { bottom: calc(44px + var(--alt)); inset-inline-start: calc(24px + var(--sol)); }
   .weapon-slot { width: 64px; height: 64px; font-size: 32px; }
 }
 
@@ -1134,7 +1140,7 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
 .joystick {
   position: absolute;
   bottom: calc(32px + var(--alt));
-  right: calc(32px + var(--sag));
+  inset-inline-end: calc(32px + var(--sag));
   width: 136px;
   height: 136px;
   background:
@@ -1183,7 +1189,7 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
     width: 160px;
     height: 160px;
     bottom: calc(44px + var(--alt));
-    right: calc(48px + var(--sag));
+    inset-inline-end: calc(48px + var(--sag));
   }
   .joystick-knob {
     width: 70px;
@@ -1196,7 +1202,7 @@ body.is-tablet .joystick {
   width: 200px;
   height: 200px;
   bottom: calc(60px + var(--alt));
-  right: calc(64px + var(--sag));
+  inset-inline-end: calc(64px + var(--sag));
   border-width: 3px;
 }
 body.is-tablet .joystick-knob {
@@ -1207,7 +1213,7 @@ body.is-tablet .joystick-knob {
 
 body.is-tablet .weapon-bar {
   bottom: calc(60px + var(--alt));
-  left: calc(28px + var(--sol));
+  inset-inline-start: calc(28px + var(--sol));
   gap: 14px;
 }
 body.is-tablet .weapon-slot {

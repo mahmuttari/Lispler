@@ -1174,6 +1174,41 @@ function toggleInventory() {
   panel.classList.add("open");
 }
 
+// Silah çubuğu yerleşimi: çubuk envanter düğmesinin yanından içeri doğru yatay sarar ve yukarı
+// doğru büyür. Genişlik joystick'e kadar sınırlanır; HUD'a değerse düğmeler küçülür. Arapçada
+// bütün alt kontroller aynalandığı için ölçüler ekran yönünden bağımsız okunur.
+function layoutWeaponBar() {
+  const bar = document.getElementById("weapon-bar");
+  const inv = document.getElementById("inv-btn");
+  const joy = document.getElementById("joystick");
+  if (!bar || !inv || !joy) return;
+  const w = window.innerWidth, h = window.innerHeight;
+  const invR = inv.getBoundingClientRect();
+  const joyR = joy.getBoundingClientRect();
+  const bosluk = 10;
+  const rtl = getComputedStyle(document.documentElement).direction === "rtl";
+  bar.classList.remove("dar");
+  bar.style.top = "auto";
+  bar.style.bottom = Math.max(0, Math.round(h - invR.bottom)) + "px";
+  bar.style.left = "auto";
+  bar.style.right = "auto";
+  const yerles = () => {
+    if (rtl) { // envanter sağda, joystick solda: çubuk sağdan içeri doğru
+      const genislik = Math.max(44, invR.left - bosluk - (joyR.right + bosluk));
+      bar.style.right = Math.round(w - invR.left + bosluk) + "px";
+      bar.style.width = Math.round(genislik) + "px";
+    } else { // envanter solda, joystick sağda: çubuk soldan içeri doğru
+      const genislik = Math.max(44, joyR.left - bosluk - (invR.right + bosluk));
+      bar.style.left = Math.round(invR.right + bosluk) + "px";
+      bar.style.width = Math.round(genislik) + "px";
+    }
+  };
+  yerles();
+  const hud = document.querySelector(".hud");
+  const hudAlt = hud ? hud.getBoundingClientRect().bottom : 0;
+  if (bar.getBoundingClientRect().top < hudAlt + 6) bar.classList.add("dar");
+}
+
 function refreshWeaponBar() {
   const bar = document.getElementById("weapon-bar");
   if (!bar) return;
@@ -1199,6 +1234,7 @@ function refreshWeaponBar() {
     btn.addEventListener("click", trigger);
     bar.appendChild(btn);
   });
+  layoutWeaponBar();
 }
 
 function useWeapon(key) {
@@ -5698,6 +5734,7 @@ function resizeCanvas() {
   // game.W/H artık "dünya birimi cinsinden görüş alanı" — kamera ve görünürlük testleri bunu kullanır
   game.W = window.innerWidth / viewScale;
   game.H = window.innerHeight / viewScale;
+  if (game.running) layoutWeaponBar(); // ekran dönünce silah çubuğu HUD'a binmesin
 }
 
 // ====== JOYSTICK ======

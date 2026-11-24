@@ -428,9 +428,146 @@ try {
     });
   }
 
+  // ---- 3D-2c: Fanatik, Silsen, Serçin — her kostüm, 8 yön, silah, imza ----
+  const YENI3 = ['fanatik', 'silsen', 'sercin'];
+  const yeni3 = await p.evaluate((chars) => {
+    const W = 220, H = 260, OX = 110, OY = 170, BOY2 = 80, s = BOY2 / 100;
+    const ciz = (ch, idx, aci, aim, kim, gun) => {
+      const c = document.createElement('canvas'); c.width = W; c.height = H;
+      const x = c.getContext('2d');
+      drawCharacter(x, ch, idx, OX, OY, BOY2, 0, 0, aim, 0, gun || '', null, aci, kim);
+      return x;
+    };
+    const ozet = (x) => {
+      const d = x.getImageData(0, 0, W, H).data;
+      let ust = H, alt = -1, dolu = 0;
+      for (let yy = 0; yy < H; yy++) for (let xx = 0; xx < W; xx++) {
+        if (d[(yy * W + xx) * 4 + 3] > 128) { dolu++; if (yy < ust) ust = yy; if (yy > alt) alt = yy; }
+      }
+      return { ust, alt, dolu };
+    };
+    const fark = (a, b) => {
+      const da = a.getImageData(0, 0, W, H).data, db = b.getImageData(0, 0, W, H).data;
+      let n = 0;
+      for (let i = 0; i < da.length; i += 4) {
+        if (da[i + 3] > 128 || db[i + 3] > 128) {
+          if (Math.abs(da[i] - db[i]) + Math.abs(da[i + 1] - db[i + 1]) + Math.abs(da[i + 2] - db[i + 2]) > 60) n++;
+        }
+      }
+      return n;
+    };
+    const bantSay = (x, a, b, test) => {
+      const d = x.getImageData(0, 0, W, H).data;
+      let ust = H, alt = -1;
+      for (let yy = 0; yy < H; yy++) for (let xx = 0; xx < W; xx++) {
+        if (d[(yy * W + xx) * 4 + 3] > 128) { if (yy < ust) ust = yy; if (yy > alt) alt = yy; }
+      }
+      const h = Math.max(1, alt - ust + 1);
+      let n = 0;
+      for (let yy = ust + Math.floor(h * a); yy < Math.min(alt + 1, ust + Math.ceil(h * b)); yy++) {
+        for (let xx = 0; xx < W; xx++) {
+          const i = (yy * W + xx) * 4;
+          if (d[i + 3] > 128 && test(d[i], d[i + 1], d[i + 2])) n++;
+        }
+      }
+      return n;
+    };
+    const sagKenar = (xx) => {
+      const d = xx.getImageData(0, 0, W, H).data;
+      let sag = -1;
+      for (let px = 0; px < W; px++) for (let py = 0; py < H; py++) {
+        if (d[(py * W + px) * 4 + 3] > 128 && px > sag) sag = px;
+      }
+      return sag;
+    };
+    const veri = {};
+    for (const ch of chars) {
+      const kos = COSTUMES[ch].length;
+      const adim = [];
+      for (let idx = 0; idx < kos; idx++) {
+        const kk = karakterKodKutusu(ch, idx);
+        const ayak = OY + kk.alt * s;
+        const ustSinir = ayak - (kk.alt - kk.ust) * s * 1.06;
+        const yonler = [];
+        for (let i = 0; i < 8; i++) {
+          const aci = i * Math.PI / 4;
+          const o = ozet(ciz(ch, idx, aci, 1, `${ch}-${idx}-${i}`));
+          yonler.push({ aci: +aci.toFixed(2), ust: o.ust, alt: o.alt, dolu: o.dolu, pay: o.ust - ustSinir, ayakFark: o.alt - ayak });
+        }
+        const nisanSag = sagKenar(ciz(ch, idx, Math.PI / 2, 1, `${ch}-${idx}-silah`));
+        const durusSag = sagKenar(ciz(ch, idx, Math.PI / 2, 0, `${ch}-${idx}-durus`));
+        adim.push({ idx, yonler, ayak, silahFark: nisanSag - durusSag });
+      }
+      veri[ch] = { adim };
+    }
+    // İmzalar (görüntünün üst/orta bandında karaktere özgü renk)
+    const imza = {};
+    imza.fanatikBant = bantSay(ciz('fanatik', 0, 0, 0, 'imza-fanatik'), 0.2, 0.45, (r, g, b) => r > 150 && g < 80 && b < 80);
+    imza.silsenElbise = bantSay(ciz('silsen', 0, 0, 0, 'imza-silsen'), 0.34, 0.8, (r, g, b) => g > 140 && g > r + 30 && g > b + 30);
+    imza.sercinGaga = bantSay(ciz('sercin', 0, 0, 0, 'imza-sercin'), 0.12, 0.5, (r, g, b) => r > 200 && g > 100 && g < 190 && b < 110);
+    imza.kostumFark = {};
+    for (const ch of chars) {
+      const kos = COSTUMES[ch].length;
+      const temel = ciz(ch, 0, 0, 0, `kf3-${ch}-0`);
+      const liste = [];
+      for (let i = 1; i < kos; i++) liste.push(fark(temel, ciz(ch, i, 0, 0, `kf3-${ch}-${i}`)));
+      imza.kostumFark[ch] = liste;
+    }
+    // Mağaza silahları: 5 silah da sağ elde öne taşar ve avcının kendi silahından farklı görünür.
+    const dukkan = {};
+    for (const gun of ['baloncuk', 'lazer', 'yesil', 'pompali', 'bazuka']) {
+      const x = ciz('kinkin', 0, Math.PI / 2, 1, `dukkan-${gun}`, gun);
+      const d = x.getImageData(0, 0, W, H).data;
+      const sayilar = new Array(W).fill(0);
+      let sag = -1;
+      for (let xx = 0; xx < W; xx++) for (let yy = 0; yy < H; yy++) {
+        if (d[(yy * W + xx) * 4 + 3] > 128) { sayilar[xx]++; if (xx > sag) sag = xx; }
+      }
+      let govdeSag = -1;
+      for (let xx = 0; xx < W; xx++) if (sayilar[xx] >= 14) govdeSag = xx;
+      dukkan[gun] = {
+        fark: fark(x, ciz('kinkin', 0, Math.PI / 2, 1, `dukkan-kendi-${gun}`, '')),
+        tasma: sag - govdeSag, sag, govdeSag,
+      };
+    }
+    return { veri, imza, dukkan };
+  }, YENI3);
+  const insanlar3 = { fanatik: 'Fanatik', silsen: 'Silsen', sercin: 'Serçin' };
+  for (const ch of YENI3) {
+    for (const a of yeni3.veri[ch].adim) {
+      sina(`${insanlar3[ch]} kostüm ${a.idx}: 8 yönde dolu, ayak hizasında, üstte kırpılma yok`, () => {
+        for (const k of a.yonler) {
+          assert.ok(k.dolu > 200, `aci=${k.aci} dolu=${k.dolu}`);
+          assert.ok(Math.abs(k.ayakFark) <= 8, `aci=${k.aci} alt=${k.alt} ayak=${a.ayak}`);
+          assert.ok(k.pay >= 3, `aci=${k.aci} pay=${k.pay}`);
+        }
+      });
+      sina(`${insanlar3[ch]} kostüm ${a.idx}: nişanda silah gövdenin önüne taşar`, () => {
+        assert.ok(a.silahFark >= 3, `fark=${a.silahFark}`);
+      });
+    }
+  }
+  sina('Fanatik\'in baş bölgesinde kırmızı alın bandı var', () => { assert.ok(yeni3.imza.fanatikBant > 10, `kırmızı=${yeni3.imza.fanatikBant}`); });
+  sina('Silsen\'in gövdesinde yeşil elbise pikselleri var', () => { assert.ok(yeni3.imza.silsenElbise > 30, `yeşil=${yeni3.imza.silsenElbise}`); });
+  sina('Serçin\'in yüzünde turuncu gaga maskesi var', () => { assert.ok(yeni3.imza.sercinGaga > 5, `turuncu=${yeni3.imza.sercinGaga}`); });
+  for (const ch of YENI3) {
+    sina(`${insanlar3[ch]}: kostüm renkleri birbirinden farklı`, () => {
+      const liste = yeni3.imza.kostumFark[ch];
+      assert.ok(liste.length > 0, 'kostüm yok');
+      for (const f of liste) assert.ok(f > 100, `fark=${liste.join(',')}`);
+    });
+  }
+  for (const gun of ['baloncuk', 'lazer', 'yesil', 'pompali', 'bazuka']) {
+    sina(`Mağaza silahı ${gun}: nişanda elde öne taşar ve kendi silahından farklı`, () => {
+      const d = yeni3.dukkan[gun];
+      assert.ok(d.tasma >= 3, JSON.stringify(d));
+      assert.ok(d.fark > 100, `fark=${d.fark}`);
+    });
+  }
+
   // ---- Bütün avcıların iletişim sayfası: test/ciktilar/uc-avcilar.png (ön 3/4, nişan) ----
   const sayfa = await p.evaluate(() => {
-    const avcilar = ['kinkin', 'veryi', 'kornet', 'mark', 'kent', 'ponko', 'gul', 'rani', 'beti'];
+    const avcilar = ['kinkin', 'veryi', 'kornet', 'mark', 'kent', 'ponko', 'gul', 'rani', 'beti', 'fanatik', 'silsen', 'sercin'];
     const T = 170, W = T * avcilar.length, H = 240;
     const c = document.createElement('canvas'); c.width = W; c.height = H;
     const x = c.getContext('2d');

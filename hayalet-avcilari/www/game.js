@@ -4733,7 +4733,7 @@ function karakterZorlukYildiz(n) {
 }
 
 function karakterZorlukAd(n) {
-  return t(n === 1 ? "Kolay" : n === 2 ? "Orta" : "Usta");
+  return n === 1 ? t("Kolay") : n === 2 ? t("Orta") : t("Usta"); // anahtarlar.mjs düz t("…") çağrılarını toplar
 }
 
 // Stat çubuklarının ortak ölçeği: bütün karakterlerin en yüksek değeri (computeStats yükseltmeleri de içerir)

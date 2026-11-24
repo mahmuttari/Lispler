@@ -183,6 +183,127 @@ try {
     assert.ok(bot.dolu > 100, `dolu=${bot.dolu}`);
   });
 
+  // ---- 3D-2a: Veryi, Kornet, Marli, Kenit — her kostüm, 8 yön, silah, imza ----
+  const YENI = ['veryi', 'kornet', 'mark', 'kent'];
+  const yeni = await p.evaluate((chars) => {
+    const W = 220, H = 260, OX = 110, OY = 170, BOY2 = 80, s = BOY2 / 100;
+    const ciz = (ch, idx, aci, aim, kim) => {
+      const c = document.createElement('canvas'); c.width = W; c.height = H;
+      const x = c.getContext('2d');
+      drawCharacter(x, ch, idx, OX, OY, BOY2, 0, 0, aim, 0, '', null, aci, kim);
+      return x;
+    };
+    const ozet = (x) => {
+      const d = x.getImageData(0, 0, W, H).data;
+      let ust = H, alt = -1, dolu = 0;
+      for (let yy = 0; yy < H; yy++) for (let xx = 0; xx < W; xx++) {
+        if (d[(yy * W + xx) * 4 + 3] > 128) { dolu++; if (yy < ust) ust = yy; if (yy > alt) alt = yy; }
+      }
+      return { ust, alt, dolu };
+    };
+    const say = (x, test) => {
+      const d = x.getImageData(0, 0, W, H).data;
+      let n = 0;
+      for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 128 && test(d[i], d[i + 1], d[i + 2])) n++;
+      return n;
+    };
+    const fark = (a, b) => {
+      const da = a.getImageData(0, 0, W, H).data, db = b.getImageData(0, 0, W, H).data;
+      let n = 0;
+      for (let i = 0; i < da.length; i += 4) {
+        if (da[i + 3] > 128 || db[i + 3] > 128) {
+          if (Math.abs(da[i] - db[i]) + Math.abs(da[i + 1] - db[i + 1]) + Math.abs(da[i + 2] - db[i + 2]) > 60) n++;
+        }
+      }
+      return n;
+    };
+    const veri = {};
+    for (const ch of chars) {
+      const kos = COSTUMES[ch].length;
+      const adim = [];
+      for (let idx = 0; idx < kos; idx++) {
+        const kk = karakterKodKutusu(ch, idx);
+        const ayak = OY + kk.alt * s;
+        const ustSinir = ayak - (kk.alt - kk.ust) * s * 1.06;
+        const yonler = [];
+        for (let i = 0; i < 8; i++) {
+          const aci = i * Math.PI / 4;
+          const o = ozet(ciz(ch, idx, aci, 1, `${ch}-${idx}-${i}`));
+          yonler.push({ aci: +aci.toFixed(2), ust: o.ust, alt: o.alt, dolu: o.dolu, pay: o.ust - ustSinir, ayakFark: o.alt - ayak });
+        }
+        const sagKenar = (xx) => {
+          const d = xx.getImageData(0, 0, W, H).data;
+          let sag = -1;
+          for (let px = 0; px < W; px++) for (let py = 0; py < H; py++) {
+            if (d[(py * W + px) * 4 + 3] > 128 && px > sag) sag = px;
+          }
+          return sag;
+        };
+        // Silah öne çıkınca sağ kenar, nişansız duruşa göre belirgin sağa taşar (kalın çekiç başı da sayılır).
+        const nisanSag = sagKenar(ciz(ch, idx, Math.PI / 2, 1, `${ch}-${idx}-silah`));
+        const durusSag = sagKenar(ciz(ch, idx, Math.PI / 2, 0, `${ch}-${idx}-durus`));
+        adim.push({ idx, yonler, ayak, silahFark: nisanSag - durusSag });
+      }
+      veri[ch] = { adim };
+    }
+    // İmzalar
+    const imza = {};
+    imza.kent = say(ciz('kent', 0, 0, 0, 'imza-kent'), (r, g, b) => r > 140 && g < 100 && b < 100);
+    imza.kornetDeri = say(ciz('kornet', 0, 0, 0, 'imza-kornet'), (r, g, b) => Math.abs(r - 244) < 25 && Math.abs(g - 214) < 25 && Math.abs(b - 181) < 25);
+    imza.markKahve = say(ciz('mark', 0, 0.6, 1, 'imza-mark'), (r, g, b) => r > 55 && r < 170 && g > 25 && g < 120 && b < 90 && g < r * 0.9);
+    imza.veryiCelik = say(ciz('veryi', 0, Math.PI / 2, 1, 'imza-veryi'), (r, g, b) => r > 110 && g > 110 && b > 110 && Math.max(r, g, b) - Math.min(r, g, b) < 40);
+    imza.kostumFark = {};
+    for (const ch of chars) {
+      const a = ciz(ch, 0, 0, 0, `kf-${ch}-0`), b = ciz(ch, 1, 0, 0, `kf-${ch}-1`), c = ciz(ch, 2, 0, 0, `kf-${ch}-2`);
+      imza.kostumFark[ch] = [fark(a, b), fark(a, c)];
+    }
+    return { veri, imza };
+  }, YENI);
+  const insanlar = { veryi: 'Veryi', kornet: 'Kornet', mark: 'Marli', kent: 'Kenit' };
+  for (const ch of YENI) {
+    for (const a of yeni.veri[ch].adim) {
+      sina(`${insanlar[ch]} kostüm ${a.idx}: 8 yönde dolu, ayak hizasında, üstte kırpılma yok`, () => {
+        for (const k of a.yonler) {
+          assert.ok(k.dolu > 200, `aci=${k.aci} dolu=${k.dolu}`);
+          assert.ok(Math.abs(k.ayakFark) <= 8, `aci=${k.aci} alt=${k.alt} ayak=${a.ayak}`);
+          assert.ok(k.pay >= 3, `aci=${k.aci} pay=${k.pay}`);
+        }
+      });
+      sina(`${insanlar[ch]} kostüm ${a.idx}: nişanda silah gövdenin önüne taşar`, () => {
+        assert.ok(a.silahFark >= 3, `fark=${a.silahFark}`);
+      });
+    }
+  }
+  sina('Kenit\'in baş bölgesinde parlak kırmızı gözler var', () => { assert.ok(yeni.imza.kent > 8, `kırmızı=${yeni.imza.kent}`); });
+  sina('Kornet\'te insan teni renginde piksel yok', () => { assert.equal(yeni.imza.kornetDeri, 0); });
+  sina('Marli\'de kahverengi saç/çanta pikseli var', () => { assert.ok(yeni.imza.markKahve > 50, `kahve=${yeni.imza.markKahve}`); });
+  sina('Veryi\'nin çelik çekici başı nişanda görünür', () => { assert.ok(yeni.imza.veryiCelik > 10, `çelik=${yeni.imza.veryiCelik}`); });
+  for (const ch of YENI) {
+    sina(`${insanlar[ch]}: kostüm renkleri birbirinden farklı`, () => {
+      const [f1, f2] = yeni.imza.kostumFark[ch];
+      assert.ok(f1 > 100 && f2 > 100, `fark0-1=${f1} fark0-2=${f2}`);
+    });
+  }
+
+  // ---- Bütün avcıların iletişim sayfası: test/ciktilar/uc-avcilar.png (ön 3/4, nişan) ----
+  const sayfa = await p.evaluate(() => {
+    const avcilar = ['kinkin', 'veryi', 'kornet', 'mark', 'kent'];
+    const T = 170, W = T * avcilar.length, H = 240;
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const x = c.getContext('2d');
+    x.fillStyle = '#101827'; x.fillRect(0, 0, W, H);
+    for (let i = 0; i < avcilar.length; i++) {
+      drawCharacter(x, avcilar[i], 0, T * i + T / 2, 214, 112, 0, 0, 1, 0, '', null, 0.6, `posta-${avcilar[i]}`);
+    }
+    return c.toDataURL('image/png');
+  });
+  const cikti = path.join(path.dirname(fileURLToPath(import.meta.url)), 'ciktilar');
+  fs.mkdirSync(cikti, { recursive: true });
+  fs.writeFileSync(path.join(cikti, 'uc-avcilar.png'), Buffer.from(sayfa.split(',')[1], 'base64'));
+  sina('iletişim sayfası test/ciktilar/uc-avcilar.png olarak kaydedildi', () => {
+    assert.ok(fs.statSync(path.join(cikti, 'uc-avcilar.png')).size > 5000);
+  });
+
   // d) Oyun döngüsü: oyuncu UcAvci.ciz ile çizilir; ateş başlayınca namlu ucu oyuncunun yanında
   const dongu = await p.evaluate(async () => {
     const asil = UcAvci.ciz;

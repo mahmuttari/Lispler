@@ -4,3 +4,4 @@ android/keystore.properties
 *.keystore
 dist/
 __pycache__/
+test/ciktilar/

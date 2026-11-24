@@ -116,6 +116,73 @@ try {
     assert.ok(Math.abs(yon.sag.sag - yon.sol.sol) < yon.sag.sag * 0.25, `${yon.sag.sag} / ${yon.sol.sol}`);
   });
 
+  // c2) Kırpılma yok: 8 yönde de saç/tacın en üst boyası, ayrılan boy kutusunun en az 3 px altında
+  const kirp = await p.evaluate(() => {
+    const W = 200, H = 240, y = 150, size = 80, s = size / 100;
+    const kk = karakterKodKutusu('kinkin', 0);
+    const hedefBoy = (kk.alt - kk.ust) * s * 1.06;
+    const ustSinir = y + kk.alt * s - hedefBoy; // ayrılan çizim kutusunun üstü
+    const sonuc = [];
+    for (let i = 0; i < 8; i++) {
+      const aci = i * Math.PI / 4;
+      const c = document.createElement('canvas'); c.width = W; c.height = H;
+      const ctx = c.getContext('2d');
+      UcAvci.ciz(ctx, { charKey: 'kinkin', costumeIdx: 0, x: 100, y, size, aci, aimRaise: 1, kimlik: `k-${i}` });
+      const d = ctx.getImageData(0, 0, W, H).data;
+      let ust = H;
+      for (let yy = 0; yy < H; yy++) for (let xx = 0; xx < W; xx++) if (d[(yy * W + xx) * 4 + 3] > 128 && yy < ust) ust = yy;
+      sonuc.push({ aci: +aci.toFixed(2), ust, pay: +(ust - ustSinir).toFixed(1) });
+    }
+    return { sonuc, ustSinir };
+  });
+  sina('8 yönde de en üst dolu satır çizim kutusunun en az 3 px altında (kırpılma yok)', () => {
+    for (const k of kirp.sonuc) assert.ok(k.pay >= 3, `aci=${k.aci} ust=${k.ust} üstSınır=${kirp.ustSinir} pay=${k.pay}`);
+  });
+
+  // c3) Silah elde ve önde: aci π/2 (sağa bakış), nişanda namlu gövde kutusunun sağına taşar
+  const silahGorunur = await p.evaluate(() => {
+    const W = 220, H = 240;
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const ctx = c.getContext('2d');
+    UcAvci.ciz(ctx, { charKey: 'kinkin', costumeIdx: 0, x: 110, y: 160, size: 90, aci: Math.PI / 2, aimRaise: 1, kimlik: 'silah-on' });
+    const d = ctx.getImageData(0, 0, W, H).data;
+    const sayilar = new Array(W).fill(0);
+    let sag = -1;
+    for (let xx = 0; xx < W; xx++) for (let yy = 0; yy < H; yy++) {
+      if (d[(yy * W + xx) * 4 + 3] > 128) { sayilar[xx]++; if (xx > sag) sag = xx; }
+    }
+    let govdeSag = -1; // gövde sütunları kalın; ince silah namlusu bu eşiğin altında kalır
+    for (let xx = 0; xx < W; xx++) if (sayilar[xx] >= 14) govdeSag = xx;
+    return { sag, govdeSag, fark: sag - govdeSag };
+  });
+  sina('nişanda (aci π/2) silah gövdenin sağına taşar (opak piksel var)', () => {
+    assert.ok(silahGorunur.fark >= 4, JSON.stringify(silahGorunur));
+  });
+
+  // c4) Bot da UcAvci.ciz ile çizilir (charKey "bot", kimlik "bot")
+  const bot = await p.evaluate(() => {
+    const c = document.createElement('canvas'); c.width = 200; c.height = 240;
+    const ctx = c.getContext('2d');
+    const asil = UcAvci.ciz;
+    let kayit = null;
+    UcAvci.ciz = function (x, o) { kayit = o; return asil.call(this, x, o); };
+    const eskiOyuncu = game.player;
+    game.player = { x: 200, y: 160, botTargetUntil: 0 };
+    try {
+      drawBot(ctx, { x: 100, y: 160, r: 18, hp: 6, maxHp: 6, walkTimer: 0, aimRaise: 0.8, shootRecoil: 0, hitFlash: 0 });
+    } finally {
+      UcAvci.ciz = asil; game.player = eskiOyuncu;
+    }
+    const d = ctx.getImageData(0, 0, 200, 240).data; let dolu = 0;
+    for (let i = 3; i < d.length; i += 4) if (d[i] > 128) dolu++;
+    return { charKey: kayit && kayit.charKey, kimlik: kayit && kayit.kimlik, dolu };
+  });
+  sina('Bot drawBot üzerinden UcAvci.ciz(charKey "bot", kimlik "bot") ile çizilir', () => {
+    assert.equal(bot.charKey, 'bot');
+    assert.equal(bot.kimlik, 'bot');
+    assert.ok(bot.dolu > 100, `dolu=${bot.dolu}`);
+  });
+
   // d) Oyun döngüsü: oyuncu UcAvci.ciz ile çizilir; ateş başlayınca namlu ucu oyuncunun yanında
   const dongu = await p.evaluate(async () => {
     const asil = UcAvci.ciz;

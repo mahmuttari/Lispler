@@ -6923,6 +6923,29 @@ function botaDokun(clientX, clientY) {
   game.player.botTargetUntil = performance.now() + 2500;
 }
 
+// Bot etiketi: isim, can çubuğu, hedef işareti (3D ve 2D çizimde ortak)
+function botEtiketi(ctx, b) {
+  ctx.save();
+  ctx.font = "800 12px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
+  ctx.textAlign = "center";
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#000";
+  ctx.fillStyle = "#67e8f9";
+  ctx.strokeText("🤖 Bot", b.x, b.y - 46);
+  ctx.fillText("🤖 Bot", b.x, b.y - 46);
+  if (b.hp < b.maxHp) {
+    const w = 34, oran = Math.max(0, b.hp / b.maxHp);
+    ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(b.x - w / 2 - 1, b.y - 41, w + 2, 6);
+    ctx.fillStyle = "#dc2626"; ctx.fillRect(b.x - w / 2, b.y - 40, w, 4);
+    ctx.fillStyle = "#10b981"; ctx.fillRect(b.x - w / 2, b.y - 40, w * oran, 4);
+  }
+  if (game.player && game.player.botTargetUntil > performance.now()) {
+    ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(b.x, b.y - 8, 34, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.restore();
+}
+
 // Bot'un görünüşü (çizimdeki gibi): uzun saç, kocaman gözler, tırtıklı ağız, köşeli gövde ve eller
 function drawBot(ctx, b) {
   const size = 62, s = size / 100;
@@ -6931,6 +6954,18 @@ function drawBot(ctx, b) {
   ctx.translate(b.x, b.y - Math.abs(walk) * 1.5 * s);
   ctx.fillStyle = "rgba(0,0,0,0.3)";
   ctx.beginPath(); ctx.ellipse(0, 45 * s, 20 * s, 6 * s, 0, 0, Math.PI * 2); ctx.fill();
+  // 3D bot (uc-avci.js): hazırsa gövdeyi UcAvci çizer, etiket yine burada kalır.
+  if (window.UcAvci && window.UcAvci.hazir) {
+    const px = (game.player && Number.isFinite(game.player.x)) ? game.player.x : b.x;
+    const py = (game.player && Number.isFinite(game.player.y)) ? game.player.y : b.y + 1;
+    const aci = Math.atan2(px - b.x, py - b.y);
+    if (window.UcAvci.ciz(ctx, {
+      charKey: "bot", costumeIdx: 0, x: 0, y: 0, size, aci,
+      yuruyor: b.walkTimer > 0, walkPhase: b.walkTimer,
+      aimRaise: b.aimRaise || 0, nisan: (b.aimRaise || 0) > 0.4,
+      shootRecoil: b.shootRecoil || 0, kimlik: "bot",
+    })) { ctx.restore(); botEtiketi(ctx, b); return; }
+  }
   // Sırttaki uzun saç
   ctx.fillStyle = "#27272a";
   ctx.fillRect(-21 * s, -30 * s, 42 * s, 38 * s);
@@ -6996,26 +7031,7 @@ function drawBot(ctx, b) {
     ctx.globalAlpha = 1;
   }
   ctx.restore();
-  // İsim, can çubuğu ve hedef işareti
-  ctx.save();
-  ctx.font = "800 12px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
-  ctx.textAlign = "center";
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = "#000";
-  ctx.fillStyle = "#67e8f9";
-  ctx.strokeText("🤖 Bot", b.x, b.y - 46);
-  ctx.fillText("🤖 Bot", b.x, b.y - 46);
-  if (b.hp < b.maxHp) {
-    const w = 34, oran = Math.max(0, b.hp / b.maxHp);
-    ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(b.x - w / 2 - 1, b.y - 41, w + 2, 6);
-    ctx.fillStyle = "#dc2626"; ctx.fillRect(b.x - w / 2, b.y - 40, w, 4);
-    ctx.fillStyle = "#10b981"; ctx.fillRect(b.x - w / 2, b.y - 40, w * oran, 4);
-  }
-  if (game.player && game.player.botTargetUntil > performance.now()) {
-    ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(b.x, b.y - 8, 34, 0, Math.PI * 2); ctx.stroke();
-  }
-  ctx.restore();
+  botEtiketi(ctx, b);
 }
 
 function damagePlayer() {

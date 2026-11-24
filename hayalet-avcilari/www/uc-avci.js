@@ -14,26 +14,90 @@ let tuvalBoyut = 0;
 const rigler = new Map();
 const durumlar = new Map();
 
-// Malzeme: düz ve ucuz (Lambert). emisyon verilirse parlayan çekirdek/göz için.
-function malzeme(renk, emisyon) {
-  const m = new THREE.MeshLambertMaterial({ color: new THREE.Color(renk) });
+// Toon rampası: 3 kademeli (NearestFilter). Bütün gövde parçaları paylaşır.
+let _rampa = null;
+function rampaAl() {
+  if (_rampa) return _rampa;
+  _rampa = new THREE.DataTexture(new Uint8Array([70, 70, 70, 255, 165, 165, 165, 255, 255, 255, 255, 255]), 3, 1, THREE.RGBAFormat);
+  _rampa.minFilter = THREE.NearestFilter;
+  _rampa.magFilter = THREE.NearestFilter;
+  _rampa.generateMipmaps = false;
+  _rampa.needsUpdate = true;
+  return _rampa;
+}
+// Malzemeler renge göre önbellekte: toon gövde + dark kontur (ters kabuk). emisyon verilirse parlayan çekirdek/göz.
+const _malzemeOnbellek = new Map();
+function toonMalzeme(renk, emisyon) {
+  const anahtar = `${renk}|${emisyon || ""}`;
+  let m = _malzemeOnbellek.get(anahtar);
+  if (m) return m;
+  m = new THREE.MeshToonMaterial({ color: new THREE.Color(renk), gradientMap: rampaAl() });
   if (emisyon) { m.emissive = new THREE.Color(emisyon); m.emissiveIntensity = 1; }
+  _malzemeOnbellek.set(anahtar, m);
   return m;
 }
+// Yuvarlatılmış kutu: BoxGeometry köşeleri iç kutuya çekilip yarıçap kadar dışa itilir; geometri önbellekte.
+const _geoOnbellek = new Map();
+function yuvarlakGeo(w, h, d, oran = 0.24, parca = 3) {
+  const r = Math.max(0.02, Math.min(w, h, d) * Math.min(0.5, oran));
+  const anahtar = `${w.toFixed(2)}|${h.toFixed(2)}|${d.toFixed(2)}|${r.toFixed(2)}|${parca}`;
+  let g = _geoOnbellek.get(anahtar);
+  if (g) return g;
+  g = new THREE.BoxGeometry(w, h, d, parca, parca, parca);
+  const konum = g.attributes.position;
+  const ix = Math.max(0, w / 2 - r), iy = Math.max(0, h / 2 - r), iz = Math.max(0, d / 2 - r);
+  const v = new THREE.Vector3(), c = new THREE.Vector3(), yon = new THREE.Vector3();
+  for (let i = 0; i < konum.count; i++) {
+    v.fromBufferAttribute(konum, i);
+    c.set(
+      Math.max(-ix, Math.min(ix, v.x)),
+      Math.max(-iy, Math.min(iy, v.y)),
+      Math.max(-iz, Math.min(iz, v.z)),
+    );
+    yon.copy(v).sub(c);
+    const uzun = yon.length();
+    if (uzun > 1e-6) {
+      yon.multiplyScalar(r / uzun);
+      konum.setXYZ(i, c.x + yon.x, c.y + yon.y, c.z + yon.z);
+    }
+  }
+  g.computeVertexNormals();
+  g.computeBoundingSphere();
+  _geoOnbellek.set(anahtar, g);
+  return g;
+}
 function kutu(w, h, d, renk, x = 0, y = 0, z = 0, emisyon) {
-  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), malzeme(renk, emisyon));
+  const m = new THREE.Mesh(yuvarlakGeo(w, h, d), toonMalzeme(renk, emisyon));
   m.position.set(x, y, z);
   return m;
+}
+// Ters kabuk kontur: aynı geometri, arka yüz, hafif büyük ve koyu.
+let _konturMalzeme = null;
+function konturla(mesh, kalinlik = 1.06) {
+  if (!_konturMalzeme) _konturMalzeme = new THREE.MeshBasicMaterial({ color: new THREE.Color("#1b1030"), side: THREE.BackSide });
+  const k = new THREE.Mesh(mesh.geometry, _konturMalzeme);
+  k.scale.setScalar(kalinlik);
+  mesh.add(k);
+  return mesh;
 }
 function grup(x = 0, y = 0, z = 0) {
   const g = new THREE.Group();
   g.position.set(x, y, z);
   return g;
 }
+// Renk yardımcıları (açık omuzluk, koyu kol, açık taban)
+function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+function karistir(a, b, t) {
+  const x = hexRgb(a), y = hexRgb(b);
+  return "#" + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, "0")).join("");
+}
+function acik(h, t = 0.45) { return karistir(h, "#ffffff", t); }
+function koyu(h, t = 0.22) { return karistir(h, "#000000", t); }
 // Top-level betiklerdeki sözlükler (game.js) pencere üzerinden okunur.
 function renkler(charKey, costumeIdx) {
-  const C = (typeof window !== "undefined" && window.CHARACTERS) || {};
-  const K = (typeof window !== "undefined" && window.COSTUMES) || {};
+  // CHARACTERS ve COSTUMES game.js'te üst düzey const: window'un özelliği değiller ama modülden adıyla erişilir
+  const C = (typeof CHARACTERS !== "undefined" && CHARACTERS) || {};
+  const K = (typeof COSTUMES !== "undefined" && COSTUMES) || {};
   const c = C[charKey] || C.kinkin || { color: { skin: "#f4d6b5", legs: "#374151" } };
   const liste = K[charKey] || K.kinkin || [{ body: "#1d4ed8", hair: "#7a3e1d" }];
   const cos = liste[costumeIdx] || liste[0] || { body: "#1d4ed8", hair: "#7a3e1d" };
@@ -67,75 +131,177 @@ function kur() {
 }
 
 // Kinkin'in enerji tabancası (gümüş gövde, camgöbeği parlayan çekirdek). Namlu yerel -Y yönünde;
-// kol nişanda -Y'yi +Z'ye çevirdiği için silah ileri (baktığı yön) bakar.
+// kol nişanda -Y'yi +Z'ye çevirdiği için silah ileri (baktığı yön) bakar. Boy yaklaşık baş genişliği.
 function silahKur(charKey) {
   const g = grup();
   const kinkin = charKey === "kinkin" || !charKey;
-  g.add(kutu(kinkin ? 5 : 4, 15, 7, "#cfd8e3", 0, -7, 0));      // gövde/namlu
-  g.add(kutu(4, 6, 5, "#4b5563", 0, -1, 1));                     // kabza
-  g.add(kutu(kinkin ? 2.6 : 2, 9, 2.6, "#22d3ee", 0, -8, 2, "#22d3ee")); // parlayan çekirdek
+  const govde = kutu(8, 28, 10, "#cfd8e3", 0, -15, 0);           // gövde/namlu (baş kadar uzun)
+  g.add(konturla(govde));
+  g.add(kutu(7, 10, 8, "#4b5563", 0, 1, -1));                    // kabza (el içinde)
+  g.add(kutu(3, 20, 11, "#22d3ee", 0, -15, 0, "#22d3ee"));        // parlayan çekirdek şeridi
+  g.add(kutu(2, 4, 12, "#e5e7eb", 0, -2, 0));                     // nişangâh
+  g.add(kutu(9, 3, 5, "#94a3b8", 0, -28, 0));                     // namlu ağzı
+  if (kinkin) g.add(kutu(2.4, 2.4, 2.4, "#a5f3fc", 0, -27, 0, "#67e8f9"));
   const namlu = new THREE.Object3D();
-  namlu.position.set(0, -17, 0);
+  namlu.position.set(0, -31, 0);
+  g.add(namlu);
+  return { grup: g, namlu };
+}
+// Bot'un küçük blaster'ı: gövde, kabza ve camgöbeği uç. Namlu yerel -Y'de.
+function botSilahKur() {
+  const g = grup();
+  g.add(konturla(kutu(6, 20, 8, "#334155", 0, -10, 0), 1.08));
+  g.add(kutu(5, 8, 6, "#1e293b", 0, 1, -1));
+  g.add(kutu(3, 3, 3, "#67e8f9", 0, -20, 0, "#67e8f9"));
+  const namlu = new THREE.Object3D();
+  namlu.position.set(0, -22, 0);
   g.add(namlu);
   return { grup: g, namlu };
 }
 
 // (karakter, kostüm) iskeleti: kok → kalca → govde → bas, govde → omuz → kol → el, kalca → bacak.
 function iskelet(charKey, costumeIdx) {
+  if (charKey === "bot") return botIskelet();
   const r = renkler(charKey, costumeIdx);
   const kinkin = charKey === "kinkin" || !r.c || charKey === undefined;
-  const omuzRenk = kinkin ? "#e5e7eb" : r.body;
+  const kolRenk = koyu(r.body, 0.2);       // kollar biraz koyu
+  const omuzRenk = acik(r.body, 0.7);      // açık omuzluklar
   const kok = grup();
   const kalca = grup(0, 32, 0); kok.add(kalca);
   const govde = grup(); kalca.add(govde);
-  govde.add(kutu(26, 28, 16, r.body, 0, 14, 0));
-  govde.add(kutu(14, 15, 1.5, kinkin ? "#e5e7eb" : r.body, 0, 14, 8.3)); // tulum göğsü
-  govde.add(kutu(10, 7, 18, omuzRenk, 13, 24, 0));   // açık omuzluklar
-  govde.add(kutu(10, 7, 18, omuzRenk, -13, 24, 0));
-  govde.add(kutu(28, 4, 17, "#6b3f1d", 0, 1, 0));    // kahverengi kemer
-  govde.add(kutu(9, 11, 7, "#7c4a1e", 12, 4, -8));   // yan çanta
+  govde.add(konturla(kutu(26, 28, 16, r.body, 0, 14, 0)));
+  govde.add(kutu(15, 16, 1.8, acik(r.body, 0.35), 0, 15, 8.4)); // tulum göğsü
+  for (const x of [-13, 13]) {                                   // açık omuzluklar
+    govde.add(kutu(11, 8, 18, omuzRenk, x, 24, 0));
+    govde.add(kutu(12, 2, 19, acik(omuzRenk, 0.25), x, 28, 0));
+  }
+  govde.add(kutu(28, 4.5, 17, "#6b3f1d", 0, 1, 0));   // kahverengi kemer
+  govde.add(kutu(5, 3, 1.8, "#fbbf24", 0, 1, 8.7));   // altın toka
+  govde.add(kutu(9, 11, 7, "#7c4a1e", 12, 3, -8));    // yan çanta
+  govde.add(kutu(10, 2.5, 8, "#5c3a14", 12, 9, -8));  // çanta kapağı
 
   const bas = grup(0, 28, 0); govde.add(bas);
-  bas.add(kutu(40, 40, 38, r.skin, 0, 20, 0));
-  bas.add(kutu(42, 12, 40, r.hair, 0, 38, 0));       // saç tepesi
-  bas.add(kutu(6, 15, 38, r.hair, -20, 30, 0));      // yan saçlar
-  bas.add(kutu(6, 15, 38, r.hair, 20, 30, 0));
-  bas.add(kutu(12, 8, 4, r.hair, -13, 32, 19.4));    // dağınık kahküller
-  bas.add(kutu(10, 10, 4, r.hair, -2, 30, 20));
-  bas.add(kutu(11, 7, 4, r.hair, 10, 33, 19.4));
+  bas.add(konturla(kutu(40, 40, 38, r.skin, 0, 20, 0)));
+  for (const yon of [-1, 1]) bas.add(kutu(6, 11, 9, r.skin, yon * 21, 20, 0)); // kulaklar
+  const sac = r.hair;
+  bas.add(konturla(kutu(42, 13, 40, sac, 0, 37, 0)));  // saç tepesi
+  bas.add(kutu(7, 17, 38, sac, -20, 29, 0));           // yan saçlar
+  bas.add(kutu(7, 17, 38, sac, 20, 29, 0));
+  // Dağınık saç tutamları: birkaç eğik kutu (düz tek kutu değil)
+  const tutamlar = [[-14, -3, 0.35, 12, 11, 12], [-3, 3, -0.4, 14, 13, 14], [9, -4, 0.45, 12, 10, 12],
+    [17, 6, -0.25, 8, 9, 10], [-18, 7, 0.2, 8, 9, 10], [4, 9, 0.15, 10, 10, 11]];
+  for (const [x, z, egim, w, h, d] of tutamlar) {
+    const t = kutu(w, h, d, sac, x, 43 + h * 0.25, z);
+    t.rotation.z = egim; t.rotation.x = z * 0.012;
+    bas.add(t);
+  }
+  // Alnın üstüne düşen kahküller
+  for (const [x, y, egim, w, h] of [[-14, 33, -0.3, 9, 10], [-5, 31, 0.2, 10, 12], [4, 32, -0.25, 9, 11], [13, 34, 0.35, 8, 9]]) {
+    const k = kutu(w, h, 5, sac, x, y, 19.6);
+    k.rotation.z = egim;
+    bas.add(k);
+  }
   const gozler = [];
   for (const yon of [-1, 1]) {
-    const goz = kutu(6, 8, 1.5, "#111827", yon * 8, 24, 19.4);
+    bas.add(kutu(10, 12, 2.5, "#ffffff", yon * 9, 23, 19.2));           // beyaz göz
+    const goz = kutu(5.4, 7, 2, "#111827", yon * 9, 22.5, 20.4);        // bebek
     bas.add(goz); gozler.push(goz);
-    bas.add(kutu(1.8, 1.8, 0.8, "#ffffff", yon * 8 - 1.6, 26, 20.1)); // küçük parlama
+    bas.add(kutu(2.2, 2.2, 1, "#ffffff", yon * 9 - 1.8, 25.6, 21.2));   // parlak nokta
+    bas.add(kutu(6, 1.8, 1.6, sac, yon * 9, 31, 19.8));                 // küçük kaş
   }
-  bas.add(kutu(10, 1.6, 1.2, "#7c2d12", 0, 16, 19.5)); // gülümseme
+  bas.add(kutu(6, 1.6, 1.4, "#7c2d12", 0, 15.5, 19.7));                 // gülümseme ortası
+  for (const yon of [-1, 1]) {
+    const dudak = kutu(3.5, 1.5, 1.2, "#7c2d12", yon * 4.2, 16.3, 19.6);
+    dudak.rotation.z = yon * 0.5;
+    bas.add(dudak);
+  }
+  for (const yon of [-1, 1]) bas.add(kutu(6, 3.5, 1.4, "#f9a8d4", yon * 14, 16, 19.2)); // pembe yanaklar
   if (costumeIdx === 1) { // Pembe Prenses: küçük altın taç
-    bas.add(kutu(14, 4, 14, "#fbbf24", 0, 44, 0));
-    for (const x of [-5, 0, 5]) bas.add(kutu(3, 6, 3, "#fbbf24", x, 47, 0));
+    bas.add(konturla(kutu(15, 4, 15, "#fbbf24", 0, 45, 0), 1.05));
+    for (const x of [-5, 0, 5]) bas.add(kutu(3, 6, 3, "#fbbf24", x, 48.5, 0));
   }
 
   const omuzSag = grup(15, 24, 0); govde.add(omuzSag);
   const kolSag = grup(); omuzSag.add(kolSag);
-  kolSag.add(kutu(8, 20, 8, r.body, 0, -10, 0));
+  kolSag.add(konturla(kutu(8, 21, 8, kolRenk, 0, -10, 0), 1.05));
   const elSag = grup(0, -20, 0); kolSag.add(elSag);
-  elSag.add(kutu(8, 8, 8, r.skin, 0, -2, 0));
+  elSag.add(kutu(9, 9, 9, r.skin, 0, -2, 0, null)); // yumruk
   const silah = silahKur(charKey);
   elSag.add(silah.grup);
 
   const omuzSol = grup(-15, 24, 0); govde.add(omuzSol);
   const kolSol = grup(); omuzSol.add(kolSol);
-  kolSol.add(kutu(8, 20, 8, r.body, 0, -10, 0));
+  kolSol.add(konturla(kutu(8, 21, 8, kolRenk, 0, -10, 0), 1.05));
   const elSol = grup(0, -20, 0); kolSol.add(elSol);
-  elSol.add(kutu(8, 8, 8, r.skin, 0, -2, 0));
+  elSol.add(kutu(9, 9, 9, r.skin, 0, -2, 0)); // öbür yumruk
 
   const bacakSag = grup(7, 0, 0); kalca.add(bacakSag);
   bacakSag.add(kutu(9, 26, 10, r.body, 0, -13, 0));
-  bacakSag.add(kutu(10, 7, 12, "#374151", 0, -28.5, 1)); // koyu gri bot
+  bacakSag.add(kutu(10, 8, 13, "#374151", 0, -27, 1));   // koyu gri bot
+  bacakSag.add(kutu(11, 3, 14, "#9ca3af", 0, -30.5, 1)); // açık taban
   const bacakSol = grup(-7, 0, 0); kalca.add(bacakSol);
   bacakSol.add(kutu(9, 26, 10, r.body, 0, -13, 0));
-  bacakSol.add(kutu(10, 7, 12, "#374151", 0, -28.5, 1));
+  bacakSol.add(kutu(10, 8, 13, "#374151", 0, -27, 1));
+  bacakSol.add(kutu(11, 3, 14, "#9ca3af", 0, -30.5, 1));
 
+  return {
+    kok, kalca, govde, bas, gozler, namlu: silah.namlu,
+    omuzSag, kolSag, elSag, omuzSol, kolSol, elSol, bacakSag, bacakSol,
+  };
+}
+
+// Yardımcı robot (bot): gri metal gövde, iki mavi ışık, dişli ekran yüz, siyah saç tutamı, küçük blaster.
+function botIskelet() {
+  const metal = "#64748b", acikMetal = "#cbd5e1", koyuMetal = "#334155";
+  const kok = grup();
+  const kalca = grup(0, 30, 0); kok.add(kalca);
+  const govde = grup(); kalca.add(govde);
+  govde.add(konturla(kutu(30, 26, 18, metal, 0, 13, 0)));
+  govde.add(kutu(16, 14, 1.8, acikMetal, 0, 13, 9.4)); // göğüs paneli
+  govde.add(kutu(4, 4, 1.2, "#22d3ee", -4, 13, 10.4, "#22d3ee")); // iki mavi ışık
+  govde.add(kutu(4, 4, 1.2, "#22d3ee", 4, 13, 10.4, "#22d3ee"));
+  govde.add(kutu(32, 4, 19, koyuMetal, 0, 0, 0));      // bel halkası
+
+  const bas = grup(0, 26, 0); govde.add(bas);
+  bas.add(konturla(kutu(38, 34, 34, acikMetal, 0, 19, 0)));
+  bas.add(kutu(28, 22, 2.2, "#0f172a", 0, 20, 17.4));  // ekran
+  for (const yon of [-1, 1]) {
+    bas.add(kutu(7, 8, 1.4, "#22d3ee", yon * 7, 24, 18.8, "#22d3ee")); // mavi gözler
+  }
+  // Dişli ekran ağzı: beyaz diş sırası + koyu aralıklar
+  bas.add(kutu(17, 9, 1.4, "#f8fafc", 0, 13, 18.6));
+  for (const x of [-6, -2, 2, 6]) bas.add(kutu(1.4, 9, 1.6, "#0f172a", x, 13, 19.0));
+  // Siyah saç tutamı
+  const sac = "#27272a";
+  bas.add(konturla(kutu(30, 6, 28, sac, 0, 36, -1), 1.05));
+  for (const [x, z, egim] of [[-9, -2, 0.4], [0, 2, -0.3], [9, -3, 0.5]]) {
+    const t = kutu(8, 9, 8, sac, x, 40, z);
+    t.rotation.z = egim;
+    bas.add(t);
+  }
+
+  const omuzSag = grup(17, 22, 0); govde.add(omuzSag);
+  const kolSag = grup(); omuzSag.add(kolSag);
+  kolSag.add(konturla(kutu(8, 20, 8, metal, 0, -10, 0), 1.05));
+  const elSag = grup(0, -20, 0); kolSag.add(elSag);
+  elSag.add(kutu(10, 10, 10, acikMetal, 0, -2, 0));
+  const silah = botSilahKur();
+  elSag.add(silah.grup);
+
+  const omuzSol = grup(-17, 22, 0); govde.add(omuzSol);
+  const kolSol = grup(); omuzSol.add(kolSol);
+  kolSol.add(konturla(kutu(8, 20, 8, metal, 0, -10, 0), 1.05));
+  const elSol = grup(0, -20, 0); kolSol.add(elSol);
+  elSol.add(kutu(10, 10, 10, acikMetal, 0, -2, 0));
+
+  const bacakSag = grup(8, 0, 0); kalca.add(bacakSag);
+  bacakSag.add(kutu(9, 22, 10, koyuMetal, 0, -11, 0));
+  bacakSag.add(kutu(11, 6, 13, "#1e293b", 0, -24, 1)); // bot ayağı
+  const bacakSol = grup(-8, 0, 0); kalca.add(bacakSol);
+  bacakSol.add(kutu(9, 22, 10, koyuMetal, 0, -11, 0));
+  bacakSol.add(kutu(11, 6, 13, "#1e293b", 0, -24, 1));
+
+  const gozler = [];
   return {
     kok, kalca, govde, bas, gozler, namlu: silah.namlu,
     omuzSag, kolSag, elSag, omuzSol, kolSol, elSol, bacakSag, bacakSol,
@@ -168,13 +334,17 @@ function canlandir(rig, d, o, dt, simdi) {
   const kos = !!o.kosuyor;
   const yuru = !!o.yuruyor || (o.walkPhase || 0) > 0;
   const rec = Math.max(0, Math.min(1, o.shootRecoil || 0));
-  d.nisan += ((o.nisan || (o.aimRaise || 0) > 0.4 || rec > 0.05 ? 1 : 0) - d.nisan) * (dt > 0 ? 1 - Math.exp(-10 * dt) : 1);
+  const onizleme = !!o.onizleme; // önizlemeler her zaman nişanda, yavaş bir salınımla
+  d.nisan += ((onizleme || o.nisan || (o.aimRaise || 0) > 0.4 || rec > 0.05 ? 1 : 0) - d.nisan) * (dt > 0 ? 1 - Math.exp(-10 * dt) : 1);
+  const salinim = Math.sin(simdi / 1200);
   const hedef = {
     govdeX: (kos ? 0.17 : 0) - 0.08 * rec,
     bacakSagX: kos ? 0.87 * faz : yuru ? 0.52 * faz : 0,
     bacakSolX: kos ? -0.87 * faz : yuru ? -0.52 * faz : 0,
     omuzSolX: (kos ? -0.7 * faz : yuru ? -0.44 * faz : 0) + Math.sin(simdi / 900) * 0.04,
-    omuzSagX: d.nisan > 0.5 ? -Math.PI / 2 - 0.35 * rec : (yuru ? -0.2 * faz : 0),
+    // Nişanda ileri ve yere paralel; hedefsiz yürürken yarı kalkık (silah önde-aşağıda, gövde arkasında kalmaz).
+    omuzSagX: d.nisan > 0.5 ? -Math.PI / 2 - 0.35 * rec + salinim * 0.03
+      : (yuru ? -0.85 - 0.12 * faz : -0.45 + salinim * 0.05),
     elSagX: d.nisan > 0.5 ? -0.15 * rec : 0,
   };
   const k = dt > 0 ? 1 - Math.exp(-10 * dt) : 1;
@@ -231,33 +401,49 @@ function ciz(ctx, o) {
     sahne.add(rig.kok);
     aktifRig = rig;
   }
-  canlandir(rig, d, { ...secenek, kimlik }, dt, simdi);
+  canlandir(rig, d, { ...secenek, kimlik, onizleme: kimlik.indexOf("onizleme") === 0 }, dt, simdi);
   const n = Math.max(16, Math.min(256, Math.round(size * (window.devicePixelRatio || 1) * 1.3)));
   boyutAyarla(n);
-  renderer.render(sahne, kamera);
-  // En alt nokta botların ön-alt köşeleridir (kamera eğik olduğu için derinlik de dikeyde kayar):
-  // gerçek en alt pikseli ayak hizasına oturt ki gölge hariç alt kenar tam kk.alt*s olsun.
-  let altPx = -Infinity;
-  for (const bacak of [rig.bacakSag, rig.bacakSol]) {
-    for (const z of [-5, 7]) {
-      const v = new THREE.Vector3(0, -32, z); bacak.localToWorld(v); v.project(kamera);
-      altPx = Math.max(altPx, (1 - v.y) / 2 * n);
+  rig.kok.updateMatrixWorld(true);
+  // Her parçanın kendi kutusunu kameraya yansıt: tüm modelin (saç, taç, silah) sınırı, kırpılmadan.
+  kamera.zoom = 1;
+  kamera.updateProjectionMatrix();
+  kamera.updateMatrixWorld();
+  const kose = new THREE.Vector3();
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  rig.kok.traverse((parca) => {
+    if (!parca.isMesh || !parca.visible) return;
+    const g = parca.geometry;
+    if (!g.boundingBox) g.computeBoundingBox();
+    const bb = g.boundingBox;
+    if (!bb) return;
+    for (const cx of [bb.min.x, bb.max.x]) for (const cy of [bb.min.y, bb.max.y]) for (const cz of [bb.min.z, bb.max.z]) {
+      kose.set(cx, cy, cz).applyMatrix4(parca.matrixWorld).project(kamera);
+      if (kose.x < minX) minX = kose.x; if (kose.x > maxX) maxX = kose.x;
+      if (kose.y < minY) minY = kose.y; if (kose.y > maxY) maxY = kose.y;
     }
-  }
-  const tepe = new THREE.Vector3(0, 44, 0); rig.bas.localToWorld(tepe); tepe.project(kamera);
-  const tepePx = (1 - tepe.y) / 2 * n;
-  const ayak = new THREE.Vector3(0, 0, 0); rig.kok.localToWorld(ayak); ayak.project(kamera);
-  const ayakX = (ayak.x + 1) / 2 * n;
-  const izH = Math.max(1, Math.abs(altPx - tepePx));
+  });
+  const yari = Math.max(Math.abs(minX), Math.abs(maxX), Math.abs(minY), Math.abs(maxY), 1e-3);
+  kamera.zoom = Math.min(8, Math.max(0.05, 0.84 / yari)); // her yanda yaklaşık %8 pay
+  kamera.updateProjectionMatrix();
+  const z = kamera.zoom;
+  const pxX = (vx) => (vx * z + 1) / 2 * n;
+  const pxY = (vy) => (1 - vy * z) / 2 * n;
+  const ustPx = pxY(maxY), altPx = pxY(minY);
+  const ayak = new THREE.Vector3(); rig.kok.getWorldPosition(ayak); ayak.project(kamera);
+  const ayakX = pxX(ayak.x);
   const hedefBoy = (kk.alt - kk.ust) * s * 1.06;
-  const olcek = hedefBoy / izH;
+  const gorunum = hedefBoy * 0.92; // %8 üst pay: saç/silah tepeye yapışmaz
+  const izH = Math.max(1, altPx - ustPx);
+  const olcek = gorunum / izH;
   const dx = x - ayakX * olcek;
   const dy = y + kk.alt * s - altPx * olcek;
+  renderer.render(sahne, kamera);
   ctx.drawImage(tuval, dx, dy, n * olcek, n * olcek);
   // Namlu ucunun yerel ve ekran (ctx dönüşümü uygulanmış) noktası
   const m = new THREE.Vector3(); rig.namlu.getWorldPosition(m); m.project(kamera);
-  const mx = dx + ((m.x + 1) / 2 * n) * olcek;
-  const my = dy + ((1 - m.y) / 2 * n) * olcek;
+  const mx = dx + pxX(m.x) * olcek;
+  const my = dy + pxY(m.y) * olcek;
   d.namluYerel = { x: mx, y: my };
   try {
     const t = typeof ctx.getTransform === "function" ? ctx.getTransform() : null;

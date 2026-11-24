@@ -285,9 +285,152 @@ try {
     });
   }
 
+  // ---- 3D-2b: Ponko, Güllu, Rani, Beri — her kostüm, 8 yön, silah, imza ----
+  const YENI2 = ['ponko', 'gul', 'rani', 'beti'];
+  const yeni2 = await p.evaluate((chars) => {
+    const W = 220, H = 260, OX = 110, OY = 170, BOY2 = 80, s = BOY2 / 100;
+    const ciz = (ch, idx, aci, aim, kim) => {
+      const c = document.createElement('canvas'); c.width = W; c.height = H;
+      const x = c.getContext('2d');
+      drawCharacter(x, ch, idx, OX, OY, BOY2, 0, 0, aim, 0, '', null, aci, kim);
+      return x;
+    };
+    const ozet = (x) => {
+      const d = x.getImageData(0, 0, W, H).data;
+      let ust = H, alt = -1, dolu = 0;
+      for (let yy = 0; yy < H; yy++) for (let xx = 0; xx < W; xx++) {
+        if (d[(yy * W + xx) * 4 + 3] > 128) { dolu++; if (yy < ust) ust = yy; if (yy > alt) alt = yy; }
+      }
+      return { ust, alt, dolu };
+    };
+    const say = (x, test) => {
+      const d = x.getImageData(0, 0, W, H).data;
+      let n = 0;
+      for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 128 && test(d[i], d[i + 1], d[i + 2])) n++;
+      return n;
+    };
+    const fark = (a, b) => {
+      const da = a.getImageData(0, 0, W, H).data, db = b.getImageData(0, 0, W, H).data;
+      let n = 0;
+      for (let i = 0; i < da.length; i += 4) {
+        if (da[i + 3] > 128 || db[i + 3] > 128) {
+          if (Math.abs(da[i] - db[i]) + Math.abs(da[i + 1] - db[i + 1]) + Math.abs(da[i + 2] - db[i + 2]) > 60) n++;
+        }
+      }
+      return n;
+    };
+    // Görüntünün dikey kapsamına oranlı bantlarda en geniş dolu satır ve bölge piksel sayısı
+    const bantlar = (x) => {
+      const d = x.getImageData(0, 0, W, H).data;
+      let ust = H, alt = -1;
+      for (let yy = 0; yy < H; yy++) for (let xx = 0; xx < W; xx++) if (d[(yy * W + xx) * 4 + 3] > 128) { if (yy < ust) ust = yy; if (yy > alt) alt = yy; }
+      const h = Math.max(1, alt - ust + 1);
+      const genislik = (a, b) => {
+        let m = 0;
+        for (let yy = ust + Math.floor(h * a); yy < Math.min(alt + 1, ust + Math.ceil(h * b)); yy++) {
+          let sol = W, sag = -1;
+          for (let xx = 0; xx < W; xx++) if (d[(yy * W + xx) * 4 + 3] > 128) { if (xx < sol) sol = xx; if (xx > sag) sag = xx; }
+          if (sag >= sol) m = Math.max(m, sag - sol + 1);
+        }
+        return m;
+      };
+      const bolgeSay = (a, b, test) => {
+        let n = 0;
+        for (let yy = ust + Math.floor(h * a); yy < Math.min(alt + 1, ust + Math.ceil(h * b)); yy++) {
+          for (let xx = 0; xx < W; xx++) {
+            const i = (yy * W + xx) * 4;
+            if (d[i + 3] > 128 && test(d[i], d[i + 1], d[i + 2])) n++;
+          }
+        }
+        return n;
+      };
+      return { genislik, bolgeSay };
+    };
+    const sagKenar = (xx) => {
+      const d = xx.getImageData(0, 0, W, H).data;
+      let sag = -1;
+      for (let px = 0; px < W; px++) for (let py = 0; py < H; py++) {
+        if (d[(py * W + px) * 4 + 3] > 128 && px > sag) sag = px;
+      }
+      return sag;
+    };
+    const veri = {};
+    for (const ch of chars) {
+      const kos = COSTUMES[ch].length;
+      const adim = [];
+      for (let idx = 0; idx < kos; idx++) {
+        const kk = karakterKodKutusu(ch, idx);
+        const ayak = OY + kk.alt * s;
+        const ustSinir = ayak - (kk.alt - kk.ust) * s * 1.06;
+        const yonler = [];
+        for (let i = 0; i < 8; i++) {
+          const aci = i * Math.PI / 4;
+          const o = ozet(ciz(ch, idx, aci, 1, `${ch}-${idx}-${i}`));
+          yonler.push({ aci: +aci.toFixed(2), ust: o.ust, alt: o.alt, dolu: o.dolu, pay: o.ust - ustSinir, ayakFark: o.alt - ayak });
+        }
+        const nisanSag = sagKenar(ciz(ch, idx, Math.PI / 2, 1, `${ch}-${idx}-silah`));
+        const durusSag = sagKenar(ciz(ch, idx, Math.PI / 2, 0, `${ch}-${idx}-durus`));
+        adim.push({ idx, yonler, ayak, silahFark: nisanSag - durusSag });
+      }
+      veri[ch] = { adim };
+    }
+    // İmzalar
+    const imza = {};
+    const pBant = bantlar(ciz('ponko', 0, 0, 0, 'imza-ponko'));
+    imza.ponkoUst = pBant.genislik(0, 0.35);       // şapka tepesi/kenarı
+    imza.ponkoOmuz = pBant.genislik(0.46, 0.62);   // omuz hizası
+    imza.gulAltin = say(ciz('gul', 0, 0, 0, 'imza-gul'), (r, g, b) => r > 200 && g > 150 && b < 130);
+    const rBant = bantlar(ciz('rani', 0, 0, 0, 'imza-rani'));
+    imza.raniBas = rBant.genislik(0, 0.3);         // topuzlu baş
+    imza.raniGovde = rBant.genislik(0.42, 0.6);    // omuz/gövde
+    const betiBant = bantlar(ciz('beti', 0, 0, 0, 'imza-beti'));
+    imza.betiBeyaz = betiBant.bolgeSay(0, 0.15, (r, g, b) => r > 235 && g > 235 && b > 235); // berenin beyaz şeritleri
+    const hh = COSTUMES['beti'][0].hair;
+    const hr = parseInt(hh.slice(1, 3), 16), hg = parseInt(hh.slice(3, 5), 16), hb = parseInt(hh.slice(5, 7), 16);
+    imza.betiSac = betiBant.bolgeSay(0, 0.15, (r, g, b) => Math.abs(r - hr) < 55 && Math.abs(g - hg) < 55 && Math.abs(b - hb) < 55);
+    imza.kostumFark = {};
+    for (const ch of chars) {
+      const a = ciz(ch, 0, 0, 0, `kf2-${ch}-0`), b = ciz(ch, 1, 0, 0, `kf2-${ch}-1`), c = ciz(ch, 2, 0, 0, `kf2-${ch}-2`);
+      imza.kostumFark[ch] = [fark(a, b), fark(a, c)];
+    }
+    return { veri, imza };
+  }, YENI2);
+  const insanlar2 = { ponko: 'Ponko', gul: 'Güllu', rani: 'Rani', beti: 'Beri' };
+  for (const ch of YENI2) {
+    for (const a of yeni2.veri[ch].adim) {
+      sina(`${insanlar2[ch]} kostüm ${a.idx}: 8 yönde dolu, ayak hizasında, üstte kırpılma yok`, () => {
+        for (const k of a.yonler) {
+          assert.ok(k.dolu > 200, `aci=${k.aci} dolu=${k.dolu}`);
+          assert.ok(Math.abs(k.ayakFark) <= 8, `aci=${k.aci} alt=${k.alt} ayak=${a.ayak}`);
+          assert.ok(k.pay >= 3, `aci=${k.aci} pay=${k.pay}`);
+        }
+      });
+      sina(`${insanlar2[ch]} kostüm ${a.idx}: nişanda silah gövdenin önüne taşar`, () => {
+        assert.ok(a.silahFark >= 3, `fark=${a.silahFark}`);
+      });
+    }
+  }
+  sina('Ponko\'nun şapkası tepede omuzlardan geniştir', () => {
+    assert.ok(yeni2.imza.ponkoUst > yeni2.imza.ponkoOmuz * 1.15, `üst=${yeni2.imza.ponkoUst} omuz=${yeni2.imza.ponkoOmuz}`);
+  });
+  sina('Güllu\'nun başının üstünde altın taç pikselleri var', () => { assert.ok(yeni2.imza.gulAltin > 20, `altın=${yeni2.imza.gulAltin}`); });
+  sina('Rani\'nin yan topuzları başı gövdeden geniş yapar', () => {
+    assert.ok(yeni2.imza.raniBas > yeni2.imza.raniGovde * 1.2, `baş=${yeni2.imza.raniBas} gövde=${yeni2.imza.raniGovde}`);
+  });
+  sina('Beri\'nin beresinde beyaz ve saç rengi sarmal şeritler var', () => {
+    assert.ok(yeni2.imza.betiBeyaz > 3, `beyaz=${yeni2.imza.betiBeyaz}`);
+    assert.ok(yeni2.imza.betiSac > 3, `saç=${yeni2.imza.betiSac}`);
+  });
+  for (const ch of YENI2) {
+    sina(`${insanlar2[ch]}: kostüm renkleri birbirinden farklı`, () => {
+      const [f1, f2] = yeni2.imza.kostumFark[ch];
+      assert.ok(f1 > 100 && f2 > 100, `fark0-1=${f1} fark0-2=${f2}`);
+    });
+  }
+
   // ---- Bütün avcıların iletişim sayfası: test/ciktilar/uc-avcilar.png (ön 3/4, nişan) ----
   const sayfa = await p.evaluate(() => {
-    const avcilar = ['kinkin', 'veryi', 'kornet', 'mark', 'kent'];
+    const avcilar = ['kinkin', 'veryi', 'kornet', 'mark', 'kent', 'ponko', 'gul', 'rani', 'beti'];
     const T = 170, W = T * avcilar.length, H = 240;
     const c = document.createElement('canvas'); c.width = W; c.height = H;
     const x = c.getContext('2d');

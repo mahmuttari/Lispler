@@ -194,6 +194,10 @@ function silahKur(charKey) {
     case "kornet": return kornetSilahKur();
     case "mark": return markSilahKur();
     case "kent": return kentSilahKur();
+    case "ponko": return ponkoSilahKur();
+    case "gul": return gulSilahKur();
+    case "rani": return raniSilahKur();
+    case "beti": return betiSilahKur();
     case "bot": return botSilahKur();
     default: return kinkinSilahKur();
   }
@@ -289,6 +293,93 @@ function kentSilahKur() {
   g.add(kutu(1.6, 14, 1.6, "#f8fafc", 0, -20, 2));                // parlak sırt çizgisi
   const namlu = new THREE.Object3D();
   namlu.position.set(0, -33, 0);
+  g.add(namlu);
+  return { grup: g, namlu };
+}
+// Ponko'nun kovboy tabancası: koyu metal namlu, tahta kabza, altın tetik korkuluğu. Namlu yerel -Y'de.
+function ponkoSilahKur() {
+  const g = grup();
+  const metal = "#374151", ahsap = "#7c2d12";
+  g.add(konturla(kutu(6, 30, 7, metal, 0, -18, 0), 1.06));   // namlu/gövde
+  g.add(kutu(9, 8, 9, "#4b5563", 0, -3, 0));                 // silindir (kovan)
+  g.add(kutu(2.4, 7, 8.6, "#1f2937", 0, -3, 1.2));           // silindir yivi
+  const kabza = kutu(6, 12, 6, ahsap, 0, 6, -3);             // tahta kabza (el içinde)
+  kabza.rotation.x = -0.35;
+  g.add(kabza);
+  // Altın tetik korkuluğu: dört ince parçadan halka
+  g.add(kutu(5, 1.8, 4.5, "#fbbf24", 0, -1, -5));            // üst kol
+  g.add(kutu(1.8, 5, 4.5, "#fbbf24", -2.2, -4, -5));
+  g.add(kutu(1.8, 5, 4.5, "#fbbf24", 2.2, -4, -5));
+  g.add(kutu(5, 1.8, 4.5, "#fbbf24", 0, -7, -5));            // alt kol
+  g.add(kutu(2, 2, 2, "#fbbf24", 0, -32, 0));                // altın arpacık
+  const namlu = new THREE.Object3D();
+  namlu.position.set(0, -36, 0);
+  g.add(namlu);
+  return { grup: g, namlu };
+}
+// Güllu'nun uzun yayı: dik tutulur; gövde yerel Z boyunca uzanır (nişanda dikey görünür), kiriş arkada.
+// Sarı kabza bandı, oku yalnız ateşte görünür (ok meshesi canlandir'da açılır).
+function gulSilahKur() {
+  const g = grup();
+  const ahsap = "#7c2d12";
+  g.add(konturla(kutu(4, 12, 4, ahsap, 0, 0, 0), 1.05));          // tutamak
+  g.add(kutu(5, 6, 5, "#fbbf24", 0, 0, 0));                       // sarı kabza bandı
+  for (const yon of [1, -1]) {
+    for (const [z, y] of [[7, -10], [14, -15], [21, -8]]) {
+      g.add(kutu(3.2, 3.2, 8.5, ahsap, 0, y, yon * z));           // öne kavisli kollar
+    }
+    g.add(konturla(kutu(4.2, 4.2, 4, "#451a03", 0, 2, yon * 26), 1.05)); // uç topuzu (kirişe döner)
+  }
+  g.add(kutu(1.2, 1.2, 54, "#e5e7eb", 0, 2, 0));                  // kiriş (uçlar arası)
+  const ok = grup();
+  ok.add(kutu(2, 34, 2, "#92400e", 0, -20, 0));                   // ok gövdesi (ileri)
+  ok.add(kutu(4, 4, 4, "#9ca3af", 0, -38, 0));                    // ok ucu
+  ok.add(kutu(6, 3, 1.4, "#dc2626", 0, -6, 0));                   // tüy
+  ok.visible = false;
+  g.add(ok);
+  const namlu = new THREE.Object3D();
+  namlu.position.set(0, -40, 0);
+  g.add(namlu);
+  // Nişanda dikey (0), dinlenirken omuza yatık (-1.12): tutuş açısı yumuşak geçer.
+  return { grup: g, namlu, ok, dinlen: -1.12, nisan: 0 };
+}
+// Rani'nin Y biçimli sapanı: tahta gövde, iki kol, lastik bantlar ve taş. Namlu yerel -Y'de.
+function raniSilahKur() {
+  const g = grup();
+  const ahsap = "#7c2d12";
+  g.add(konturla(kutu(4.5, 14, 4.5, ahsap, 0, -3, 0), 1.05));     // sap
+  for (const yon of [-1, 1]) {
+    const kol = kutu(3.6, 17, 3.6, ahsap, yon * 5, -17, 0);       // Y'nin iki kolu
+    kol.rotation.z = yon * -0.42;
+    g.add(kol);
+    const bant = kutu(1.2, 14, 1.2, "#451a03", yon * 3, -21, 0);  // lastik bant
+    bant.rotation.z = yon * 0.3;
+    g.add(bant);
+  }
+  g.add(konturla(kure(5, "#fde68a", 0, -27, 0), 1.06));           // taş
+  g.add(kure(2.2, "#fef3c7", -1.4, -29, 1.2));                    // parıltı
+  const namlu = new THREE.Object3D();
+  namlu.position.set(0, -33, 0);
+  g.add(namlu);
+  return { grup: g, namlu };
+}
+// Beri'nin sarmal lolipop asası: beyaz çubuk, disk şeker ve yüzünde beyaz sarmal şeritler.
+function betiSilahKur(r) {
+  const g = grup();
+  const seker = (r && r.weapon) || "#ec4899";
+  g.add(konturla(kutu(2.8, 26, 2.8, "#f8fafc", 0, -9, 0), 1.05)); // beyaz çubuk
+  g.add(kutu(3.4, 4, 3.4, seker, 0, 3, 0));                       // tutamak halkası
+  const disk = silindir(13, 13, 4, seker, 0, -28, 0);
+  disk.rotation.z = Math.PI / 2;                                  // disk yüzü kameraya bakar
+  g.add(konturla(disk, 1.06));
+  for (let i = 0; i < 7; i++) {                                   // beyaz sarmal
+    const rad = 2.5 + i * 1.5, aci = i * 1.25;
+    const b = kutu(1.2, 2.4, 5, "#ffffff", -2.5, -28 + Math.cos(aci) * rad, Math.sin(aci) * rad);
+    b.rotation.x = aci;
+    g.add(b);
+  }
+  const namlu = new THREE.Object3D();
+  namlu.position.set(0, -38, 0);
   g.add(namlu);
   return { grup: g, namlu };
 }
@@ -417,8 +508,8 @@ function bacakCiz(g, renk, K) {
   if (K.bot === false) {
     g.add(kutu(10, 6, 12, renk, 0, -boy - 1, 1));
   } else {
-    g.add(kutu(10, 8, 13, "#374151", 0, -boy - 1, 1));   // koyu gri bot
-    g.add(kutu(11, 3, 14, "#9ca3af", 0, -boy - 4.5, 1)); // açık taban
+    g.add(kutu(10, 8, 13, K.botRenk || "#374151", 0, -boy - 1, 1));   // bot (varsayılan koyu gri)
+    g.add(kutu(11, 3, 14, K.tabanRenk || "#9ca3af", 0, -boy - 4.5, 1)); // açık taban
   }
 }
 
@@ -470,6 +561,7 @@ function iskelet(charKey, costumeIdx) {
     kok, kalca, govde, bas, gozler, namlu: silah.namlu,
     omuzSag, kolSag, elSag, omuzSol, kolSol, elSol, bacakSag, bacakSol,
     silahGrup: silah.grup,
+    silahOk: silah.ok || null,
     silahAci: silah.dinlen !== undefined ? { dinlen: silah.dinlen, nisan: silah.nisan || 0 } : null,
   };
 }
@@ -589,6 +681,130 @@ Object.assign(KARAKTER_3D, {
     },
     silah() { return kornetSilahKur(); },
   },
+  // ---- 3D-2b: Ponko, Güllu, Rani, Beri ----
+  ponko: {
+    bacakRenk: (r) => r.legs,
+    botRenk: "#4a2a10", tabanRenk: "#6b3f1d", // kahverengi kovboy botu
+    govde(govde, r) {
+      govde.add(kutu(16, 14, 1.8, acik(r.body, 0.35), 0, 16, 8.4)); // gömlek göğsü
+      govde.add(kutu(20, 5, 2, koyu(r.body, 0.3), 0, 26, 8.3));      // yaka
+      for (const x of [-7, 7]) govde.add(kutu(6, 6, 1.6, koyu(r.body, 0.2), x, 18, 8.5)); // göğüs cepleri
+      govde.add(kutu(28, 5, 17, "#5c3a14", 0, 1, 0));                // deri kemer
+      govde.add(kutu(7, 5, 1.9, "#fbbf24", 0, 1, 8.7));              // altın toka
+    },
+    sac(bas, r) {
+      const sac = r.hair;
+      bas.add(konturla(kutu(42, 10, 40, sac, 0, 36, 0)));            // şapka altı kısa saç
+      for (const yon of [-1, 1]) bas.add(kutu(6, 12, 36, sac, yon * 20, 30, 0)); // yan saç
+      for (const [x, y, w, h] of [[-12, 33, 9, 8], [-2, 32, 10, 9], [9, 33, 8, 8]]) {
+        bas.add(kutu(w, h, 5, sac, x, y, 19.6));                     // kahküller
+      }
+    },
+    basAksesuar(bas, r, costumeIdx) {
+      const altin = costumeIdx === 2;
+      const kenar = altin ? "#f59e0b" : "#5c3a14";
+      const tepe = altin ? "#fbbf24" : "#7c2d12";
+      const bant = altin ? "#7c2d12" : "#fbbf24";
+      bas.add(konturla(silindir(35, 37, 4, kenar, 0, 41, 0), 1.04));  // geniş şapka kenarı
+      bas.add(konturla(silindir(15, 18, 15, tepe, 0, 50, 0), 1.05));  // şapka tepesi
+      bas.add(silindir(18, 18, 3.5, bant, 0, 45, 0));                 // şapka bandı
+    },
+    silah() { return ponkoSilahKur(); },
+  },
+  gul: {
+    bacakRenk: (r) => r.legs,
+    botRenk: "#4a2a10", tabanRenk: "#6b3f1d",
+    govde(govde, r) {
+      govde.add(kutu(27, 5, 17, koyu(r.body, 0.18), 0, 1, 0));       // tunik eteği
+      govde.add(kutu(15, 12, 1.8, acik(r.body, 0.4), 0, 18, 8.4));   // göğüs
+      govde.add(kutu(22, 4, 2, acik(r.body, 0.55), 0, 27, 8.3));     // yaka
+    },
+    sac(bas, r) {
+      const sac = r.hair;
+      bas.add(konturla(kutu(44, 12, 42, sac, 0, 37, 0)));            // tepe
+      for (const yon of [-1, 1]) bas.add(konturla(kutu(8, 30, 42, sac, yon * 21, 25, 0), 1.04)); // omuza küt yanlar
+      bas.add(konturla(kutu(40, 24, 9, sac, 0, 22, -18), 1.04));     // arka
+      for (const [x, y, w, h] of [[-14, 33, 11, 10], [-3, 32, 12, 11], [8, 33, 10, 10], [16, 34, 7, 9]]) {
+        bas.add(kutu(w, h, 5, sac, x, y, 19.8));                     // düz kahküller
+      }
+    },
+    basAksesuar(bas) {
+      bas.add(konturla(kutu(20, 4, 18, "#fbbf24", 0, 43, 0), 1.05)); // altın taç tabanı
+      for (const x of [-7, 0, 7]) bas.add(kutu(4, 8, 4, "#fbbf24", x, 47, 0)); // taç dişleri
+      for (const x of [-3.5, 3.5]) bas.add(kutu(2.6, 5, 2.6, "#fde68a", x, 45.5, 0));
+      bas.add(kure(2.2, "#fef3c7", 0, 44.5, 8.6));                   // ön mücevher
+    },
+    silah() { return gulSilahKur(); },
+  },
+  rani: {
+    bacakRenk: (r) => r.legs,
+    botRenk: "#f8fafc", tabanRenk: "#cbd5e1", // beyaz spor ayakkabı
+    govde(govde, r) {
+      govde.add(kutu(16, 14, 1.8, acik(r.body, 0.45), 0, 16, 8.4));  // üst göğüs
+      govde.add(kutu(22, 4, 2, acik(r.body, 0.6), 0, 27, 8.3));      // yaka
+      govde.add(kutu(26, 4, 17, koyu(r.body, 0.2), 0, 1, 0));        // bel bandı
+      govde.add(kutu(5, 5, 1.4, "#fde047", 0, 17, 8.7));             // parıltı
+    },
+    sac(bas, r) {
+      const sac = r.hair;
+      bas.add(konturla(kutu(44, 12, 42, sac, 0, 37, 0)));            // tepe
+      for (const yon of [-1, 1]) {
+        bas.add(konturla(kure(9, sac, yon * 23, 34, -2), 1.06));     // yandaki topuzlar (başı genişletir)
+        bas.add(kure(3.4, acik(sac, 0.25), yon * 23, 38, 4));        // topuz parıltısı
+        bas.add(kutu(6, 16, 38, sac, yon * 21, 29, 0));              // yan saç
+      }
+      bas.add(konturla(kutu(40, 22, 9, sac, 0, 22, -18), 1.04));     // arka saç
+      for (const [x, y, w, h] of [[-13, 33, 9, 9], [-3, 32, 11, 10], [7, 33, 9, 9]]) {
+        bas.add(kutu(w, h, 5, sac, x, y, 19.8));                     // kahküller
+      }
+    },
+    silah() { return raniSilahKur(); },
+  },
+  beti: {
+    bacakRenk: (r) => r.legs, // mor pantolon
+    botRenk: "#4c1d95", tabanRenk: "#7c3aed",
+    govde(govde, r) {
+      govde.add(kutu(16, 14, 1.8, acik(r.body, 0.4), 0, 16, 8.4));   // üst
+      govde.add(kutu(22, 4, 2, acik(r.body, 0.6), 0, 27, 8.3));      // yaka
+      const kalpRenk = "#f472b6";                                    // göğüste küçük kalp
+      for (const yon of [-1, 1]) {
+        const k = kutu(5, 5, 1.4, kalpRenk, yon * 2.6, 18, 8.7);
+        k.rotation.z = Math.PI / 4;
+        govde.add(k);
+      }
+      const uc = koni(3.2, 5, kalpRenk, 0, 14.5, 8.7);
+      uc.rotation.x = Math.PI;
+      govde.add(uc);
+    },
+    sac(bas, r) {
+      const sac = r.hair;
+      bas.add(konturla(kutu(44, 12, 42, sac, 0, 37, 0)));            // tepe
+      for (const yon of [-1, 1]) {
+        bas.add(konturla(kutu(8, 26, 40, sac, yon * 21, 26, 0), 1.04)); // uzun yan saç
+        for (let i = 0; i < 4; i++) {                                // dalgalı tutamlar
+          const t = kutu(9, 8, 10, i % 2 ? koyu(sac, 0.08) : sac, yon * (21 + (i % 2 ? 2 : -2)), 14 - i * 6, -6);
+          t.rotation.z = yon * (i % 2 ? 0.25 : -0.2);
+          bas.add(t);
+        }
+      }
+      bas.add(konturla(kutu(40, 26, 9, sac, 0, 20, -18), 1.04));     // arka saç
+      for (const [x, y, w, h] of [[-13, 33, 10, 10], [-2, 32, 11, 11], [8, 33, 9, 10]]) {
+        bas.add(kutu(w, h, 5, sac, x, y, 19.8));                     // kahküller
+      }
+      // Lolipop gibi sarmal çizgili bere (saç rengi + beyaz)
+      const bere = grup(0, 44, 0);
+      bere.rotation.z = -0.16;
+      bere.add(konturla(silindir(17, 18, 7, sac, 0, 0, 0), 1.04));
+      for (let i = 0; i < 8; i++) {
+        const b = kutu(3, 1.6, 32, i % 2 ? "#ffffff" : acik(sac, 0.15), 0, 3.6, 0);
+        b.rotation.y = i * Math.PI / 8;
+        bere.add(b);
+      }
+      bere.add(kure(3, sac, 0, 5, 0));                               // tepedeki düğme
+      bas.add(bere);
+    },
+    silah(r) { return betiSilahKur(r); },
+  },
 });
 
 // Yardımcı robot (bot): gri metal gövde, iki mavi ışık, dişli ekran yüz, siyah saç tutamı, küçük blaster.
@@ -705,6 +921,8 @@ function canlandir(rig, d, o, dt, simdi) {
   if (rig.silahGrup && rig.silahAci) {
     rig.silahGrup.rotation.x = rig.silahAci.dinlen + (rig.silahAci.nisan - rig.silahAci.dinlen) * d.nisan;
   }
+  // Ok yalnız ateş ederken görünür (Güllu'nun yayı)
+  if (rig.silahOk) rig.silahOk.visible = rec > 0.05;
   // Ara sıra göz kırpma (göz kutuları dikeyde kısalır)
   const dongu = (simdi / 1000 + (o.kimlik || "").length * 0.37) % 3.4;
   const kirp = dongu < 0.1 ? 0.12 : 1;

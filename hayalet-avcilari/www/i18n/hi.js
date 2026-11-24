@@ -677,6 +677,7 @@ I18N.hi = {
   "Sevimli minik avcı.": "प्यारा छोटा शिकारी।",
   "Sıfırlandı!": "रीसेट हो गया!",
   "Sırt çantalı maceracı.": "बैकपैक वाला खोजी।",
+  "Sırt çantası haritalar, pusulalar ve atıştırmalıklarla dolu Marli, her macerada bir hazine arar. Hayaletlerin bıraktığı paraları ondan hızlı toplayan yoktur.": "नक्शों, कंपास और स्नैक्स से भरे बैगपैक वाली Marli, हर साहसिक कार्य में खजाना ढूंढती है। भूतों द्वारा छोड़े गए पैसे उससे तेज़ कोई नहीं इकट्ठा कर सकता।",
   "Silah": "हथियार",
   "Silsen'in bayrağının tepesindeki papatya hiç solmaz. Gittiği her yere bahar götürür; çiçek topları değdiği hayaleti ışığa çevirir.": "Silsen के झंडे के शीर्ष पर लगा गुलबहार कभी नहीं मुरझाता। जहाँ भी जाती है बसंत ले आती है; फूलों के गोले जिस भूत को छूते हैं उसे रोशनी में बदल देते हैं।",
   "Siose Pol köprüsü": "सी-ओ-से-पोल पुल",

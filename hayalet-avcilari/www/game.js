@@ -1104,8 +1104,8 @@ const GUNS = {
   baloncuk: { name: t("Baloncuk Tabancası"), cost: 200,  desc: t("Hızlı atar: mavi baloncuklar."),             delayMul: 0.65, dmgMul: 1, speed: 460 },
   lazer:    { name: t("Kırmızı Lazer"),      cost: 350,  desc: t("Çok hızlı ışın, iki hayaleti birden deler."), delayMul: 1,    dmgMul: 1, speed: 820, pierce: 1 },
   yesil:    { name: t("Yeşil Çiftli"),       cost: 500,  desc: t("Her atışta yan yana iki mermi."),             delayMul: 1,    dmgMul: 1, speed: 500, twin: true },
-  pompali:  { name: t("Saçmalı Top"),        cost: 800,  desc: t("Bir atışta üç saçma, kısa menzil."),          delayMul: 1.15, dmgMul: 1, speed: 520, spread: [-0.22, 0, 0.22], life: 0.8 },
-  bazuka:   { name: t("Dev Bazuka"),         cost: 1200, desc: t("Yavaş ama üç kat hasar."),                    delayMul: 1.7,  dmgMul: 3, speed: 400 },
+  pompali:  { name: t("Saçmalı Top"),        cost: 800,  desc: t("Bir atışta üç saçma, kısa menzil."),          delayMul: 1.15, dmgMul: 1, speed: 520, spread: [-0.22, 0, 0.22], life: 0.4 },
+  bazuka:   { name: t("Dev Bazuka"),         cost: 1200, desc: t("Yavaş ama üç kat hasar."),                    delayMul: 1.3,  dmgMul: 3, speed: 400 },
 };
 
 // Takılı ve sahip olunan silahın anahtarı; yoksa "" (karakterin kendi silahı)
@@ -3775,6 +3775,8 @@ function odaKapandi() {
   game.menude = false;
   document.getElementById("screen-pause").classList.remove("active");
   document.getElementById("screen-gameover").classList.remove("active");
+  if (typeof turPerdeleriniKapat === "function") turPerdeleriniKapat();
+  if (typeof turMuzigiSondur === "function") turMuzigiSondur();
   showToast(t("Oda kapandı"));
   showScreen("screen-online");
   durumumuYaz();
@@ -6110,7 +6112,7 @@ function update(dt, now) {
       // Kasırga donmuş hayaleti de ezsin
       if (playerKasirga) {
         const ddx = g.x - game.player.x, ddy = g.y - game.player.y;
-        if (ddx * ddx + ddy * ddy < KASIRGA_R * KASIRGA_R) g.hp -= KASIRGA_DPS * dt;
+        if (ddx * ddx + ddy * ddy < KASIRGA_R * KASIRGA_R) g.hp -= (g.isBoss ? KASIRGA_DPS : KASIRGA_YAKALA_DPS) * dt;
       }
       continue;
     }
@@ -6382,8 +6384,11 @@ function update(dt, now) {
   // Otomatik atış (en yakın hayalete) — güçle hızlanır (spectator atış yapamaz)
   const firePower = getActivePower();
   let fireDelay = game.player.fireDelay;
-  if (firePower && firePower.type === "ponko") fireDelay = fireDelay / 3;
-  if (GUNS[game.player.gun]) fireDelay *= GUNS[game.player.gun].delayMul;
+  // Güç ve silah hız çarpanları çarpılmaz, toplanır: Ponko (÷3) + Baloncuk (0.65) → /(1 + 2 + 0.538...)
+  let hizCarpani = 1;
+  if (firePower && firePower.type === "ponko") hizCarpani += 3 - 1;
+  if (GUNS[game.player.gun]) hizCarpani += 1 / GUNS[game.player.gun].delayMul - 1;
+  fireDelay = Math.max(60, fireDelay / hizCarpani);
   updateBot(dt, now);
   petGuncelle(dt, now); // pet: oyuncuyu izler, yakındaki hayalete saldırır (pet.js)
   havaGuncelle(dt); // yarasalar ve fırtına bulutu: yalnız görsel (hava.js)
@@ -6859,9 +6864,11 @@ function fireProjectile(target) {
   const speed = gun ? gun.speed : 480;
   const baseAng = Math.atan2(dy, dx);
   const power = getActivePower();
-  let dmg = game.player.damage;
-  if (power && power.type === "veryi") dmg *= 3;
-  if (gun) dmg *= gun.dmgMul;
+  // Güç ve silah hasar çarpanları çarpılmaz, toplanır: Veryi (×3) + Bazuka (×3) → ×5
+  let dmgCarpani = 1;
+  if (power && power.type === "veryi") dmgCarpani += 3 - 1;
+  if (gun) dmgCarpani += gun.dmgMul - 1;
+  let dmg = game.player.damage * dmgCarpani;
 
   // Mermi deseni
   let offsets = [0]; // tek mermi varsayılan

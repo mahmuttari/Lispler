@@ -44,6 +44,7 @@ const reklam = {
   odulTuru: "zumrut",    // izlenen ödüllü reklamın ödülü: "zumrut" | "para"
   cevrimiciSonuc: false, // son oyun çevrimiçi turdu: sonuç ekranında ödüllü düğme yok
   devamSonucu: null,     // reklamla devam bekleniyor: sonuç bu işleve gider (zümrüt ödülü verilmez)
+  gecisZamanlayici: null, // oyun bitişinde 800 ms sonra gösterilecek geçiş reklamının zamanlayıcısı
   gizlilikGerekli: false,
 };
 
@@ -129,7 +130,8 @@ function reklamOyunBitti(bilgi = {}) {
   if (ad && reklam.hazir && gecisUygunMu(bilgi, k, simdi)) {
     if (!reklam.gecisYuklu) gecisYukle(); // hazır değil: sayaç sürer, sonraki oyun sonunda
     else {
-      setTimeout(() => {
+      reklam.gecisZamanlayici = setTimeout(() => {
+        reklam.gecisZamanlayici = null;
         // Bu arada yeni oyun başladıysa ("Tekrar Oyna") ya da ekrandan çıkıldıysa reklam gösterilmez: hak sonraki oyun sonuna
         if (game.running || !document.getElementById("screen-gameover").classList.contains("active")) return;
         const k2 = save.reklam; k2.sure = 0; k2.son.push(Date.now()); persistSave();
@@ -148,6 +150,8 @@ async function odulluIzle(tur = "zumrut") {
   reklam.odulTuru = tur;
   reklam.odulKazanildi = false;
   reklam.odulluYuklu = false;
+  // Ödüllü reklam başladı: 800 ms sonra çıkacak bekleyen geçiş reklamı gösterilmesin
+  if (reklam.gecisZamanlayici !== null) { clearTimeout(reklam.gecisZamanlayici); reklam.gecisZamanlayici = null; }
   odulDugmesiniGuncelle();
   try {
     await ad.showRewardVideoAd();
@@ -211,7 +215,8 @@ function odulluKapandi() {
     save.reklam.sure = 0; // kendi isteğiyle reklam izleyene bir sonraki geçiş reklamı için süre yeniden başlar
     persistSave();
     const el = document.getElementById("final-zumrut");
-    if (el) el.textContent = String(Number(el.textContent || 0) + REKLAM.odulZumrut);
+    if (typeof odulSayaclariniBitir === "function") odulSayaclariniBitir(); // oyun sonu sayacı sürüyorsa önce bitir
+    if (el) { const yeni = Number(el.dataset.son || el.textContent || 0) + REKLAM.odulZumrut; el.dataset.son = String(yeni); el.textContent = String(yeni); }
     showToast(t("💚 +{n} zümrüt kazandın!", { n: REKLAM.odulZumrut }));
   }
   reklam.odulKazanildi = false;

@@ -14,8 +14,8 @@ Karakter kuralları `../ham3d/DURUM.md` ile aynıdır.
 | U06 | Para ve ödüller | üretildi (1. deneme, referans D01); toplu gösterim bekleniyor |
 | U07 | Menü simgeleri 1 | üretildi (1. deneme, referans D01); Güllu'nun tacı sivri (D04'te kare taç); 2. ve 6. hücre sol kenara 3–6 px; toplu gösterim bekleniyor |
 | U08 | Menü simgeleri 2 | üretildi (1. deneme, referans D01); Güllu'nun tacı sivri; 1. hücrede el sol kenara 18 px; toplu gösterim bekleniyor |
-| U09 | Giriş ekranı kahraman resmi (dikey) | üretildi (1. deneme, referans D01), kullanıcı onayı bekleniyor; kusurlar: Marli'nin saçı siyah topuz (Rani'ninki gibi), Kornet'in yüzü kızgın, Güllu'nun tacı sivri, kenar boşluğu yok (yan ve alt kenara değiyor) |
-| U10 | Oyun sonu ve olay amblemleri | bekliyor |
+| U09 | Giriş ekranı kahraman resmi (dikey) | **tamam**: 1. denemede kullanıcı bu haliyle onayladı (referans D01); bilinen kusurlar: Marli'nin saçı siyah topuz (Rani'ninki gibi), Kornet'in yüzü kızgın, Güllu'nun tacı sivri, kenar boşluğu yok (yan ve alt kenara değiyor) |
+| U10 | Oyun sonu ve olay amblemleri | üretildi (2. deneme, referans D01; 1. denemede 3. hücredeki kurdele 2. hücreye taşıyordu, düzeltme istemiyle yeniden üretildi); 3. hücre sol kenara 11 px, hücre sınırı aşılmıyor; gösterim bekleniyor |
 
 Üretim (23 Kasım 2026, yerel Claude): tek ChatGPT sohbeti, ARAYÜZ ANA İSTEMİ bir kez gönderildi. Paftalar ChatGPT'nin
 verdiği PNG olarak, işlenmeden kaydedilir (1536 × 1024, RGBA). Arka planda alfa 1–16 arası hafif bir pus kalır;

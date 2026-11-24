@@ -57,7 +57,7 @@ const KARAKTER_DETAY = {
     hikaye: t("Küçük bir krallığın prensesi Güllu, taht yerine ok ve yayı seçti. Attığı her ok hedefini bulur, patlayan hayaletler etrafındakileri de devirir."),
     silah: t("Kraliyet yayı"),
     guc: t("Patlama Vuruşu: 15 saniye boyunca yendiği her hayalet patlar ve yanındakilere de hasar verir."),
-    ipucu: t("Hayaletleri bir araya toplayıp ilkini vur: zincirleme patlamalar ekranı temizler."),
+    ipucu: t("Hayaletleri bir araya topla, sonra vur: patlayan her hayalet yanındakileri de yaralar."),
     zorluk: 2,
   },
   rani: {
@@ -73,7 +73,7 @@ const KARAKTER_DETAY = {
     hikaye: t("Lolipop bereli Beri, şeker fabrikasının en neşeli avcısıdır. Suya bile aldırmaz; göllerin içinden yürüyüp şekerden toplarıyla hayaletleri tatlı tatlı uğurlar."),
     silah: t("Şeker topları"),
     guc: t("Lolipop Yağmuru: 15 saniye boyunca her atışta beş yöne şeker topu saçar."),
-    ipucu: t("Suyun içinden geçebilen tek avcı: kaçarken göllere dal, hayaletler kıyıda kalsın."),
+    ipucu: t("Suyun içinden geçebilen tek avcı: kaçarken göllerden kestirme yap, yolun kısalsın."),
     zorluk: 2,
   },
   fanatik: {

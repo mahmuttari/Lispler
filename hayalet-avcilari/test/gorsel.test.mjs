@@ -42,6 +42,8 @@ await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, 
 await p.goto(adres, { waitUntil: 'load' });
 await p.waitForFunction(() => typeof hayaletResmiCiz === 'function' && typeof startGame === 'function');
 await p.waitForFunction((n) => Object.keys(GORSEL).length === n, Object.keys(LISTE).length, { timeout: 10000 });
+// Bu sınama eski 2D/resim çizim yolunu doğrular; yeni 3D avcı katmanı (uc-avci.test.mjs) kapatılır.
+await p.evaluate(() => { if (window.UcAvci && typeof UcAvci.kapat === 'function') UcAvci.kapat(); });
 try {
   const r = await p.evaluate((liste) => {
     const o = {};

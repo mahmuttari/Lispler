@@ -1621,7 +1621,17 @@ const UPGRADES = {
 };
 
 // ====== ÇİZİM YARDIMCILARI ======
-function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPhase = 0, aimRaise = 0, shootRecoil = 0, gunKey = "", bakisSol = null) {
+// Önizleme tuvalleri için kalıcı kimlik (uc-avci.js animasyon durumunu buna göre saklar)
+const _onizlemeKimlikleri = new WeakMap();
+let _onizlemeKimlikSayac = 0;
+function _onizlemeKimlik(ctx) {
+  const cv = ctx && ctx.canvas;
+  if (!cv) return "onizleme-" + (++_onizlemeKimlikSayac);
+  let k = _onizlemeKimlikleri.get(cv);
+  if (!k) { k = "onizleme-" + (++_onizlemeKimlikSayac); _onizlemeKimlikleri.set(cv, k); }
+  return k;
+}
+function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPhase = 0, aimRaise = 0, shootRecoil = 0, gunKey = "", bakisSol = null, aci3d = null, kimlik3d = null) {
   if (!CHARACTERS[charKey] || !COSTUMES[charKey]) charKey = "kinkin"; // yeni sürümden gelen oyuncunun karakteri bende yoksa
   const c = CHARACTERS[charKey];
   const cos = COSTUMES[charKey][costumeIdx] || COSTUMES[charKey][0];
@@ -1649,6 +1659,16 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
   ctx.beginPath();
   ctx.ellipse(0, 45 * s, 22 * s, 7 * s, 0, 0, Math.PI * 2);
   ctx.fill();
+
+  // Gerçek 3D avcı (uc-avci.js): gölgeden sonra model; çizdiyse 2D gövdeye hiç girilmez. Ölçüm sırasında (_karKodla) kapalı.
+  if (window.UcAvci && window.UcAvci.hazir && (typeof _karKodla === "undefined" || !_karKodla)) {
+    const kimlik = kimlik3d || (aci3d !== null ? "ben" : _onizlemeKimlik(ctx));
+    if (window.UcAvci.ciz(ctx, {
+      charKey, costumeIdx, x: 0, y: 0, size, aci: aci3d,
+      yuruyor: isWalking, kosuyor: false, walkPhase, shootRecoil,
+      aimRaise, nisan: aimRaise > 0.4, gunKey, kimlik,
+    })) { ctx.restore(); return; }
+  }
 
   // ChatGPT 3D karakter kareleri (A paftaları, gorsel.js): gövde kare kare resimden, silah koddan (nişan, geri tepme)
   // Kareler yandan, sağa dönük çizildi: sola bakarken (bakisSol) karakter ve silah birlikte yatay aynalanır. bakisSol
@@ -4292,6 +4312,10 @@ function uzaktakiAtislar(dt, simdi) {
     // yalnız belirgin yatay hareketle değişir (|cos| > 0.2), dururken son yön korunur
     if (hedef) rp.bakisSol = hedef.x < rp.x;
     else if (Math.abs(Math.cos(rp.facing || 0)) > 0.2) rp.bakisSol = Math.cos(rp.facing || 0) < 0;
+    // 3D model dönüşü: hedefe, yoksa yürüme yönüne; veri yoksa bakisSol → ±π/2
+    if (hedef) rp.aci3d = Math.atan2(hedef.x - rp.x, hedef.y - rp.y);
+    else if ((rp.sw || 0) > 0 && typeof rp.facing === "number") rp.aci3d = Math.atan2(Math.cos(rp.facing), Math.sin(rp.facing));
+    else if (typeof rp.aci3d !== "number") rp.aci3d = rp.bakisSol ? -Math.PI / 2 : Math.PI / 2;
     rp.recoil = Math.max(0, (rp.recoil || 0) - dt * 6);
     if (hedef && simdi - (rp.sonAtis || 0) >= c.baseFireDelay) {
       rp.sonAtis = simdi;
@@ -4990,6 +5014,11 @@ window.addEventListener("gorsel-yuklendi", () => {
   const ekran = document.getElementById("screen-characters");
   if (ekran && ekran.classList.contains("active")) refreshCharacters();
 });
+// 3D avcı modülü hazır olunca açık karakter ekranındaki kartlar yeniden çizilir (önizlemeler 3D'ye geçer)
+window.addEventListener("uc-avci-hazir", () => {
+  const ekran = document.getElementById("screen-characters");
+  if (ekran && ekran.classList.contains("active")) refreshCharacters();
+});
 
 let currentShopTab = "upgrades";
 function showShopTab(tab) {
@@ -5548,6 +5577,7 @@ function startGame(secenek) {
     costumeIdx: save.selectedCostume[charKey],
     facing: 0,
     bakisSol: false, // 3D kareler sağa dönük: sola bakarken yatay aynalanır (ateşte hedefe, yoksa yürüme yönüne bakar)
+    aci3d: null, // 3D modelin dönüşü (atan2(dx, dy)); hedefe, yoksa hareket yönüne bakar, dururken korunur
     waterImmune: !!CHARACTERS[charKey].waterImmune,
     power: null,
     aimRaise: 0,
@@ -5878,6 +5908,8 @@ function update(dt, now) {
       if (kayarakYuru(game.player, nx - game.player.x, ny - game.player.y, engel, mesafe)) movedThisFrame = true;
     }
   }
+  // 3D bakış: hedef yokken hareket yönü (atan2(dx, dy)); dururken önceki yön korunur
+  if (movedThisFrame) game.player.aci3d = Math.atan2(dirX, dirY);
   // Yürüme animasyonu fazı
   if (movedThisFrame) {
     game.player.walkTimer = (game.player.walkTimer || 0) + dt;
@@ -6281,6 +6313,7 @@ function update(dt, now) {
   // Silah yükseltme/indirme animasyonu: hedef varken yukarı çekilir, yoksa iner
   if (fireTarget) {
     game.player.bakisSol = fireTarget.x < game.player.x; // 3D kareler: ateş edilen hedefe bak
+    game.player.aci3d = Math.atan2(fireTarget.x - game.player.x, fireTarget.y - game.player.y);
     game.player.aimRaise = Math.min(1, (game.player.aimRaise || 0) + dt * 6);
   } else {
     game.player.aimRaise = Math.max(0, (game.player.aimRaise || 0) - dt * 4);
@@ -7091,7 +7124,8 @@ function render() {
         ctx.save();
         if (rp.invisible) ctx.globalAlpha = 0.4;
         drawCharacter(ctx, rp.charKey || "kinkin", rp.costumeIdx || 0, rp.x, rp.y, 70, rp.facing || 0, rp.yurume || 0,
-          rp.aimRaise || 0, rp.recoil || 0, "", !!rp.bakisSol);
+          rp.aimRaise || 0, rp.recoil || 0, "", !!rp.bakisSol,
+          typeof rp.aci3d === "number" ? rp.aci3d : null, uid);
         ctx.restore();
       }
       // İsim etiketi (host'un adında taç)
@@ -7141,10 +7175,10 @@ function render() {
     } else if (isInvisible) {
       ctx.save();
       ctx.globalAlpha = 0.4;
-      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol);
+      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol, game.player.aci3d, "ben");
       ctx.restore();
     } else {
-      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol);
+      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol, game.player.aci3d, "ben");
     }
   }
   if (batma) ctx.restore();

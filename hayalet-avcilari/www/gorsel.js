@@ -328,6 +328,12 @@ window.addEventListener("gorsel-yuklendi", () => {
   for (const o of _onizlemeler) canliOnizlemeCiz(o, an, true);
 });
 
+// 3D avcı modülü hazır olunca kayıtlı önizlemeler bir kez yeniden çizilir (kartlar 3D'ye geçer)
+window.addEventListener("uc-avci-hazir", () => {
+  const an = performance.now();
+  for (const o of _onizlemeler) canliOnizlemeCiz(o, an, true);
+});
+
 gorselYukle();
 
 // ---- Kare kare animasyonlar (N01–N13; an-<ad>-<n>.webp) ----

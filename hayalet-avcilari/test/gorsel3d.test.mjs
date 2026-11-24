@@ -35,6 +35,8 @@ await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, 
 await p.goto(adres, { waitUntil: 'load' });
 await p.waitForFunction(() => typeof karakter3dKare === 'function' && typeof startGame === 'function');
 await p.waitForFunction((n) => Object.keys(GORSEL).length === n, Object.keys(LISTE).length, { timeout: 10000 });
+// Bu sınama eski 2D/kare çizim yolunu doğrular; yeni 3D avcı katmanı (uc-avci.test.mjs) kapatılır.
+await p.evaluate(() => { if (window.UcAvci && typeof UcAvci.kapat === 'function') UcAvci.kapat(); });
 try {
   // 1) karakter3dKare: saf işlev; kare seçiminde rastgelelik yok
   const kare = await p.evaluate(() => {

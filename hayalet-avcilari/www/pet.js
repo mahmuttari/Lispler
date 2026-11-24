@@ -136,7 +136,14 @@ function petGuncelle(dt, now) {
       if (now - p.sonVurus >= tanim.ara * 1000) {
         p.sonVurus = now;
         p.saldiri = 1;
-        if (tanim.sersem && online.mode !== "client") hedef.frozenUntil = Math.max(hedef.frozenUntil || 0, performance.now() + tanim.sersem * 1000);
+        if (tanim.sersem) {
+          if (online.mode === "client") {
+            // İstemcinin köpeği sersemletti: host kendi peti gibi dondursun
+            if (typeof hedef._idx === "number") online.pendingEvents.push({ type: "stun", gi: hedef._idx, duration: tanim.sersem * 1000 });
+          } else {
+            hedef.frozenUntil = Math.max(hedef.frozenUntil || 0, performance.now() + tanim.sersem * 1000);
+          }
+        }
         petVur(hedef, tanim.hasar + Math.floor((game.level - 1) / 6));
       }
     }

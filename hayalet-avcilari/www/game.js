@@ -4262,6 +4262,10 @@ function applyHostEvent(ev) {
   } else if (ev.type === "pickup") {
     const k = game.pickups.findIndex((p) => p.id === ev.pi);
     if (k >= 0) game.pickups.splice(k, 1);
+  } else if (ev.type === "stun") {
+    // İstemcinin köpeği hayaleti sersemletti: host kendi peti gibi dondurur (süre kurallarda izinli "duration" alanında)
+    const g = hayaletBul(ev.gi);
+    if (g) g.frozenUntil = Math.max(g.frozenUntil || 0, performance.now() + Math.min(3000, ev.duration || 600));
   } else if (ev.type === "areaDmg") {
     // {x,y,r,dmg} — bomba
     const r2 = (ev.r || 100) * (ev.r || 100);
@@ -4328,6 +4332,8 @@ function clientApplyLevel(newLevel) {
   buildWalls();
   buildWaters();
   buildHazards();
+  petKur(); // yanına alınan pet (pet.js): baygın pet yeni bölüme tam canla başlar
+  havaKur(); // yarasalar ve fırtına bulutu (hava.js)
   ensurePlayerSafe();
   yenidenDog();
   showToast(bolumBildirimi());

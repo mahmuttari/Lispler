@@ -44,8 +44,9 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 ## Sürüm notu
 
-🦇 Murciélagos vuelan por el bosque y una nube de tormenta lanza rayos sobre el jefe.
-🎨 Nuevo diseño y 🏆 top 500 de campeones.
-🎬 Mira un anuncio: sigue en la Gira mundial (3 veces por partida) o duplica tus monedas al final.
-🐊 Ahora hay cocodrilos en el agua: ¡si te quedas en la orilla, pueden morderte!
-🐾 ¡Llegan las mascotas: lleva un gato, un perro o un pájaro! Los fantasmas también les pegan; cada mascota tiene 5 vidas.
+🧊 ¡Cazadores en 3D real: giran, caminan y corren, con el arma siempre en la mano!
+👥 Nueva pantalla de Personajes: historia, poder y disfraces de cada cazador.
+⚡ ¡Armas y poderes animados: rayo, humo de cohete, bloque de hielo, aura de poder!
+🔊 Sonidos renovados; cada arma de la tienda suena distinto.
+⚙️ Nuevo botón "Personajes 3D" en el sonido; en móviles lentos el 3D se apaga solo.
+🛠️ Armas y mejoras más equilibradas, y muchas correcciones en línea.

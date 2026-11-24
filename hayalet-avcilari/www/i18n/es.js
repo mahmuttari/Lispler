@@ -263,7 +263,7 @@ I18N.es = {
   "🥉 3. sıraya girdin!": "🥉 ¡Llegaste al puesto 3!",
   "🥉 Turu 3. bitirdin!": "🥉 ¡Terminaste la ronda en 3.er lugar!",
   "🦇 Ormanda yarasalar uçuşuyor; boss'un tepesinde şimşek çakan bir fırtına bulutu dolaşıyor!": "🦇 Murciélagos vuelan por el bosque y una nube de tormenta lanza rayos sobre el jefe.",
-  "🧊 Avcılar artık gerçek 3D: her yöne dönüyor, yürüyor, koşuyor; silah hep elinde!": "🧊 ¡Los cazadores ahora son 3D de verdad: giran en todas direcciones, caminan, corren; ¡el arma siempre en la mano!",
+  "🧊 Avcılar artık gerçek 3D: her yöne dönüyor, yürüyor, koşuyor; silah hep elinde!": "🧊 ¡Los cazadores ahora son 3D de verdad: giran en todas direcciones, caminan y corren, con el arma siempre en la mano!",
   "🧹 Kalan: {n}": "🧹 Quedan: {n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 Menos anuncios: ninguno para jugadores nuevos ni tras partidas cortas.",
   "🚀 ODA KUR": "🚀 CREAR SALA",

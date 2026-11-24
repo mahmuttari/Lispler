@@ -3,3 +3,4 @@
 ⚡ Ek silahlar ve güçler animasyonlu: yıldırım, roket dumanı, buz bloğu, güç halesi!
 🔊 Bütün ses efektleri yenilendi; her mağaza silahının kendi atış sesi var.
 ⚙️ Ses ayarlarında yeni "3D karakterler" düğmesi; yavaş telefonda 3D kendiliğinden kapanır.
+🛠️ Daha dengeli silahlar ve birçok çevrimiçi düzeltme.

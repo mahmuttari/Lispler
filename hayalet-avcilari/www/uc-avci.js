@@ -13,6 +13,7 @@ let tuval = null;
 let tuvalBoyut = 0;
 const rigler = new Map();
 const durumlar = new Map();
+let _kareSayac = 0; // oyun karesi sayacı (kareBitti ile artar); önbellek tazeleme sıklığı buna bakar
 
 // Toon rampası: 3 kademeli (NearestFilter). Bütün gövde parçaları paylaşır.
 let _rampa = null;
@@ -1151,7 +1152,15 @@ function aciFarki(a) {
 function durumAl(kimlik) {
   let d = durumlar.get(kimlik);
   if (!d) {
-    d = { aci: null, son: 0, govdeX: 0, bacakSagX: 0, bacakSolX: 0, omuzSagX: 0, omuzSolX: 0, elSagX: 0, nisan: 0 };
+    // Kimliğe göre sabit kare fazı: avcılar aynı karede 3D'ye yüklenmesin, yük karelere dağılsın.
+    let h = 0;
+    const s = String(kimlik);
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    d = { aci: null, son: 0, govdeX: 0, bacakSagX: 0, bacakSolX: 0, omuzSagX: 0, omuzSolX: 0, elSagX: 0, nisan: 0,
+      faz: Math.abs(h) % 2,
+      // 2D önbellek: son çizilen 3D kare ve yerleşimi; aradaki karelerde yalnız drawImage yapılır
+      onbellek: null, gBoyut: 0, gAyakX: 0, gAltPx: 0, gOlcek: 1, gN: 0, namluX0: 0, namluY0: 0,
+      sonKare: -1e9, sonAci: null, sonDurum: "", sonRender: 0 };
     durumlar.set(kimlik, d);
   }
   return d;
@@ -1227,7 +1236,18 @@ function boyutAyarla(n) {
   renderer.setSize(n, n, false);
 }
 
+// Namlu ucunu 2D ctx dönüşümüyle ekran noktasına çevirip duruma yazar.
+function namluYaz(ctx, d, mx, my) {
+  d.namluYerel = { x: mx, y: my };
+  try {
+    const t = typeof ctx.getTransform === "function" ? ctx.getTransform() : null;
+    const p = t && typeof t.transformPoint === "function" ? t.transformPoint(new DOMPoint(mx, my)) : { x: mx, y: my };
+    d.namluEkran = { x: p.x, y: p.y };
+  } catch (_) { d.namluEkran = { x: mx, y: my }; }
+}
+
 // 2D ctx'e çizer: ayaklar (x, y + kk.alt*s), boy (kk.alt-kk.ust)*s*1.06. Çizdiyse true.
+// 3D model her 2. karede (önizlemede 20 fps) yeniden çizilir; aradaki karelerde son görüntü önbellekten basılır.
 function ciz(ctx, o) {
   if (!hazir || kapali) return false;
   const secenek = o || {};
@@ -1239,6 +1259,7 @@ function ciz(ctx, o) {
   const kk = (typeof window.karakterKodKutusu === "function" && window.karakterKodKutusu(charKey, costumeIdx))
     || { ust: -40, alt: 46 };
   const kimlik = secenek.kimlik || "onizleme";
+  const onizleme = kimlik.indexOf("onizleme") === 0;
   const d = durumAl(kimlik);
   const simdi = performance.now();
   const dt = d.son ? Math.min(0.12, Math.max(0, (simdi - d.son) / 1000)) : 0;
@@ -1250,6 +1271,27 @@ function ciz(ctx, o) {
     const adim = Math.min(Math.abs(fark), 12 * dt) * Math.sign(fark);
     d.aci += adim;
   }
+  // Duruş değişimi (yürü ↔ dur ↔ ateş başlangıcı, özel güç) anında tazelenir.
+  const yuru = !!secenek.yuruyor || (secenek.walkPhase || 0) > 0;
+  const durum = `${yuru ? 1 : 0}|${secenek.kosuyor ? 1 : 0}|${(secenek.shootRecoil || 0) > 0.05 ? 1 : 0}|${secenek.ozel || ""}`;
+  const aciDegisti = d.sonAci === null || Math.abs(aciFarki(d.aci - d.sonAci)) > 0.15;
+  const boyutDegisti = d.gBoyut !== size;
+  let tazele;
+  if (secenek.sadeceOnbellek) tazele = !d.onbellek || boyutDegisti; // 3'ten sonraki uzak oyuncular: yalnız önbellek
+  else if (onizleme) tazele = !d.onbellek || boyutDegisti || simdi - d.sonRender >= 50; // önizleme en çok 20 fps
+  else tazele = !d.onbellek || boyutDegisti || aciDegisti || durum !== d.sonDurum
+    || (_kareSayac - d.sonKare >= 2 && (_kareSayac & 1) === d.faz)
+    || simdi - d.sonRender >= 150; // kare sayacı ilerlemezse (çok yavaş/duraklamış döngü) bayat kalmasın
+
+  if (!tazele) {
+    // Önbellekteki görüntüyü güncel konuma bas; model yeniden çizilmez.
+    const dx = x - d.gAyakX * d.gOlcek;
+    const dy = y + kk.alt * s - d.gAltPx * d.gOlcek;
+    ctx.drawImage(d.onbellek, dx, dy, d.gN * d.gOlcek, d.gN * d.gOlcek);
+    namluYaz(ctx, d, dx + d.namluX0, dy + d.namluY0);
+    return true;
+  }
+
   const gunKey = secenek.gunKey || "";
   const rig = rigAl(charKey, costumeIdx, gunKey);
   if (aktifRig !== rig) {
@@ -1257,8 +1299,9 @@ function ciz(ctx, o) {
     sahne.add(rig.kok);
     aktifRig = rig;
   }
-  canlandir(rig, d, { ...secenek, kimlik, onizleme: kimlik.indexOf("onizleme") === 0 }, dt, simdi);
-  const n = Math.max(16, Math.min(256, Math.round(size * (window.devicePixelRatio || 1) * 1.3)));
+  canlandir(rig, d, { ...secenek, kimlik, onizleme }, dt, simdi);
+  // Oyun karakterinde kare 160 px (eskiden 256), önizlemede 256: oyun boyutunda hâlâ net.
+  const n = Math.max(16, Math.min(onizleme ? 256 : 160, Math.round(size * (window.devicePixelRatio || 1) * 1.3)));
   boyutAyarla(n);
   rig.kok.updateMatrixWorld(true);
   // Her parçanın kendi kutusunu kameraya yansıt: tüm modelin (saç, taç, silah) sınırı, kırpılmadan.
@@ -1295,17 +1338,21 @@ function ciz(ctx, o) {
   const dx = x - ayakX * olcek;
   const dy = y + kk.alt * s - altPx * olcek;
   renderer.render(sahne, kamera);
-  ctx.drawImage(tuval, dx, dy, n * olcek, n * olcek);
+  // Görüntüyü kimliğe özel 2D tuvale al: sonraki karelerde yalnız bu kopya basılır.
+  if (!d.onbellek) d.onbellek = document.createElement("canvas");
+  if (d.onbellek.width !== n || d.onbellek.height !== n) { d.onbellek.width = n; d.onbellek.height = n; }
+  const oc = d.onbellek.getContext("2d");
+  oc.clearRect(0, 0, n, n);
+  oc.drawImage(tuval, 0, 0);
+  ctx.drawImage(d.onbellek, dx, dy, n * olcek, n * olcek);
   // Namlu ucunun yerel ve ekran (ctx dönüşümü uygulanmış) noktası
   const m = new THREE.Vector3(); rig.namlu.getWorldPosition(m); m.project(kamera);
-  const mx = dx + pxX(m.x) * olcek;
-  const my = dy + pxY(m.y) * olcek;
-  d.namluYerel = { x: mx, y: my };
-  try {
-    const t = typeof ctx.getTransform === "function" ? ctx.getTransform() : null;
-    const p = t && typeof t.transformPoint === "function" ? t.transformPoint(new DOMPoint(mx, my)) : { x: mx, y: my };
-    d.namluEkran = { x: p.x, y: p.y };
-  } catch (_) { d.namluEkran = { x: mx, y: my }; }
+  const mx0 = pxX(m.x) * olcek, my0 = pxY(m.y) * olcek;
+  namluYaz(ctx, d, dx + mx0, dy + my0);
+  // Önbellek yerleşimi: sonraki (çizilmeyen) karelerde güncel x/y ile yeniden konumlanır.
+  d.gBoyut = size; d.gAyakX = ayakX; d.gAltPx = altPx; d.gOlcek = olcek; d.gN = n;
+  d.namluX0 = mx0; d.namluY0 = my0;
+  d.sonKare = _kareSayac; d.sonAci = d.aci; d.sonDurum = durum; d.sonRender = simdi;
   return true;
 }
 
@@ -1331,6 +1378,7 @@ function ac() {
     aktifRig = null;
     _yavasPencere.length = 0;
     _yavasBildirildi = false;
+    _kareUcMs = 0;
     api.hazir = true;
     api.ciz = ciz;
     api.namlu = namlu;
@@ -1341,22 +1389,33 @@ function ac() {
   }
 }
 
-// Başarım koruması: drawCharacter her UcAvci.ciz süresini buraya bildirir. Son 3 sn'nin ortalaması
-// 45 ms'yi aşarsa 3D kendiliğinden kapanır; oyun 'uc-avci-yavas' olayını dinleyip bildirir ve kaydeder.
+// Başarım koruması: drawCharacter her UcAvci.ciz süresini sureEkle ile o kareye ekler (kare toplamı).
+// Oyun döngüsü kare bitince kareBitti(kareMs) çağırır. Son 2 sn'nin ortalama kare süresi 40 ms'yi aşar ve
+// 3D payı (karedeki ciz toplamı) karenin %25'inden fazlaysa 3D kendiliğinden kapanır; oyun 'uc-avci-yavas'
+// olayını dinleyip bildirir ve kaydeder. Böylece çok avcıda tek çağrı 45 ms altında kalsa da yavaş kare yakalanır.
 const _yavasPencere = [];
 let _yavasBildirildi = false;
-const _yavasAyar = { pencereMs: 3000, esikMs: 45, enAz: 8 };
+let _kareUcMs = 0; // bu karede UcAvci.ciz çağrılarının toplam süresi
+const _yavasAyar = { pencereMs: 2000, esikMs: 40, enAz: 8, payEsik: 0.25 };
 function sureEkle(ms) {
   if (!hazir || kapali) return;
+  _kareUcMs += Math.max(0, Number(ms) || 0);
+}
+function kareBitti(kareMs) {
+  if (!hazir || kapali) return;
+  const ucMs = _kareUcMs;
+  _kareUcMs = 0;
+  _kareSayac++;
   const simdi = performance.now();
-  _yavasPencere.push({ t: simdi, ms: Math.max(0, Number(ms) || 0) });
+  _yavasPencere.push({ t: simdi, kareMs: Math.max(0, Number(kareMs) || 0), ucMs });
   while (_yavasPencere.length && simdi - _yavasPencere[0].t > _yavasAyar.pencereMs) _yavasPencere.shift();
   if (_yavasPencere.length < _yavasAyar.enAz) return;
-  const ort = _yavasPencere.reduce((a, b) => a + b.ms, 0) / _yavasPencere.length;
-  if (ort > _yavasAyar.esikMs && !_yavasBildirildi) {
+  const ort = _yavasPencere.reduce((a, b) => a + b.kareMs, 0) / _yavasPencere.length;
+  const ortUc = _yavasPencere.reduce((a, b) => a + b.ucMs, 0) / _yavasPencere.length;
+  if (ort > _yavasAyar.esikMs && ortUc > ort * _yavasAyar.payEsik && !_yavasBildirildi) {
     _yavasBildirildi = true;
     kapat();
-    try { window.dispatchEvent(new CustomEvent("uc-avci-yavas", { detail: { ort } })); } catch (_) { /* sessiz */ }
+    try { window.dispatchEvent(new CustomEvent("uc-avci-yavas", { detail: { ort, ortUc } })); } catch (_) { /* sessiz */ }
   }
 }
 
@@ -1368,6 +1427,7 @@ const api = {
   kapat,
   ac,
   sureEkle,
+  kareBitti,
   ayar: _yavasAyar,
 };
 window.UcAvci = api;
@@ -1381,6 +1441,6 @@ try {
   window.dispatchEvent(new Event("uc-avci-hazir"));
 } catch (_) {
   hazir = false;
-  window.UcAvci = { hazir: false, ciz: () => false, namlu: () => null, destek: () => false, kapat: () => {} };
+  window.UcAvci = { hazir: false, ciz: () => false, namlu: () => null, destek: () => false, kapat: () => {}, sureEkle: () => {}, kareBitti: () => {}, ayar: _yavasAyar };
 }
 

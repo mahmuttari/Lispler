@@ -1699,7 +1699,7 @@ function ucCizOlc(ctx, o) {
   if (window.UcAvci.sureEkle) window.UcAvci.sureEkle(performance.now() - bas);
   return sonuc;
 }
-function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPhase = 0, aimRaise = 0, shootRecoil = 0, gunKey = "", bakisSol = null, aci3d = null, kimlik3d = null, ozel3d = null) {
+function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPhase = 0, aimRaise = 0, shootRecoil = 0, gunKey = "", bakisSol = null, aci3d = null, kimlik3d = null, ozel3d = null, sadeceOnbellek = false) {
   if (!CHARACTERS[charKey] || !COSTUMES[charKey]) charKey = "kinkin"; // yeni sürümden gelen oyuncunun karakteri bende yoksa
   const c = CHARACTERS[charKey];
   const cos = COSTUMES[charKey][costumeIdx] || COSTUMES[charKey][0];
@@ -1734,7 +1734,7 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
     if (ucCizOlc(ctx, {
       charKey, costumeIdx, x: 0, y: 0, size, aci: aci3d,
       yuruyor: isWalking, kosuyor: false, walkPhase, shootRecoil,
-      aimRaise, nisan: aimRaise > 0.4, gunKey, kimlik, ozel: ozel3d || undefined,
+      aimRaise, nisan: aimRaise > 0.4, gunKey, kimlik, ozel: ozel3d || undefined, sadeceOnbellek,
     })) { ctx.restore(); return; }
   }
 
@@ -5843,6 +5843,7 @@ function readKeyboardInput() {
 // ====== OYUN DÖNGÜSÜ ======
 function gameLoop(now, no) {
   if (!game.running || no !== _donguNo) return;
+  const kareBas = performance.now();
   const dt = Math.min(0.05, (now - game.lastFrame) / 1000);
   game.lastFrame = now;
   if (!game.paused) {
@@ -5858,6 +5859,8 @@ function gameLoop(now, no) {
     if (window.showErrBanner) window.showErrBanner("render@" + (e.stack || e.message));
     console.error("render", e);
   }
+  // 3D başarım koruması: kare başına bir kez, tüm karenin süresi (3D payıyla birlikte) bildirilir.
+  if (window.UcAvci && window.UcAvci.kareBitti) window.UcAvci.kareBitti(performance.now() - kareBas);
   requestAnimationFrame((zaman) => gameLoop(zaman, no));
 }
 
@@ -7220,7 +7223,7 @@ function render() {
   if (online.mode) {
     const rps = online.remotePlayers || {};
     const hostUid = online.cachedRoom && online.cachedRoom.hostUid;
-    Object.keys(rps).forEach((uid) => {
+    Object.keys(rps).forEach((uid, sira) => {
       const rp = rps[uid];
       if (!rp || !Number.isFinite(rp.x) || !Number.isFinite(rp.y)) return;
       if (rp.gizli && !rp.dead) { caliGozleri(ctx, rp.x, rp.y, performance.now() / 1000); return; } // çalıda saklanıyor
@@ -7231,7 +7234,7 @@ function render() {
         if (rp.invisible) ctx.globalAlpha = 0.4;
         drawCharacter(ctx, rp.charKey || "kinkin", rp.costumeIdx || 0, rp.x, rp.y, 70, rp.facing || 0, rp.yurume || 0,
           rp.aimRaise || 0, rp.recoil || 0, "", !!rp.bakisSol,
-          typeof rp.aci3d === "number" ? rp.aci3d : null, uid);
+          typeof rp.aci3d === "number" ? rp.aci3d : null, uid, null, sira >= 3);
         ctx.restore();
       }
       // İsim etiketi (host'un adında taç)

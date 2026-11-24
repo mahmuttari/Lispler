@@ -785,19 +785,26 @@ try {
     assert.equal(ayar3d.acik.kayit, true);
   });
 
-  // j) Başarım koruması: ciz yavaşlatılınca (sahte) 3D kendiliğinden kapanır, save.ayar3d=false olur
+  // j) Başarım koruması: kare başına 3D toplamı ve kare süresi kareBitti ile bildirilir; yavaş karede 3D kapanır
   const koruma = await p.evaluate(() => {
     if (window.UcAvci.ac) UcAvci.ac();
+    const ayar0 = { ...UcAvci.ayar };
     UcAvci.ayar.pencereMs = 100000; UcAvci.ayar.esikMs = 40; UcAvci.ayar.enAz = 5;
     let olay = 0;
     window.addEventListener('uc-avci-yavas', () => { olay++; });
     const asil = UcAvci.ciz;
-    UcAvci.ciz = function () { const b = performance.now(); while (performance.now() - b < 50) { /* yavaş çizim */ } return false; };
+    UcAvci.ciz = function (ctx, o) {
+      const b = performance.now(); while (performance.now() - b < 50) { /* yavaş çizim */ }
+      return asil.call(this, ctx, o);
+    };
     const c = document.createElement('canvas'); c.width = 200; c.height = 240;
     const ctx = c.getContext('2d');
-    for (let i = 0; i < 6; i++) drawCharacter(ctx, 'kinkin', 0, 100, 140, 80, 0, 0, 0, 0, '', null, 0.6, `yavas-${i}`);
+    for (let kare = 0; kare < 8; kare++) {
+      for (let i = 0; i < 3; i++) drawCharacter(ctx, 'kinkin', 0, 100, 140, 80, 0, 0, 0, 0, '', null, 0.6, `yavas-${i}`);
+      UcAvci.kareBitti(100);
+    }
     UcAvci.ciz = asil;
-    UcAvci.ayar.pencereMs = 3000; UcAvci.ayar.esikMs = 45; UcAvci.ayar.enAz = 8;
+    Object.assign(UcAvci.ayar, ayar0);
     return { hazir: UcAvci.hazir, destek: UcAvci.destek(), sav: save.ayar3d, kayit: JSON.parse(localStorage.getItem(SAVE_KEY)).ayar3d, olay };
   });
   sina('Başarım koruması yavaş çizimde 3D\'yi kapatır ve save.ayar3d=false yazar', () => {
@@ -806,6 +813,51 @@ try {
     assert.equal(koruma.sav, false);
     assert.equal(koruma.kayit, false);
     assert.ok(koruma.olay >= 1, `olay=${koruma.olay}`);
+  });
+
+  // j2) Normal tek kişilik oyun SwiftShader'da 3 s sürerken 3D kendiliğinden kapanmaz
+  const surdurulebilir = await p.evaluate(async () => {
+    save.ayar3d = true; persistSave();
+    if (window.UcAvci.ac) UcAvci.ac();
+    startGame();
+    game.spawnTimer = 1e9; game.player.invuln = 1e9; game.player.hp = game.player.maxHp;
+    await new Promise((coz) => setTimeout(coz, 3000));
+    return { destek: UcAvci.destek(), hazir: UcAvci.hazir, calisiyor: game.running };
+  });
+  sina('SwiftShader\'da 3 sn normal oyun sonrası 3D hâlâ açık (destek true)', () => {
+    assert.equal(surdurulebilir.hazir, true);
+    assert.equal(surdurulebilir.destek, true);
+    assert.equal(surdurulebilir.calisiyor, true);
+  });
+
+  // j3) ciz her çağrıda +30 ms yavaşlarken kare başına 3 avcı: koruma 3 sn içinde 3D'yi kapatır
+  const ucAvciYavas = await p.evaluate(async () => {
+    game.running = false; // oyun döngüsünü durdur, kareleri elle sür
+    const ayar0 = { ...UcAvci.ayar };
+    UcAvci.ayar.pencereMs = 2000; UcAvci.ayar.esikMs = 40; UcAvci.ayar.enAz = 8;
+    const asil = UcAvci.ciz;
+    UcAvci.ciz = function (ctx, o) {
+      const b = performance.now(); while (performance.now() - b < 30) { /* +30 ms yapay yük */ }
+      return asil.call(this, ctx, o);
+    };
+    const c = document.createElement('canvas'); c.width = 220; c.height = 260;
+    const ctx = c.getContext('2d');
+    const bas = performance.now();
+    let kare = 0;
+    while (UcAvci.destek() && performance.now() - bas < 3000) {
+      const kb = performance.now();
+      for (let i = 0; i < 3; i++) drawCharacter(ctx, 'kinkin', 0, 60 + i * 70, 180, 80, 0, 0, 1, 0.2, '', null, 0.6, `hiz-${i}`);
+      UcAvci.kareBitti(performance.now() - kb);
+      kare++;
+      await new Promise((coz) => setTimeout(coz, 0));
+    }
+    UcAvci.ciz = asil;
+    Object.assign(UcAvci.ayar, ayar0);
+    return { destek: UcAvci.destek(), kare, sure: Math.round(performance.now() - bas) };
+  });
+  sina('3 avcı × +30 ms yavaş çizimde koruma 3 sn içinde 3D\'yi kapatır', () => {
+    assert.equal(ucAvciYavas.destek, false, `${ucAvciYavas.sure} ms, ${ucAvciYavas.kare} kare`);
+    assert.ok(ucAvciYavas.sure <= 3000, `süre=${ucAvciYavas.sure}`);
   });
 
   sina('SwiftShader sayfasında sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });

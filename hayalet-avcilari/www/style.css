@@ -247,7 +247,7 @@ html, body {
 .btn-small:active, .btn-geri:active { background: var(--yuzey-3); }
 
 /* Ses açma/kapama durumu */
-.sound-toggle.sound-off {
+.sound-toggle.sound-off, .btn-3d-toggle.sound-off {
   background: rgba(239, 68, 68, 0.18);
   border-color: rgba(239, 68, 68, 0.55);
   color: #fecaca;

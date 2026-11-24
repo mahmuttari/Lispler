@@ -750,6 +750,7 @@ const defaultSave = {
   // Dünya Turu (dunya-turu.js): en ileri açık ülke, damgalar (ISO kodu → zaman), ilk tamamlanma zamanı
   dunyaTuru: { acik: 1, damgalar: {}, bitti: 0 },
   soundEnabled: true,
+  ayar3d: true, // 3D avcılar açık (WebGL yoksa ya da başarım düşerse kapanır)
   volumes: { ghost: 1, fire: 1, sfx: 1, muzik: 0.6 }, // muzik: Dünya Turu müziği (muzik.js)
   accountCode: "",
 };
@@ -1631,7 +1632,14 @@ function _onizlemeKimlik(ctx) {
   if (!k) { k = "onizleme-" + (++_onizlemeKimlikSayac); _onizlemeKimlikleri.set(cv, k); }
   return k;
 }
-function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPhase = 0, aimRaise = 0, shootRecoil = 0, gunKey = "", bakisSol = null, aci3d = null, kimlik3d = null) {
+// 3D çizimi ölçer: UcAvci.ciz süresi başarım korumasına bildirilir (45 ms ortalamada 3D kapanır).
+function ucCizOlc(ctx, o) {
+  const bas = performance.now();
+  const sonuc = window.UcAvci.ciz(ctx, o);
+  if (window.UcAvci.sureEkle) window.UcAvci.sureEkle(performance.now() - bas);
+  return sonuc;
+}
+function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPhase = 0, aimRaise = 0, shootRecoil = 0, gunKey = "", bakisSol = null, aci3d = null, kimlik3d = null, ozel3d = null) {
   if (!CHARACTERS[charKey] || !COSTUMES[charKey]) charKey = "kinkin"; // yeni sürümden gelen oyuncunun karakteri bende yoksa
   const c = CHARACTERS[charKey];
   const cos = COSTUMES[charKey][costumeIdx] || COSTUMES[charKey][0];
@@ -1663,10 +1671,10 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
   // Gerçek 3D avcı (uc-avci.js): gölgeden sonra model; çizdiyse 2D gövdeye hiç girilmez. Ölçüm sırasında (_karKodla) kapalı.
   if (window.UcAvci && window.UcAvci.hazir && (typeof _karKodla === "undefined" || !_karKodla)) {
     const kimlik = kimlik3d || (aci3d !== null ? "ben" : _onizlemeKimlik(ctx));
-    if (window.UcAvci.ciz(ctx, {
+    if (ucCizOlc(ctx, {
       charKey, costumeIdx, x: 0, y: 0, size, aci: aci3d,
       yuruyor: isWalking, kosuyor: false, walkPhase, shootRecoil,
-      aimRaise, nisan: aimRaise > 0.4, gunKey, kimlik,
+      aimRaise, nisan: aimRaise > 0.4, gunKey, kimlik, ozel: ozel3d || undefined,
     })) { ctx.restore(); return; }
   }
 
@@ -5016,8 +5024,17 @@ window.addEventListener("gorsel-yuklendi", () => {
 });
 // 3D avcı modülü hazır olunca açık karakter ekranındaki kartlar yeniden çizilir (önizlemeler 3D'ye geçer)
 window.addEventListener("uc-avci-hazir", () => {
+  if (save && save.ayar3d === false && window.UcAvci && window.UcAvci.kapat) window.UcAvci.kapat();
+  refresh3dButton();
   const ekran = document.getElementById("screen-characters");
   if (ekran && ekran.classList.contains("active")) refreshCharacters();
+});
+// Başarım koruması 3D'yi kapattı: kullanıcıya söyle, seçimi kaydet.
+window.addEventListener("uc-avci-yavas", () => {
+  save.ayar3d = false;
+  persistSave();
+  refresh3dButton();
+  if (typeof showToast === "function") showToast(t("3D karakterler yavaşladığı için kapatıldı"));
 });
 
 let currentShopTab = "upgrades";
@@ -6462,6 +6479,7 @@ function update(dt, now) {
 
 function nextLevel() {
   game.level++;
+  if (game.player && !game.player.dead) game.player.sevincUntil = performance.now() + 1400; // kısa sevinç pozu
   if (!game.dunyaTuru) pgsBolum(game.level); // Dünya Turu Play Games'e yazılmaz
   game.levelTimer = 0;
   game.ghostsCaught = 0;
@@ -6959,7 +6977,7 @@ function drawBot(ctx, b) {
     const px = (game.player && Number.isFinite(game.player.x)) ? game.player.x : b.x;
     const py = (game.player && Number.isFinite(game.player.y)) ? game.player.y : b.y + 1;
     const aci = Math.atan2(px - b.x, py - b.y);
-    if (window.UcAvci.ciz(ctx, {
+    if (ucCizOlc(ctx, {
       charKey: "bot", costumeIdx: 0, x: 0, y: 0, size, aci,
       yuruyor: b.walkTimer > 0, walkPhase: b.walkTimer,
       aimRaise: b.aimRaise || 0, nisan: (b.aimRaise || 0) > 0.4,
@@ -7186,15 +7204,18 @@ function render() {
     // Spectator iken silah indirilmiş kalsın
     const ar = game.player.dead ? 0 : (game.player.aimRaise || 0);
     const rc = game.player.dead ? 0 : (game.player.shootRecoil || 0);
+    const aktifGuc = typeof getActivePower === "function" ? getActivePower() : null;
+    const ozel3d = (aktifGuc && aktifGuc.type === "fanatik") ? "tekme"
+      : ((game.player.sevincUntil || 0) > performance.now() ? "sevinc" : null);
     if (game.player.dead) {
       hayaletOyuncuCiz(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 0.5);
     } else if (isInvisible) {
       ctx.save();
       ctx.globalAlpha = 0.4;
-      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol, game.player.aci3d, "ben");
+      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol, game.player.aci3d, "ben", ozel3d);
       ctx.restore();
     } else {
-      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol, game.player.aci3d, "ben");
+      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol, game.player.aci3d, "ben", ozel3d);
     }
   }
   if (batma) ctx.restore();
@@ -7425,6 +7446,8 @@ function init() {
   audio.volumes = Object.assign({ ghost: 1, fire: 1, sfx: 1, muzik: 0.6 }, save.volumes || {});
   refreshSoundButtons();
   refreshSoundSliders();
+  refresh3dButton();
+  uc3dUygula(); // save.ayar3d kapalıysa 3D'yi kapat (modül sonra yüklenirse olayda uygulanır)
   // Firebase + auth state listener; oturum yoksa (ilk açılış, Google'dan çıkış, hesap silme) anonim giriş
   try {
     const auth = fbAuth();
@@ -7810,6 +7833,32 @@ function refreshSoundButtons() {
   });
 }
 
+// 3D karakterler aç/kapa (Ayarlar). Kapalıyken eski 2D çizim kullanılır.
+function refresh3dButton() {
+  const el = document.getElementById("btn-ayar3d");
+  if (!el) return;
+  const on = save.ayar3d !== false;
+  el.textContent = on ? t("Açık") : t("Kapalı");
+  el.classList.toggle("sound-off", !on);
+  const lbl = document.getElementById("lbl-ayar3d");
+  if (lbl) lbl.textContent = t("3D karakterler");
+}
+function toggle3d(zorla) {
+  save.ayar3d = typeof zorla === "boolean" ? zorla : save.ayar3d === false;
+  persistSave();
+  if (window.UcAvci) {
+    if (save.ayar3d) { if (window.UcAvci.ac) window.UcAvci.ac(); }
+    else if (window.UcAvci.kapat) window.UcAvci.kapat();
+  }
+  refresh3dButton();
+}
+function uc3dUygula() {
+  if (!window.UcAvci) return;
+  if (save.ayar3d === false) { if (window.UcAvci.kapat) window.UcAvci.kapat(); }
+  else if (!window.UcAvci.hazir && window.UcAvci.ac) window.UcAvci.ac();
+  refresh3dButton();
+}
+
 // Açılırken açık olan bütün ekranlar hatırlanır, kapanınca hepsine dönülür. Oyun içinde iki ekran açıktır (oyun +
 // üstünde ⏸ menüsü); 3.15.0'a kadar yalnız ilki hatırlanıyordu: ⏸ menüsü kayboluyor, oyun duraklatılmış kalıyor,
 // "Devam" görünmüyordu (3.15.1, test/ayarlar.test.mjs)
@@ -7819,6 +7868,7 @@ function openSoundSettings() {
   _soundReturnScreens = acik.length ? acik : ["screen-menu"];
   refreshSoundButtons();
   refreshSoundSliders();
+  refresh3dButton();
   showScreen("screen-sound");
 }
 

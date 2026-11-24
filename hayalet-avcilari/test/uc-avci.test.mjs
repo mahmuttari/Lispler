@@ -628,6 +628,110 @@ try {
     assert.equal(kapaliDurum.say, 0);
   });
 
+  // g) Yakın vuruş: Veryi'nin çekici ve Kenit'in hançeri atışta kol açısını değiştirir (yay)
+  const yakin = await p.evaluate(() => {
+    UcAvci.ac();
+    const ciz = (ch, rec, kim) => {
+      const c = document.createElement('canvas'); c.width = 200; c.height = 240;
+      drawCharacter(c.getContext('2d'), ch, 0, 100, 160, 80, 0, 0, 1, rec, '', null, 0.6, kim);
+      return c.getContext('2d').getImageData(0, 0, 200, 240).data;
+    };
+    const fark = (a, b) => {
+      let n = 0;
+      for (let i = 0; i < a.length; i += 4) {
+        if (a[i + 3] > 128 || b[i + 3] > 128) {
+          if (Math.abs(a[i] - b[i]) + Math.abs(a[i + 1] - b[i + 1]) + Math.abs(a[i + 2] - b[i + 2]) > 60) n++;
+        }
+      }
+      return n;
+    };
+    const o = {};
+    for (const ch of ['veryi', 'kent']) {
+      const sifir = ciz(ch, 0, `${ch}-vurus-0`);
+      o[ch] = { tam: fark(ciz(ch, 1, `${ch}-vurus-1`), sifir), ara: fark(ciz(ch, 0.6, `${ch}-vurus-6`), sifir) };
+    }
+    return o;
+  });
+  sina('Veryi çekici ve Kenit hançeri atışta kol açısını değiştirir (yay çizerek iner)', () => {
+    for (const ch of ['veryi', 'kent']) {
+      assert.ok(yakin[ch].tam > 100, `${ch} tam=${yakin[ch].tam}`);
+      assert.ok(yakin[ch].ara > 40, `${ch} ara=${yakin[ch].ara}`);
+    }
+  });
+
+  // h) Fanatik'in Tornado Tekme bayrağı modeli kendi çevresinde döndürür
+  const donme = await p.evaluate(async () => {
+    UcAvci.ac();
+    const kare = (kim) => new Promise((coz) => {
+      const c = document.createElement('canvas'); c.width = 200; c.height = 240;
+      const ctx = c.getContext('2d');
+      UcAvci.ciz(ctx, { charKey: 'fanatik', costumeIdx: 0, x: 100, y: 160, size: 80, aci: 0.55, aimRaise: 1, nisan: true, ozel: 'tekme', kimlik: kim });
+      setTimeout(() => coz(ctx.getImageData(0, 0, 200, 240).data), 220);
+    });
+    const a = await kare('fanatik-don');
+    const b = await kare('fanatik-don');
+    let n = 0;
+    for (let i = 0; i < a.length; i += 4) {
+      if (a[i + 3] > 128 || b[i + 3] > 128) {
+        if (Math.abs(a[i] - b[i]) + Math.abs(a[i + 1] - b[i + 1]) + Math.abs(a[i + 2] - b[i + 2]) > 60) n++;
+      }
+    }
+    return n;
+  });
+  sina('Fanatik tekme bayrağıyla zamanla döner (kareler farklı)', () => { assert.ok(donme > 150, `fark=${donme}`); });
+
+  // i) Ayarlar: 3D aç/kapa düğmesi UcAvci'yi açar/kapatır ve save.ayar3d'ye yazar
+  const ayar3d = await p.evaluate(() => {
+    save.ayar3d = true;
+    if (window.UcAvci.ac) UcAvci.ac();
+    refresh3dButton();
+    const bas = { hazir: UcAvci.hazir, btn: (document.getElementById('btn-ayar3d') || {}).textContent };
+    toggle3d(false);
+    const kapali = {
+      hazir: UcAvci.hazir, sav: save.ayar3d, btn: (document.getElementById('btn-ayar3d') || {}).textContent,
+      kayit: JSON.parse(localStorage.getItem(SAVE_KEY)).ayar3d,
+    };
+    toggle3d(true);
+    const acik = {
+      hazir: UcAvci.hazir, sav: save.ayar3d,
+      kayit: JSON.parse(localStorage.getItem(SAVE_KEY)).ayar3d,
+    };
+    return { bas, kapali, acik };
+  });
+  sina('Ayarlar düğmesi 3D\'yi kapatır (save.ayar3d=false, kalıcı) ve yeniden açar', () => {
+    assert.equal(ayar3d.bas.hazir, true);
+    assert.equal(ayar3d.kapali.hazir, false);
+    assert.equal(ayar3d.kapali.sav, false);
+    assert.equal(ayar3d.kapali.kayit, false);
+    assert.equal(ayar3d.kapali.btn, 'Kapalı');
+    assert.equal(ayar3d.acik.hazir, true);
+    assert.equal(ayar3d.acik.sav, true);
+    assert.equal(ayar3d.acik.kayit, true);
+  });
+
+  // j) Başarım koruması: ciz yavaşlatılınca (sahte) 3D kendiliğinden kapanır, save.ayar3d=false olur
+  const koruma = await p.evaluate(() => {
+    if (window.UcAvci.ac) UcAvci.ac();
+    UcAvci.ayar.pencereMs = 100000; UcAvci.ayar.esikMs = 40; UcAvci.ayar.enAz = 5;
+    let olay = 0;
+    window.addEventListener('uc-avci-yavas', () => { olay++; });
+    const asil = UcAvci.ciz;
+    UcAvci.ciz = function () { const b = performance.now(); while (performance.now() - b < 50) { /* yavaş çizim */ } return false; };
+    const c = document.createElement('canvas'); c.width = 200; c.height = 240;
+    const ctx = c.getContext('2d');
+    for (let i = 0; i < 6; i++) drawCharacter(ctx, 'kinkin', 0, 100, 140, 80, 0, 0, 0, 0, '', null, 0.6, `yavas-${i}`);
+    UcAvci.ciz = asil;
+    UcAvci.ayar.pencereMs = 3000; UcAvci.ayar.esikMs = 45; UcAvci.ayar.enAz = 8;
+    return { hazir: UcAvci.hazir, destek: UcAvci.destek(), sav: save.ayar3d, kayit: JSON.parse(localStorage.getItem(SAVE_KEY)).ayar3d, olay };
+  });
+  sina('Başarım koruması yavaş çizimde 3D\'yi kapatır ve save.ayar3d=false yazar', () => {
+    assert.equal(koruma.hazir, false);
+    assert.equal(koruma.destek, false);
+    assert.equal(koruma.sav, false);
+    assert.equal(koruma.kayit, false);
+    assert.ok(koruma.olay >= 1, `olay=${koruma.olay}`);
+  });
+
   sina('SwiftShader sayfasında sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 
   // f) Varsayılan ayarlı ikinci tarayıcı: WebGL olmasa da sayfa çalışır, drawCharacter çizer, hata yok

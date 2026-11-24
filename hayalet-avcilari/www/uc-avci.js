@@ -221,20 +221,25 @@ function kinkinSilahKur() {
 function veryiSilahKur() {
   const g = grup();
   const ahsap = "#6b3f1d", celik = "#9ca3af";
-  g.add(konturla(kutu(5, 44, 5, ahsap, 0, -16, 0), 1.05));        // sap
+  g.add(konturla(kutu(5, 50, 5, ahsap, 0, -16, 0), 1.05));        // uzun sap
   g.add(kutu(6.5, 8, 6.5, "#4a2a10", 0, -1, 0));                  // tutamak sargısı
-  g.add(konturla(kutu(28, 14, 14, celik, 0, -36, 0), 1.05));      // çelik baş
-  g.add(kutu(30, 4, 15, "#c3ccd8", 0, -32, 0));                   // parlak üst şerit
-  g.add(kutu(9, 16, 16, "#6b7280", 0, -36, 0));                   // merkez göbek
-  g.add(kutu(10, 3, 7, "#b45309", 0, -36, 0));                    // bronz halka
+  // Çekiç başı ayrı bir grupta yana yatık: omzun üstünde, başın yanında okunur kalır.
+  const bas = grup();
+  bas.rotation.z = 0.3;
+  bas.add(konturla(kutu(28, 14, 14, celik, 0, -38, 0), 1.05));    // çelik baş
+  bas.add(kutu(30, 4, 15, "#c3ccd8", 0, -34, 0));                 // parlak üst şerit
+  bas.add(kutu(9, 16, 16, "#6b7280", 0, -38, 0));                 // merkez göbek
+  bas.add(kutu(10, 3, 7, "#b45309", 0, -38, 0));                  // bronz halka
   for (const x of [-11, -4, 4, 11]) {
-    for (const z of [-7.5, 7.5]) g.add(kutu(3, 3, 3, "#3f4652", x, -36, z)); // çiviler
-    g.add(kutu(3, 3, 3, "#3f4652", x, -43, 0));
+    for (const z of [-7.5, 7.5]) bas.add(kutu(3, 3, 3, "#3f4652", x, -38, z)); // çiviler
+    bas.add(kutu(3, 3, 3, "#3f4652", x, -45, 0));
   }
+  g.add(bas);
   const namlu = new THREE.Object3D();
-  namlu.position.set(0, -45, 0);
+  namlu.position.set(0, -48, 0);
   g.add(namlu);
-  return { grup: g, namlu, dinlen: Math.PI * 0.94, nisan: 0.08 };
+  // Dinlenirken sap dikey (baş omzun üstünde), nişanda öne-yukarı ~45°.
+  return { grup: g, namlu, dinlen: Math.PI, nisan: -0.78 };
 }
 // Marli'nin küçük arbaleti: tahta gövde, yanlara açılan yay kolları, takılı ok.
 function markSilahKur() {
@@ -259,27 +264,29 @@ function markSilahKur() {
 // Kornet'in kristal asası: tahta sap, sarı sarmal bant, üç dişli uçta parlayan mor kristal.
 function kornetSilahKur() {
   const g = grup();
-  g.add(konturla(kutu(4, 54, 4, "#8b5a2b", 0, -21, 0), 1.05));    // sap
+  // Sap yerel -Y boyunca: dinlenirken grup π döner, asa dikey ve kristal başın üstünde kalır.
+  // Nişanda -0.78 rad: asa ~45° öne-yukarı uzanır (kristal önde, baş hizasında).
+  g.add(konturla(kutu(4, 58, 4, "#8b5a2b", 0, -25, 0), 1.05));    // sap
   for (let i = 0; i < 8; i++) {
-    const b = kutu(5, 2.4, 5, "#fbbf24", 0, -3 - i * 5.4, 0);     // sarmal bant
+    const b = kutu(5, 2.4, 5, "#fbbf24", 0, -3 - i * 5.6, 0);     // sarmal bant
     b.rotation.y = i * 0.8;
     g.add(b);
   }
-  g.add(konturla(kutu(3.4, 15, 3.4, "#eab308", 0, -55, 0)));      // orta diş
+  g.add(konturla(kutu(3.4, 15, 3.4, "#eab308", 0, -57, 0)));      // orta diş
   for (const yon of [-1, 1]) {
-    const p = kutu(3.4, 13, 3.4, "#eab308", yon * 7, -53, 0);
+    const p = kutu(3.4, 13, 3.4, "#eab308", yon * 7, -55, 0);
     p.rotation.z = yon * 0.3;                                      // yan dişler
     g.add(p);
   }
   const kristal = new THREE.Mesh(_kristalGeo, parlakMalzeme("#c026d3"));
-  kristal.position.set(0, -51, 0);
+  kristal.position.set(0, -57, 0);
   kristal.scale.set(1, 1.5, 1);
   g.add(kristal);
-  g.add(kutu(2, 2, 2, "#f0abfc", 0, -51, 0, "#e879f9"));          // iç parlama
+  g.add(kutu(2, 2, 2, "#f0abfc", 0, -57, 0, "#e879f9"));          // iç parlama
   const namlu = new THREE.Object3D();
-  namlu.position.set(0, -64, 0);
+  namlu.position.set(0, -70, 0);
   g.add(namlu);
-  return { grup: g, namlu };
+  return { grup: g, namlu, dinlen: Math.PI, nisan: -0.78 };
 }
 // Kenit'in küçük hançeri: kısa kabza, balçak, sivri gümüş bıçak.
 function kentSilahKur() {
@@ -322,26 +329,32 @@ function ponkoSilahKur() {
 function gulSilahKur() {
   const g = grup();
   const ahsap = "#7c2d12";
-  g.add(konturla(kutu(4, 12, 4, ahsap, 0, 0, 0), 1.05));          // tutamak
-  g.add(kutu(5, 6, 5, "#fbbf24", 0, 0, 0));                       // sarı kabza bandı
+  // Yay gövde boyu dikey; elin biraz önünde tutulur (boyun parçası), böylece 3/4 önden de görünür.
+  g.add(konturla(kutu(4, 4, 22, ahsap, 0, 0, 11), 1.05));         // tutuş boynu (el → yay)
+  const yay = grup(0, 0, 22);
+  yay.add(konturla(kutu(5, 14, 5, ahsap, 0, 0, 0), 1.05));        // tutamak
+  yay.add(kutu(6, 7, 6, "#fbbf24", 0, 0, 0));                     // sarı kabza bandı
   for (const yon of [1, -1]) {
-    for (const [z, y] of [[7, -10], [14, -15], [21, -8]]) {
-      g.add(kutu(3.2, 3.2, 8.5, ahsap, 0, y, yon * z));           // öne kavisli kollar
+    for (const [y, z] of [[12, 12], [22, 24], [32, 18], [39, 2]]) {
+      const kol = kutu(3.6, 11, 3.6, ahsap, 0, yon * y, z);       // dışa kavisli kollar
+      kol.rotation.x = -yon * 0.2;
+      yay.add(kol);
     }
-    g.add(konturla(kutu(4.2, 4.2, 4, "#451a03", 0, 2, yon * 26), 1.05)); // uç topuzu (kirişe döner)
+    yay.add(konturla(kutu(4.2, 4.2, 4, "#451a03", 0, yon * 40, 0), 1.05)); // uç topuzu
   }
-  g.add(kutu(1.2, 1.2, 54, "#e5e7eb", 0, 2, 0));                  // kiriş (uçlar arası)
+  yay.add(kutu(1.3, 82, 1.3, "#e5e7eb", 0, 0, -3));               // kiriş (dikey, arkada)
   const ok = grup();
-  ok.add(kutu(2, 34, 2, "#92400e", 0, -20, 0));                   // ok gövdesi (ileri)
-  ok.add(kutu(4, 4, 4, "#9ca3af", 0, -38, 0));                    // ok ucu
-  ok.add(kutu(6, 3, 1.4, "#dc2626", 0, -6, 0));                   // tüy
+  ok.add(kutu(2, 2, 36, "#92400e", 0, 0, 12));                    // ok gövdesi (ileri)
+  ok.add(kutu(4, 4, 5, "#9ca3af", 0, 0, 30));                     // ok ucu
+  ok.add(kutu(6, 3, 1.4, "#dc2626", 0, 0, -5));                   // tüy
   ok.visible = false;
-  g.add(ok);
+  yay.add(ok);
   const namlu = new THREE.Object3D();
-  namlu.position.set(0, -40, 0);
-  g.add(namlu);
-  // Nişanda dikey (0), dinlenirken omuza yatık (-1.12): tutuş açısı yumuşak geçer.
-  return { grup: g, namlu, ok, dinlen: -1.12, nisan: 0 };
+  namlu.position.set(0, 0, 34);
+  yay.add(namlu);
+  g.add(yay);
+  // Kol nişanda -π/2 döner; yay grup açısıyla telafi edilip dikey kalır.
+  return { grup: g, namlu, ok, dinlen: Math.PI / 2, nisan: Math.PI / 2 };
 }
 // Rani'nin Y biçimli sapanı: tahta gövde, iki kol, lastik bantlar ve taş. Namlu yerel -Y'de.
 function raniSilahKur() {
@@ -784,12 +797,16 @@ Object.assign(KARAKTER_3D, {
     kolRenk: (r) => r.body,
     govde(govde, r) {
       const b = r.body;
-      const kureler = [[13, 14, 0, 1], [10, 6, 6, 0.9], [9, 23, -4, 0.88], [8, 8, -8, 0.94], [7, -1, 5, 0.86]];
-      for (const [rad, y, z, oran] of kureler) {
-        const m = kure(rad, oran < 1 ? koyu(b, 0.12) : b, 0, y, z);  // kabarık bulut gövde
+      // İri ve yuvarlak bulut gövde: baş kadar geniş büyük küreler kümesi, altında kısa bacaklar görünür.
+      const kureler = [
+        [18, 15, 0, 0, 1], [14, 26, 0, 0, 0.95], [12, 15, 10, 0, 0.92],
+        [12, 15, -10, 0, 0.92], [12, 6, 0, 7, 0.88], [11, 22, 0, -9, 0.9],
+      ];
+      for (const [rad, y, x, z, oran] of kureler) {
+        const m = kure(rad, oran < 1 ? koyu(b, 0.12) : b, x, y, z);
         govde.add(konturla(m, 1.06));
       }
-      for (const yon of [-1, 1]) govde.add(konturla(kure(7, acik(b, 0.12), yon * 10, 14, 2), 1.06));
+      for (const yon of [-1, 1]) govde.add(konturla(kure(11, acik(b, 0.1), yon * 13, 16, 2), 1.06)); // yan kabarıklıklar
     },
     yuzEk(bas) {
       for (const yon of [-1, 1]) bas.add(kutu(11, 13, 2, "#0b0b12", yon * 9, 24, 19.5)); // siyah göz oyukları
@@ -856,10 +873,18 @@ Object.assign(KARAKTER_3D, {
       }
     },
     basAksesuar(bas) {
-      bas.add(konturla(kutu(20, 4, 18, "#fbbf24", 0, 43, 0), 1.05)); // altın taç tabanı
-      for (const x of [-7, 0, 7]) bas.add(kutu(4, 8, 4, "#fbbf24", x, 47, 0)); // taç dişleri
-      for (const x of [-3.5, 3.5]) bas.add(kutu(2.6, 5, 2.6, "#fde68a", x, 45.5, 0));
-      bas.add(kure(2.2, "#fef3c7", 0, 44.5, 8.6));                   // ön mücevher
+      // Gerçek taç: geniş altın halka, beş sivri diş, kırmızı-pembe taşlar; saçın üstünde yükselir.
+      bas.add(konturla(silindir(18, 19, 5, "#fbbf24", 0, 44, 0), 1.05)); // altın halka
+      bas.add(silindir(19, 19, 2, "#fde68a", 0, 46.5, 0));              // parlak halka üstü
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * Math.PI * 2;
+        const x = Math.sin(a) * 15, z = Math.cos(a) * 15;
+        const dik = koni(3.4, 14, "#fbbf24", x, 54, z);                  // beş sivri diş
+        bas.add(konturla(dik, 1.05));
+        bas.add(kure(1.8, i % 2 ? "#f472b6" : "#ef4444", x, 47.5, z * 1.05)); // diş dibinde taş
+      }
+      bas.add(kure(2.6, "#ef4444", 0, 47.5, 18));                       // ön mücevher
+      bas.add(kure(1.4, "#fecaca", 0, 48.4, 19.4));                     // mücevher parıltısı
     },
     silah() { return gulSilahKur(); },
   },
@@ -876,9 +901,9 @@ Object.assign(KARAKTER_3D, {
       const sac = r.hair;
       bas.add(konturla(kutu(44, 12, 42, sac, 0, 37, 0)));            // tepe
       for (const yon of [-1, 1]) {
-        bas.add(konturla(kure(9, sac, yon * 23, 34, -2), 1.06));     // yandaki topuzlar (başı genişletir)
-        bas.add(kure(3.4, acik(sac, 0.25), yon * 23, 38, 4));        // topuz parıltısı
-        bas.add(kutu(6, 16, 38, sac, yon * 21, 29, 0));              // yan saç
+        bas.add(konturla(kure(12, sac, yon * 24, 37, -2), 1.06));    // iri yandaki topuzlar (başı belirgin genişletir)
+        bas.add(kure(4.6, acik(sac, 0.25), yon * 25, 42, 5));        // topuz parıltısı
+        bas.add(kutu(8, 18, 38, sac, yon * 21, 29, 0));              // yan saç
       }
       bas.add(konturla(kutu(40, 22, 9, sac, 0, 22, -18), 1.04));     // arka saç
       for (const [x, y, w, h] of [[-13, 33, 9, 9], [-3, 32, 11, 10], [7, 33, 9, 9]]) {
@@ -1130,6 +1155,9 @@ function canlandir(rig, d, o, dt, simdi) {
   const yuru = !!o.yuruyor || (o.walkPhase || 0) > 0;
   const rec = Math.max(0, Math.min(1, o.shootRecoil || 0));
   const onizleme = !!o.onizleme; // önizlemeler her zaman nişanda, yavaş bir salınımla
+  const yakin = o.charKey === "veryi" || o.charKey === "kent"; // çekiç/hançer: ateşte yay çizerek iner
+  const tekme = o.ozel === "tekme"; // Fanatik'in Tornado Tekme gücü
+  const sevinc = o.ozel === "sevinc"; // bölüm sonu kutlaması
   d.nisan += ((onizleme || o.nisan || (o.aimRaise || 0) > 0.4 || rec > 0.05 ? 1 : 0) - d.nisan) * (dt > 0 ? 1 - Math.exp(-10 * dt) : 1);
   const salinim = Math.sin(simdi / 1200);
   const hedef = {
@@ -1142,16 +1170,29 @@ function canlandir(rig, d, o, dt, simdi) {
       : (yuru ? -0.85 - 0.12 * faz : -0.45 + salinim * 0.05),
     elSagX: d.nisan > 0.5 ? -0.15 * rec : 0,
   };
+  if (yakin && rec > 0.02) {
+    // Yakın vuruş: kol yukarıdan aşağı yay çizer (geri tepme yerine). rec 1 → yukarı, 0 → dinlenme.
+    hedef.omuzSagX = -0.45 - 2.4 * rec;
+    hedef.elSagX = 0.5 * rec;
+  }
+  if (sevinc) { // iki kol havada, küçük zıplama
+    hedef.omuzSagX = -2.85;
+    hedef.omuzSolX = -2.85;
+    hedef.elSagX = 0;
+  }
   const k = dt > 0 ? 1 - Math.exp(-10 * dt) : 1;
   for (const ad of ["govdeX", "bacakSagX", "bacakSolX", "omuzSolX", "omuzSagX", "elSagX"]) d[ad] += (hedef[ad] - d[ad]) * k;
   const nefes = Math.sin(simdi / 1000 * (2 * Math.PI / 1.6)) * 0.02;
-  const zipla = yuru ? Math.abs(faz) * (kos ? 2.2 : 1.6) : 0;
+  let zipla = yuru ? Math.abs(faz) * (kos ? 2.2 : 1.6) : 0;
+  if (sevinc) zipla = Math.abs(Math.sin(simdi / 140)) * 5;
   rig.kok.position.y = zipla;
-  rig.kok.rotation.y = d.aci;
+  rig.kok.rotation.y = d.aci + (tekme ? simdi * 0.02 : 0); // tornado: kendi çevresinde hızla döner
   rig.govde.rotation.x = d.govdeX;
   rig.govde.scale.y = 1 + nefes;
   rig.bacakSag.rotation.x = d.bacakSagX;
   rig.bacakSol.rotation.x = d.bacakSolX;
+  rig.bacakSag.rotation.z = tekme ? 1.15 : 0; // tekme: bir bacak yana açık
+  rig.bacakSol.rotation.z = 0;
   rig.omuzSag.rotation.x = d.omuzSagX;
   rig.omuzSol.rotation.x = d.omuzSolX;
   rig.elSag.rotation.x = d.elSagX;
@@ -1267,12 +1308,54 @@ function kapat() {
   try { if (renderer) renderer.dispose(); } catch (_) { /* sessiz */ }
 }
 
+// 3D'yi yeniden açar (Ayarlar'da aç/kapa; kapat() sonrası).
+function ac() {
+  if (hazir && !kapali) return true;
+  try {
+    kur();
+    hazir = true;
+    kapali = false;
+    aktifRig = null;
+    _yavasPencere.length = 0;
+    _yavasBildirildi = false;
+    api.hazir = true;
+    api.ciz = ciz;
+    api.namlu = namlu;
+    api.destek = () => hazir && !kapali;
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+// Başarım koruması: drawCharacter her UcAvci.ciz süresini buraya bildirir. Son 3 sn'nin ortalaması
+// 45 ms'yi aşarsa 3D kendiliğinden kapanır; oyun 'uc-avci-yavas' olayını dinleyip bildirir ve kaydeder.
+const _yavasPencere = [];
+let _yavasBildirildi = false;
+const _yavasAyar = { pencereMs: 3000, esikMs: 45, enAz: 8 };
+function sureEkle(ms) {
+  if (!hazir || kapali) return;
+  const simdi = performance.now();
+  _yavasPencere.push({ t: simdi, ms: Math.max(0, Number(ms) || 0) });
+  while (_yavasPencere.length && simdi - _yavasPencere[0].t > _yavasAyar.pencereMs) _yavasPencere.shift();
+  if (_yavasPencere.length < _yavasAyar.enAz) return;
+  const ort = _yavasPencere.reduce((a, b) => a + b.ms, 0) / _yavasPencere.length;
+  if (ort > _yavasAyar.esikMs && !_yavasBildirildi) {
+    _yavasBildirildi = true;
+    kapat();
+    try { window.dispatchEvent(new CustomEvent("uc-avci-yavas", { detail: { ort } })); } catch (_) { /* sessiz */ }
+  }
+}
+
 const api = {
   hazir: false,
   ciz: () => false,
   namlu: () => null,
   destek: () => false,
   kapat,
+  ac,
+  sureEkle,
+  ayar: _yavasAyar,
 };
 window.UcAvci = api;
 try {

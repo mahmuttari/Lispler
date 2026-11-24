@@ -1225,9 +1225,10 @@ function refreshWeaponBar() {
   bar.innerHTML = "";
   Object.keys(WEAPONS).forEach((key) => {
     const count = stock[key] || 0;
+    if (count <= 0) return; // stoğu olmayan silah çubukta yer kaplamaz (3.19'daki gibi)
     const w = WEAPONS[key];
     const btn = document.createElement("button");
-    const pasif = count <= 0 || oldu;
+    const pasif = oldu;
     btn.className = "weapon-slot" + (pasif ? " ae-pasif" : "");
     btn.dataset.weapon = key;
     btn.setAttribute("aria-disabled", pasif ? "true" : "false");

@@ -235,17 +235,20 @@ try {
     assert.equal(seviye.banner, true);
   });
 
-  // 12) Cephane çubuğu: stok 0 pasif görünür; stok azalınca rozet popu
+  // 12) Cephane çubuğu: stok 0 düğme gizli (yer kaplamaz), ölü oyuncuda düğmeler pasif; stok azalınca rozet popu
   const bar = await p.evaluate(() => {
     __hazir(); ensureAmmoStock(game.player.charKey).bomba = 0; refreshWeaponBar();
-    const pasif = !!document.querySelector('#weapon-bar .weapon-slot.ae-pasif');
+    const gizli = !document.querySelector('#weapon-bar [data-weapon="bomba"]');
+    ensureAmmoStock(game.player.charKey).bomba = 1; game.player.dead = true; refreshWeaponBar();
+    const pasif = gizli && !!document.querySelector('#weapon-bar [data-weapon="bomba"].ae-pasif');
+    game.player.dead = false;
     ensureAmmoStock(game.player.charKey).bomba = 3; refreshWeaponBar();
     const once = document.querySelector('#weapon-bar [data-weapon="bomba"] .badge');
     ensureAmmoStock(game.player.charKey).bomba = 2; refreshWeaponBar();
     const sonra = document.querySelector('#weapon-bar [data-weapon="bomba"] .badge');
     return { pasif, pop: !!(sonra && sonra.classList.contains('ae-rozet-pop')), once: once && once.textContent, sonra: sonra && sonra.textContent };
   });
-  sina('cephane çubuğu: stok 0 düğmesi pasif; stok değişince rozet zıplar', () => {
+  sina('cephane çubuğu: stok 0 düğmesi gizli, ölüyken pasif; stok değişince rozet zıplar', () => {
     assert.equal(bar.pasif, true);
     assert.equal(bar.pop, true);
     assert.equal(bar.once, '3'); assert.equal(bar.sonra, '2');

@@ -2,6 +2,7 @@
 // 3.13.0: oyun ve boss kareleri yeni engelleri gösterir (Yeşil Orman, Mor Şato), menüde kupa, 6. kare Arkadaşlar.
 // 3.14.0: 7. kare Dünya Turu (Japonya, kimonolu boss); tanıtım görselinin alt yazısında 🌍 Dünya turu.
 // 3.18.0: ChatGPT görselleri (www/gorsel/*.webp) yüklenmeden kare alınmaz; simge yeni (icon-1024.png).
+// 3.20.0: gerçek 3D avcılar (SwiftShader ile WebGL).
 // Kullanım: node hayalet-avcilari/araclar/magaza-gorsel.mjs [play-dili…]   (Playwright + Chromium gerekir)
 // Çıktı: tr-TR → magaza/play/, diğerleri → magaza/play/<play-dili>/ (android/play.mjs gorsel bu klasörleri yükler)
 import http from 'node:http';
@@ -35,7 +36,8 @@ const sunucu = http.createServer((q, r) => {
 const adres = `http://127.0.0.1:${sunucu.address().port}/index.html`;
 const ikon = 'data:image/png;base64,' + fs.readFileSync(path.join(WWW, 'icon-1024.png')).toString('base64');
 
-const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
+// 3.20.0: avcılar gerçek 3D (uc-avci.js); WebGL için SwiftShader, karelerden önce 3D hazır beklenir
+const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 try {
   for (const playDili of secim) {
     const d = DILLER[playDili];
@@ -48,6 +50,7 @@ try {
     await p.waitForTimeout(800);
     // Bütün ChatGPT görselleri yüklensin (karakter, hayalet, animasyon kareleri, tema dokuları, menü arka planı)
     await p.waitForFunction(() => typeof GORSEL === 'object' && Object.keys(GORSEL).length >= Object.keys(GORSEL_LISTESI).length, null, { timeout: 30000 });
+    await p.waitForFunction(() => window.UcAvci && window.UcAvci.hazir, null, { timeout: 30000 });
     await p.evaluate(() => {
       save.playerName = 'Kiki'; save.para = 1250; save.elmas = 14; save.zumrut = 6; save.kupa = 3; save.highestLevel = 7; persistSave();
       try { localStorage.setItem(VERSION_KEY, APP_VERSION); } catch (_) {}

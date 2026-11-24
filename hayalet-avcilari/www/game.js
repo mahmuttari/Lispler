@@ -4317,7 +4317,7 @@ function flushOnlineRewards() {
   if (game.runPara)   save.para   += game.runPara;
   if (game.runElmas)  save.elmas  += game.runElmas;
   if (game.runZumrut) save.zumrut += game.runZumrut;
-  if (game.level > save.highestLevel) save.highestLevel = game.level;
+  if (!game.dunyaTuru && game.level > save.highestLevel) save.highestLevel = game.level;
   game.runPara = 0; game.runElmas = 0; game.runZumrut = 0;
   persistSave();
 }
@@ -5386,7 +5386,7 @@ function computeStats(charKey) {
   return {
     speed: c.baseSpeed + u.speed * 0.4,
     damage: c.baseDamage + u.damage,
-    fireDelay: Math.max(150, c.baseFireDelay - u.fireRate * 90),
+    fireDelay: Math.round(c.baseFireDelay - (c.baseFireDelay - 150) * Math.min(u.fireRate, 10) / 10),
     range: c.baseRange + u.range * 35,
   };
 }
@@ -6051,7 +6051,13 @@ function update(dt, now) {
     if (game.dunyaTuru) turUlkesiBitti(); // damga, uçak geçişi, sıradaki ülke (dunya-turu.js)
     else {
       showToast(t("🌟 Bölüm temiz! Sıradaki bölüm geliyor..."));
-      setTimeout(() => { if (game.running) nextLevel(); }, 1800);
+      const no = _donguNo; // yeni oyun başlarsa eski geçiş onu ilerletmesin
+      const gecis = () => {
+        if (!game.running || no !== _donguNo) return;
+        if (game.paused) { setTimeout(gecis, 200); return; } // duraklatma bitince devam
+        nextLevel();
+      };
+      setTimeout(gecis, 1800);
     }
   }
 
@@ -7124,6 +7130,7 @@ function drawBot(ctx, b) {
 
 function damagePlayer() {
   if (game.player.dead || game.devamBekliyor) return;
+  if (game._turGeciste) return; // ülkeden ülkeye uçak geçişinde oyuncu güvende
   game.player.hp--;
   game.player.invuln = 1.2;
   if (typeof aeHasarEkle === "function") aeHasarEkle(game.player.x, game.player.y); // hasar patlaması, kırmızı vinyet, sarsıntı
@@ -7375,12 +7382,38 @@ function updateHUD() {
 }
 
 // ====== DURAKLAT / ÇIK ======
+// Duraklatmada geçen gerçek süreyi mutlak zaman alanlarına ekler (oyun saati değil, küçük yama).
+// Gelecekteki *Until alanları, oyuncu gücünün expires'ı ve hayaletlerin nextShot'ı kaydırılır.
+function oyunSaatiniKaydir(ms) {
+  if (!(ms > 0)) return;
+  const simdi = performance.now();
+  const kaydir = (o) => {
+    if (!o) return;
+    for (const k in o) {
+      if (!k.endsWith("Until")) continue;
+      if (typeof o[k] === "number" && o[k] > simdi) o[k] += ms;
+    }
+  };
+  if (game.player) {
+    kaydir(game.player);
+    if (game.player.power && typeof game.player.power.expires === "number" && game.player.power.expires > simdi) game.player.power.expires += ms;
+  }
+  if (Array.isArray(game.ghosts)) {
+    for (const g of game.ghosts) {
+      kaydir(g);
+      if (typeof g.nextShot === "number" && g.nextShot > simdi) g.nextShot += ms;
+    }
+  }
+  if (game.activePower && typeof game.activePower.expires === "number" && game.activePower.expires > simdi) game.activePower.expires += ms;
+}
+
 // Çevrimiçi oyunda menü oyunu durdurmaz: host dursa herkesin oyunu donardı
 function pauseGame() {
   if (!game.running) return;
   const cevrimici = !!online.mode;
   game.paused = !cevrimici;
   game.menude = cevrimici;
+  if (!cevrimici) game._duraklamaBas = performance.now(); // tek kişilik: duraklama süresi sayaçlardan düşülür
   document.getElementById("pause-title").textContent = cevrimici ? t("⏸ Menü") : t("⏸ Duraklatıldı");
   const not = document.getElementById("pause-not");
   not.textContent = cevrimici ? t("Çevrimiçi oyun durmaz: hayaletler gelmeye devam eder.") : "";
@@ -7397,6 +7430,7 @@ function pauseGame() {
 }
 
 function resumeGame() {
+  if (game._duraklamaBas) { oyunSaatiniKaydir(performance.now() - game._duraklamaBas); game._duraklamaBas = 0; }
   document.getElementById("screen-pause").classList.remove("active");
   game.paused = false;
   game.menude = false;
@@ -7407,6 +7441,15 @@ function resumeGame() {
 function quitToMenu() {
   // Odadaysa (oyunda ya da tur sonu ekranında) odadan çık; kazançlar kaydedilir
   if (online.roomId) odadanCik();
+  // Tek kişilikte yarıda bırakılan oyunun kazançları kaybolmasın (bölüm bonusu ve rekor değişmez)
+  if (game.running && !online.mode) {
+    save.para += game.runPara;
+    save.elmas += game.runElmas;
+    save.zumrut += game.runZumrut;
+    game.runPara = 0; game.runElmas = 0; game.runZumrut = 0;
+    persistSave();
+  }
+  game._duraklamaBas = 0;
   game.running = false;
   game.menude = false;
   turPerdeleriniKapat();
@@ -7419,6 +7462,17 @@ function quitToMenu() {
   hostBeklemeGostergesi(0);
   goToMenu();
 }
+
+// Arka plana geçince tek kişilik oyun duraklatılır; dönüşte sayaçlar duraklama süresi kadar kaydırılır.
+// Çevrimiçi oyun duraklatılmaz (diğerleri oynamaya devam eder).
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    if (game.running && !game.paused && !online.mode) pauseGame();
+  } else if (game._duraklamaBas) {
+    oyunSaatiniKaydir(performance.now() - game._duraklamaBas);
+    game._duraklamaBas = game.paused ? performance.now() : 0; // duraklatma ekranı açık kaldıysa süre yeniden sayılır
+  }
+});
 
 // ====== OYUN BİTTİ ======
 function endGame(won) {

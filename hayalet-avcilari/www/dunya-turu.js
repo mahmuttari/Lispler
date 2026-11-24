@@ -407,6 +407,7 @@ function turDevamTeklifi() {
   if (!game.dunyaTuru || online.mode || game.turBitti || !(game.turDevamKalan > 0) || !reklamDevamHazir()) return false;
   game.devamBekliyor = true;
   game.paused = true;
+  game._duraklamaBas = performance.now(); // "reklam izle, devam" ekranında sayaçlar işlemesin
   game.inputDir.x = 0; game.inputDir.y = 0;
   muzikDuraklat(true);
   turDevamEkrani();
@@ -434,6 +435,7 @@ function turDevamIzle() {
 function turDevamSonucu(kazandi) {
   if (!game.devamBekliyor || !game.running) return;
   if (!kazandi) { turDevamEkrani(); return; } // yarıda kapandı ya da gösterilemedi: pencere yeniden, karar oyuncunun
+  if (game._duraklamaBas) { oyunSaatiniKaydir(performance.now() - game._duraklamaBas); game._duraklamaBas = 0; }
   turDevamKapat();
   game.turDevamKalan--;
   game.player.hp = game.player.maxHp;
@@ -448,6 +450,7 @@ function turDevamSonucu(kazandi) {
 
 function turDevamVazgec() {
   if (!game.devamBekliyor) return;
+  game._duraklamaBas = 0;
   turDevamKapat();
   game.paused = false;
   muzikDuraklat(false);

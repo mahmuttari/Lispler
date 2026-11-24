@@ -188,6 +188,44 @@ try {
   const kostum2 = await p.evaluate(() => save.selectedCostume.kinkin);
   sina('6) sahip olunmayan kostüm çipi kostümü seçmez', () => { assert.equal(kostum2, 1); });
 
+  // 9) menuSimgeleriniUygula: yalnız baştaki emoji değişir, iki kez çağrı tek <img> ekler
+  const menuSimge = await p.evaluate(() => {
+    GORSEL_LISTESI['ui-magaza'] = 1;
+    menuSimgeleriniUygula();
+    const btn = document.querySelector('[data-ui-simge="ui-magaza"]');
+    const ilk = { metin: btn.textContent, img: btn.querySelectorAll('img.ui-simge').length };
+    menuSimgeleriniUygula();
+    const ikinci = btn.querySelectorAll('img.ui-simge').length;
+    delete GORSEL_LISTESI['ui-magaza'];
+    return { ilk, ikinci };
+  });
+  sina('9) menü simgesi yalnız emojinin yerine geçer, iki kez çağrıda tek img', () => {
+    assert.equal(menuSimge.ilk.img, 1);
+    assert.equal(menuSimge.ikinci, 1);
+    assert.ok(menuSimge.ilk.metin.includes('Mağaza'), menuSimge.ilk.metin);
+    assert.ok(!menuSimge.ilk.metin.includes('🛒'), menuSimge.ilk.metin);
+  });
+
+  // Oyun sonu ödül sayacı: 0'dan son değere ~0.8 sn'de, 1.2 sn sonra son sayılar görünür
+  const odul = await p.evaluate(async () => {
+    odulSayaclariGoster({ hayalet: 12, para: 345, elmas: 7, zumrut: 4 });
+    const erken = document.getElementById('final-para').textContent;
+    await new Promise((r) => setTimeout(r, 1200));
+    return {
+      erken,
+      ghosts: document.getElementById('final-ghosts').textContent,
+      para: document.getElementById('final-para').textContent,
+      elmas: document.getElementById('final-elmas').textContent,
+      zumrut: document.getElementById('final-zumrut').textContent,
+    };
+  });
+  sina('oyun sonu ödül sayacı 1.2 sn sonra son değerlere ulaşır', () => {
+    assert.equal(odul.ghosts, '12');
+    assert.equal(odul.para, '345');
+    assert.equal(odul.elmas, '7');
+    assert.equal(odul.zumrut, '4');
+  });
+
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 
   // 10) Arapça, 340×740: panel açılır ve yatay taşma olmaz

@@ -25,7 +25,7 @@
       <p id="welcome-text" data-i18n-html>Merhaba! Ben <b>Kinkin</b>! Hadi birlikte hayalet avına çıkalım!</p>
     </div>
     <button class="btn btn-big" onclick="welcomeContinue()">BAŞLA ▶</button>
-    <button class="btn btn-small" onclick="openLanguage()">🌐 Dil</button>
+    <button class="btn btn-small" data-ui-simge="ui-dil" onclick="openLanguage()">🌐 Dil</button>
   </div>
 </div>
 
@@ -55,30 +55,30 @@
       <button class="btn-tiny" onclick="openName(true)">Değiştir</button>
     </div>
     <div class="resources">
-      <div class="resource">💰 <span id="menu-para">0</span></div>
-      <div class="resource">💎 <span id="menu-elmas">0</span></div>
-      <div class="resource">💚 <span id="menu-zumrut">0</span></div>
-      <div class="resource">🏆 <span id="menu-kupa">0</span></div>
+      <div class="resource" data-ui-simge="ui-para">💰 <span id="menu-para">0</span></div>
+      <div class="resource" data-ui-simge="ui-elmas">💎 <span id="menu-elmas">0</span></div>
+      <div class="resource" data-ui-simge="ui-zumrut">💚 <span id="menu-zumrut">0</span></div>
+      <div class="resource" data-ui-simge="ui-kupa">🏆 <span id="menu-kupa">0</span></div>
     </div>
     <div class="character-preview" id="character-preview"></div>
     <p class="character-name" id="character-name">Kinkin</p>
     <p class="character-stats" id="character-stats"></p>
     </div>
     <div class="menu-sag">
-    <button class="btn btn-big btn-play" onclick="startGame()">▶ OYNA</button>
+    <button class="btn btn-big btn-play" data-ui-simge="ui-oyna" onclick="startGame()">▶ OYNA</button>
     <div class="menu-buttons">
-      <button class="btn" onclick="openCharacters()">👥 Karakterler</button>
-      <button class="btn" onclick="openShop()">🛒 Mağaza</button>
-      <button class="btn" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
-      <button class="btn btn-tur" onclick="openDunyaTuru()">🌍 Dünya Turu</button>
+      <button class="btn" data-ui-simge="ui-karakterler" onclick="openCharacters()">👥 Karakterler</button>
+      <button class="btn" data-ui-simge="ui-magaza" onclick="openShop()">🛒 Mağaza</button>
+      <button class="btn" data-ui-simge="ui-sampiyon" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
+      <button class="btn btn-tur" data-ui-simge="ui-dunya" onclick="openDunyaTuru()">🌍 Dünya Turu</button>
       <div class="menu-satir">
-        <button class="btn btn-online" onclick="openOnline()">🌐 Online Oyna</button>
-        <button id="menu-arkadas" class="btn btn-kare" aria-label="Arkadaşlar" onclick="openFriends()">👫<span id="menu-arkadas-rozet" class="rozet" style="display:none"></span></button>
+        <button class="btn btn-online" data-ui-simge="ui-online" onclick="openOnline()">🌐 Online Oyna</button>
+        <button id="menu-arkadas" class="btn btn-kare" data-ui-simge="ui-arkadas" aria-label="Arkadaşlar" onclick="openFriends()">👫<span id="menu-arkadas-rozet" class="rozet" style="display:none"></span></button>
       </div>
     </div>
     <div class="menu-footer-row">
-      <button class="btn btn-small" onclick="openAccount()">👤 Hesap</button>
-      <button class="btn btn-small" onclick="openSoundSettings()">🎚 Ses</button>
+      <button class="btn btn-small" data-ui-simge="ui-hesap" onclick="openAccount()">👤 Hesap</button>
+      <button class="btn btn-small" data-ui-simge="ui-ses" onclick="openSoundSettings()">🎚 Ses</button>
       <button class="btn btn-small" onclick="openLanguage()">🌐 Dil</button>
       <button class="btn btn-small" onclick="resetData()">🔄 Sıfırla</button>
       <button class="btn btn-small" id="btn-reklam-gizlilik" style="display:none" onclick="reklamGizlilikSecenekleri()">🔒 Gizlilik</button>
@@ -117,9 +117,9 @@
       <div class="resource">💚 <span id="char-zumrut">0</span></div>
     </div>
     <div id="character-list" class="character-list"></div>
-    <div id="character-detail" class="char-detay" role="dialog" aria-modal="true" aria-labelledby="char-detay-ad" hidden></div>
     <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
+  <div id="character-detail" class="char-detay" role="dialog" aria-modal="true" aria-labelledby="char-detay-ad" hidden></div>
 </div>
 
 <!-- ========== MAĞAZA ========== -->

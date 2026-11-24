@@ -1856,3 +1856,6 @@ details.arkadas-bolum > summary::-webkit-details-marker { display: none; }
 
 .char-eylem { display: flex; width: 100%; margin: 0; }
 .char-eylem.yetersiz { opacity: 0.55; }
+
+/* 3.20.0 arayüz */
+.ui-simge { width: 1.3em; height: 1.3em; vertical-align: -0.25em; object-fit: contain; }

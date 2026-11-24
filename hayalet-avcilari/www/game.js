@@ -4646,6 +4646,30 @@ function refreshMenu() {
   rozetiGuncelle(); // 👫 düğmesindeki istek + davet sayısı (arkadaslar.js)
 }
 
+// Menü simgeleri (3.20.0): resmi GORSEL_LISTESI'nde olan [data-ui-simge] ögelerinin yalnız baştaki emojisini
+// uiSimgeHTML ile değiştirir; çevrilmiş sözcükler olduğu gibi kalır. Uygulanan öge işaretlenir (idempotent).
+function menuSimgeleriniUygula() {
+  if (typeof GORSEL_LISTESI !== "object" || !GORSEL_LISTESI) return;
+  for (const el of document.querySelectorAll("[data-ui-simge]")) {
+    if (el.dataset.uiSimgeUygulandi === "1") continue;
+    const key = el.dataset.uiSimge;
+    if (!GORSEL_LISTESI[key]) continue;
+    const dugum = [...el.childNodes].find((n) => n.nodeType === 3 && /\S/.test(n.textContent));
+    if (!dugum) continue;
+    const m = dugum.textContent.match(/^(\s*)([^\p{L}\s]+)(?:(\s+)([\s\S]*))?$/u);
+    if (!m) { el.dataset.uiSimgeUygulandi = "1"; continue; }
+    const emoji = m[2];
+    const kalan = (m[3] || "") + (m[4] || "");
+    const ad = (m[4] || "").trim() || emoji;
+    const kap = document.createElement("span");
+    kap.innerHTML = uiSimgeHTML(key, emoji, ad);
+    const resim = kap.firstChild;
+    el.insertBefore(resim, dugum);
+    dugum.textContent = kalan;
+    el.dataset.uiSimgeUygulandi = "1";
+  }
+}
+
 // ====== KARAKTERLER EKRANI (3.20.0) ======
 // Kart ızgarası + ayrıntı paneli. Kart dokunuşu artık satın alma/seçme yapmaz; yalnız paneli açar.
 // Satın alma ve seçme tek yerde: karakterAlVeyaSec (kart ve panel düğmesi buradan çağırır).
@@ -4721,7 +4745,9 @@ function refreshCharacters() {
 
     const unvan = document.createElement("div");
     unvan.className = "char-unvan";
-    unvan.textContent = detay.unvan || c.desc;
+    // Çeviriler sonradan eklenecek: henüz çevrilmemiş Türkçe unvan yabancı dilde gösterilmez
+    const unvanMetin = String(detay.unvan || c.desc || "");
+    unvan.textContent = (typeof DIL !== "undefined" && DIL !== "tr" && /[ğışĞİŞ]/.test(unvanMetin)) ? "" : unvanMetin;
     card.appendChild(unvan);
 
     const rozet = document.createElement("div");
@@ -4960,6 +4986,7 @@ document.addEventListener("keydown", (e) => {
 
 // Görseller yüklenince açık ekranın kartları (ve paneli) yeniden çizilir: kart-* resimleri <img> olur
 window.addEventListener("gorsel-yuklendi", () => {
+  menuSimgeleriniUygula();
   const ekran = document.getElementById("screen-characters");
   if (ekran && ekran.classList.contains("active")) refreshCharacters();
 });
@@ -7245,6 +7272,30 @@ function endGame(won) {
   oyunSonu(won, false);
 }
 
+// Oyun sonu ödülleri (3.20.0): dört sayı 0'dan değerine ~0.8 sn'de sayılır. Az hareket tercihinde
+// doğrudan son değer yazılır. Değerler yalnız gösterilir; kazanç hesabı ve kaydı değişmez.
+let _odulSayacRaf = 0;
+function odulSayaclariGoster(degerler) {
+  const hedefler = [
+    [document.getElementById("final-ghosts"), degerler.hayalet],
+    [document.getElementById("final-para"), degerler.para],
+    [document.getElementById("final-elmas"), degerler.elmas],
+    [document.getElementById("final-zumrut"), degerler.zumrut],
+  ];
+  const yaz = (k) => { for (const [el, hedef] of hedefler) if (el) el.textContent = Math.round((hedef || 0) * k); };
+  if (_odulSayacRaf) { cancelAnimationFrame(_odulSayacRaf); _odulSayacRaf = 0; }
+  const azHareket = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (azHareket) { yaz(1); return; }
+  const sure = 800, baslangic = performance.now();
+  yaz(0);
+  const adim = (an) => {
+    const k = Math.min(1, (an - baslangic) / sure);
+    yaz(k);
+    if (k < 1) _odulSayacRaf = requestAnimationFrame(adim); else _odulSayacRaf = 0;
+  };
+  _odulSayacRaf = requestAnimationFrame(adim);
+}
+
 // Tek kişilik oyunun sonu ya da çevrimiçi turun sonu (turSonu): kazançlar kaydedilir, sonuç ekranı açılır.
 // reklamsiz: arkadaşın davetiyle odaya geçerken (arkadaslar.js davetiKabulEt) oyun sonu reklamı gösterilmez
 // siralama: çevrimiçi turun sıralaması (turSiralamasi); birinci kupa kazanır
@@ -7305,10 +7356,7 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   turSiralamasiniGoster(cevrimici ? siralama : null);
   document.getElementById("gameover-title").textContent = cevrimici ? t("🏁 Tur bitti!") : turBitti ? t("🌍 Dünya turu tamamlandı!")
     : won ? t("🌟 Harika!") : t("👻 Yakalandın!");
-  document.getElementById("final-ghosts").textContent = game.totalCaught;
-  document.getElementById("final-para").textContent = finalPara;
-  document.getElementById("final-elmas").textContent = game.runElmas;
-  document.getElementById("final-zumrut").textContent = game.runZumrut;
+  odulSayaclariGoster({ hayalet: game.totalCaught, para: finalPara, elmas: game.runElmas, zumrut: game.runZumrut });
   // Kazançlar kaydedildi: odadan çıkarken (flushOnlineRewards) ikinci kez eklenmesin
   game.runPara = 0; game.runElmas = 0; game.runZumrut = 0;
   // Çevrimiçi turdan sonra "Tekrar Oyna" tek kişilik oyun açardı: yerine lobiye dönülür
@@ -7344,6 +7392,7 @@ function init() {
   // AdMob (yalnız Android uygulamasında; web'de eklenti yok)
   reklamBaslat();
   drawGreeter();
+  menuSimgeleriniUygula(); // dilUygula sonrası: resmi olan menü simgeleri emojinin yerine geçer
   // Hoşgeldin ekranında ismi varsa göster
   if (save.playerName) {
     document.getElementById("welcome-text").innerHTML =

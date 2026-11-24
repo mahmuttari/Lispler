@@ -6,6 +6,10 @@ güzelleştir."* Bu paket menü, karakter, mağaza ve oyun sonu ekranlarındaki 
 ve görseller ürettirir. Üslup, onaylı karakter paftalarıyla (`gorsel/ham3d/D01–D06`) aynıdır. Kodu Evren yazar:
 kullanıcının kararı "kodlama için sadece Evren kullan". Resim gelmezse oyun bugünkü emojiyle çalışır.
 
+> **24 Kasım 2026 güncellemesi:** Kullanıcı avcıların **gerçek 3D model** olmasına karar verdi (`UC-BOYUT.md`).
+> Avcılar artık kodla kurulan 3D modeller; **yön paftaları (Y01–Y34) İPTAL**, üretilmeyecek. U paftaları (simgeler,
+> kartlar, giriş resmi, amblemler) ve N14–N20 animasyon paftaları geçerli; sırayla devam edilir.
+
 ## Yerel Claude için iş sırası
 
 0. **İlk iş yön paftalarıdır (Y01–Y34, dosyanın sonunda).** Onları 3D karakter sohbetinde ya da yeni bir sohbette

@@ -35,4 +35,4 @@ verdiği PNG olarak, işlenmeden kaydedilir (1536 × 1024, RGBA). Arka planda al
 
 ## Yön paftaları (öncelikli; kayıt yeri `gorsel/ham3d/`)
 
-Y01–Y34: her kostüm için dört yöne yürüyüş, silah elde. Durum: bekliyor (Y01 kullanıcı onayına sunulacak).
+Y01–Y34: İPTAL (24 Kasım 2026). Kullanıcı gerçek 3D modele karar verdi; avcılar kodla kurulan 3D modeller (`../../UC-BOYUT.md`).

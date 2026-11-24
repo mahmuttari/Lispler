@@ -329,23 +329,28 @@ function ponkoSilahKur() {
   g.add(namlu);
   return { grup: g, namlu };
 }
-// Güllu'nun uzun yayı: elin önünde tek sürekli kavisli ahşap gövde (TubeGeometry), dik tutulur.
-// Uçlar arasında ince açık kiriş, elin içinde sarı kabza bandı; ok yalnız ateşte görünür.
+// Güllu'nun uzun yayı: tek sürekli kavisli ahşap gövde (TubeGeometry), gövde boyu dikey.
+// Yay göğüs hizasındaki sağ yumrukta, gövdenin sağında ve biraz önünde durur; uçlar arasında kiriş,
+// elin içinde sarı kabza bandı; ok yalnız ateşte görünür.
 function gulSilahKur() {
   const g = grup();
   const ahsap = "#7c2d12";
-  // Kavis elin içinden geçsin diye grup hafif geri alınır; yay yerel Y boyunca dikeydir.
-  const yay = grup(0, 0, -6.6);
+  // Yumruktan yayın kabzasına kısa ahşap boyun: yay sağa ve öne taşınır, gövdeye gömülmez.
+  g.add(kutu(16, 5, 5, ahsap, 7, -2, 4));
+  // Yay yerel Y boyunca dikey; kabza (t=0.5) yumruğun önünde, uçlar hafif geride.
+  const yay = grup(16, -2, 8);
+  const Boy = 60;
   const noktalar = [];
-  for (let i = 0; i <= 14; i++) {
-    const t = i / 14;
-    noktalar.push(new THREE.Vector3(0, -24 + 76 * t, 8 * Math.sin(Math.PI * t))); // alt uç → üst uç, öne kavis
+  for (let i = 0; i <= 16; i++) {
+    const t = i / 16;
+    noktalar.push(new THREE.Vector3(0, -Boy + 2 * Boy * t, 7 * Math.sin(Math.PI * t) - 7)); // alt uç → üst uç
   }
   const egri = new THREE.CatmullRomCurve3(noktalar);
-  const govde = new THREE.Mesh(new THREE.TubeGeometry(egri, 28, 2.2, 8, false), toonMalzeme(ahsap));
+  const govde = new THREE.Mesh(new THREE.TubeGeometry(egri, 30, 2.6, 8, false), toonMalzeme(ahsap));
   yay.add(konturla(govde, 1.08));                                  // tek parça sürekli yay gövdesi
-  yay.add(kutu(1.2, 76, 1.2, "#e5e7eb", 0, 14, 0));                // uçlar arası ince kiriş (arkada)
-  yay.add(kutu(5, 11, 5, "#fbbf24", 0, 0, 6.6));                   // sarı kabza bandı (elin içinde)
+  yay.add(kutu(1.4, 2 * Boy, 1.4, "#e5e7eb", 0, 0, -7));           // uçlar arası ince kiriş (arkada)
+  yay.add(kutu(6, 14, 6, "#fbbf24", 0, 0, 0));                     // sarı kabza bandı (yumruğun önünde)
+  yay.add(kutu(5, 4, 5, "#451a03", 0, 0, 0));                      // koyu kabza sarımı
   const ok = grup();
   ok.add(kutu(2, 2, 36, "#92400e", 0, 0, 14));                     // ok gövdesi (ileri)
   ok.add(kutu(4, 4, 5, "#9ca3af", 0, 0, 32));                      // ok ucu
@@ -1378,3 +1383,4 @@ try {
   hazir = false;
   window.UcAvci = { hazir: false, ciz: () => false, namlu: () => null, destek: () => false, kapat: () => {} };
 }
+

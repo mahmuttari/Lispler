@@ -473,6 +473,37 @@ try {
     assert.ok(k.ustBant > 4 || k.tasma >= 6, JSON.stringify(k));
   });
 
+  // 3D-5: Güllu'nun yayı dik, gövde boyu: nişanda 0.55 ve π/2'de omuz üstünde ve bel altında ahşap piksel var.
+  const gulYay = await p.evaluate(() => {
+    const W = 300, H = 320, OX = 150, OY = 250, size = 150;
+    const yayTest = (r, g, b) => r > 85 && g < 110 && b < 80 && r > g * 1.3; // #7c2d12 ahşap
+    const olc = (aci) => {
+      const c = document.createElement('canvas'); c.width = W; c.height = H;
+      drawCharacter(c.getContext('2d'), 'gul', 0, OX, OY, size, 0, 0, 1, 0, '', null, aci, `gul-yay-${aci}`);
+      const d = c.getContext('2d').getImageData(0, 0, W, H).data;
+      let ust = H, alt = -1;
+      for (let yy = 0; yy < H; yy++) for (let xx = 0; xx < W; xx++) if (d[(yy * W + xx) * 4 + 3] > 128) { if (yy < ust) ust = yy; if (yy > alt) alt = yy; }
+      const h = Math.max(1, alt - ust + 1);
+      const omuz = ust + h * 0.30, bel = ust + h * 0.66;
+      let ustBant = 0, belBant = 0;
+      for (let yy = 0; yy < H; yy++) for (let xx = 0; xx < W; xx++) {
+        const i = (yy * W + xx) * 4;
+        if (d[i + 3] > 128 && yayTest(d[i], d[i + 1], d[i + 2])) {
+          if (yy < omuz) ustBant++;
+          if (yy > bel) belBant++;
+        }
+      }
+      return { aci: +aci.toFixed(2), ustBant, belBant };
+    };
+    return [olc(0.55), olc(Math.PI / 2)];
+  });
+  for (const k of gulYay) {
+    sina(`Güllu'nun yayı aci=${k.aci} nişanda omuz üstünde ve bel altında görünür (gövdeden uzun)`, () => {
+      assert.ok(k.ustBant >= 10, `omuz üstü=${k.ustBant} (${JSON.stringify(k)})`);
+      assert.ok(k.belBant >= 10, `bel altı=${k.belBant} (${JSON.stringify(k)})`);
+    });
+  }
+
   // ---- 3D-2c: Fanatik, Silsen, Serçin — her kostüm, 8 yön, silah, imza ----
   const YENI3 = ['fanatik', 'silsen', 'sercin'];
   const yeni3 = await p.evaluate((chars) => {

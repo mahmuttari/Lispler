@@ -98,6 +98,22 @@ function hikayeParilti() {
   return c;
 }
 
+// Emoji her karede yazı olarak çizilmez (renkli yazı tipi yazılımla çizilirken pahalı): bir kez küçük tuvale çizilir
+const _hikayeSimgeler = new Map();
+function hikayeSimgeResmi(simge) {
+  let c = _hikayeSimgeler.get(simge);
+  if (c) return c;
+  c = document.createElement("canvas");
+  c.width = c.height = 80;
+  const x = c.getContext("2d");
+  x.font = "56px serif";
+  x.textAlign = "center";
+  x.textBaseline = "middle";
+  x.fillText(simge, 40, 42);
+  _hikayeSimgeler.set(simge, c);
+  return c;
+}
+
 function hikayeCiz(ctx) {
   const h = game.hatira;
   if (!h) return;
@@ -109,10 +125,7 @@ function hikayeCiz(ctx) {
   ctx.globalAlpha = 0.85 + Math.sin(sn * 2.4) * 0.12;
   ctx.drawImage(hikayeParilti(), -g, -g, g * 2, g * 2);
   ctx.globalAlpha = 1;
-  ctx.font = "28px serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(h.simge || "🎁", 0, 0);
+  ctx.drawImage(hikayeSimgeResmi(h.simge || "🎁"), -20, -20, 40, 40);
   const a = sn * 1.7;
   ctx.fillStyle = "#fff7cc";
   ctx.beginPath();

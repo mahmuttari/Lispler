@@ -264,29 +264,34 @@ function markSilahKur() {
 // Kornet'in kristal asası: tahta sap, sarı sarmal bant, üç dişli uçta parlayan mor kristal.
 function kornetSilahKur() {
   const g = grup();
-  // Sap yerel -Y boyunca: dinlenirken grup π döner, asa dikey ve kristal başın üstünde kalır.
-  // Nişanda -0.78 rad: asa ~45° öne-yukarı uzanır (kristal önde, baş hizasında).
-  g.add(konturla(kutu(4, 58, 4, "#8b5a2b", 0, -25, 0), 1.05));    // sap
-  for (let i = 0; i < 8; i++) {
-    const b = kutu(5, 2.4, 5, "#fbbf24", 0, -3 - i * 5.6, 0);     // sarmal bant
+  // Sap yerel +Y boyunca uzanır: dinlenirken dik, nişanda ~45° öne eğilir (silahDunya).
+  // Asa yumruğun dış yanında tutulur (başın önüne gelip görünmez olmasın); kısa tahta boyun ele bağlar.
+  const asa = grup(12, 0, 0);
+  asa.add(konturla(kutu(4, 76, 4, "#8b5a2b", 0, 30, 0), 1.05));    // sap (el → yukarı)
+  for (let i = 0; i < 9; i++) {
+    const b = parlak(5, 2.4, 5, "#fbbf24", 0, 4 + i * 6.5, 0);     // sarı sarmal bant (düz parlak: ten rengine kaymaz)
     b.rotation.y = i * 0.8;
-    g.add(b);
+    asa.add(b);
   }
-  g.add(konturla(kutu(3.4, 15, 3.4, "#eab308", 0, -57, 0)));      // orta diş
+  asa.add(konturla(parlak(3.4, 16, 3.4, "#7e22ce", 0, 73, 0)));    // orta diş
   for (const yon of [-1, 1]) {
-    const p = kutu(3.4, 13, 3.4, "#eab308", yon * 7, -55, 0);
-    p.rotation.z = yon * 0.3;                                      // yan dişler
-    g.add(p);
+    const p = parlak(3.4, 13, 3.4, "#7e22ce", yon * 7, 70, 0);
+    p.rotation.z = yon * 0.3;                                       // yan dişler
+    asa.add(p);
   }
   const kristal = new THREE.Mesh(_kristalGeo, parlakMalzeme("#c026d3"));
-  kristal.position.set(0, -57, 0);
+  kristal.position.set(0, 84, 0);                                   // dişlerin üstünde, baştan yüksek
   kristal.scale.set(1, 1.5, 1);
-  g.add(kristal);
-  g.add(kutu(2, 2, 2, "#f0abfc", 0, -57, 0, "#e879f9"));          // iç parlama
+  asa.add(kristal);
+  asa.add(kutu(2, 2, 2, "#f0abfc", 0, 84, 0, "#e879f9"));          // iç parlama
   const namlu = new THREE.Object3D();
-  namlu.position.set(0, -70, 0);
-  g.add(namlu);
-  return { grup: g, namlu, dinlen: Math.PI, nisan: -0.78 };
+  namlu.position.set(0, 96, 0);
+  asa.add(namlu);
+  g.add(asa);
+  g.add(kutu(9, 5, 5, "#8b5a2b", 7, 0, 0));                         // tahta boyun (yumruk → asa)
+  g.add(kutu(5, 7, 6, "#fbbf24", 0, 0, 0));                         // kabza bandı (elin içinde)
+  // Dünya açısı: dinlenirken dik (0), nişanda ~45° öne (0.78).
+  return { grup: g, namlu, silahDunya: { dinlen: 0, nisan: 0.78 } };
 }
 // Kenit'in küçük hançeri: kısa kabza, balçak, sivri gümüş bıçak.
 function kentSilahKur() {
@@ -324,37 +329,35 @@ function ponkoSilahKur() {
   g.add(namlu);
   return { grup: g, namlu };
 }
-// Güllu'nun uzun yayı: dik tutulur; gövde yerel Z boyunca uzanır (nişanda dikey görünür), kiriş arkada.
-// Sarı kabza bandı, oku yalnız ateşte görünür (ok meshesi canlandir'da açılır).
+// Güllu'nun uzun yayı: elin önünde tek sürekli kavisli ahşap gövde (TubeGeometry), dik tutulur.
+// Uçlar arasında ince açık kiriş, elin içinde sarı kabza bandı; ok yalnız ateşte görünür.
 function gulSilahKur() {
   const g = grup();
   const ahsap = "#7c2d12";
-  // Yay gövde boyu dikey; elin biraz önünde tutulur (boyun parçası), böylece 3/4 önden de görünür.
-  g.add(konturla(kutu(4, 4, 22, ahsap, 0, 0, 11), 1.05));         // tutuş boynu (el → yay)
-  const yay = grup(0, 0, 22);
-  yay.add(konturla(kutu(5, 14, 5, ahsap, 0, 0, 0), 1.05));        // tutamak
-  yay.add(kutu(6, 7, 6, "#fbbf24", 0, 0, 0));                     // sarı kabza bandı
-  for (const yon of [1, -1]) {
-    for (const [y, z] of [[12, 12], [22, 24], [32, 18], [39, 2]]) {
-      const kol = kutu(3.6, 11, 3.6, ahsap, 0, yon * y, z);       // dışa kavisli kollar
-      kol.rotation.x = -yon * 0.2;
-      yay.add(kol);
-    }
-    yay.add(konturla(kutu(4.2, 4.2, 4, "#451a03", 0, yon * 40, 0), 1.05)); // uç topuzu
+  // Kavis elin içinden geçsin diye grup hafif geri alınır; yay yerel Y boyunca dikeydir.
+  const yay = grup(0, 0, -6.6);
+  const noktalar = [];
+  for (let i = 0; i <= 14; i++) {
+    const t = i / 14;
+    noktalar.push(new THREE.Vector3(0, -24 + 76 * t, 8 * Math.sin(Math.PI * t))); // alt uç → üst uç, öne kavis
   }
-  yay.add(kutu(1.3, 82, 1.3, "#e5e7eb", 0, 0, -3));               // kiriş (dikey, arkada)
+  const egri = new THREE.CatmullRomCurve3(noktalar);
+  const govde = new THREE.Mesh(new THREE.TubeGeometry(egri, 28, 2.2, 8, false), toonMalzeme(ahsap));
+  yay.add(konturla(govde, 1.08));                                  // tek parça sürekli yay gövdesi
+  yay.add(kutu(1.2, 76, 1.2, "#e5e7eb", 0, 14, 0));                // uçlar arası ince kiriş (arkada)
+  yay.add(kutu(5, 11, 5, "#fbbf24", 0, 0, 6.6));                   // sarı kabza bandı (elin içinde)
   const ok = grup();
-  ok.add(kutu(2, 2, 36, "#92400e", 0, 0, 12));                    // ok gövdesi (ileri)
-  ok.add(kutu(4, 4, 5, "#9ca3af", 0, 0, 30));                     // ok ucu
-  ok.add(kutu(6, 3, 1.4, "#dc2626", 0, 0, -5));                   // tüy
+  ok.add(kutu(2, 2, 36, "#92400e", 0, 0, 14));                     // ok gövdesi (ileri)
+  ok.add(kutu(4, 4, 5, "#9ca3af", 0, 0, 32));                      // ok ucu
+  ok.add(kutu(6, 3, 1.4, "#dc2626", 0, 0, -4));                    // tüy
   ok.visible = false;
   yay.add(ok);
   const namlu = new THREE.Object3D();
-  namlu.position.set(0, 0, 34);
+  namlu.position.set(0, 0, 38);
   yay.add(namlu);
   g.add(yay);
-  // Kol nişanda -π/2 döner; yay grup açısıyla telafi edilip dikey kalır.
-  return { grup: g, namlu, ok, dinlen: Math.PI / 2, nisan: Math.PI / 2 };
+  // Kol dönerken yay dünya ekseninde dikey kalsın: canlandir açıyı kola göre telafi eder.
+  return { grup: g, namlu, ok, silahDunya: { dinlen: 0, nisan: 0 } };
 }
 // Rani'nin Y biçimli sapanı: tahta gövde, iki kol, lastik bantlar ve taş. Namlu yerel -Y'de.
 function raniSilahKur() {
@@ -703,6 +706,7 @@ function iskelet(charKey, costumeIdx, gunKey) {
     silahGrup: silah.grup,
     silahOk: silah.ok || null,
     silahAci: silah.dinlen !== undefined ? { dinlen: silah.dinlen, nisan: silah.nisan || 0 } : null,
+    silahDunya: silah.silahDunya || null, // dünya ekseninde istenen silah açısı (kol dönüşünü telafi eder)
   };
 }
 
@@ -1197,7 +1201,11 @@ function canlandir(rig, d, o, dt, simdi) {
   rig.omuzSol.rotation.x = d.omuzSolX;
   rig.elSag.rotation.x = d.elSagX;
   // Çekici olan karakterde silah dinlenirken omuzda, nişanda önde: tutuş açısı yumuşak geçer.
-  if (rig.silahGrup && rig.silahAci) {
+  // Dünya açısı istenen silahlarda (Güllu'nun yayı, Kornet'in asası) kol dönüşü telafi edilir.
+  if (rig.silahGrup && rig.silahDunya) {
+    const istenen = rig.silahDunya.dinlen + (rig.silahDunya.nisan - rig.silahDunya.dinlen) * d.nisan;
+    rig.silahGrup.rotation.x = istenen - (rig.omuzSag.rotation.x + rig.elSag.rotation.x);
+  } else if (rig.silahGrup && rig.silahAci) {
     rig.silahGrup.rotation.x = rig.silahAci.dinlen + (rig.silahAci.nisan - rig.silahAci.dinlen) * d.nisan;
   }
   // Ok yalnız ateş ederken görünür (Güllu'nun yayı)

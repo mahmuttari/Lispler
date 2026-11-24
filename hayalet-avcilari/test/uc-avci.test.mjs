@@ -428,6 +428,51 @@ try {
     });
   }
 
+  // ---- 3D-4: Güllu'nun yayı ve Kornet'in asası nişanda omuz üstünde, yerde değil ----
+  const silahUst = await p.evaluate(() => {
+    const W = 220, H = 260, OX = 110, OY = 170, size = 80;
+    const ciz = (ch, kim) => {
+      const c = document.createElement('canvas'); c.width = W; c.height = H;
+      drawCharacter(c.getContext('2d'), ch, 0, OX, OY, size, 0, 0, 1, 0, '', null, 0.55, kim);
+      return c.getContext('2d').getImageData(0, 0, W, H).data;
+    };
+    // Silaha özgü renklerin siluetin üst bandındaki sayısı ve sağ kenar taşması.
+    const olc = (d, test) => {
+      let ust = H, alt = -1;
+      const sayilar = new Array(W).fill(0);
+      for (let yy = 0; yy < H; yy++) for (let xx = 0; xx < W; xx++) {
+        if (d[(yy * W + xx) * 4 + 3] > 128) { sayilar[xx]++; if (yy < ust) ust = yy; if (yy > alt) alt = yy; }
+      }
+      const h = Math.max(1, alt - ust + 1);
+      let ustBant = 0, silahSag = -1;
+      for (let yy = ust; yy < Math.min(alt + 1, ust + Math.ceil(h * 0.45)); yy++) {
+        for (let xx = 0; xx < W; xx++) {
+          const i = (yy * W + xx) * 4;
+          if (d[i + 3] > 128 && test(d[i], d[i + 1], d[i + 2])) ustBant++;
+        }
+      }
+      for (let yy = 0; yy < H; yy++) for (let xx = 0; xx < W; xx++) {
+        const i = (yy * W + xx) * 4;
+        if (d[i + 3] > 128 && test(d[i], d[i + 1], d[i + 2]) && xx > silahSag) silahSag = xx;
+      }
+      let govdeSag = -1; // gövde sütunları kalın; ince silah bundan sağa taşar
+      for (let xx = 0; xx < W; xx++) if (sayilar[xx] >= 10) govdeSag = xx;
+      return { ustBant, tasma: silahSag - govdeSag };
+    };
+    return {
+      gul: olc(ciz('gul', 'silah-ust-gul'), (r, g, b) => r > 60 && g < 100 && b < 80 && r > g * 1.3),    // yay ahşabı
+      kornet: olc(ciz('kornet', 'silah-ust-kornet'), (r, g, b) => r > 175 && g < 70 && b > 175),        // mor kristal
+    };
+  });
+  sina('Güllu\'nun yayı nişanda omuz üstünde görünür (yerde yatmıyor)', () => {
+    const g = silahUst.gul;
+    assert.ok(g.ustBant > 10 || g.tasma >= 6, JSON.stringify(g));
+  });
+  sina('Kornet\'in mor kristali nişanda baş/gövde üstünde görünür (asa yerde değil)', () => {
+    const k = silahUst.kornet;
+    assert.ok(k.ustBant > 4 || k.tasma >= 6, JSON.stringify(k));
+  });
+
   // ---- 3D-2c: Fanatik, Silsen, Serçin — her kostüm, 8 yön, silah, imza ----
   const YENI3 = ['fanatik', 'silsen', 'sercin'];
   const yeni3 = await p.evaluate((chars) => {

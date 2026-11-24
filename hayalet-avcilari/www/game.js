@@ -4338,6 +4338,7 @@ function clientApplyLevel(newLevel) {
   ensurePlayerSafe();
   yenidenDog();
   showToast(bolumBildirimi());
+  if (typeof hikayeBolumBasladi === "function") hikayeBolumBasladi(); // hikâye: istemcide hatıra (sahne yok)
 }
 
 // Çevrimiçi oyunda hayalet olan oyuncu yeni bölümde doğar
@@ -5729,6 +5730,7 @@ function startGame(secenek) {
   refreshWeaponBar();
   // Dünya Turu'nda ülkenin teaser'ı ve döngüsü (muzik.js); normal oyunda müzik yok
   if (game.dunyaTuru && !game.turOrtadan) turMuzigiBaslat(turUlkesi().kod); else turMuzigiSondur(0);
+  if (typeof hikayeBolumBasladi === "function") hikayeBolumBasladi(); // hikâye: hatıra, gezgin, sahne (hikaye.js)
   game.lastFrame = performance.now();
   const no = ++_donguNo;
   requestAnimationFrame((zaman) => gameLoop(zaman, no));
@@ -6566,6 +6568,7 @@ function update(dt, now) {
       game.pickups.splice(i, 1);
     }
   }
+  if (typeof hikayeGuncelle === "function") hikayeGuncelle(); // hatıraya değme (mıknatıs çekmez)
 
   // Parçacıklar
   for (let i = game.particles.length - 1; i >= 0; i--) {
@@ -6625,6 +6628,7 @@ function nextLevel() {
   game.levelTransitioning = false;
   game._turGeciste = false;
   game._turSonraki = null;
+  if (typeof hikayeBolumBasladi === "function") hikayeBolumBasladi(); // hikâye: yeni ülkenin hatırası ve sahnesi
 }
 
 // Bölüm başı bildirimi: Dünya Turu'nda ülkenin tanıtım satırı ("✈️ 7. İtalya — Kolezyum ve …")
@@ -7256,6 +7260,7 @@ function render() {
 
   // Toplanabilirler
   for (const p of game.pickups) drawPickup(ctx, p);
+  if (typeof hikayeCiz === "function") hikayeCiz(ctx); // parlayan hatıra baloncuğu
 
   // Mermiler
   for (const p of game.projectiles) drawProjectile(ctx, p);

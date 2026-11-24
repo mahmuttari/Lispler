@@ -402,9 +402,11 @@
     <div class="lb-tabs">
       <button class="lb-tab active" data-sekme="rota" onclick="turSekmesi('rota')">✈️ Rota</button>
       <button class="lb-tab" data-sekme="pasaport" onclick="turSekmesi('pasaport')">🛂 Pasaport</button>
+      <button class="lb-tab" data-sekme="defter" onclick="turSekmesi('defter')">📖 Defter</button>
     </div>
     <div id="tur-liste" class="tur-liste"></div>
     <div id="tur-pasaport" class="tur-pasaport" style="display:none"></div>
+    <div id="tur-defter" class="tur-defter" style="display:none"></div>
     <button id="tur-basla" class="btn btn-big btn-play" onclick="dunyaTuruBaslat()">▶ Başla</button>
     <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
@@ -412,6 +414,9 @@
 <!-- Damga ve uçak geçişi perdeleri (oyunun üstünde; dokunuşu geçirir) -->
 <div id="tur-damga" class="tur-perde" aria-live="polite"></div>
 <div id="tur-gecis" class="tur-perde" aria-live="polite"></div>
+<!-- Dünya Turu hikâyesi: varış/katılış sahnesi ve bilmece (hikaye.js) -->
+<div id="hikaye-sahne" class="hikaye-perde" role="dialog" aria-modal="true" aria-live="polite"></div>
+<div id="hikaye-bilmece" class="hikaye-perde" role="dialog" aria-modal="true" aria-live="polite"></div>
 <!-- Damgaların mürekkep pürüzü -->
 <svg class="tur-svg-tanim" width="0" height="0" aria-hidden="true" focusable="false">
   <filter id="tur-murekkep" x="-5%" y="-5%" width="110%" height="110%">
@@ -552,6 +557,8 @@
 <script src="ulkeler.js"></script>
 <script src="kostumler.js"></script>
 <script src="dunya-turu.js"></script>
+<script src="hikaye-veri.js"></script>
+<script src="hikaye.js"></script>
 <script src="ulke-muzikleri.js"></script>
 <script src="muzik.js"></script>
 <script src="arkadaslar.js"></script>

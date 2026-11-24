@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const WWW = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'www');
 const anahtarlar = new Set();
-for (const f of ['game.js', 'i18n.js', 'reklam.js', 'playgames.js', 'arkadaslar.js', 'ulkeler.js', 'dunya-turu.js', 'timsah.js', 'kopru.js', 'cali.js', 'pet.js', 'kostumler.js', 'muzik.js', 'karakter-detay.js', 'anim-ek.js', 'uc-avci.js', 'gorsel.js']) {
+for (const f of ['game.js', 'i18n.js', 'reklam.js', 'playgames.js', 'arkadaslar.js', 'ulkeler.js', 'dunya-turu.js', 'timsah.js', 'kopru.js', 'cali.js', 'pet.js', 'kostumler.js', 'muzik.js', 'karakter-detay.js', 'anim-ek.js', 'uc-avci.js', 'gorsel.js', 'hikaye-veri.js', 'hikaye.js']) {
   const s = fs.readFileSync(path.join(WWW, f), 'utf8');
   for (const m of s.matchAll(/\bt\(\s*("(?:[^"\\\n]|\\.)*")/g)) anahtarlar.add(JSON.parse(m[1].replace(/\\'/g, "'")));
 }

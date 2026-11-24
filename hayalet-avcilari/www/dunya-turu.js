@@ -19,7 +19,33 @@ function turKaydiniTemizle(v) {
     for (const [kod, zaman] of Object.entries(k.damgalar)) if (ulkeKodla(kod) && Number.isFinite(zaman)) damgalar[kod] = zaman;
   }
   const bitti = Number.isFinite(k.bitti) && k.bitti > 0 ? k.bitti : 0;
-  return { acik, damgalar, bitti };
+  const r = { acik, damgalar, bitti };
+  // Hikâye alanları (HIKAYE.md): yalnız kayıtta varsa eklenir (eski kayıt biçimi bozulmaz)
+  const yeni = ["hatiralar", "bilmeceler", "sahneler", "katilanlar", "gezgin", "rozet"].some((a) => k[a] != null);
+  if (!yeni) return r;
+  const avcilar = (window.HIKAYE_TEST && window.HIKAYE_TEST.avciSirasi) || (typeof HIKAYE_AVCI_SIRASI !== "undefined" ? HIKAYE_AVCI_SIRASI : []);
+  const hatiralar = {};
+  if (k.hatiralar && typeof k.hatiralar === "object") {
+    for (const [kod, zaman] of Object.entries(k.hatiralar)) if (ulkeKodla(kod) && Number.isFinite(zaman) && zaman > 0) hatiralar[kod] = zaman;
+  }
+  const bilmeceler = {};
+  if (k.bilmeceler && typeof k.bilmeceler === "object") {
+    for (const [n, zaman] of Object.entries(k.bilmeceler)) {
+      const i = Number(n);
+      if (Number.isInteger(i) && i >= 1 && i <= 10 && Number.isFinite(zaman) && zaman > 0) bilmeceler[String(i)] = zaman;
+    }
+  }
+  const sahneler = {};
+  if (k.sahneler && typeof k.sahneler === "object") {
+    for (const [kod, deger] of Object.entries(k.sahneler)) if (ulkeKodla(kod) && Number.isFinite(Number(deger)) && Number(deger) > 0) sahneler[kod] = 1;
+  }
+  const katilanlar = {};
+  if (k.katilanlar && typeof k.katilanlar === "object") {
+    for (const [avci, zaman] of Object.entries(k.katilanlar)) if (avcilar.includes(avci) && Number.isFinite(zaman) && zaman > 0) katilanlar[avci] = zaman;
+  }
+  const gezgin = avcilar.includes(k.gezgin) ? k.gezgin : "";
+  const rozet = Number.isFinite(k.rozet) && k.rozet > 0 ? k.rozet : 0;
+  return { acik, damgalar, bitti, hatiralar, bilmeceler, sahneler, katilanlar, gezgin, rozet };
 }
 
 function turKaydi() {
@@ -232,6 +258,11 @@ function turTamamlandi() {
     setTimeout(() => { if (game.running && online.mode === "host") turuBitir(); }, 2000);
     return;
   }
+  // Tek kişilik: final sahnesi açıldıysa önce o gösterilir, kapanınca oyun sonu
+  if (typeof hikayeFinalHazir === "function" && hikayeFinalHazir()) {
+    hikayeFinalGoster(() => oyunSonu(true, false));
+    return;
+  }
   oyunSonu(true, false);
 }
 // Oyun sonundaki "🔁 Tekrar Oyna": Dünya Turu'nda kalınan ülkeden (tur bittiyse Dünya Turu ekranı), normal oyunda baştan
@@ -271,11 +302,15 @@ function renderDunyaTuru() {
   document.getElementById("tur-liste").innerHTML = html;
 }
 function turSekmesi(ad) {
-  const pasaport = ad === "pasaport";
-  document.querySelectorAll("#screen-dunya-turu .lb-tab").forEach((b) => b.classList.toggle("active", b.dataset.sekme === (pasaport ? "pasaport" : "rota")));
-  document.getElementById("tur-liste").style.display = pasaport ? "none" : "";
+  if (ad !== "pasaport" && ad !== "defter") ad = "rota";
+  const pasaport = ad === "pasaport", defter = ad === "defter";
+  document.querySelectorAll("#screen-dunya-turu .lb-tab").forEach((b) => b.classList.toggle("active", b.dataset.sekme === ad));
+  document.getElementById("tur-liste").style.display = ad === "rota" ? "" : "none";
   const pp = document.getElementById("tur-pasaport");
   pp.style.display = pasaport ? "" : "none";
+  const df = document.getElementById("tur-defter");
+  if (df) df.style.display = defter ? "" : "none";
+  if (defter && typeof hikayeDefterCiz === "function") hikayeDefterCiz();
   if (pasaport) {
     const k = turKaydi();
     pp.innerHTML = ULKELER.map((u) => (k.damgalar[u.kod]
@@ -361,7 +396,7 @@ function turDurumGeldi(st) {
   if (ilk) game.turBaslangic = lvl;
   const muzikSecenegi = ortadan ? { giris: false } : undefined;
   if (lvl === game.level) {
-    if (ortadan) { showToast(bolumBildirimi()); turMuzigiBaslat(ulkeSirada(lvl).kod, muzikSecenegi); }
+    if (ortadan) { showToast(bolumBildirimi()); turMuzigiBaslat(ulkeSirada(lvl).kod, muzikSecenegi); if (typeof hikayeBolumBasladi === "function") hikayeBolumBasladi(); }
     else if (!ilk && st.lt && !game.levelTransitioning) istemciGecisi(ulkeSirada(lvl)); // kurucu ülkeyi bitirdi (lt 0 → 1)
     return true;
   }

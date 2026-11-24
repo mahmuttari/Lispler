@@ -65,13 +65,15 @@ try {
     const k = turKaydi();
     const r = { gezgin: k.gezgin, katilanlar: { ...k.katilanlar }, sahne: document.getElementById('hikaye-sahne').classList.contains('active') };
     endGame(false);
+    r.kapandi = !document.getElementById('hikaye-sahne').classList.contains('active');
     return r;
   });
   sina('tur gezgini seçili avcı; katılış ülkesinde listedeki ilk arkadaş katılır (gezgin atlanır)', () => {
     assert.equal(gezgin.gezgin, 'kinkin');
     assert.equal(typeof gezgin.katilanlar.veryi, 'number');
     assert.equal(gezgin.katilanlar.kinkin, undefined);
-    assert.equal(gezgin.sahne, false); // bu ülkenin/metin verisinin sahnesi yok
+    assert.equal(gezgin.sahne, true); // katılan arkadaşın sahnesi açılır
+    assert.equal(gezgin.kapandi, true); // oyun bitince sahne ekranda kalmaz
   });
 
   // --- 3) Hatıra: boş ve uzak nokta, iki koşuda aynı; dokunma kaydeder; mıknatıs çekmez ---

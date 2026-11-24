@@ -59,7 +59,7 @@ async function sayfaAc(b, ad) {
     await r.fulfill({ status: 200, contentType: 'text/javascript', body: govde });
   });
   await p.route(/firestore\.googleapis\.com|googlesyndication|doubleclick/, (r) => r.abort());
-  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); });
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForTimeout(300);
   await p.evaluate((ad) => {

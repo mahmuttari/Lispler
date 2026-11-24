@@ -29,7 +29,7 @@ try {
   const hatalar = [];
   p.on('pageerror', (e) => hatalar.push(e.message));
   await p.route(/gstatic\.com|googleapis|firebase/, (r) => r.abort()); // ağsız
-  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); });
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForTimeout(300);
   const cdp = await p.context().newCDPSession(p);
@@ -100,7 +100,7 @@ try {
     const t = await b.newPage({ viewport: { width: 800, height: 1280 }, deviceScaleFactor: dpr });
     t.on('pageerror', (e) => hatalar.push(e.message));
     await t.route(/gstatic\.com|googleapis|firebase/, (r) => r.abort());
-    await t.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+    await t.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); });
     await t.goto(adres, { waitUntil: 'load' });
     await t.waitForTimeout(300);
     await (await t.context().newCDPSession(t)).send('Emulation.setCPUThrottlingRate', { rate: 4 });

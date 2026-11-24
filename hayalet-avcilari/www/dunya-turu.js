@@ -183,6 +183,7 @@ function perdeAc(el) {
 function turPerdeleriniKapat() {
   _perdeNo++;
   document.querySelectorAll(".tur-perde").forEach((p) => p.classList.remove("active"));
+  if (typeof hikayePencereleriKapat === "function") hikayePencereleriKapat(); // hikâye sahnesi ve bilmecesi de (hikaye.js)
 }
 function damgaGoster(u) {
   const el = document.getElementById("tur-damga");

@@ -31,7 +31,7 @@ const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/
 const hatalar = [];
 const p = await b.newPage({ viewport: { width: 844, height: 390 } });
 p.on('pageerror', (e) => hatalar.push(e.message));
-await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); });
 await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
 await p.goto(adres, { waitUntil: 'load' });
 await p.waitForFunction(() => typeof canliOnizleme === 'function' && typeof uiSimgeHTML === 'function' && typeof startGame === 'function');
@@ -230,7 +230,7 @@ try {
 
   // 10) Arapça, 340×740: panel açılır ve yatay taşma olmaz
   const p2 = await b.newPage({ viewport: { width: 340, height: 740 } });
-  await p2.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'ar'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+  await p2.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'ar'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); });
   await p2.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
   await p2.goto(adres, { waitUntil: 'load' });
   await p2.waitForFunction(() => typeof karakterDetayAc === 'function' && typeof openCharacters === 'function');

@@ -221,6 +221,17 @@ function hikayeSahneKapat() {
   }
 }
 
+// Oyun biterken, menüye dönülürken ya da yeni oyun başlarken (turPerdeleriniKapat): açık sahne ve bilmece sessizce kapanır,
+// devam işleri çağrılmaz (oyun zaten kapanıyor ya da baştan kuruluyor).
+function hikayePencereleriKapat() {
+  _sahne = null;
+  _bilmece = null;
+  for (const id of ["hikaye-sahne", "hikaye-bilmece"]) {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove("active"); el.innerHTML = ""; }
+  }
+}
+
 // ---------- Bilmece ----------
 let _bilmece = null;
 const _bilmeceTeklif = {};
@@ -351,6 +362,8 @@ function hikayeBolumBasladi() {
   }
   if (online.mode) return;
   if (k.sahneler[u.kod]) return;
+  // Geliştirici anahtarı: hikâyeyi denemeyen sınamalar sahneyi kendiliğinden açtırmaz (hatıra yine konur)
+  try { if (localStorage.getItem("hayaletAvcilariHikayeSahnesiz") === "1") return; } catch (_) {}
   const adimlar = [];
   const n = hikayeCozulebilirBilmece(k, true);
   if (n) adimlar.push((devam) => hikayeBilmeceAc(n, devam));

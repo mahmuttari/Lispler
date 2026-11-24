@@ -35,7 +35,7 @@ const hatalar = [];
 async function sayfaAc(secenek = {}, dil = 'tr') {
   const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, ...secenek });
   p.on('pageerror', (e) => hatalar.push(e.message));
-  await p.addInitScript((dil) => { localStorage.setItem('hayaletAvcilariDil', dil); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); }, dil);
+  await p.addInitScript((dil) => { localStorage.setItem('hayaletAvcilariDil', dil); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); }, dil);
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForTimeout(300);

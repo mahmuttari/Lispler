@@ -30,7 +30,7 @@ const hatalar = [];
 async function sayfa(dil, en, boy) {
   const p = await b.newPage({ viewport: { width: en, height: boy }, hasTouch: true });
   p.on('pageerror', (e) => hatalar.push(`${dil}: ${e.stack}`));
-  await p.addInitScript((d) => { localStorage.setItem('hayaletAvcilariDil', d); }, dil);
+  await p.addInitScript((d) => { localStorage.setItem('hayaletAvcilariDil', d); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); }, dil);
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForFunction(() => typeof startGame === 'function');

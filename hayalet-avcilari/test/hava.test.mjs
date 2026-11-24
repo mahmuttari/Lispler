@@ -30,7 +30,7 @@ async function sayfa(azHareket) {
   const p = await b.newPage({ viewport: { width: 844, height: 390 } });
   if (azHareket) await p.emulateMedia({ reducedMotion: 'reduce' });
   p.on('pageerror', (e) => hatalar.push(e.message));
-  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); });
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForFunction(() => typeof havaGuncelle === 'function' && typeof startGame === 'function');

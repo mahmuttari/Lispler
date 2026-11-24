@@ -32,7 +32,7 @@ async function sayfa(dil, en) {
   p.on('pageerror', (e) => hatalar.push(`${dil}: ${e.message}`));
   await p.addInitScript((d) => {
     localStorage.setItem('hayaletAvcilariDil', d);
-    localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9');
+    localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1');
   }, dil);
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
   await p.goto(adres, { waitUntil: 'load' });

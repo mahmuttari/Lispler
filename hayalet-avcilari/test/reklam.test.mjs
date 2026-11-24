@@ -35,7 +35,7 @@ try {
   p.on('pageerror', (e) => hatalar.push(e.message));
   await p.addInitScript(() => {
     localStorage.setItem('hayaletAvcilariDil', 'tr');
-    localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9');
+    localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1');
     const kayit = [];
     window.__admob = kayit;
     window.__dinle = {};

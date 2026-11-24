@@ -53,7 +53,7 @@ async function sayfaAc(b, ad, admob) {
     await r.fulfill({ status: 200, contentType: 'text/javascript', body: govde });
   });
   await p.route(/firestore\.googleapis\.com|googlesyndication|doubleclick/, (r) => r.abort());
-  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); });
   if (admob) {
     // Sahte AdMob: ödüllü reklam hep yüklü; olaylar window.__olay ile tetiklenir (test/reklam.test.mjs ile aynı)
     await p.addInitScript(() => {

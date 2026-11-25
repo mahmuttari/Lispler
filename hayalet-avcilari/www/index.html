@@ -416,12 +416,14 @@
       <button class="lb-tab" data-sekme="pasaport" onclick="turSekmesi('pasaport')">🛂 Pasaport</button>
       <button class="lb-tab" data-sekme="defter" onclick="turSekmesi('defter')">📖 Defter</button>
     </div>
+    <div id="tur-yakinda-banner" class="tur-yakinda-banner-wrap" style="display:none"></div>
     <div id="tur-liste" class="tur-liste"></div>
     <div id="tur-pasaport" class="tur-pasaport" style="display:none"></div>
     <div id="tur-defter" class="tur-defter" style="display:none"></div>
     <button id="tur-basla" class="btn btn-big btn-play" onclick="dunyaTuruBaslat()">▶ Başla</button>
     <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
+  <div id="tur-yakinda-perde" class="tur-yakinda-perde" style="display:none" role="dialog" aria-modal="true" aria-label="Yakında: Pamukkale"></div>
 </div>
 <!-- Damga ve uçak geçişi perdeleri (oyunun üstünde; dokunuşu geçirir) -->
 <div id="tur-damga" class="tur-perde" aria-live="polite"></div>

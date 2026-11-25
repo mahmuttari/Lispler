@@ -291,6 +291,48 @@ function openDunyaTuru() {
   const liste = document.getElementById("tur-liste"), kart = liste.querySelector(".tur-kart.secili");
   if (kart) liste.scrollTop = kart.offsetTop - (liste.clientHeight - kart.offsetHeight) / 2;
 }
+// "Yakında" önizlemesi: gorsel("yakinda-pamukkale") varsa resmi, yoksa yumuşak degrade yer tutucu
+function turYakindaResmi() {
+  const im = typeof gorsel === "function" ? gorsel("yakinda-pamukkale") : null;
+  return im && im.src ? im.src : "";
+}
+function turYakindaGorselHtml(sinif) {
+  const src = turYakindaResmi();
+  return src ? `<img class="${sinif}" src="${src}" alt="">` : `<span class="${sinif} bos" aria-hidden="true">🏞️</span>`;
+}
+// Rota listesinin sonunda her zaman görünen, oynanamayan "🔜 Yakında" kartı
+function turYakindaKartHtml() {
+  return `<button class="tur-kart yakinda" data-yakinda="1" onclick="turYakindaAc()" aria-label="${escapeHtml(t("Yakında: Pamukkale"))}">` +
+    turYakindaGorselHtml("tur-resim") +
+    `<span class="tur-yakinda-metin"><bdi class="tur-ad">${escapeHtml(t("Yakında: Pamukkale"))}</bdi>` +
+    `<small class="tur-yakinda-alt">${escapeHtml(t("Yeni dünyalar geliyor: dünyanın ikonik yerleri"))}</small></span>` +
+    `<span class="tur-durum" aria-hidden="true">⏳</span></button>`;
+}
+function turYakindaBannerCiz() {
+  const kutu = document.getElementById("tur-yakinda-banner");
+  if (!kutu) return;
+  const k = turKaydi();
+  const rota = !document.getElementById("tur-liste") || document.getElementById("tur-liste").style.display !== "none";
+  if (!k.bitti || !rota) { kutu.style.display = "none"; kutu.innerHTML = ""; return; }
+  kutu.style.display = "";
+  kutu.innerHTML = `<button class="tur-yakinda-banner" onclick="turYakindaAc()" aria-label="${escapeHtml(t("Yakında: Pamukkale"))}">` +
+    turYakindaGorselHtml("tur-yakinda-banner-resim") +
+    `<span class="tur-yakinda-banner-metin"><small>${escapeHtml(t("Turu bitirdin! Sıradaki dünya yakında:"))}</small>` +
+    `<bdi>${escapeHtml(t("Yakında: Pamukkale"))}</bdi></span></button>`;
+}
+function turYakindaAc() {
+  const p = document.getElementById("tur-yakinda-perde");
+  if (!p) return;
+  p.innerHTML = `<div class="tur-yakinda-kutu">` + turYakindaGorselHtml("tur-yakinda-buyuk") +
+    `<h3 class="tur-yakinda-baslik">${escapeHtml(t("Yakında: Pamukkale"))}</h3>` +
+    `<p class="tur-yakinda-aciklama">${escapeHtml(t("Bembeyaz traverten havuzları ve turkuaz sular"))}</p>` +
+    `<button type="button" class="btn" onclick="turYakindaKapat()">${escapeHtml(t("Kapat"))}</button></div>`;
+  p.style.display = "flex";
+}
+function turYakindaKapat() {
+  const p = document.getElementById("tur-yakinda-perde");
+  if (p) { p.style.display = "none"; p.innerHTML = ""; }
+}
 function renderDunyaTuru() {
   const k = turKaydi();
   document.getElementById("tur-sayac").textContent = `🛂 ${Object.keys(k.damgalar).length}/${ULKE_SAYISI}`;
@@ -304,7 +346,9 @@ function renderDunyaTuru() {
       (resim ? `<img class="tur-resim" src="${resim}" alt="">` : `<span class="tur-resim bos" aria-hidden="true"></span>`) +
       `<bdi class="tur-ad">${escapeHtml(u.ad)}</bdi><span class="tur-durum">${TUR_DURUM_SIMGE[durum]}</span></button>`;
   }
+  html += turYakindaKartHtml();
   document.getElementById("tur-liste").innerHTML = html;
+  turYakindaBannerCiz();
 }
 function turSekmesi(ad) {
   if (ad !== "pasaport" && ad !== "defter") ad = "rota";
@@ -315,6 +359,7 @@ function turSekmesi(ad) {
   pp.style.display = pasaport ? "" : "none";
   const df = document.getElementById("tur-defter");
   if (df) df.style.display = defter ? "" : "none";
+  turYakindaBannerCiz();
   if (defter && typeof hikayeDefterCiz === "function") hikayeDefterCiz();
   if (pasaport) {
     const k = turKaydi();

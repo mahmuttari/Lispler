@@ -108,7 +108,10 @@ function hikayeHatiraSimgesiHTML(kod, emoji, ad = "") {
   const k = `hatira-${kod}`;
   if (kod && typeof GORSEL_LISTESI === "object" && GORSEL_LISTESI && GORSEL_LISTESI[k]) {
     const guvenliAd = String(ad).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-    return `<img class="defter-hatira-resim" src="gorsel/${encodeURIComponent(k)}.webp" alt="${guvenliAd}" draggable="false">`;
+    // Yüklü resmin kendi adresi (paketli denemede data URL); henüz yüklenmediyse dosya yolu
+    const im = typeof gorsel === "function" ? gorsel(k) : null;
+    const src = im ? im.src : `gorsel/${encodeURIComponent(k)}.webp`;
+    return `<img class="defter-hatira-resim" src="${src}" alt="${guvenliAd}" draggable="false">`;
   }
   return emoji;
 }

@@ -5095,12 +5095,12 @@ function menuDekoruKur() {
   if (em) {
     const g = gorsel("menu-amblem");
     em.hidden = !g;
-    em.innerHTML = g ? `<img class="menu-resim" src="gorsel/menu-amblem.webp" alt="" draggable="false">` : "";
+    em.innerHTML = g ? `<img class="menu-resim" src="${g.src}" alt="" draggable="false">` : ""; // yüklü resmin adresi (denemede data URL)
   }
   const spot = document.getElementById("hunter-spot");
-  if (spot) spot.innerHTML = gorsel("menu-spot") ? `<img class="menu-resim" src="gorsel/menu-spot.webp" alt="" draggable="false">` : "";
+  if (spot) spot.innerHTML = gorsel("menu-spot") ? `<img class="menu-resim" src="${gorsel("menu-spot").src}" alt="" draggable="false">` : "";
   const kaide = document.getElementById("hunter-kaide");
-  if (kaide) kaide.innerHTML = gorsel("menu-kaide") ? `<img class="menu-resim" src="gorsel/menu-kaide.webp" alt="" draggable="false">` : "";
+  if (kaide) kaide.innerHTML = gorsel("menu-kaide") ? `<img class="menu-resim" src="${gorsel("menu-kaide").src}" alt="" draggable="false">` : "";
   const kayan = document.getElementById("dekor-kayan");
   if (kayan) kayan.innerHTML = _menuResimVeyaEmoji("menu-kayan", "✨");
   const yarasa = document.getElementById("dekor-yarasa");

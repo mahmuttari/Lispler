@@ -249,6 +249,10 @@ try {
       emoji: (yuva().querySelector('.defter-simge').textContent || '').trim(),
       src: (yuva().querySelector('img.defter-hatira-resim') || {}).getAttribute ? yuva().querySelector('img.defter-hatira-resim').getAttribute('src') : '',
     });
+    // Gerçek hatira-TR (ChatGPT, H01) listedeyse sınama boyunca kenara alınır, sonda geri konur
+    const gercekIm = GORSEL['hatira-TR'], gercekListe = GORSEL_LISTESI['hatira-TR'];
+    delete GORSEL['hatira-TR']; delete GORSEL_LISTESI['hatira-TR'];
+    hikayeDefterCiz();
     const once = oku();
     const c = document.createElement('canvas'); c.width = c.height = 32;
     const x = c.getContext('2d'); x.fillStyle = '#e11'; x.fillRect(2, 2, 28, 28);
@@ -260,11 +264,13 @@ try {
     delete GORSEL['hatira-TR']; delete GORSEL_LISTESI['hatira-TR'];
     hikayeDefterCiz();
     const geri = oku();
-    return { once, sonra, geri };
+    if (gercekIm) GORSEL['hatira-TR'] = gercekIm;
+    if (gercekListe) GORSEL_LISTESI['hatira-TR'] = gercekListe;
+    return { once, sonra, geri, sahteSrc: im.src };
   });
   sina('hatira-TR resmi varsa yuva resmi, yoksa emoji gösterir', () => {
     assert.equal(hatiraSimge.once.resim, false); assert.ok(hatiraSimge.once.emoji.length > 0, hatiraSimge.once.emoji);
-    assert.equal(hatiraSimge.sonra.resim, true); assert.equal(hatiraSimge.sonra.src, 'gorsel/hatira-TR.webp'); assert.equal(hatiraSimge.sonra.emoji, '');
+    assert.equal(hatiraSimge.sonra.resim, true); assert.equal(hatiraSimge.sonra.src, hatiraSimge.sahteSrc); // yüklü resmin kendi adresi (denemede data URL) assert.equal(hatiraSimge.sonra.emoji, '');
     assert.equal(hatiraSimge.geri.resim, false); assert.ok(hatiraSimge.geri.emoji.length > 0, hatiraSimge.geri.emoji);
   });
 

@@ -526,7 +526,128 @@ function yolculukHaritaKur() {
   }));
   game._kopruSular = game.waters;
 
+  yolculukDonatilariKur();
   yolculukYoluGarantile();
+}
+
+// ---------- harita süs objeleri (DON1) ----------
+// Türler üç aileye ayrılır; bölge temasına göre karışım değişir. Görseli olmayan tür hiç konmaz.
+const YOLCULUK_DONATI = {
+  koy: ["fici", "sandik", "fener", "bank", "tabela", "saman"],
+  doga: ["cali", "ciceklik", "mantar", "kutuk", "tas", "yaprak"],
+  urkek: ["balkabagi", "araba", "cit", "korkuluk", "mum", "orumcek"],
+};
+// Yuvarlak engel olan büyük objeler (düz olanlar hiç çarpışmaz)
+const YOLCULUK_DONATI_BUYUK = { fici: 1, sandik: 1, saman: 1, araba: 1, korkuluk: 1, tas: 1, kutuk: 1, bank: 1 };
+const YOLCULUK_DONATI_BOY = {
+  yaprak: 38, orumcek: 36, mantar: 38, ciceklik: 40, mum: 38, tabela: 42,
+  fici: 52, sandik: 48, bank: 56, cali: 44, tas: 48, kutuk: 50,
+  cit: 58, balkabagi: 46, fener: 54, araba: 64, saman: 62, korkuluk: 60,
+};
+
+function yolculukDonatiVar(k) {
+  return typeof gorsel === "function" && !!gorsel("donati-" + k);
+}
+
+function yolculukDonatilariKur() {
+  const A = YOLCULUK_AYAR, d = game && game._yolculukDuzen;
+  game._yolculukDonatilar = [];
+  if (!d) return;
+  const hepsi = YOLCULUK_DONATI.doga.concat(YOLCULUK_DONATI.koy, YOLCULUK_DONATI.urkek);
+  if (!hepsi.some(yolculukDonatiVar)) return; // hiç görsel yoksa obje konmaz
+  const bolum = game.level || 1, ulke = yolculukUlkeKodu();
+  const rnd = (b, n) => yolculukRastgele(bolum, ulke, b, 2000 + n);
+  const bas = yolculukBaslangic();
+  const u = typeof turUlkesi === "function" ? turUlkesi() : null;
+  const tema = ((bolum - 1) % 6 + 6) % 6;
+  const koyFazla = !!u;                       // Dünya Turu ülkelerinde köy objeleri daha çok
+  const urkekFazla = !u && (tema === 0 || tema === 4); // şato ve volkan temasında ürkünç objeler daha çok
+  const cak = (x, y, w, h, gap) => {
+    const all = game.walls.concat(game.waters, game.spikes, game.lavas);
+    for (const o of all) if (x < o.x + o.w + gap && x + w + gap > o.x && y < o.y + o.h + gap && y + h + gap > o.y) return true;
+    return false;
+  };
+  const liste = [];
+  const sec = (havuz, sira) => {
+    for (let q = 0; q < havuz.length; q++) {
+      const k = havuz[(sira + q) % havuz.length];
+      if (yolculukDonatiVar(k)) return k;
+    }
+    return null;
+  };
+  let sayac = 0;
+  const bolgeKoy = (b, x0, x1, y0, y1, zone, oncekiCy) => {
+    const n = 10 + Math.floor(rnd(b, 1) * 7); // 10-16
+    let nDoga = Math.round(n * 0.5), nKoy = Math.round(n * 0.3);
+    if (koyFazla) { nKoy = Math.min(n, nKoy + 2); nDoga = Math.max(0, n - nKoy - Math.round(n * 0.2)); }
+    if (urkekFazla) { nDoga = Math.max(0, nDoga - 2); }
+    let nUrkek = n - nDoga - nKoy;
+    if (nUrkek < 0) { nKoy += nUrkek; nUrkek = 0; }
+    const istek = [];
+    for (let q = 0; q < nDoga; q++) istek.push("doga");
+    for (let q = 0; q < nKoy; q++) istek.push("koy");
+    for (let q = 0; q < nUrkek; q++) istek.push("urkek");
+    for (let q = istek.length - 1; q > 0; q--) { // tohumlu karıştırma
+      const j = Math.floor(rnd(b, 10 + q) * (q + 1));
+      const t = istek[q]; istek[q] = istek[j]; istek[j] = t;
+    }
+    for (let qi = 0; qi < istek.length; qi++) {
+      const aile = istek[qi];
+      let kondu = false;
+      for (let deneme = 0; deneme < 300 && !kondu; deneme++) {
+        sayac++;
+        const havuz = YOLCULUK_DONATI[aile];
+        let tur = sec(havuz, Math.floor(rnd(b, 100 + sayac) * havuz.length) + deneme);
+        if (!tur) break;
+        const taban = YOLCULUK_DONATI_BOY[tur] || 44;
+        let w = Math.max(36, Math.min(64, taban * (0.92 + rnd(b, 200 + sayac) * 0.16)));
+        let h = w;
+        const x = x0 + w / 2 + rnd(b, 300 + sayac) * Math.max(0, x1 - x0 - w);
+        const y = y0 + h / 2 + rnd(b, 400 + sayac) * Math.max(0, y1 - y0 - h);
+        // Hayalet yuvasına yakın objeler daha çok ürkünç aileden seçilir
+        if (aile !== "urkek" && game.yuvalar && game.yuvalar.some((y2) => Math.hypot(y2.x - x, y2.y - y) < 300)) {
+          const u2 = sec(YOLCULUK_DONATI.urkek, Math.floor(rnd(b, 500 + sayac) * YOLCULUK_DONATI.urkek.length));
+          if (u2) { const olcek = w / taban; tur = u2; const tb2 = YOLCULUK_DONATI_BOY[tur] || 44; w = Math.max(36, Math.min(64, tb2 * olcek)); h = w; }
+        }
+        const bx = x - w / 2, by = y - h / 2;
+        if (zone && yolculukYasakKutu(bx, by, w, h, d, zone, oncekiCy)) continue; // koridor + köprü ağzı
+        if (!zone && Math.hypot(x - bas.x, y - bas.y) < 140 + w / 2) continue;    // başlangıç tabelası
+        if (x > d.arena.x0 - 140) continue;                                        // arena kapısı
+        if (d.zones.some((z) => x > z.gate.x0 - 140 && x < z.gate.x1 + 140 && y > z.gate.bridgeY0 - 140 && y < z.gate.bridgeY1 + 140)) continue;
+        if ((game.yuvalar || []).some((y2) => Math.hypot(y2.x - x, y2.y - y) < 90 + w / 2)) continue; // yuva ağzı (bölgede 4 yuva)
+        if (cak(bx, by, w, h, 4)) continue; // su, duvar, diken, lav
+        if (liste.some((p) => Math.hypot(p.x - x, p.y - y) < 70)) continue;
+        const p = { tur, x, y, w, h, bolge: b };
+        liste.push(p);
+        if (YOLCULUK_DONATI_BUYUK[tur]) {
+          const r = w * 0.4;
+          const bicim = [{ t: "d", x: w / 2, y: h / 2, r }];
+          game.walls.push({ x: bx, y: by, w, h, donati: true, aile: "yama", derinlik: 0, tohum: 1, bicim, carpisma: bicim.map((q) => ({ ...q })) });
+        }
+        kondu = true;
+      }
+    }
+  };
+  // Başlangıç alanı
+  bolgeKoy(0, 40, A.startW - 40, 60, A.worldH - 60, null, 0);
+  let oncekiCy = A.worldH / 2;
+  for (let i = 1; i <= A.zoneCount; i++) {
+    const z = d.zones[i - 1];
+    bolgeKoy(i, z.x0 + 30, z.gate.x0 - 20, 60, A.worldH - 60, z, oncekiCy);
+    oncekiCy = z.gate.cy;
+  }
+  liste.sort((a, b) => (a.y + a.h / 2) - (b.y + b.h / 2)); // alt kenara göre derinlik
+  game._yolculukDonatilar = liste;
+}
+
+function yolculukDonatilariCiz(ctx) {
+  if (!yolculukAcik() || !game || !Array.isArray(game._yolculukDonatilar) || !game._yolculukDonatilar.length) return;
+  const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0;
+  for (const p of game._yolculukDonatilar) {
+    if (p.x + p.w / 2 < cam.x || p.x - p.w / 2 > cam.x + W || p.y + p.h / 2 < cam.y || p.y - p.h / 2 > cam.y + H) continue;
+    if (!yolculukDonatiVar(p.tur)) continue;
+    gorselKutuya(ctx, "donati-" + p.tur, p.x - p.w / 2, p.y - p.h / 2, p.w, p.h, true);
+  }
 }
 
 // Yürünebilir mi: duvar, diken, lav ve (köprü şeridi dışında) su engel

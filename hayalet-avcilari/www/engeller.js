@@ -687,11 +687,18 @@
 
   // ---------- çizim hattı (render her karede çağırır; ctx dünya koordinatında) ----------
   let _sonOlcek = 0, _sira = null;
-  const listeler = () => [game.walls || [], game.waters || [], game.spikes || [], game.lavas || []];
+  // Donatılar yolculuk.js'te çizilir; süzülmüş duvar listesi her karede yeniden kurulmaz (duvar dizisi ya da boyu değişince)
+  let _cizDuvar = { kaynak: null, n: -1, liste: [] };
+  const cizimDuvarlari = () => {
+    const W = game.walls || [];
+    if (_cizDuvar.kaynak !== W || _cizDuvar.n !== W.length) _cizDuvar = { kaynak: W, n: W.length, liste: W.some((o) => o.donati) ? W.filter((o) => !o.donati) : W };
+    return _cizDuvar.liste;
+  };
+  const listeler = () => [cizimDuvarlari(), game.waters || [], game.spikes || [], game.lavas || []];
   // duvar ve objeler alt kenarlarına göre (önde duran sonra çizilir); liste her bölümde yenidir
   function duvarSirasi() {
     const W = game.walls || [];
-    if (!_sira || _sira.kaynak !== W || _sira.n !== W.length) _sira = { kaynak: W, n: W.length, liste: W.slice().sort((a, b) => (a.y + a.h) - (b.y + b.h)) };
+    if (!_sira || _sira.kaynak !== W || _sira.n !== W.length) _sira = { kaynak: W, n: W.length, liste: W.filter((o) => !o.donati).sort((a, b) => (a.y + a.h) - (b.y + b.h)) };
     return _sira.liste;
   }
   // Önbellek ısınması: bölüm başında (ve ölçek değişince) bütün engellerin resmi, her karede çizimden sonra, kameraya en

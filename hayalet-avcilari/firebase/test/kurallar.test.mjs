@@ -159,6 +159,8 @@ describe("rooms — girişli oda (3.10.2, anonim giriş)", () => {
     await assertSucceeds(u.ref(`rooms/${ODA}/players/${UCUNCU}`).set(giris(true)));
     await assertSucceeds(h.ref(`rooms/${ODA}/state`).update(kimlikliDurum(true)));  // durumuGonder
     await assertSucceeds(h.ref(`rooms/${ODA}/state`).update(kimlikliDurum(false))); // paralar değişmedi
+    await assertSucceeds(h.ref(`rooms/${ODA}/state`).update({ ald: [[51, KONUK]] })); // değerli toplama onayı
+    await assertFails(h.ref(`rooms/${ODA}/state`).update({ ald: [[51, KONUK, 1]] })); // üçüncü alan yok
     await assertSucceeds(k.ref(`rooms/${ODA}/players/${KONUK}`).update({ x: 640, y: 388, walk: 0.3 })); // yalnız değişen alanlar
     await assertSucceeds(k.ref(`rooms/${ODA}/players/${KONUK}`).update({ dead: 1, hp: 0, lastSeen: SUNUCU }));
     await assertSucceeds(k.ref(`rooms/${ODA}/events`).push().set({ type: "mermi", gi: 43, by: KONUK }));

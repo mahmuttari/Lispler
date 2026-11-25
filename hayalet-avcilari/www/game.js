@@ -296,6 +296,8 @@ const online = {
   sonDurum: 0,           // istemci: host'tan son durumun geldiği an (performance.now)
   sunucuFarki: 0,        // .info/serverTimeOffset
   alinanlar: new Set(),  // istemci: aldığım paraların kimlikleri (host silene kadar yeniden görünmesin)
+  _aldBekleyen: new Map(), // istemci: host onayı bekleyen değerli toplanabilirler (kimlik → ödül)
+  _aldYok: false,        // kural "ald" alanını kabul etmiyor: durum yazımı onsuz sürer
   vuranlar: new Set(),   // istemci: bana çarpan / vurduğum düşman mermilerinin kimlikleri
   vurduklarim: new Map(),// istemci: hayalet kimliği → son vuruşum (yakalananı kendime saymak için)
   baslatiliyor: false,   // host BAŞLAT'a bastı, durum dinleyicisi oyunu ikinci kez açmasın
@@ -3678,6 +3680,8 @@ function enterLobby(room) {
     status: room.status || "lobby", players: room.players || {}, tur: !!room.tur, level: room.level || 1,
   };
   online.alinanlar = new Set();
+  online._aldBekleyen = new Map();
+  online._aldYok = false;
   online.vuranlar = new Set();
   online.vurduklarim = new Map();
   showScreen("screen-lobby");
@@ -3803,6 +3807,22 @@ function setupOnDisconnect() {
   db.ref(`rooms/${online.roomId}/players/${online.uid}`).onDisconnect().cancel().catch(() => {});
   db.ref(`rooms/${online.roomId}/players/${online.uid}`).onDisconnect().remove()
     .catch((e) => console.error("onDisconnect", e));
+}
+
+// Host arka plana geçince oda donmasın: hostluğu en eski diğer oyuncuya bırak (ayrılma ile aynı biçimde)
+function hostuDevret() {
+  const r = online.cachedRoom;
+  if (!r || !online.roomId || online.mode !== "host") return;
+  const players = r.players || {};
+  const adaylar = Object.keys(players).filter((u) => u !== online.uid);
+  if (!adaylar.length) return;
+  adaylar.sort((a, b) => {
+    const ja = players[a].joinedAt || 0, jb = players[b].joinedAt || 0;
+    if (ja !== jb) return ja - jb;
+    return a < b ? -1 : 1;
+  });
+  const yeni = adaylar[0];
+  rtdb.patch(`rooms/${online.roomId}`, { hostUid: yeni, hostName: (players[yeni] && players[yeni].name) || t("Avcı") });
 }
 
 // Mevcut host odada değilse deterministik olarak yeni host seç (herkes aynı kararı verir)
@@ -4007,9 +4027,11 @@ function startMpGameClient() {
   online.remotePlayers = {};
   online.pendingEvents = [];
   online.alinanlar = new Set();
+  online._aldBekleyen = new Map();
   online.vuranlar = new Set();
   online.vurduklarim = new Map();
   online.sonDurum = performance.now();
+  game._alindi = [];
   document.getElementById("screen-gameover").classList.remove("active");
   showToast(online.isHost ? t("👑 Host olarak başlattın") : t("🌐 Bağlanıldı"));
   const turUlke = turOdaUlkesi(online.cachedRoom); // Dünya Turu odası: kalınan ülkeden
@@ -4184,7 +4206,15 @@ async function durumuGonder() {
   }
   const imza = JSON.stringify(p);
   if (imza !== _sonPickupImza) govde.p = p;
-  if (await rtdb.patch(`rooms/${online.roomId}/state`, govde) && govde.p) _sonPickupImza = imza;
+  if (game._alindi && game._alindi.length && !online._aldYok) govde.ald = game._alindi;
+  let oldu = await rtdb.patch(`rooms/${online.roomId}/state`, govde);
+  if (!oldu && govde.ald) {
+    // Kural "ald" alanını henüz bilmiyor: alansız yeniden dene, bir daha gönderme (eski davranış)
+    online._aldYok = true;
+    delete govde.ald;
+    oldu = await rtdb.patch(`rooms/${online.roomId}/state`, govde);
+  }
+  if (oldu && govde.p) _sonPickupImza = imza;
 }
 
 // İstemci: olaylar; aynı hayalete aynı aralıkta gelen vuruşlar tek olayda toplanır
@@ -4228,6 +4258,16 @@ function durumGeldi(st) {
   const simdi = performance.now();
   online.sonDurum = simdi;
   if (!st) return;
+  // Değerli toplama onayları: host yalnız ilk toplayanın kimliğini yazar
+  const ald = st.ald ? (Array.isArray(st.ald) ? st.ald : Object.values(st.ald)) : [];
+  for (const e of ald) {
+    const d = Array.isArray(e) ? e : Object.values(e || {});
+    const id = Number(d[0]);
+    if (!online._aldBekleyen || !online._aldBekleyen.has(id)) continue;
+    const b = online._aldBekleyen.get(id);
+    online._aldBekleyen.delete(id);
+    if (String(d[1]) === online.uid) collectPickup(b); // benim toplamam onaylandı
+  }
   if (game.baslangicBolum == null && typeof st.lvl === "number") game.baslangicBolum = st.lvl; // ilk durum: katıldığı bölüm
   const turdaUygulandi = game.dunyaTuru && turDurumGeldi(st); // damga, tur sonu ve müzik (dunya-turu.js)
   if (!turdaUygulandi && typeof st.lvl === "number" && st.lvl !== game.level) clientApplyLevel(st.lvl);
@@ -4464,7 +4504,15 @@ function applyHostEvent(ev) {
     if (k >= 0) game.enemyProjectiles.splice(k, 1);
   } else if (ev.type === "pickup") {
     const k = game.pickups.findIndex((p) => p.id === ev.pi);
-    if (k >= 0) game.pickups.splice(k, 1);
+    if (k >= 0) {
+      const p = game.pickups[k];
+      game.pickups.splice(k, 1);
+      // Değerli toplama: yalnız ilk gelen olay onaylanır, istemci ödülü bu onayla alır
+      if (p.kind === "elmas" || p.kind === "zumrut" || p.kind === "guc" || p.kind === "kalp") {
+        game._alindi.push([ev.pi, String(ev.by || "")]);
+        if (game._alindi.length > 20) game._alindi.splice(0, game._alindi.length - 20);
+      }
+    }
   } else if (ev.type === "stun") {
     // İstemcinin köpeği hayaleti sersemletti: host kendi peti gibi dondurur (süre kurallarda izinli "duration" alanında)
     const g = hayaletBul(ev.gi);
@@ -5800,6 +5848,7 @@ const game = {
   ghosts: [],
   projectiles: [],
   pickups: [],
+  _alindi: [], // host: onaylanan değerli toplamalar [kimlik, oyuncu] (son 20)
   walls: [],
   waters: [],
   particles: [],
@@ -6934,15 +6983,28 @@ function update(dt, now) {
       p.cekiliyor = true;
     }
     if (!game.player.dead && d < game.player.r + 8) {
-      collectPickup(p);
-      if (istemci && typeof p._idx === "number") {
-        // Client: lokal sil + host'a sildirme event'i gönder; host silene kadar yeniden görünmesin
+      const degerli = istemci && degerliToplama(p.kind);
+      if (degerli && typeof p._idx === "number") {
+        // Değerli toplama: ödül hemen verilmez; host onayı (ald) gelince verilir
         online.alinanlar.add(p._idx);
         online.pendingEvents.push({ type: "pickup", pi: p._idx, by: online.uid });
+        online._aldBekleyen.set(p._idx, { kind: p.kind, value: p.value, x: p.x, y: p.y, t: performance.now() });
+      } else {
+        collectPickup(p);
+        if (!istemci && online.mode === "host" && degerliToplama(p.kind)) {
+          game._alindi.push([kimlik(p), String(online.uid || "")]); // host kendi aldı: istemciler onaylansın
+          if (game._alindi.length > 20) game._alindi.splice(0, game._alindi.length - 20);
+        }
+        if (istemci && typeof p._idx === "number") {
+          // Client: lokal sil + host'a sildirme event'i gönder; host silene kadar yeniden görünmesin
+          online.alinanlar.add(p._idx);
+          online.pendingEvents.push({ type: "pickup", pi: p._idx, by: online.uid });
+        }
       }
       game.pickups.splice(i, 1);
     }
   }
+  aldBekleyenleriGuncelle(performance.now()); // host onayı gelmezse eski davranış: 1,5 sn sonra yerel ödül
   if (typeof hikayeGuncelle === "function") hikayeGuncelle(); // hatıraya değme (mıknatıs çekmez)
 
   // Parçacıklar
@@ -7450,6 +7512,20 @@ function killGhost(g, idx) {
   const gucDuser = online.mode ? (!gucYerde && Math.random() < 0.04) : (!getActivePower() && Math.random() < 0.04);
   if (gucDuser) {
     game.pickups.push({ x: g.x, y: g.y - 10, kind: "guc" });
+  }
+}
+
+function degerliToplama(kind) {
+  return kind === "elmas" || kind === "zumrut" || kind === "guc" || kind === "kalp";
+}
+// İstemci: host onayı gelmeyen değerli toplamalar 1,5 sn sonra eski davranışla yerel verilir
+function aldBekleyenleriGuncelle(simdi) {
+  if (!online._aldBekleyen || !online._aldBekleyen.size) return;
+  for (const [id, b] of online._aldBekleyen) {
+    if (simdi - b.t >= 1500) {
+      online._aldBekleyen.delete(id);
+      collectPickup(b);
+    }
   }
 }
 
@@ -8264,6 +8340,7 @@ function quitToMenu() {
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     if (game.running && !game.paused && !online.mode) pauseGame();
+    hostuDevret(); // arka planda durum yazılamaz: hostluk kalan en eski oyuncuya geçer
   } else if (game._duraklamaBas) {
     oyunSaatiniKaydir(performance.now() - game._duraklamaBas);
     game._duraklamaBas = game.paused ? performance.now() : 0; // duraklatma ekranı açık kaldıysa süre yeniden sayılır

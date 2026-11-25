@@ -85,6 +85,98 @@ try {
     assert.equal(sersem.dondu, true);
   });
 
+  // 9) Host arka plana geçince hostluğu en eski diğer oyuncuya bırakır; tek başınaysa yazmaz
+  const devir = await p.evaluate(() => {
+    __hazir('host');
+    online.roomId = 'TEST01'; online.uid = 'ben'; online.mode = 'host';
+    const asil = rtdb.patch;
+    const yaz = [];
+    rtdb.patch = async (yol, govde) => { yaz.push({ yol, govde }); return govde; };
+    online.cachedRoom = { hostUid: 'ben', players: { ben: { joinedAt: 1 }, eski: { joinedAt: 2, name: 'Eski' }, yeni: { joinedAt: 3, name: 'Yeni' } } };
+    hostuDevret();
+    const dolu = yaz.slice();
+    yaz.length = 0;
+    online.roomId = 'TEST02';
+    online.cachedRoom = { hostUid: 'ben', players: { ben: { joinedAt: 1 } } };
+    hostuDevret();
+    const yalniz = yaz.length;
+    rtdb.patch = asil;
+    return { dolu, yalniz };
+  });
+  sina('host arka planda en eski diğer oyuncuya devredilir; tek başınayken yazım yok', () => {
+    assert.equal(devir.dolu.length, 1);
+    assert.equal(devir.dolu[0].yol, 'rooms/TEST01');
+    assert.equal(devir.dolu[0].govde.hostUid, 'eski');
+    assert.equal(devir.dolu[0].govde.hostName, 'Eski');
+    assert.equal(devir.yalniz, 0);
+  });
+
+  // 13) Aynı elması iki istemci alırsa host yalnız ilk gelenin kimliğini onaylar
+  const hostAldi = await p.evaluate(() => {
+    __hazir('host'); online.uid = 'host1';
+    game.pickups = [{ id: 5, kind: 'elmas', value: 1 }, { id: 6, kind: 'guc' }];
+    game._alindi = [];
+    applyHostEvent({ type: 'pickup', pi: 5, by: 'a' });
+    applyHostEvent({ type: 'pickup', pi: 5, by: 'b' }); // aynı öğe: yok sayılır
+    const elmas = game._alindi.map((e) => e.slice());
+    applyHostEvent({ type: 'pickup', pi: 6, by: 'c' });
+    return { elmas, tumu: game._alindi.map((e) => e.slice()), kalan: game.pickups.length };
+  });
+  sina('host aynı elmas için yalnız ilk toplayanı ald listesine yazar', () => {
+    assert.deepEqual(hostAldi.elmas, [[5, 'a']]);
+    assert.deepEqual(hostAldi.tumu, [[5, 'a'], [6, 'c']]);
+    assert.equal(hostAldi.kalan, 0);
+  });
+
+  // 13) İstemci ödülü yalnız kendi kimliği onaylanınca verir
+  const onay = await p.evaluate(() => {
+    __hazir('client'); online.uid = 'ben'; online.mode = 'client';
+    game.runElmas = 0; online._aldBekleyen = new Map();
+    online._aldBekleyen.set(7, { kind: 'elmas', value: 2, x: 0, y: 0, t: performance.now() });
+    durumGeldi({ ald: [[7, 'baska']], g: [], e: [], p: [] });
+    const disaridan = { bekleyen: online._aldBekleyen.size, elmas: game.runElmas };
+    online._aldBekleyen.set(8, { kind: 'elmas', value: 3, x: 0, y: 0, t: performance.now() });
+    durumGeldi({ ald: [[8, 'ben']], g: [], e: [], p: [] });
+    return { disaridan, benim: { bekleyen: online._aldBekleyen.size, elmas: game.runElmas } };
+  });
+  sina('istemci ödülü yalnız kendi kimliği onaylanınca bir kez verir', () => {
+    assert.deepEqual(onay.disaridan, { bekleyen: 0, elmas: 0 });
+    assert.deepEqual(onay.benim, { bekleyen: 0, elmas: 3 });
+  });
+
+  // 13) Eski kurallar "ald" alanını reddederse durum yazımı alansız yeniden denenir
+  const push = await p.evaluate(async () => {
+    __hazir('host'); online.uid = 'h'; online.roomId = 'TEST03'; online._aldYok = false;
+    game._alindi = [[1, 'a']]; game.ghosts = []; game.pickups = []; game.enemyProjectiles = [];
+    const cagri = [];
+    const asil = rtdb.patch;
+    rtdb.patch = async (yol, govde) => {
+      cagri.push(JSON.parse(JSON.stringify(govde)));
+      return cagri.length === 1 ? null : govde;
+    };
+    await durumuGonder();
+    rtdb.patch = asil;
+    return { cagri, aldYok: online._aldYok };
+  });
+  sina('ald alanı reddedilince yazım alansız yeniden denenir, _aldYok işaretlenir', () => {
+    assert.equal(push.cagri.length, 2);
+    assert.deepEqual(push.cagri[0].ald, [[1, 'a']]);
+    assert.equal('ald' in push.cagri[1], false);
+    assert.equal(push.aldYok, true);
+  });
+
+  // 13) Onay 1,5 sn içinde gelmezse istemci yerel ödülü verir (eski davranış)
+  const geri = await p.evaluate(() => {
+    __hazir('client'); online.uid = 'ben'; game.runElmas = 0;
+    online._aldBekleyen = new Map([[9, { kind: 'elmas', value: 4, x: 0, y: 0, t: performance.now() - 1600 }]]);
+    aldBekleyenleriGuncelle(performance.now());
+    return { bekleyen: online._aldBekleyen.size, elmas: game.runElmas };
+  });
+  sina('host onayı 1,5 sn içinde gelmezse istemci ödülü yerel verir', () => {
+    assert.equal(geri.bekleyen, 0);
+    assert.equal(geri.elmas, 4);
+  });
+
   sina('sayfa hatası yok', () => assert.deepEqual(hatalar, []));
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);

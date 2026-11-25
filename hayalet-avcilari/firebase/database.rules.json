@@ -97,6 +97,13 @@
           "bd":     { ".validate": "newData.isNumber()" },
           "bt":     { ".validate": "newData.isNumber()" },
           "lt":     { ".validate": "newData.isNumber()" },
+          "ald": {
+            "$i": {
+              "0":      { ".validate": "newData.isNumber()" },
+              "1":      { ".validate": "newData.isString() && newData.val().length <= 40" },
+              "$other": { ".validate": false }
+            }
+          },
           "$other": { ".validate": false }
         },
 

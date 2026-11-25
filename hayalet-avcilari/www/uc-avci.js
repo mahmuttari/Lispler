@@ -1262,6 +1262,7 @@ let _sonKareMs = -1e9; // son kare süresi (kareBitti); ısınma boş zamanda pi
 const _isinmaBasladi = new Set();
 const _isinmaKuyruk = [];
 let _isinmaCalisiyor = false;
+let _ilkOyunCizMs = 0; // ilk oyun avcısı çiziminin zamanı; ısınmanın ilk 20 sn'si yavaşlık sayılmaz
 
 function dirAl(aci) {
   const ikiPi = Math.PI * 2;
@@ -1458,6 +1459,7 @@ function isinmaDongu() {
 
 // Oyun avcısı: pişmiş resmi bas; yoksa bu karede en çok bir yeni duruş pişir (bütçe doluysa yakın resim).
 function oyunCiz(ctx, secenek, charKey, costumeIdx, size, x, y, kk, d, simdi) {
+  if (!_ilkOyunCizMs) _ilkOyunCizMs = performance.now();
   const gunKey = secenek.gunKey || "";
   const boyut = 160; // eski canlı yolun oyun boyutu: 2x ekranda keskin kalır
   const { poz, nisan, rec } = pozAl(secenek);
@@ -1688,6 +1690,11 @@ function kareBitti(kareMs) {
   _kareUcMs = 0;
   _kareSayac++;
   const simdi = performance.now();
+  // Isınma pişirmesi sürerken ilk 20 sn yavaşlık sayılmaz; pişirme kareleri 3D'yi kapatmasın.
+  if (_isinmaKuyruk.length > 0 && _ilkOyunCizMs && simdi - _ilkOyunCizMs < 20000) {
+    _yavasPencere.length = 0;
+    return;
+  }
   _yavasPencere.push({ t: simdi, kareMs: Math.max(0, Number(kareMs) || 0), ucMs });
   while (_yavasPencere.length && simdi - _yavasPencere[0].t > _yavasAyar.pencereMs) _yavasPencere.shift();
   if (_yavasPencere.length < _yavasAyar.enAz) return;
@@ -1712,6 +1719,7 @@ const api = {
   ayar: _yavasAyar,
   _sayac: () => ({ render: _renderSay, bake: _bakeSay, onbellekSay: _onbellek.size, onbellekBayt: _onbellekBayt,
     isinmaKalan: _isinmaKuyruk.length, isinmaCalisiyor: _isinmaCalisiyor }),
+  _test: { ilkOyunCiz: (ms) => { _ilkOyunCizMs = Number(ms) || 0; } },
 };
 window.UcAvci = api;
 try {
@@ -1724,6 +1732,6 @@ try {
   window.dispatchEvent(new Event("uc-avci-hazir"));
 } catch (_) {
   hazir = false;
-  window.UcAvci = { hazir: false, ciz: () => false, namlu: () => null, destek: () => false, kapat: () => {}, sureEkle: () => {}, kareBitti: () => {}, ayar: _yavasAyar };
+  window.UcAvci = { hazir: false, ciz: () => false, namlu: () => null, destek: () => false, kapat: () => {}, sureEkle: () => {}, kareBitti: () => {}, ayar: _yavasAyar, _test: { ilkOyunCiz: () => {} } };
 }
 

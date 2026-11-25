@@ -763,11 +763,19 @@ const defaultSave = {
   dunyaTuru: { acik: 1, damgalar: {}, bitti: 0 },
   soundEnabled: true,
   ayar3d: true, // 3D avcılar açık (WebGL yoksa ya da başarım düşerse kapanır)
+  ayar3dSifir: 0, // 3.20.0'da yavaşlık yüzünden kapanan 3D'nin bir kerelik yeniden açılması yapıldı mı
   volumes: { ghost: 1, fire: 1, sfx: 1, muzik: 0.6 }, // muzik: Dünya Turu müziği (muzik.js)
   accountCode: "",
 };
 
 let save = loadSave();
+
+// 3.20.0 ısınma takılması 3D'yi birçok oyuncuda kalıcı kapatmıştı: bir kerelik yeniden aç.
+try {
+  if (save.ayar3d === false && !save.ayar3dSifir) save.ayar3d = true;
+  save.ayar3dSifir = 1;
+  persistSave();
+} catch (_) { /* sessiz: depolama kapalıysa ayarlar yine de bellekte kalır */ }
 
 function loadSave() {
   try {

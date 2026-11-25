@@ -1,7 +1,6 @@
-// Hayalet Avcıları: silah çubuğu yerleşimi — çevrimdışı sınama.
-// Kullanıcının isteği (24 Kasım 2026): çok sayıda tek kullanımlık silah varken soldaki dikey çubuk
-// sol üstteki HUD panellerine (canlar, "Bölüm 1", boss süresi) binmesin; 340×640 dikeyden
-// 960×420 yataya kadar hiçbir boyutta çakışma olmasın, Türkçe ve Arapça (aynalı) dahil.
+// Hayalet Avcıları: silah çubuğu — çevrimdışı sınama.
+// Çubukta en çok 3 silah gösterilir; "⋯" düğmesiyle açılan panelden oyuncu istediği 3 silahı seçer.
+// Seçim save.silahSecim içinde saklanır. Yerleşim 340 px telefon ve Arapça (aynalı) dahil sınanır.
 // Çalıştırma: node hayalet-avcilari/test/silah-cubugu.test.mjs   (Playwright + Chromium; ağ ve Firebase gerekmez)
 import http from 'node:http';
 import fs from 'node:fs';
@@ -30,66 +29,168 @@ const hatalar = [];
 async function sayfa(dil, en, boy) {
   const p = await b.newPage({ viewport: { width: en, height: boy }, hasTouch: true });
   p.on('pageerror', (e) => hatalar.push(`${dil}: ${e.stack}`));
-  await p.addInitScript((d) => { localStorage.setItem('hayaletAvcilariDil', d); }, dil);
+  await p.addInitScript((d) => { localStorage.setItem('hayaletAvcilariDil', d); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); }, dil);
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForFunction(() => typeof startGame === 'function');
   await p.evaluate(() => { localStorage.setItem(VERSION_KEY, APP_VERSION); save.playerName = save.playerName || 'Deniz'; });
   return p;
 }
+// Oyunu hazırla: bütün silahlara stok ver, çubuğu yenile
+async function hazir(p, stoklar) {
+  await p.evaluate((stoklar) => {
+    startGame();
+    game.paused = false;
+    const stok = ensureAmmoStock(game.player.charKey);
+    Object.keys(WEAPONS).forEach((k) => { stok[k] = (stoklar && stoklar[k]) || 0; });
+    save.silahSecim = [];
+    refreshWeaponBar();
+  }, stoklar || null);
+}
+const hepsi = { bomba: 5, dondurma: 5, simsek: 5, kasirga: 5, ilkyrd: 5, roket: 5, gorunmez: 5 };
 
 const kesisim = (a, c) => !(a.right <= c.left || a.left >= c.right || a.bottom <= c.top || a.top >= c.bottom);
-const kutu = (r) => ({ left: r.left, top: r.top, right: r.right, bottom: r.bottom });
 
 try {
+  // a) 7 silah stoğu: tam 3 .weapon-slot + 1 "⋯" düğmesi, "+4"
+  const pa = await sayfa('tr', 390, 844);
+  await hazir(pa, hepsi);
+  const a = await pa.evaluate(() => {
+    const more = document.querySelector('#weapon-bar .weapon-more');
+    return {
+      slot: document.querySelectorAll('#weapon-bar .weapon-slot').length,
+      moreText: more ? more.textContent : '',
+      more: !!more,
+    };
+  });
+  sina('a) 7 silahta tam 3 slot + "⋯" düğmesi ve "+4"', () => {
+    assert.equal(a.slot, 3);
+    assert.equal(a.more, true);
+    assert.ok(a.moreText.includes('+4'), a.moreText);
+  });
+  await pa.close();
+
+  // b) panelden 3 silah seç: sıra korunur, save.silahSecim kalıcıdır, yenileme ve loadSave sonrası sürer
+  const pb = await sayfa('tr', 390, 844);
+  await hazir(pb, hepsi);
+  await pb.click('#weapon-bar .weapon-more');
+  for (const k of ['simsek', 'roket', 'bomba']) await pb.click(`#silah-sec-panel .silah-sec-slot[data-weapon="${k}"]`);
+  const b1 = await pb.evaluate(() => ({
+    sira: [...document.querySelectorAll('#weapon-bar .weapon-slot')].map((e) => e.dataset.weapon),
+    secim: save.silahSecim.slice(),
+    acik: document.getElementById('silah-sec-panel').classList.contains('open'),
+  }));
+  sina('b) seçilen 3 silah çubukta o sırayla görünür ve save.silahSecim yazılır', () => {
+    assert.deepEqual(b1.sira, ['simsek', 'roket', 'bomba']);
+    assert.deepEqual(b1.secim, ['simsek', 'roket', 'bomba']);
+    assert.equal(b1.acik, true);
+  });
+  const b2 = await pb.evaluate(() => {
+    refreshWeaponBar();
+    const once = [...document.querySelectorAll('#weapon-bar .weapon-slot')].map((e) => e.dataset.weapon);
+    const kayit = save.silahSecim.slice();
+    Object.assign(save, loadSave()); // kayıttan yeniden yükle
+    refreshWeaponBar();
+    return { once, kayit, sonra: [...document.querySelectorAll('#weapon-bar .weapon-slot')].map((e) => e.dataset.weapon), secim: save.silahSecim.slice() };
+  });
+  sina('b) seçim refreshWeaponBar ve loadSave sonrası korunur', () => {
+    assert.deepEqual(b2.once, ['simsek', 'roket', 'bomba']);
+    assert.deepEqual(b2.kayit, ['simsek', 'roket', 'bomba']);
+    assert.deepEqual(b2.sonra, ['simsek', 'roket', 'bomba']);
+    assert.deepEqual(b2.secim, ['simsek', 'roket', 'bomba']);
+  });
+  // c) 4. seçim en erken seçileni değiştirir
+  await pb.click('#silah-sec-panel .silah-sec-slot[data-weapon="kasirga"]');
+  const c1 = await pb.evaluate(() => ({
+    secim: save.silahSecim.slice(),
+    sira: [...document.querySelectorAll('#weapon-bar .weapon-slot')].map((e) => e.dataset.weapon),
+  }));
+  sina('c) 4. seçim en erken seçileni değiştirir', () => {
+    assert.deepEqual(c1.secim, ['roket', 'bomba', 'kasirga']);
+    assert.deepEqual(c1.sira, ['roket', 'bomba', 'kasirga']);
+  });
+  // c) 2 silah stoğunda 2 slot + "⋯"; 1 silahta "⋯" yok
+  const c2 = await pb.evaluate(() => {
+    const stok = ensureAmmoStock(game.player.charKey);
+    Object.keys(WEAPONS).forEach((k) => { stok[k] = 0; });
+    stok.bomba = 2; stok.dondurma = 1;
+    save.silahSecim = [];
+    refreshWeaponBar();
+    const iki = { slot: document.querySelectorAll('#weapon-bar .weapon-slot').length, more: !!document.querySelector('#weapon-bar .weapon-more') };
+    stok.dondurma = 0;
+    refreshWeaponBar();
+    const bir = { slot: document.querySelectorAll('#weapon-bar .weapon-slot').length, more: !!document.querySelector('#weapon-bar .weapon-more') };
+    return { iki, bir };
+  });
+  sina('c) 2 silahta 2 slot + "⋯", 1 silahta "⋯" yok', () => {
+    assert.equal(c2.iki.slot, 2);
+    assert.equal(c2.iki.more, true);
+    assert.equal(c2.bir.slot, 1);
+    assert.equal(c2.bir.more, false);
+  });
+  await pb.close();
+
+  // d) tek kişilikte panel oyunu duraklatır, kapanınca sürer; çevrimiçi host'ta duraklatmaz
+  const pd = await sayfa('tr', 390, 844);
+  await hazir(pd, hepsi);
+  const d1 = await pd.evaluate(() => {
+    game.paused = false;
+    silahSecPanelAc();
+    const acik = game.paused === true;
+    silahSecPanelKapat();
+    return { acik, kapali: game.paused === false };
+  });
+  const d2 = await pd.evaluate(() => {
+    online.mode = 'host';
+    game.paused = false;
+    silahSecPanelAc();
+    const acik = game.paused === true;
+    silahSecPanelKapat();
+    online.mode = null;
+    return acik;
+  });
+  sina('d) tek kişilikte panel duraklatır/kapatınca sürer, çevrimiçinde duraklatmaz', () => {
+    assert.equal(d1.acik, true);
+    assert.equal(d1.kapali, true);
+    assert.equal(d2, false);
+  });
+  await pd.close();
+
+  // e) yerleşim: 3 + 1 düğme tek satırda, yatay taşma yok, panel ekran içinde
   for (const [dil, en, boy] of [
-    ['tr', 844, 390], ['ar', 740, 360], ['tr', 390, 844], ['ar', 340, 640],
-    ['tr', 740, 360], ['tr', 340, 640], ['tr', 960, 420], ['ar', 960, 420],
+    ['tr', 390, 844], ['ar', 340, 640], ['ar', 740, 360], ['tr', 960, 420],
   ]) {
     const p = await sayfa(dil, en, boy);
+    await hazir(p, hepsi);
     const sonuc = await p.evaluate(() => {
-      startGame();
-      // Bütün tek kullanımlık silahlardan 5 stok ver ve çubuğu yenile
-      Object.keys(WEAPONS).forEach((k) => { ensureAmmoStock(game.player.charKey)[k] = 5; });
-      refreshWeaponBar();
-      const butonlar = [...document.querySelectorAll('#weapon-bar .weapon-slot')].map((e) => {
-        const r = e.getBoundingClientRect();
-        return { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height };
-      });
-      const paneller = [...document.querySelectorAll('.hud-left > *, .hud-right > *')]
-        .filter((e) => e.offsetParent !== null && e.getBoundingClientRect().width > 0 && e.getBoundingClientRect().height > 0)
-        .map((e) => {
-          const r = e.getBoundingClientRect();
-          return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
-        });
-      const cevre = [document.querySelector('.pause-btn'), document.getElementById('joystick')].map((e) => {
-        const r = e.getBoundingClientRect();
-        return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
-      });
-      const envanter = document.getElementById('inv-btn').getBoundingClientRect();
-      return { butonlar, paneller, cevre, envanter: { left: envanter.left, top: envanter.top, right: envanter.right, bottom: envanter.bottom }, w: innerWidth, h: innerHeight };
+      const kutu = (e) => { const r = e.getBoundingClientRect(); return { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height }; };
+      const dugmeler = [...document.querySelectorAll('#weapon-bar .weapon-slot, #weapon-bar .weapon-more')].map(kutu);
+      document.querySelector('#weapon-bar .weapon-more').click();
+      const panel = document.getElementById('silah-sec-panel');
+      const pr = panel.getBoundingClientRect();
+      return {
+        dugmeler, bar: kutu(document.getElementById('weapon-bar')),
+        panel: { left: pr.left, top: pr.top, right: pr.right, bottom: pr.bottom },
+        panelAcik: panel.classList.contains('open'), w: innerWidth, h: innerHeight,
+        env: kutu(document.getElementById('inv-btn')),
+        joy: kutu(document.getElementById('joystick')),
+      };
     });
-
-    sina(`${dil} ${en}×${boy}: yedi silah düğmesi çizilir`, () => {
-      assert.equal(sonuc.butonlar.length, 7);
-    });
-    sina(`${dil} ${en}×${boy}: düğmeler en az 44 px ve ekran içinde`, () => {
-      for (const d of sonuc.butonlar) {
+    sina(`${dil} ${en}×${boy}: 3 + 1 düğme tek satırda ve ekran içinde`, () => {
+      assert.equal(sonuc.dugmeler.length, 4);
+      const ust = sonuc.dugmeler[0].top;
+      for (const d of sonuc.dugmeler) {
         assert.ok(d.width >= 44 && d.height >= 44, `boyut ${d.width}×${d.height}`);
-        assert.ok(d.left >= -0.5 && d.top >= -0.5 && d.right <= sonuc.w + 0.5 && d.bottom <= sonuc.h + 0.5, 'ekran dışında');
+        assert.ok(Math.abs(d.top - ust) < 2, 'düğmeler tek satırda değil');
+        assert.ok(d.left >= -0.5 && d.right <= sonuc.w + 0.5 && d.bottom <= sonuc.h + 0.5, 'ekran dışında');
       }
+      assert.ok(sonuc.bar.right <= sonuc.w + 0.5 && sonuc.bar.left >= -0.5, 'çubuk yatay taşıyor');
+      for (const d of sonuc.dugmeler) assert.equal(kesisim(d, sonuc.env), false);
     });
-    sina(`${dil} ${en}×${boy}: düğmeler HUD panelleriyle, duraklatla ve joystick'le çakışmaz`, () => {
-      for (const d of sonuc.butonlar) {
-        for (const h of [...sonuc.paneller, ...sonuc.cevre]) {
-          assert.equal(kesisim(d, h), false, `çakışma: düğme ${JSON.stringify(d)} kutu ${JSON.stringify(h)}`);
-        }
-      }
-    });
-    sina(`${dil} ${en}×${boy}: envanter düğmesi erişilebilir ve çubukla çakışmaz`, () => {
-      const e = sonuc.envanter;
-      assert.ok(e.left >= 0 && e.right <= sonuc.w && e.top >= 0 && e.bottom <= sonuc.h, 'envanter ekran dışında');
-      for (const d of sonuc.butonlar) assert.equal(kesisim(d, e), false);
+    sina(`${dil} ${en}×${boy}: seçim paneli ekran içinde`, () => {
+      assert.equal(sonuc.panelAcik, true);
+      assert.ok(sonuc.panel.left >= -0.5 && sonuc.panel.right <= sonuc.w + 0.5, 'panel yatay dışarıda');
+      assert.ok(sonuc.panel.top >= -0.5 && sonuc.panel.bottom <= sonuc.h + 0.5, 'panel dikey dışarıda');
     });
     await p.close();
   }

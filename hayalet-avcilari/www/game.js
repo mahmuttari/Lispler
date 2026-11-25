@@ -711,6 +711,16 @@ async function fetchOnlineLeaderboard(limit) {
   }
 }
 
+// Silah anahtarları (WEAPONS'tan önce, loadSave sırasında da kullanılır)
+const SILAH_ANAHTARLARI = ["bomba", "dondurma", "simsek", "kasirga", "ilkyrd", "roket", "gorunmez"];
+function silahSeciminiTemizle(arr) {
+  const out = [];
+  if (Array.isArray(arr)) for (const k of arr) {
+    if (SILAH_ANAHTARLARI.includes(k) && !out.includes(k) && out.length < 3) out.push(k);
+  }
+  return out;
+}
+
 const defaultSave = {
   playerName: "",
   para: 0,
@@ -753,6 +763,7 @@ const defaultSave = {
   // Envanter silahları (bütün karakterler ortak): sahip olunanlar ve takılı olan ("" = karakterin kendi silahı)
   ownedGuns: {},
   equippedGun: "",
+  silahSecim: [], // silah çubuğunda gösterilecek en çok 3 tek kullanımlık silah
   // Petler (pet.js): sahip olunanlar ve yanına alınan ("" = petsiz)
   ownedPets: {},
   pet: "",
@@ -813,6 +824,8 @@ function loadSave() {
     delete merged.upgrades;
     merged.reklam = reklamKaydiniTemizle(data.reklam);
     merged.dunyaTuru = turKaydiniTemizle(data.dunyaTuru);
+    // silahSecim: yalnız bilinen silahlar, en çok 3, tekrarsız
+    merged.silahSecim = silahSeciminiTemizle(data.silahSecim);
     // ammoByChar göçü
     merged.ammoByChar = JSON.parse(JSON.stringify(defaultSave.ammoByChar));
     if (data.ammoByChar) {
@@ -1212,33 +1225,162 @@ function layoutWeaponBar() {
   bar.style.bottom = Math.max(0, Math.round(h - invR.bottom)) + "px";
   bar.style.left = "auto";
   bar.style.right = "auto";
+  const adet = Math.max(1, bar.children.length);
+  const gerekli = adet * 46 + Math.max(0, adet - 1) * 6; // tek satır için en az genişlik (dar düğmeler)
   const yerles = () => {
+    const ara = rtl ? (invR.left - bosluk) - (joyR.right + bosluk) : (joyR.left - bosluk) - (invR.right + bosluk);
+    if (ara < gerekli) {
+      // Joystick ile envanter arasına sığmıyor: tek satır kalsın diye joystick'in üstüne çık.
+      bar.style.bottom = Math.floor(h - joyR.top + bosluk) + "px";
+      if (rtl) { // envanter sağda: soldan envantere kadar
+        bar.style.right = Math.round(w - invR.left + bosluk) + "px";
+        bar.style.width = Math.max(44, Math.round(invR.left - bosluk - 16)) + "px";
+      } else { // envanter solda: envanterden sağ kenara kadar
+        bar.style.left = Math.round(invR.right + bosluk) + "px";
+        bar.style.width = Math.max(44, Math.round(w - 16 - (invR.right + bosluk))) + "px";
+      }
+      return;
+    }
     if (rtl) { // envanter sağda, joystick solda: çubuk sağdan içeri doğru
-      const genislik = Math.max(44, invR.left - bosluk - (joyR.right + bosluk));
       bar.style.right = Math.round(w - invR.left + bosluk) + "px";
-      bar.style.width = Math.round(genislik) + "px";
+      bar.style.width = Math.round(ara) + "px";
     } else { // envanter solda, joystick sağda: çubuk soldan içeri doğru
-      const genislik = Math.max(44, joyR.left - bosluk - (invR.right + bosluk));
       bar.style.left = Math.round(invR.right + bosluk) + "px";
-      bar.style.width = Math.round(genislik) + "px";
+      bar.style.width = Math.round(ara) + "px";
     }
   };
   yerles();
+  if (bar.scrollWidth > bar.clientWidth + 0.5) bar.classList.add("dar"); // genişlik darsa düğmeler küçülür
   const hud = document.querySelector(".hud");
   const hudAlt = hud ? hud.getBoundingClientRect().bottom : 0;
   if (bar.getBoundingClientRect().top < hudAlt + 6) bar.classList.add("dar");
 }
 
+const SILAH_SECIM_MAX = 3;
+let _silahSecDurakladi = false;
+
+function silahSecimi() {
+  save.silahSecim = silahSeciminiTemizle(save.silahSecim);
+  return save.silahSecim;
+}
+
+// Görünen silahlar: önce seçilenler (stoğu olanlar), sonra boş slotlara WEAPONS sırasıyla diğerleri
+function gorunurSilahlar(stock) {
+  const sec = silahSecimi().filter((k) => (stock[k] || 0) > 0);
+  const out = sec.slice(0, SILAH_SECIM_MAX);
+  for (const k of SILAH_ANAHTARLARI) {
+    if (out.length >= SILAH_SECIM_MAX) break;
+    if ((stock[k] || 0) > 0 && !out.includes(k)) out.push(k);
+  }
+  return out;
+}
+
+function silahSecPanelAcikMi() {
+  const p = document.getElementById("silah-sec-panel");
+  return !!(p && p.classList.contains("open"));
+}
+
+function silahSecPanelKonumla() {
+  const p = document.getElementById("silah-sec-panel");
+  const bar = document.getElementById("weapon-bar");
+  if (!p || !bar) return;
+  const r = bar.getBoundingClientRect();
+  const h = window.innerHeight, w = window.innerWidth;
+  p.style.maxWidth = Math.max(0, w - 16) + "px";
+  p.style.top = "auto";
+  p.style.bottom = Math.max(8, Math.round(h - r.top + 8)) + "px";
+  const pw = p.getBoundingClientRect().width;
+  const rtl = getComputedStyle(document.documentElement).direction === "rtl";
+  let left = rtl ? r.right - pw : r.left;
+  left = Math.max(8, Math.min(left, w - pw - 8));
+  p.style.left = Math.round(left) + "px";
+  p.style.right = "auto";
+}
+
+function silahSecPanelCiz() {
+  const p = document.getElementById("silah-sec-panel");
+  if (!p || !game || !game.player) return;
+  const stock = ensureAmmoStock(game.player.charKey);
+  const sec = silahSecimi();
+  p.innerHTML = "";
+  const bas = document.createElement("div");
+  bas.className = "silah-sec-bas";
+  bas.textContent = t("En çok 3");
+  p.appendChild(bas);
+  const izgara = document.createElement("div");
+  izgara.className = "silah-sec-izgara";
+  p.appendChild(izgara);
+  SILAH_ANAHTARLARI.forEach((key) => {
+    const count = stock[key] || 0;
+    if (count <= 0) return;
+    const w = WEAPONS[key];
+    const secili = sec.includes(key);
+    const b = document.createElement("button");
+    b.className = "weapon-slot silah-sec-slot" + (secili ? " secili" : "");
+    b.dataset.weapon = key;
+    b.title = `${w.name}: ${w.desc}`;
+    b.setAttribute("aria-pressed", secili ? "true" : "false");
+    b.innerHTML = `<span>${typeof esyaSimgesiHTML === "function" ? esyaSimgesiHTML(key, w.icon, w.name) : w.icon}</span><span class="badge">${count}</span>` + (secili ? `<span class="sec-tik">✓</span>` : "");
+    b.onclick = (e) => {
+      e.preventDefault(); e.stopPropagation();
+      if (typeof aeDugmeZip === "function") aeDugmeZip(b);
+      silahSecToggle(key);
+    };
+    izgara.appendChild(b);
+  });
+  const kapat = document.createElement("button");
+  kapat.className = "silah-sec-kapat";
+  kapat.textContent = "✓";
+  kapat.setAttribute("aria-label", "✓");
+  kapat.onclick = (e) => { e.preventDefault(); e.stopPropagation(); silahSecPanelKapat(); };
+  p.appendChild(kapat);
+}
+
+function silahSecToggle(key) {
+  if (!game || !game.player) return;
+  const stock = ensureAmmoStock(game.player.charKey);
+  if ((stock[key] || 0) <= 0) return;
+  const sec = silahSecimi();
+  const i = sec.indexOf(key);
+  if (i >= 0) sec.splice(i, 1);
+  else if (sec.length >= SILAH_SECIM_MAX) { sec.shift(); sec.push(key); }
+  else sec.push(key);
+  save.silahSecim = silahSeciminiTemizle(sec);
+  persistSave();
+  refreshWeaponBar();
+}
+
+function silahSecPanelAc() {
+  const p = document.getElementById("silah-sec-panel");
+  if (!p || !game || !game.player || !game.running || game.player.dead) return;
+  p.classList.add("open");
+  p.setAttribute("aria-label", t("Silah seç"));
+  silahSecPanelCiz();
+  silahSecPanelKonumla();
+  if (!online.mode && typeof hikayeDuraklat === "function") _silahSecDurakladi = hikayeDuraklat();
+  else _silahSecDurakladi = false;
+}
+
+function silahSecPanelKapat() {
+  const p = document.getElementById("silah-sec-panel");
+  if (p) p.classList.remove("open");
+  if (_silahSecDurakladi) {
+    if (typeof hikayeDevam === "function") hikayeDevam(true);
+    _silahSecDurakladi = false;
+  }
+}
+
 function refreshWeaponBar() {
   const bar = document.getElementById("weapon-bar");
   if (!bar) return;
-  if (!game || !game.player || !game.running) { bar.innerHTML = ""; return; }
+  if (!game || !game.player || !game.running) { bar.innerHTML = ""; silahSecPanelKapat(); return; }
   const stock = ensureAmmoStock(game.player.charKey);
   const oldu = !!game.player.dead;
+  if (oldu) silahSecPanelKapat();
   bar.innerHTML = "";
-  Object.keys(WEAPONS).forEach((key) => {
+  const gorunur = gorunurSilahlar(stock);
+  gorunur.forEach((key) => {
     const count = stock[key] || 0;
-    if (count <= 0) return; // stoğu olmayan silah çubukta yer kaplamaz (3.19'daki gibi)
     const w = WEAPONS[key];
     const btn = document.createElement("button");
     const pasif = oldu;
@@ -1257,8 +1399,36 @@ function refreshWeaponBar() {
     btn.addEventListener("click", trigger);
     bar.appendChild(btn);
   });
+  const stoklu = SILAH_ANAHTARLARI.filter((k) => (stock[k] || 0) > 0);
+  if (!oldu && stoklu.length >= 2) { // silah seç düğmesi (en çok 3 gösterilir)
+    const gizli = stoklu.length - gorunur.length;
+    const b = document.createElement("button");
+    b.className = "weapon-more";
+    b.dataset.rol = "silah-sec";
+    b.title = t("Silah seç");
+    b.setAttribute("aria-label", t("Silah seç"));
+    b.innerHTML = `<span>⋯</span>` + (gizli > 0 ? `<span class="badge">+${gizli}</span>` : "");
+    b.onclick = (e) => {
+      e.preventDefault(); e.stopPropagation();
+      if (silahSecPanelAcikMi()) silahSecPanelKapat();
+      else silahSecPanelAc();
+    };
+    bar.appendChild(b);
+  }
+  if (silahSecPanelAcikMi()) { silahSecPanelCiz(); silahSecPanelKonumla(); }
   layoutWeaponBar();
 }
+
+document.addEventListener("pointerdown", (e) => {
+  if (!silahSecPanelAcikMi()) return;
+  const p = document.getElementById("silah-sec-panel");
+  const daha = document.querySelector("#weapon-bar .weapon-more");
+  if (p.contains(e.target) || (daha && daha.contains(e.target))) return;
+  silahSecPanelKapat();
+}, true);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && silahSecPanelAcikMi()) { e.stopPropagation(); silahSecPanelKapat(); }
+});
 
 function useWeapon(key) {
   if (!game || !game.player || !game.running || game.paused) return;

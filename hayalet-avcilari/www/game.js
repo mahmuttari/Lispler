@@ -5553,7 +5553,7 @@ function karakterDetayCiz() {
       const rozet = document.createElement("span");
       rozet.className = "efsane-rozet";
       rozet.style.color = "#fbbf24";
-      rozet.textContent = "✨ Efsane";
+      rozet.textContent = t("✨ Efsane");
       chip.appendChild(rozet);
     }
     if (!sahip) {
@@ -5724,7 +5724,7 @@ function refreshShop() {
       item.appendChild(icon);
       const info = document.createElement("div");
       info.className = "item-info";
-      info.innerHTML = `<div class="item-name">${oz.ad} <span style="color:#fbbf24">✨ Efsane</span></div><div class="item-desc">${oz.desc}</div>`;
+      info.innerHTML = `<div class="item-name">${oz.ad} <span style="color:#fbbf24">${t("✨ Efsane")}</span></div><div class="item-desc">${oz.desc}</div>`;
       item.appendChild(info);
       const btn = document.createElement("button");
       if (oz.key === "extraBot" && online.mode) {
@@ -5833,7 +5833,7 @@ function refreshShop() {
       item.appendChild(icon);
       const info = document.createElement("div");
       info.className = "item-info";
-      const rozet = g && g.efsane ? ` <span style="color:#fbbf24">✨ Efsane</span>` : "";
+      const rozet = g && g.efsane ? ` <span style="color:#fbbf24">${t("✨ Efsane")}</span>` : "";
       info.innerHTML = `<div class="item-name">${ad}${rozet}</div><div class="item-desc">${aciklama}</div>`;
       item.appendChild(info);
       const btn = document.createElement("button");
@@ -5936,7 +5936,7 @@ function refreshShop() {
 
         const info = document.createElement("div");
         info.className = "item-info";
-        const cosRozet = cos.efsane ? ` <span style="color:#fbbf24">✨ Efsane</span>` : "";
+        const cosRozet = cos.efsane ? ` <span style="color:#fbbf24">${t("✨ Efsane")}</span>` : "";
         info.innerHTML = `<div class="item-name">${CHARACTERS[charKey].name} - ${cos.name}${cosRozet}</div>
                           <div class="item-desc">${t("Kostüm")}</div>`;
         item.appendChild(info);

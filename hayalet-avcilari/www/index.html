@@ -47,8 +47,15 @@
 <!-- ========== ANA MENÜ ========== -->
 <div id="screen-menu" class="screen">
   <div class="menu-bg"></div>
+  <div class="menu-dekor" id="menu-dekor" aria-hidden="true">
+    <div class="dekor-hayaletler" id="dekor-hayaletler"></div>
+    <div class="dekor-kayan" id="dekor-kayan"></div>
+    <div class="dekor-yarasa" id="dekor-yarasa"></div>
+    <button type="button" class="dekor-bakan" id="dekor-bakan" tabindex="-1" aria-label="👻">👻</button>
+  </div>
   <div class="menu-content ana-menu">
     <div class="menu-sol">
+    <div class="menu-amblem" id="menu-amblem" hidden></div>
     <h1 class="title-small">👻 Hayalet Avcıları 👻</h1>
     <div class="player-bar">
       <span class="player-tag">👤 <span id="menu-player">Avcı</span></span>
@@ -60,27 +67,31 @@
       <div class="resource" data-ui-simge="ui-zumrut">💚 <span id="menu-zumrut">0</span></div>
       <div class="resource" data-ui-simge="ui-kupa">🏆 <span id="menu-kupa">0</span></div>
     </div>
-    <div class="character-preview" id="character-preview"></div>
+    <div class="hunter-sahne">
+      <div class="hunter-spot" id="hunter-spot"></div>
+      <div class="character-preview" id="character-preview"></div>
+      <div class="hunter-kaide" id="hunter-kaide"></div>
+    </div>
     <p class="character-name" id="character-name">Kinkin</p>
     <p class="character-stats" id="character-stats"></p>
     </div>
     <div class="menu-sag">
-    <button class="btn btn-big btn-play" data-ui-simge="ui-oyna" onclick="startGame()">▶ OYNA</button>
+    <button class="btn btn-big btn-play" data-menu-dugme="yesil" data-ui-simge="ui-oyna" onclick="startGame()">▶ OYNA</button>
     <div class="menu-buttons">
-      <button class="btn" data-ui-simge="ui-karakterler" onclick="openCharacters()">👥 Karakterler</button>
-      <button class="btn" data-ui-simge="ui-magaza" onclick="openShop()">🛒 Mağaza</button>
-      <button class="btn" data-ui-simge="ui-sampiyon" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
-      <button class="btn btn-tur" data-ui-simge="ui-dunya" onclick="openDunyaTuru()">🌍 Dünya Turu</button>
+      <button class="btn" data-menu-dugme="mor" data-ui-simge="ui-karakterler" onclick="openCharacters()">👥 Karakterler</button>
+      <button class="btn" data-menu-dugme="mor" data-ui-simge="ui-magaza" onclick="openShop()">🛒 Mağaza</button>
+      <button class="btn" data-menu-dugme="mor" data-ui-simge="ui-sampiyon" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
+      <button class="btn btn-tur" data-menu-dugme="turuncu" data-ui-simge="ui-dunya" onclick="openDunyaTuru()">🌍 Dünya Turu</button>
       <div class="menu-satir">
-        <button class="btn btn-online" data-ui-simge="ui-online" onclick="openOnline()">🌐 Online Oyna</button>
+        <button class="btn btn-online" data-menu-dugme="camgobegi" data-ui-simge="ui-online" onclick="openOnline()">🌐 Online Oyna</button>
         <button id="menu-arkadas" class="btn btn-kare" data-ui-simge="ui-arkadas" aria-label="Arkadaşlar" onclick="openFriends()">👫<span id="menu-arkadas-rozet" class="rozet" style="display:none"></span></button>
       </div>
     </div>
     <div class="menu-footer-row">
       <button class="btn btn-small" data-ui-simge="ui-hesap" onclick="openAccount()">👤 Hesap</button>
       <button class="btn btn-small" data-ui-simge="ui-ses" onclick="openSoundSettings()">🎚 Ses</button>
-      <button class="btn btn-small" onclick="openLanguage()">🌐 Dil</button>
-      <button class="btn btn-small" onclick="resetData()">🔄 Sıfırla</button>
+      <button class="btn btn-small" data-ui-simge="ui-dil" onclick="openLanguage()">🌐 Dil</button>
+      <button class="btn btn-small" data-ui-simge="ui-ayar" onclick="resetData()">🔄 Sıfırla</button>
       <button class="btn btn-small" id="btn-reklam-gizlilik" style="display:none" onclick="reklamGizlilikSecenekleri()">🔒 Gizlilik</button>
     </div>
     </div>

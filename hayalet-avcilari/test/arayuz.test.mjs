@@ -27,8 +27,8 @@ function sina(ad, fn) {
 
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
 const hatalar = [];
-async function sayfa(dil, en, boy) {
-  const p = await b.newPage({ viewport: { width: en, height: boy }, hasTouch: true });
+async function sayfa(dil, en, boy, ek = {}) {
+  const p = await b.newPage({ viewport: { width: en, height: boy }, hasTouch: true, ...ek });
   p.on('pageerror', (e) => hatalar.push(`${dil}: ${e.stack}`));
   await p.addInitScript((d) => { localStorage.setItem('hayaletAvcilariDil', d); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); }, dil);
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
@@ -104,6 +104,117 @@ try {
   sina('duraklat penceresi: düğmeler eşit genişlikte; Ses ve Menü ikincil', () => {
     assert.ok(pencere.g.length >= 3); assert.equal(new Set(pencere.g).size, 1, pencere.g.join(',')); assert.equal(pencere.ikincil, 2);
   });
+
+  // Ana menü süsü: ui-* resimleri, dekoratif katmanlar, oyun açıkken durma
+  const simgeler = await p.evaluate(() => {
+    menuSimgeleriniUygula();
+    const src = (sel) => { const im = document.querySelector(sel); return im && im.tagName === "IMG" ? im.getAttribute("src") : null; };
+    return {
+      oyna: src('#screen-menu .btn-play img.ui-simge'),
+      kar: src('#screen-menu [data-ui-simge="ui-karakterler"] img.ui-simge'),
+      para: src('#screen-menu .resource[data-ui-simge="ui-para"] img.ui-simge'),
+      dil: src('#screen-menu [data-ui-simge="ui-dil"] img.ui-simge'),
+      sifirla: src('#screen-menu [data-ui-simge="ui-ayar"] img.ui-simge'),
+    };
+  });
+  sina("menü düğmeleri ve kaynak göstergeleri ui-* resimlerini kullanır", () => {
+    assert.equal(simgeler.oyna, "gorsel/ui-oyna.webp");
+    assert.equal(simgeler.kar, "gorsel/ui-karakterler.webp");
+    assert.equal(simgeler.para, "gorsel/ui-para.webp");
+    assert.equal(simgeler.dil, "gorsel/ui-dil.webp");
+    assert.equal(simgeler.sifirla, "gorsel/ui-ayar.webp");
+  });
+
+  const yedek = await p.evaluate(() => {
+    const btn = document.createElement("button");
+    btn.setAttribute("data-ui-simge", "ui-para");
+    btn.textContent = "💰 0";
+    document.body.appendChild(btn);
+    const kayit = GORSEL_LISTESI["ui-para"];
+    delete GORSEL_LISTESI["ui-para"];
+    menuSimgeleriniUygula();
+    const metin = btn.textContent.trim(), resim = !!btn.querySelector("img.ui-simge");
+    GORSEL_LISTESI["ui-para"] = kayit;
+    btn.remove();
+    return { metin, resim };
+  });
+  sina("simge anahtarı listede yoksa emoji yedeği kalır", () => {
+    assert.equal(yedek.resim, false);
+    assert.match(yedek.metin, /💰/);
+  });
+
+  const dekor = await p.evaluate(() => {
+    const d = document.getElementById("menu-dekor");
+    const h = [...document.querySelectorAll("#dekor-hayaletler .dekor-hayalet")];
+    const bakan = document.getElementById("dekor-bakan");
+    const pe = (el) => el && getComputedStyle(el).pointerEvents;
+    return {
+      var: !!d, hayalet: h.length, dekorPE: pe(d), hayaletPE: pe(h[0]),
+      kayan: !!document.getElementById("dekor-kayan"), yarasa: !!document.getElementById("dekor-yarasa"),
+      bakan: !!bakan, bakanPE: pe(bakan), bakan44: bakan ? bakan.getBoundingClientRect().width >= 44 : false,
+      sahne: !!document.querySelector(".hunter-sahne #character-preview"), kaide: !!document.getElementById("hunter-kaide"),
+    };
+  });
+  sina("dekoratif katmanlar var, dokunuşu engellemez; bakan hayalet tıklanabilir ve 44 px", () => {
+    assert.equal(dekor.var, true); assert.ok(dekor.hayalet >= 2 && dekor.hayalet <= 4, String(dekor.hayalet));
+    assert.equal(dekor.dekorPE, "none"); assert.equal(dekor.hayaletPE, "none");
+    assert.equal(dekor.kayan, true); assert.equal(dekor.yarasa, true);
+    assert.equal(dekor.bakan, true); assert.equal(dekor.bakanPE, "auto"); assert.equal(dekor.bakan44, true);
+    assert.equal(dekor.sahne, true); assert.equal(dekor.kaide, true);
+  });
+
+  const bakan = await p.evaluate(() => {
+    const b = document.getElementById("dekor-bakan");
+    b.click();
+    const gizli = b.classList.contains("gizli");
+    return { gizli, opak: getComputedStyle(b).opacity };
+  });
+  sina("bakan hayalet dokunulunca saklanır", () => { assert.equal(bakan.gizli, true); });
+
+  const durdu = await p.evaluate(() => {
+    startGame();
+    const m = document.getElementById("screen-menu");
+    const h = document.querySelector(".dekor-hayalet");
+    const oyun = document.getElementById("screen-game").classList.contains("active");
+    const durgun = m.classList.contains("dekor-durgun");
+    const oynatim = h ? getComputedStyle(h).animationPlayState : "";
+    quitToMenu();
+    return { oyun, durgun, oynatim, donus: document.getElementById("screen-menu").classList.contains("dekor-durgun") };
+  });
+  sina("oyun açıkken menü animasyonları durur, menüye dönünce sürer", () => {
+    assert.equal(durdu.oyun, true); assert.equal(durdu.durgun, true);
+    assert.equal(durdu.oynatim, "paused"); assert.equal(durdu.donus, false);
+  });
+
+  const q = await sayfa("tr", 390, 844, { reducedMotion: "reduce" });
+  const azHareket = await q.evaluate(() => {
+    const ad = (sel) => { const el = document.querySelector(sel); return el ? getComputedStyle(el).animationName : ""; };
+    return { hayalet: ad(".dekor-hayalet"), amblem: ad(".menu-amblem"), oyna: ad("#screen-menu .btn-play"), bakan: ad("#dekor-bakan") };
+  });
+  sina("az hareket tercihinde süzülme, zıplama ve parlama kapalı", () => {
+    assert.equal(azHareket.hayalet, "none"); assert.equal(azHareket.amblem, "none");
+    assert.equal(azHareket.oyna, "none"); assert.equal(azHareket.bakan, "none");
+  });
+  await q.close();
+
+  // Dar ekranlar: 340 px Arapça (RTL) ve 390 px Türkçe yatay taşmaz
+  for (const [dil, en, boy] of [["ar", 340, 720], ["tr", 390, 844]]) {
+    const q2 = await sayfa(dil, en, boy);
+    const tasma = await q2.evaluate(() => {
+      const m = document.getElementById("screen-menu");
+      const btn = m.querySelector(".menu-buttons > .btn");
+      return {
+        sayfa: document.documentElement.scrollWidth - innerWidth,
+        menu: m.scrollWidth - innerWidth,
+        dugmeYuksek: btn ? Math.round(btn.getBoundingClientRect().height) : 0,
+      };
+    });
+    sina(`ana menü yatay taşmaz ve düğme dokunma alanı yeter (${dil}, ${en}×${boy})`, () => {
+      assert.equal(tasma.sayfa, 0); assert.ok(tasma.menu <= 0, `menü ${tasma.menu}`);
+      assert.ok(tasma.dugmeYuksek >= 44, String(tasma.dugmeYuksek));
+    });
+    await q2.close();
+  }
 
   // Yatay telefon: ana menü iki sütun, kaymadan sığar (tr ve ar)
   for (const [dil, en, boy] of [['tr', 844, 390], ['ar', 740, 360]]) {

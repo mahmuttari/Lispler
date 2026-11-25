@@ -40,13 +40,16 @@ try {
   // 7) canliOnizleme: açılış karşılıyıcısında tuval var, görseller gelince dolu; DOM'dan çıkınca kaydı silinir
   const karsilayici = await p.evaluate(() => {
     const el = document.getElementById('kinkin-greeter');
-    return { tuval: !!el.querySelector('canvas.canli-onizleme'), kayit: canliOnizlemeSayisi() };
+    const resim = el.querySelector('img.giris-kahraman');
+    return { tuval: !!el.querySelector('canvas.canli-onizleme'), resim: !!resim,
+      resimDolu: !!resim && resim.complete && resim.naturalWidth > 0, kayit: canliOnizlemeSayisi() };
   });
-  sina('7) açılış karşılıyıcısı canvas.canli-onizleme içerir ve kayıtlıdır', () => {
-    assert.equal(karsilayici.tuval, true);
-    assert.equal(karsilayici.kayit, 1);
+  // "giris-kahraman" listede varsa resim önceliklidir (drawGreeter); yoksa canlı tuval çizilir.
+  sina('7) açılış karşılıyıcısı canlı tuval ya da grup resmi içerir', () => {
+    assert.ok(karsilayici.tuval || karsilayici.resim, 'karşılıyıcı boş');
+    assert.equal(karsilayici.kayit, karsilayici.resim ? 0 : 1);
   });
-  const doluMu = await p.waitForFunction(() => {
+  const doluMu = karsilayici.resim ? karsilayici.resimDolu : await p.waitForFunction(() => {
     const cv = document.querySelector('#kinkin-greeter canvas.canli-onizleme');
     if (!cv || !cv.width) return false;
     const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
@@ -54,7 +57,7 @@ try {
     for (let i = 3; i < d.length; i += 4) if (d[i] > 0) dolu++;
     return dolu > 300;
   }, null, { timeout: 5000 }).then(() => true, () => false);
-  sina('7) görseller yüklenince karşılıyıcı tuvali boş değil (kareler çizilir)', () => { assert.equal(doluMu, true); });
+  sina('7) görseller yüklenince karşılıyıcı dolu (resim veya çizilen kareler)', () => { assert.equal(doluMu, true); });
 
   await p.evaluate(() => document.getElementById('kinkin-greeter').remove());
   const kayitSifir = await p.waitForFunction(() => canliOnizlemeSayisi() === 0, null, { timeout: 3000 }).then(() => true, () => false);

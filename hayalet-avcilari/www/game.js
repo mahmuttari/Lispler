@@ -3403,11 +3403,13 @@ function drawPickup(ctx, p) {
 function showScreen(id) {
   document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
+  if (typeof menuDekorDurum === "function") menuDekorDurum(id === "screen-menu");
   eskiToastuKapat();
 }
 
 function goToMenu() {
   showScreen("screen-menu");
+  if (typeof menuDekoruKur === "function") menuDekoruKur();
   refreshMenu();
   maybeShowUpdateNotes();
 }
@@ -4999,6 +5001,113 @@ function menuSimgeleriniUygula() {
   }
 }
 
+// Ana menü süsü (3.21.0): dekoratif katmanlar yalnız menü açıkken çalışır. Resim varsa gorsel() ile,
+// yoksa emoji/hayalet-normal ile çizilir; hiçbiri dokunuşu engellemez (bakan hayalet dışında).
+const _menuDekor = { kuruldu: false, acik: false, kareZamanlayici: 0 };
+function _menuAzHareket() {
+  return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+function _menuResimVeyaEmoji(k, emoji) {
+  return gorsel(k) ? `<img class="menu-resim" src="gorsel/${k}.webp" alt="" draggable="false">` : emoji;
+}
+function _menuHayaletKareCiz() {
+  const kutu = document.getElementById("dekor-hayaletler");
+  if (!kutu) return;
+  const sn = performance.now() / 1000;
+  for (const c of kutu.querySelectorAll("canvas.dekor-hayalet-tuval")) {
+    const ctx = c.getContext("2d");
+    const n = animHazir("menu-hayalet");
+    if (!ctx || !n) continue;
+    ctx.clearRect(0, 0, c.width, c.height);
+    animCiz(ctx, "menu-hayalet", 1 + (Math.floor(sn * 4 + (+c.dataset.faz || 0)) % n), 0, 0, c.width, c.height);
+  }
+}
+function _menuHayaletleriKur() {
+  const kutu = document.getElementById("dekor-hayaletler");
+  if (!kutu) return;
+  const kareVar = typeof animHazir === "function" && animHazir("menu-hayalet") > 0;
+  if (kutu.dataset.kuruldu === "1") {
+    // Resimler sonradan yüklendiyse yedeği (emoji / hayalet-normal) tazele
+    if (kareVar && !kutu.querySelector("canvas.dekor-hayalet-tuval")) {
+      kutu.innerHTML = ""; kutu.dataset.kuruldu = "0";
+    } else if (!kareVar) {
+      const kaynak = _menuResimVeyaEmoji("hayalet-normal", "👻");
+      for (const h of kutu.querySelectorAll(".dekor-hayalet")) if (h.innerHTML !== kaynak) h.innerHTML = kaynak;
+      return;
+    } else return;
+  }
+  kutu.dataset.kuruldu = "1";
+  for (let i = 0; i < 3; i++) {
+    const h = document.createElement("div");
+    h.className = "dekor-hayalet dekor-hayalet-" + (i + 1);
+    if (kareVar) {
+      const c = document.createElement("canvas");
+      c.className = "dekor-hayalet-tuval";
+      c.width = 66; c.height = 80; c.dataset.faz = String(i * 2);
+      h.appendChild(c);
+    } else {
+      h.innerHTML = _menuResimVeyaEmoji("hayalet-normal", "👻");
+    }
+    kutu.appendChild(h);
+  }
+  if (kareVar && _menuDekor.acik && !_menuDekor.kareZamanlayici && !_menuAzHareket()) {
+    _menuDekor.kareZamanlayici = setInterval(_menuHayaletKareCiz, 250);
+  }
+}
+function _menuDekorDugmeleriKur() {
+  for (const el of document.querySelectorAll("[data-menu-dugme]")) {
+    const k = "menu-dugme-" + el.dataset.menuDugme;
+    if (gorsel(k)) {
+      el.style.backgroundImage = `url("gorsel/${k}.webp")`;
+      el.style.backgroundSize = "100% 100%";
+      el.style.backgroundRepeat = "no-repeat";
+      el.classList.add("menu-dugme-resim");
+    } else {
+      el.style.backgroundImage = "";
+      el.classList.remove("menu-dugme-resim");
+    }
+  }
+}
+function menuDekoruKur() {
+  const em = document.getElementById("menu-amblem");
+  if (em) {
+    const g = gorsel("menu-amblem");
+    em.hidden = !g;
+    em.innerHTML = g ? `<img class="menu-resim" src="gorsel/menu-amblem.webp" alt="" draggable="false">` : "";
+  }
+  const spot = document.getElementById("hunter-spot");
+  if (spot) spot.innerHTML = gorsel("menu-spot") ? `<img class="menu-resim" src="gorsel/menu-spot.webp" alt="" draggable="false">` : "";
+  const kaide = document.getElementById("hunter-kaide");
+  if (kaide) kaide.innerHTML = gorsel("menu-kaide") ? `<img class="menu-resim" src="gorsel/menu-kaide.webp" alt="" draggable="false">` : "";
+  const kayan = document.getElementById("dekor-kayan");
+  if (kayan) kayan.innerHTML = _menuResimVeyaEmoji("menu-kayan", "✨");
+  const yarasa = document.getElementById("dekor-yarasa");
+  if (yarasa) yarasa.innerHTML = _menuResimVeyaEmoji("menu-yarasa", "🦇");
+  const bakan = document.getElementById("dekor-bakan");
+  if (bakan) bakan.innerHTML = _menuResimVeyaEmoji("menu-bakan", "👻");
+  _menuHayaletleriKur();
+  _menuDekorDugmeleriKur();
+  if (!_menuDekor.kuruldu) {
+    _menuDekor.kuruldu = true;
+    if (bakan) bakan.addEventListener("click", () => {
+      bakan.classList.add("gizli");
+      setTimeout(() => { if (_menuDekor.acik) bakan.classList.remove("gizli"); }, 8000);
+    });
+  }
+}
+// Menü animasyonlarını açar/kapatır: oyun ekranı açılınca dekor katmanı durur (CSS play-state + JS sayacı).
+function menuDekorDurum(acik) {
+  const el = document.getElementById("screen-menu");
+  if (!el) return;
+  _menuDekor.acik = !!acik;
+  el.classList.toggle("dekor-durgun", !acik);
+  if (!acik && _menuDekor.kareZamanlayici) { clearInterval(_menuDekor.kareZamanlayici); _menuDekor.kareZamanlayici = 0; }
+  if (acik && !_menuDekor.kareZamanlayici && !_menuAzHareket() &&
+      typeof animHazir === "function" && animHazir("menu-hayalet") > 0) {
+    _menuDekor.kareZamanlayici = setInterval(_menuHayaletKareCiz, 250);
+  }
+}
+
 // ====== KARAKTERLER EKRANI (3.20.0) ======
 // Kart ızgarası + ayrıntı paneli. Kart dokunuşu artık satın alma/seçme yapmaz; yalnız paneli açar.
 // Satın alma ve seçme tek yerde: karakterAlVeyaSec (kart ve panel düğmesi buradan çağırır).
@@ -5316,6 +5425,7 @@ document.addEventListener("keydown", (e) => {
 // Görseller yüklenince açık ekranın kartları (ve paneli) yeniden çizilir: kart-* resimleri <img> olur
 window.addEventListener("gorsel-yuklendi", () => {
   menuSimgeleriniUygula();
+  if (typeof menuDekoruKur === "function") menuDekoruKur();
   const ekran = document.getElementById("screen-characters");
   if (ekran && ekran.classList.contains("active")) refreshCharacters();
 });
@@ -8101,6 +8211,7 @@ function init() {
   reklamBaslat();
   drawGreeter();
   menuSimgeleriniUygula(); // dilUygula sonrası: resmi olan menü simgeleri emojinin yerine geçer
+  menuDekoruKur(); // ana menü süsü (emblem, kaide, dekoratif katmanlar)
   // Hoşgeldin ekranında ismi varsa göster
   if (save.playerName) {
     document.getElementById("welcome-text").innerHTML =

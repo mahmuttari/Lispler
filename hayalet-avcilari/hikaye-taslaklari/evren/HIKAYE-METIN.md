@@ -1,11 +1,11 @@
-# Hayalet Avcıları — Dünya Turu hikâyesi (taslak, onay için)
+# Hayalet Avcıları — Dünya Turu hikâyesi (Evren (deepseek/glm), bulut Claude düzeltti)
 
-Gezgin, turu başlatan oyuncunun seçili avcısıdır. Öbür 11 avcı sırayla şu ülkelerde katılır (gezgin listeden çıkarılır): Polonya (3), İtalya (7), Fildişi Sahili (11), Angola (15), Tanzanya (19), Sudan (23), Filistin (27), Afganistan (31), Myanmar (35), Filipinler (39), Japonya (43).
+Gezgin, turu başlatan oyuncunun seçili avcısıdır. Öbür 11 avcı sırayla şu ülkelerde katılır (gezgin listeden çıkarılır): Polonya (3), İtalya (7), Fildişi Sahili (11), Angola (15), Tanzanya (19), Sudan (23), Filistin (27), Afganistan (31), Myanmar (35), Filipinler (39), Japonya (43). "Arkadaş", en son katılan avcıdır.
 Satırlarda konuşanın adı etiket olarak görünür; cümlelerin içinde ad geçmez.
 
 ## Açılış
 
-İstanbul'da eski bir sandıkta silik bir **Dostluk Haritası** bulunur (H11 görseli). Yolculuk Türkiye'de başlar.
+İstanbul'da eski bir sandıkta silik bir **Dostluk Haritası** bulunur. Yolculuk Türkiye'de başlar.
 
 ## Avcıların katılış sahneleri
 

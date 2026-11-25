@@ -1,12 +1,12 @@
 /* ============================================================
    HAYALET AVCILARI — DÜNYA TURU HİKÂYESİ: METİNLER (3.21.0)
-   Şartname: HIKAYE.md; okunur metin: hikaye-taslaklari/<yazar>/HIKAYE-METIN.md. Bu dosya yalnız veri içerir; kurallar ve arayüz hikaye.js'te.
-   Metni Evren yazdı, bulut Claude düzeltti. Satır: { k: "anlatici" | "gezgin" | "arkadas" | "katilan", m: metin }.
-   Cümle içinde avcı adı geçmez; konuşanın adı etiket olarak gösterilir.
+   Yazar: Evren (deepseek/glm), bulut Claude düzeltti. Kaynak: hikaye-taslaklari/evren/ (araclar/hikaye_derle.py üretir; elle düzenleme).
+   Şartname: HIKAYE.md. Bu dosya yalnız veri içerir; kurallar ve arayüz hikaye.js'te.
+   Satır: { k: "anlatici" | "gezgin" | "arkadas" | "katilan", m: metin }. Cümle içinde avcı adı geçmez.
    ============================================================ */
 // Katılış sırası (gezgin listeden çıkarılır) ve katılış ülkelerinin rota sırası
 const HIKAYE_AVCI_SIRASI = ["kinkin", "veryi", "kornet", "mark", "kent", "ponko", "gul", "rani", "beti", "fanatik", "silsen", "sercin"];
-const HIKAYE_KATILIS_ULKE = [3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43];
+const HIKAYE_KATILIS_ULKE = [3,  7,  11,  15,  19,  23,  27,  31,  35,  39,  43];
 // Ödül
 const HIKAYE_BILMECE_PARA = 100, HIKAYE_BILMECE_ELMAS = 2;
 

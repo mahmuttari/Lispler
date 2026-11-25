@@ -115,6 +115,7 @@ I18N.hi = {
   "🎁 Hatıra: {ad}": "🎁 यादगार: {ad}",
   "🎁 Ödül: {para} 💰 + {elmas} 💎": "🎁 इनाम: {para} 💰 + {elmas} 💎",
   "🎉 {ad} açıldı!": "🎉 {ad} अनलॉक हुआ!",
+  "🎉 Bölüm {n} tamam!": "🎉 लेवल {n} पूरा!",
   "🎉 Güncelleme v{surum}": "🎉 अपडेट v{surum}",
   "🎉 Yeni kostüm!": "🎉 नई पोशाक!",
   "🎒 Envanter: Mağaza › 🔫 Silahlar'dan 5 yeni silah al, oyunda 🎒 düğmesiyle değiştir; karakterin kendi silahı envanterde kalır.": "🎒 इन्वेंटरी: दुकान › 🔫 हथियार से 5 नए हथियार खरीदो और खेल में 🎒 बटन से बदलो; कैरेक्टर का अपना हथियार इन्वेंटरी में रहता है।",

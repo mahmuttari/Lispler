@@ -115,6 +115,7 @@ I18N.en = {
   "🎁 Hatıra: {ad}": "🎁 Keepsake: {ad}",
   "🎁 Ödül: {para} 💰 + {elmas} 💎": "🎁 Reward: {para} 💰 + {elmas} 💎",
   "🎉 {ad} açıldı!": "🎉 {ad} unlocked!",
+  "🎉 Bölüm {n} tamam!": "🎉 Level {n} complete!",
   "🎉 Güncelleme v{surum}": "🎉 Update v{surum}",
   "🎉 Yeni kostüm!": "🎉 New costume!",
   "🎒 Envanter: Mağaza › 🔫 Silahlar'dan 5 yeni silah al, oyunda 🎒 düğmesiyle değiştir; karakterin kendi silahı envanterde kalır.": "🎒 Inventory: buy 5 new weapons in Shop › 🔫 Weapons and switch them in game with the 🎒 button; your character's own weapon stays in the inventory.",

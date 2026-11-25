@@ -115,6 +115,7 @@ I18N.ar = {
   "🎁 Hatıra: {ad}": "🎁 تذكار: {ad}",
   "🎁 Ödül: {para} 💰 + {elmas} 💎": "🎁 مكافأة: {para} 💰 + {elmas} 💎",
   "🎉 {ad} açıldı!": "🎉 تم فتح {ad}!",
+  "🎉 Bölüm {n} tamam!": "🎉 اكتملت المرحلة {n}!",
   "🎉 Güncelleme v{surum}": "🎉 تحديث v{surum}",
   "🎉 Yeni kostüm!": "🎉 زي جديد!",
   "🎒 Envanter: Mağaza › 🔫 Silahlar'dan 5 yeni silah al, oyunda 🎒 düğmesiyle değiştir; karakterin kendi silahı envanterde kalır.": "🎒 الحقيبة: اشترِ 5 أسلحة جديدة من المتجر › 🔫 الأسلحة وبدّلها أثناء اللعب بزر 🎒؛ ويبقى سلاح الشخصية الأصلي في الحقيبة.",

@@ -650,6 +650,31 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
   background: #2d1b4e;
 }
 
+/* GEC1: bölüm tamamlandı şeridi (kutlama); resim yoksa bu HTML/CSS şerit görünür */
+.gec1-banner {
+  position: absolute;
+  top: calc(130px + var(--ust)); /* yolculuk ilerleme çubuğunun altında */
+  left: 50%;
+  transform: translateX(-50%) translateY(-14px);
+  z-index: 150;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 201, 77, 0.75);
+  background: linear-gradient(180deg, rgba(76, 29, 149, 0.94), rgba(24, 10, 48, 0.96));
+  color: #fff7cc;
+  font-family: var(--font-baslik);
+  font-weight: 800;
+  font-size: 15px;
+  text-align: center;
+  white-space: normal;
+  max-width: min(90vw, 420px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+.gec1-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
 /* Göstergeler (HUD): çentik ve yuvarlak köşelerden içeride; hepsi aynı yükseklikte cam hap */
 .hud {
   position: absolute;

@@ -4231,6 +4231,7 @@ function durumGeldi(st) {
   if (game.baslangicBolum == null && typeof st.lvl === "number") game.baslangicBolum = st.lvl; // ilk durum: katıldığı bölüm
   const turdaUygulandi = game.dunyaTuru && turDurumGeldi(st); // damga, tur sonu ve müzik (dunya-turu.js)
   if (!turdaUygulandi && typeof st.lvl === "number" && st.lvl !== game.level) clientApplyLevel(st.lvl);
+  if (st.lt && !game.levelTransitioning && typeof gec1Basla === "function") gec1Basla(); // kurucu bölümü bitirdi: kutlama
   game.bossDefeated = !!st.bd;
   game.bossSpawnTimer = st.bt || 0;
   game.levelTransitioning = !!st.lt;
@@ -4328,6 +4329,8 @@ function hostOl() {
   for (const p of game.enemyProjectiles) { p.id = p._idx; p.life = 2; if (Number.isFinite(p._idx)) _sonKimlik = Math.max(_sonKimlik, p._idx); }
   game.spawnTimer = 0;
   game.levelTransitioning = false; // geçişin zamanlayıcısı eski host'taydı; bölüm temizse yeniden başlar
+  game.gec1 = null; // istemciyken başlayan kutlama yeni host geçişini bastırmasın
+  if (typeof gec1BannerKapat === "function") gec1BannerKapat();
   game._turGeciste = false; game._turJeton = null; // istemcinin Dünya Turu geçişi bırakılır; host akışı yeniden yürütür
   _sonPickupImza = "";
   startEventsListener();
@@ -4336,6 +4339,8 @@ function hostOl() {
 function istemciOl() {
   online.mode = "client";
   stopEventsListener();
+  game.gec1 = null; // host geçişi istemcide yarıda kalmasın
+  if (typeof gec1BannerKapat === "function") gec1BannerKapat();
   for (const g of game.ghosts) g._idx = kimlik(g);
   for (const p of game.pickups) p._idx = kimlik(p);
   for (const p of game.enemyProjectiles) p._idx = kimlik(p);
@@ -4535,6 +4540,12 @@ function clientApplyLevel(newLevel) {
   ensurePlayerSafe();
   yenidenDog();
   showToast(bolumBildirimi());
+  // Çevrimiçi istemci: kutlama gördüyse yeni bölümde başlık kartı (perde yok)
+  if (game.gec1 && game.gec1.istemci) {
+    const now = performance.now();
+    game.gec1.asama = "kart"; game.gec1.wipeBas = now - 600; game.gec1.kartBas = now;
+    game.gec1.n = game.level; game.gec1.baslik = t("Bölüm {n}", { n: game.level }); game.gec1.tema = getTheme().name;
+  }
   if (typeof hikayeBolumBasladi === "function") hikayeBolumBasladi(); // hikâye: istemcide hatıra (sahne yok)
 }
 
@@ -6059,6 +6070,8 @@ function startGame(secenek) {
   game.bossSpawnTimer = getBossTimerForLevel(game.level);
   game.bossDefeated = false;
   game.levelTransitioning = false;
+  game.gec1 = null; // yeni oyun önceki geçişin perdesini/kartını devralmaz
+  if (typeof gec1BannerKapat === "function") gec1BannerKapat();
 
   updateHUD();
   refreshWeaponBar();
@@ -6425,10 +6438,10 @@ function update(dt, now) {
   const spawnInterval = Math.max(0.25, 0.8 - game.level * 0.06);
   const maxGhosts = Math.min(40, 12 + game.level * 4);
   if (yolculuk) {
-    if (typeof yolculukSpawnGuncelle === "function") yolculukSpawnGuncelle(dt, spawnInterval, maxGhosts);
+    if (!gec1SpawnKilit() && typeof yolculukSpawnGuncelle === "function") yolculukSpawnGuncelle(dt, spawnInterval, maxGhosts);
   } else {
     game.spawnTimer -= dt;
-    if (!game.bossDefeated && game.spawnTimer <= 0 && game.ghosts.length < maxGhosts) {
+    if (!gec1SpawnKilit() && !game.bossDefeated && game.spawnTimer <= 0 && game.ghosts.length < maxGhosts) {
       spawnGhost();
       game.spawnTimer = spawnInterval;
     }
@@ -6437,8 +6450,11 @@ function update(dt, now) {
   // Bölüm tamamlandı mı? Boss öldü VE diğer tüm hayaletler bitti
   if (game.bossDefeated && game.ghosts.length === 0 && !game.levelTransitioning) {
     game.levelTransitioning = true;
-    if (game.dunyaTuru) turUlkesiBitti(); // damga, uçak geçişi, sıradaki ülke (dunya-turu.js)
-    else {
+    if (typeof gec1Basla === "function") gec1Basla(); // kutlama her yolda önce gelir
+    if (game.dunyaTuru) {
+      if (typeof gec1Basla !== "function") turUlkesiBitti(); // damga, uçak geçişi, sıradaki ülke
+    } else if (online.mode) {
+      // Çevrimiçi: zamanlama ve lt eşitlemesi eskisi gibi (kutlama + başlık kartı)
       showToast(t("🌟 Bölüm temiz! Sıradaki bölüm geliyor..."));
       const no = _donguNo; // yeni oyun başlarsa eski geçiş onu ilerletmesin
       const gecis = () => {
@@ -6448,6 +6464,7 @@ function update(dt, now) {
       };
       setTimeout(gecis, 1800);
     }
+    // Tek kişilik normal oyun: gec1Guncelle kutlama → portal/perde → kart akışını yürütür
   }
 
   // Çevrimiçi: herkes hayalet olduysa tur 2,5 sn sonra biter (yazım tutmazsa 5 sn sonra yeniden denenir)
@@ -6947,6 +6964,9 @@ function update(dt, now) {
     if (game.ghosts[i].hp <= 0) killGhost(game.ghosts[i], i);
   }
 
+  // GEC1: bölüm geçişi (duraklatılmışken update çalışmaz, sayaçlar da durur)
+  if (typeof gec1Guncelle === "function") gec1Guncelle(dt, now);
+
   // Kasırga görseli render'da çizilir (anim.js kasirgaCiz: dönen hortumlar, rüzgâr halkası, uçuşan yapraklar)
 
   // Kamera takibi
@@ -6956,6 +6976,147 @@ function update(dt, now) {
   game.camera.y = Math.max(0, Math.min(game.worldH - game.H, game.camera.y));
 
   updateHUD();
+}
+
+// ====== GEC1: bölüm geçişi (kutlama → portal → iris → başlık kartı) ======
+function gec1Aktif() { return !!(game.gec1 && game.gec1.aktif); }
+function gec1SpawnKilit() { return gec1Aktif(); }
+
+function gec1BannerKapat() {
+  const el = document.getElementById("gec1-banner");
+  if (el) el.classList.remove("show");
+}
+
+// Kutlama şeridi: para/elmas sayaçları kutlama boyunca yukarı sayar
+function gec1BannerYaz(now, zorla) {
+  const s = game.gec1, el = document.getElementById("gec1-banner");
+  if (!s || !el) return;
+  if (!zorla && now - (s.sonYazi || 0) < 100) return;
+  s.sonYazi = now;
+  const k = Math.max(0, Math.min(1, (now - s.bas) / Math.max(1, s.kutlamaSure)));
+  const para = Math.round(s.para0 + (game.runPara - s.para0) * k);
+  const elmas = Math.round(s.elmas0 + (game.runElmas - s.elmas0) * k);
+  el.textContent = t("🎉 Bölüm {n} tamam!", { n: s.n }) + `  💰 ${para}  💎 ${elmas}`;
+  el.classList.add("show");
+}
+
+// Kutlama: havai fişek kareleri varsa animasyon, yoksa mevcut parçacık patlaması
+function gec1Fisek(s, now) {
+  if (s.mod === "fade" || !game.player) return;
+  const gecen = (now - s.bas) / 1000;
+  const ates = [0.25, 0.85, 1.45];
+  const ofs = [[-70, -60], [70, -75], [0, 55]];
+  while (s.fisekIdx < ates.length && gecen >= ates[s.fisekIdx]) {
+    const i = s.fisekIdx++;
+    const x = game.player.x + ofs[i][0], y = game.player.y + ofs[i][1];
+    if (typeof animHazir === "function" && animHazir("havai-fisek") && typeof animEfektEkle === "function") {
+      animEfektEkle("kare", x, y, { ad: "havai-fisek", sure: 0.8, boyut: 120 });
+    } else {
+      for (let j = 0; j < 18; j++) {
+        const a = j * (Math.PI * 2 / 18), sp = 70 + Math.random() * 90;
+        game.particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.7, color: ["#fde047", "#fb7185", "#38bdf8", "#34d399", "#c084fc", "#fb923c"][j % 6] });
+      }
+      if (typeof aeParlama === "function") aeParlama(0.12);
+    }
+  }
+}
+
+// Haritada kalan toplanabilirler avcıya uçar ve toplanır (istemcide para host'a aittir)
+function gec1Miknatis(dt) {
+  const P = game.player;
+  if (!P) return;
+  for (let i = game.pickups.length - 1; i >= 0; i--) {
+    const p = game.pickups[i];
+    const dx = P.x - p.x, dy = P.y - p.y, d = Math.hypot(dx, dy);
+    if (d < P.r + 14) {
+      collectPickup(p);
+      game.pickups.splice(i, 1);
+      continue;
+    }
+    const adim = Math.max(700 * dt, d * Math.min(1, dt * 6));
+    p.x += (dx / Math.max(d, 1)) * adim;
+    p.y += (dy / Math.max(d, 1)) * adim;
+  }
+}
+
+function gec1Basla() {
+  if (game.gec1) return;
+  const now = performance.now();
+  const az = typeof aeAzHareket === "function" ? aeAzHareket() : false;
+  const P = game.player;
+  game.gec1 = {
+    aktif: true, asama: "kutlama", mod: az ? "fade" : "iris",
+    online: !!online.mode, istemci: online.mode === "client",
+    dunya: !!game.dunyaTuru,
+    yolculuk: !!(typeof yolculukAcik === "function" && yolculukAcik()),
+    bas: now, kutlamaSure: online.mode ? 1600 : 2200,
+    n: game.level, para0: game.runPara, elmas0: game.runElmas,
+    portalX: Math.min(game.worldW - 60, (P ? P.x : game.worldW / 2) + 140),
+    portalY: P ? P.y : game.worldH / 2,
+    portalBas: 0, portalAcik: false, otoBas: 0,
+    wipeX: P ? P.x : 0, wipeY: P ? P.y : 0,
+    wipeBas: 0, kartBas: 0, fisekIdx: 0, sonYazi: 0, baslik: "", tema: "",
+  };
+  if (P && !P.dead) P.sevincUntil = now + 2200; // mevcut sevinç pozu
+  gec1BannerYaz(now, true);
+  let caldi = false;
+  try { if (typeof audio.hikayeSes === "function") caldi = !!audio.hikayeSes("rozet"); } catch (e) { caldi = false; }
+  if (!caldi) { try { if (typeof audio.yildiz === "function") audio.yildiz(); else audio.levelUp(); } catch (e) { /* ses yoksa geçiş sürer */ } }
+}
+
+// Tek kişilik akışı ilerletir; çevrimiçi zamanlama (lt + 1,8 sn) eskisi gibi kalır
+function gec1Guncelle(dt, now) {
+  const s = game.gec1;
+  if (!s || !s.aktif) return;
+  if (s.asama === "kutlama") {
+    if (!s.istemci) gec1Miknatis(dt);
+    gec1Fisek(s, now);
+    gec1BannerYaz(now);
+    if (now - s.bas >= s.kutlamaSure) {
+      gec1BannerKapat();
+      if (s.dunya) {
+        game.gec1 = null;
+        if (!s.istemci && typeof turUlkesiBitti === "function") turUlkesiBitti(); // damga + uçak yolu korunur
+        return;
+      }
+      if (s.online) { s.asama = "bekle"; return; }
+      if (s.yolculuk) { s.asama = "portal"; s.portalBas = now; s.portalAcik = false; s.otoBas = now + 3000; return; }
+      s.asama = s.mod === "fade" ? "fadeKapan" : "kapan";
+      s.wipeX = game.player.x; s.wipeY = game.player.y; s.wipeBas = now;
+    }
+    return;
+  }
+  if (s.asama === "portal") {
+    if (!s.portalAcik && now - s.portalBas > 400) s.portalAcik = true;
+    if (game.player && !game.player.dead) {
+      const d = Math.hypot(s.portalX - game.player.x, s.portalY - game.player.y);
+      if (now >= s.otoBas && d > 6) { // 3 sn içinde girilmezse avcı kendiliğinden yürür (girdi yok sayılır)
+        const adim = Math.min(d, 190 * dt);
+        game.player.x += ((s.portalX - game.player.x) / (d || 1)) * adim;
+        game.player.y += ((s.portalY - game.player.y) / (d || 1)) * adim;
+        game.player.facing = Math.atan2(s.portalY - game.player.y, s.portalX - game.player.x);
+        game.player.walkTimer = (game.player.walkTimer || 0) + dt;
+      }
+      if (s.portalAcik && d < 38) {
+        s.asama = s.mod === "fade" ? "fadeKapan" : "kapan";
+        s.wipeX = game.player.x; s.wipeY = game.player.y; s.wipeBas = now;
+      }
+    }
+    return;
+  }
+  if (s.asama === "kapan" || s.asama === "fadeKapan") {
+    if (now - s.wipeBas >= 600) {
+      nextLevel(); // perde karanlıkken bölüm ilerler
+      s.wipeX = game.player.x; s.wipeY = game.player.y; s.wipeBas = now; s.kartBas = now;
+      s.n = game.level; s.baslik = t("Bölüm {n}", { n: game.level }); s.tema = getTheme().name;
+      s.asama = s.mod === "fade" ? "fadeAc" : "kart";
+    }
+    return;
+  }
+  if (s.asama === "kart" || s.asama === "fadeAc") {
+    if (now - s.kartBas >= 1400) { s.aktif = false; game.gec1 = null; } // kart bitince hayalet doğar
+  }
+  // "bekle": çevrimiçi kendi zamanlamasıyla nextLevel çağırır; kart nextLevel'de kurulur
 }
 
 function nextLevel() {
@@ -6991,6 +7152,12 @@ function nextLevel() {
   game.levelTransitioning = false;
   game._turGeciste = false;
   game._turSonraki = null;
+  // Çevrimiçi: geçiş zamanlaması korunur; bölüm yenilenince başlık kartı görünür (perde yok)
+  if (game.gec1 && game.gec1.online) {
+    const now = performance.now();
+    game.gec1.asama = "kart"; game.gec1.wipeBas = now - 600; game.gec1.kartBas = now;
+    game.gec1.n = game.level; game.gec1.baslik = t("Bölüm {n}", { n: game.level }); game.gec1.tema = getTheme().name;
+  }
   if (typeof hikayeBolumBasladi === "function") hikayeBolumBasladi(); // hikâye: yeni ülkenin hatırası ve sahnesi
 }
 
@@ -7913,8 +8080,10 @@ function render() {
     ctx.restore();
   }
   havaCiz(ctx); // yarasalar, fırtına bulutu ve şimşek (hava.js)
+  if (typeof gec1DunyaCiz === "function") gec1DunyaCiz(ctx, performance.now()); // portal + konfeti (GEC1)
 
   ctx.restore();
+  if (typeof gec1EkranCiz === "function") gec1EkranCiz(ctx, performance.now()); // iris/soluk perde + başlık kartı
   if (typeof aeEkranEfektleriCiz === "function") aeEkranEfektleriCiz(ctx, performance.now());
   havaParlamaCiz(ctx); // şimşeğin ekran parlaması
 }

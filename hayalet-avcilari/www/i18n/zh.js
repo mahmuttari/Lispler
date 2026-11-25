@@ -115,6 +115,7 @@ I18N.zh = {
   "🎁 Hatıra: {ad}": "🎁 纪念品：{ad}",
   "🎁 Ödül: {para} 💰 + {elmas} 💎": "🎁 奖励：{para} 💰 + {elmas} 💎",
   "🎉 {ad} açıldı!": "🎉 {ad}已解锁！",
+  "🎉 Bölüm {n} tamam!": "🎉 第{n}关完成!",
   "🎉 Güncelleme v{surum}": "🎉 更新 v{surum}",
   "🎉 Yeni kostüm!": "🎉 新服装！",
   "🎒 Envanter: Mağaza › 🔫 Silahlar'dan 5 yeni silah al, oyunda 🎒 düğmesiyle değiştir; karakterin kendi silahı envanterde kalır.": "🎒 背包：在 商店 › 🔫 武器 购买 5 把新武器，游戏中用 🎒 按钮切换；角色自己的武器会留在背包里。",

@@ -729,3 +729,117 @@ function aeSeviyeEkle(player, level) {
   aeBanner(t("Bölüm {n}", { n: level }), 1200);
 }
 
+
+// ---- GEC1: bölüm geçişi görselleri (kutlama, portal, iris, başlık) ----
+// Yalnız çizim: oyun kuralları, hasar, hız ve çevrimiçi alanlar değişmez. Kare başına nesne üretilmez.
+const GEC1_RENK = ["#fde047", "#fb7185", "#38bdf8", "#34d399", "#c084fc", "#fb923c"];
+
+// Dünya uzayı: portal halkası ve kutlama konfetisi (oyuncunun çevresinde)
+function gec1DunyaCiz(ctx, now = performance.now()) {
+  const s = (typeof game === "object" && game && game.gec1) || null;
+  if (!s || !s.aktif) return;
+  // Portal yalnız yolculuk haritasında, kutlama bitince görünür
+  if (s.yolculuk && (s.asama === "portal" || s.asama === "kapan" || s.asama === "fadeKapan")) {
+    const px = s.portalX, py = s.portalY;
+    const anahtar = s.portalAcik ? "gecit-acik" : "gecit-kapali";
+    if (typeof gorselKutuya === "function" && gorselKutuya(ctx, anahtar, px - 45, py - 62, 90, 124, true)) {
+      // resim çizildi
+    } else {
+      const tb = (now - s.portalBas) / 1000;
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.globalAlpha = s.portalAcik ? 0.95 : 0.45;
+      ctx.lineWidth = s.portalAcik ? 7 : 4;
+      ctx.strokeStyle = s.portalAcik ? "#a855f7" : "#64748b";
+      ctx.beginPath(); ctx.ellipse(0, 0, 34, 52, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = s.portalAcik ? "#f0abfc" : "#94a3b8";
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 3; i++) {
+        const a = tb * 2.4 + i * (Math.PI * 2 / 3);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 22 - i * 4, 42 - i * 6, a, 0, Math.PI * 1.2);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+  }
+  // Konfeti: az hareket tercihinde hiç çizilmez
+  if (s.asama === "kutlama" && s.mod !== "fade" && game.player) {
+    const P = game.player;
+    ctx.save();
+    for (let i = 0; i < 26; i++) {
+      const x = P.x + Math.cos(i * 2.399 + s.bas * 0.001) * (26 + (i % 5) * 20);
+      const y = P.y - 96 + ((now * 0.09 + i * 47) % 250) - 40;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(now * 0.004 + i);
+      ctx.fillStyle = GEC1_RENK[i % GEC1_RENK.length];
+      ctx.fillRect(-3, -2, 6, 4);
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+}
+
+// Ekran uzayı: kutlama şeridi resmi, iris/soluk perde ve bölüm başlık kartı
+function gec1EkranCiz(ctx, now = performance.now()) {
+  const s = (typeof game === "object" && game && game.gec1) || null;
+  if (!s || !s.aktif) return;
+  const W = game.W, H = game.H;
+  if (s.asama === "kutlama") {
+    if (typeof gorselKutuya === "function") gorselKutuya(ctx, "kutlama-serit", W / 2 - 150, 10, 300, 52);
+    return;
+  }
+  const cx = s.wipeX - game.camera.x, cy = s.wipeY - game.camera.y;
+  const maxR = Math.hypot(W, H) || 1;
+  const kapali = s.asama === "kapan" || s.asama === "fadeKapan";
+  const acik = s.asama === "kart" || s.asama === "fadeAc";
+  if (kapali || acik) {
+    const k = Math.max(0, Math.min(1, (now - s.wipeBas) / 600));
+    ctx.save();
+    if (s.mod === "fade") {
+      ctx.globalAlpha = kapali ? k : 1 - k;
+      ctx.fillStyle = "#080412";
+      ctx.fillRect(0, 0, W, H);
+    } else {
+      // Dışı koyu, ortası oyuncuya daralan/açılan daire (evenodd: kare başına ayırma yok)
+      const r = maxR * (kapali ? 1 - k : k);
+      ctx.fillStyle = "rgba(8, 4, 18, 1)";
+      ctx.beginPath();
+      ctx.rect(0, 0, W, H);
+      ctx.arc(cx, cy, Math.max(0, r), 0, Math.PI * 2, true);
+      ctx.fill("evenodd");
+    }
+    ctx.restore();
+  }
+  if (acik) {
+    const k = (now - s.kartBas) / 1400;
+    if (k >= 0 && k < 1) {
+      const giris = Math.min(1, k / 0.2), cikis = Math.max(0, (k - 0.8) / 0.2);
+      const kay = s.mod === "fade" ? 0 : (1 - giris) * 70 - cikis * 70;
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, giris * 1.6) * (1 - cikis);
+      ctx.translate(W / 2 + kay, H * 0.45);
+      ctx.fillStyle = "rgba(16, 9, 34, 0.84)";
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(-Math.min(W * 0.42, 220), -62, Math.min(W * 0.84, 440), 124, 18);
+      else ctx.rect(-Math.min(W * 0.42, 220), -62, Math.min(W * 0.84, 440), 124);
+      ctx.fill();
+      ctx.textAlign = "center";
+      ctx.font = "900 38px Baloo 2, Nunito, sans-serif";
+      ctx.lineWidth = 6; ctx.strokeStyle = "rgba(0,0,0,0.65)";
+      const baslik = s.baslik || "";
+      ctx.strokeText(baslik, 0, -6);
+      const gr = ctx.createLinearGradient(0, -34, 0, 8);
+      gr.addColorStop(0, "#fff7cc"); gr.addColorStop(1, "#fbbf24");
+      ctx.fillStyle = gr;
+      ctx.fillText(baslik, 0, -6);
+      if (s.tema) {
+        ctx.font = "800 18px Nunito, sans-serif";
+        ctx.fillStyle = "#c4b5fd";
+        ctx.fillText(s.tema, 0, 34);
+      }
+      ctx.restore();
+    }
+  }
+}

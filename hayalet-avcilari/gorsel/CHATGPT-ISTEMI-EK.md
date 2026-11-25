@@ -2,6 +2,7 @@
 
 Hazırlandı: 25 Kasım 2026. Kullanıcının isteği: *"Görseller için ChatGPT kullan"*. Bu paket, son eklenen özelliklerin görsellerini
 ürettirir:
+- hayaletlerin çıktığı yuvalar (mezarlık, mağara, izbe ev…);
 - yıldırım çarpma efekti (avcıya yıldırım düşünce);
 - kıvrımlı derelerin kıyı süsleri;
 - fırtına bulutu çeşitleri ve yıldırım çizgileri.
@@ -13,15 +14,16 @@ kod çizimine düşer.
 
 1. ChatGPT'de **yeni bir sohbet** aç ve `CHATGPT-ISTEMI-YOLCULUK.md`'deki **ANA İSTEM**'i bir kez gönder (aynı üslup).
 2. Her paftaya üslup referansı olarak `hamui/U06.png` ve `ham3d/D01.png` ekle.
-3. Her resmi `gorsel/hamek/<KOD>.png` olarak kaydet (K01 … K03). Her paftadan sonra commit ve push yap, ilerlemeyi
+3. Her resmi `gorsel/hamek/<KOD>.png` olarak kaydet (K01 … K04). Her paftadan sonra commit ve push yap, ilerlemeyi
    `gorsel/hamek/DURUM.md`'ye yaz.
-4. Üç paftayı birlikte kullanıcıya göster.
+4. Dört paftayı birlikte kullanıcıya göster.
 5. Giriş, şifre, ödeme ve ChatGPT'nin görsel sınırı kullanıcıya bırakılır. Oyun koduna dokunma.
 
 Kesim: `araclar/gorsel_kes.py`. Adlar:
 - K01 → `an-carpilma-1` … `an-carpilma-6`;
 - K02 → `dere-sus-1` … `dere-sus-6`;
-- K03 → `bulut-2`, `bulut-3`, `bulut-4`, `simsek-1`, `simsek-2`, `simsek-3`.
+- K03 → `bulut-2`, `bulut-3`, `bulut-4`, `simsek-1`, `simsek-2`, `simsek-3`;
+- K04 → `yuva-mezarlik`, `yuva-magara`, `yuva-izbe`, `yuva-kovuk`, `yuva-kuyu`, `yuva-kripta`.
 
 ## K01: yıldırım çarpma (6 kare, döngü)
 
@@ -54,4 +56,18 @@ Cells 1-3: three different cute dark-lilac storm clouds seen slightly from below
   1: wide and flat, 2: round and tall, 3: small and stretched with a few rain streaks under it. Same style as a premium casual game.
 Cells 4-6: three vertical cartoon lightning bolts (bright yellow-white core, soft cyan glow), each a different zig-zag shape, top
   thicker than the bottom, filling the cell height. No background, no ground.
+```
+
+## K04: hayalet yuvaları (hayaletlerin çıktığı yerler)
+
+```
+Sheet K04: places where friendly ghosts come out, for a TOP-DOWN map (seen from above with a slight 3/4 tilt so fronts are readable),
+TRANSPARENT background, grid 3 x 2, each object about 300-380 px wide inside its cell, cute and spooky-but-friendly (not scary):
+1. a small graveyard: 3-4 rounded tombstones, a broken little wooden fence, tufts of grass, a faint lilac mist
+2. a cave mouth in a mossy rock mound, dark inside, a few glowing dots (eyes of tiny ghosts) in the dark
+3. an abandoned crooked little house: broken roof, boarded window, dark open door, cobweb
+4. a hollow dead tree with a big dark hole at the bottom, twisted branches, a crow-shaped silhouette is NOT needed
+5. an old stone well with a broken wooden roof and a bucket, faint mist rising from it
+6. a small stone crypt / mausoleum with a cracked door slightly open, two little lanterns
+No text, no crosses or religious symbols on tombstones (use simple rounded stones with cracks or a tiny ghost carving).
 ```

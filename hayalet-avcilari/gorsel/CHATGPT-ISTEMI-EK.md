@@ -14,16 +14,17 @@ kod çizimine düşer.
 
 1. ChatGPT'de **yeni bir sohbet** aç ve `CHATGPT-ISTEMI-YOLCULUK.md`'deki **ANA İSTEM**'i bir kez gönder (aynı üslup).
 2. Her paftaya üslup referansı olarak `hamui/U06.png` ve `ham3d/D01.png` ekle.
-3. Her resmi `gorsel/hamek/<KOD>.png` olarak kaydet (K01 … K04). Her paftadan sonra commit ve push yap, ilerlemeyi
+3. Her resmi `gorsel/hamek/<KOD>.png` olarak kaydet (K01 … K05). Her paftadan sonra commit ve push yap, ilerlemeyi
    `gorsel/hamek/DURUM.md`'ye yaz.
-4. Dört paftayı birlikte kullanıcıya göster.
+4. Paftaları birlikte kullanıcıya göster.
 5. Giriş, şifre, ödeme ve ChatGPT'nin görsel sınırı kullanıcıya bırakılır. Oyun koduna dokunma.
 
 Kesim: `araclar/gorsel_kes.py`. Adlar:
 - K01 → `an-carpilma-1` … `an-carpilma-6`;
 - K02 → `dere-sus-1` … `dere-sus-6`;
 - K03 → `bulut-2`, `bulut-3`, `bulut-4`, `simsek-1`, `simsek-2`, `simsek-3`;
-- K04 → `yuva-mezarlik`, `yuva-magara`, `yuva-izbe`, `yuva-kovuk`, `yuva-kuyu`, `yuva-kripta`.
+- K04 → `yuva-mezarlik`, `yuva-magara`, `yuva-izbe`, `yuva-kovuk`, `yuva-kuyu`, `yuva-kripta`;
+- K05 → `kopru-kapali`, `an-kopru-in-1`, `an-kopru-in-2`, `kopru-acik`, `kilit`, `kilit-acik`.
 
 ## K01: yıldırım çarpma (6 kare, döngü)
 
@@ -70,4 +71,22 @@ TRANSPARENT background, grid 3 x 2, each object about 300-380 px wide inside its
 5. an old stone well with a broken wooden roof and a bucket, faint mist rising from it
 6. a small stone crypt / mausoleum with a cracked door slightly open, two little lanterns
 No text, no crosses or religious symbols on tombstones (use simple rounded stones with cracks or a tiny ghost carving).
+```
+
+## K05: kilitli köprü ve açılışı
+
+Kullanıcı (25 Kasım 2026): *"Kilitli köprü görüntüsünü de ChatGPT'ye yaptır."* Bütün temalarda kullanılacak ortak, tahta asma köprü.
+
+```
+Sheet K05: a wooden rope DRAWBRIDGE over a river gap, seen from DIRECTLY ABOVE (top-down, slight depth on raised parts), spanning
+LEFT to RIGHT, TRANSPARENT background (no water, no ground: only the bridge pieces), grid 3 x 2, same bridge size and position in
+cells 1-4 (about 440 px long, 150 px wide when lying flat):
+1. CLOSED: the bridge deck raised up on the left bank like a drawbridge (planks tilted up toward the viewer, two iron chains pulling
+   it), a soft glowing golden barrier line across the gap and a big shiny golden padlock hanging in the middle
+2. LOWERING frame 1: the padlock is gone, the deck is half-way down (tilted 45°), chains loosening, a few sparkles
+3. LOWERING frame 2: the deck almost flat, small dust puffs at the far end
+4. OPEN: the bridge lying flat across the gap, wooden planks, rope rails with wooden posts at both ends
+5. a big golden padlock alone (closed), glowing softly — used as a small icon
+6. the same padlock popped open with sparkles — the unlock moment
+Cute premium casual style, warm wood, no text.
 ```

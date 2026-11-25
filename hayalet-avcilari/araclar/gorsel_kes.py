@@ -107,6 +107,7 @@ ANIMASYON = {
     'N20': [('donma', [1, 2, 3], 160), ('cozulme', [4, 5, 6], 160)],
     # Ek paftalar (gorsel/hamek, CHATGPT-ISTEMI-EK.md): yıldırım çarpma efekti (hava.js)
     'K01': [('carpilma', [1, 2, 3, 4, 5, 6], 192)],
+    'K05': [('kopru-in', [2, 3], 256)],  # kilitli köprünün inişi (1. kare K05 hücre 1: kopru-kapali)
 }
 
 
@@ -599,6 +600,7 @@ def kes():
 EK_PAFTALAR = {
     'K02': [('dere-sus-1', 160), ('dere-sus-2', 160), ('dere-sus-3', 160), ('dere-sus-4', 160), ('dere-sus-5', 160), ('dere-sus-6', 160)],
     'K03': [('bulut-2', 256), ('bulut-3', 256), ('bulut-4', 256), ('simsek-1', 256), ('simsek-2', 256), ('simsek-3', 256)],
+    'K05': [('kopru-kapali', 256), None, None, ('kopru-acik', 256), ('kilit', 128), ('kilit-acik', 128)],
     'K04': [('yuva-mezarlik', 256), ('yuva-magara', 256), ('yuva-izbe', 256), ('yuva-kovuk', 256), ('yuva-kuyu', 256), ('yuva-kripta', 256)],
 }
 
@@ -636,7 +638,10 @@ def ek_hucreler(liste):
         resim = Image.open(yol).convert('RGBA')
         if resim.size != (1536, 1024):
             sys.exit(f'{pafta}: boyut {resim.size}, 1536 × 1024 olmalı')
-        for i, (anahtar, en) in enumerate(hucreler):
+        for i, hc in enumerate(hucreler):
+            if not hc:
+                continue
+            anahtar, en = hc
             x0, y0 = (i % 3) * 512, (i // 3) * 512
             hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
             kutu = hucre.getbbox()

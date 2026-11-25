@@ -212,6 +212,176 @@ try {
   });
   await pk.close();
 
+  // 9) Efsane kostüm: her karakterde 4. kostüm 300 💎; parası yetmeyince alınmaz, yetince alınır ve seçilir
+  const pc = await sayfa();
+  const kostum = await pc.evaluate(() => {
+    const dortler = Object.fromEntries(Object.keys(COSTUMES).map((k) => {
+      const cos = COSTUMES[k][3] || {};
+      return [k, { adet: COSTUMES[k].length, cost: cos.cost, efsane: !!cos.efsane }];
+    }));
+    save.elmas = 299;
+    save.unlockedCostumes.kinkin = [0];
+    save.selectedCostume.kinkin = 0;
+    showShopTab('costumes');
+    const bul = () => [...document.querySelectorAll('#shop-content .shop-item')]
+      .find((e) => e.textContent.includes('Kinkin') && e.textContent.includes('💎 Efsane'));
+    const ilkDugme = bul().querySelector('button');
+    const ilk = { metin: ilkDugme.textContent, kapali: ilkDugme.disabled };
+    ilkDugme.click();
+    const yetersiz = { sahip: save.unlockedCostumes.kinkin.includes(3), elmas: save.elmas };
+    save.elmas = 300;
+    refreshShop();
+    const item = bul();
+    const dugme = item.querySelector('button');
+    const yeter = { metin: dugme.textContent, kapali: dugme.disabled };
+    dugme.click();
+    const alindi = {
+      sahip: save.unlockedCostumes.kinkin.includes(3), elmas: save.elmas,
+      secili: save.selectedCostume.kinkin, rozet: item.textContent.includes('✨ Efsane'),
+    };
+    // Başka bir sahip olunan kostüme geç, sonra efsaneyi yeniden "Giy"
+    save.unlockedCostumes.kinkin.push(1);
+    save.selectedCostume.kinkin = 1;
+    refreshShop();
+    const geriDugme = bul().querySelector('button');
+    const geriMetin = geriDugme.textContent;
+    geriDugme.click();
+    const geri = save.selectedCostume.kinkin;
+    // Karakter ekranı: 4 çip, efsane rozeti ve (sahip olunmayınca) fiyat
+    save.selectedChar = 'kinkin';
+    save.unlockedCostumes.kinkin = [0];
+    save.selectedCostume.kinkin = 0;
+    openCharacters();
+    karakterDetayAc('kinkin');
+    const panel = document.getElementById('character-detail');
+    const cipler = [...panel.querySelectorAll('.char-kostum')];
+    const rozet = cipler[3] && cipler[3].querySelector('.efsane-rozet');
+    const fiyat = cipler[3] && cipler[3].querySelector('.char-kostum-fiyat');
+    karakterDetayKapat();
+    return { dortler, ilk, yetersiz, yeter, alindi, geriMetin, geri,
+      cipSayisi: cipler.length, rozet: rozet && rozet.textContent, fiyat: fiyat && fiyat.textContent };
+  });
+  sina('9) her karakterde 300 💎 efsane kostüm var; yetersizken alınmaz, yeterken alınır ve seçilir', () => {
+    for (const [k, v] of Object.entries(kostum.dortler)) {
+      assert.equal(v.adet, 4, `${k}: 4 kostüm olmalı`);
+      assert.equal(v.cost, 300, `${k}: efsane kostüm 300 💎`);
+      assert.equal(v.efsane, true, `${k}: efsane işareti`);
+    }
+    assert.ok(kostum.ilk.metin.includes('300'), kostum.ilk.metin);
+    assert.equal(kostum.ilk.kapali, true);
+    assert.equal(kostum.yetersiz.sahip, false);
+    assert.equal(kostum.yetersiz.elmas, 299);
+    assert.equal(kostum.yeter.kapali, false);
+    assert.equal(kostum.alindi.sahip, true);
+    assert.equal(kostum.alindi.elmas, 0);
+    assert.equal(kostum.alindi.secili, 3);
+    assert.equal(kostum.alindi.rozet, true);
+    assert.equal(kostum.geriMetin.trim(), 'Giy');
+    assert.equal(kostum.geri, 3);
+    assert.equal(kostum.cipSayisi, 4);
+    assert.equal((kostum.rozet || '').trim(), '✨ Efsane');
+    assert.ok((kostum.fiyat || '').includes('300'), kostum.fiyat);
+  });
+
+  // 10) Efsane kostüm aurası 3D açık ve kapalıyken hatasız çizilir
+  const aura = await pc.evaluate(() => {
+    const cv = document.createElement('canvas'); cv.width = 220; cv.height = 220;
+    const ctx = cv.getContext('2d');
+    const sonuc = {};
+    for (const d3 of [true, false]) {
+      save.ayar3d = d3;
+      try {
+        efsaneAuraCiz(ctx, 110, 110, performance.now());
+        drawCharacter(ctx, 'kinkin', 3, 110, 110, 80);
+        sonuc[d3 ? 'uc' : 'iki'] = true;
+      } catch (e) { sonuc.hata = String(e && e.message); }
+    }
+    // Gerçek oyun çizimi: kostüm giyiliyken render hatasız
+    save.unlockedCostumes.kinkin = [0, 3];
+    save.selectedCostume.kinkin = 3;
+    save.selectedChar = 'kinkin';
+    startGame(); game.paused = true;
+    game.player.costumeIdx = 3;
+    for (const d3 of [true, false]) {
+      save.ayar3d = d3;
+      try { render(); sonuc[d3 ? 'renderUc' : 'renderIki'] = true; } catch (e) { sonuc.renderHata = String(e && e.message); }
+    }
+    return sonuc;
+  });
+  sina('10) efsane kostüm aurası 3D açık ve kapalıyken hatasız çizilir', () => {
+    assert.equal(aura.hata, undefined);
+    assert.equal(aura.renderHata, undefined);
+    assert.equal(aura.uc, true);
+    assert.equal(aura.iki, true);
+    assert.equal(aura.renderUc, true);
+    assert.equal(aura.renderIki, true);
+  });
+  await pc.close();
+
+  // 11) İkinci bot: yalnız satın alınınca ve yalnız tek kişilikte doğar; çevrimiçi mağazada kapalı
+  const pd = await sayfa();
+  const bot = await pd.evaluate(() => {
+    save.extraBot = false;
+    save.selectedChar = 'kinkin'; save.selectedCostume.kinkin = 0;
+    startGame(); game.paused = true;
+    const tek = { bot1: !!game.bot, bot2: !!game.bot2 };
+    save.extraBot = true;
+    startGame(); game.paused = true;
+    updateBot(0.016, performance.now(), game.bot2);
+    const iki = {
+      bot1: !!game.bot, bot2: !!game.bot2,
+      uzak: game.bot2 ? Math.hypot(game.bot2.x - game.player.x, game.bot2.y - game.player.y) : 1e9,
+    };
+    // Çevrimiçi: satın alınmış olsa da ikinci bot doğmaz, mağazada düğme kapalı
+    online.mode = 'host';
+    startGame(); game.paused = true;
+    const cevrimici = { bot1: !!game.bot, bot2: !!game.bot2 };
+    save.extraBot = false;
+    showShopTab('upgrades');
+    const bul = () => [...document.querySelectorAll('#shop-content .shop-item')]
+      .find((e) => e.textContent.includes('İkinci Bot'));
+    const cevrimiciDugme = bul().querySelector('button');
+    const cevrimiciMagaza = { metin: cevrimiciDugme.textContent, kapali: cevrimiciDugme.disabled };
+    online.mode = null;
+    refreshShop();
+    const tekDugme = bul().querySelector('button');
+    const tekMagaza = { metin: tekDugme.textContent, kapali: tekDugme.disabled };
+    return { tek, iki, cevrimici, cevrimiciMagaza, tekMagaza };
+  });
+  sina('11) ikinci bot yalnız satın alınınca ve yalnız tek kişilikte doğar', () => {
+    assert.equal(bot.tek.bot1, true);
+    assert.equal(bot.tek.bot2, false);
+    assert.equal(bot.iki.bot1, true);
+    assert.equal(bot.iki.bot2, true);
+    assert.ok(bot.iki.uzak < 220, `ikinci bot oyuncunun yanında olmalı: ${bot.iki.uzak}`);
+    assert.equal(bot.cevrimici.bot1, false);
+    assert.equal(bot.cevrimici.bot2, false);
+    assert.equal(bot.cevrimiciMagaza.metin.trim(), 'Yalnız tek kişilik');
+    assert.equal(bot.cevrimiciMagaza.kapali, true);
+    assert.ok(bot.tekMagaza.metin.includes('100000'), bot.tekMagaza.metin);
+  });
+
+  // 12) Fazladan kalp: loadSave sonrası azami kalp 4 olur (3 değil)
+  const kalp = await pd.evaluate(() => {
+    save.extraHeart = false; persistSave();
+    Object.assign(save, loadSave());
+    startGame(); game.paused = true;
+    const uc = { hp: game.player.hp, max: game.player.maxHp };
+    save.extraHeart = true; persistSave();
+    const yuklenen = loadSave();
+    Object.assign(save, yuklenen);
+    startGame(); game.paused = true;
+    const dort = { hp: game.player.hp, max: game.player.maxHp, kayit: !!yuklenen.extraHeart };
+    return { varsayilan: defaultSave.extraHeart, uc, dort };
+  });
+  sina('12) fazladan kalp kayıttan yüklenince azami kalp 4 olur', () => {
+    assert.equal(kalp.varsayilan, false);
+    assert.deepEqual(kalp.uc, { hp: 3, max: 3 });
+    assert.equal(kalp.dort.kayit, true);
+    assert.deepEqual(kalp.dort, { hp: 4, max: 4, kayit: true });
+  });
+  await pd.close();
+
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, [], hatalar.join(' / ')); });
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);

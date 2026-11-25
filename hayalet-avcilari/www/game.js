@@ -4427,6 +4427,10 @@ function durumGeldi(st) {
     }
   }
   if (Number.isFinite(st.bz)) game.bolge = st.bz;
+  // Arena: boss bekleme durumu ve geri sayım bildirimi (10/5/3 sn)
+  if (Number.isFinite(st.ab)) game._arenaBossDurum = st.ab;
+  if (Number.isFinite(st.aw)) game._arenaBekleme = st.aw;
+  if (game._arenaBossDurum === 1 && typeof yolculukArenaToastKontrol === "function") yolculukArenaToastKontrol();
 
   // Hayaletler (kimliğe göre)
   const eski = new Map();

@@ -277,9 +277,60 @@ function yolculukGuncelle(dt) {
   for (const k in game._kopruAnim) game._kopruAnim[k] = Math.max(0, game._kopruAnim[k] - dt);
 }
 
+// Canlı oyuncuların konumları: kurucu kendi oyuncusunu ve çevrimiçi öbür oyuncuları bilir
+function yolculukCanliKonumlar() {
+  const k = [];
+  if (game && game.player && !game.player.dead) k.push({ x: game.player.x, y: game.player.y });
+  if (typeof online !== "undefined" && online && online.mode === "host") {
+    for (const rp of Object.values(online.remotePlayers || {})) {
+      if (rp && !rp.dead && Number.isFinite(rp.x) && Number.isFinite(rp.y)) k.push({ x: rp.x, y: rp.y });
+    }
+  }
+  return k;
+}
+
+const YOLCULUK_ARENA_BEKLEME_MS = 10000;
+// Arenaya ilk canlı oyuncu girince 10 sn geri sayım başlar; 10/5/3 sn kala küçük bildirim (kurucu ve istemci)
+function yolculukArenaToastKontrol() {
+  if (!game || game._arenaBossDurum !== 1) return;
+  const n = Math.ceil((game._arenaBekleme || 0) / 1000);
+  if ((n === 10 || n === 5 || n === 3) && game._arenaSonToast !== n) {
+    game._arenaSonToast = n;
+    if (typeof showToast === "function") showToast(t("👑 Boss {n} sn içinde geliyor", { n }));
+  }
+}
+
+// Arena: bütün canlı oyuncular içerideyse hemen, değilse ilk girenden 10 sn sonra boss gelir
+function yolculukArenaGuncelle(dt) {
+  if (!game || game.bossDefeated) return;
+  if (game._arenaBossDurum === 2 || game.ghosts.some((g) => g.isBoss)) return;
+  const canli = yolculukCanliKonumlar();
+  if (!canli.length) return;
+  const icerde = canli.filter((p) => hangiBolge(p.x) === 7).length;
+  if (!icerde) return;
+  if (game._arenaBossDurum !== 1) {
+    game._arenaBossDurum = 1;
+    game._arenaBekleme = YOLCULUK_ARENA_BEKLEME_MS;
+    game._arenaSonToast = null;
+  }
+  if (icerde === canli.length) { // herkes içeride: beklemeden gelsin
+    game._arenaBossDurum = 2;
+    game._arenaBekleme = 0;
+    if (typeof spawnBoss === "function") spawnBoss();
+    return;
+  }
+  game._arenaBekleme = Math.max(0, (game._arenaBekleme || 0) - dt * 1000);
+  if (game._arenaBekleme <= 0) { // ilk girenden 10 sn sonra
+    game._arenaBossDurum = 2;
+    if (typeof spawnBoss === "function") spawnBoss();
+    return;
+  }
+  yolculukArenaToastKontrol();
+}
+
 // Bölgeleri güncelle: kotası dolan ve hayaleti kalmayan bölge temizlenir, köprüsü açılır, sıradaki bölge etkin olur.
-// Arena (7): son köprü açıkken oyuncu arenaya girince boss gelir.
-function yolculukBolgeGuncelle() {
+// Arena (7): son köprü açıkken canlı oyuncuların hepsi ya da ilk girenden 10 sn sonra boss gelir.
+function yolculukBolgeGuncelle(dt) {
   if (!yolculukAcik() || !game || !game._yolculukDuzen || !game.bolgeTemiz) return;
   const A = YOLCULUK_AYAR;
   for (let z = 1; z <= A.zoneCount; z++) {
@@ -296,19 +347,13 @@ function yolculukBolgeGuncelle() {
   if (!aktif) aktif = 7;
   game.bolge = aktif;
 
-  if (aktif === 7) {
-    const bossVar = game.ghosts.some((g) => g.isBoss);
-    if (!game.bossDefeated && !bossVar && !game._bolgeBossGeldi && hangiBolge(game.player.x) === 7) {
-      game._bolgeBossGeldi = true;
-      if (typeof spawnBoss === "function") spawnBoss();
-    }
-  }
+  if (aktif === 7) yolculukArenaGuncelle(dt);
 }
 
 // Yolculuk doğumu: yalnız etkin bölgede (arena ise boss yaşarken eşlik edenler)
 function yolculukSpawnGuncelle(dt, spawnInterval, maxGhosts) {
   if (!yolculukAcik() || !game || !game._yolculukDuzen || !game.bolgeKota) return;
-  yolculukBolgeGuncelle();
+  yolculukBolgeGuncelle(dt);
   if (game.bossDefeated) return;
   const z = game.bolge;
   if (z >= 7) {
@@ -324,16 +369,29 @@ function yolculukSpawnGuncelle(dt, spawnInterval, maxGhosts) {
   }
   const zone = game._yolculukDuzen.zones[z - 1];
   if (!zone) return;
-  // Oyuncu bölgenin içindeyse ya da önceki köprü açık ve oyuncu bölgeye 300 px yakınsa doğum başlar
-  let basla = hangiBolge(game.player.x) === z;
-  if (!basla) {
-    if (z === 1) basla = game.player.x >= zone.x0 - 300;
+  const konumlar = yolculukCanliKonumlar();
+  // Canlı oyunculardan biri bölgenin içindeyse ya da önceki köprü açık ve bölgeye 300 px yakınsa doğum başlar
+  let basla = false;
+  for (const p of konumlar) {
+    if (hangiBolge(p.x) === z) { basla = true; break; }
+    if (z === 1) { if (p.x >= zone.x0 - 300) { basla = true; break; } }
     else if (game.kopruAcik[z - 2]) {
-      const uzak = Math.max(zone.x0 - game.player.x, game.player.x - zone.x1, 0);
-      basla = uzak <= 300;
+      const uzak = Math.max(zone.x0 - p.x, p.x - zone.x1, 0);
+      if (uzak <= 300) { basla = true; break; }
     }
   }
   if (!basla) return;
+  // Geride (önceki temizlenmiş bölgede) canlı oyuncu varsa yanına doğma: yeterince uzak yuva yoksa ertele
+  const geride = konumlar.some((p) => { const b = hangiBolge(p.x); return b >= 1 && b < z; });
+  if (geride) {
+    const uzak = typeof HAYALET_DOGUM_UZAKLIK === "number" ? HAYALET_DOGUM_UZAKLIK : 320;
+    const uygun = (game.yuvalar || []).some((yv) => {
+      if (yv.bolge !== z || yv.ulasilir === false) return false;
+      const agiz = typeof yolculukYuvaAgzi === "function" ? yolculukYuvaAgzi(yv) : { x: yv.x, y: yv.y };
+      return konumlar.every((p) => Math.hypot(agiz.x - p.x, agiz.y - p.y) >= uzak);
+    });
+    if (!uygun) return;
+  }
   game.spawnTimer -= dt;
   if (game.spawnTimer <= 0 && game.ghosts.length < maxGhosts && (game.bolgeDogan[z] || 0) < game.bolgeKota[z]) {
     spawnGhost({ x0: zone.x0 + 20, x1: Math.min(zone.gate.x0 - 20, (zone.gecitSol ?? zone.gate.x0) - 30), bolge: z });
@@ -379,6 +437,9 @@ function yolculukHaritaKur() {
     game.bolgeTemiz[i] = false;
   }
   game._bolgeBossGeldi = false;
+  game._arenaBossDurum = 0;
+  game._arenaBekleme = 0;
+  game._arenaSonToast = null;
   game.yuvalar = [];
   game.walls = [];
   game.waters = [];

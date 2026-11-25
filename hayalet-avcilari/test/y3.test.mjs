@@ -221,6 +221,144 @@ try {
     assert.equal(baslangic.dead, false);
   });
 
+  // 9) Doğum yalnız bz bölgesinde; uzaktaki oyuncunun konumu bölgede sayılır
+  const bolgeDogum = await p.evaluate(() => {
+    __resetOnline();
+    online.mode = 'host'; online.cachedRoom = { yj: 1 };
+    game.level = 1; game.running = true; game.dunyaTuru = false;
+    game.player = { x: 0, y: 500, r: 22, hp: 3, maxHp: 3, dead: false, waterImmune: true, charKey: save.selectedChar, costumeIdx: 0 };
+    game.ghosts = []; game.pickups = []; game.enemyProjectiles = []; game.effects = [];
+    dunyaBoyutunuAyarla(); buildWalls(); buildWaters(); buildHazards();
+    const d = game._yolculukDuzen, z = d.zones[1];
+    game.bolgeTemiz[1] = true; game.kopruAcik[0] = true;
+    game.bolgeKota[2] = 4; game.bolgeDogan[2] = 0;
+    game.player.x = (z.x0 + z.gate.x0) / 2; game.player.y = 500;
+    online.remotePlayers = {};
+    for (let i = 0; i < 40 && game.bolgeDogan[2] < 3; i++) { game.spawnTimer = 0; yolculukSpawnGuncelle(0.016, 0.01, 40); }
+    const sadece = {
+      bolge: game.bolge, dogan: game.bolgeDogan[2] || 0,
+      yanlis: game.ghosts.filter((g) => g.bolge !== 2).length,
+      disari: game.ghosts.filter((g) => g.x < z.x0 || g.x > z.gate.x0).length,
+    };
+    // Yerel oyuncu başlangıçta, çevrimiçi öbür oyuncu bölge 2'de: doğum onun sayesinde başlar
+    game.ghosts = []; game.spawnTimer = 0;
+    game.bolgeTemiz[2] = false; game.bolgeDogan[2] = 0; game.bolgeKota[2] = 4;
+    game.player.x = 100; game.player.y = 500;
+    online.remotePlayers = { r1: { x: (z.x0 + z.gate.x0) / 2, y: 500, dead: false } };
+    for (let i = 0; i < 40 && (game.bolgeDogan[2] || 0) < 2; i++) { game.spawnTimer = 0; yolculukSpawnGuncelle(0.016, 0.01, 40); }
+    const uzak = { bolge: game.bolge, dogan: game.bolgeDogan[2] || 0 };
+    online.remotePlayers = {};
+    return { sadece, uzak };
+  });
+  sina('doğum yalnız bz bölgesinde; uzak oyuncu bölgede sayılır', () => {
+    assert.equal(bolgeDogum.sadece.bolge, 2);
+    assert.ok(bolgeDogum.sadece.dogan > 0);
+    assert.equal(bolgeDogum.sadece.yanlis, 0);
+    assert.equal(bolgeDogum.sadece.disari, 0);
+    assert.equal(bolgeDogum.uzak.bolge, 2);
+    assert.ok(bolgeDogum.uzak.dogan > 0);
+  });
+
+  // 10) Geride kalan oyuncunun yanına doğmaz: yeterince uzak yuva yoksa ertelenir
+  const geride = await p.evaluate(() => {
+    __resetOnline();
+    online.mode = 'host'; online.cachedRoom = { yj: 1 };
+    game.level = 1; game.running = true; game.dunyaTuru = false;
+    game.player = { x: 0, y: 500, r: 22, hp: 3, maxHp: 3, dead: false, waterImmune: true, charKey: save.selectedChar, costumeIdx: 0 };
+    game.ghosts = []; game.pickups = []; game.enemyProjectiles = []; game.effects = [];
+    dunyaBoyutunuAyarla(); buildWalls(); buildWaters(); buildHazards();
+    const d = game._yolculukDuzen, z = d.zones[1];
+    game.bolgeTemiz[1] = true; game.kopruAcik[0] = true;
+    game.bolgeKota[2] = 5; game.bolgeDogan[2] = 0; game.ghosts = []; game.spawnTimer = 0;
+    game.player.x = z.x0 - 40; game.player.y = 500; // geride: temizlenmiş bölge 1
+    online.remotePlayers = {};
+    game.yuvalar = [{ x: z.x0 + 40, y: 500, r: 30, tur: 'magara', bolge: 2, ulasilir: true }];
+    for (let i = 0; i < 20; i++) { game.spawnTimer = 0; yolculukSpawnGuncelle(0.016, 0.01, 40); }
+    const yakin = { dogan: game.bolgeDogan[2] || 0, sayi: game.ghosts.length };
+    game.yuvalar = [{ x: z.gate.x0 - 60, y: 900, r: 30, tur: 'magara', bolge: 2, ulasilir: true }];
+    game.bolgeDogan[2] = 0; game.ghosts = []; game.spawnTimer = 0;
+    for (let i = 0; i < 20; i++) { game.spawnTimer = 0; yolculukSpawnGuncelle(0.016, 0.01, 40); }
+    const uzak = { dogan: game.bolgeDogan[2] || 0, sayi: game.ghosts.length };
+    return { yakin, uzak };
+  });
+  sina('geride kalan oyuncunun yanına doğmaz; uzak yuva varsa doğar', () => {
+    assert.equal(geride.yakin.dogan, 0);
+    assert.equal(geride.yakin.sayi, 0);
+    assert.ok(geride.uzak.dogan > 0);
+    assert.ok(geride.uzak.sayi > 0);
+  });
+
+  // 11) Arena: biri içerideyken bekleme başlar, 10 sn sonra boss; herkes içerideyse hemen
+  const arena = await p.evaluate(() => {
+    __resetOnline();
+    online.mode = 'host'; online.cachedRoom = { yj: 1 };
+    game.level = 1; game.running = true; game.dunyaTuru = false;
+    game.player = { x: 0, y: 500, r: 22, hp: 3, maxHp: 3, dead: false, waterImmune: true, charKey: save.selectedChar, costumeIdx: 0 };
+    game.ghosts = []; game.pickups = []; game.enemyProjectiles = []; game.effects = [];
+    dunyaBoyutunuAyarla(); buildWalls(); buildWaters(); buildHazards();
+    const d = game._yolculukDuzen, A = d.arena;
+    game.kopruAcik.fill(true);
+    for (let z = 1; z <= 6; z++) { game.bolgeTemiz[z] = true; game.bolgeDogan[z] = game.bolgeKota[z]; }
+    game.ghosts = []; game.bossDefeated = false; game.bossSpawnTimer = 999;
+    game.player.x = d.zones[5].x0 + 100; game.player.y = 500; // geride bölge 6'da
+    online.remotePlayers = { r1: { x: A.x0 + 200, y: 500, dead: false } };
+    const toast = []; showToast = (m) => toast.push(m);
+    game.spawnTimer = 1e9;
+    yolculukSpawnGuncelle(0.016, 0.01, 40);
+    const bekle = { ab: game._arenaBossDurum, aw: game._arenaBekleme, boss: game.ghosts.some((g) => g.isBoss) };
+    game._arenaBekleme = 5000; yolculukSpawnGuncelle(0.001, 0.01, 40);
+    game._arenaBekleme = 3000; yolculukSpawnGuncelle(0.001, 0.01, 40);
+    game._arenaBekleme = 3000; yolculukSpawnGuncelle(0.001, 0.01, 40);
+    const sayim = toast.filter((m) => /Boss \d+ sn içinde geliyor/.test(m));
+    game._arenaBekleme = 7000;
+    game.player.x = A.x0 + 300; game.player.y = 500; // herkes içeride
+    yolculukSpawnGuncelle(0.001, 0.01, 40);
+    const hepsi = { ab: game._arenaBossDurum, boss: game.ghosts.some((g) => g.isBoss), aw: game._arenaBekleme };
+    // Süre dolunca: yerel oyuncu geride, öbürü içeride; bekleme bitince boss gelir
+    game.ghosts = []; game._arenaBossDurum = 0; game._arenaBekleme = 0; game._arenaSonToast = null;
+    game.bossDefeated = false; game.player.x = d.zones[5].x0 + 100; game.player.y = 500;
+    yolculukSpawnGuncelle(0.001, 0.01, 40);
+    const sureBas = { ab: game._arenaBossDurum, boss: game.ghosts.some((g) => g.isBoss) };
+    game._arenaBekleme = 0.005;
+    yolculukSpawnGuncelle(0.016, 0.01, 40);
+    const sure = { ab: game._arenaBossDurum, boss: game.ghosts.some((g) => g.isBoss) };
+    online.remotePlayers = {};
+    return { bekle, sayim, hepsi, sureBas, sure };
+  });
+  sina('arena: içeride biri varken bekleme, 10 sn; herkes içerideyse hemen boss', () => {
+    assert.equal(arena.bekle.ab, 1);
+    assert.ok(arena.bekle.aw > 9000);
+    assert.equal(arena.bekle.boss, false);
+    assert.deepEqual(arena.sayim.map((m) => (m.match(/(\d+)/) || [])[1]), ['10', '5', '3']);
+    assert.equal(arena.hepsi.ab, 2);
+    assert.equal(arena.hepsi.boss, true);
+    assert.equal(arena.sureBas.ab, 1);
+    assert.equal(arena.sureBas.boss, false);
+    assert.equal(arena.sure.ab, 2);
+    assert.equal(arena.sure.boss, true);
+  });
+
+  // 12) İstemci arena geri sayımını 10/5/3 sn'de bir kez gösterir
+  const istemciSayim = await p.evaluate(() => {
+    __resetOnline();
+    online.mode = 'client'; online.cachedRoom = { yj: 1 };
+    game.running = true; game.level = 1; game.dunyaTuru = false;
+    game.player = { x: 0, y: 500, r: 22, hp: 3, maxHp: 3, dead: false, waterImmune: true, charKey: save.selectedChar, costumeIdx: 0 };
+    game.ghosts = []; game.enemyProjectiles = []; game.pickups = []; game.effects = [];
+    dunyaBoyutunuAyarla(); buildWalls();
+    const toast = []; showToast = (m) => toast.push(m);
+    durumGeldi({ ab: 1, aw: 10000, g: [], e: [], p: [] });
+    durumGeldi({ ab: 1, aw: 5000, g: [], e: [], p: [] });
+    durumGeldi({ ab: 1, aw: 3000, g: [], e: [], p: [] });
+    durumGeldi({ ab: 1, aw: 3000, g: [], e: [], p: [] });
+    return { mesaj: toast.filter((m) => /Boss \d+ sn içinde geliyor/.test(m)), ab: game._arenaBossDurum, aw: game._arenaBekleme };
+  });
+  sina('istemci geri sayımı 10/5/3 sn’de bir kez gösterir', () => {
+    assert.deepEqual(istemciSayim.mesaj.map((m) => (m.match(/(\d+)/) || [])[1]), ['10', '5', '3']);
+    assert.equal(istemciSayim.ab, 1);
+    assert.equal(istemciSayim.aw, 3000);
+  });
+
   await p.evaluate(() => __resetOnline());
   sina('sayfada hata yok', () => { assert.deepEqual(hatalar, []); });
 } finally {

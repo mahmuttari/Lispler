@@ -51,6 +51,6 @@
 | R45 | bekliyor |
 | R46 | bekliyor |
 | R47 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): arma, kaide, spot ışığı, yeşil/mor/turuncu hap düğme; nesneler hücre içinde, sınırlarda yalnız 1-4 tek tük pus pikseli (alfa >= 40); spot ışığı yarı saydam (alfa 1-39 %20); kullanıcıya gösterilecek |
-| R48 | bekliyor (öncelikli) |
+| R48 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): el sallayan hayalet 3 kare (aynı boy ve merkez), kayan yıldız, yarasa, fener; hücre sınırı aşılmıyor, en dar kenar 5. hücrede (yarasa kanadı) 11 px; kullanıcıya gösterilecek |
 | R49 | bekliyor (öncelikli) |
 | R50 | bekliyor (öncelikli: bölüm geçişi kutlaması) |

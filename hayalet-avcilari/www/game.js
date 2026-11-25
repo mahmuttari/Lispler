@@ -7288,6 +7288,7 @@ function spawnGhost(aralik) {
     }
   }
   if (kaynak) {
+    kaynak._dogumAn = performance.now();
     x = kaynakAgiz.x; y = kaynakAgiz.y;
   } else {
     for (let deneme = 0; deneme < 16; deneme++) {

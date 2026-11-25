@@ -1003,14 +1003,77 @@ function yolculukCiz(ctx) {
 }
 
 // ---------- hayalet yuvaları (KAY1) ----------
+// Yuvanın sis katmanı için tek seferlik yumuşak daire sprite'ı (kare başına gradyan kurulmaz).
+let _yuvaSisSprite = null;
+function yolculukYuvaSisSprite() {
+  if (_yuvaSisSprite) return _yuvaSisSprite;
+  const s = 64, c = document.createElement("canvas");
+  c.width = c.height = s;
+  const x = c.getContext("2d");
+  const gr = x.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+  gr.addColorStop(0, "rgba(203,213,225,0.55)");
+  gr.addColorStop(0.55, "rgba(196,181,253,0.24)");
+  gr.addColorStop(1, "rgba(196,181,253,0)");
+  x.fillStyle = gr; x.fillRect(0, 0, s, s);
+  return (_yuvaSisSprite = c);
+}
+
+// Yuvanın ağzında canlı sis: K12 kareleri varsa animasyon, yoksa önbellekli sprite'dan yükselen 3 duman.
+// Doğumdan sonraki 0.7 sn sis 1.6 kat büyür/parlar. Hareketi azalt tercihinde statik kalır.
+function yolculukYuvaSisiCiz(ctx, yv, r, zaman, az) {
+  const faz = (yv.x * 0.013 + yv.y * 0.017) % (Math.PI * 2);
+  const gecen = yv._dogumAn ? zaman * 1000 - yv._dogumAn : 1e9;
+  const p = Math.max(0, Math.min(1, gecen / 700));
+  const etki = (1 - p) * (1 - p);
+  const buyuk = 1 + 0.6 * etki, ek = 0.25 * etki;
+  const t = az ? 0 : zaman;
+  const sisVar = typeof animHazir === "function" && animHazir("yuva-sis");
+  const dumanVar = typeof animHazir === "function" && animHazir("yuva-duman");
+  if (sisVar) {
+    const kare = animDongu("yuva-sis", t + faz, 3);
+    const w = r * 3.2 * buyuk, kay = az ? 0 : Math.sin(t * 0.5 + faz) * 6;
+    const alfa = az ? 0.55 : 0.55 + 0.15 * Math.sin(t * 0.9 + faz);
+    ctx.save(); ctx.globalAlpha = Math.min(1, alfa + ek);
+    animCiz(ctx, "yuva-sis", kare, yv.x + kay - w / 2, yv.y + r * 0.55 - w / 2, w, w);
+    ctx.restore();
+  }
+  if (dumanVar) {
+    const kare = animDongu("yuva-duman", t + faz, 4);
+    const w = r * 1.3 * buyuk;
+    ctx.save(); ctx.globalAlpha = Math.min(1, 0.5 + ek);
+    animCiz(ctx, "yuva-duman", kare, yv.x - w / 2, yv.y - r * 0.2 - w / 2, w, w);
+    ctx.restore();
+  }
+  if (sisVar || dumanVar) return;
+  const sp = yolculukYuvaSisSprite();
+  // Yerde nefes alan düz sis
+  const gw = r * 2.1 * buyuk, gh = r * 0.65 * buyuk;
+  ctx.globalAlpha = Math.min(1, (az ? 0.16 : 0.14 + 0.05 * Math.sin(t * 0.8 + faz)) + ek * 0.5);
+  ctx.drawImage(sp, yv.x - gw / 2, yv.y + r * 0.55 - gh / 2, gw, gh);
+  // Ağızdan yavaşça yükselen, büyüyüp solan duman topları (görünmeyen an atlanır)
+  const adet = az ? 1 : 3;
+  for (let i = 0; i < adet; i++) {
+    const ilerleme = az ? 0.3 : ((t / 2.4 + i / 3 + faz * 0.16) % 1);
+    const alfa = 0.35 * Math.sin(ilerleme * Math.PI) + ek * 0.4;
+    if (alfa < 0.05) continue;
+    const boy = r * (0.55 + ilerleme * 0.5) * buyuk;
+    const x = yv.x + (az ? 0 : Math.sin(t * 0.6 + i * 2.1 + faz) * r * 0.35);
+    const y = yv.y + r * 0.75 - ilerleme * r * 2.2;
+    ctx.globalAlpha = Math.min(1, alfa);
+    ctx.drawImage(sp, x - boy / 2, y - boy / 2, boy, boy);
+  }
+  ctx.globalAlpha = 1;
+}
+
 // Harita objeleriyle birlikte, karakterlerin altında çizilir. Önce "yuva-<tur>" resmi denenir; yoksa tema
-// renkleriyle okunaklı kod çizimi. Ağızda hafif nabız atan sis, hayaletlerin nereden çıktığını gösterir.
+// renkleriyle okunaklı kod çizimi. Ardından yuvanın ağzında canlı sis katmanı çizilir.
 function yolculukYuvalariCiz(ctx) {
   if (!yolculukAcik() || !game || !game._yolculukDuzen || !Array.isArray(game.yuvalar) || !game.yuvalar.length) return;
   const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0;
   const th = typeof getTheme === "function" ? getTheme() : null;
   const tas = (th && th.wall) || "#64748b", koyu = (th && th.wallDark) || "#1e293b", toprak = (th && th.floor) || "#1e293b";
   const zaman = performance.now() / 1000;
+  const az = yolculukAzHareket();
   const el = (x, y, rx, ry, renk) => { ctx.fillStyle = renk; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.fill(); };
   for (const yv of game.yuvalar) {
     const r = yv.r || 32;
@@ -1071,12 +1134,6 @@ function yolculukYuvalariCiz(ctx) {
       }
     }
     ctx.restore();
-    // Ağızda nabız atan hafif sis
-    const agiz = yolculukYuvaAgzi(yv);
-    const p = 0.22 + 0.14 * Math.sin(zaman * 2.2 + yv.x * 0.01);
-    const gr = ctx.createRadialGradient(agiz.x, agiz.y, 0, agiz.x, agiz.y, r * 1.15);
-    gr.addColorStop(0, `rgba(203,213,225,${p})`); gr.addColorStop(1, "rgba(203,213,225,0)");
-    ctx.fillStyle = gr;
-    ctx.beginPath(); ctx.ellipse(agiz.x, agiz.y, r * 1.05, r * 0.7, 0, 0, Math.PI * 2); ctx.fill();
+    yolculukYuvaSisiCiz(ctx, yv, r, zaman, az);
   }
 }

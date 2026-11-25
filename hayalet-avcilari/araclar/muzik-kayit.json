@@ -1,64 +1,58 @@
 {
   "TR": {
-    "gorev": "7b7659d0dbc5ce717768e68a3d2fe01c",
-    "secilen": 2,
+    "gorev": "elevenlabs-music-2026-11-25",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-tr-1.mp3",
-        "sure": 118.573,
-        "tempo": 130.02,
+        "dosya": "tr-1.mp3",
+        "sure": 100.127,
+        "tempo": 110.0,
         "dongu": {
-          "bas": 11.3102,
-          "uzunluk": 27.66473,
-          "vurus": 60
+          "bas": 10.9526,
+          "uzunluk": 30.54696,
+          "vurus": 56
         },
-        "ekYeri": 0.9271,
-        "sabitlik": 0.8751,
-        "puan": 0.916,
+        "ekYeri": 0.943,
+        "sabitlik": 0.4867,
+        "puan": 0.7275,
         "teaser": {
-          "bas": 89.6758,
-          "son": 93.8322
-        },
-        "id": "f2061cff-3ec0-4a47-83c0-7410ac92758d",
-        "etiketler": "Turkish Anatolian folk line-dance, bright warm acoustic mix, loop-friendly adventure-game bed; rich polyphonic baglama lead melody, zurna counter-melody, darbuka and davul bass drum rhythm section; instrumental; lively festive, playful and heroic, upbeat energetic, driving 2/4 groove around 128 BPM, steady danceable pulse, constant full-ensemble energy with a seamless loop."
+          "bas": 72.0497,
+          "son": 75.881
+        }
       },
       {
-        "dosya": "hayalet-avcilari-tr-2.mp3",
-        "sure": 119.893,
-        "tempo": 130.38,
+        "dosya": "tr-2.mp3",
+        "sure": 100.127,
+        "tempo": 100.01,
         "dongu": {
-          "bas": 17.0229,
-          "uzunluk": 29.52421,
-          "vurus": 64
+          "bas": 51.5014,
+          "uzunluk": 31.20935,
+          "vurus": 52
         },
-        "ekYeri": 0.9713,
-        "sabitlik": 0.8767,
-        "puan": 0.9368,
+        "ekYeri": 0.9662,
+        "sabitlik": 0.1788,
+        "puan": 0.5968,
         "teaser": {
-          "bas": 86.0969,
-          "son": 90.23
-        },
-        "id": "aae54e45-a097-4335-a79b-db09579ebbb7",
-        "etiketler": "Turkish Anatolian folk line-dance, adventure-video-game background music; bright warm acoustic mix, loop-friendly, constant-energy arrangement with a smooth repeating close; baglama lead, zurna counter-melody, darbuka and davul rhythm section; instrumental; lively festive, playful and heroic, upbeat driving 2/4 around 128 BPM."
+          "bas": 31.7097,
+          "son": 35.9125
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -5.6,
+    "tepe": -3.2,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3331,
-    "ekOrani": 0.426,
+    "girisSure": 5.0313,
+    "ekOrani": 0.244,
     "dosyalar": {
       "dongu": "muzik/TR-dongu.ogg",
       "giris": "muzik/TR-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 29.62421,
-    "tempo": 130.38,
-    "kredi": {
-      "kalan": 152.5
-    }
+    "bas": 0.1175,
+    "son": 30.66446,
+    "tempo": 110.0,
+    "kredi": {}
   },
   "JP": {
     "gorev": "75b57b9cf7fa381e84e951e8dc29a130",

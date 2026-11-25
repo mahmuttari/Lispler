@@ -156,6 +156,56 @@ try {
     assert.notEqual(cizim.su, cizim.zemin);
   });
 
+  // f) Şelale (YD2 seviye düşmesi): her geçitte 2-3 tane, köprüden ve birbirinden ≥200 px
+  const selale = await p.evaluate(() => {
+    const kotu = [];
+    for (let L = 1; L <= 6; L++) {
+      __kur(L);
+      for (const z of game._yolculukDuzen.zones) {
+        const dd = z._gecitDusmeler || [];
+        if (dd.length < 2 || dd.length > 3) kotu.push(`L${L}:g${z.i} adet=${dd.length}`);
+        for (const a of dd) {
+          if (Math.abs(a.y - z.gate.cy) < 200) kotu.push(`L${L}:g${z.i} köprü ${a.y.toFixed(1)}`);
+          for (const b of dd) if (a !== b && Math.abs(a.y - b.y) < 200) kotu.push(`L${L}:g${z.i} aralık`);
+          if (a.y < 90 || a.y > 910) kotu.push(`L${L}:g${z.i} sınır ${a.y.toFixed(1)}`);
+        }
+      }
+    }
+    return kotu;
+  });
+  sina('her geçitte 2-3 şelale; köprüden ve birbirinden ≥200 px uzak', () => { assert.deepEqual(selale, []); });
+
+  // g) Aynı bölümde düşme konumları deterministik (iki kurulum aynı)
+  const kararli = await p.evaluate(() => {
+    const al = () => { __kur(4); return game._yolculukDuzen.zones.map((z) => (z._gecitDusmeler || []).map((d) => d.y)); };
+    const a = al(), c = al();
+    return JSON.stringify(a) === JSON.stringify(c);
+  });
+  sina('şelale konumları aynı bölümde iki kurulumda aynı', () => { assert.equal(kararli, true); });
+
+  // h) Hareketi azalt açık/kapalı hatasız çizer; şelale + kanal derinliği görüntüsü
+  const selaleVar = await p.evaluate(() => {
+    __kur(3);
+    const z = game._yolculukDuzen.zones[0], d = (z._gecitDusmeler || [])[0];
+    if (!d) return false;
+    game.ghosts = []; game.pickups = []; game.effects = [];
+    game.player.x = d.x; game.player.y = d.y;
+    game.camera.x = Math.max(0, d.x - game.W / 2);
+    game.camera.y = Math.max(0, Math.min(game.worldH - game.H, d.y - game.H / 2));
+    render();
+    return true;
+  });
+  sina('şelale görüntüsü için düşme bulundu', () => { assert.equal(selaleVar, true); });
+  await p.emulateMedia({ reducedMotion: 'reduce' });
+  await p.evaluate(() => { render(); });
+  sina('yolculukGecitCiz "Hareketi azalt" ile de hatasız çizer', () => { assert.deepEqual(hatalar, []); });
+  await p.emulateMedia({ reducedMotion: 'no-preference' });
+  const cikti = path.join(path.dirname(fileURLToPath(import.meta.url)), 'ciktilar');
+  fs.mkdirSync(cikti, { recursive: true });
+  await p.evaluate(() => { render(); });
+  await p.screenshot({ path: path.join(cikti, 'yd2.png') });
+  sina('test/ciktilar/yd2.png kaydedildi', () => { assert.ok(fs.statSync(path.join(cikti, 'yd2.png')).size > 5000); });
+
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);

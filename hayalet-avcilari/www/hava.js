@@ -26,6 +26,39 @@ const HAVA = {
 const havaRast = (a, b) => a + Math.random() * (b - a);
 const havaAzHareket = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
+// Sınama kancası: 25% oyuncuya nişan dalını zorlar (oyun akışını değiştirmez)
+let havaTestZorlaHedef = false;
+function havaTestHedefZorla(v) { havaTestZorlaHedef = !!v; }
+
+// Gezgin bulutun salınımı: 2-3 farklı frekanslı sinüs, toplam genlik 60-110 px
+function bulutGezintiKur(bl) {
+  bl.byFrac = havaRast(0.12, 0.45);
+  bl.wT = 0;
+  bl.hizFaz = havaRast(0, Math.PI * 2);
+  bl.hizFrek = havaRast(0.35, 0.8);
+  const adet = havaRast(0, 1) < 0.5 ? 2 : 3;
+  const agirlik = [];
+  let top = 0;
+  for (let i = 0; i < adet; i++) { agirlik[i] = havaRast(0.3, 1); top += agirlik[i]; }
+  const genlik = havaRast(60, 110);
+  bl.dalgalar = agirlik.map((w) => ({ f: havaRast(0.4, 1.6), a: genlik * w / top, p: havaRast(0, Math.PI * 2) }));
+}
+
+// Var olan bulut görsellerinden birini seçer (bulut, bulut-2..4); hiçbiri yoksa "bulut"
+function bulutResmiSec() {
+  const aday = [];
+  if (typeof gorsel === "function" && gorsel("bulut")) aday.push("bulut");
+  for (let i = 2; i <= 4; i++) if (typeof gorsel === "function" && gorsel(`bulut-${i}`)) aday.push(`bulut-${i}`);
+  return aday.length ? aday[Math.floor(havaRast(0, aday.length))] : "bulut";
+}
+
+// Var olan şimşek görsellerinden birini seçer; hiçbiri yoksa null (kod çizimi)
+function simsekResmiSec() {
+  const aday = [];
+  for (let i = 1; i <= 3; i++) if (typeof gorsel === "function" && gorsel(`simsek-${i}`)) aday.push(`simsek-${i}`);
+  return aday.length ? aday[Math.floor(havaRast(0, aday.length))] : null;
+}
+
 // startGame ve her yeni bölüm çağırır
 function havaKur() {
   game.hava = {
@@ -69,9 +102,26 @@ function yarasaSurusu() {
 
 function simsekCak(bulut, hedef) {
   const h = game.hava;
+  const oyuncu = game.player;
+  // Boss dışında 25% olasılıkla (bulut oyuncunun 220 px yakınındaysa) şimşek oyuncuya nişan alır
+  const oyuncuyaNisan = !hedef && oyuncu && !oyuncu.dead && !oyuncu.gizli &&
+    (havaTestZorlaHedef || (Math.random() < 0.25 && Math.abs(bulut.x - oyuncu.x) < 220));
   const x0 = bulut.x + havaRast(-22, 22), y0 = bulut.y + 18;
-  const x1 = hedef ? hedef.x + havaRast(-60, 60) : x0 + havaRast(-50, 50);
-  const y1 = hedef ? hedef.y + havaRast(-10, 30) : y0 + havaRast(150, 230);
+  let x1 = hedef ? hedef.x + havaRast(-60, 60) : oyuncuyaNisan ? oyuncu.x : x0 + havaRast(-50, 50);
+  let y1 = hedef ? hedef.y + havaRast(-10, 30) : oyuncuyaNisan ? oyuncu.y : y0 + havaRast(150, 230);
+  // Şimşeğin ucu bir karaktere (r + 18) kadar yakınsa tam merkezine oturur ve çarpılma efekti başlar
+  const adaylar = [];
+  if (oyuncu && !oyuncu.dead && !oyuncu.gizli) adaylar.push(oyuncu);
+  if (game.bot && !(game.bot.hp <= 0)) adaylar.push(game.bot);
+  if (game.pet && !(game.pet.baygin > 0)) adaylar.push(game.pet);
+  let vurulan = null;
+  for (const c of adaylar) if (Math.hypot(x1 - c.x, y1 - c.y) <= (c.r || 22) + 18) { vurulan = c; break; }
+  if (vurulan) {
+    x1 = vurulan.x; y1 = vurulan.y;
+    vurulan.carpilma = { kalan: 0.9, bas: performance.now() / 1000 };
+    if (typeof showFloat === "function") showFloat("⚡", vurulan.x, vurulan.y - 36 - (vurulan.r || 22));
+    if (typeof audio !== "undefined" && typeof audio.zap === "function") audio.zap();
+  }
   const noktalar = [[x0, y0]];
   const adim = 7;
   for (let i = 1; i < adim; i++) {
@@ -80,7 +130,7 @@ function simsekCak(bulut, hedef) {
   }
   noktalar.push([x1, y1]);
   const kol = noktalar.slice(2, 5).map(([x, y]) => [[x, y], [x + havaRast(-40, 40), y + havaRast(20, 50)]]);
-  h.simsekler.push({ noktalar, kol, omur: HAVA.simsekSure });
+  h.simsekler.push({ noktalar, kol, omur: HAVA.simsekSure, resim: simsekResmiSec() });
   if (!havaAzHareket()) h.parlama = Math.max(h.parlama, 0.16);
   bulut.cakti = 0.25;
   if (typeof audio !== "undefined") {
@@ -118,7 +168,8 @@ function havaGuncelle(dt) {
     if (boss || h.bulutSayac <= 0) {
       const soldan = Math.random() < 0.5;
       h.bulut = { x: soldan ? cam.x - 140 : cam.x + W + 140, y: cam.y + havaRast(0.12, 0.3) * H, yon: soldan ? 1 : -1,
-        hiz: havaRast(HAVA.bulutHiz[0], HAVA.bulutHiz[1]), sayac: havaRast(1, 2.5), cakti: 0, tohum: Math.random() * 10 };
+        hiz: havaRast(HAVA.bulutHiz[0], HAVA.bulutHiz[1]), sayac: havaRast(1, 2.5), cakti: 0, tohum: Math.random() * 10,
+        resim: bulutResmiSec() };
     }
   }
   const bl = h.bulut;
@@ -130,8 +181,14 @@ function havaGuncelle(dt) {
       bl.x += (hx - bl.x) * k; bl.y += (hy - bl.y) * k;
       bl.boss = true;
     } else {
-      bl.x += bl.yon * bl.hiz * dt;
-      bl.y += Math.sin((bl.tohum += dt * 0.6)) * 6 * dt;
+      if (!bl.dalgalar) bulutGezintiKur(bl); // gezgin bulut: kaotik yukarı-aşağı salınım
+      bl.wT += dt;
+      const hizCarpan = 1 + 0.4 * Math.sin(bl.wT * bl.hizFrek + bl.hizFaz); // 60%-140%, asla ters dönmez
+      bl.x += bl.yon * bl.hiz * hizCarpan * dt;
+      let dy = 0;
+      const az = havaAzHareket() ? 0.5 : 1;
+      for (const d of bl.dalgalar) dy += Math.sin(bl.wT * d.f + d.p) * d.a * az;
+      bl.y = Math.max(cam.y + 0.06 * H, Math.min(cam.y + 0.6 * H, cam.y + bl.byFrac * H + dy)); // görüş içinde kalır
       if (bl.boss) { bl.boss = false; bl.yon = bl.x < cam.x + W / 2 ? -1 : 1; } // boss yenildi: bulut çekip gider
     }
     bl.cakti = Math.max(0, bl.cakti - dt);
@@ -147,6 +204,10 @@ function havaGuncelle(dt) {
   for (const s of h.simsekler) s.omur -= dt;
   h.simsekler = h.simsekler.filter((s) => s.omur > 0);
   h.parlama = Math.max(0, h.parlama - dt * 0.8);
+  // Çarpılma efekti sayacı (yalnız görsel)
+  for (const c of [game.player, game.bot, game.pet]) {
+    if (c && c.carpilma) { c.carpilma.kalan -= dt; if (c.carpilma.kalan <= 0) c.carpilma = null; }
+  }
 }
 
 // ---------- çizim ----------
@@ -195,11 +256,12 @@ function bulutCiz(ctx, bl) {
   ctx.beginPath(); ctx.ellipse(0, bl.boss ? HAVA.bossUst + 30 : 150, 70, 16, 0, 0, Math.PI * 2); ctx.fill();
   const parca = [[-46, 6, 26], [-18, -10, 34], [16, -14, 32], [44, 2, 26], [0, 10, 30], [-30, 16, 22], [30, 16, 22]];
   const aydinlik = bl.cakti > 0 ? 1 : 0;
-  if (typeof gorsel === "function" && gorsel("bulut")) {
+  const anahtar = bl.boss ? "bulut" : (bl.resim || "bulut");
+  if (typeof gorsel === "function" && gorsel(anahtar)) {
     // ChatGPT görseli: hafifçe kabarır; şimşek çakınca aydınlanır
     ctx.scale(1 + Math.sin(zaman * 1.3) * 0.02, 1 + Math.cos(zaman * 1.1) * 0.025);
-    gorselKutuya(ctx, "bulut", -76, -50, 152, 96);
-    if (aydinlik) { ctx.globalAlpha = 0.55; resmiKutuyaCiz(ctx, gorselRenkli("bulut", "#e0e7ff", "doldur"), -76, -50, 152, 96); }
+    gorselKutuya(ctx, anahtar, -76, -50, 152, 96);
+    if (aydinlik) { ctx.globalAlpha = 0.55; resmiKutuyaCiz(ctx, gorselRenkli(anahtar, "#e0e7ff", "doldur"), -76, -50, 152, 96); }
     ctx.restore();
     return;
   }
@@ -216,6 +278,17 @@ function bulutCiz(ctx, bl) {
 
 function simsekCiz(ctx, s) {
   const a = Math.max(0, s.omur / HAVA.simsekSure);
+  const im = s.resim && typeof gorsel === "function" ? gorsel(s.resim) : null;
+  if (im) { // ChatGPT şimşek görseli: başlangıç ve bitiş arasına gerilir
+    const [x0, y0] = s.noktalar[0], [x1, y1] = s.noktalar[s.noktalar.length - 1];
+    const uz = Math.hypot(x1 - x0, y1 - y0) || 1;
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.translate(x0, y0); ctx.rotate(Math.atan2(y1 - y0, x1 - x0));
+    ctx.drawImage(im, 0, -32, uz, 64);
+    ctx.restore();
+    return;
+  }
   const yol = (noktalar) => { ctx.beginPath(); ctx.moveTo(noktalar[0][0], noktalar[0][1]); for (const [x, y] of noktalar.slice(1)) ctx.lineTo(x, y); ctx.stroke(); };
   ctx.save();
   ctx.lineCap = "round"; ctx.lineJoin = "round";
@@ -226,6 +299,48 @@ function simsekCiz(ctx, s) {
   ctx.restore();
 }
 
+// Şimşek çarpan karakterde kısa, yalnız görsel "çarpılma" efekti
+function carpilmaCiz(ctx, c) {
+  const e = c.carpilma;
+  if (!e || e.kalan <= 0) return;
+  const gecen = Math.max(0, performance.now() / 1000 - e.bas);
+  const az = havaAzHareket(), r = c.r || 22;
+  const n = typeof animHazir === "function" ? animHazir("carpilma") : 0;
+  ctx.save();
+  if (n) {
+    const s = r * 4.8; // yaklaşık 2.4× karakter yarıçapı yarıçaplı hale
+    animCiz(ctx, "carpilma", animDongu("carpilma", gecen, 12), c.x - s / 2, c.y - s / 2, s, s);
+  } else {
+    const a = az ? 1 : (Math.floor(gecen / 0.06) % 2 ? 0.35 : 1); // ~60 ms'de bir yanıp söner
+    ctx.globalAlpha = a;
+    ctx.shadowColor = "#67e8f9"; ctx.shadowBlur = 14;
+    ctx.strokeStyle = "#aef9ff"; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(c.x, c.y, r + 10, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1.5; ctx.shadowBlur = 6;
+    ctx.beginPath(); ctx.arc(c.x, c.y, r + 10, 0, Math.PI * 2); ctx.stroke();
+    ctx.shadowBlur = 0;
+    const kare = Math.floor(gecen / 0.06), adet = 3 + (kare % 3); // 3-5 kıvılcım, her yanıp sönmede değişir
+    for (let i = 0; i < adet; i++) {
+      const ac = (i / adet) * Math.PI * 2 + kare * 0.7;
+      const r0 = r * 0.7, r1 = r + 10 + ((kare * 7 + i * 13) % 9);
+      ctx.beginPath();
+      ctx.moveTo(c.x + Math.cos(ac) * r0, c.y + Math.sin(ac) * r0);
+      ctx.lineTo(c.x + Math.cos(ac + 0.1) * (r0 + r1) / 2 + ((kare + i) % 2 ? 4 : -4),
+        c.y + Math.sin(ac + 0.1) * (r0 + r1) / 2);
+      ctx.lineTo(c.x + Math.cos(ac + 0.25) * r1, c.y + Math.sin(ac + 0.25) * r1);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+  if (!az && gecen < 0.12) { // ilk 120 ms: karakterin üzerinde kısa beyaz parlama
+    ctx.globalAlpha = 0.55 * (1 - gecen / 0.12);
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+}
+
 // render() dünya koordinatlarında, parçacıklardan sonra çağırır (gökyüzü her şeyin üstünde)
 function havaCiz(ctx) {
   const h = game.hava;
@@ -233,6 +348,7 @@ function havaCiz(ctx) {
   for (const s of h.simsekler) simsekCiz(ctx, s);
   if (h.bulut) bulutCiz(ctx, h.bulut);
   for (const b of h.yarasalar) yarasaCiz(ctx, b);
+  for (const c of [game.player, game.bot, game.pet]) if (c) carpilmaCiz(ctx, c);
 }
 
 // render() ekran koordinatlarında en sonda çağırır: şimşeğin hafif ekran parlaması

@@ -119,6 +119,7 @@ const audio = {
   toast()  { const v = this._v("sfx"); this.beep(660, 0.07, "sine", 0.10 * v); },
   fire()   { const v = this._v("fire"); this.beep(820, 0.05, "triangle", 0.07 * v); },
   hit()    { const v = this._v("sfx"); this.beep(220, 0.06, "square", 0.10 * v); },
+  zap()    { const v = this._v("sfx"); this.slide(1800, 2600, 0.10, "sawtooth", 0.12 * v); setTimeout(() => this.beep(3200, 0.06, "square", 0.10 * v), 70); setTimeout(() => this.beep(2400, 0.05, "square", 0.08 * v), 150); },
   kill()   { const v = this._v("sfx"); this.slide(700, 1100, 0.18, "triangle", 0.16 * v); },
   boss()   { const v = this._v("ghost"); this.slide(220, 90, 0.5, "sawtooth", 0.20 * v); },
   bossDie(){ const v = this._v("sfx"); this.slide(150, 800, 0.4, "sawtooth", 0.22 * v); setTimeout(() => this.beep(1000, 0.18, "triangle", 0.18 * v), 350); },

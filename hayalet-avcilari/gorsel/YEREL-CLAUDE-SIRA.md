@@ -9,11 +9,12 @@ gpt kullan, yerel oturumu kullan"*.
    Kullanıcıya göster, onay gelince devam et.
 2. **K05 (hemen ardından):** `CHATGPT-ISTEMI-EK.md` › K05 kilitli köprü ve açılışı (kullanıcı istedi). Kayıt:
    `gorsel/hamek/K05.png`.
-3. **H02–H09:** kalan hatıra paftaları (aynı dosya). Toplu göstermek yeterli.
-4. ~~K03, K04~~ yapıldı (bulut Claude kesti; mor bulutlar griye boyandı).
-5. ~~K02 kararı~~ kullanıcı onayladı.
-6. **H10–H12, B01–B10, A01–A03:** hikâye resimleri ve animasyonlar (`CHATGPT-ISTEMI-HIKAYE.md`).
-7. **J01–J12:** yolculuk paftaları (`CHATGPT-ISTEMI-YOLCULUK.md`).
+3. **K06–K08:** harita donatıları (`CHATGPT-ISTEMI-EK.md`, kullanıcı istedi).
+4. **H02–H09:** kalan hatıra paftaları (aynı dosya). Toplu göstermek yeterli.
+5. ~~K03, K04~~ yapıldı (bulut Claude kesti; mor bulutlar griye boyandı).
+6. ~~K02 kararı~~ kullanıcı onayladı.
+7. **H10–H12, B01–B10, A01–A03:** hikâye resimleri ve animasyonlar (`CHATGPT-ISTEMI-HIKAYE.md`).
+8. **J01–J12:** yolculuk paftaları (`CHATGPT-ISTEMI-YOLCULUK.md`).
 
 Her paftadan sonra commit ve push yap (çalışma dalı `ccr-e316a7ca-5sw0ow`); bulut oturumu kesip oyuna bağlar
 (`araclar/gorsel_kes.py`: H01–H09 → `hatira-<KOD>`, K01 → `an-carpilma-*`).

@@ -14,7 +14,7 @@ kod çizimine düşer.
 
 1. ChatGPT'de **yeni bir sohbet** aç ve `CHATGPT-ISTEMI-YOLCULUK.md`'deki **ANA İSTEM**'i bir kez gönder (aynı üslup).
 2. Her paftaya üslup referansı olarak `hamui/U06.png` ve `ham3d/D01.png` ekle.
-3. Her resmi `gorsel/hamek/<KOD>.png` olarak kaydet (K01 … K05). Her paftadan sonra commit ve push yap, ilerlemeyi
+3. Her resmi `gorsel/hamek/<KOD>.png` olarak kaydet (K01 … K08). Her paftadan sonra commit ve push yap, ilerlemeyi
    `gorsel/hamek/DURUM.md`'ye yaz.
 4. Paftaları birlikte kullanıcıya göster.
 5. Giriş, şifre, ödeme ve ChatGPT'nin görsel sınırı kullanıcıya bırakılır. Oyun koduna dokunma.
@@ -24,7 +24,10 @@ Kesim: `araclar/gorsel_kes.py`. Adlar:
 - K02 → `dere-sus-1` … `dere-sus-6`;
 - K03 → `bulut-2`, `bulut-3`, `bulut-4`, `simsek-1`, `simsek-2`, `simsek-3`;
 - K04 → `yuva-mezarlik`, `yuva-magara`, `yuva-izbe`, `yuva-kovuk`, `yuva-kuyu`, `yuva-kripta`;
-- K05 → `kopru-kapali`, `an-kopru-in-1`, `an-kopru-in-2`, `kopru-acik`, `kilit`, `kilit-acik`.
+- K05 → `kopru-kapali`, `an-kopru-in-1`, `an-kopru-in-2`, `kopru-acik`, `kilit`, `kilit-acik`;
+- K06 → `donati-fici`, `donati-sandik`, `donati-fener`, `donati-bank`, `donati-tabela`, `donati-saman`;
+- K07 → `donati-cali`, `donati-ciceklik`, `donati-mantar`, `donati-kutuk`, `donati-tas`, `donati-yaprak`;
+- K08 → `donati-balkabagi`, `donati-araba`, `donati-cit`, `donati-korkuluk`, `donati-mum`, `donati-orumcek`.
 
 ## K01: yıldırım çarpma (6 kare, döngü)
 
@@ -89,4 +92,40 @@ cells 1-4 (about 440 px long, 150 px wide when lying flat):
 5. a big golden padlock alone (closed), glowing softly — used as a small icon
 6. the same padlock popped open with sparkles — the unlock moment
 Cute premium casual style, warm wood, no text.
+```
+
+## K06–K08: harita donatıları
+
+Kullanıcı (25 Kasım 2026): *"Haritadaki donatıları artıralım, görselleri ChatGPT yapsın."* Bölgelere serpiştirilecek küçük süs ve
+engel parçaları; bütün temalarda kullanılabilecek nötr renklerde (kod temaya göre hafif renk tonu verebilir).
+
+```
+Sheet K06: village props for a TOP-DOWN map (seen from above with a slight 3/4 tilt so fronts are readable), TRANSPARENT background,
+grid 3 x 2, each object 220-320 px inside its cell, cute premium casual style, warm materials, soft contact shadow under each object:
+1. an old wooden barrel with metal hoops
+2. a stack of two wooden crates
+3. an old iron street lantern on a post, warm light glowing
+4. a small wooden park bench
+5. a crooked wooden signpost with two arrow boards (no writing)
+6. a round haystack with a pitchfork leaning on it
+```
+
+```
+Sheet K07: nature props, same view and style, TRANSPARENT background, grid 3 x 2:
+1. a round leafy bush
+2. a flowering shrub with small pink and white flowers
+3. a cluster of three red-capped mushrooms with white dots
+4. a tree stump with rings and a little sprout
+5. a pile of three mossy rocks
+6. a scattered patch of autumn leaves (flat on the ground)
+```
+
+```
+Sheet K08: friendly-spooky props, same view and style, TRANSPARENT background, grid 3 x 2, cute not scary:
+1. a carved pumpkin with a gentle smile, soft glow inside
+2. an old broken wooden cart with one wheel off
+3. a short piece of old crooked wooden fence
+4. a friendly scarecrow with a patched hat
+5. a cluster of three melting candles on a small stone, warm flames
+6. a corner cobweb with a tiny cute spider (flat on the ground, semi-transparent web)
 ```

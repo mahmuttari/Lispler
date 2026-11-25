@@ -153,8 +153,10 @@ function hikayeHatiraTopla() {
   persistSave();
   showToast(t("🎁 Hatıra: {ad}", { ad: h.ad }));
   if (typeof audio !== "undefined") {
-    if (typeof audio.yildiz === "function") audio.yildiz();
-    else if (typeof audio.gem === "function") audio.gem();
+    if (!(audio.hikayeSes && audio.hikayeSes("hatira"))) {
+      if (typeof audio.yildiz === "function") audio.yildiz();
+      else if (typeof audio.gem === "function") audio.gem();
+    }
   }
   if (typeof animEfektEkle === "function") animEfektEkle("topla", h.x, h.y - 10, { renk: "255, 210, 102" });
   else if (typeof spawnHitParticles === "function") spawnHitParticles(h.x, h.y);
@@ -201,6 +203,9 @@ function hikayeSahneGoster(satirlar, secenek) {
   _sahne = { satirlar, i: 0, katilan: secenek.katilan, bitince: secenek.bitince, durakladi: hikayeDuraklat() };
   const el = document.getElementById("hikaye-sahne");
   if (!el) { hikayeDevam(_sahne.durakladi); _sahne = null; return; }
+  if (!(typeof online !== "undefined" && online.mode) && typeof audio !== "undefined" && audio.hikayeSes) {
+    audio.hikayeSes(secenek.katilan ? "arkadas" : "sahne");
+  }
   el.classList.add("active");
   hikayeSahneCiz();
 }
@@ -284,6 +289,7 @@ function hikayeBilmeceAc(n, bitince) {
   _bilmece = { n, b, bitince: bitince || null, durakladi: hikayeDuraklat() };
   const el = document.getElementById("hikaye-bilmece");
   if (!el) { hikayeDevam(_bilmece.durakladi); _bilmece = null; return; }
+  if (!(typeof online !== "undefined" && online.mode) && typeof audio !== "undefined" && audio.hikayeSes) audio.hikayeSes("harita");
   const secenekler = (b.secenek || []).map((s, i) =>
     `<button class="hikaye-secenek" type="button" data-i="${i}" dir="auto"><bdi>${escapeHtml(s)}</bdi></button>`).join("");
   el.innerHTML = `<div class="hikaye-kutu">` +
@@ -304,6 +310,7 @@ function hikayeBilmeceSec(i, btn) {
   if (!_bilmece) return false;
   const { n, b } = _bilmece;
   if (Number(i) === Number(b.dogru)) {
+    if (!(typeof online !== "undefined" && online.mode) && typeof audio !== "undefined" && audio.hikayeSes) audio.hikayeSes("dogru");
     const k = hikayeKayit();
     k.bilmeceler[String(n)] = Date.now();
     const vv = hikayeVerisi();
@@ -314,7 +321,10 @@ function hikayeBilmeceSec(i, btn) {
     showToast(t("🎁 Ödül: {para} 💰 + {elmas} 💎", { para, elmas }));
     const v = vv;
     const hepsi = (v.bilmece || []).length > 0 && (v.bilmece || []).every((_, j) => k.bilmeceler[String(j + 1)]);
-    if (hepsi && !k.rozet) { k.rozet = Date.now(); persistSave(); showToast(t("🧭 Gezgin rozeti!")); }
+    if (hepsi && !k.rozet) {
+      k.rozet = Date.now(); persistSave(); showToast(t("🧭 Gezgin rozeti!"));
+      if (!(typeof online !== "undefined" && online.mode) && typeof audio !== "undefined" && audio.hikayeSes) setTimeout(() => audio.hikayeSes("rozet"), 700);
+    }
     const bolum = (b.bolum || []).map((m) => ({ k: "anlatici", m }));
     const devam = _bilmece.bitince;
     hikayeBilmeceKapat(false);
@@ -322,6 +332,7 @@ function hikayeBilmeceSec(i, btn) {
     else if (devam) devam();
     return true;
   }
+  if (!(typeof online !== "undefined" && online.mode) && typeof audio !== "undefined" && audio.hikayeSes) audio.hikayeSes("yanlis");
   if (btn) {
     btn.classList.remove("salla");
     void btn.offsetWidth;
@@ -406,7 +417,14 @@ function hikayeFinalHazir() {
 
 function hikayeFinalGoster(bitince) {
   const v = hikayeVerisi();
-  hikayeSahneGoster(v.final, { bitince });
+  if (!(typeof online !== "undefined" && online.mode) && typeof audio !== "undefined" && audio.hikayeSes) audio.hikayeSes("fener");
+  const sar = bitince;
+  hikayeSahneGoster(v.final, {
+    bitince: () => {
+      if (!(typeof online !== "undefined" && online.mode) && typeof audio !== "undefined" && audio.hikayeSes) audio.hikayeSes("eve-donus");
+      if (sar) sar();
+    },
+  });
 }
 
 function hikayeFinalOku(bitince) {

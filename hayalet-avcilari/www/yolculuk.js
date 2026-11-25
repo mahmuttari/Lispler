@@ -112,8 +112,10 @@ function yolculukKopruAc(i) {
   game._kopruAnim[i] = 0.6;
   try {
     if (typeof audio !== "undefined") {
-      if (typeof audio.unlock === "function") audio.unlock();
-      else if (typeof audio.levelUp === "function") audio.levelUp();
+      if (!(audio.hikayeSes && audio.hikayeSes("kopru-ac"))) {
+        if (typeof audio.unlock === "function") audio.unlock();
+        else if (typeof audio.levelUp === "function") audio.levelUp();
+      }
     }
   } catch (e) { /* ses yoksa sessiz */ }
   if (typeof showToast === "function") showToast(t("🌉 Köprü açıldı!"));

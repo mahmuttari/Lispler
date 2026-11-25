@@ -4,6 +4,7 @@
    ============================================================ */
 
 // ====== SES SİSTEMİ ======
+const HIKAYE_SESLERI = ["hatira", "sahne", "dogru", "yanlis", "kopru-ac", "kopru-kilit", "harita", "arkadas", "rozet", "fener", "eve-donus"];
 const audio = {
   ctx: null,
   enabled: true,
@@ -32,6 +33,7 @@ const audio = {
     this._preloaded = true;
     this.loadSample("smallGhost", "sfx/kucuk-hayalet.m4a");
     this.loadSample("bigGhost", "sfx/buyuk-hayalet.m4a");
+    for (const ad of HIKAYE_SESLERI) this.loadSample("h:" + ad, "sfx/hikaye/" + ad + ".m4a");
   },
   async loadSample(key, url) {
     if (this.samples[key] || !this.ctx) return;
@@ -64,6 +66,9 @@ const audio = {
   },
   bigGhost() {
     if (!this.playSample("bigGhost", 0.8 * this._v("ghost"))) this.boss();
+  },
+  hikayeSes(ad, vol) {
+    return this.playSample("h:" + ad, (vol == null ? 0.6 : vol) * this._v("sfx"));
   },
   beep(freq, dur, type, vol) {
     if (!this.enabled || !this.ctx) return;
@@ -6040,6 +6045,13 @@ function update(dt, now) {
       const engel = (x, y, r) => collidesWalls(x, y, r) || (waterBlock && kopruluSuCarpar(x, y, r));
       const mesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), waterBlock ? kopruluSuMesafesi(x, y, r) : Infinity);
       if (kayarakYuru(game.player, nx - game.player.x, ny - game.player.y, engel, mesafe)) movedThisFrame = true;
+      else if (typeof yolculukKopruKapaliNokta === "function" && yolculukKopruKapaliNokta(nx, ny, game.player.r)) {
+        const simdi = performance.now();
+        if (simdi - (game._kopruKilitSes || 0) > 1500) {
+          game._kopruKilitSes = simdi;
+          if (typeof audio !== "undefined" && audio.hikayeSes) audio.hikayeSes("kopru-kilit");
+        }
+      }
     }
   }
   // 3D bakış: hedef yokken hareket yönü (atan2(dx, dy)); dururken önceki yön korunur

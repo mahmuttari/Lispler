@@ -38,6 +38,13 @@ function suUzakligi(o, x, y) {
   return ENGEL.parcaUzaklik({ t: "k", x: o.x, y: o.y, w: o.w, h: o.h, rr: 0 }, x, y);
 }
 
+// Geçit nehrinin köprüsü (yolculuk haritası); göl ya da köprüsüzse null
+function suKopru(o) {
+  if (!o.gecit) return null;
+  for (const k of game.kopruler || []) if (k.su === o) return k;
+  return null;
+}
+
 // Oyuncuya en yakın göl ve uzaklığı
 function enYakinSu(x, y) {
   let en = null, d = Infinity;
@@ -101,12 +108,17 @@ function timsahSaldirt(o, x, y) {
 function timsahSusle() {
   const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0;
   const uzaklar = online.mode === "host" ? Object.values(online.remotePlayers).filter((rp) => rp && Number.isFinite(rp.x)) : [];
-  const gorunen = (game.waters || []).filter((o) => !o.gecit && ((o.x < cam.x + W && o.x + o.w > cam.x && o.y < cam.y + H && o.y + o.h > cam.y) ||
-    uzaklar.some((rp) => Math.abs(rp.x - (o.x + o.w / 2)) < 500 && Math.abs(rp.y - (o.y + o.h / 2)) < 700)));
+  const gorunen = (game.waters || []).filter((o) => (o.x < cam.x + W && o.x + o.w > cam.x && o.y < cam.y + H && o.y + o.h > cam.y) ||
+    uzaklar.some((rp) => Math.abs(rp.x - (o.x + o.w / 2)) < 500 && Math.abs(rp.y - (o.y + o.h / 2)) < 700));
   if (!gorunen.length) return null;
   const o = gorunen[Math.floor(Math.random() * gorunen.length)];
+  const kop = suKopru(o);
+  // Geçit nehri bütün dünyayı kaplar: gözler görünür şeritte ve köprüden en az 120 px uzakta çıkar
+  const y0 = o.gecit ? Math.max(o.y, cam.y) : o.y, y1 = o.gecit ? Math.min(o.y + o.h, cam.y + H) : o.y + o.h;
+  if (y1 <= y0) return null;
   for (let i = 0; i < 40; i++) {
-    const x = o.x + Math.random() * o.w, y = o.y + Math.random() * o.h;
+    const x = o.x + Math.random() * o.w, y = y0 + Math.random() * (y1 - y0);
+    if (kop && Math.abs(y - kop.c) < 120) continue;
     if (suUzakligi(o, x, y) < -22) {
       const tur = Math.random() < TIMSAH.bosOlasilik ? "bos" : "sus";
       const tm = { id: ++_timsahNo, tur, x, y, a: Math.random() * Math.PI * 2, t: 0 };
@@ -153,7 +165,10 @@ function timsahGuncelle(dt) {
   // Köprüdeki ya da köprüden düşmüş oyuncuya kıyı saldırısı yok: köprüde kural düşmedir (kopru.js)
   if (!p || p.dead || game.devamBekliyor || p.dusus || koprudeMi(p.x, p.y)) { game._timsahKiyi = 0; return; }
   const { su, d } = enYakinSu(p.x, p.y);
-  if (!su || su.gecit || d - p.r > TIMSAH.yakin) { game._timsahKiyi = 0; return; }
+  if (!su || d - p.r > TIMSAH.yakin) { game._timsahKiyi = 0; return; }
+  const kop = suKopru(su);
+  // Geçitte köprüye 90 px'ten yakın kıyıya saldırmaz (karşıya geçiş güvenli kalsın)
+  if (kop && Math.abs(p.y - kop.c) < 90) { game._timsahKiyi = 0; return; }
   game._timsahKiyi += dt;
   if (game._timsahKiyi < TIMSAH.bekleme || game._timsahAra > 0) return;
   if (game.timsahlar.some((tm) => tm.tur === "saldiri")) return;

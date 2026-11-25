@@ -50,7 +50,7 @@
 | R44 | bekliyor |
 | R45 | bekliyor |
 | R46 | bekliyor |
-| R47 | bekliyor (öncelikli: giriş ekranı) |
+| R47 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): arma, kaide, spot ışığı, yeşil/mor/turuncu hap düğme; nesneler hücre içinde, sınırlarda yalnız 1-4 tek tük pus pikseli (alfa >= 40); spot ışığı yarı saydam (alfa 1-39 %20); kullanıcıya gösterilecek |
 | R48 | bekliyor (öncelikli) |
 | R49 | bekliyor (öncelikli) |
 | R50 | bekliyor (öncelikli: bölüm geçişi kutlaması) |

@@ -4,6 +4,10 @@ Bulut oturumu ChatGPT'ye erişemez; görselleri Mac'teki Claude ChatGPT'ye üret
 vardır. Bu dosya yalnız **öncelik sırasını** verir. Kullanıcı 25 Kasım 2026'da istedi: *"bakır kahve cezvesi doğru görsel olmalı,
 gpt kullan, yerel oturumu kullan"*.
 
+> **Kullanıcının son talimatı (25 Kasım 2026, akşam):** *"GPT yerel oturuma prompt göndereceksin, Chrome ile chat üzerinden yapacak.
+> Devam eden işi bozma."* Bu listedeki **bütün** paftalar Chrome'da chatgpt.com sohbetinde ürettirilir. Oyun koduna (`www/`, `test/`)
+> dokunulmaz (bulutta Evren görevleri yazılıyor); yalnız PNG ve DURUM.md commit edilir, `git pull --no-rebase` sonra push.
+
 1. **H01 (hemen):** `CHATGPT-ISTEMI-HIKAYE.md` › "Hatıra paftaları" › H01 (ülke 1–6; 1. hücre Türkiye'nin **bakır kahve cezvesi**:
    uzun saplı, el dövmesi bakır, köpüklü kahveli küçük cezve; fincan DEĞİL). Kayıt: `gorsel/hamhikaye/H01.png`.
    Kullanıcıya göster, onay gelince devam et.

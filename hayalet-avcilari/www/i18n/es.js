@@ -266,6 +266,7 @@ I18N.es = {
   "🧊 Avcılar artık gerçek 3D: her yöne dönüyor, yürüyor, koşuyor; silah hep elinde!": "🧊 ¡Los cazadores ahora son 3D de verdad: giran en todas direcciones, caminan y corren, con el arma siempre en la mano!",
   "🧹 Kalan: {n}": "🧹 Quedan: {n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 Menos anuncios: ninguno para jugadores nuevos ni tras partidas cortas.",
+  "🚀 Avcılar artık akıcı: 3D çizimdeki takılmalar giderildi.": "🚀 Cazadores más fluidos: se corrigieron los tirones del dibujo 3D.",
   "🚀 ODA KUR": "🚀 CREAR SALA",
   "🚪 Çıkış": "🚪 Salir",
   "🚪 Odadan Ayrıl": "🚪 Salir de la sala",

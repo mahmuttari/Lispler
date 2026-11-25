@@ -266,6 +266,7 @@ I18N.en = {
   "🧊 Avcılar artık gerçek 3D: her yöne dönüyor, yürüyor, koşuyor; silah hep elinde!": "🧊 Hunters are now real 3D: they turn, walk and run in every direction; weapon always in hand!",
   "🧹 Kalan: {n}": "🧹 Left: {n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 Fewer ads: none for new players or after short games.",
+  "🚀 Avcılar artık akıcı: 3D çizimdeki takılmalar giderildi.": "🚀 Smoother hunters: the 3D drawing stutter is fixed.",
   "🚀 ODA KUR": "🚀 CREATE ROOM",
   "🚪 Çıkış": "🚪 Sign Out",
   "🚪 Odadan Ayrıl": "🚪 Leave Room",

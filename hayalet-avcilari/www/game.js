@@ -322,7 +322,7 @@ const LEADERBOARD_MAX = 500; // 3.16.1, kullanıcı: "Şampiyon listesi ilk 500 
 const VERSION_KEY = "hayaletAvcilariLastSeenVersion";
 
 // ====== SÜRÜM NOTLARI ======
-const APP_VERSION = "3.20.0";
+const APP_VERSION = "3.20.1";
 const UPDATE_NOTES = {
   // Mağaza notu aynı satırlar; her dilde 500 karakterin altında kalsın diye Dünya Turu'nun satırları (3.14.0) yok
   // 3.15.0 incelemedeyken 3.15.1 gelebilir: 3.15.0'ın satırları ve düzeltme (mağaza notu aynı satırlar, ≤ 500)
@@ -333,6 +333,13 @@ const UPDATE_NOTES = {
   // için çıktı
   // 3.19.0 (kullanıcı: "karakterleri mevcut görünümlerinden esinlenerek tamamen baştan oluşturt, 3D olsun, animasyonlu
   // duruş, hareket ve atış"): 3D görünümlü karakterler ve silahlar (ChatGPT; kod Evren); 🐾 (yayında) 500 sınırı için çıktı
+  "3.20.1": [
+    t("🚀 Avcılar artık akıcı: 3D çizimdeki takılmalar giderildi."),
+    t("🧊 Avcılar artık gerçek 3D: her yöne dönüyor, yürüyor, koşuyor; silah hep elinde!"),
+    t("👥 Yeni Karakterler ekranı: her avcının hikâyesi, gücü, yetenekleri ve kostümleri tek panelde."),
+    t("⚡ Ek silahlar ve güçler animasyonlu: yıldırım, roket dumanı, buz bloğu, güç halesi!"),
+    t("🔊 Bütün ses efektleri yenilendi; her mağaza silahının kendi atış sesi var."),
+  ],
   "3.20.0": [
     t("🧊 Avcılar artık gerçek 3D: her yöne dönüyor, yürüyor, koşuyor; silah hep elinde!"),
     t("👥 Yeni Karakterler ekranı: her avcının hikâyesi, gücü, yetenekleri ve kostümleri tek panelde."),

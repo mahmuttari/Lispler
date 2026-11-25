@@ -44,9 +44,9 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 ## Sürüm notu
 
+🚀 Cazadores más fluidos: se corrigieron los tirones del dibujo 3D.
 🧊 ¡Cazadores en 3D real: giran, caminan y corren, con el arma siempre en la mano!
 👥 Nueva pantalla de Personajes: historia, poder y disfraces de cada cazador.
 ⚡ ¡Armas y poderes animados: rayo, humo de cohete, bloque de hielo, aura de poder!
 🔊 Sonidos renovados; cada arma de la tienda suena distinto.
 ⚙️ Nuevo botón "Personajes 3D" en el sonido; en móviles lentos el 3D se apaga solo.
-🛠️ Armas y mejoras más equilibradas, y muchas correcciones en línea.

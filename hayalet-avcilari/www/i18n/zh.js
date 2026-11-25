@@ -266,6 +266,7 @@ I18N.zh = {
   "🧊 Avcılar artık gerçek 3D: her yöne dönüyor, yürüyor, koşuyor; silah hep elinde!": "🧊 猎人们现在是真3D了：能向各个方向转身、走路、奔跑；武器始终手持！",
   "🧹 Kalan: {n}": "🧹 剩余：{n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 广告更少：新玩家和短局之后不再显示广告。",
+  "🚀 Avcılar artık akıcı: 3D çizimdeki takılmalar giderildi.": "🚀 猎人更流畅：修复了3D绘制造成的卡顿。",
   "🚀 ODA KUR": "🚀 创建房间",
   "🚪 Çıkış": "🚪 退出",
   "🚪 Odadan Ayrıl": "🚪 离开房间",

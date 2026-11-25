@@ -266,6 +266,7 @@ I18N.ar = {
   "🧊 Avcılar artık gerçek 3D: her yöne dönüyor, yürüyor, koşuyor; silah hep elinde!": "🧊 أصبح الصيادون الآن ثلاثيي الأبعاد الحقيقيين: يديرون في كل اتجاه، يمشون، يركضون؛ السلاح دائمًا في اليد!",
   "🧹 Kalan: {n}": "🧹 المتبقي: {n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 إعلانات أقل: لا إعلانات للاعبين الجدد ولا بعد الجولات القصيرة.",
+  "🚀 Avcılar artık akıcı: 3D çizimdeki takılmalar giderildi.": "🚀 صيادون أكثر سلاسة: تم إصلاح التقطع في الرسم ثلاثي الأبعاد.",
   "🚀 ODA KUR": "🚀 إنشاء غرفة",
   "🚪 Çıkış": "🚪 خروج",
   "🚪 Odadan Ayrıl": "🚪 مغادرة الغرفة",

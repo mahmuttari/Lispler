@@ -40,17 +40,16 @@ try {
   // 7) canliOnizleme: açılış karşılıyıcısında tuval var, görseller gelince dolu; DOM'dan çıkınca kaydı silinir
   const karsilayici = await p.evaluate(() => {
     const el = document.getElementById('kinkin-greeter');
-    const resim = el.querySelector('img.giris-kahraman');
-    return { tuval: !!el.querySelector('canvas.canli-onizleme'), resim: !!resim,
-      resimDolu: !!resim && resim.complete && resim.naturalWidth > 0, kayit: canliOnizlemeSayisi() };
+    return { tuval: el.querySelectorAll('canvas.canli-onizleme').length, resim: !!el.querySelector('img.giris-kahraman'),
+      orta: !!el.querySelector('.greeter-avci.orta canvas.canli-onizleme'), kayit: canliOnizlemeSayisi() };
   });
-  // "giris-kahraman" listede varsa resim önceliklidir (drawGreeter); yoksa canlı tuval çizilir.
-  sina('7) açılış karşılıyıcısı canlı tuval ya da grup resmi içerir', () => {
-    assert.ok(karsilayici.tuval || karsilayici.resim, 'karşılıyıcı boş');
-    assert.equal(karsilayici.kayit, karsilayici.resim ? 0 : 1);
+  // Açılışta 3D avcı grubu (kullanıcı: "burada karakterlerin 3D görünümleri olmalı"): 5 canlı tuval, seçili avcı ortada; düz resim yok
+  sina('7) açılış karşılıyıcısında 5 canlı 3D avcı tuvali, seçili avcı ortada, düz grup resmi yok', () => {
+    assert.equal(karsilayici.tuval, 5); assert.equal(karsilayici.orta, true); assert.equal(karsilayici.resim, false);
+    assert.equal(karsilayici.kayit, 5);
   });
-  const doluMu = karsilayici.resim ? karsilayici.resimDolu : await p.waitForFunction(() => {
-    const cv = document.querySelector('#kinkin-greeter canvas.canli-onizleme');
+  const doluMu = await p.waitForFunction(() => {
+    const cv = document.querySelector('#kinkin-greeter .greeter-avci.orta canvas.canli-onizleme');
     if (!cv || !cv.width) return false;
     const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
     let dolu = 0;

@@ -4942,18 +4942,28 @@ function clearLeaderboard() {
 }
 
 // ====== AÇILIŞ EKRANI KARAKTER ÇİZİMİ ======
-// Kinkin canlı önizlemeyle çizilir (gorsel.js canliOnizleme). Eskiden açılışta bir kez data URL'e çizilirdi;
-// 3D kareler henüz yüklenmediği için eski düz çizim görünürdü. "giris-kahraman" (ileride gelecek grup paftası)
-// listede varsa onun resmi gösterilir.
+// Açılışta 3D avcılardan bir grup (kullanıcı: "burada karakterlerin 3D görünümleri olmalı"): seçili avcı ortada ve
+// büyük, dört arkadaşı iki yanında; her biri canlı önizleme (gorsel.js canliOnizleme; 3D hazır değilse 2D yedek).
+// Atış kıpırtıları sırayla kaydırılır, hep birlikte ateş etmezler.
 function drawGreeter() {
   const el = document.getElementById("kinkin-greeter");
   if (!el) return;
-  if (typeof GORSEL_LISTESI === "object" && GORSEL_LISTESI && GORSEL_LISTESI["giris-kahraman"]) {
-    canliOnizlemeTemizle(el);
-    el.innerHTML = `<img class="giris-kahraman" src="gorsel/giris-kahraman.webp" alt="${escapeHtml(t("Hayalet Avcıları"))}" draggable="false">`;
-    return;
-  }
-  canliOnizleme(el, "kinkin", 0);
+  canliOnizlemeTemizle(el);
+  const secili = (typeof save !== "undefined" && save.selectedChar && CHARACTERS[save.selectedChar]) ? save.selectedChar : "kinkin";
+  const diger = ["gul", "kornet", "fanatik", "rani", "kinkin", "veryi"].filter((k) => k !== secili && CHARACTERS[k]).slice(0, 4);
+  const sira = [diger[0], diger[1], secili, diger[2], diger[3]];
+  el.classList.add("greeter-grup");
+  el.innerHTML = sira.map((k, i) => `<div class="greeter-avci${i === 2 ? " orta" : ""}" data-avci="${k}"></div>`).join("");
+  const kutular = el.querySelectorAll(".greeter-avci");
+  kutular.forEach((kutu, i) => {
+    const k = sira[i];
+    const kostum = (save.selectedCostume && save.selectedCostume[k]) || 0;
+    const o = canliOnizleme(kutu, k, kostum);
+    // Atış kıpırtısını kaydır: her avcı farklı anda ateş etsin
+    const kayit = (typeof _onizlemeler !== "undefined") ? _onizlemeler.find((x) => x.el === kutu) : null;
+    if (kayit) kayit.sonAtis = performance.now() - i * 520;
+    return o;
+  });
 }
 
 // ====== MENÜ ======
@@ -7751,6 +7761,7 @@ function render() {
   if (typeof yolculukGecitCiz === "function") yolculukGecitCiz(ctx); // yolculuk geçit nehirleri (yolculuk.js)
   koprulerCiz(ctx);   // sallanan ip köprüler (kopru.js)
   if (typeof yolculukCiz === "function") yolculukCiz(ctx); // yolculuk geçitleri (yolculuk.js)
+  if (typeof yolculukDonatilariCiz === "function") yolculukDonatilariCiz(ctx); // yolculuk süs objeleri (yolculuk.js)
   if (typeof yolculukYuvalariCiz === "function") yolculukYuvalariCiz(ctx); // yolculuk hayalet yuvaları (yolculuk.js)
   timsahlariCiz(ctx); // sudaki timsahlar (timsah.js)
   calilariCiz(ctx);   // saklanma çalıları (cali.js)

@@ -157,6 +157,13 @@ function koprulerCiz(ctx) {
     const [x0, y0] = k.yatay ? [k.a, k.c] : [k.c, k.a], [x1, y1] = k.yatay ? [k.b, k.c] : [k.c, k.b], pay = KOPRU.kalin;
     if (x1 + pay < cam.x || x0 - pay > cam.x + W || y1 + pay < cam.y || y0 - pay > cam.y + H) continue; // ekran dışı
     const boy = k.b - k.a, yari = KOPRU.kalin / 2;
+    // Yolculuk geçidi köprüleri: açık köprü resmi varsa kod tahtaları yerine resim çizilir.
+    // Göl köprüleri (su.gecit yok) değişmez; kapalı geçit köprüsünü yolculukCiz çizer.
+    if (k.su && k.su.gecit && typeof gorsel === "function" && gorsel("kopru-acik")) {
+      const gecitAcik = !(game.kopruAcik && k.sira != null && !game.kopruAcik[k.sira]);
+      if (gecitAcik) gorselKutuya(ctx, "kopru-acik", Math.min(x0, x1) - yari, Math.min(y0, y1) - yari, Math.abs(x1 - x0) + yari * 2, Math.abs(y1 - y0) + yari * 2);
+      continue;
+    }
     const ustunde = p && !p.dead && koprudeki(p.x, p.y) === k;
     const genlik = 1.5 + (ustunde ? 1.5 + (game._kopruDurma || 0) * 3 : 0);
     const kay = (s) => genlik * Math.sin(zaman * 3.2 + s * 0.03) * Math.sin(Math.PI * Math.min(1, Math.max(0, (s - k.a) / boy)));

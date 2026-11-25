@@ -267,6 +267,62 @@ try {
   });
   sina('kıyı süsleri görsellerle ve görseller silinince hatasız çizilir', () => { assert.equal(susCizim, true); });
 
+  // KOP1) Köprü resimleri: kapalı/açık köprü ve açılış kareleri; resim yokken kod çizimi
+  const kopruResim = await p.evaluate(async () => {
+    __kur(1);
+    const yap = async (renk) => {
+      const c = document.createElement('canvas'); c.width = 64; c.height = 32;
+      const x = c.getContext('2d'); x.fillStyle = renk; x.fillRect(0, 0, 64, 32);
+      const im = new Image();
+      await new Promise((coz) => { im.onload = im.onerror = () => coz(); im.src = c.toDataURL(); });
+      return im;
+    };
+    const anahtarlar = ['kopru-kapali', 'an-kopru-in-1', 'an-kopru-in-2', 'kopru-acik', 'kilit-acik'];
+    const renkler = ['#f00', '#0f0', '#00f', '#ff0', '#0ff'];
+    const src = {}, imler = {};
+    for (let i = 0; i < anahtarlar.length; i++) {
+      imler[anahtarlar[i]] = await yap(renkler[i]);
+      GORSEL[anahtarlar[i]] = imler[anahtarlar[i]];
+      GORSEL_LISTESI[anahtarlar[i]] = imler[anahtarlar[i]].src;
+      src[anahtarlar[i]] = imler[anahtarlar[i]].src;
+    }
+    delete _animSayi['kopru-in'];
+    const z = game._yolculukDuzen.zones[0], g = z.gate;
+    const ciz = (fn) => {
+      const c = document.createElement('canvas'); c.width = 400; c.height = 300;
+      const x = c.getContext('2d'); const list = []; const asil = x.drawImage.bind(x);
+      x.drawImage = (im, ...a) => { list.push(im.src || ''); return asil(im, ...a); };
+      fn(x); return list;
+    };
+    game.camera.x = Math.max(0, g.x0 - 120);
+    game.camera.y = Math.max(0, Math.min(game.worldH - game.H, g.cy - game.H / 2));
+    game.kopruAcik.fill(false); game._kopruAnim = {};
+    const kapali = ciz((x) => yolculukCiz(x));
+    game.kopruAcik.fill(true); game._kopruAnim = {};
+    const acikKopru = ciz((x) => koprulerCiz(x));
+    const kareler = [];
+    for (const t of [0.58, 0.4, 0.25, 0.08]) { game._kopruAnim[0] = t; kareler.push(ciz((x) => yolculukCiz(x))); }
+    for (const k of anahtarlar) { delete GORSEL[k]; delete GORSEL_LISTESI[k]; }
+    delete _animSayi['kopru-in'];
+    game.kopruAcik.fill(false); game._kopruAnim = {};
+    const resimsiz = ciz((x) => yolculukCiz(x));
+    const resimsizAcik = ciz((x) => koprulerCiz(x));
+    return { kapali, acikKopru, kareler, resimsiz, resimsizAcik, src };
+  });
+  sina('kapalı köprü kopru-kapali resmiyle çizilir', () => {
+    assert.ok(kopruResim.kapali.includes(kopruResim.src['kopru-kapali']));
+  });
+  sina('açık geçit köprüsü kopru-acik resmiyle çizilir', () => {
+    assert.ok(kopruResim.acikKopru.includes(kopruResim.src['kopru-acik']));
+  });
+  sina('açılış animasyonu dört kareyi de hatasız çizer', () => {
+    const hepsi = kopruResim.kareler.flat();
+    for (const k of ['kopru-kapali', 'an-kopru-in-1', 'an-kopru-in-2', 'kopru-acik']) assert.ok(hepsi.includes(kopruResim.src[k]), k);
+  });
+  sina('köprü resimleri yokken kapalı/açık köprü kod çizimi hatasız çalışır', () => {
+    assert.ok(Array.isArray(kopruResim.resimsiz) && Array.isArray(kopruResim.resimsizAcik));
+  });
+
   const cikti = path.join(path.dirname(fileURLToPath(import.meta.url)), 'ciktilar');
   fs.mkdirSync(cikti, { recursive: true });
   await p.evaluate(() => { render(); });

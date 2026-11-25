@@ -803,7 +803,35 @@ function yolculukCiz(ctx) {
     if (acik && anim <= 0) continue;
     const kapali = acik ? Math.min(1, anim / 0.6) : 1; // 1 → kapalı, 0 → açık
     const x0 = g.x0 - 4, x1 = g.x1 + 4, y0 = g.bridgeY0, y1 = g.bridgeY1;
+    const pay = (typeof KOPRU !== "undefined" ? KOPRU.karaPay : 30); // açık köprünün bank taşması
+    const rx = x0 - pay, rw = (x1 - x0) + pay * 2;
+    const kilitX = g.x0 + 14, kilitY = (y0 + y1) / 2;
+    const kilitPop = () => { // açılışın ilk 0,4 sn: büyüyüp sönen açık kilit
+      const gecen = 0.6 - anim;
+      if (gecen < 0 || gecen >= 0.4 || !gorsel("kilit-acik")) return;
+      const u = gecen / 0.4, s = (1 + 0.3 * u) * 24;
+      ctx.globalAlpha = 1 - u;
+      gorselKutuya(ctx, "kilit-acik", kilitX - s / 2, kilitY - s / 2, s, s);
+      ctx.globalAlpha = 1;
+    };
     ctx.save();
+    // Kapalı köprü resmi varsa kod çizimi yerine o çizilir (çarpışma kutusu değişmez)
+    if (!acik && gorsel("kopru-kapali")) {
+      ctx.fillStyle = "rgba(0,0,0,0.25)";
+      ctx.fillRect(x0, y0 + 4, x1 - x0, y1 - y0);
+      gorselKutuya(ctx, "kopru-kapali", rx, y0, rw, y1 - y0);
+      ctx.restore(); continue;
+    }
+    // Açılış kareleri: kapalı → in-1 → in-2 → açık
+    if (acik && anim > 0 && gorsel("kopru-kapali") && gorsel("kopru-acik") && animHazir("kopru-in") >= 2) {
+      const ilerleme = Math.min(1, Math.max(0, 1 - anim / 0.6));
+      const kare = ilerleme < 0.25 ? "kopru-kapali" : ilerleme < 0.5 ? "an-kopru-in-1" : ilerleme < 0.75 ? "an-kopru-in-2" : "kopru-acik";
+      ctx.fillStyle = "rgba(0,0,0,0.25)";
+      ctx.fillRect(x0, y0 + 4, x1 - x0, y1 - y0);
+      gorselKutuya(ctx, kare, rx, y0, rw, y1 - y0);
+      kilitPop();
+      ctx.restore(); continue;
+    }
     // Kalkan köprünün gölgesi
     ctx.fillStyle = "rgba(0,0,0,0.25)";
     ctx.fillRect(x0, y0 + 4, x1 - x0, y1 - y0);
@@ -849,6 +877,7 @@ function yolculukCiz(ctx) {
       ctx.textAlign = "center"; ctx.textBaseline = "middle";
       ctx.fillText("🔒", agizX + 12, (y0 + y1) / 2);
     }
+    kilitPop(); // resim kareleri yoksa da açık kilit sıçraması görünür
     ctx.restore();
   }
 }

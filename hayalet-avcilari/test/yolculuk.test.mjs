@@ -228,6 +228,157 @@ try {
     assert.ok(sure.yeni <= sure.eski * 1.3, `${sure.yeni.toFixed(1)} ms / ${sure.eski.toFixed(1)} ms`);
   });
 
+  // 10) Bölge doğumu: yalnız bölge 1 içinde, kota ve eşzamanlılık sınırı
+  const dogum = await p.evaluate(() => {
+    __kur(1);
+    const d = game._yolculukDuzen, z = d.zones[0];
+    game.player.x = (z.x0 + z.gate.x0) / 2; game.player.y = game.worldH / 2; game.player.invuln = 1e9;
+    game.ghosts = []; game.spawnTimer = 0;
+    for (let i = 0; i < 40; i++) { game.spawnTimer = 0; update(1 / 60, 1e6 + i * 16); }
+    const disari = game.ghosts.filter((g) => g.x < z.x0 || g.x > z.gate.x0).length;
+    const yanlis = game.ghosts.filter((g) => g.bolge !== 1).length;
+    const ilk = { sayi: game.ghosts.length, disari, yanlis, kota: game.bolgeKota[1], dogan: game.bolgeDogan[1] };
+    // Eşzamanlılık sınırı: kotayı büyüt, var olanları temizle, zorla doğur
+    game.bolgeKota[1] = 100; game.bolgeDogan[1] = 0; game.ghosts = [];
+    for (let i = 0; i < 80; i++) { game.spawnTimer = 0; update(1 / 60, 2e6 + i * 16); }
+    const maxGhosts = Math.min(40, 12 + game.level * 4);
+    const cap = { sayi: game.ghosts.length, maxGhosts };
+    return { ilk, cap };
+  });
+  sina('bölge 1 yalnız bölge 1 içinde doğurur; kota ve eşzamanlılık sınırı korunur', () => {
+    assert.equal(dogum.ilk.disari, 0); assert.equal(dogum.ilk.yanlis, 0);
+    assert.equal(dogum.ilk.dogan, dogum.ilk.kota);
+    assert.ok(dogum.cap.sayi <= dogum.cap.maxGhosts, `${dogum.cap.sayi} > ${dogum.cap.maxGhosts}`);
+    assert.ok(dogum.cap.sayi > 0);
+  });
+
+  // 11) Bölge temizliği: kota dolunca hayaletler ölünce köprü açılır, bölge 2 etkin olur; köprüler kapanmaz
+  const temizlik = await p.evaluate(() => {
+    __kur(1);
+    const d = game._yolculukDuzen;
+    game.player.x = (d.zones[0].x0 + d.zones[0].gate.x0) / 2; game.player.y = game.worldH / 2; game.player.invuln = 1e9;
+    game.kopruAcik.fill(false);
+    game.bolgeKota[1] = 2; game.bolgeDogan[1] = 0; game.ghosts = []; game.spawnTimer = 0;
+    for (let i = 0; i < 8 && game.bolgeDogan[1] < 2; i++) { game.spawnTimer = 0; update(1 / 60, 1e6 + i * 16); }
+    const dogdu = game.bolgeDogan[1];
+    while (game.ghosts.length) killGhost(game.ghosts[0], 0);
+    update(1 / 60, 2e6);
+    const bir = { dogdu, bolge: game.bolge, kopru1: game.kopruAcik[0], temiz1: game.bolgeTemiz[1] };
+    // Bölge 2'yi de temizle: köprü 1 açık kalmalı
+    game.player.x = (d.zones[1].x0 + d.zones[1].gate.x0) / 2;
+    game.bolgeKota[2] = 1; game.bolgeDogan[2] = 0; game.ghosts = []; game.spawnTimer = 0;
+    for (let i = 0; i < 8 && game.bolgeDogan[2] < 1; i++) { game.spawnTimer = 0; update(1 / 60, 3e6 + i * 16); }
+    while (game.ghosts.length) killGhost(game.ghosts[0], 0);
+    update(1 / 60, 4e6);
+    return { bir, iki: { bolge: game.bolge, kopru1: game.kopruAcik[0], kopru2: game.kopruAcik[1], temiz2: game.bolgeTemiz[2] } };
+  });
+  sina('bölge 1 kotası ölünce köprü 1 açılır, bölge 2 etkin; köprüler açık kalır', () => {
+    assert.equal(temizlik.bir.dogdu, 2); assert.equal(temizlik.bir.temiz1, true);
+    assert.equal(temizlik.bir.kopru1, true); assert.equal(temizlik.bir.bolge, 2);
+    assert.equal(temizlik.iki.temiz2, true); assert.equal(temizlik.iki.kopru1, true);
+    assert.equal(temizlik.iki.kopru2, true); assert.equal(temizlik.iki.bolge, 3);
+  });
+
+  // 12) Zorluk: aynı bölümde bölge 5 hayaletleri bölge 1'den daha güçlü ve hızlı
+  const zorluk = await p.evaluate(() => {
+    __kur(1);
+    const d = game._yolculukDuzen;
+    const topla = (z) => {
+      game.ghosts = [];
+      for (let i = 0; i < 40; i++) spawnGhost({ x0: d.zones[z - 1].x0 + 60, x1: d.zones[z - 1].gate.x0 - 60, bolge: z });
+      const hp = game.ghosts.map((g) => g.hp), hiz = game.ghosts.map((g) => g.speed);
+      return { hpMin: Math.min(...hp), hpMax: Math.max(...hp), hizOrt: hiz.reduce((a, b) => a + b, 0) / hiz.length };
+    };
+    return { bolge1: topla(1), bolge5: topla(5) };
+  });
+  sina('bölge 5 hayaletleri bölge 1\'den güçlü (can) ve hızlı', () => {
+    assert.ok(zorluk.bolge5.hpMin > zorluk.bolge1.hpMax, `${zorluk.bolge5.hpMin} / ${zorluk.bolge1.hpMax}`);
+    assert.ok(zorluk.bolge5.hizOrt > zorluk.bolge1.hizOrt, `${zorluk.bolge5.hizOrt} / ${zorluk.bolge1.hizOrt}`);
+  });
+
+  // 13) Arena: arenaya girmeden boss yok; girince sağda boss gelir, eşlikçiler doğar; boss ölünce doğum durur
+  const arena = await p.evaluate(() => {
+    __kur(1);
+    const d = game._yolculukDuzen, A = game._yolculukDuzen.arena;
+    game.kopruAcik.fill(true);
+    for (let z = 1; z <= 6; z++) { game.bolgeTemiz[z] = true; game.bolgeDogan[z] = game.bolgeKota[z]; }
+    game.ghosts = []; game.bossDefeated = false; game._bolgeBossGeldi = false; game.bossSpawnTimer = 999;
+    game.player.invuln = 1e9; game.player.x = d.zones[5].x0 + 100; game.player.y = game.worldH / 2;
+    for (let i = 0; i < 30; i++) update(1 / 60, 1e6 + i * 16);
+    const once = { bolge: game.bolge, boss: game.ghosts.some((g) => g.isBoss) };
+    game.player.x = A.x0 + 200; game.player.y = game.worldH / 2;
+    update(1 / 60, 2e6);
+    const boss = game.ghosts.find((g) => g.isBoss);
+    if (boss) boss.minionState = null; // boss minionları sınama dışı
+    const sonra = { boss: !!boss, sagda: !!boss && boss.x > A.x0 };
+    game.spawnTimer = 0;
+    for (let i = 0; i < 40; i++) { game.spawnTimer = 0; update(1 / 60, 3e6 + i * 16); }
+    const eslik = { sayi: game.ghosts.filter((g) => !g.isBoss).length, cap: Math.floor(Math.min(40, 12 + game.level * 4) / 2) };
+    killGhost(boss, game.ghosts.indexOf(boss));
+    const olu = game.ghosts.length;
+    for (let i = 0; i < 40; i++) { game.spawnTimer = 0; update(1 / 60, 4e6 + i * 16); }
+    const durdu = { once: olu, sonra: game.ghosts.length };
+    return { once, sonra, eslik, durdu };
+  });
+  sina('arenaya girmeden boss yok; girince sağda boss ve eşlikçiler; boss ölünce doğum durur', () => {
+    assert.equal(arena.once.boss, false); assert.equal(arena.once.bolge, 7);
+    assert.equal(arena.sonra.boss, true); assert.equal(arena.sonra.sagda, true);
+    assert.ok(arena.eslik.sayi > 0, String(arena.eslik.sayi)); assert.ok(arena.eslik.sayi <= arena.eslik.cap);
+    assert.equal(arena.durdu.sonra, arena.durdu.once);
+    assert.ok(arena.eslik.sayi > 0);
+  });
+
+  // 14) Bölüm bitişi + sonraki bölüm (normal oyun)
+  const bitis = await p.evaluate(() => {
+    __kur(1);
+    game.bossDefeated = true; game.ghosts = []; game.levelTransitioning = false; game.paused = true;
+    update(1 / 60, 1e6);
+    const gecti = game.levelTransitioning;
+    nextLevel();
+    return { gecti, level: game.level, bolge: game.bolge, kopruler: game.kopruAcik.slice(), kotaVar: !!game.bolgeKota[1] };
+  });
+  sina('bölüm tamamlanınca geçiş kurulur; nextLevel yeni haritayı kurar', () => {
+    assert.equal(bitis.gecti, true); assert.equal(bitis.level, 2); assert.equal(bitis.bolge, 1);
+    assert.ok(bitis.kopruler.every((k) => k === false)); assert.equal(bitis.kotaVar, true);
+  });
+
+  // 15) HUD: yolculuk çubuğu görünür, nokta sağa gider, eski "Boss: Ns" gizli
+  const hud = await p.evaluate(() => {
+    __kur(1);
+    game.player.x = 250; updateHUD();
+    const bar = document.getElementById('yolculuk-hud');
+    const ilk = { gorunur: bar.style.display, boss: document.getElementById('boss-status').style.display,
+      nokta: parseFloat(document.getElementById('yc-nokta').style.left), kalan: document.getElementById('yc-kalan').textContent,
+      vurgu: document.getElementById('yc-bolge').style.display };
+    game.player.x = game.worldW - 200; updateHUD();
+    const son = parseFloat(document.getElementById('yc-nokta').style.left);
+    return { ilk, son };
+  });
+  sina('yolculuk çubuğu görünür, oyuncu noktası sağa gider, "Boss" yazısı gizli', () => {
+    assert.equal(hud.ilk.gorunur, 'flex'); assert.equal(hud.ilk.boss, 'none');
+    assert.match(hud.ilk.kalan, /👻 \d+/); assert.equal(hud.ilk.vurgu, 'block');
+    assert.ok(hud.son > hud.ilk.nokta, `${hud.son} / ${hud.ilk.nokta}`);
+  });
+
+  // 16) Çevrimiçi değişmedi: eski harita ve 60 sn boss
+  const cevrimici = await p.evaluate(() => {
+    __kur(1);
+    online.mode = 'host'; startGame(); game.paused = true; game.spawnTimer = 1e9;
+    game.bossSpawnTimer = 0.005; game.bossDefeated = false; game.ghosts = [];
+    updateHUD();
+    const r = { w: game.worldW, h: game.worldH, bar: document.getElementById('yolculuk-hud').style.display,
+      boss: document.getElementById('boss-status').style.display, timer: game.bossSpawnTimer };
+    update(1 / 60, 1e6);
+    r.bossGeldi = game.ghosts.some((g) => g.isBoss);
+    online.mode = null; endGame(false);
+    return r;
+  });
+  sina('çevrimiçi eski harita ve eski boss zamanlayıcısıyla oynanır', () => {
+    assert.deepEqual([cevrimici.w, cevrimici.h], [1600, 1200]);
+    assert.equal(cevrimici.bar, 'none'); assert.notEqual(cevrimici.boss, 'none');
+    assert.ok(cevrimici.timer > 0); assert.equal(cevrimici.bossGeldi, true);
+  });
+
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);

@@ -19,6 +19,16 @@ const YOLCULUK_AYAR = {
   koridor: 130, // bölge içindeki yürüme koridorunun yarı genişliği (px)
 };
 YOLCULUK_AYAR.zoneW = (YOLCULUK_AYAR.worldW - YOLCULUK_AYAR.startW - YOLCULUK_AYAR.arenaW) / YOLCULUK_AYAR.zoneCount;
+// Bölge kotası: bölgede doğacak hayalet sayısı (Y2'de ayarlanacak)
+YOLCULUK_AYAR.kota = function (bolum, bolge) {
+  return Math.max(1, Math.round((10 + 3 * bolum) * (0.8 + 0.08 * bolge)));
+};
+// Bölge zorluk çarpanları (Y2'de ayarlanacak)
+YOLCULUK_AYAR.zorluk = {
+  can: (bolge) => Math.floor((bolge - 1) / 2),
+  hiz: (bolge) => 1 + 0.04 * (bolge - 1),
+  ates: (bolge) => 0.02 * (bolge - 1),
+};
 
 function yolculukAcik() {
   return !(typeof online !== "undefined" && online && online.mode);
@@ -115,6 +125,71 @@ function yolculukGuncelle(dt) {
   for (const k in game._kopruAnim) game._kopruAnim[k] = Math.max(0, game._kopruAnim[k] - dt);
 }
 
+// Bölgeleri güncelle: kotası dolan ve hayaleti kalmayan bölge temizlenir, köprüsü açılır, sıradaki bölge etkin olur.
+// Arena (7): son köprü açıkken oyuncu arenaya girince boss gelir.
+function yolculukBolgeGuncelle() {
+  if (!yolculukAcik() || !game || !game._yolculukDuzen || !game.bolgeTemiz) return;
+  const A = YOLCULUK_AYAR;
+  for (let z = 1; z <= A.zoneCount; z++) {
+    if (game.bolgeTemiz[z]) continue;
+    if ((game.bolgeDogan[z] || 0) < (game.bolgeKota[z] || 0)) continue;
+    let canli = false;
+    for (const g of game.ghosts) if (!g.isBoss && g.bolge === z) { canli = true; break; }
+    if (canli) continue;
+    game.bolgeTemiz[z] = true;
+    yolculukKopruAc(z - 1); // köprü bir daha kapanmaz
+  }
+  let aktif = 0;
+  for (let z = 1; z <= A.zoneCount; z++) if (!game.bolgeTemiz[z]) { aktif = z; break; }
+  if (!aktif) aktif = 7;
+  game.bolge = aktif;
+
+  if (aktif === 7) {
+    const bossVar = game.ghosts.some((g) => g.isBoss);
+    if (!game.bossDefeated && !bossVar && !game._bolgeBossGeldi && hangiBolge(game.player.x) === 7) {
+      game._bolgeBossGeldi = true;
+      if (typeof spawnBoss === "function") spawnBoss();
+    }
+  }
+}
+
+// Yolculuk doğumu: yalnız etkin bölgede (arena ise boss yaşarken eşlik edenler)
+function yolculukSpawnGuncelle(dt, spawnInterval, maxGhosts) {
+  if (!yolculukAcik() || !game || !game._yolculukDuzen || !game.bolgeKota) return;
+  yolculukBolgeGuncelle();
+  if (game.bossDefeated) return;
+  const z = game.bolge;
+  if (z >= 7) {
+    if (!game.ghosts.some((g) => g.isBoss)) return; // boss ölünce doğum durur
+    game.spawnTimer -= dt;
+    const cap = Math.floor(maxGhosts / 2);
+    if (game.spawnTimer <= 0 && game.ghosts.length < cap) {
+      const ar = game._yolculukDuzen.arena;
+      spawnGhost({ x0: ar.x0 + 40, x1: ar.x1 - 40, bolge: 7 });
+      game.spawnTimer = spawnInterval;
+    }
+    return;
+  }
+  const zone = game._yolculukDuzen.zones[z - 1];
+  if (!zone) return;
+  // Oyuncu bölgenin içindeyse ya da önceki köprü açık ve oyuncu bölgeye 300 px yakınsa doğum başlar
+  let basla = hangiBolge(game.player.x) === z;
+  if (!basla) {
+    if (z === 1) basla = game.player.x >= zone.x0 - 300;
+    else if (game.kopruAcik[z - 2]) {
+      const uzak = Math.max(zone.x0 - game.player.x, game.player.x - zone.x1, 0);
+      basla = uzak <= 300;
+    }
+  }
+  if (!basla) return;
+  game.spawnTimer -= dt;
+  if (game.spawnTimer <= 0 && game.ghosts.length < maxGhosts && (game.bolgeDogan[z] || 0) < game.bolgeKota[z]) {
+    spawnGhost({ x0: zone.x0 + 20, x1: zone.gate.x0 - 20, bolge: z });
+    game.bolgeDogan[z] = (game.bolgeDogan[z] || 0) + 1;
+    game.spawnTimer = spawnInterval;
+  }
+}
+
 // Bir engel köprü ağzına / geçit şeridine / bölgenin yürüme koridoruna değiyor mu
 function yolculukYasakKutu(x, y, w, h, duzen, zone, oncekiCy) {
   const A = YOLCULUK_AYAR, g = zone.gate;
@@ -142,6 +217,16 @@ function yolculukHaritaKur() {
   game.yolculuk = true;
   game.kopruAcik = new Array(A.zoneCount).fill(false);
   game._kopruAnim = {};
+  game.bolge = 1; // etkin bölge: en soldaki temizlenmemiş bölge, hepsi bitince 7 (arena)
+  game.bolgeKota = {};
+  game.bolgeDogan = {};
+  game.bolgeTemiz = {};
+  for (let i = 1; i <= A.zoneCount; i++) {
+    game.bolgeKota[i] = A.kota(bolum, i);
+    game.bolgeDogan[i] = 0;
+    game.bolgeTemiz[i] = false;
+  }
+  game._bolgeBossGeldi = false;
   game.walls = [];
   game.waters = [];
   game.spikes = [];

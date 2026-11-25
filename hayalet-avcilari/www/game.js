@@ -6079,8 +6079,9 @@ function update(dt, now) {
   // Bölüm zamanlayıcısı
   game.levelTimer += dt;
 
-  // Boss zamanlayıcısı: 60 sn sonra boss gelir
-  if (game.bossSpawnTimer > 0 && !game.bossDefeated) {
+  const yolculuk = typeof yolculukAcik === "function" && yolculukAcik();
+  // Boss zamanlayıcısı: 60 sn sonra boss gelir (yalnız eski harita; yolculukta boss arenada çıkar)
+  if (!yolculuk && game.bossSpawnTimer > 0 && !game.bossDefeated) {
     game.bossSpawnTimer -= dt;
     if (game.bossSpawnTimer <= 0) {
       game.bossSpawnTimer = 0;
@@ -6089,12 +6090,16 @@ function update(dt, now) {
   }
 
   // Hayalet spawn — boss yenildikten sonra yeni hayalet gelmesin (2 katı: hem cap hem hız)
-  game.spawnTimer -= dt;
   const spawnInterval = Math.max(0.25, 0.8 - game.level * 0.06);
   const maxGhosts = Math.min(40, 12 + game.level * 4);
-  if (!game.bossDefeated && game.spawnTimer <= 0 && game.ghosts.length < maxGhosts) {
-    spawnGhost();
-    game.spawnTimer = spawnInterval;
+  if (yolculuk) {
+    if (typeof yolculukSpawnGuncelle === "function") yolculukSpawnGuncelle(dt, spawnInterval, maxGhosts);
+  } else {
+    game.spawnTimer -= dt;
+    if (!game.bossDefeated && game.spawnTimer <= 0 && game.ghosts.length < maxGhosts) {
+      spawnGhost();
+      game.spawnTimer = spawnInterval;
+    }
   }
 
   // Bölüm tamamlandı mı? Boss öldü VE diğer tüm hayaletler bitti
@@ -6668,7 +6673,14 @@ function ensurePlayerSafe() {
 function spawnBoss() {
   let x = game.worldW / 2, y = 200;
   let placed = false;
-  for (let attempts = 0; attempts < 30; attempts++) {
+  if (typeof yolculukAcik === "function" && yolculukAcik() && game._yolculukDuzen) {
+    // Yolculuk: boss arenanın sağ tarafında çıkar
+    const ar = game._yolculukDuzen.arena;
+    x = ar.x1 - 220; y = game.worldH / 2;
+    ({ x, y } = freeSpot(x, y, 60, (px, py, pr) => collidesWalls(px, py, pr) || collidesWaters(px, py, pr)));
+    placed = true;
+  }
+  for (let attempts = 0; !placed && attempts < 30; attempts++) {
     const tx = 120 + Math.random() * (game.worldW - 240);
     const ty = 120 + Math.random() * (game.worldH - 240);
     if (oyunculardanUzaklik(tx, ty) < 380) continue;
@@ -6732,17 +6744,26 @@ function oyunculardanUzaklik(x, y) {
   return m;
 }
 
-function spawnGhost() {
-  // Haritanın kenarlarından rastgele yerler denenir; oyunculara yeterince uzak ilk yer, yoksa en uzağı
+function spawnGhost(aralik) {
+  // aralik: { x0, x1, bolge } — yolculukta bölgenin x aralığı ve bölge numarası (isteğe bağlı)
+  const range = aralik && Number.isFinite(aralik.x0) && Number.isFinite(aralik.x1) ? aralik : null;
   const margin = 60;
   let x = 0, y = 0, enIyi = -1;
   for (let deneme = 0; deneme < 16; deneme++) {
-    const side = Math.floor(Math.random() * 4);
     let ax, ay;
-    if (side === 0) { ax = margin; ay = margin + Math.random() * (game.worldH - margin * 2); }
-    else if (side === 1) { ax = game.worldW - margin; ay = margin + Math.random() * (game.worldH - margin * 2); }
-    else if (side === 2) { ax = margin + Math.random() * (game.worldW - margin * 2); ay = margin; }
-    else { ax = margin + Math.random() * (game.worldW - margin * 2); ay = game.worldH - margin; }
+    if (range) {
+      // Bölgenin sol/sağ kenarından doğar
+      const kirp = Math.min(80, Math.max(1, (range.x1 - range.x0) * 0.25));
+      ax = Math.random() < 0.5 ? range.x0 + Math.random() * kirp : range.x1 - Math.random() * kirp;
+      ay = margin + Math.random() * (game.worldH - margin * 2);
+    } else {
+      // Haritanın kenarlarından rastgele yerler denenir; oyunculara yeterince uzak ilk yer, yoksa en uzağı
+      const side = Math.floor(Math.random() * 4);
+      if (side === 0) { ax = margin; ay = margin + Math.random() * (game.worldH - margin * 2); }
+      else if (side === 1) { ax = game.worldW - margin; ay = margin + Math.random() * (game.worldH - margin * 2); }
+      else if (side === 2) { ax = margin + Math.random() * (game.worldW - margin * 2); ay = margin; }
+      else { ax = margin + Math.random() * (game.worldW - margin * 2); ay = game.worldH - margin; }
+    }
     const d = oyunculardanUzaklik(ax, ay);
     if (d > enIyi) { enIyi = d; x = ax; y = ay; }
     if (d >= HAYALET_DOGUM_UZAKLIK) break;
@@ -6753,8 +6774,11 @@ function spawnGhost() {
   const tier = 1 + Math.floor(game.level / 3);
   const speed = 50 + game.level * 6 + Math.random() * 20;
   const hp = tier;
-  // Bölüm 5+: %18 ihtimalle ateş edebilen yavaş hayalet
-  const isShooter = game.level >= 5 && Math.random() < 0.18;
+  const bolge = range && Number.isFinite(range.bolge) ? range.bolge : null;
+  const Z = YOLCULUK_AYAR && YOLCULUK_AYAR.zorluk;
+  // Bölüm 5+: %18 ihtimalle ateş edebilen yavaş hayalet; yolculukta bölgeyle oran artar
+  const atesSans = (game.level >= 5 ? 0.18 : 0) + (bolge && Z ? Z.ates(bolge) : 0);
+  const isShooter = Math.random() < atesSans;
   const ghost = {
     x, y, r: 22,
     speed: isShooter ? speed * 0.7 : speed,
@@ -6762,6 +6786,12 @@ function spawnGhost() {
     maxHp: isShooter ? Math.max(2, tier) : hp,
     size: 40 + (tier - 1) * 4,
   };
+  if (bolge && Z) {
+    ghost.hp += Z.can(bolge);
+    ghost.maxHp = ghost.hp;
+    ghost.speed *= Z.hiz(bolge);
+    ghost.bolge = bolge;
+  }
   if (isShooter) {
     ghost.isShooter = true;
     ghost.canShoot = true;
@@ -7423,9 +7453,49 @@ function updateHUD() {
   document.getElementById("run-para").textContent = game.runPara;
   if (typeof aeHudKontrol === "function") aeHudKontrol(game); // sayaçlar artınca kısa zıplama
 
+  // Yolculuk çubuğu: harita, geçitler, etkin bölge, oyuncu noktası ve bölgede kalan hayalet
+  const yHud = document.getElementById("yolculuk-hud");
+  const yolculuk = typeof yolculukAcik === "function" && yolculukAcik();
+  if (yHud) {
+    yHud.style.display = yolculuk && game._yolculukDuzen ? "flex" : "none";
+    if (yolculuk && game._yolculukDuzen) {
+      const W = game.worldW || 1;
+      const pct = (x) => Math.max(0, Math.min(100, (x / W) * 100));
+      const d = game._yolculukDuzen;
+      const kapilar = yHud.querySelectorAll(".yc-kapi");
+      for (let i = 0; i < kapilar.length && i < d.zones.length; i++) kapilar[i].style.left = pct(d.zones[i].gate.x1) + "%";
+      const nokta = document.getElementById("yc-nokta");
+      if (nokta) nokta.style.left = pct(game.player ? game.player.x : 0) + "%";
+      const aktif = game.bolge || 1;
+      const bolgeEl = document.getElementById("yc-bolge");
+      if (bolgeEl) {
+        let b = null;
+        if (aktif >= 1 && aktif <= 6) b = d.zones[aktif - 1];
+        else if (aktif === 7) b = d.arena;
+        if (b) {
+          bolgeEl.style.display = "block";
+          bolgeEl.style.left = pct(b.x0) + "%";
+          bolgeEl.style.width = Math.max(0, pct(b.x1) - pct(b.x0)) + "%";
+        } else bolgeEl.style.display = "none";
+      }
+      const kalanEl = document.getElementById("yc-kalan");
+      if (kalanEl) {
+        let kalan = 0;
+        if (aktif >= 1 && aktif <= 6) {
+          kalan = Math.max(0, (game.bolgeKota[aktif] || 0) - (game.bolgeDogan[aktif] || 0));
+          for (const g of game.ghosts) if (!g.isBoss && g.bolge === aktif) kalan++;
+        } else {
+          for (const g of game.ghosts) if (!g.isBoss) kalan++;
+        }
+        kalanEl.textContent = "👻 " + kalan;
+      }
+    }
+  }
+
   // Boss durumu
   const bossEl = document.getElementById("boss-status");
   if (bossEl) {
+    bossEl.style.display = yolculuk ? "none" : "";
     if (game.bossDefeated) {
       const remain = game.ghosts.length;
       bossEl.textContent = remain > 0 ? t("🧹 Kalan: {n}", { n: remain }) : t("✓ Bölüm temiz!");

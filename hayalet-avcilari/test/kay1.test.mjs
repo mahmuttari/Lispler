@@ -1,5 +1,5 @@
 // Hayalet Avcıları KAY1: hayalet yuvaları (mezarlık, mağara, izbe, kovuk, kuyu) — çevrimdışı sınama.
-// Yolculuk haritasında her bölgeye ve arenaya 2 yuva tohumlu yerleştirilir; hayaletler yuvanın ağzından
+// Yolculuk haritasında her bölgeye ve arenaya 4 yuva tohumlu yerleştirilir; hayaletler yuvanın ağzından
 // 0.6 sn'lik belirme efektiyle çıkar (bu sürede vurulamaz/hasar vermez). Çevrimiçi eski harita değişmez.
 // Çalıştırma: node test/kay1.test.mjs
 import http from 'node:http';
@@ -55,7 +55,7 @@ try {
     window.__cak = (a, b2) => a.x < b2.x + b2.w && a.x + a.w > b2.x && a.y < b2.y + b2.h && a.y + a.h > b2.y;
   });
 
-  // 1) Her bölgede 2, arenada 2 yuva; aralarında ≥260, suda/duvarda değil, başlangıçtan ≥300, yol var
+  // 1) Her bölgede 4, arenada 4 yuva; aralarında ≥260, suda/duvarda değil, başlangıçtan ≥300, yol var
   const yerlesim = await p.evaluate(() => {
     const ulkeler = ['TR', 'JP', 'KE'];
     const kontroller = [];
@@ -73,7 +73,7 @@ try {
           if (__cak(g1, w)) duvarda.push(i);
         }
         for (let j = i + 1; j < yv.length; j++) {
-          if (Math.hypot(yv[i].x - yv[j].x, yv[i].y - yv[j].y) < 260) kisa.push(`${i}-${j}`);
+          if (Math.hypot(yv[i].x - yv[j].x, yv[i].y - yv[j].y) < 150) kisa.push(`${i}-${j}`);
         }
         const bas = yolculukBaslangic();
         if (yv[i].bolge === 1 && Math.hypot(yv[i].x - bas.x, yv[i].y - bas.y) < 300) starta.push(i);
@@ -87,13 +87,13 @@ try {
     for (const kod of ulkeler) { __kur(ulkeKodla(kod).sira, kod); denetle(kod); }
     return kontroller;
   });
-  sina('her bölgede (1..6) ve arenada 2 yuva', () => {
+  sina('her bölgede (1..6) ve arenada 4 yuva', () => {
     for (const k of yerlesim) {
-      assert.equal(k.toplam, 14, `${k.etiket}: ${k.toplam}`);
-      for (let i = 1; i <= 7; i++) assert.equal(k.sayi[i], 2, `${k.etiket} bölge ${i}: ${k.sayi[i]}`);
+      assert.equal(k.toplam, 28, `${k.etiket}: ${k.toplam} ${JSON.stringify(k.sayi)}`);
+      for (let i = 1; i <= 7; i++) assert.equal(k.sayi[i], 4, `${k.etiket} bölge ${i}: ${k.sayi[i]}`);
     }
   });
-  sina('yuvalar arası ≥260 px, suda/duvarda değil, başlangıçtan ≥300 px', () => {
+  sina('yuvalar arası ≥150 px (çoğunlukla 260), suda/duvarda değil, başlangıçtan ≥300 px', () => {
     for (const k of yerlesim) {
       assert.deepEqual(k.suda, [], `${k.etiket} suda: ${k.suda}`);
       assert.deepEqual(k.duvarda, [], `${k.etiket} duvarda: ${k.duvarda}`);
@@ -114,28 +114,37 @@ try {
     return { ayni: a === b2, farkli: a !== c, ornek: JSON.parse(a).length };
   });
   sina('yuva yerleri tohumlu: aynı bölüm/ülke aynı, başka bölümde farklı', () => {
-    assert.equal(tohum.ayni, true); assert.equal(tohum.farkli, true); assert.equal(tohum.ornek, 14);
+    assert.equal(tohum.ayni, true); assert.equal(tohum.farkli, true); assert.equal(tohum.ornek, 28);
   });
 
-  // 3) Yolculukta doğum: 20 doğumun hepsi bölge 1 yuvasının ağzında (±40 px)
+  // 3) Yolculukta doğum: 40 doğumun hepsi bölge 1 yuvalarından birinin önünde (merkezden ≤ r+40 px); doğumlar
+  //    en az 3 farklı yuvaya dağılır, art arda aynı yuva yoktur ve iki doğum aynı noktaya düşmez (yığılma yok)
   const dogum = await p.evaluate(() => {
     __kur(1);
-    const yv1 = game.yuvalar.filter((y) => y.bolge === 1).map((y) => yolculukYuvaAgzi(y));
+    const yv1 = game.yuvalar.filter((y) => y.bolge === 1);
     const d = game._yolculukDuzen, z = d.zones[0];
     game.player.x = d.start.x1 - 80; game.player.y = 500;
-    const uzak = [];
-    for (let i = 0; i < 20; i++) {
+    const uzak = [], kullanilan = new Set(), noktalar = [];
+    let ardArda = 0, onceki = null;
+    for (let i = 0; i < 40; i++) {
       game.ghosts = [];
       spawnGhost({ x0: z.x0 + 20, x1: z.gate.x0 - 20, bolge: 1 });
       const g = game.ghosts[0];
-      const en = Math.min(...yv1.map((a) => Math.hypot(g.x - a.x, g.y - a.y)));
-      uzak.push(en);
+      let en = Infinity, hangi = -1;
+      yv1.forEach((y, j) => { const m = Math.hypot(g.x - y.x, g.y - y.y) - (y.r || 32); if (m < en) { en = m; hangi = j; } });
+      uzak.push(en); kullanilan.add(hangi); noktalar.push([g.x, g.y]);
+      if (hangi === onceki) ardArda++;
+      onceki = hangi;
     }
-    return { enBuyuk: Math.max(...uzak), sayi: yv1.length };
+    const ayniNokta = noktalar.filter((a, i) => noktalar.some((b2, j) => j < i && Math.hypot(a[0] - b2[0], a[1] - b2[1]) < 1)).length;
+    return { enBuyuk: Math.max(...uzak), sayi: yv1.length, farkli: kullanilan.size, ardArda, ayniNokta };
   });
-  sina('yolculukta 20 doğum da bölge 1 yuvasının ağzında (≤40 px)', () => {
-    assert.equal(dogum.sayi, 2);
+  sina('yolculukta doğumlar bölge 1 yuvalarının önünde, en az 3 yuvaya dağılır, art arda aynı yuva yok', () => {
+    assert.equal(dogum.sayi, 4);
     assert.ok(dogum.enBuyuk <= 40, `en uzak ${dogum.enBuyuk.toFixed(1)} px`);
+    assert.ok(dogum.farkli >= 3, `yalnız ${dogum.farkli} yuva kullanıldı`);
+    assert.equal(dogum.ardArda, 0);
+    assert.ok(dogum.ayniNokta <= 2, `aynı noktaya ${dogum.ayniNokta} doğum`);
   });
 
   // 4) Belirme: çıkan hayalet 0.6 sn vurulamaz; süre bitince vurulur

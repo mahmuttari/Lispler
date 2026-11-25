@@ -7097,17 +7097,27 @@ function spawnGhost(aralik) {
   const range = aralik && Number.isFinite(aralik.x0) && Number.isFinite(aralik.x1) ? aralik : null;
   const margin = 60;
   let x = 0, y = 0, enIyi = -1;
-  // Yolculukta (KAY1) hayalet, bölgenin hayalet yuvasından çıkar. Ağzı oyunculardan yeterince uzak ilk yuva;
-  // yoksa en uzak yuva seçilir. Çevrimdışı eski harita ve çevrimiçi oyun değişmez.
+  // Yolculukta (KAY1) hayalet, bölgenin hayalet yuvalarından (bölge başına 4) çıkar. Oyunculardan yeterince uzak
+  // yuvalardan rastgele biri seçilir, art arda aynı yuva seçilmez (kullanıcı: "hepsi tek yuvadan yığın hâlinde
+  // çıkıyor"); uzak yuva yoksa en uzağı. Çıkış noktası yuvanın önünde bir yay üzerinde dağılır (üst üste binmez).
+  // Çevrimdışı eski harita ve çevrimiçi oyun değişmez.
   let kaynak = null, kaynakAgiz = null;
   if (range && Number.isFinite(range.bolge) && Array.isArray(game.yuvalar) && game.yuvalar.length && typeof yolculukYuvaAgzi === "function") {
-    let enIyiD = -1;
+    let enIyiD = -1, enUzak = null;
+    const uygun = [];
     for (const yv of game.yuvalar) {
       if (yv.bolge !== range.bolge) continue;
       const agiz = yolculukYuvaAgzi(yv);
       const d = oyunculardanUzaklik(agiz.x, agiz.y);
-      if (d >= HAYALET_DOGUM_UZAKLIK) { kaynak = yv; kaynakAgiz = agiz; break; }
-      if (d > enIyiD) { enIyiD = d; kaynak = yv; kaynakAgiz = agiz; }
+      if (d >= HAYALET_DOGUM_UZAKLIK) uygun.push(yv);
+      if (d > enIyiD) { enIyiD = d; enUzak = yv; }
+    }
+    const secilebilir = uygun.length > 1 ? uygun.filter((yv) => yv !== game._sonYuva) : uygun;
+    kaynak = secilebilir.length ? secilebilir[Math.floor(Math.random() * secilebilir.length)] : enUzak;
+    if (kaynak) {
+      game._sonYuva = kaynak;
+      const r = kaynak.r || 32, aci = Math.PI / 2 + (Math.random() - 0.5) * 2.2, R = r + 16 + Math.random() * 12;
+      kaynakAgiz = freeSpot(kaynak.x + Math.cos(aci) * R, kaynak.y + Math.sin(aci) * R, 24);
     }
   }
   if (kaynak) {

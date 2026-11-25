@@ -450,13 +450,13 @@ function yolculukHaritaKur() {
     oncekiCy = z.gate.cy;
   }
 
-  // Hayalet yuvaları (KAY1): her bölgede 2, arenada 2. Tohumlu; yürüme koridorundan ve geçit ağzından uzak,
-  // duvar/su ile çakışmaz, aralarında en az 260 px, başlangıç noktasından en az 300 px.
+  // Hayalet yuvaları (KAY1): her bölgede 4, arenada 4 (hayaletler dört bir yandan çıksın). Tohumlu; yürüme koridorundan ve geçit ağzından uzak,
+  // duvar/su ile çakışmaz, aralarında en az 260 px (dar bölgede 200/150), başlangıç noktasından en az 300 px.
   {
     const havuz = yolculukYuvaTurleri();
     const bas = yolculukBaslangic();
     let sy = 0;
-    const kaynakKoy = (bolge, zone, oncekiCy, x0, x1) => {
+    const kaynakKoy = (bolge, zone, oncekiCy, x0, x1, ara = 260, pay = 24) => {
       for (let deneme = 0; deneme < 600; deneme++) {
         sy++;
         const r = 30 + rnd(bolge, 900 + sy * 7) * 8;
@@ -467,7 +467,7 @@ function yolculukHaritaKur() {
         if (cak(bx, by, bw, bh, 36)) continue;
         if (Math.hypot(x - bas.x, y - bas.y) < 300) continue;
         if (!zone && Math.abs(y - A.worldH / 2) < 150) continue; // arena: orta şerit boss ve oyuncu yolu, yuva konmaz
-        if (game.yuvalar.some((o) => Math.hypot(o.x - x, o.y - y) < 260)) continue;
+        if (game.yuvalar.some((o) => Math.hypot(o.x - x, o.y - y) < ara)) continue;
         const tur = havuz[Math.min(havuz.length - 1, Math.floor(rnd(bolge, 960 + sy) * havuz.length))];
         game.yuvalar.push({ x, y, tur, bolge, r });
         game.walls.push({ x: bx, y: by, w: bw, h: bh, yuva: true });
@@ -480,10 +480,10 @@ function yolculukHaritaKur() {
           const r = 26 + rnd(bolge, 980 + sy) * 6;
           const bx = gx - r * 0.8, by = gy - r * 0.8, bw = r * 1.6, bh = r * 1.6;
           if (zone && yolculukYasakKutu(bx, by, bw, bh, d, zone, oncekiCy)) continue;
-          if (cak(bx, by, bw, bh, 24)) continue;
+          if (cak(bx, by, bw, bh, pay)) continue;
           if (Math.hypot(gx - bas.x, gy - bas.y) < 300) continue;
           if (!zone && Math.abs(gy - A.worldH / 2) < 150) continue;
-          if (game.yuvalar.some((o) => Math.hypot(o.x - gx, o.y - gy) < 260)) continue;
+          if (game.yuvalar.some((o) => Math.hypot(o.x - gx, o.y - gy) < ara)) continue;
           const tur = havuz[Math.min(havuz.length - 1, Math.floor(rnd(bolge, 960 + sy) * havuz.length))];
           game.yuvalar.push({ x: gx, y: gy, tur, bolge, r });
           game.walls.push({ x: bx, y: by, w: bw, h: bh, yuva: true });
@@ -496,11 +496,10 @@ function yolculukHaritaKur() {
       const z = d.zones[i - 1];
       const oncekiCy = i === 1 ? A.worldH / 2 : d.zones[i - 2].gate.cy;
       const icX0 = z.x0 + 30, icX1 = z.gate.x0 - 20;
-      kaynakKoy(i, z, oncekiCy, icX0, icX1);
-      kaynakKoy(i, z, oncekiCy, icX0, icX1);
+      // Dar bölgede 260 px aralıkla sığmazsa 200, o da olmazsa 150 px ve dar kenar payıyla yeniden denenir
+      for (let k = 0; k < 4; k++) kaynakKoy(i, z, oncekiCy, icX0, icX1) || kaynakKoy(i, z, oncekiCy, icX0, icX1, 200) || kaynakKoy(i, z, oncekiCy, icX0, icX1, 150, 10);
     }
-    kaynakKoy(7, null, 0, d.arena.x0 + A.agizBos, d.arena.x1 - 40);
-    kaynakKoy(7, null, 0, d.arena.x0 + A.agizBos, d.arena.x1 - 40);
+    for (let k = 0; k < 4; k++) kaynakKoy(7, null, 0, d.arena.x0 + A.agizBos, d.arena.x1 - 40) || kaynakKoy(7, null, 0, d.arena.x0 + A.agizBos, d.arena.x1 - 40, 200);
   }
 
   // Geçit suyu şeritleri (sınırlara girmeden) — en sona eklenir; timsahlar bunları kullanmaz

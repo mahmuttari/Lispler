@@ -290,6 +290,7 @@
   // build işlevlerinin sonunda: biçimi olmayan her engeli tamamlar (kılık: kesişen iç blok duvar, değilse (i + bölüm) % 3)
   function engelBicimleriniKur() {
     if (typeof game === "undefined" || !game.walls) return;
+    _engelSurum++;
     const L = game.level, ic = game.walls.slice(4);
     const u = window.turUlkesi && window.turUlkesi();
     const tema = u ? u.kod : (L - 1) % 6; // Dünya Turu'nda ülke kodu
@@ -306,29 +307,62 @@
     }
   }
 
+  // Uzamsal kova: 400 px'lik sütunlara göre engel listesi (engelBicimleriniKur listeyi değiştirince yenilenir).
+  // Çarpışma/uzaklık yalnız sorgu dikdörtgeninin değdiği sütunlardaki engelleri gezer; sonuç aynı kalır.
+  const KOLON_GENISLIGI = 400;
+  let _engelSurum = 0;
+  const _kolonOnbellek = new WeakMap();
+  function kolonlarAl(liste) {
+    const k = _kolonOnbellek.get(liste);
+    if (k && k.surum === _engelSurum && k.n === liste.length) return k.kolonlar;
+    const kolonlar = new Map();
+    for (const o of liste) {
+      const i0 = Math.floor(o.x / KOLON_GENISLIGI), i1 = Math.floor((o.x + o.w) / KOLON_GENISLIGI);
+      for (let i = i0; i <= i1; i++) {
+        let a = kolonlar.get(i);
+        if (!a) kolonlar.set(i, a = []);
+        a.push(o);
+      }
+    }
+    _kolonOnbellek.set(liste, { surum: _engelSurum, n: liste.length, kolonlar });
+    return kolonlar;
+  }
+
   // Listedeki engellerin (x, y)'deki en küçük işaretli uzaklığı; yalnız dikdörtgeni r kadar yakın olanlar (uzaktakiler
   // Infinity). Biçimi kurulmamış engelde dikdörtgenin uzaklığı. Kayarak yürümede yüzey normali bunun eğiminden bulunur.
   function engelMesafesi(liste, x, y, r) {
     let m = Infinity;
-    if (!liste) return m;
-    for (const o of liste) {
-      if (x + r <= o.x || x - r >= o.x + o.w || y + r <= o.y || y - r >= o.y + o.h) continue;
-      const d = o.carpisma ? engelUzaklik(o.carpisma, x - o.x, y - o.y) : parcaUzaklik({ t: "k", x: o.x, y: o.y, w: o.w, h: o.h, rr: 0 }, x, y);
-      if (d < m) m = d;
+    if (!liste || !liste.length) return m;
+    const kolonlar = kolonlarAl(liste);
+    const i0 = Math.floor((x - r) / KOLON_GENISLIGI), i1 = Math.floor((x + r) / KOLON_GENISLIGI);
+    for (let i = i0; i <= i1; i++) {
+      const adaylar = kolonlar.get(i);
+      if (!adaylar) continue;
+      for (const o of adaylar) {
+        if (x + r <= o.x || x - r >= o.x + o.w || y + r <= o.y || y - r >= o.y + o.h) continue;
+        const d = o.carpisma ? engelUzaklik(o.carpisma, x - o.x, y - o.y) : parcaUzaklik({ t: "k", x: o.x, y: o.y, w: o.w, h: o.h, rr: 0 }, x, y);
+        if (d < m) m = d;
+      }
     }
     return m;
   }
   // Dikdörtgenle ön eleme, sonra biçimin işaretli uzaklığı; biçimi kurulmamış engelde dikdörtgen
   function engelCarpisir(liste, x, y, r) {
-    if (!liste) return false;
-    for (const o of liste) {
-      if (x + r <= o.x || x - r >= o.x + o.w || y + r <= o.y || y - r >= o.y + o.h) continue;
-      if (!o.carpisma) {
-        const cx = Math.max(o.x, Math.min(x, o.x + o.w)), cy = Math.max(o.y, Math.min(y, o.y + o.h));
-        if (Math.hypot(x - cx, y - cy) < r) return true;
-        continue;
+    if (!liste || !liste.length) return false;
+    const kolonlar = kolonlarAl(liste);
+    const i0 = Math.floor((x - r) / KOLON_GENISLIGI), i1 = Math.floor((x + r) / KOLON_GENISLIGI);
+    for (let i = i0; i <= i1; i++) {
+      const adaylar = kolonlar.get(i);
+      if (!adaylar) continue;
+      for (const o of adaylar) {
+        if (x + r <= o.x || x - r >= o.x + o.w || y + r <= o.y || y - r >= o.y + o.h) continue;
+        if (!o.carpisma) {
+          const cx = Math.max(o.x, Math.min(x, o.x + o.w)), cy = Math.max(o.y, Math.min(y, o.y + o.h));
+          if (Math.hypot(x - cx, y - cy) < r) return true;
+          continue;
+        }
+        if (engelUzaklik(o.carpisma, x - o.x, y - o.y) < r) return true;
       }
-      if (engelUzaklik(o.carpisma, x - o.x, y - o.y) < r) return true;
     }
     return false;
   }

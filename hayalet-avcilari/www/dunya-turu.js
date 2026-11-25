@@ -115,7 +115,11 @@ function turZeminCiz(ctx) {
       : [1 / k, 0, 0, 1 / k, 0, 0]));
   }
   ctx.fillStyle = desen;
-  ctx.fillRect(0, 0, game.worldW, game.worldH);
+  // Yalnız görünen kare (kamera + 2 px pay) döşenir; desen dünya koordinatında hizalı olduğu için dikiş olmaz
+  const cam = game.camera || { x: 0, y: 0 }, W = game.W || game.worldW, H = game.H || game.worldH;
+  const zx = Math.max(0, Math.floor(cam.x) - 2), zy = Math.max(0, Math.floor(cam.y) - 2);
+  const zw = Math.min(game.worldW, Math.ceil(cam.x + W) + 2) - zx, zh = Math.min(game.worldH, Math.ceil(cam.y + H) + 2) - zy;
+  if (zw > 0 && zh > 0) ctx.fillRect(zx, zy, zw, zh);
   return true;
 }
 

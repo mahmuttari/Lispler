@@ -6643,6 +6643,11 @@ function nextLevel() {
   buildWalls();
   buildWaters();
   buildHazards();
+  // Yolculuk haritası: yeni bölüm en soldan başlar (oyuncu önceki bölümün arenasında, kapalı köprülerin ardında kalmasın)
+  if (typeof yolculukAcik === "function" && yolculukAcik() && typeof yolculukBaslangic === "function" && game.player) {
+    const b = yolculukBaslangic();
+    game.player.x = b.x; game.player.y = b.y;
+  }
   ensurePlayerSafe();
   spawnBot();
   petKur(); // yanına alınan pet (pet.js)

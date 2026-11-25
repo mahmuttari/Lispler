@@ -334,12 +334,18 @@ try {
     game.bossDefeated = true; game.ghosts = []; game.levelTransitioning = false; game.paused = true;
     update(1 / 60, 1e6);
     const gecti = game.levelTransitioning;
+    game.player.x = game.worldW - 300; game.player.y = game.worldH / 2; // önceki bölümün arenasında
     nextLevel();
-    return { gecti, level: game.level, bolge: game.bolge, kopruler: game.kopruAcik.slice(), kotaVar: !!game.bolgeKota[1] };
+    const bas = yolculukBaslangic();
+    return { gecti, level: game.level, bolge: game.bolge, kopruler: game.kopruAcik.slice(), kotaVar: !!game.bolgeKota[1],
+      basta: Math.hypot(game.player.x - bas.x, game.player.y - bas.y) < 120, hangi: hangiBolge(game.player.x) };
   });
   sina('bölüm tamamlanınca geçiş kurulur; nextLevel yeni haritayı kurar', () => {
     assert.equal(bitis.gecti, true); assert.equal(bitis.level, 2); assert.equal(bitis.bolge, 1);
     assert.ok(bitis.kopruler.every((k) => k === false)); assert.equal(bitis.kotaVar, true);
+  });
+  sina('yeni bölüm haritanın başında başlar (oyuncu önceki arenada, kapalı köprülerin ardında kalmaz)', () => {
+    assert.equal(bitis.basta, true, `hangiBolge=${bitis.hangi}`);
   });
 
   // 15) HUD: yolculuk çubuğu görünür, nokta sağa gider, eski "Boss: Ns" gizli

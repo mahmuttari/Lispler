@@ -167,3 +167,19 @@ Sheet K11: LEGENDARY cosmetics, TRANSPARENT background, grid 3 x 2:
 5. a legendary treasure chest, half open, golden light and gems spilling out
 6. a big four-pointed sparkle burst (purchase celebration)
 ```
+
+## K12: yuvaların hareketli sisi ve dumanı
+
+Kullanıcı (25 Kasım 2026): "hayaletlerin çıktıkları yerlerdeki sisli dumanlı görseller hareketli, animasyonlu olsun". Yuva resimleri
+(K04) değişmez; bu kareler onların üstüne, ayrı katman olarak döngüyle çizilir. Referans: K04 (aynı ışık, aynı renk dili).
+
+```
+Sheet K12: TRANSPARENT background, grid 3 x 2, same stylized 3D premium casual style as the ghost-lair sheet (K04), soft and magical,
+NOT scary. Pale grey-lavender mist with a faint cool glow; semi-transparent soft edges (no hard outline), no ground, no objects, no
+ghosts, no text. Every frame in a row has the SAME size and the SAME centre so they loop smoothly.
+1-3. LOW GROUND FOG loop (3 frames): a wide flat bank of mist hugging the ground, about 3 times wider than tall, curling wisps at both
+     ends; between frames the wisps drift slightly to the right and the curls change shape a little (frame 3 must lead back to 1).
+4-6. RISING SMOKE loop (3 frames): a soft column of mist rising from a small dark opening at the bottom centre, about 1.5 times taller
+     than wide, swirling upward and thinning out at the top; between frames the swirls climb and twist (frame 3 must lead back to 4).
+```
+

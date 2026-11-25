@@ -15,3 +15,4 @@
 | K09 | Yakında: Pamukkale önizlemesi (tek resim) | bekliyor (kullanıcı istedi) |
 | K10 | Efsane silahlar (3) + yıldız mermisi animasyonu | bekliyor (kullanıcı istedi) |
 | K11 | Efsane aura animasyonu, rozet, sandık, parıltı | bekliyor (kullanıcı istedi) |
+| K12 | Yuvaların hareketli sisi (yer sisi 3 kare) ve dumanı (yükselen duman 3 kare) | bekliyor (kullanıcı istedi: "sisli dumanlı görseller hareketli olsun") |

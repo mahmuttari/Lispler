@@ -8,6 +8,8 @@ gpt kullan, yerel oturumu kullan"*.
    uzun saplı, el dövmesi bakır, köpüklü kahveli küçük cezve; fincan DEĞİL). Kayıt: `gorsel/hamhikaye/H01.png`.
    Kullanıcıya göster, onay gelince devam et.
 1b. **R47–R50 (hemen):** `CHATGPT-ISTEMI-YENILEME.md` › G. Eğlenceli giriş ekranı ve H. bölüm geçişi kutlaması (kullanıcı istedi). Kayıt `gorsel/hamyeni/`.
+1c. **K12 (hemen):** `CHATGPT-ISTEMI-EK.md` › K12 yuvaların hareketli sisi ve dumanı (kullanıcı istedi: "hayaletlerin çıktığı
+   yerlerdeki sisli dumanlı görseller hareketli olsun"). Kayıt: `gorsel/hamek/K12.png`.
 2. **K05 (hemen ardından):** `CHATGPT-ISTEMI-EK.md` › K05 kilitli köprü ve açılışı (kullanıcı istedi). Kayıt:
    `gorsel/hamek/K05.png`.
 3. **K09–K11:** Yakında/Pamukkale önizlemesi, efsane silahlar, efsane parıltılar (`CHATGPT-ISTEMI-EK.md`, kullanıcı istedi).

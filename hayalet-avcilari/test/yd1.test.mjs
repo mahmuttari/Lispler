@@ -36,6 +36,7 @@ try {
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForFunction(() => typeof startGame === 'function' && typeof yolculukHaritaKur === 'function');
+  await p.waitForFunction(() => [1, 2, 3, 4, 5, 6].every((k) => gorsel(`dere-sus-${k}`)), null, { timeout: 15000 }).catch(() => {});
   await p.evaluate(() => {
     window.__kur = (level = 1, tur = null) => {
       if (game.running) endGame(false);
@@ -200,6 +201,72 @@ try {
   await p.evaluate(() => { render(); });
   sina('yolculukGecitCiz "Hareketi azalt" ile de hatasız çizer', () => { assert.deepEqual(hatalar, []); });
   await p.emulateMedia({ reducedMotion: 'no-preference' });
+
+  // i) Kıyı süsleri (DSU1): her geçitte 10-16, köprüden ≥120 px, su/bank doğru, tohumlu
+  const sus = await p.evaluate(() => {
+    const kotu = [];
+    for (let L = 1; L <= 6; L++) {
+      __kur(L);
+      for (const z of game._yolculukDuzen.zones) {
+        const s = z._gecitSus || [];
+        if (s.length < 10 || s.length > 16) kotu.push(`L${L}:g${z.i} adet=${s.length}`);
+        for (const it of s) {
+          if (Math.abs(it.y - z.gate.cy) < 120) kotu.push(`L${L}:g${z.i} köprü kind=${it.kind}`);
+          const suda = collidesWaters(it.x, it.y, 1);
+          if ((it.kind === 2 || it.kind === 4) !== suda) kotu.push(`L${L}:g${z.i} kind=${it.kind} su=${suda}`);
+          if (it.size < 34 || it.size > 56) kotu.push(`L${L}:g${z.i} boy=${it.size}`);
+        }
+        for (let a = 0; a < s.length; a++) for (let b2 = a + 1; b2 < s.length; b2++) {
+          if (Math.hypot(s[a].x - s[b2].x, s[a].y - s[b2].y) < 40) kotu.push(`L${L}:g${z.i} aralık`);
+        }
+      }
+    }
+    return kotu;
+  });
+  sina("her geçitte 10-16 kıyı süsü; köprüden ≥120 px, aralarında ≥40 px", () => { assert.deepEqual(sus, []); });
+
+  const susSu = await p.evaluate(() => {
+    const kotu = [];
+    for (let L = 1; L <= 6; L++) {
+      __kur(L);
+      for (const z of game._yolculukDuzen.zones) {
+        const s = z._gecitSus || [];
+        const suIci = s.filter((it) => it.kind === 2 || it.kind === 4);
+        if (suIci.length !== 3) kotu.push(`L${L}:g${z.i} suIci=${suIci.length}`);
+        for (const it of s) {
+          const suda = collidesWaters(it.x, it.y, 1);
+          if ((it.kind === 2 || it.kind === 4) && !suda) kotu.push(`L${L}:g${z.i} kind=${it.kind} su değil`);
+          if (it.kind !== 2 && it.kind !== 4 && suda) kotu.push(`L${L}:g${z.i} kind=${it.kind} bankta değil`);
+        }
+      }
+    }
+    return kotu;
+  });
+  sina("nilüfer/kaya su içinde, bank süsleri su dışında", () => { assert.deepEqual(susSu, []); });
+
+  const susKararli = await p.evaluate(() => {
+    const al = () => { __kur(4); return game._yolculukDuzen.zones.map((z) => (z._gecitSus || []).map((s) => [s.kind, s.x.toFixed(2), s.y.toFixed(2), s.size.toFixed(2)])); };
+    const a = al(), c = al();
+    return JSON.stringify(a) === JSON.stringify(c);
+  });
+  sina('kıyı süsleri aynı bölümde iki kurulumda aynı', () => { assert.equal(susKararli, true); });
+
+  const susCizim = await p.evaluate(() => {
+    __kur(3);
+    for (const z of game._yolculukDuzen.zones) {
+      const g = z.gate;
+      game.camera.x = Math.max(0, Math.min(game.worldW - game.W, g.x0 - 120));
+      game.camera.y = Math.max(0, Math.min(game.worldH - game.H, g.cy - game.H / 2));
+      render();
+    }
+    const silinen = {};
+    for (let k = 1; k <= 6; k++) { silinen[k] = GORSEL[`dere-sus-${k}`]; delete GORSEL[`dere-sus-${k}`]; }
+    render();
+    for (const k in silinen) if (silinen[k]) GORSEL[`dere-sus-${k}`] = silinen[k];
+    return true;
+  });
+  sina('kıyı süsleri görsellerle ve görseller silinince hatasız çizilir', () => { assert.equal(susCizim, true); });
+
   const cikti = path.join(path.dirname(fileURLToPath(import.meta.url)), 'ciktilar');
   fs.mkdirSync(cikti, { recursive: true });
   await p.evaluate(() => { render(); });

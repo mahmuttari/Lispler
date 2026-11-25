@@ -114,6 +114,59 @@ function yolculukGecitDusmeleri(egri, z, bolum, ulke) {
   return out;
 }
 
+// Kıyı süsleri (DSU1): kamış, çakıl, dal, çiçek bankta; nilüfer (2) ve yosunlu kaya (4) su içinde.
+// Tohum bölüm/ülke/bölge; köprüden 120 px, şelaleden 40 px uzak; aralarında en az 40 px. Görsel only.
+function yolculukGecitSuslari(z, egri, dilimler, bolum, ulke) {
+  if (bolum == null) bolum = (typeof game !== "undefined" && game.level) || 1;
+  if (ulke == null) ulke = yolculukUlkeKodu();
+  const g = z.gate, drops = z._gecitDusmeler || [], out = [];
+  const rnd = (n) => yolculukRastgele(bolum, ulke, z.i, n);
+  const dilim = (y) => {
+    let son = dilimler[0];
+    for (const q of dilimler) { if (y >= q.y && y < q.y + q.h) return q; if (q.y < y) son = q; }
+    return son;
+  };
+  const uygun = (x, y) => {
+    if (Math.abs(y - g.cy) < 120) return false;
+    for (const d of drops) if (Math.abs(y - d.y) < 40) return false;
+    for (const s of out) if (Math.hypot(s.x - x, s.y - y) < 40) return false;
+    return true;
+  };
+  const yerlestir = (kind, su) => {
+    for (let t = 0; t < 90; t++) {
+      const n = 400 + out.length * 3 + t;
+      const y = 50 + rnd(n) * 900;
+      const q = dilim(y), c = egri.merkez + egri.offset(y), yarim = egri.yarim;
+      const sol = rnd(n + 1) < 0.5, ic = 8 + rnd(n + 2) * 12;
+      // Komşu dilimler 16 px'lik sınırlarda taşabildiği için yakın dilimlerin birleşimi kullanılır.
+      let enSol = Infinity, enSag = -Infinity;
+      for (const q2 of dilimler) {
+        if (y <= q2.y - 2 || y >= q2.y + q2.h + 2) continue;
+        if (q2.x < enSol) enSol = q2.x;
+        if (q2.x + q2.w > enSag) enSag = q2.x + q2.w;
+      }
+      let x;
+      if (su) {
+        x = sol ? c - yarim + ic : c + yarim - ic;
+        const alt = enSol + 3, ust = enSag - 3; // çarpışma birleşiminin içinde kal
+        if (x < alt || x > ust) x = sol ? alt : ust;
+      } else {
+        x = sol ? c - yarim - ic : c + yarim + ic;
+        if (sol) x = Math.min(x, enSol - ic); else x = Math.max(x, enSag + ic);
+      }
+      if (!uygun(x, y)) continue;
+      out.push({ kind, x, y, size: 34 + rnd(n + 3) * 22 });
+      return true;
+    }
+    return false;
+  };
+  yerlestir(2, true); yerlestir(2, true); yerlestir(4, true); // 2 nilüfer + 1 yosunlu kaya
+  const bankAdet = 7 + Math.floor(rnd(390) * 7); // 7-13 bankta → toplam 10-16
+  const turler = [1, 3, 5, 6]; // kamış, çakıl, dal, çiçek
+  for (let i = 0; i < bankAdet; i++) yerlestir(turler[Math.floor(rnd(800 + i) * 4) % 4], false);
+  return out;
+}
+
 // "Hareketi azalt" tercihi (hava.js ile aynı ölçüt)
 function yolculukAzHareket() {
   try { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
@@ -327,6 +380,7 @@ function yolculukHaritaKur() {
     for (const q of dilimler) { if (q.x < minX) minX = q.x; if (q.x + q.w > maxX) maxX = q.x + q.w; }
     z.gecitSol = minX; z.gecitSag = maxX; z._gecitDilimler = dilimler; z._gecitEgri = egri;
     z._gecitDusmeler = yolculukGecitDusmeleri(egri, z, bolum, ulke);
+    z._gecitSus = yolculukGecitSuslari(z, egri, dilimler, bolum, ulke); // kıyı süsleri (görsel)
     z._gecitYol = null; // yol/bank/orta önbellekleri harita kurulunca yenilenir
   });
 
@@ -578,6 +632,7 @@ function yolculukGecitCiz(ctx) {
       z._gecitSolBank = sol; z._gecitSagBank = sag; z._gecitOrta = orta;
     }
     const yol = z._gecitYol, solBank = z._gecitSolBank, sagBank = z._gecitSagBank, orta = z._gecitOrta;
+    const susler = z._gecitSus || (z._gecitSus = yolculukGecitSuslari(z, egri, z._gecitDilimler, game.level, yolculukUlkeKodu()));
     const azHareket = yolculukAzHareket();
     ctx.save();
     ctx.lineJoin = "round"; ctx.lineCap = "round";
@@ -640,7 +695,19 @@ function yolculukGecitCiz(ctx) {
         ctx.beginPath(); ctx.arc(bx, by, 1.2 + (i % 3) * 0.5, 0, Math.PI * 2); ctx.fill();
       }
     }
+    // Su içi süsler (nilüfer, yosunlu kaya): su dolgusundan sonra, kırpma içinde
+    for (const s of susler) {
+      if (s.kind !== 2 && s.kind !== 4) continue;
+      if (s.x + s.size < cam.x || s.x - s.size > cam.x + W || s.y + s.size < cam.y || s.y - s.size > cam.y + H) continue;
+      gorselKutuya(ctx, `dere-sus-${s.kind}`, s.x - s.size / 2, s.y - s.size / 2, s.size, s.size);
+    }
     ctx.restore();
+    // Bank süsleri (kamış, çakıl, dal, çiçek): bank çizgilerinden sonra
+    for (const s of susler) {
+      if (s.kind === 2 || s.kind === 4) continue;
+      if (s.x + s.size < cam.x || s.x - s.size > cam.x + W || s.y + s.size < cam.y || s.y - s.size > cam.y + H) continue;
+      gorselKutuya(ctx, `dere-sus-${s.kind}`, s.x - s.size / 2, s.y - s.size / 2, s.size, s.size);
+    }
     // Su ile duvarın buluştuğu koyu gölge çizgisi
     ctx.strokeStyle = "rgba(0,0,0,0.35)"; ctx.lineWidth = 2; ctx.stroke(yol);
     ctx.restore();

@@ -379,6 +379,84 @@ try {
     assert.ok(cevrimici.timer > 0); assert.equal(cevrimici.bossGeldi, true);
   });
 
+  // 17) Geçit nehri: düz tek renk değil; tema suyu, zeminle karışmıyor
+  const gecit = await p.evaluate(() => {
+    __kur(2);
+    const z = game._yolculukDuzen.zones[0], g = z.gate;
+    game.kopruAcik.fill(true); game._kopruAnim = {};
+    game.ghosts = []; game.pickups = []; game.effects = [];
+    const camX = g.x0 - 100;
+    const camY = Math.max(0, Math.min(game.worldH - game.H, g.cy - game.H / 2));
+    game.player.x = g.x0 + 45; game.player.y = g.cy;
+    game.camera.x = camX; game.camera.y = camY;
+    render();
+    const m = game.ctx.getTransform();
+    const piksel = (wx, wy) => {
+      const sx = Math.round((wx - game.camera.x) * m.a + m.e), sy = Math.round((wy - game.camera.y) * m.d + m.f);
+      const d = game.ctx.getImageData(sx, sy, 1, 1).data;
+      return `${d[0]},${d[1]},${d[2]}`;
+    };
+    const renkler = new Set();
+    for (let y = g.cy + 75; y <= g.cy + 155; y += 4) renkler.add(piksel(g.x0 + 45, y));
+    return { sayi: renkler.size, su: piksel(g.x0 + 45, g.cy + 100), zemin: piksel(g.x1 + 110, g.cy + 100) };
+  });
+  sina('geçit şeridi tek düz renk değil (dikey çizgide en az 3 renk) ve zeminden farklı', () => {
+    assert.ok(gecit.sayi >= 3, `${gecit.sayi} renk`);
+    assert.notEqual(gecit.su, gecit.zemin);
+  });
+
+  // 18) Kapalı köprünün ağzında parlayan engel var; açılınca kalkıyor
+  const kopruEngel = await p.evaluate(() => {
+    __kur(1);
+    const z = game._yolculukDuzen.zones[0], g = z.gate;
+    game.kopruAcik.fill(false); game._kopruAnim = {};
+    game.ghosts = []; game.pickups = []; game.effects = [];
+    game.player.x = g.x0 - 60; game.player.y = g.cy;
+    game.camera.x = g.x0 - 100; game.camera.y = Math.max(0, Math.min(game.worldH - game.H, g.cy - game.H / 2));
+    const toplam = () => {
+      render();
+      const m = game.ctx.getTransform();
+      let s = 0;
+      for (let y = g.bridgeY0 + 8; y <= g.bridgeY1 - 8; y += 8) {
+        const sx = Math.round((g.x0 + 2 - game.camera.x) * m.a + m.e), sy = Math.round((y - game.camera.y) * m.d + m.f);
+        const d = game.ctx.getImageData(sx, sy, 1, 1).data;
+        s += d[0] + d[1] + d[2];
+      }
+      return s;
+    };
+    const once = toplam();
+    yolculukKopruAc(0);
+    const sonra = toplam();
+    return { once, sonra };
+  });
+  sina('kapalı köprü ağzında engel çizilir; açılınca kalkar', () => {
+    assert.notEqual(kopruEngel.once, kopruEngel.sonra);
+  });
+
+  // 19) Yolculuk çubuğu duraklat düğmesiyle çakışmaz (yatay, dikey, dar)
+  const hudKutular = [];
+  for (const [w, h] of [[844, 390], [390, 844], [340, 700]]) {
+    await p.setViewportSize({ width: w, height: h });
+    hudKutular.push(await p.evaluate(() => {
+      __kur(1); updateHUD();
+      const a = document.getElementById('yolculuk-hud').getBoundingClientRect();
+      const b = document.querySelector('.pause-btn').getBoundingClientRect();
+      const k = document.getElementById('yc-kalan');
+      return { w: innerWidth, h: innerHeight,
+        kesisim: a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top,
+        bar: [Math.round(a.left), Math.round(a.top), Math.round(a.right), Math.round(a.bottom)],
+        pause: [Math.round(b.left), Math.round(b.top), Math.round(b.right), Math.round(b.bottom)],
+        kalanGorunur: k.offsetWidth > 0 && k.offsetHeight > 0 };
+    }));
+  }
+  await p.setViewportSize({ width: 390, height: 844 });
+  sina('yolculuk çubuğu üç boyutta da duraklat düğmesiyle çakışmaz; 👻 sayacı görünür', () => {
+    for (const k of hudKutular) {
+      assert.equal(k.kesisim, false, `${k.w}x${k.h}: bar ${k.bar} / pause ${k.pause}`);
+      assert.equal(k.kalanGorunur, true, `${k.w}x${k.h}: 👻 sayaç yok`);
+    }
+  });
+
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);

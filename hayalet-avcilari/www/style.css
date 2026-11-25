@@ -712,7 +712,7 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
 .yolculuk-hud {
   position: absolute;
   left: 50%;
-  top: calc(10px + var(--ust));
+  top: calc(88px + var(--ust));
   transform: translateX(-50%);
   display: none;
   align-items: center;
@@ -784,7 +784,7 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
 
 .power-bar {
   position: absolute;
-  top: calc(60px + var(--ust));
+  top: calc(114px + var(--ust));
   left: 50%;
   transform: translateX(-50%);
   display: none;
@@ -1328,8 +1328,11 @@ body.is-tablet .pause-btn {
 }
 body.is-tablet .pause-btn svg { width: 22px; height: 22px; }
 
+body.is-tablet .yolculuk-hud {
+  top: calc(108px + var(--ust));
+}
 body.is-tablet .power-bar {
-  top: calc(84px + var(--ust));
+  top: calc(136px + var(--ust));
   font-size: 17px;
   padding: 8px 16px;
   min-width: 240px;

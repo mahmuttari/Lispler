@@ -385,6 +385,113 @@ function yolculukYoluGarantile() {
 }
 
 // ---------- çizim ----------
+// Geçit nehri: tema suları gibi renk geçişi, eğri kıyılar, taş/kamış. Bir kez temaya özel döşeme çizilir;
+// her karede yalnız görünen parça basılır, parıltı çizgileri kaydırılarak canlanır (gölge yok).
+const YOLCULUK_GECIT = { anahtar: "", tuval: null, h: 0 };
+function yolculukGecitTemasi() {
+  try {
+    if (typeof turUlkesi === "function") {
+      const u = turUlkesi();
+      if (u && typeof ulkeTemasi === "function") return ulkeTemasi(u);
+    }
+  } catch (e) { /* tema yoksa */ }
+  return typeof getTheme === "function" ? getTheme()
+    : { floor: "#1e293b", wall: "#475569", wallDark: "#1e293b", waterTop: "#1e7fd6", waterBot: "#0a3a8a" };
+}
+function yolculukGecitDoseme(th) {
+  const w = YOLCULUK_AYAR.gateW, h = YOLCULUK_AYAR.worldH - 60;
+  const anahtar = [w, h, th.waterTop, th.waterBot, th.wall, th.wallDark, th.floor].join("|");
+  if (YOLCULUK_GECIT.anahtar === anahtar) return YOLCULUK_GECIT;
+  let c = null, cx = null;
+  try { c = document.createElement("canvas"); c.width = w; c.height = h; cx = c.getContext("2d"); } catch (e) { cx = null; }
+  if (!cx) { YOLCULUK_GECIT.anahtar = anahtar; YOLCULUK_GECIT.tuval = null; return YOLCULUK_GECIT; }
+  const g = cx.createLinearGradient(0, 0, 0, h);
+  g.addColorStop(0, th.waterTop || "#1e7fd6"); g.addColorStop(1, th.waterBot || "#0a3a8a");
+  cx.fillStyle = g; cx.fillRect(0, 0, w, h);
+  // Durağan dalga çizgileri (tema gölü gibi)
+  cx.strokeStyle = "rgba(255,255,255,0.16)"; cx.lineWidth = 1.5;
+  for (let y = 18, k = 0; y < h - 6; y += 26, k++) {
+    const sol = 10 + Math.sin(y * 0.05) * 2, sag = w - 10 - Math.sin(y * 0.045 + 1.3) * 2;
+    cx.beginPath();
+    for (let x = sol; x <= sag; x += 8) {
+      const yy = y + Math.sin((x + k * 7) / 17) * 1.8;
+      if (x === sol) cx.moveTo(x, yy); else cx.lineTo(x, yy);
+    }
+    cx.stroke();
+  }
+  // Eğri kıyılar: tema zemin/kenar rengi, iki yanda
+  const kiyi = (taraf) => {
+    const puan = [];
+    for (let y = 0; y <= h; y += 8) {
+      const kalin = 9 + Math.sin(y * 0.018 + (taraf < 0 ? 0 : 1.7)) * 2.2 + Math.sin(y * 0.007) * 1.4;
+      puan.push([taraf < 0 ? kalin : w - kalin, y]);
+    }
+    cx.beginPath(); cx.moveTo(taraf < 0 ? 0 : w, 0);
+    for (const [x, y] of puan) cx.lineTo(x, y);
+    cx.lineTo(taraf < 0 ? 0 : w, h); cx.closePath();
+    cx.fillStyle = th.wallDark || th.wall || "#1e293b"; cx.fill();
+    cx.beginPath();
+    puan.forEach(([x, y], i) => (i ? cx.lineTo(x, y) : cx.moveTo(x, y)));
+    cx.strokeStyle = th.wall || th.floor || "#475569"; cx.lineWidth = 2.5; cx.stroke();
+  };
+  kiyi(-1); kiyi(1);
+  // Kıyıda birkaç tema taşı ve kamış (tohumlu)
+  const rast = (n) => { const s = Math.sin(n * 91.7 + 13) * 43758.5453; return s - Math.floor(s); };
+  for (let i = 0; i < 14; i++) {
+    const y = 18 + rast(i) * (h - 36), sol = rast(i + 20) < 0.5;
+    const x = sol ? 5 + rast(i + 3) * 7 : w - 5 - rast(i + 3) * 7;
+    if (rast(i + 30) < 0.45) {
+      cx.strokeStyle = "#4d7c0f"; cx.lineWidth = 1.4;
+      for (let j = 0; j < 3; j++) {
+        cx.beginPath(); cx.moveTo(x + j * 1.5, y);
+        cx.lineTo(x + j * 1.5 + Math.sin(y * 0.05 + j) * 2, y - 7 - j * 2); cx.stroke();
+      }
+    } else {
+      const r = 2.2 + rast(i + 7) * 2.6;
+      cx.fillStyle = "rgba(0,0,0,0.25)"; cx.beginPath(); cx.ellipse(x + 1, y + 1.5, r, r * 0.75, 0, 0, Math.PI * 2); cx.fill();
+      cx.fillStyle = th.wall || "#64748b"; cx.beginPath(); cx.ellipse(x, y, r, r * 0.75, 0, 0, Math.PI * 2); cx.fill();
+      cx.fillStyle = "rgba(255,255,255,0.18)"; cx.beginPath(); cx.ellipse(x - r * 0.3, y - r * 0.3, r * 0.45, r * 0.32, 0, 0, Math.PI * 2); cx.fill();
+    }
+  }
+  YOLCULUK_GECIT.anahtar = anahtar; YOLCULUK_GECIT.tuval = c; YOLCULUK_GECIT.h = h;
+  return YOLCULUK_GECIT;
+}
+function yolculukGecitCiz(ctx) {
+  if (!yolculukAcik() || !game._yolculukDuzen) return;
+  const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0, A = YOLCULUK_AYAR;
+  const gy0 = 30, gy1 = A.worldH - 30;
+  if (gy1 < cam.y || gy0 > cam.y + H) return;
+  const T = yolculukGecitDoseme(yolculukGecitTemasi());
+  const zaman = performance.now() / 1000;
+  for (const z of game._yolculukDuzen.zones) {
+    const g = z.gate, x0 = g.x0, w = A.gateW;
+    if (x0 + w < cam.x || x0 > cam.x + W) continue;
+    if (T.tuval) {
+      const sy = Math.max(0, Math.floor(cam.y - 8 - gy0));
+      const sh = Math.min(T.h - sy, Math.ceil(H + 16));
+      if (sh > 0) ctx.drawImage(T.tuval, 0, sy, w, sh, x0, gy0 + sy, w, sh);
+    } else {
+      const g2 = ctx.createLinearGradient(0, gy0, 0, gy1);
+      g2.addColorStop(0, "#1e7fd6"); g2.addColorStop(1, "#0a3a8a");
+      ctx.fillStyle = g2; ctx.fillRect(x0, Math.max(gy0, cam.y), w, Math.min(gy1, cam.y + H) - Math.max(gy0, cam.y));
+    }
+    // Aşağı akan parıltı çizgileri: döşemenin üstünde, kıyılara girmeden
+    ctx.save();
+    ctx.beginPath(); ctx.rect(x0 + 11, Math.max(gy0, cam.y), w - 22, Math.min(gy1, cam.y + H) - Math.max(gy0, cam.y)); ctx.clip();
+    ctx.strokeStyle = "rgba(255,255,255,0.22)"; ctx.lineWidth = 1.5;
+    const boy = T.h || (gy1 - gy0);
+    for (let k = 0; k < 3; k++) {
+      const y = gy0 + ((zaman * 20 + k * (boy / 3)) % boy);
+      ctx.beginPath();
+      for (let x = x0 + 14; x <= x0 + w - 14; x += 8) {
+        const yy = y + Math.sin((x + zaman * 30) / 18 + k) * 2;
+        if (x === x0 + 14) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
 // Kapalı köprü: kalkık asma köprü / parlayan kapı (tema renklerinde, sade)
 function yolculukCiz(ctx) {
   if (!yolculukAcik() || !game._yolculukDuzen) return;
@@ -397,7 +504,7 @@ function yolculukCiz(ctx) {
     const anim = (game._kopruAnim && game._kopruAnim[i]) || 0;
     const acik = game.kopruAcik[i];
     if (acik && anim <= 0) continue;
-    const k = acik ? Math.min(1, anim / 0.6) : 1; // 0 → kapalı, 1 → açık
+    const kapali = acik ? Math.min(1, anim / 0.6) : 1; // 1 → kapalı, 0 → açık
     const x0 = g.x0 - 4, x1 = g.x1 + 4, y0 = g.bridgeY0, y1 = g.bridgeY1;
     ctx.save();
     // Kalkan köprünün gölgesi
@@ -407,24 +514,43 @@ function yolculukCiz(ctx) {
     ctx.strokeStyle = th.grid || "#64748b";
     ctx.lineWidth = 6;
     ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0, y1); ctx.moveTo(x1, y0); ctx.lineTo(x1, y1); ctx.stroke();
-    // Kalkık köprü tahtası (açılırken yumuşakça iner)
-    const yuk = (1 - k) * (y1 - y0) * 0.9;
+    // Kalkık köprü tahtası (üstten bakış: uzak kenar daralır; açılırken yumuşakça iner)
+    const yuk = kapali * (y1 - y0) * 0.9;
+    const ust = y0 - yuk, alt = y1 - yuk, ic = 4 + kapali * 12;
     ctx.fillStyle = "#a16207";
     ctx.strokeStyle = "#451a03";
     ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.rect(x0, y0 - yuk, x1 - x0, y1 - y0); ctx.fill(); ctx.stroke();
-    for (let y = y0 + 10; y < y1; y += 20) {
-      ctx.beginPath(); ctx.moveTo(x0 + 2, y - yuk); ctx.lineTo(x1 - 2, y - yuk); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x0 + ic, ust); ctx.lineTo(x1 - ic, ust); ctx.lineTo(x1, alt); ctx.lineTo(x0, alt); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    for (let q = 1; q < 5; q++) {
+      const u = q / 5, yy = ust + (alt - ust) * u;
+      ctx.beginPath(); ctx.moveTo(x0 + ic * (1 - u) + 2, yy); ctx.lineTo(x1 - ic * (1 - u) - 2, yy); ctx.stroke();
     }
-    // Kapalıyken parlayan kilit
+    // İki zincir: karşı kıyıdan kalkık tahtanın serbest ucuna
+    if (kapali > 0.02) {
+      ctx.strokeStyle = "rgba(226,232,240,0.8)"; ctx.lineWidth = 2.5;
+      const serbestX = x1 - ic;
+      ctx.beginPath();
+      ctx.moveTo(x1, y0 + 6); ctx.quadraticCurveTo((x1 + serbestX) / 2, (y0 + ust) / 2 - 10, serbestX, ust + 6);
+      ctx.moveTo(x1, y1 - 6); ctx.quadraticCurveTo((x1 + serbestX) / 2, (y1 + alt) / 2 + 10, serbestX, alt - 6);
+      ctx.stroke();
+    }
+    // Kapalıyken köprü ağzında parlayan engel çizgisi ve kilit
     if (!acik) {
+      const agizX = g.x0 + 2;
       const alfa = 0.35 + 0.25 * Math.sin(zaman * 3 + i);
+      ctx.strokeStyle = `rgba(253,224,71,${alfa * 0.6})`;
+      ctx.lineWidth = 10;
+      ctx.beginPath(); ctx.moveTo(agizX, y0); ctx.lineTo(agizX, y1); ctx.stroke();
+      ctx.strokeStyle = "rgba(253,224,71,0.9)"; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(agizX, y0); ctx.lineTo(agizX, y1); ctx.stroke();
       ctx.fillStyle = `rgba(253,224,71,${alfa})`;
-      ctx.beginPath(); ctx.arc((x0 + x1) / 2, (y0 + y1) / 2, 12, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(agizX + 12, (y0 + y1) / 2, 12, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#fde047";
       ctx.font = "800 18px Nunito, sans-serif";
       ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      ctx.fillText("🔒", (x0 + x1) / 2, (y0 + y1) / 2);
+      ctx.fillText("🔒", agizX + 12, (y0 + y1) / 2);
     }
     ctx.restore();
   }

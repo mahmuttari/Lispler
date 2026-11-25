@@ -7303,6 +7303,7 @@ function render() {
 
   // Engeller: su, diken, lav, duvar ve objeler — eğri hatlı, temaya özel, önbellekli (engeller.js)
   engelleriCiz(ctx);
+  if (typeof yolculukGecitCiz === "function") yolculukGecitCiz(ctx); // yolculuk geçit nehirleri (yolculuk.js)
   koprulerCiz(ctx);   // sallanan ip köprüler (kopru.js)
   if (typeof yolculukCiz === "function") yolculukCiz(ctx); // yolculuk geçitleri (yolculuk.js)
   timsahlariCiz(ctx); // sudaki timsahlar (timsah.js)

@@ -864,7 +864,7 @@ const CHARACTERS = {
     baseSpeed: 3.2,
     baseDamage: 1,
     baseFireDelay: 600,
-    baseRange: 220,
+    baseRange: 165,
     color: { hair: "#7a3e1d", skin: "#f4d6b5", body: "#1d4ed8", legs: "#f4d6b5", weapon: "#e0e0e0" },
   },
   veryi: {
@@ -874,7 +874,7 @@ const CHARACTERS = {
     baseSpeed: 2.6,
     baseDamage: 2,
     baseFireDelay: 700,
-    baseRange: 180,
+    baseRange: 135,
     color: { hair: "#3a1d0a", skin: "#f4d6b5", body: "#6b3410", legs: "#4a8c2a", weapon: "#7a7a7a" },
   },
   kornet: {
@@ -884,7 +884,7 @@ const CHARACTERS = {
     baseSpeed: 2.8,
     baseDamage: 1,
     baseFireDelay: 500,
-    baseRange: 280,
+    baseRange: 210,
     color: { hair: "#ffffff", skin: "#fafafa", body: "#9d4edd", legs: "#9d4edd", weapon: "#c026d3" },
   },
   mark: {
@@ -894,7 +894,7 @@ const CHARACTERS = {
     baseSpeed: 3.0,
     baseDamage: 1,
     baseFireDelay: 580,
-    baseRange: 230,
+    baseRange: 175,
     color: { hair: "#5a3825", skin: "#f4d6b5", body: "#10b981", legs: "#374151", weapon: "#e0e0e0" },
   },
   kent: {
@@ -904,7 +904,7 @@ const CHARACTERS = {
     baseSpeed: 3.4,
     baseDamage: 2,
     baseFireDelay: 480,
-    baseRange: 200,
+    baseRange: 150,
     color: { hair: "#1f1f1f", skin: "#e8e8f0", body: "#1a1a2e", legs: "#0f0f1a", weapon: "#9ca3af" },
   },
   ponko: {
@@ -914,7 +914,7 @@ const CHARACTERS = {
     baseSpeed: 3.0,
     baseDamage: 1,
     baseFireDelay: 450,
-    baseRange: 220,
+    baseRange: 165,
     color: { hair: "#3a1d0a", skin: "#f4d6b5", body: "#ef4444", legs: "#1f2937", weapon: "#e0e0e0" },
   },
   gul: {
@@ -924,7 +924,7 @@ const CHARACTERS = {
     baseSpeed: 3.2,
     baseDamage: 1,
     baseFireDelay: 580,
-    baseRange: 240,
+    baseRange: 180,
     color: { hair: "#3a1d0a", skin: "#f4d6b5", body: "#ec4899", legs: "#831843", weapon: "#e0e0e0" },
   },
   rani: {
@@ -934,7 +934,7 @@ const CHARACTERS = {
     baseSpeed: 3.3,
     baseDamage: 1,
     baseFireDelay: 520,
-    baseRange: 220,
+    baseRange: 165,
     color: { hair: "#1f1f1f", skin: "#fce7d8", body: "#06b6d4", legs: "#0e7490", weapon: "#fde68a" },
   },
   beti: {
@@ -944,7 +944,7 @@ const CHARACTERS = {
     baseSpeed: 3.0,
     baseDamage: 2,
     baseFireDelay: 550,
-    baseRange: 250,
+    baseRange: 190,
     color: { hair: "#9d4edd", skin: "#fef3c7", body: "#f43f5e", legs: "#7c3aed", weapon: "#ec4899" },
     waterImmune: true,
   },
@@ -955,7 +955,7 @@ const CHARACTERS = {
     baseSpeed: 3.6,
     baseDamage: 3,
     baseFireDelay: 350,
-    baseRange: 280,
+    baseRange: 210,
     color: { hair: "#0a0a0a", skin: "#f4d6b5", body: "#fafafa", legs: "#fafafa", weapon: "#dc2626" },
   },
   silsen: {
@@ -965,7 +965,7 @@ const CHARACTERS = {
     baseSpeed: 3.1,
     baseDamage: 1,
     baseFireDelay: 520,
-    baseRange: 240,
+    baseRange: 180,
     color: { hair: "#4a2511", skin: "#f4d6b5", body: "#4ade80", legs: "#f4d6b5", weapon: "#fbbf24" },
   },
   sercin: {
@@ -975,7 +975,7 @@ const CHARACTERS = {
     baseSpeed: 3.5,
     baseDamage: 1,
     baseFireDelay: 500,
-    baseRange: 230,
+    baseRange: 175,
     color: { hair: "#1f1f1f", skin: "#f4d6b5", body: "#a16207", legs: "#78350f", weapon: "#fef3c7" },
   },
 };
@@ -1583,6 +1583,7 @@ function useWeapon(key) {
             target: hedef,
             damage: 25,
             life: dist / speed + 0.5,
+            oyuncuSilahi: true,
           });
         }
         if (typeof audio.roket === "function") audio.roket(); else audio.unlock();
@@ -1641,7 +1642,8 @@ function updateEffects(dt) {
       let exploded = false;
       const t = e.target;
       if (t && t.hp > 0 && game.ghosts.indexOf(t) !== -1) {
-        if (Math.hypot(t.x - e.x, t.y - e.y) < (t.r || 22) + 14) {
+        if (!(e.oyuncuSilahi && gorunurPencereDisi(t.x, t.y)) &&
+            Math.hypot(t.x - e.x, t.y - e.y) < (t.r || 22) + 14) {
           t.hp -= e.damage;
           if (e.uzak) t.uzakVurdu = true;
           showFloat("🚀 -" + e.damage, t.x, t.y - 30);
@@ -1673,6 +1675,7 @@ function updateEffects(dt) {
         }
         for (const og of game.ghosts) {
           if (og === t) continue; // ana hedef direct hit yedi
+          if (e.oyuncuSilahi && gorunurPencereDisi(og.x, og.y)) continue; // görünüm dışına hasar yok
           const ddx = og.x - e.x, ddy = og.y - e.y;
           const dd2 = ddx * ddx + ddy * ddy;
           if (dd2 < splashR2) {
@@ -6673,6 +6676,11 @@ function update(dt, now) {
     p.x += p.vx * dt;
     p.y += p.vy * dt;
     if (typeof aeMermiIziGuncelle === "function") aeMermiIziGuncelle(p); // kısa iz (en çok 4 nokta)
+    // Oyuncu mermisi görünür alanın (24 px pay) dışına çıkınca silinir; ekran dışına hasar gitmez
+    if (p.oyuncuMermisi && gorunurPencereDisi(p.x, p.y)) {
+      game.projectiles.splice(i, 1);
+      continue;
+    }
     p.life -= dt;
     if (p.life <= 0 || collidesWalls(p.x, p.y, 4)) {
       game.projectiles.splice(i, 1);
@@ -6721,6 +6729,7 @@ function update(dt, now) {
     for (let j = game.ghosts.length - 1; j >= 0; j--) {
       const g = game.ghosts[j];
       if (p.hits && p.hits.includes(g)) continue; // delen mermi aynı hayalete iki kez vurmaz
+      if (p.oyuncuMermisi && gorunurPencereDisi(g.x, g.y)) continue; // görünüm dışındaki hayalete hasar yok
       if (Math.hypot(p.x - g.x, p.y - g.y) < g.r + 6) {
         spawnHitParticles(p.x, p.y);
         if (p.pierce > 0) { p.pierce--; (p.hits || (p.hits = [])).push(g); }
@@ -7188,6 +7197,7 @@ function fireProjectile(target) {
           pierce: (gun && gun.pierce) || 0,
           homing,
           atBot: target === game.bot,
+          oyuncuMermisi: true,
         });
       }
     }
@@ -7197,6 +7207,13 @@ function fireProjectile(target) {
   // Takılı envanter silahı varsa sesine anahtarı verilir; yoksa eski çağrı aynen kalır
   const _aeSilah = typeof equippedGun === "function" ? equippedGun() : "";
   if (_aeSilah) audio.fire(_aeSilah); else audio.fire();
+}
+
+// Oyuncu mermisi kamera görünümünün 24 px dışına çıktı mı? (görünüm dışındaki hayaletlere hasar yok)
+function gorunurPencereDisi(x, y, pay = 24) {
+  const cam = game.camera;
+  return x < cam.x - pay || x > cam.x + game.W + pay ||
+         y < cam.y - pay || y > cam.y + game.H + pay;
 }
 
 function nearestGhost(maxR) {

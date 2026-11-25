@@ -5018,7 +5018,8 @@ function _menuAzHareket() {
   return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 function _menuResimVeyaEmoji(k, emoji) {
-  return gorsel(k) ? `<img class="menu-resim" src="gorsel/${k}.webp" alt="" draggable="false">` : emoji;
+  const im = gorsel(k); // yüklü resmin kendi adresi (paketli denemede data URL, uygulamada dosya)
+  return im ? `<img class="menu-resim" src="${im.src}" alt="" draggable="false">` : emoji;
 }
 function _menuHayaletKareCiz() {
   const kutu = document.getElementById("dekor-hayaletler");
@@ -5068,7 +5069,7 @@ function _menuDekorDugmeleriKur() {
   for (const el of document.querySelectorAll("[data-menu-dugme]")) {
     const k = "menu-dugme-" + el.dataset.menuDugme;
     if (gorsel(k)) {
-      el.style.backgroundImage = `url("gorsel/${k}.webp")`;
+      el.style.backgroundImage = `url("${gorsel(k).src}")`;
       el.style.backgroundSize = "100% 100%";
       el.style.backgroundRepeat = "no-repeat";
       el.classList.add("menu-dugme-resim");

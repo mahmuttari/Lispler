@@ -6640,6 +6640,7 @@ function update(dt, now) {
   fireDelay = Math.max(60, fireDelay / hizCarpani);
   updateBot(dt, now);
   petGuncelle(dt, now); // pet: oyuncuyu izler, yakındaki hayalete saldırır (pet.js)
+  botPetAyir(); // bot ile pet üst üste binmesin
   havaGuncelle(dt); // yarasalar ve fırtına bulutu: yalnız görsel (hava.js)
   if (online.mode) uzakPetleriGuncelle(dt);
   if (keys["b"] && game.bot) game.player.botTargetUntil = now + 300; // klavye: B'ye basılıyken Bot'a ateş
@@ -7235,8 +7236,76 @@ function steerHoming(p, dt) {
 // oyuncu ona dokunursa (klavyede B) ona ateş eder, yenilince içinden 1 kalp çıkar. Her bölüm başında yeniden gelir.
 // Çevrimiçi oyunda yok: konumu ve canı odaya senkronlanmaz.
 const BOT_MAX_HP = 6;
-const botEngel = (x, y, r) => collidesWalls(x, y, r) || collidesWaters(x, y, r);
-const botMesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), engelMesafesi(game.waters, x, y, r));
+const botEngel = (x, y, r) => collidesWalls(x, y, r) || kopruluSuCarpar(x, y, r);
+const botMesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), kopruluSuMesafesi(x, y, r));
+
+// İki nokta arasındaki düz yol köprü dışında sudan geçiyor mu?
+function suCizgisiKesiyor(x0, y0, x1, y1) {
+  const d = Math.hypot(x1 - x0, y1 - y0);
+  const n = Math.max(2, Math.ceil(d / 20));
+  for (let i = 1; i < n; i++) {
+    const t = i / n, x = x0 + (x1 - x0) * t, y = y0 + (y1 - y0) * t;
+    if (collidesWaters(x, y, 1) && !koprudeMi(x, y)) return true;
+  }
+  return false;
+}
+
+// Oyuncunun yanında, oyuncuya düz yolu köprü dışında sudan geçmeyen boş bir nokta
+function suGecidiTemizYer(cx, cy, r, engel, tercih) {
+  const adaylar = tercih ? [tercih] : [];
+  adaylar.push([-50, 30], [50, 30], [-50, -30], [50, -30], [0, 55], [0, -55], [-70, 0], [70, 0]);
+  let son = null;
+  for (const [ox, oy] of adaylar) {
+    const yer = freeSpot(cx + ox, cy + oy, r, engel);
+    if (!suCizgisiKesiyor(yer.x, yer.y, cx, cy)) return yer;
+    if (!son) son = yer;
+  }
+  return son || freeSpot(cx, cy, r, engel);
+}
+
+// Bot suyun öbür yanındaysa en yakın açık köprüden geçirecek ara hedef; yoksa null
+function botKopruNoktasi(b, px, py) {
+  if (!b.kopru || b.kopruAsama >= 2) {
+    b.kopru = null; b.kopruAsama = 0;
+    if (!suCizgisiKesiyor(b.x, b.y, px, py)) return null;
+    const liste = (typeof koprulerHazir === "function" ? koprulerHazir() : []) || [];
+    const mx = (b.x + px) / 2, my = (b.y + py) / 2;
+    let en = Infinity, sec = null;
+    for (const k of liste) {
+      const kx = k.yatay ? (k.a + k.b) / 2 : k.c, ky = k.yatay ? k.c : (k.a + k.b) / 2;
+      const dd = Math.hypot(kx - mx, ky - my);
+      if (dd < en) { en = dd; sec = k; }
+    }
+    if (!sec) return null;
+    // Giriş ucu botun bulunduğu yan, çıkış ucu oyuncunun bulunduğu yan (geçiş boyunca sabit)
+    const uclar = kopruUclari(sec);
+    const karsi = Math.hypot(uclar[0].x - px, uclar[0].y - py) <= Math.hypot(uclar[1].x - px, uclar[1].y - py) ? uclar[0] : uclar[1];
+    b.kopru = sec; b.kopruAsama = 0;
+    b.kopruKarsi = karsi;
+    b.kopruKendi = karsi === uclar[0] ? uclar[1] : uclar[0];
+  }
+  const kendi = b.kopruKendi, karsi = b.kopruKarsi;
+  if (!kendi || !karsi) { b.kopru = null; b.kopruAsama = 0; return null; }
+  if (b.kopruAsama === 0 && Math.hypot(b.x - kendi.x, b.y - kendi.y) < 24) b.kopruAsama = 1;
+  if (b.kopruAsama >= 1 && Math.hypot(b.x - karsi.x, b.y - karsi.y) < 24) {
+    b.kopru = null; b.kopruAsama = 0; b.kopruKendi = null; b.kopruKarsi = null; return null;
+  }
+  return b.kopruAsama === 0 ? kendi : karsi;
+}
+
+// Bot ile pet üst üste binmesin: pet saldırırken yalnız bot itilir
+function botPetAyir() {
+  const b = game.bot, p = game.pet;
+  if (!b || !p || online.mode) return;
+  const dx = p.x - b.x, dy = p.y - b.y, d = Math.hypot(dx, dy);
+  const min = b.r + p.r + 14;
+  if (d >= min || d < 1e-6) return;
+  const it = (min - d) / 2, ux = dx / d, uy = dy / d;
+  kayarakYuru(b, -ux * it, -uy * it, botEngel, botMesafe);
+  if (p.saldiriyor) return;
+  if (PETLER[p.tur].ucar) { p.x += ux * it; p.y += uy * it; }
+  else kayarakYuru(p, ux * it, uy * it, petEngel, petMesafe);
+}
 
 function spawnBot() {
   game.bot = null;
@@ -7245,6 +7314,7 @@ function spawnBot() {
   game.bot = {
     x: yer.x, y: yer.y, r: 18, hp: BOT_MAX_HP, maxHp: BOT_MAX_HP,
     walkTimer: 0, lastFire: 0, aimRaise: 0, shootRecoil: 0, hitFlash: 0, stuck: 0,
+    sonMesafe: 1e9, ilerlemeSure: 0, kopru: null, kopruAsama: 0,
   };
 }
 
@@ -7253,17 +7323,29 @@ function updateBot(dt, now) {
   if (!b || online.mode) return;
   if (b.hitFlash > 0) b.hitFlash -= dt;
   b.shootRecoil = Math.max(0, b.shootRecoil - dt * 6);
-  // Oyuncuyu ~80 px geriden izle; takılır ya da çok geride kalırsa yanına ışınlan
-  const dx = game.player.x - b.x, dy = game.player.y - b.y;
+  // Suyun öbür yanındaysa köprü ara hedefi; yoksa doğrudan oyuncuya yürü
+  const pk = botKopruNoktasi(b, game.player.x, game.player.y);
+  const hedefX = pk ? pk.x : game.player.x, hedefY = pk ? pk.y : game.player.y;
+  const dx = hedefX - b.x, dy = hedefY - b.y;
   const d = Math.hypot(dx, dy) || 1;
+  const dp = Math.hypot(game.player.x - b.x, game.player.y - b.y) || 1;
   let yurudu = false;
-  if (d > 80) {
+  if (d > (pk ? 6 : 80)) {
     const adim = game.player.speed * 0.95 * dt;
     yurudu = kayarakYuru(b, (dx / d) * adim, (dy / d) * adim, botEngel, botMesafe);
-    b.stuck = yurudu ? 0 : b.stuck + dt;
-    if (d > 650 || b.stuck > 2) {
-      const yer = freeSpot(game.player.x - 50, game.player.y + 30, b.r, botEngel);
-      b.x = yer.x; b.y = yer.y; b.stuck = 0;
+  }
+  // İlerleme: oyuncuya uzaklık 2,5 sn'de 20 px azalmadıysa oyuncunun yanına ışınlan
+  if (b.sonMesafe === undefined) { b.sonMesafe = dp; b.ilerlemeSure = 0; }
+  if (pk) {
+    b.sonMesafe = Math.min(b.sonMesafe, dp);
+    b.ilerlemeSure = 0;
+  } else {
+    if (dp <= 110) { b.sonMesafe = dp; b.ilerlemeSure = 0; } // izleme mesafesinde duruyor: takılma sayılmaz
+    else b.ilerlemeSure += dt;
+    if (dp <= b.sonMesafe - 20) { b.sonMesafe = dp; b.ilerlemeSure = 0; }
+    if (dp > 650 || b.ilerlemeSure > 2.5) {
+      const yer = suGecidiTemizYer(game.player.x, game.player.y, b.r, botEngel, [-50, 30]);
+      b.x = yer.x; b.y = yer.y; b.ilerlemeSure = 0; b.sonMesafe = 1e9; b.kopru = null; b.kopruAsama = 0;
     }
   }
   b.walkTimer = yurudu ? b.walkTimer + dt : 0;

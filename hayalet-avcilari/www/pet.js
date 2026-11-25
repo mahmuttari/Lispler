@@ -26,8 +26,8 @@ const PET_IZ = 56;       // takipte oyuncunun bu kadar gerisinde durur (px)
 const PET_KORUMA = 1.2;  // vurulduktan sonra dokunulmaz (sn)
 const PET_DIRILME = 15;  // bayılan pet bu kadar sonra döner (sn)
 
-const petEngel = (x, y, r) => collidesWalls(x, y, r) || collidesWaters(x, y, r);
-const petMesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), engelMesafesi(game.waters, x, y, r));
+const petEngel = (x, y, r) => collidesWalls(x, y, r) || kopruluSuCarpar(x, y, r);
+const petMesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), kopruluSuMesafesi(x, y, r));
 
 function petSecili() {
   const k = save.pet;
@@ -39,9 +39,9 @@ function petKur() {
   game.pet = null;
   const tur = petSecili();
   if (!tur || !game.player) return;
-  const yer = PETLER[tur].ucar ? { x: game.player.x - 40, y: game.player.y + 20 } : freeSpot(game.player.x - 45, game.player.y + 25, 14, petEngel);
+  const yer = PETLER[tur].ucar ? { x: game.player.x + 45, y: game.player.y - 5 } : suGecidiTemizYer(game.player.x, game.player.y, 14, petEngel, [45, 25]);
   const can = PETLER[tur].can;
-  game.pet = { tur, x: yer.x, y: yer.y, r: 14, yon: 1, yurume: 0, sonVurus: -1e9, saldiri: 0, takili: 0, kanat: 0, can, maxCan: can, koruma: 0, baygin: 0 };
+  game.pet = { tur, x: yer.x, y: yer.y, r: 14, yon: 1, yurume: 0, sonVurus: -1e9, saldiri: 0, saldiriyor: false, takili: 0, sonMesafe: 1e9, ilerlemeSure: 0, kanat: 0, can, maxCan: can, koruma: 0, baygin: 0 };
 }
 
 // Pete vurulur (hayalet teması, düşman mermisi); can biterse bayılır
@@ -114,7 +114,7 @@ function petGuncelle(dt, now) {
   if (p.baygin > 0) {
     p.baygin -= dt;
     if (p.baygin > 0) return;
-    const yer = tanim.ucar ? { x: oy.x - 40, y: oy.y - 20 } : freeSpot(oy.x - 45, oy.y + 25, p.r, petEngel);
+    const yer = tanim.ucar ? { x: oy.x + 45, y: oy.y - 5 } : suGecidiTemizYer(oy.x, oy.y, p.r, petEngel, [45, 25]);
     Object.assign(p, { x: yer.x, y: yer.y, can: p.maxCan, baygin: 0, koruma: PET_KORUMA, takili: 0 });
     showFloat(t("{simge} {ad} geri döndü!", { simge: tanim.simge, ad: tanim.ad }), p.x, p.y - 30);
   }
@@ -148,16 +148,27 @@ function petGuncelle(dt, now) {
       }
     }
   } else {
-    // Oyuncunun baktığı yönün gerisinde dur
-    const a = (oy.facing || 0) + Math.PI;
-    const hx = oy.x + Math.cos(a) * PET_IZ, hy = oy.y + Math.sin(a) * PET_IZ + (tanim.ucar ? -30 : 0);
+    // Oyuncunun sağında dur (bot sol/arkada kalır)
+    const hx = oy.x + 45, hy = oy.y + 25 + (tanim.ucar ? -30 : 0);
     if (Math.hypot(hx - p.x, hy - p.y) > 18) yurudu = petYuru(p, hx, hy, hiz, dt);
   }
+  p.saldiriyor = vuruyor;
   p.yurume = yurudu ? p.yurume + dt : 0;
+  // Yürüyen pet oyuncuya dönerken 2,5 sn'de 20 px yaklaşamadıysa (suda kayarak takılma) yanına ışınlan
+  if (!tanim.ucar && !hedef) {
+    if (p.sonMesafe === undefined) { p.sonMesafe = 1e9; p.ilerlemeSure = 0; }
+    const dp = Math.hypot(oy.x - p.x, oy.y - p.y) || 1;
+    if (dp <= 110 || dp <= p.sonMesafe - 20) { p.sonMesafe = dp; p.ilerlemeSure = 0; } // yanında duruyorsa takılma sayılmaz
+    else p.ilerlemeSure += dt;
+    if (p.ilerlemeSure > 2.5) {
+      const yer = suGecidiTemizYer(oy.x, oy.y, p.r, petEngel, [45, 25]);
+      p.x = yer.x; p.y = yer.y; p.ilerlemeSure = 0; p.sonMesafe = 1e9; p.takili = 0;
+    }
+  }
   // Gitmek isteyip gidemiyorsa (duvar, su) takılmıştır: 2 sn sonra oyuncunun yanına
   p.takili = !yurudu && !vuruyor && Math.hypot(oy.x - p.x, oy.y - p.y) > PET_IZ + 30 ? p.takili + dt : (hedef && !yurudu && !vuruyor ? p.takili + dt : 0);
   if (Math.hypot(oy.x - p.x, oy.y - p.y) > 650 || p.takili > 2) {
-    const yer = tanim.ucar ? { x: oy.x - 40, y: oy.y - 20 } : freeSpot(oy.x - 45, oy.y + 25, p.r, petEngel);
+    const yer = tanim.ucar ? { x: oy.x + 45, y: oy.y - 5 } : suGecidiTemizYer(oy.x, oy.y, p.r, petEngel, [45, 25]);
     p.x = yer.x; p.y = yer.y; p.takili = 0;
   }
 }

@@ -35,6 +35,7 @@ I18N.ar = {
   "⚠ Bağlanılamadı, yeniden dene": "⚠ تعذّر الاتصال، حاول مرة أخرى",
   "⚠ Bağlantı hatası: {hata}": "⚠ خطأ في الاتصال: {hata}",
   "⚠ Bağlantı: {hata}": "⚠ الاتصال: {hata}",
+  "⚠ Çevrimiçi yolculuk için güncelleme bekleniyor": "⚠ رحلة اللعب عبر الإنترنت تحتاج إلى تحديث",
   "⚠ Dünya Turu odası şu an kurulamıyor": "⚠ لا يمكن إنشاء غرفة جولة حول العالم الآن",
   "⚠ Firebase'e bağlanılamadı — internetini kontrol edip yeniden dene.": "⚠ تعذّر الاتصال بـ Firebase — تحقّق من الإنترنت وحاول مجددًا.",
   "⚠ Google Play Games'e bağlanılamadı": "⚠ تعذّر الاتصال بـ Google Play Games",

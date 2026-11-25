@@ -35,6 +35,7 @@ I18N.zh = {
   "⚠ Bağlanılamadı, yeniden dene": "⚠ 无法连接，请重试",
   "⚠ Bağlantı hatası: {hata}": "⚠ 连接错误：{hata}",
   "⚠ Bağlantı: {hata}": "⚠ 连接：{hata}",
+  "⚠ Çevrimiçi yolculuk için güncelleme bekleniyor": "⚠ 在线旅程需要更新",
   "⚠ Dünya Turu odası şu an kurulamıyor": "⚠ 暂时无法创建环游世界房间",
   "⚠ Firebase'e bağlanılamadı — internetini kontrol edip yeniden dene.": "⚠ 无法连接 Firebase——请检查网络后重试。",
   "⚠ Google Play Games'e bağlanılamadı": "⚠ 无法连接 Google Play 游戏",

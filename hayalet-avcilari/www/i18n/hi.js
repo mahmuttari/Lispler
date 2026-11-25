@@ -35,6 +35,7 @@ I18N.hi = {
   "⚠ Bağlanılamadı, yeniden dene": "⚠ कनेक्ट नहीं हो सका, फिर से कोशिश करो",
   "⚠ Bağlantı hatası: {hata}": "⚠ कनेक्शन एरर: {hata}",
   "⚠ Bağlantı: {hata}": "⚠ कनेक्शन: {hata}",
+  "⚠ Çevrimiçi yolculuk için güncelleme bekleniyor": "⚠ ऑनलाइन यात्रा के लिए अपडेट चाहिए",
   "⚠ Dünya Turu odası şu an kurulamıyor": "⚠ अभी विश्व यात्रा कमरा नहीं बन सकता",
   "⚠ Firebase'e bağlanılamadı — internetini kontrol edip yeniden dene.": "⚠ Firebase से कनेक्ट नहीं हो सका — इंटरनेट जाँचें और फिर कोशिश करें।",
   "⚠ Google Play Games'e bağlanılamadı": "⚠ Google Play Games से कनेक्ट नहीं हो सका",

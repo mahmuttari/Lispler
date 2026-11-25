@@ -35,6 +35,7 @@ I18N.en = {
   "⚠ Bağlanılamadı, yeniden dene": "⚠ Couldn't connect, try again",
   "⚠ Bağlantı hatası: {hata}": "⚠ Connection error: {hata}",
   "⚠ Bağlantı: {hata}": "⚠ Connection: {hata}",
+  "⚠ Çevrimiçi yolculuk için güncelleme bekleniyor": "⚠ Online journey needs an update",
   "⚠ Dünya Turu odası şu an kurulamıyor": "⚠ A World Tour room can't be created right now",
   "⚠ Firebase'e bağlanılamadı — internetini kontrol edip yeniden dene.": "⚠ Couldn't connect to Firebase — check your internet and try again.",
   "⚠ Google Play Games'e bağlanılamadı": "⚠ Couldn't connect to Google Play Games",

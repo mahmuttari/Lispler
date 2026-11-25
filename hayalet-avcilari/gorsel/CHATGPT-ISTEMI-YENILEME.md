@@ -1,4 +1,4 @@
-# Hayalet Avcıları: bütün kod çizimlerinin ChatGPT ile yenilenmesi (R01–R49)
+# Hayalet Avcıları: bütün kod çizimlerinin ChatGPT ile yenilenmesi (R01–R50)
 
 Hazırlandı: 25 Kasım 2026. Kullanıcının kararı: *"Senin hazırladığın bütün görselleri ChatGPT'ye yeniden yaptır. Senin hazırladığın
 görsel kalmasın."* ve *"Görselleri her zamanki gibi ChatGPT'ye üret; bunu artık söylememe gerek yok."* Bu paket, oyunda bugün kodla
@@ -10,7 +10,7 @@ görsel kalmasın."* ve *"Görselleri her zamanki gibi ChatGPT'ye üret; bunu ar
 1. ChatGPT'de yeni bir sohbet aç; `CHATGPT-ISTEMI-YOLCULUK.md`'deki **ANA İSTEM**'i bir kez gönder (aynı üslup, tepeden görünüm).
    Karakter/efekt paftaları için üslup referansı `hamui/U06.png` ve `ham3d/D01.png`.
 2. Her resmi `gorsel/hamyeni/<KOD>.png` olarak kaydet; her paftadan sonra commit + push, `gorsel/hamyeni/DURUM.md`'yi güncelle.
-3. Sıra: önce R47–R49 (giriş ekranı, kullanıcı istedi), sonra R01 → R46 (öncelik sırasıyla dizildi). Her 6 paftada bir kullanıcıya toplu göster.
+3. Sıra: önce R47–R50 (giriş ekranı, kullanıcı istedi), sonra R01 → R46 (öncelik sırasıyla dizildi). Her 6 paftada bir kullanıcıya toplu göster.
 4. Ortak kurallar: 1536 × 1024 PNG, 3 × 2 ızgara (512 px hücre), saydam arka plan (opak denenler belirtilmiş), her nesne hücresinin
    içinde 24 px payla, yazı/harf/rakam/bayrak/dini simge yok, sevimli ve korkutucu olmayan premium casual üslup.
 5. Giriş, şifre, ödeme ve ChatGPT'nin görsel sınırı kullanıcıya bırakılır; oyun koduna dokunma.
@@ -555,4 +555,16 @@ Sheet R49: TRANSPARENT, grid 3 x 2:
 4. a confetti burst (colourful pieces) for celebrations
 5. a sparkle cluster (three four-point stars)
 6. a cute ghost peeking from the bottom edge of the screen (only the top half of the ghost, waving)
+```
+
+## H. Bölüm geçişi kutlaması (kullanıcı istedi: "bölüm geçişlerine eğlenceli bir şey koy, bir kutlama olsun")
+
+### R50: kutlama ve geçit
+
+```
+Sheet R50: TRANSPARENT, grid 3 x 2, cute premium casual style:
+1. a victory ribbon banner (golden ribbon with two small stars, EMPTY middle area for text — no letters)
+2-4. a firework burst, 3 animation frames (small spark → big colourful burst → fading glitter), same centre and size
+5. a glowing magic travel portal seen from above at a slight 3/4 angle: a swirling violet-gold ring standing on the ground
+6. the same portal fully open, brighter, with sparkles flying out
 ```

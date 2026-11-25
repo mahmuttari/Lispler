@@ -53,3 +53,4 @@
 | R47 | bekliyor (öncelikli: giriş ekranı) |
 | R48 | bekliyor (öncelikli) |
 | R49 | bekliyor (öncelikli) |
+| R50 | bekliyor (öncelikli: bölüm geçişi kutlaması) |

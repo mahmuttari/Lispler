@@ -103,6 +103,16 @@ function hikayeParilti() {
   return c;
 }
 
+// Hatıra simgesi: resim varsa <img>, yoksa emoji (esyaSimgesiHTML gibi kaçışlı).
+function hikayeHatiraSimgesiHTML(kod, emoji, ad = "") {
+  const k = `hatira-${kod}`;
+  if (kod && typeof GORSEL_LISTESI === "object" && GORSEL_LISTESI && GORSEL_LISTESI[k]) {
+    const guvenliAd = String(ad).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    return `<img class="defter-hatira-resim" src="gorsel/${encodeURIComponent(k)}.webp" alt="${guvenliAd}" draggable="false">`;
+  }
+  return emoji;
+}
+
 // Emoji her karede yazı olarak çizilmez (renkli yazı tipi yazılımla çizilirken pahalı): bir kez küçük tuvale çizilir
 const _hikayeSimgeler = new Map();
 function hikayeSimgeResmi(simge) {
@@ -130,7 +140,9 @@ function hikayeCiz(ctx) {
   ctx.globalAlpha = 0.85 + Math.sin(sn * 2.4) * 0.12;
   ctx.drawImage(hikayeParilti(), -g, -g, g * 2, g * 2);
   ctx.globalAlpha = 1;
-  ctx.drawImage(hikayeSimgeResmi(h.simge || "🎁"), -20, -20, 40, 40);
+  const hatiraResmi = (h.kod && typeof gorsel === "function") ? gorsel(`hatira-${h.kod}`) : null;
+  if (hatiraResmi) ctx.drawImage(hatiraResmi, -20, -20, 40, 40);
+  else ctx.drawImage(hikayeSimgeResmi(h.simge || "🎁"), -20, -20, 40, 40);
   const a = sn * 1.7;
   ctx.fillStyle = "#fff7cc";
   ctx.beginPath();
@@ -197,6 +209,49 @@ function hikayeKonusan(rol, s) {
   return { ad: "", emoji: "📜", key: null };
 }
 
+// Avcı önizlemesi: Karakterler ekranındaki çizimin aynısı (drawCharacter; 3D hazırsa UcAvci, yoksa k3/kar).
+// Karta bir kez çizilir (döngü yok); "uc-avci-hazir" gelince yeniden çizilir. 3D kapalıysa da aynı yedek çizim.
+const HIKAYE_AVCI_BOY = 96;
+function hikayeAvciTuvasiCiz(cv, key) {
+  const boy = HIKAYE_AVCI_BOY;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const px = Math.round(boy * dpr);
+  if (cv.width !== px || cv.height !== px) { cv.width = px; cv.height = px; }
+  const ctx = cv.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, boy, boy);
+  if (typeof drawCharacter !== "function") return false;
+  const idx = (typeof save !== "undefined" && save.selectedCostume && save.selectedCostume[key]) || 0;
+  drawCharacter(ctx, key, idx, boy / 2, boy * 0.62, boy * 0.8, 0);
+  return true;
+}
+// .hikaye-avci[data-avci] yuvalarını tuvalle doldurur (drawCharacter yoksa son çare kart resmi).
+function hikayeAvciDoldur(kap) {
+  if (!kap || typeof kap.querySelectorAll !== "function") return;
+  kap.querySelectorAll(".hikaye-avci[data-avci]").forEach((el) => {
+    const key = el.getAttribute("data-avci");
+    if (!key) return;
+    const varOlan = el.querySelector("canvas.hikaye-avci-tuval");
+    if (varOlan) { hikayeAvciTuvasiCiz(varOlan, key); return; }
+    el.textContent = "";
+    if (typeof drawCharacter === "function") {
+      const cv = document.createElement("canvas");
+      cv.className = "hikaye-avci-tuval";
+      cv.setAttribute("data-avci", key);
+      hikayeAvciTuvasiCiz(cv, key);
+      el.appendChild(cv);
+    } else {
+      const im = document.createElement("img");
+      im.className = "hikaye-avci-yedek";
+      im.src = `gorsel/kart-${encodeURIComponent(key)}.webp`;
+      im.alt = "";
+      im.onerror = () => { im.style.display = "none"; };
+      el.appendChild(im);
+    }
+  });
+}
+window.addEventListener("uc-avci-hazir", () => hikayeAvciDoldur(document));
+
 function hikayeSahneGoster(satirlar, secenek) {
   secenek = secenek || {};
   if (!satirlar || !satirlar.length) { if (secenek.bitince) secenek.bitince(); return; }
@@ -217,7 +272,7 @@ function hikayeSahneCiz() {
   const satir = s.satirlar[s.i] || { k: "anlatici", m: "" };
   const kim = hikayeKonusan(satir.k, s);
   const resim = kim.key
-    ? `<span class="hikaye-emoji" aria-hidden="true">${kim.emoji}</span><img class="hikaye-kart" src="gorsel/kart-${encodeURIComponent(kim.key)}.webp" alt="" onerror="this.style.display='none'">`
+    ? `<span class="hikaye-emoji" aria-hidden="true">${kim.emoji}</span><span class="hikaye-avci" data-avci="${escapeHtml(kim.key)}"></span>`
     : `<span class="hikaye-emoji" aria-hidden="true">${kim.emoji}</span>`;
   el.innerHTML = `<div class="hikaye-kutu">` +
     `<div class="hikaye-kim">${resim}</div>` +
@@ -225,6 +280,7 @@ function hikayeSahneCiz() {
     `<p class="hikaye-metin" dir="auto">${escapeHtml(satir.m || "")}</p>` +
     `<button class="hikaye-ileri" type="button" aria-label="${escapeHtml(t("Devam"))}">▶</button>` +
     `</div>`;
+  hikayeAvciDoldur(el);
 }
 
 function hikayeSahneIleri() {
@@ -435,7 +491,7 @@ function hikayeFinalOku(bitince) {
 // ---------- Defter ----------
 function hikayeKartHtml(key, sinif) {
   const ad = hikayeAvciAdi(key) || key || "";
-  return `<div class="defter-arkadas ${sinif || ""}"><img src="gorsel/kart-${encodeURIComponent(key)}.webp" alt="" onerror="this.style.display='none'">` +
+  return `<div class="defter-arkadas ${sinif || ""}"><span class="hikaye-avci defter-avci" data-avci="${escapeHtml(key)}"></span>` +
     `<small dir="auto"><bdi>${escapeHtml(ad)}</bdi></small></div>`;
 }
 
@@ -459,7 +515,7 @@ function hikayeDefterCiz() {
     const kod = u ? u.kod : "";
     if (veri && k.hatiralar[kod]) {
       html += `<button class="defter-yuva dolu" type="button" onclick="hikayeHatiraTikla('${kod}')">` +
-        `<span class="defter-simge" aria-hidden="true">${veri.hatira.simge || "🎁"}</span>` +
+        `<span class="defter-simge" aria-hidden="true">${hikayeHatiraSimgesiHTML(kod, veri.hatira.simge || "🎁", veri.hatira.ad || "")}</span>` +
         `<bdi class="defter-ad">${escapeHtml(veri.hatira.ad || "")}</bdi></button>`;
     } else {
       html += `<button class="defter-yuva bos" type="button" onclick="hikayeHatiraTikla('${kod}')">` +
@@ -480,6 +536,7 @@ function hikayeDefterCiz() {
   if (hikayeFinalHazir()) html += `<button class="btn btn-play defter-final" type="button" onclick="hikayeFinalOku()">▶ ${escapeHtml(t("Final"))}</button>`;
   if (k.rozet) html += `<div class="defter-rozet" dir="auto">🧭 ${escapeHtml(t("Gezgin rozeti"))}</div>`;
   el.innerHTML = html;
+  hikayeAvciDoldur(el);
 }
 
 function hikayeHatiraTikla(kod) {
@@ -489,7 +546,10 @@ function hikayeHatiraTikla(kod) {
   const u = kod ? ulkeKodla(kod) : null, veri = u && (v.ulke || {})[u.kod];
   if (!veri) { tip.hidden = true; tip.innerHTML = ""; return; }
   const varMi = !!k.hatiralar[kod];
-  let html = `<p dir="auto">${escapeHtml(varMi ? (veri.hatira.not || "") : t("Henüz bulunmadı."))}</p>`;
+  let html = varMi
+    ? `<div class="defter-tip-simge">${hikayeHatiraSimgesiHTML(kod, veri.hatira.simge || "🎁", veri.hatira.ad || "")}</div>`
+    : "";
+  html += `<p dir="auto">${escapeHtml(varMi ? (veri.hatira.not || "") : t("Henüz bulunmadı."))}</p>`;
   if (varMi && k.sahneler[kod] && veri.sahne) {
     html += `<button class="btn-tiny" type="button" onclick="hikayeUlkeSahnesi('${kod}')">▶ ${escapeHtml(t("Sahne"))}</button>`;
   }

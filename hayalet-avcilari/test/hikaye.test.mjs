@@ -219,16 +219,66 @@ try {
     assert.equal(defter.gorunur, true); assert.equal(defter.liste, 'none'); assert.equal(defter.yuva, 51); assert.equal(defter.aktif, 'defter'); assert.ok(defter.hedef >= 44, String(defter.hedef));
   });
 
+  // --- 6b) Defter avcı kartları: Karakterler ekranındaki önizleme tuvalleri, eski kart resmi değil ---
+  const avciKart = await kopya(p, () => {
+    save.dunyaTuru = { acik: 1, damgalar: {}, bitti: 0, gezgin: 'kinkin', katilanlar: { veryi: 1, kornet: 2, mark: 3 } };
+    openDunyaTuru(); turSekmesi('defter');
+    const el = document.getElementById('tur-defter');
+    const canvases = [...el.querySelectorAll('.defter-arkadaslar canvas.hikaye-avci-tuval')];
+    const dolu = canvases.map((cv) => {
+      const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
+      let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 8) n++;
+      return n;
+    });
+    return { sayi: canvases.length, dolu, eskiKart: !!el.querySelector('img[src^="gorsel/kart-"]') };
+  });
+  sina('defterde gezgin + 3 katılan arkadaş tuvalleri çizilir, eski kart resmi yok', () => {
+    assert.ok(avciKart.sayi >= 4, String(avciKart.sayi));
+    assert.ok(avciKart.dolu.every((n) => n > 0), JSON.stringify(avciKart.dolu));
+    assert.equal(avciKart.eskiKart, false);
+  });
+
+  // --- 6c) Hatıra simgesi: hatira-TR resmi varsa resim, yoksa emoji ---
+  const hatiraSimge = await kopya(p, async () => {
+    save.dunyaTuru = { acik: 1, damgalar: {}, bitti: 0, gezgin: 'kinkin', katilanlar: {}, hatiralar: { TR: Date.now() } };
+    openDunyaTuru(); turSekmesi('defter');
+    const el = document.getElementById('tur-defter');
+    const yuva = () => [...el.querySelectorAll('.defter-yuva.dolu')].find((b) => (b.getAttribute('onclick') || '').includes("'TR'"));
+    const oku = () => ({
+      resim: !!yuva().querySelector('img.defter-hatira-resim'),
+      emoji: (yuva().querySelector('.defter-simge').textContent || '').trim(),
+      src: (yuva().querySelector('img.defter-hatira-resim') || {}).getAttribute ? yuva().querySelector('img.defter-hatira-resim').getAttribute('src') : '',
+    });
+    const once = oku();
+    const c = document.createElement('canvas'); c.width = c.height = 32;
+    const x = c.getContext('2d'); x.fillStyle = '#e11'; x.fillRect(2, 2, 28, 28);
+    const im = new Image();
+    await new Promise((coz) => { im.onload = im.onerror = () => coz(); im.src = c.toDataURL(); });
+    GORSEL['hatira-TR'] = im; GORSEL_LISTESI['hatira-TR'] = im.src;
+    hikayeDefterCiz();
+    const sonra = oku();
+    delete GORSEL['hatira-TR']; delete GORSEL_LISTESI['hatira-TR'];
+    hikayeDefterCiz();
+    const geri = oku();
+    return { once, sonra, geri };
+  });
+  sina('hatira-TR resmi varsa yuva resmi, yoksa emoji gösterir', () => {
+    assert.equal(hatiraSimge.once.resim, false); assert.ok(hatiraSimge.once.emoji.length > 0, hatiraSimge.once.emoji);
+    assert.equal(hatiraSimge.sonra.resim, true); assert.equal(hatiraSimge.sonra.src, 'gorsel/hatira-TR.webp'); assert.equal(hatiraSimge.sonra.emoji, '');
+    assert.equal(hatiraSimge.geri.resim, false); assert.ok(hatiraSimge.geri.emoji.length > 0, hatiraSimge.geri.emoji);
+  });
+
   // --- 7) Arapça RTL, 340 px: yatay taşma yok ---
   const rtl = await sayfaAc(340);
   const tasma = await kopya(rtl, () => {
     document.documentElement.setAttribute('dir', 'rtl');
-    save.dunyaTuru = { acik: 3, damgalar: { TR: 1 }, bitti: 0 };
+    save.dunyaTuru = { acik: 3, damgalar: { TR: 1 }, bitti: 0, gezgin: 'kinkin', katilanlar: { veryi: 1, kornet: 2, mark: 3, kent: 4, ponko: 5, gul: 6, rani: 7, beti: 8, fanatik: 9, silsen: 10, sercin: 11 } };
     openDunyaTuru(); turSekmesi('defter');
     const el = document.getElementById('tur-defter');
-    return { ic: el.scrollWidth, dis: el.clientWidth, sayfa: document.documentElement.scrollWidth, genislik: window.innerWidth };
+    return { ic: el.scrollWidth, dis: el.clientWidth, sayfa: document.documentElement.scrollWidth, genislik: window.innerWidth, avci: el.querySelectorAll('canvas.hikaye-avci-tuval').length };
   });
   sina('Arapça 340 px defterde yatay taşma yok', () => {
+    assert.ok(tasma.avci >= 12, String(tasma.avci));
     assert.ok(tasma.ic <= tasma.dis + 1, `${tasma.ic}/${tasma.dis}`); assert.ok(tasma.sayfa <= tasma.genislik + 1, `${tasma.sayfa}/${tasma.genislik}`);
   });
   await rtl.close();

@@ -2084,7 +2084,7 @@ body.is-tablet .power-bar .power-ring { width: 32px; height: 32px; font-size: 21
 .defter-bolum h3 { margin: 4px 0 6px; font-size: 15px; color: var(--altin); text-align: start; }
 .defter-arkadaslar { display: flex; flex-wrap: wrap; gap: 8px; }
 .defter-arkadas {
-  width: 64px;
+  width: 104px;
   min-height: 44px;
   display: flex;
   flex-direction: column;
@@ -2098,6 +2098,9 @@ body.is-tablet .power-bar .power-ring { width: 32px; height: 32px; font-size: 21
 }
 .defter-arkadas.gezgin { border-color: rgba(255, 201, 77, 0.7); box-shadow: 0 0 0 1px rgba(255, 201, 77, 0.35); }
 .defter-arkadas img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
+.defter-avci { width: 96px; height: 96px; display: flex; align-items: center; justify-content: center; }
+.defter-avci img, .hikaye-avci img { width: 96px; height: 96px; border-radius: 8px; object-fit: cover; }
+.hikaye-avci-tuval { width: 96px; height: 96px; display: block; }
 .defter-arkadas small { font-size: 10px; line-height: 1.1; overflow-wrap: anywhere; text-align: center; }
 .defter-arkadas.kilit { opacity: 0.5; justify-content: center; font-size: 20px; }
 .defter-izgara { display: grid; grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: 6px; }
@@ -2119,7 +2122,9 @@ body.is-tablet .power-bar .power-ring { width: 32px; height: 32px; font-size: 21
   overflow: hidden;
 }
 .defter-yuva.dolu { border-color: rgba(255, 201, 77, 0.55); }
-.defter-simge { font-size: 22px; line-height: 1; }
+.defter-simge { font-size: 22px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+.defter-hatira-resim { width: 40px; height: 40px; border-radius: 8px; object-fit: contain; }
+.defter-tip-simge { display: flex; justify-content: center; margin-bottom: 6px; }
 .defter-ad { font-size: 10px; line-height: 1.15; overflow-wrap: anywhere; text-align: center; max-width: 100%; }
 .defter-sira { font-size: 12px; color: var(--soluk); }
 .defter-tip {
@@ -2181,9 +2186,10 @@ body.is-tablet .power-bar .power-ring { width: 32px; height: 32px; font-size: 21
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
   text-align: start;
 }
-.hikaye-kim { position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
+.hikaye-kim { position: relative; width: 96px; height: 96px; display: flex; align-items: center; justify-content: center; }
+.hikaye-kim .hikaye-avci { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 .hikaye-emoji { font-size: 40px; line-height: 1; }
-.hikaye-kart { position: absolute; inset: 0; width: 64px; height: 64px; border-radius: 12px; object-fit: cover; }
+.hikaye-kart { position: absolute; inset: 0; width: 96px; height: 96px; border-radius: 12px; object-fit: cover; }
 .hikaye-konusan { margin-top: 8px; font-family: var(--font-baslik); font-weight: 800; color: var(--altin); overflow-wrap: anywhere; }
 .hikaye-metin { margin: 8px 0 14px; font-size: 16px; line-height: 1.45; overflow-wrap: anywhere; }
 .hikaye-bilmece-soru { white-space: pre-line; }

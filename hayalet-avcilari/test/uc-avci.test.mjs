@@ -860,6 +860,142 @@ try {
     assert.ok(ucAvciYavas.sure <= 3000, `süre=${ucAvciYavas.sure}`);
   });
 
+  // ---- UC7b: pişmiş duruş önbelleği — kırpma, boyut, ısınma ve kare bütçesi ----
+  const onbellekOyun = await p.evaluate(async () => {
+    save.ayar3d = true; persistSave();
+    if (window.UcAvci.ac) UcAvci.ac();
+    const c = document.createElement('canvas'); c.width = 844; c.height = 390;
+    const ctx = c.getContext('2d');
+    const d = { aci: 0 };
+    const kare = () => {
+      const kb = performance.now();
+      const t = performance.now() / 1000;
+      d.aci = t * 2;
+      UcAvci.ciz(ctx, { charKey: 'kent', costumeIdx: 0, x: 200, y: 220, size: 70, aci: d.aci, yuruyor: true, walkPhase: t, aimRaise: 1, kimlik: 'ben' }, d);
+      UcAvci.ciz(ctx, { charKey: 'mark', costumeIdx: 0, x: 420, y: 220, size: 62, aci: d.aci + 1, yuruyor: true, walkPhase: t, aimRaise: 0.5, kimlik: 'bot' }, d);
+      UcAvci.kareBitti(performance.now() - kb);
+    };
+    const bas = performance.now();
+    let kareSay = 0;
+    await new Promise((coz) => {
+      const dongu = () => {
+        kare(); kareSay++;
+        const s = UcAvci._sayac();
+        if (s.isinmaKalan === 0 && !s.isinmaCalisiyor) return coz();
+        if (performance.now() - bas > 40000) return coz();
+        requestAnimationFrame(dongu);
+      };
+      requestAnimationFrame(dongu);
+    });
+    const isinmaMs = Math.round(performance.now() - bas);
+    const isinma = UcAvci._sayac();
+    let t1 = performance.now(), ilkRender = 0, kare2 = 0;
+    await new Promise((coz) => {
+      const dongu = () => {
+        kare(); kare2++;
+        const gecen = performance.now() - t1;
+        if (gecen >= 1000 && !ilkRender) ilkRender = UcAvci._sayac().render;
+        if (gecen >= 3000) return coz();
+        requestAnimationFrame(dongu);
+      };
+      requestAnimationFrame(dongu);
+    });
+    const son = UcAvci._sayac();
+    return { isinmaMs, kareSay, isinmaKalan: isinma.isinmaKalan, isinmaCalisiyor: isinma.isinmaCalisiyor,
+      renderSon2sn: son.render - ilkRender, onbellekBayt: son.onbellekBayt, onbellekSay: son.onbellekSay, kare2 };
+  });
+  sina('UC7b ısınma sonrası 3 sn yürüyüşte son 2 sn render ≤ 5 ve önbellek ≤ 32 MB', () => {
+    assert.equal(onbellekOyun.isinmaKalan, 0, `kalan=${onbellekOyun.isinmaKalan}`);
+    assert.equal(onbellekOyun.isinmaCalisiyor, false);
+    assert.ok(onbellekOyun.renderSon2sn <= 5, `render=${onbellekOyun.renderSon2sn}`);
+    assert.ok(onbellekOyun.onbellekBayt <= 32 * 1024 * 1024, `bayt=${onbellekOyun.onbellekBayt}`);
+  });
+
+  // CPU 4x: ısınma sonrası 6 sn oyunda kare aralıkları (p95 ≤ 20 ms, en büyük ≤ 50 ms)
+  const cdp = await p.context().newCDPSession(p);
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+  const kareAralik = await p.evaluate(async () => {
+    const c = document.createElement('canvas'); c.width = 844; c.height = 390;
+    const ctx = c.getContext('2d');
+    const d = { aci: 0 };
+    const kare = () => {
+      const kb = performance.now();
+      const t = performance.now() / 1000;
+      d.aci = t * 2;
+      UcAvci.ciz(ctx, { charKey: 'kent', costumeIdx: 0, x: 200, y: 220, size: 70, aci: d.aci, yuruyor: true, walkPhase: t, aimRaise: 1, kimlik: 'ben' }, d);
+      UcAvci.ciz(ctx, { charKey: 'mark', costumeIdx: 0, x: 420, y: 220, size: 62, aci: d.aci + 1, yuruyor: true, walkPhase: t, aimRaise: 0.5, kimlik: 'bot' }, d);
+      UcAvci.kareBitti(performance.now() - kb);
+    };
+    const aralik = [];
+    let son = 0;
+    const bitis = performance.now() + 6000;
+    await new Promise((coz) => {
+      const dongu = (now) => {
+        if (son) aralik.push(now - son);
+        son = now;
+        kare();
+        if (performance.now() >= bitis) return coz();
+        requestAnimationFrame(dongu);
+      };
+      requestAnimationFrame(dongu);
+    });
+    aralik.sort((a, b) => a - b);
+    const yuzde = (q) => aralik[Math.min(aralik.length - 1, Math.floor(aralik.length * q))];
+    return { n: aralik.length, p95: yuzde(0.95), enBuyuk: aralik[aralik.length - 1], destek: UcAvci.destek() };
+  });
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+  sina('UC7b CPU 4x: ısınma sonrası 6 sn oyunda p95 ≤ 20 ms, hiçbir aralık > 50 ms', () => {
+    assert.equal(kareAralik.destek, true);
+    assert.ok(kareAralik.n > 100, `aralık=${kareAralik.n}`);
+    assert.ok(kareAralik.p95 <= 20, `p95=${kareAralik.p95}`);
+    assert.ok(kareAralik.enBuyuk <= 50, `en büyük=${kareAralik.enBuyuk}`);
+  });
+
+  // Kırpılmış pişmiş resim, canlı (kırpılmamış) kareyle aynı yere basılır; namlu ucu da eşleşir.
+  const kirpmaKonum = await p.evaluate(() => {
+    const W = 240, H = 260;
+    const ciz = (kimlik, ek) => {
+      const c = document.createElement('canvas'); c.width = W; c.height = H;
+      const ctx = c.getContext('2d');
+      UcAvci.ciz(ctx, { charKey: 'kinkin', costumeIdx: 0, x: 120, y: 180, size: 80, aci: Math.PI / 2,
+        aimRaise: 1, shootRecoil: 1, kimlik, ...ek });
+      const d = ctx.getImageData(0, 0, W, H).data;
+      let L = W, R = -1, U = H, D = -1;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        if (d[(y * W + x) * 4 + 3] > 128) { if (x < L) L = x; if (x > R) R = x; if (y < U) U = y; if (y > D) D = y; }
+      }
+      const n = UcAvci.namlu(kimlik);
+      return { L, R, U, D, namlu: n };
+    };
+    return { onbellek: ciz('kirp-onbellek', {}), canli: ciz('kirp-canli', { _canli: true }) };
+  });
+  sina('UC7b kırpılmış pişmiş avcı canlı çizimle aynı yerde (≤ 2 px), namlu ≤ 3 px', () => {
+    for (const k of ['L', 'R', 'U', 'D']) {
+      assert.ok(Math.abs(kirpmaKonum.onbellek[k] - kirpmaKonum.canli[k]) <= 2,
+        `${k}: önbellek=${kirpmaKonum.onbellek[k]} canlı=${kirpmaKonum.canli[k]}`);
+    }
+    assert.ok(kirpmaKonum.onbellek.namlu && kirpmaKonum.canli.namlu, 'namlu yok');
+    const uzak = Math.hypot(kirpmaKonum.onbellek.namlu.x - kirpmaKonum.canli.namlu.x,
+      kirpmaKonum.onbellek.namlu.y - kirpmaKonum.canli.namlu.y);
+    assert.ok(uzak <= 3, `namlu uzaklık=${uzak}`);
+  });
+
+  // 12 karakter × 3 kostüm gezildikten sonra önbellek 32 MB sınırında kalır.
+  const onbellekCap = await p.evaluate(() => {
+    const chars = ['kinkin', 'veryi', 'kornet', 'mark', 'kent', 'ponko', 'gul', 'rani', 'beti', 'fanatik', 'silsen', 'sercin'];
+    const c = document.createElement('canvas'); c.width = 300; c.height = 320;
+    const ctx = c.getContext('2d');
+    for (const ch of chars) for (let idx = 0; idx < 3; idx++) for (let i = 0; i < 8; i++) for (let k = 0; k < 8; k++) {
+      UcAvci.ciz(ctx, { charKey: ch, costumeIdx: idx, x: 150, y: 220, size: 70, aci: i * Math.PI / 4,
+        yuruyor: true, walkPhase: k * (Math.PI * 2 / 12) / 8, kimlik: `cap-${ch}-${idx}` });
+    }
+    return UcAvci._sayac();
+  });
+  sina('UC7b 12 karakter × 3 kostüm sonrası önbellek ≤ 32 MB, sayfa hatası yok', () => {
+    assert.ok(onbellekCap.onbellekSay > 0);
+    assert.ok(onbellekCap.onbellekBayt <= 32 * 1024 * 1024, `bayt=${onbellekCap.onbellekBayt}`);
+  });
+
   sina('SwiftShader sayfasında sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 
   // f) Varsayılan ayarlı ikinci tarayıcı: WebGL olmasa da sayfa çalışır, drawCharacter çizer, hata yok

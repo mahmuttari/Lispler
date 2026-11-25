@@ -19,7 +19,8 @@ from PIL import Image
 KOK = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 HAM = os.path.join(KOK, 'gorsel', 'ham')
 HAMUI = os.path.join(KOK, 'gorsel', 'hamui')
-HAMEK = os.path.join(KOK, 'gorsel', 'hamek')  # ek paftalar (CHATGPT-ISTEMI-EK.md, K01–K04)
+HAMEK = os.path.join(KOK, 'gorsel', 'hamek')
+HAMYENI = os.path.join(KOK, 'gorsel', 'hamyeni')  # yenileme paftaları R01–R49  # ek paftalar (CHATGPT-ISTEMI-EK.md, K01–K04)
 CIKTI = os.path.join(KOK, 'www', 'gorsel')
 
 # Pafta → hücre anahtarları (None: kullanılmaz). Anahtar → en uzun kenar (px).
@@ -109,7 +110,8 @@ ANIMASYON = {
     'K01': [('carpilma', [1, 2, 3, 4, 5, 6], 192)],
     'K05': [('kopru-in', [2, 3], 256)],
     'K10': [('mermi-yildiz', [4, 5, 6], 64)],
-    'K11': [('efsane-aura', [1, 2, 3], 256)],  # kilitli köprünün inişi (1. kare K05 hücre 1: kopru-kapali)
+    'K11': [('efsane-aura', [1, 2, 3], 256)],
+    'R48': [('menu-hayalet', [1, 2, 3], 160)],  # kilitli köprünün inişi (1. kare K05 hücre 1: kopru-kapali)
 }
 
 
@@ -151,6 +153,8 @@ ANIM_GOVDE = {}  # ad → ilk karenin dolu alanı, birleşik kutuya oranla [x, y
 def animasyonlar(liste):
     for pafta, animler in ANIMASYON.items():
         yol = ham_yolu(pafta)
+        if not os.path.exists(yol):
+            yol = os.path.join(HAMYENI, f'{pafta}.png')
         if not os.path.exists(yol):
             continue
         resim = Image.open(yol).convert('RGBA')
@@ -608,6 +612,9 @@ EK_PAFTALAR = {
     'K08': [('donati-balkabagi', 128), ('donati-araba', 192), ('donati-cit', 160), ('donati-korkuluk', 192), ('donati-mum', 128), ('donati-orumcek', 160)],
     'K10': [('silah-yildiz', 192), ('silah-ejder', 192), ('silah-gokkusagi', 192), None, None, None],
     'K11': [None, None, None, ('efsane-rozet', 128), ('efsane-sandik', 192), ('efsane-parilti', 192)],
+    'R47': [('menu-amblem', 256), ('menu-kaide', 256), ('menu-spot', 256), ('menu-dugme-yesil', 256), ('menu-dugme-mor', 256), ('menu-dugme-turuncu', 256)],
+    'R49': [('menu-dugme-camgobegi', 256), ('menu-dugme-cam', 192), ('menu-sayac', 192), ('menu-konfeti', 192), ('menu-parilti', 128), ('menu-bakan', 192)],
+    'R48': [None, None, None, ('menu-kayan', 192), ('menu-yarasa', 128), ('menu-fener', 128)],
     'K04': [('yuva-mezarlik', 256), ('yuva-magara', 256), ('yuva-izbe', 256), ('yuva-kovuk', 256), ('yuva-kuyu', 256), ('yuva-kripta', 256)],
 }
 
@@ -641,6 +648,8 @@ def ek_hucreler(liste):
     for pafta, hucreler in EK_PAFTALAR.items():
         yol = os.path.join(HAMEK, f'{pafta}.png')
         if not os.path.exists(yol):
+            yol = os.path.join(HAMYENI, f'{pafta}.png')  # R paftaları (CHATGPT-ISTEMI-YENILEME.md)
+        if not os.path.exists(yol):
             continue
         resim = Image.open(yol).convert('RGBA')
         if resim.size != (1536, 1024):
@@ -673,7 +682,7 @@ def ek_kes():
     al = lambda ad: json.loads(re.search(r'const ' + ad + r' = (\{.*?\});', metin, re.S).group(1))
     liste, govde, namlu = al('GORSEL_LISTESI'), al('ANIM_GOVDE'), al('NAMLU_UCU')
     eski_anim = dict(ANIMASYON)
-    ANIMASYON.clear(); ANIMASYON.update({k: v for k, v in eski_anim.items() if k.startswith('K')})
+    ANIMASYON.clear(); ANIMASYON.update({k: v for k, v in eski_anim.items() if k[0] in 'KR'})
     animasyonlar(liste)
     ANIMASYON.clear(); ANIMASYON.update(eski_anim)
     ek_hucreler(liste)

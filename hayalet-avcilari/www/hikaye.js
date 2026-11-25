@@ -193,6 +193,60 @@ function hikayeDevam(durakladi) {
 // ---------- Sahne penceresi ----------
 let _sahne = null;
 
+// Daktilo: satır harf harf yazılır; ilk dokunuş satırı tamamlar, sonraki ilerletir.
+let _sahneYazici = 0;
+let _sahneYaziTam = "";
+let _sahneYaziYaziyor = false;
+
+function hikayeYaziDurdur() {
+  if (_sahneYazici) { clearTimeout(_sahneYazici); _sahneYazici = 0; }
+  _sahneYaziYaziyor = false;
+}
+
+function hikayeYaziTamamla() {
+  if (!_sahneYaziYaziyor) return false;
+  hikayeYaziDurdur();
+  const el = document.querySelector("#hikaye-sahne .hikaye-metin");
+  if (el) el.textContent = _sahneYaziTam;
+  return true;
+}
+
+function hikayeYaziBasla(el, metin) {
+  hikayeYaziDurdur();
+  _sahneYaziTam = metin;
+  if (!el) return;
+  const az = typeof window.matchMedia === "function"
+    && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (az || !metin) { el.textContent = metin; return; }
+  _sahneYaziYaziyor = true;
+  el.textContent = "";
+  // Harf sayısı geçen süreden hesaplanır (28 ms/harf): 3D çizim zamanlayıcıyı geciktirse de yazı geride kalmaz
+  const bas = performance.now();
+  let i = 0;
+  const adim = () => {
+    const n = Math.min(metin.length, Math.max(i + 1, Math.floor((performance.now() - bas) / 28)));
+    if (n !== i) { i = n; el.textContent = metin.slice(0, i); }
+    if (i < metin.length) _sahneYazici = setTimeout(adim, 28);
+    else { _sahneYazici = 0; _sahneYaziYaziyor = false; }
+  };
+  _sahneYazici = setTimeout(adim, 28);
+}
+
+// Sahnedeki bir avcı yuvasını doldurur; avcı değiştiyse true (kısa karşıdan karşıya geçiş için).
+function hikayeSahneYuvasi(slot, key, ayna) {
+  slot.classList.toggle("son", !!ayna);
+  const eski = slot.getAttribute("data-avci") || "";
+  if (eski === (key || "")) return false;
+  if (typeof canliOnizlemeTemizle === "function") canliOnizlemeTemizle(slot);
+  slot.textContent = "";
+  slot.setAttribute("data-avci", key || "");
+  if (key && typeof canliOnizleme === "function") {
+    const idx = (typeof save !== "undefined" && save.selectedCostume && save.selectedCostume[key]) || 0;
+    canliOnizleme(slot, key, idx, { atis: false });
+  }
+  return true;
+}
+
 function hikayeKonusan(rol, s) {
   const k = hikayeKayit();
   const gezgin = k.gezgin || (typeof save !== "undefined" ? save.selectedChar : "");
@@ -255,6 +309,7 @@ window.addEventListener("uc-avci-hazir", () => hikayeAvciDoldur(document));
 function hikayeSahneGoster(satirlar, secenek) {
   secenek = secenek || {};
   if (!satirlar || !satirlar.length) { if (secenek.bitince) secenek.bitince(); return; }
+  hikayeYaziDurdur();
   _sahne = { satirlar, i: 0, katilan: secenek.katilan, bitince: secenek.bitince, durakladi: hikayeDuraklat() };
   const el = document.getElementById("hikaye-sahne");
   if (!el) { hikayeDevam(_sahne.durakladi); _sahne = null; return; }
@@ -269,22 +324,76 @@ function hikayeSahneCiz() {
   const s = _sahne;
   if (!s) return;
   const el = document.getElementById("hikaye-sahne");
+  if (!el) return;
   const satir = s.satirlar[s.i] || { k: "anlatici", m: "" };
   const kim = hikayeKonusan(satir.k, s);
-  const resim = kim.key
-    ? `<span class="hikaye-emoji" aria-hidden="true">${kim.emoji}</span><span class="hikaye-avci" data-avci="${escapeHtml(kim.key)}"></span>`
-    : `<span class="hikaye-emoji" aria-hidden="true">${kim.emoji}</span>`;
-  el.innerHTML = `<div class="hikaye-kutu">` +
-    `<div class="hikaye-kim">${resim}</div>` +
-    `<div class="hikaye-konusan" dir="auto"><bdi>${escapeHtml(kim.ad)}</bdi></div>` +
-    `<p class="hikaye-metin" dir="auto">${escapeHtml(satir.m || "")}</p>` +
-    `<button class="hikaye-ileri" type="button" aria-label="${escapeHtml(t("Devam"))}">▶</button>` +
-    `</div>`;
-  hikayeAvciDoldur(el);
+  const gezginKey = hikayeKonusan("gezgin", s).key || "";
+  // Sahnedeki ikinci avcı: önce katılan, yoksa son arkadaş, yoksa (varsa) o satırın konuşanı.
+  let partner = s.katilan || hikayeSonArkadas(null, hikayeKayit()) || "";
+  if (satir.k !== "anlatici" && kim.key && kim.key !== gezginKey) partner = kim.key;
+  if (partner === gezginKey) partner = "";
+  const anlatim = satir.k === "anlatici";
+  const metin = String(satir.m || "");
+
+  let kutu = el.querySelector(".hikaye-kutu");
+  if (!kutu) {
+    el.innerHTML = `<div class="hikaye-kutu"><div class="hikaye-ust"></div><div class="hikaye-sahne-alan"></div>` +
+      `<button class="hikaye-ileri" type="button" aria-label="${escapeHtml(t("Devam"))}">▶</button></div>`;
+    kutu = el.querySelector(".hikaye-kutu");
+  }
+  const ust = kutu.querySelector(".hikaye-ust");
+  const alan = kutu.querySelector(".hikaye-sahne-alan");
+  if (!ust || !alan) return;
+
+  // Konuşma balonu (konuşan avcıya uzanan kuyruk) ya da anlatıcı parşömen kutusu.
+  if (anlatim) {
+    ust.innerHTML = `<div class="hikaye-anlatim"><span class="hikaye-anlatim-simge" aria-hidden="true">📜</span>` +
+      `<p class="hikaye-metin" dir="auto" aria-hidden="true"></p>` +
+      `<span class="hikaye-sr">${escapeHtml(metin)}</span></div>`;
+  } else {
+    const yon = kim.key === gezginKey ? "sol" : "sag";
+    ust.innerHTML = `<div class="hikaye-balon ${yon}"><div class="hikaye-konusan" dir="auto"><bdi>${escapeHtml(kim.ad)}</bdi></div>` +
+      `<p class="hikaye-metin" dir="auto" aria-hidden="true"></p>` +
+      `<span class="hikaye-sr">${escapeHtml(metin)}</span></div>`;
+  }
+
+  // İki avcı yuvası: satır başı (gezgin) ve satır sonu (diğer avcı).
+  let bas = alan.querySelector(".hikaye-sahne-avci.bas");
+  if (!bas) { bas = document.createElement("div"); bas.className = "hikaye-sahne-avci bas"; alan.appendChild(bas); }
+  let son = alan.querySelector(".hikaye-sahne-avci.son");
+  hikayeSahneYuvasi(bas, gezginKey, false);
+  if (partner) {
+    if (!son) { son = document.createElement("div"); son.className = "hikaye-sahne-avci son"; alan.appendChild(son); }
+    const degisti = hikayeSahneYuvasi(son, partner, true);
+    if (degisti && !anlatim) {
+      son.classList.add("degisiyor");
+      requestAnimationFrame(() => requestAnimationFrame(() => son.classList.remove("degisiyor")));
+    }
+  } else if (son) {
+    if (typeof canliOnizlemeTemizle === "function") canliOnizlemeTemizle(son);
+    son.remove(); son = null;
+  }
+  alan.classList.toggle("yalniz", !partner);
+  alan.classList.toggle("anlatim", anlatim);
+  bas.classList.toggle("konusan", !anlatim && !!kim.key && kim.key === gezginKey);
+  bas.classList.toggle("dinleyen", !anlatim && (!kim.key || kim.key !== gezginKey));
+  if (son) {
+    son.classList.toggle("konusan", !anlatim && !!kim.key && kim.key === partner);
+    son.classList.toggle("dinleyen", !anlatim && (!kim.key || kim.key !== partner));
+  }
+  const konusan = anlatim ? null : (kim.key === gezginKey ? bas : (son && kim.key === partner ? son : null));
+  if (konusan) {
+    konusan.classList.remove("zipla");
+    void konusan.offsetWidth;
+    konusan.classList.add("zipla");
+  }
+
+  hikayeYaziBasla(ust.querySelector(".hikaye-metin"), metin);
 }
 
 function hikayeSahneIleri() {
   if (!_sahne) return;
+  if (hikayeYaziTamamla()) return;
   if (_sahne.i < _sahne.satirlar.length - 1) { _sahne.i++; hikayeSahneCiz(); return; }
   hikayeSahneKapat();
 }
@@ -292,8 +401,13 @@ function hikayeSahneIleri() {
 function hikayeSahneKapat() {
   const s = _sahne;
   _sahne = null;
+  hikayeYaziDurdur();
   const el = document.getElementById("hikaye-sahne");
-  if (el) { el.classList.remove("active"); el.innerHTML = ""; }
+  if (el) {
+    if (typeof canliOnizlemeTemizle === "function") canliOnizlemeTemizle(el);
+    el.classList.remove("active");
+    el.innerHTML = "";
+  }
   if (s) {
     hikayeDevam(s.durakladi);
     if (s.bitince) s.bitince();
@@ -305,9 +419,14 @@ function hikayeSahneKapat() {
 function hikayePencereleriKapat() {
   _sahne = null;
   _bilmece = null;
+  hikayeYaziDurdur();
   for (const id of ["hikaye-sahne", "hikaye-bilmece"]) {
     const el = document.getElementById(id);
-    if (el) { el.classList.remove("active"); el.innerHTML = ""; }
+    if (el) {
+      if (typeof canliOnizlemeTemizle === "function") canliOnizlemeTemizle(el);
+      el.classList.remove("active");
+      el.innerHTML = "";
+    }
   }
 }
 

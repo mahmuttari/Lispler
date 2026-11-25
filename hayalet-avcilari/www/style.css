@@ -2250,6 +2250,88 @@ body.is-tablet .power-bar .power-ring { width: 32px; height: 32px; font-size: 21
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
   text-align: start;
 }
+#hikaye-sahne .hikaye-kutu { max-width: 460px; }
+.hikaye-ust { min-height: 0; }
+.hikaye-sahne-alan {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+.hikaye-sahne-alan.yalniz { justify-content: center; }
+.hikaye-sahne-avci {
+  --ayna: 1;
+  --olcek: 0.94;
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(96px, 38vw, 150px);
+  height: clamp(112px, 43vw, 170px);
+  opacity: 0.55;
+  transform: scaleX(var(--ayna)) scale(var(--olcek));
+  transform-origin: bottom center;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+}
+.hikaye-sahne-avci.son { --ayna: -1; }
+/* Sağdan sola düzende yuvalar yer değiştirir: aynalanan, ekranda sağda kalan (bas) yuvadır; ikisi yine birbirine bakar */
+[dir="rtl"] .hikaye-sahne-avci.bas { --ayna: -1; }
+[dir="rtl"] .hikaye-sahne-avci.son { --ayna: 1; }
+.hikaye-sahne-avci.konusan { --olcek: 1; opacity: 1; }
+.hikaye-sahne-avci.dinleyen { opacity: 0.55; }
+.hikaye-sahne-avci.degisiyor { opacity: 0 !important; }
+.hikaye-sahne-alan.anlatim .hikaye-sahne-avci { --olcek: 0.97; opacity: 0.7; }
+.hikaye-sahne-avci.zipla { animation: hikaye-zipla 0.25s ease; }
+.hikaye-sahne-alan.anlatim .hikaye-sahne-avci.zipla { animation: none; }
+@keyframes hikaye-zipla {
+  0%, 100% { transform: translateY(0) scaleX(var(--ayna)) scale(var(--olcek)); }
+  50% { transform: translateY(-6px) scaleX(var(--ayna)) scale(var(--olcek)); }
+}
+.hikaye-balon {
+  position: relative;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #fdf6e3;
+  color: #2a2118;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+}
+.hikaye-balon .hikaye-konusan { margin: 0 0 4px; color: #8a5a1c; }
+.hikaye-balon .hikaye-metin { margin: 0; color: #2a2118; }
+.hikaye-balon::after {
+  content: "";
+  position: absolute;
+  bottom: -11px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 12px 9px 0 9px;
+  border-color: #fdf6e3 transparent transparent transparent;
+}
+.hikaye-balon.sol::after { inset-inline-start: 28px; }
+.hikaye-balon.sag::after { inset-inline-end: 28px; }
+.hikaye-anlatim {
+  position: relative;
+  padding: 12px 14px;
+  border: 1px solid #d8c39a;
+  border-radius: 12px;
+  background: #efe0bf;
+  color: #3a2c18;
+  font-style: italic;
+}
+.hikaye-anlatim-simge { margin-inline-end: 6px; }
+.hikaye-anlatim .hikaye-metin { margin: 0; color: #3a2c18; font-style: italic; }
+.hikaye-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
 .hikaye-kim { position: relative; width: 96px; height: 96px; display: flex; align-items: center; justify-content: center; }
 .hikaye-kim .hikaye-avci { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 .hikaye-emoji { font-size: 40px; line-height: 1; }

@@ -19,6 +19,7 @@ from PIL import Image
 KOK = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 HAM = os.path.join(KOK, 'gorsel', 'ham')
 HAMUI = os.path.join(KOK, 'gorsel', 'hamui')
+HAMEK = os.path.join(KOK, 'gorsel', 'hamek')  # ek paftalar (CHATGPT-ISTEMI-EK.md, K01–K04)
 CIKTI = os.path.join(KOK, 'www', 'gorsel')
 
 # Pafta → hücre anahtarları (None: kullanılmaz). Anahtar → en uzun kenar (px).
@@ -104,7 +105,15 @@ ANIMASYON = {
     'N18': [('mermi-enerji', [1, 2, 3], 64), ('mermi-baloncuk', [4, 5, 6], 64)],
     'N19': [('seviye', [1, 2, 3], 256), ('hasar', [4, 5, 6], 160)],
     'N20': [('donma', [1, 2, 3], 160), ('cozulme', [4, 5, 6], 160)],
+    # Ek paftalar (gorsel/hamek, CHATGPT-ISTEMI-EK.md): yıldırım çarpma efekti (hava.js)
+    'K01': [('carpilma', [1, 2, 3, 4, 5, 6], 192)],
 }
+
+
+def ham_yolu(pafta):
+    """Paftanın ham PNG yolu: gorsel/ham, yoksa gorsel/hamek (K paftaları)."""
+    yol = os.path.join(HAM, f'{pafta}.png')
+    return yol if os.path.exists(yol) else os.path.join(HAMEK, f'{pafta}.png')
 
 
 def karakterler(liste):
@@ -138,7 +147,7 @@ ANIM_GOVDE = {}  # ad → ilk karenin dolu alanı, birleşik kutuya oranla [x, y
 
 def animasyonlar(liste):
     for pafta, animler in ANIMASYON.items():
-        yol = os.path.join(HAM, f'{pafta}.png')
+        yol = ham_yolu(pafta)
         if not os.path.exists(yol):
             continue
         resim = Image.open(yol).convert('RGBA')
@@ -473,6 +482,40 @@ def tema_dokulari(liste):
         print(f'✓ T{n} (zemin, su)')
 
 
+
+# Hikâye hatıra paftaları (gorsel/hamhikaye/H01–H09, CHATGPT-ISTEMI-HIKAYE.md): hücreler rota sırasıyla ülke 1–51
+# (H01 ülke 1–6 … H09 ülke 49–51). Anahtar: hatira-<KOD> (hikaye.js resim varsa emoji yerine bunu gösterir).
+HAMHIKAYE = os.path.join(KOK, 'gorsel', 'hamhikaye')
+HATIRA_BOYUT = 128
+
+
+def hatiralar(liste):
+    ulkeler = json.load(open(os.path.join(KOK, 'hikaye-taslaklari', 'ulkeler.json')))
+    kodlar = [u['kod'] for u in sorted(ulkeler, key=lambda u: u['sira'])]
+    for p in range(9):
+        yol = os.path.join(HAMHIKAYE, f'H{p + 1:02d}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGBA')
+        if resim.size != (1536, 1024):
+            sys.exit(f'H{p + 1:02d}: boyut {resim.size}, 1536 × 1024 olmalı')
+        for i in range(6):
+            n = p * 6 + i
+            if n >= len(kodlar):
+                break
+            x0, y0 = (i % 3) * 512, (i // 3) * 512
+            hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
+            kutu = hucre.getbbox()
+            if not kutu:
+                sys.exit(f'H{p + 1:02d} hücre {i + 1} boş')
+            hucre = hucre.crop(kutu)
+            oran = HATIRA_BOYUT / max(hucre.size)
+            if oran < 1:
+                hucre = hucre.resize((max(1, round(hucre.width * oran)), max(1, round(hucre.height * oran))), Image.LANCZOS)
+            anahtar = f'hatira-{kodlar[n]}'
+            hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=88, method=6)
+            liste[anahtar] = list(hucre.size)
+
 def kes():
     os.makedirs(CIKTI, exist_ok=True)
     liste = {}
@@ -509,6 +552,7 @@ def kes():
     karakterler_yon(liste)
     karakterler(liste)
     animasyonlar(liste)
+    hatiralar(liste)
     # Menü arka planı (A1, 1024 × 1536 dikey, opak): ana menü ve açılış ekranında (style.css), 768 px genişlikte
     yol = os.path.join(HAM, 'A1.png')
     if os.path.exists(yol):
@@ -551,5 +595,61 @@ def kes():
     print(f'{len(liste)} görsel, {toplam / 1024:.0f} KB')
 
 
+# Ek paftaların tek hücreleri (gorsel/hamek): anahtar → en uzun kenar (px). K01 animasyondur (ANIMASYON).
+EK_PAFTALAR = {
+    'K02': [('dere-sus-1', 160), ('dere-sus-2', 160), ('dere-sus-3', 160), ('dere-sus-4', 160), ('dere-sus-5', 160), ('dere-sus-6', 160)],
+    'K03': [('bulut-2', 256), ('bulut-3', 256), ('bulut-4', 256), ('simsek-1', 256), ('simsek-2', 256), ('simsek-3', 256)],
+    'K04': [('yuva-mezarlik', 256), ('yuva-magara', 256), ('yuva-izbe', 256), ('yuva-kovuk', 256), ('yuva-kuyu', 256), ('yuva-kripta', 256)],
+}
+
+
+def ek_hucreler(liste):
+    for pafta, hucreler in EK_PAFTALAR.items():
+        yol = os.path.join(HAMEK, f'{pafta}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGBA')
+        if resim.size != (1536, 1024):
+            sys.exit(f'{pafta}: boyut {resim.size}, 1536 × 1024 olmalı')
+        for i, (anahtar, en) in enumerate(hucreler):
+            x0, y0 = (i % 3) * 512, (i // 3) * 512
+            hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
+            kutu = hucre.getbbox()
+            if not kutu:
+                sys.exit(f'{pafta} hücre {i + 1} ({anahtar}) boş')
+            hucre = hucre.crop(kutu)
+            oran = en / max(hucre.size)
+            if oran < 1:
+                hucre = hucre.resize((max(1, round(hucre.width * oran)), max(1, round(hucre.height * oran))), Image.LANCZOS)
+            hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=88, method=6)
+            liste[anahtar] = [hucre.width, hucre.height]
+        print(f'✓ {pafta}')
+
+
+def ek_kes():
+    """Yalnız ek paftaları (K01–K04) ve hatıraları (H01–H09) keser; öbür görsellere dokunmaz, liste.js'e ekler.
+    Kullanım: python3 hayalet-avcilari/araclar/gorsel_kes.py --ek"""
+    import re
+    metin = open(os.path.join(CIKTI, 'liste.js'), encoding='utf-8').read()
+    al = lambda ad: json.loads(re.search(r'const ' + ad + r' = (\{.*?\});', metin, re.S).group(1))
+    liste, govde, namlu = al('GORSEL_LISTESI'), al('ANIM_GOVDE'), al('NAMLU_UCU')
+    eski_anim = dict(ANIMASYON)
+    ANIMASYON.clear(); ANIMASYON.update({k: v for k, v in eski_anim.items() if k.startswith('K')})
+    animasyonlar(liste)
+    ANIMASYON.clear(); ANIMASYON.update(eski_anim)
+    ek_hucreler(liste)
+    hatiralar(liste)
+    govde.update(ANIM_GOVDE)
+    with open(os.path.join(CIKTI, 'liste.js'), 'w', encoding='utf-8') as f:
+        f.write('// Üretilen dosya: araclar/gorsel_kes.py. Elle düzenleme.\n')
+        f.write('// ChatGPT paftalarından kesilen görseller: anahtar → [genişlik, yükseklik] (px)\n')
+        f.write('const GORSEL_LISTESI = ' + json.dumps(liste, ensure_ascii=False, indent=0, sort_keys=True).replace('\n', ' ') + ';\n')
+        f.write('// Animasyonların gövde kutusu (ilk kare, birleşik kare kutusuna oranla [x, y, w, h])\n')
+        f.write('const ANIM_GOVDE = ' + json.dumps(govde, ensure_ascii=False, sort_keys=True) + ';\n')
+        f.write('// Yön paftalarında yan karelerin namlu ucu (kırpılmış kareye oranla [fx, fy], dört kare)\n')
+        f.write('const NAMLU_UCU = ' + json.dumps(namlu, ensure_ascii=False, sort_keys=True) + ';\n')
+    print(f'{len(liste)} görsel (ek kesim)')
+
+
 if __name__ == '__main__':
-    kes()
+    ek_kes() if '--ek' in sys.argv else kes()

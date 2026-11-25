@@ -603,6 +603,31 @@ EK_PAFTALAR = {
 }
 
 
+
+# Fırtına bulutları gri-kara olmalı (kullanıcı: "önceki gibi gri kara renkli olsun, böyle çok renkli değil"): K03'ün mor bulutları
+# parlaklığına göre arduvaz griye boyanır; bulut-4'ün çizili damlaları silinir (yağmur kodla, canlı çizilir).
+GRI_BULUT = {'bulut-2', 'bulut-3', 'bulut-4'}
+
+
+def bulutu_grile(hucre, damla_sil):
+    px = hucre.load()
+    w, h = hucre.size
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if not a:
+                continue
+            if damla_sil and g > r + 60 and b > r + 80:  # mavi-camgöbeği damla (mor bulutta g < r)
+                px[x, y] = (0, 0, 0, 0)
+                continue
+            l = (0.3 * r + 0.59 * g + 0.11 * b) / 255
+            # kara arduvaz (#2c313d) → orta gri (#868c9a), hafif mavi ton
+            px[x, y] = (round(44 + l * 90), round(49 + l * 90), round(61 + l * 90), a)
+    if damla_sil:
+        hucre = en_buyuk_parca(hucre)  # damla kalıntıları (kenar pikselleri) gövdeden ayrık: yalnız bulut kalır
+    kutu = hucre.getbbox()
+    return hucre.crop(kutu) if kutu else hucre
+
 def ek_hucreler(liste):
     for pafta, hucreler in EK_PAFTALAR.items():
         yol = os.path.join(HAMEK, f'{pafta}.png')
@@ -618,6 +643,8 @@ def ek_hucreler(liste):
             if not kutu:
                 sys.exit(f'{pafta} hücre {i + 1} ({anahtar}) boş')
             hucre = hucre.crop(kutu)
+            if anahtar in GRI_BULUT:
+                hucre = bulutu_grile(hucre, anahtar == 'bulut-4')
             oran = en / max(hucre.size)
             if oran < 1:
                 hucre = hucre.resize((max(1, round(hucre.width * oran)), max(1, round(hucre.height * oran))), Image.LANCZOS)

@@ -169,6 +169,7 @@ function kameraKur() {
 }
 
 function kur() {
+  tuvalBoyut = 0;
   tuval = document.createElement("canvas");
   renderer = new THREE.WebGLRenderer({
     canvas: tuval, alpha: true, antialias: true, premultipliedAlpha: true, preserveDrawingBuffer: true,
@@ -1246,8 +1247,284 @@ function namluYaz(ctx, d, mx, my) {
   } catch (_) { d.namluEkran = { x: mx, y: my }; }
 }
 
+// ===== Pişmiş duruş önbelleği (3D kasıntısını giderir) =====
+// Model her karede yeniden çizilmez; duruş anahtarına göre bir kez pişirilip 2D tuvale resim olarak basılır.
+const DIR_SAY = 16; // 22,5 derecelik yön adımları
+const _onbellek = new Map(); // anahtar -> pişmiş duruş resmi (LRU sırası Map sırasıdır)
+const _onbellekCap = 32 * 1024 * 1024; // yaklaşık 32 MB piksel (w*h*4); 160 px duruşla iki avcı ~20 MB
+let _onbellekBayt = 0;
+let _renderSay = 0; // renderer.render çağrı sayısı (ölçüm için)
+let _bakeSay = 0;
+let _sonBakeKare = -1e9;
+let _sonBakeMs = -1e9;
+let _sonKareBittiMs = -1e9;
+let _sonKareMs = -1e9; // son kare süresi (kareBitti); ısınma boş zamanda pişirir
+const _isinmaBasladi = new Set();
+const _isinmaKuyruk = [];
+let _isinmaCalisiyor = false;
+
+function dirAl(aci) {
+  const ikiPi = Math.PI * 2;
+  const t = ((aci % ikiPi) + ikiPi) % ikiPi;
+  return Math.round(t / ikiPi * DIR_SAY) % DIR_SAY;
+}
+function dirAci(dir) { return dir / DIR_SAY * Math.PI * 2; }
+
+function pozAl(o) {
+  const rec = Math.max(0, Math.min(1, o.shootRecoil || 0));
+  const nisan = !!o.nisan || (o.aimRaise || 0) > 0.4 || rec > 0.05;
+  const yuru = !!o.yuruyor || (o.walkPhase || 0) > 0;
+  let poz;
+  if (o.ozel) poz = "ozel:" + o.ozel;
+  else if (rec > 0.05) poz = "shoot";
+  else if (yuru) poz = o.kosuyor ? "run" : "walk";
+  else poz = "idle";
+  return { poz, nisan, rec };
+}
+
+function kareAl(poz, o, rec, simdi) {
+  const ikiPi = Math.PI * 2;
+  if (poz === "idle") return Math.floor((((simdi % 1600) + 1600) % 1600) / 400) % 4;
+  if (poz === "walk" || poz === "run") {
+    const t = (((o.walkPhase || 0) * 12) % ikiPi + ikiPi) % ikiPi;
+    return Math.floor(t / ikiPi * 8) % 8;
+  }
+  if (poz === "shoot") return rec > 0.8 ? 1 : 0;
+  if (poz.indexOf("ozel:") === 0) return Math.floor((((simdi % 1000) + 1000) % 1000) / 125) % 8;
+  return 0;
+}
+
+function bakeDurum(dir) {
+  return { aci: dirAci(dir), son: 0, govdeX: 0, bacakSagX: 0, bacakSolX: 0, omuzSagX: 0, omuzSolX: 0, elSagX: 0,
+    nisan: 0, faz: 0 };
+}
+
+function bakeSecenek(charKey, costumeIdx, gunKey, poz, kare, nisan) {
+  const o = { charKey, costumeIdx, gunKey, nisan, kimlik: "bake" };
+  const ikiPi = Math.PI * 2;
+  if (poz === "walk" || poz === "run") { o.yuruyor = true; o.kosuyor = poz === "run"; o.walkPhase = kare * (ikiPi / 12) / 8; }
+  else if (poz === "shoot") { o.yuruyor = false; o.shootRecoil = kare ? 1 : 0.45; }
+  else if (poz.indexOf("ozel:") === 0) { o.ozel = poz.slice(5); o.yuruyor = false; }
+  else { o.yuruyor = false; o.walkPhase = 0; }
+  return o;
+}
+
+function bakeSimdi(poz, kare) {
+  if (poz === "idle") return kare * 400 + 1;
+  if (poz === "walk" || poz === "run") return 1000 + kare * 37;
+  if (poz === "shoot") return 1000;
+  if (poz.indexOf("ozel:") === 0) return kare * 125 + 1;
+  return 0;
+}
+
+function anahtarYap(charKey, costumeIdx, gunKey, dir, poz, nisan, kare, boyut) {
+  return `${charKey}|${costumeIdx}|${gunKey || ""}|${dir}|${poz}|${nisan ? 1 : 0}|${kare}|${boyut}`;
+}
+
+function onbellekKoy(anahtar, s) {
+  const eski = _onbellek.get(anahtar);
+  if (eski) { _onbellekBayt -= eski.canvas.width * eski.canvas.height * 4; _onbellek.delete(anahtar); }
+  _onbellek.set(anahtar, s);
+  _onbellekBayt += s.canvas.width * s.canvas.height * 4;
+  while (_onbellekBayt > _onbellekCap && _onbellek.size > 1) {
+    const ilk = _onbellek.keys().next().value;
+    if (ilk === anahtar) break;
+    const v = _onbellek.get(ilk);
+    _onbellekBayt -= v.canvas.width * v.canvas.height * 4;
+    _onbellek.delete(ilk);
+  }
+}
+
+function onbellekAl(anahtar) {
+  const s = _onbellek.get(anahtar);
+  if (!s) return null;
+  _onbellek.delete(anahtar);
+  _onbellek.set(anahtar, s); // LRU: son kullanılan sona
+  return s;
+}
+
+// Aynı avcının en yakın yönlü, sonra aynı duruşun herhangi karesi, yoksa herhangi duruşu.
+function yakinOnbellek(charKey, costumeIdx, gunKey, dir, poz, kare, boyut) {
+  let enIyi = null, enIyiSkor = Infinity;
+  for (const s of _onbellek.values()) {
+    if (s.charKey !== charKey || s.costumeIdx !== costumeIdx || s.gunKey !== (gunKey || "") || s.boyut !== boyut) continue;
+    const dd = Math.min(Math.abs(s.dir - dir), DIR_SAY - Math.abs(s.dir - dir));
+    let skor = (s.poz === poz ? 0 : 100) + dd;
+    if (s.poz === poz) {
+      const kd = Math.abs(s.kare - kare);
+      skor += Math.min(kd, 8 - Math.min(kd, 8)) * 0.1;
+    }
+    if (skor < enIyiSkor) { enIyiSkor = skor; enIyi = s; }
+  }
+  return enIyi;
+}
+
+function modelPise(charKey, costumeIdx, gunKey, dir, poz, kare, nisan, boyut, sRef, kk, tam) {
+  const rig = rigAl(charKey, costumeIdx, gunKey);
+  if (aktifRig !== rig) {
+    if (aktifRig) sahne.remove(aktifRig.kok);
+    sahne.add(rig.kok);
+    aktifRig = rig;
+  }
+  const d = bakeDurum(dir);
+  const so = bakeSecenek(charKey, costumeIdx, gunKey, poz, kare, nisan);
+  canlandir(rig, d, so, 0, bakeSimdi(poz, kare));
+  boyutAyarla(boyut);
+  rig.kok.updateMatrixWorld(true);
+  kamera.zoom = 1;
+  kamera.updateProjectionMatrix();
+  kamera.updateMatrixWorld();
+  const kose = new THREE.Vector3();
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  rig.kok.traverse((parca) => {
+    if (!parca.isMesh || !parca.visible) return;
+    const g = parca.geometry;
+    if (!g.boundingBox) g.computeBoundingBox();
+    const bb = g.boundingBox;
+    if (!bb) return;
+    for (const cx of [bb.min.x, bb.max.x]) for (const cy of [bb.min.y, bb.max.y]) for (const cz of [bb.min.z, bb.max.z]) {
+      kose.set(cx, cy, cz).applyMatrix4(parca.matrixWorld).project(kamera);
+      if (kose.x < minX) minX = kose.x; if (kose.x > maxX) maxX = kose.x;
+      if (kose.y < minY) minY = kose.y; if (kose.y > maxY) maxY = kose.y;
+    }
+  });
+  const yari = Math.max(Math.abs(minX), Math.abs(maxX), Math.abs(minY), Math.abs(maxY), 1e-3);
+  kamera.zoom = Math.min(8, Math.max(0.05, 0.84 / yari));
+  kamera.updateProjectionMatrix();
+  const z = kamera.zoom;
+  const pxX = (vx) => (vx * z + 1) / 2 * boyut;
+  const pxY = (vy) => (1 - vy * z) / 2 * boyut;
+  const ustPx = pxY(maxY), altPx = pxY(minY);
+  const ayak = new THREE.Vector3(); rig.kok.getWorldPosition(ayak); ayak.project(kamera);
+  const ayakX = pxX(ayak.x);
+  const gorunum = (kk.alt - kk.ust) * sRef * 1.06 * 0.92;
+  const olcek = gorunum / Math.max(1, altPx - ustPx);
+  const cv = document.createElement("canvas");
+  renderer.render(sahne, kamera);
+  _renderSay++; _bakeSay++;
+  // Yalnız içeriği kopyala: model köşelerinin piksel dikdörtgeni + 3 px pay, tuvale kırpılır.
+  let sx = 0, sy = 0, sw = boyut, sh = boyut;
+  if (tam !== true) {
+    sx = Math.floor(pxX(minX)) - 3; sy = Math.floor(pxY(maxY)) - 3;
+    sw = Math.ceil(pxX(maxX)) - sx + 3; sh = Math.ceil(pxY(minY)) - sy + 3;
+    sx = Math.max(0, Math.min(boyut - 1, sx)); sy = Math.max(0, Math.min(boyut - 1, sy));
+    sw = Math.max(1, Math.min(boyut - sx, sw)); sh = Math.max(1, Math.min(boyut - sy, sh));
+  }
+  cv.width = sw; cv.height = sh;
+  const oc = cv.getContext("2d");
+  oc.clearRect(0, 0, sw, sh);
+  oc.drawImage(tuval, sx, sy, sw, sh, 0, 0, sw, sh);
+  const m = new THREE.Vector3(); rig.namlu.getWorldPosition(m); m.project(kamera);
+  const s = {
+    canvas: cv, charKey, costumeIdx, gunKey: gunKey || "", dir, poz, nisan: !!nisan, kare, boyut,
+    ayakX, altPx, ox: sx, oy: sy, w: sw, h: sh,
+    namluX0: pxX(m.x) - sx, namluY0: pxY(m.y) - sy,
+    olcek, refS: sRef,
+  };
+  return s;
+}
+
+function isinmaBaslat(charKey, costumeIdx, gunKey, nisan, boyut, sRef, kk, dir) {
+  const grup = `${charKey}|${costumeIdx}|${gunKey || ""}`;
+  if (_isinmaBasladi.has(grup)) return;
+  _isinmaBasladi.add(grup);
+  // Önce avcının baktığı yöne en yakın yönler, yürüme sonra boşta duruşları.
+  const yakinDir = (d) => Math.min(Math.abs(d - dir), DIR_SAY - Math.abs(d - dir));
+  const yonSirasi = Array.from({ length: DIR_SAY }, (_, i) => i).sort((a, b) => yakinDir(a) - yakinDir(b));
+  for (const d of yonSirasi) for (let k = 0; k < 8; k++) _isinmaKuyruk.push({ charKey, costumeIdx, gunKey, dir: d, poz: "walk", kare: k, nisan, boyut, sRef, kk });
+  for (const d of yonSirasi) for (let k = 0; k < 4; k++) _isinmaKuyruk.push({ charKey, costumeIdx, gunKey, dir: d, poz: "idle", kare: k, nisan, boyut, sRef, kk });
+  if (!_isinmaCalisiyor) isinmaDongu();
+}
+
+function isinmaDongu() {
+  if (!_isinmaKuyruk.length) { _isinmaCalisiyor = false; return; }
+  _isinmaCalisiyor = true;
+  requestAnimationFrame(() => {
+    if (!hazir || kapali) { _isinmaKuyruk.length = 0; _isinmaCalisiyor = false; return; }
+    if (_sonKareMs > 12) { isinmaDongu(); return; } // kare yavaşsa bu karede pişirme, sonraya bırak
+    if (performance.now() - _sonBakeMs < 8) { isinmaDongu(); return; } // aynı karede ikinci pişirme olmasın
+    const g = _isinmaKuyruk.shift();
+    const anahtar = anahtarYap(g.charKey, g.costumeIdx, g.gunKey, g.dir, g.poz, g.nisan, g.kare, g.boyut);
+    if (!_onbellek.has(anahtar)) {
+      try {
+        const s = modelPise(g.charKey, g.costumeIdx, g.gunKey, g.dir, g.poz, g.kare, g.nisan, g.boyut, g.sRef, g.kk);
+        onbellekKoy(anahtar, s);
+      } catch (_) { /* sessiz: ısınma başarısızsa oyun isteğe bağlı pişirir */ }
+    }
+    _sonBakeMs = performance.now();
+    isinmaDongu();
+  });
+}
+
+// Oyun avcısı: pişmiş resmi bas; yoksa bu karede en çok bir yeni duruş pişir (bütçe doluysa yakın resim).
+function oyunCiz(ctx, secenek, charKey, costumeIdx, size, x, y, kk, d, simdi) {
+  const gunKey = secenek.gunKey || "";
+  const boyut = 160; // eski canlı yolun oyun boyutu: 2x ekranda keskin kalır
+  const { poz, nisan, rec } = pozAl(secenek);
+  const dir = dirAl(d.aci);
+  const kare = kareAl(poz, secenek, rec, simdi);
+  const anahtar = anahtarYap(charKey, costumeIdx, gunKey, dir, poz, nisan, kare, boyut);
+  const sRef = size / 100;
+  // Sınama için: önbelleksiz canlı kare (kırpılmamış tam tuval) aynı konuma basılır.
+  if (secenek._canli) {
+    const c = modelPise(charKey, costumeIdx, gunKey, dir, poz, kare, nisan, boyut, sRef, kk, true);
+    const oran = sRef / c.refS, olcek = c.olcek * oran;
+    const dx = x - c.ayakX * olcek, dy = y + kk.alt * sRef - c.altPx * olcek;
+    ctx.drawImage(c.canvas, dx, dy, c.boyut * olcek, c.boyut * olcek);
+    namluYaz(ctx, d, dx + c.namluX0 * olcek, dy + c.namluY0 * olcek);
+    return true;
+  }
+  const bas = (s) => {
+    const oran = sRef / s.refS;
+    const olcek = s.olcek * oran;
+    const dx = x - s.ayakX * olcek;
+    const dy = y + kk.alt * sRef - s.altPx * olcek;
+    ctx.drawImage(s.canvas, dx + s.ox * olcek, dy + s.oy * olcek, s.w * olcek, s.h * olcek);
+    namluYaz(ctx, d, dx + (s.ox + s.namluX0) * olcek, dy + (s.oy + s.namluY0) * olcek);
+  };
+  let s = onbellekAl(anahtar);
+  if (s) { bas(s); return true; }
+
+  // Ilk görünüşte/oyun kimliğinde arka planda en çok gereken duruşları pişir.
+  const kimlik = secenek.kimlik || "";
+  const oyunKimligi = kimlik === "ben" || kimlik === "bot" || !!(typeof window !== "undefined" && window.online && window.online.mode);
+  if (oyunKimligi) isinmaBaslat(charKey, costumeIdx, gunKey, nisan, boyut, sRef, kk, dir);
+
+  // Son 30 ms içinde pişirme olduysa hemen yenisini pişirme; aynı duruşun ±1 yönlü resmi varsa onu bas.
+  if (performance.now() - _sonBakeMs <= 30) {
+    let enIyi = null, enIyiDd = Infinity;
+    for (const v of _onbellek.values()) {
+      if (v.charKey !== charKey || v.costumeIdx !== costumeIdx || v.gunKey !== gunKey || v.boyut !== boyut || v.poz !== poz) continue;
+      if (v.nisan !== !!nisan || v.kare !== kare) continue;
+      const dd = Math.min(Math.abs(v.dir - dir), DIR_SAY - Math.abs(v.dir - dir));
+      if (dd <= 1 && dd < enIyiDd) { enIyiDd = dd; enIyi = v; }
+    }
+    if (enIyi) { bas(enIyi); return true; }
+  }
+
+  const buKareKullanildi = _sonBakeKare === _kareSayac && performance.now() - _sonKareBittiMs <= 100;
+  if (!secenek.sadeceOnbellek && !buKareKullanildi) {
+    s = modelPise(charKey, costumeIdx, gunKey, dir, poz, kare, nisan, boyut, sRef, kk);
+    onbellekKoy(anahtar, s);
+    _sonBakeKare = _kareSayac;
+    _sonBakeMs = performance.now();
+    bas(s);
+    return true;
+  }
+  // Bütçe dolu: aynı duruşun en yakın resmi varsa onu bas; duruş hiç yoksa (ilk görünüş) yine pişir.
+  s = yakinOnbellek(charKey, costumeIdx, gunKey, dir, poz, kare, boyut);
+  if (s && s.poz === poz) { bas(s); return true; }
+  if (secenek.sadeceOnbellek) return !!s && (bas(s), true);
+  s = modelPise(charKey, costumeIdx, gunKey, dir, poz, kare, nisan, boyut, sRef, kk);
+  onbellekKoy(anahtar, s);
+  _sonBakeKare = _kareSayac;
+  _sonBakeMs = performance.now();
+  bas(s);
+  return true;
+}
+
 // 2D ctx'e çizer: ayaklar (x, y + kk.alt*s), boy (kk.alt-kk.ust)*s*1.06. Çizdiyse true.
-// 3D model her 2. karede (önizlemede 20 fps) yeniden çizilir; aradaki karelerde son görüntü önbellekten basılır.
+// Oyun avcıları pişmiş duruş önbelleğinden basılır; önizlemeler eski canlı yolu (en çok 20 fps) kullanır.
 function ciz(ctx, o) {
   if (!hazir || kapali) return false;
   const secenek = o || {};
@@ -1271,7 +1548,9 @@ function ciz(ctx, o) {
     const adim = Math.min(Math.abs(fark), 12 * dt) * Math.sign(fark);
     d.aci += adim;
   }
-  // Duruş değişimi (yürü ↔ dur ↔ ateş başlangıcı, özel güç) anında tazelenir.
+  if (!onizleme) return oyunCiz(ctx, secenek, charKey, costumeIdx, size, x, y, kk, d, simdi);
+
+  // Önizleme: eski canlı yol (en çok 20 fps), aradaki karelerde son görüntü basılır.
   const yuru = !!secenek.yuruyor || (secenek.walkPhase || 0) > 0;
   const durum = `${yuru ? 1 : 0}|${secenek.kosuyor ? 1 : 0}|${(secenek.shootRecoil || 0) > 0.05 ? 1 : 0}|${secenek.ozel || ""}`;
   const aciDegisti = d.sonAci === null || Math.abs(aciFarki(d.aci - d.sonAci)) > 0.15;
@@ -1403,6 +1682,8 @@ function sureEkle(ms) {
 }
 function kareBitti(kareMs) {
   if (!hazir || kapali) return;
+  _sonKareBittiMs = performance.now();
+  _sonKareMs = Math.max(0, Number(kareMs) || 0);
   const ucMs = _kareUcMs;
   _kareUcMs = 0;
   _kareSayac++;
@@ -1429,6 +1710,8 @@ const api = {
   sureEkle,
   kareBitti,
   ayar: _yavasAyar,
+  _sayac: () => ({ render: _renderSay, bake: _bakeSay, onbellekSay: _onbellek.size, onbellekBayt: _onbellekBayt,
+    isinmaKalan: _isinmaKuyruk.length, isinmaCalisiyor: _isinmaCalisiyor }),
 };
 window.UcAvci = api;
 try {

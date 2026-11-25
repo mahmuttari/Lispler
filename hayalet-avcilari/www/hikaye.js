@@ -65,7 +65,12 @@ function hikayeHatiraYeri(kod, veri) {
   const px = game.player ? game.player.x : game.worldW / 2;
   const py = game.player ? game.player.y : game.worldH / 2;
   const rng = mulberry32(hikayeTohum(kod, game.level));
-  const minX = 60, maxX = game.worldW - 60, minY = 60, maxY = game.worldH - 60;
+  let minX = 60, maxX = game.worldW - 60, minY = 60, maxY = game.worldH - 60;
+  // Yolculuk haritasında hatıra 1–4. bölgelerden birine (tohumlu) konur
+  if (typeof yolculukAcik === "function" && yolculukAcik() && typeof yolculukDuzeni === "function") {
+    const d = yolculukDuzeni();
+    minX = d.zones[0].x0 + 40; maxX = d.zones[3].x1 - 40;
+  }
   for (let i = 0; i < 800; i++) {
     const x = minX + rng() * (maxX - minX), y = minY + rng() * (maxY - minY);
     if (Math.hypot(x - px, y - py) < 300) continue;

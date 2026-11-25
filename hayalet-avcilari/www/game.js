@@ -5528,6 +5528,11 @@ function freeSpot(x, y, r, blocked) {
 }
 
 function buildWalls() {
+  if (typeof dunyaBoyutunuAyarla === "function") dunyaBoyutunuAyarla();
+  if (typeof yolculukAcik === "function" && yolculukAcik() && typeof yolculukHaritaKur === "function") {
+    yolculukHaritaKur();
+    return;
+  }
   const W = game.worldW, H = game.worldH;
   game.walls = [];
   // Dış sınır
@@ -5554,6 +5559,7 @@ function buildWalls() {
 }
 
 function buildWaters() {
+  if (typeof yolculukAcik === "function" && yolculukAcik()) { if (typeof engelBicimleriniKur === "function") engelBicimleriniKur(); return; }
   const W = game.worldW, H = game.worldH;
   game.waters = [];
   const seed = 23 + game.level * 17;
@@ -5587,6 +5593,7 @@ function collidesWaters(x, y, r) {
 }
 
 function buildHazards() {
+  if (typeof yolculukAcik === "function" && yolculukAcik()) { if (typeof engelBicimleriniKur === "function") engelBicimleriniKur(); return; }
   const W = game.worldW, H = game.worldH;
   game.spikes = [];
   game.lavas  = [];
@@ -5682,9 +5689,11 @@ function startGame(secenek) {
   // Oyuncu - güvenli bir alana koy
   const charKey = save.selectedChar;
   const stats = computeStats(charKey);
+  const baslangic = (typeof yolculukAcik === "function" && yolculukAcik() && typeof yolculukBaslangic === "function")
+    ? yolculukBaslangic() : { x: game.worldW / 2, y: game.worldH / 2 };
   game.player = {
-    x: game.worldW / 2,
-    y: game.worldH / 2,
+    x: baslangic.x,
+    y: baslangic.y,
     r: 22,
     hp: 3,
     maxHp: 3,
@@ -6059,6 +6068,7 @@ function update(dt, now) {
     showFloat(t("🔥 Lav!"), game.player.x, game.player.y - 30);
   }
   kopruGuncelle(dt, movedThisFrame);
+  if (typeof yolculukGuncelle === "function") yolculukGuncelle(dt);
   caliGuncelle(dt); // çalıda saklanma (cali.js) // sallanan ip köprü: suyun üstünde oyalanan düşer (kopru.js)
   timsahGuncelle(dt); // sudan çıkan timsahlar: kıyıda duranı bazen ısırır (timsah.js)
 
@@ -6642,6 +6652,10 @@ function ensurePlayerSafe() {
   const r = game.player.r;
   const safe = (x, y) => !collidesWalls(x, y, r) && (game.player.waterImmune || !collidesWaters(x, y, r)) && !collidesSpikes(x, y, r) && !collidesLavas(x, y, r);
   if (safe(game.player.x, game.player.y)) return;
+  if (typeof yolculukAcik === "function" && yolculukAcik() && typeof yolculukBaslangic === "function") {
+    const b = yolculukBaslangic();
+    if (safe(b.x, b.y)) { game.player.x = b.x; game.player.y = b.y; return; }
+  }
   for (let i = 0; i < 60; i++) {
     const x = 100 + Math.random() * (game.worldW - 200);
     const y = 100 + Math.random() * (game.worldH - 200);
@@ -7213,7 +7227,8 @@ function becomeSpectator() {
 }
 
 function collidesWalls(x, y, r) {
-  return engelCarpisir(game.walls, x, y, r);
+  if (engelCarpisir(game.walls, x, y, r)) return true;
+  return typeof yolculukKopruKapaliNokta === "function" && yolculukKopruKapaliNokta(x, y, r);
 }
 
 // ====== ÇİZİM ======
@@ -7237,17 +7252,21 @@ function render() {
       // zemin çizildi
     } else {
     ctx.fillStyle = th.floor;
-    ctx.fillRect(0, 0, game.worldW, game.worldH);
+    ctx.fillRect(zx, zy, zw, zh);
 
     // Grid
     ctx.strokeStyle = th.grid;
     ctx.lineWidth = 1;
     const gridSize = 80;
-    for (let x = 0; x < game.worldW; x += gridSize) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, game.worldH); ctx.stroke();
+    const gx0 = Math.max(0, Math.floor(game.camera.x / gridSize) * gridSize);
+    const gx1 = Math.min(game.worldW, game.camera.x + game.W + gridSize);
+    const gy0 = Math.max(0, Math.floor(game.camera.y / gridSize) * gridSize);
+    const gy1 = Math.min(game.worldH, game.camera.y + game.H + gridSize);
+    for (let x = gx0; x < gx1; x += gridSize) {
+      ctx.beginPath(); ctx.moveTo(x, gy0); ctx.lineTo(x, gy1); ctx.stroke();
     }
-    for (let y = 0; y < game.worldH; y += gridSize) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(game.worldW, y); ctx.stroke();
+    for (let y = gy0; y < gy1; y += gridSize) {
+      ctx.beginPath(); ctx.moveTo(gx0, y); ctx.lineTo(gx1, y); ctx.stroke();
     }
     }
   }
@@ -7255,6 +7274,7 @@ function render() {
   // Engeller: su, diken, lav, duvar ve objeler — eğri hatlı, temaya özel, önbellekli (engeller.js)
   engelleriCiz(ctx);
   koprulerCiz(ctx);   // sallanan ip köprüler (kopru.js)
+  if (typeof yolculukCiz === "function") yolculukCiz(ctx); // yolculuk geçitleri (yolculuk.js)
   timsahlariCiz(ctx); // sudaki timsahlar (timsah.js)
   calilariCiz(ctx);   // saklanma çalıları (cali.js)
 

@@ -63,12 +63,18 @@ try {
     while (game.level < 8 && kare < 40000) {
       kare++; t += 50;
       Object.assign(game.player, { invuln: 1e9, hp: 3, damage: 4, range: 2600, fireDelay: 60 });
+      // Yolculuk haritasında köprüler kapalı başlar; bu sınama haritanın değil hayaletlerin engele gömülmemesini
+      // ölçer: uzun koşuda köprüler açık tutulur (Y1b'de bölge temizliği açar)
+      if (game.kopruAcik) game.kopruAcik.fill(true);
       if (kare % 600 === 1) game.player.power = { type: 'fanatik', expires: performance.now() + 1e6 };
       game.camera.x = game.player.x - game.W / 2; game.camera.y = game.player.y - game.H / 2;
       const a = kare / 90; game.inputDir = { x: Math.cos(a), y: Math.sin(a * 0.7) };
       update(0.05, t);
       if (game.levelTransitioning && !game._b) game._b = kare;
       if (game._b && kare - game._b > 40) { game._b = 0; nextLevel(); }
+      // Yolculuk haritasında (Y1a) hayaletler hâlâ dünya kenarlarından doğar; bölgeler arası köprü ağzını
+      // bulamayınca bölüm kendiliğinden bitmez. Sınama engele gömülme ölçtüğü için bölümler zorla ilerletilir.
+      if (kare % 3000 === 0) nextLevel();
       if (game.ghosts.some(icinde)) gomuluKare++;
     }
     o.uzun = { kare, bolum: game.level, gomuluKare };

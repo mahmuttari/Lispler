@@ -101,8 +101,8 @@ function timsahSaldirt(o, x, y) {
 function timsahSusle() {
   const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0;
   const uzaklar = online.mode === "host" ? Object.values(online.remotePlayers).filter((rp) => rp && Number.isFinite(rp.x)) : [];
-  const gorunen = (game.waters || []).filter((o) => (o.x < cam.x + W && o.x + o.w > cam.x && o.y < cam.y + H && o.y + o.h > cam.y) ||
-    uzaklar.some((rp) => Math.abs(rp.x - (o.x + o.w / 2)) < 500 && Math.abs(rp.y - (o.y + o.h / 2)) < 700));
+  const gorunen = (game.waters || []).filter((o) => !o.gecit && ((o.x < cam.x + W && o.x + o.w > cam.x && o.y < cam.y + H && o.y + o.h > cam.y) ||
+    uzaklar.some((rp) => Math.abs(rp.x - (o.x + o.w / 2)) < 500 && Math.abs(rp.y - (o.y + o.h / 2)) < 700)));
   if (!gorunen.length) return null;
   const o = gorunen[Math.floor(Math.random() * gorunen.length)];
   for (let i = 0; i < 40; i++) {
@@ -153,7 +153,7 @@ function timsahGuncelle(dt) {
   // Köprüdeki ya da köprüden düşmüş oyuncuya kıyı saldırısı yok: köprüde kural düşmedir (kopru.js)
   if (!p || p.dead || game.devamBekliyor || p.dusus || koprudeMi(p.x, p.y)) { game._timsahKiyi = 0; return; }
   const { su, d } = enYakinSu(p.x, p.y);
-  if (!su || d - p.r > TIMSAH.yakin) { game._timsahKiyi = 0; return; }
+  if (!su || su.gecit || d - p.r > TIMSAH.yakin) { game._timsahKiyi = 0; return; }
   game._timsahKiyi += dt;
   if (game._timsahKiyi < TIMSAH.bekleme || game._timsahAra > 0) return;
   if (game.timsahlar.some((tm) => tm.tur === "saldiri")) return;

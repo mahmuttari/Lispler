@@ -109,7 +109,8 @@ function suyaDus(k) {
   if (enYakinSu(p.x + ox, p.y + oy).d > -6) { ox = -ox; oy = -oy; }
   if (game._timsahSular !== game.waters || !game.timsahlar) timsahSifirla();
   const tx = p.x + ox, ty = p.y + oy;
-  game.timsahlar.push({ tur: "saldiri", x: tx, y: ty, a: Math.atan2(p.y - ty, p.x - tx), t: 0, isirdi: false });
+  // Yolculuk geçit şeridinde timsah yok (yolculuk.js)
+  if (!(k.su && k.su.gecit)) game.timsahlar.push({ tur: "saldiri", x: tx, y: ty, a: Math.atan2(p.y - ty, p.x - tx), t: 0, isirdi: false });
   if (!p.waterImmune) p.dusus = { t: 0, k };
 }
 

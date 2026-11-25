@@ -28,8 +28,8 @@ const LISTE = JSON.parse(listeKaynak.match(/= (\{.*\});/)[1]);
 const dosyalar = fs.readdirSync(path.join(WWW, 'gorsel')).filter((f) => f.endsWith('.webp'));
 sina('liste.js ile diskteki WebP dosyaları aynı', () => { assert.deepEqual(dosyalar.map((f) => f.slice(0, -5)).sort(), Object.keys(LISTE).sort()); });
 const toplam = dosyalar.reduce((t, f) => t + fs.statSync(path.join(WWW, 'gorsel', f)).size, 0);
-sina('görseller küçük: toplam 7 MB, her kenar en çok 256 px (tema dokuları 512, menü arka planı 1152, kahraman kartı 320, giriş resmi 1152)', () => {
-  assert.ok(toplam < 7 * 1024 * 1024, String(toplam));
+sina('görseller küçük: toplam 14 MB (bütün görseller ChatGPT'den: kullanıcı kararı, 25 Kasım 2026), her kenar en çok 256 px (tema dokuları 512, menü arka planı 1152, kahraman kartı 320, giriş resmi 1152)', () => {
+  assert.ok(toplam < 14 * 1024 * 1024, String(toplam));
   for (const [k, [w, h]] of Object.entries(LISTE)) { const en = k.startsWith('tema') ? 512 : (k === 'menu-arka' || k === 'giris-kahraman') ? 1152 : k.startsWith('kart-') ? 320 : 256; assert.ok(w <= en && h <= en, k); }
 });
 

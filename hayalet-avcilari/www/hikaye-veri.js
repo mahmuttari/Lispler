@@ -1,6 +1,6 @@
 /* ============================================================
    HAYALET AVCILARI — DÜNYA TURU HİKÂYESİ: METİNLER (3.21.0)
-   Şartname: HIKAYE.md; okunur metin: HIKAYE-METIN.md. Bu dosya yalnız veri içerir; kurallar ve arayüz hikaye.js'te.
+   Şartname: HIKAYE.md; okunur metin: hikaye-taslaklari/<yazar>/HIKAYE-METIN.md. Bu dosya yalnız veri içerir; kurallar ve arayüz hikaye.js'te.
    Metni Evren yazdı, bulut Claude düzeltti. Satır: { k: "anlatici" | "gezgin" | "arkadas" | "katilan", m: metin }.
    Cümle içinde avcı adı geçmez; konuşanın adı etiket olarak gösterilir.
    ============================================================ */

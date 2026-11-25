@@ -3,7 +3,7 @@
   "hatira": {
    "ad": "ebru kâğıdı",
    "simge": "🎨",
-   "not": "Su dolu bir teknede boyalar serpilip dalgalandırılır, oluşan desen kâğıda alınır."
+   "not": "Teknedeki suyun yüzüne boyalar serpilip şekillendirilir; desen kâğıda alınır, bir eşi daha yapılamaz."
   },
   "sahne": [
    {
@@ -35,14 +35,14 @@
  },
  "PL": {
   "hatira": {
-   "ad": "wycinanki",
+   "ad": "kâğıt oyması (wycinanki)",
    "simge": "✂️",
-   "not": "Renkli kâğıtlar makasla kesilerek çiçek, horoz ve yaprak desenleri yapılır."
+   "not": "Renkli kâğıtlardan makasla çiçek, horoz ve yaprak desenleri kesilir."
   },
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Çatılardaki leylek yuvalarından tıkırtılar yükseliyor; kasaba bir şarkı gibi uyanıyor."
+    "m": "Çatılardaki yuvalarda leylekler gagalarını takırdatıyor; kasaba bu sesle uyanıyor."
    },
    {
     "k": "gezgin",
@@ -58,12 +58,12 @@
   "hatira": {
    "ad": "zencefilli kalp",
    "simge": "🍪",
-   "not": "Bal ve baharatla yoğrulan, şekerle süslenip boyna asılan kalp biçimli kurabiye."
+   "not": "Bal ve baharatla yoğrulup şekerle süslenen kalp biçimli kurabiye; panayırlarda kurdelesiyle boyna asılır."
   },
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Yarım ahşap evlerin pencerelerinde çiçekler sıra sıra diziliyor."
+    "m": "Ahşap çatkılı evlerin pencerelerinde çiçekler sıra sıra dizili."
    },
    {
     "k": "arkadas",
@@ -88,7 +88,7 @@
    },
    {
     "k": "arkadas",
-    "m": "Şemsiye getiren var mı? Yok mu? Peki, ıslanarak keşif yapalım."
+    "m": "Şemsiye getiren yok mu? Olsun, ıslana ıslana ararız. Kırmızı bir şey görürsen haber ver!"
    }
   ]
  },
@@ -109,7 +109,7 @@
    },
    {
     "k": "arkadas",
-    "m": "Ben bir fırının önünden geçerken benzer bir şekil gördüm. Sadece söylüyorum."
+    "m": "Az önce bir fırının vitrininde tıpatıp aynı şekli gördüm. Benden söylemesi."
    }
   ]
  },
@@ -122,7 +122,7 @@
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Gondollar kanalda süzülüyor, iskele akşam ışığında yavaşça sallanıyor."
+    "m": "Gondollar kanalda süzülüyor; iskeleye bağlı olanlar akşam ışığında usulca sallanıyor."
    },
    {
     "k": "arkadas",
@@ -138,7 +138,7 @@
   "hatira": {
    "ad": "kastanyet",
    "simge": "🎶",
-   "not": "İki küçük tahta kabuk parmaklara geçirilir, birbirine vurularak ritim tutulur."
+   "not": "Kabuk biçimli iki küçük tahta başparmağa iple takılır; avuçta birbirine vurularak ritim tutulur."
   },
   "sahne": [
    {
@@ -158,7 +158,7 @@
  "MA": {
   "hatira": {
    "ad": "babuş",
-   "simge": "🥿",
+   "simge": "👞",
    "not": "Ucu sivri, arkası basık, renkli deriden dikilen yumuşak bir terlik."
   },
   "sahne": [
@@ -168,11 +168,11 @@
    },
    {
     "k": "arkadas",
-    "m": "Her yer mavi olunca kaybolmak çok kolay. Elimi bırakma, olur mu?"
+    "m": "Her sokak mavi, her köşe birbirine benziyor. Birbirimizi gözden kaçırmayalım!"
    },
    {
     "k": "gezgin",
-    "m": "Bırakmam. Zaten haritaya göre aradığımız şey çarşıda bir tezgâhta."
+    "m": "Kaçırmayız. Haritada ucu sivri, yumuşacık bir şey çizili; gözünü dört aç."
    }
   ]
  },
@@ -185,7 +185,7 @@
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Sahra'nın kumulları gün batımında altın rengi dalgalara dönüşüyor."
+    "m": "Sahra'nın kumulları gün batımında altın rengine bürünüyor."
    },
    {
     "k": "gezgin",
@@ -193,7 +193,7 @@
    },
    {
     "k": "arkadas",
-    "m": "Çölde çiçek mi? Bu ya bir bilmece ya da güneş başımıza vurdu."
+    "m": "Çölde çiçek mi? Ya bu bir bilmece ya da başımıza güneş geçti."
    }
   ]
  },
@@ -210,24 +210,24 @@
    },
    {
     "k": "arkadas",
-    "m": "Biri çikolata mı dedi? Kimse demedi mi? Ben duydum gibi geldi."
+    "m": "Çikolatanın ağaçta yetiştiğini biliyor muydun? Ben az önce öğrendim, hâlâ şaşkınım."
    },
    {
     "k": "gezgin",
-    "m": "Çikolatanın nereden geldiğini görmek üzereyiz. Bu hatıra tatlı bir sürpriz olacak."
+    "m": "O zaman gözün gövdelerde olsun: meyveler dalın ucunda değil, doğrudan gövdede büyüyor."
    }
   ]
  },
  "GH": {
   "hatira": {
    "ad": "kente kumaşı",
-   "simge": "🧵",
+   "simge": "🎀",
    "not": "Dar şeritler halinde dokunup yan yana dikilen, altın ve yeşil desenli parlak kumaş."
   },
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Kakum'un kanopi köprüsü, ağaçların tepesinde sallanan bir ip merdiven gibi uzanıyor."
+    "m": "Kakum'un asma köprüsü, ağaçların tepesinde sallanan bir ip merdiven gibi uzanıyor."
    },
    {
     "k": "arkadas",
@@ -235,14 +235,14 @@
    },
    {
     "k": "gezgin",
-    "m": "Elini ver, birlikte geçelim. Karşı tarafta renkli bir şey parlıyor."
+    "m": "Elini ver, birlikte geçelim. Haritada rengârenk şeritler çizili; aşağıda değil, ileride."
    }
   ]
  },
  "NG": {
   "hatira": {
    "ad": "ayo tahtası",
-   "simge": "🎲",
+   "simge": "🌰",
    "not": "İki sıra çukurlu tahtada tohumları dağıtarak oynanan, sayı ve strateji oyunu."
   },
   "sahne": [
@@ -252,7 +252,7 @@
    },
    {
     "k": "gezgin",
-    "m": "Uzaktan konuşan davulların sesi geliyor. Sanki bize bir şey söylüyorlar."
+    "m": "Uzaktan davul sesleri geliyor. Sanki konuşuyorlar; bize bir şey söylüyorlar."
    },
    {
     "k": "arkadas",
@@ -264,16 +264,16 @@
   "hatira": {
    "ad": "tel araba",
    "simge": "🚗",
-   "not": "Eski tel ve kapaklar bükülerek yapılan, uzun bir çubukla sürülen oyuncak araba."
+   "not": "Tel bükülerek yapılan, uzun bir çubukla sürülen el yapımı oyuncak araba; her biri tek örnektir."
   },
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Kongo Nehri'nde piroglar ağır ağır süzülüyor, kıyıda çocuk kahkahaları yankılanıyor."
+    "m": "Kongo Nehri'nde oyma kanolar ağır ağır süzülüyor, kıyıda çocuk kahkahaları yankılanıyor."
    },
    {
     "k": "arkadas",
-    "m": "Şu çocukların oyuncağına bak! Tel ile araba yapılır mıymış?"
+    "m": "Şu çocukların oyuncağına bak! Demek telden araba da yapılırmış."
    },
    {
     "k": "gezgin",
@@ -294,7 +294,7 @@
    },
    {
     "k": "arkadas",
-    "m": "Şelalenin sesi o kadar gür ki kendi sesimi duyamıyorum! NE DEDİN?"
+    "m": "Şelale öyle gürlüyor ki sesin buraya gelmiyor. Bir şey mi dedin?"
    },
    {
     "k": "gezgin",
@@ -305,17 +305,17 @@
  "ZA": {
   "hatira": {
    "ad": "boncuk bileklik",
-   "simge": "📿",
-   "not": "Renkli boncuklarla dizilen, her rengin ayrı bir anlam taşıdığı bileklik."
+   "simge": "🌈",
+   "not": "Renkli boncuklardan dizilen, her rengin ayrı bir anlam taşıdığı bileklik."
   },
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Masa Dağı'nın düz tepesine beyaz bir bulut örtü gibi serilmiş."
+    "m": "Masa Dağı'nın dümdüz tepesinden beyaz bir bulut ağır ağır aşağı dökülüyor."
    },
    {
     "k": "gezgin",
-    "m": "Dağın masasına örtü serilmiş; demek misafir bekliyorlar."
+    "m": "Masaya örtü serilmiş; demek misafir bekliyorlar."
    },
    {
     "k": "arkadas",
@@ -336,11 +336,11 @@
    },
    {
     "k": "arkadas",
-    "m": "Yelkenler rüzgârı bekliyor, ben de bir kaju bekliyorum. Herkesin bir beklentisi var."
+    "m": "Yelkenler rüzgârı bekliyor, ben de rüzgârı. Gelirse yelkenlerden önce ben yakalarım."
    },
    {
     "k": "gezgin",
-    "m": "Bekleme, ara! Haritada tahta tuşlara benzeyen bir işaret var."
+    "m": "Beklemeyelim, arayalım! Haritada tahta tuşlara benzeyen bir işaret var."
    }
   ]
  },
@@ -353,7 +353,7 @@
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Baobab Caddesi'nde dev ağaçlar, köklerini gökyüzüne çevirmiş gibi dikiliyor."
+    "m": "Baobab Caddesi'nde dev ağaçlar, yolun iki yanında kalın gövdeleriyle nöbet tutuyor."
    },
    {
     "k": "arkadas",
@@ -378,18 +378,18 @@
    },
    {
     "k": "gezgin",
-    "m": "Ekvatorun hemen yanında kar! Bu yolculuk beni şaşırtmaktan vazgeçmiyor."
+    "m": "Ekvatorun dibinde kar! Bu yolculukta şaşırmaya doyamıyorum."
    },
    {
     "k": "arkadas",
-    "m": "Asıl şaşırtıcı olan, Zanzibar kapılarının oymaları. Her biri bir masal anlatıyor."
+    "m": "Şu oymalı kapılara bak: her biri bir masal. Burada renkle, desenle anlatmayı seviyorlar."
    }
   ]
  },
  "UG": {
   "hatira": {
    "ad": "kâğıt boncuk kolye",
-   "simge": "📿",
+   "simge": "🔮",
    "not": "Renkli kâğıt şeritler sıkıca sarılıp cilalanarak boncuğa dönüştürülür."
   },
   "sahne": [
@@ -403,20 +403,20 @@
    },
    {
     "k": "gezgin",
-    "m": "Her iki durumda da selamlarını aldık. Şimdi renkli bir hatıra arayalım."
+    "m": "Öyle de olsa böyle de olsa selamı aldık. Şimdi renkli bir hatıra arayalım."
    }
   ]
  },
  "KE": {
   "hatira": {
    "ad": "kisii taşı heykelcik",
-   "simge": "🪨",
+   "simge": "🐘",
    "not": "Yumuşak sabun taşından oyulup cilalanan küçük bir hayvan heykeli."
   },
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Zürafalar akasyaların tepesindeki yaprakları uzun boyunlarıyla seçiyor."
+    "m": "Zürafalar uzun boyunlarını akasyaların tepesine uzatmış, en taze yaprakları seçiyor."
    },
    {
     "k": "arkadas",
@@ -445,15 +445,15 @@
    },
    {
     "k": "arkadas",
-    "m": "Kahve içmem ama kokusuna bayılırım. Sohbet de güzel olur."
+    "m": "Kahve içmem ama kokusuna bayılırım. Sohbetine de varım!"
    }
   ]
  },
  "SD": {
   "hatira": {
-   "ad": "kerkade çiçeği",
+   "ad": "hibiskus (kerkede) çiçeği",
    "simge": "🌺",
-   "not": "Kurutulmuş kırmızı yapraklarından ekşimsi, serinletici bir içecek yapılır."
+   "not": "Kurutulmuş kırmızı çanak yapraklarından ekşimsi, serinletici bir içecek yapılır."
   },
   "sahne": [
    {
@@ -462,7 +462,7 @@
    },
    {
     "k": "arkadas",
-    "m": "Bu sıcakta buz gibi bir şey içsem her şeyi yaparım. Neredeyse her şeyi."
+    "m": "Bu sıcakta buz gibi bir içecek için her şeyi yaparım. Yani… neredeyse her şeyi."
    },
    {
     "k": "gezgin",
@@ -474,7 +474,7 @@
   "hatira": {
    "ad": "papirüs yer imi",
    "simge": "📜",
-   "not": "Nil kıyısında yetişen bir bitkinin sapları dövülüp kurutularak kâğıt yapılır."
+   "not": "Nil kıyısında yetişen bir bitkinin sapları şerit şerit dizilip dövülür; kuruyunca kâğıt olur."
   },
   "sahne": [
    {
@@ -483,7 +483,7 @@
    },
    {
     "k": "gezgin",
-    "m": "Sfenks'in bilmeceleri ünlüdür. Umarım bizden cevap beklemiyordur."
+    "m": "Masallardaki sfenksler yolculara bilmece sorarmış. Umarım bu bizden cevap beklemiyordur."
    },
    {
     "k": "arkadas",
@@ -495,7 +495,7 @@
   "hatira": {
    "ad": "sidr balı",
    "simge": "🍯",
-   "not": "Arıların sidr ağacının çiçeklerinden yaptığı, koyu renkli ve kokulu bir bal."
+   "not": "Arıların, hünnapa benzeyen sidr ağacının çiçeklerinden yaptığı koyu renkli, kokulu bal."
   },
   "sahne": [
    {
@@ -504,19 +504,19 @@
    },
    {
     "k": "arkadas",
-    "m": "Bu ağaçlar dev mantarlara benziyor. Kimse buraya yer cücesi saklamasın."
+    "m": "Bu ağaçlar dev mantarlara benziyor. Altından bir masal kahramanı çıksa şaşırmam."
    },
    {
     "k": "gezgin",
-    "m": "Cüce yok ama vızıltı var. Arılar bir şeyin yerini biliyor gibi."
+    "m": "Masal kahramanı yok ama vızıltı var. Arılar bir şeyin yerini biliyor gibi."
    }
   ]
  },
  "SA": {
   "hatira": {
-   "ad": "sadu dokuma",
-   "simge": "🧶",
-   "not": "Yünden dokunan, kırmızı, siyah ve beyaz geometrik desenli renkli bir şerit."
+   "ad": "sadu dokuması",
+   "simge": "🐪",
+   "not": "Yünden dokunan, kırmızı, siyah ve beyaz geometrik desenli bir şerit."
   },
   "sahne": [
    {
@@ -525,18 +525,18 @@
    },
    {
     "k": "gezgin",
-    "m": "AlUla'daki Fil Kayası'nı gördün mü? Hortumunu kuma uzatmış gibi."
+    "m": "Fil Kayası'na bak: hortumunu kuma uzatmış. Haritadaki çizgili şeridi o mu saklıyor?"
    },
    {
     "k": "arkadas",
-    "m": "Gördüm. Hatta selam verdim ama cevap vermedi. Kayalar biraz utangaçtır."
+    "m": "Sordum, cevap vermedi. Kayalar biraz utangaç olur; biz kendimiz arayalım."
    }
   ]
  },
  "PS": {
   "hatira": {
-   "ad": "zeytin ağacı oyma süs",
-   "simge": "🫒",
+   "ad": "zeytin ağacından oyma süs",
+   "simge": "🌳",
    "not": "Zeytin ağacının budanan dallarından oyulup cilalanan, avuca sığan küçük süs."
   },
   "sahne": [
@@ -550,24 +550,24 @@
    },
    {
     "k": "gezgin",
-    "m": "Hayat Ağacı mozaiği gibi; dalları sabırla örülmüş. Bu bahçede saklı bir hatıra var."
+    "m": "Taş mozaikteki ağaç da böyle kıvrım kıvrım. Bu ağaçların ufak bir sırrı olmalı."
    }
   ]
  },
  "IQ": {
   "hatira": {
-   "ad": "kleiçe kurabiyesi",
+   "ad": "kleyça kurabiyesi",
    "simge": "🍪",
-   "not": "İçine hurma ezmesi konup kakuleyle kokulandırılan, bayramlarda yapılan kurabiye."
+   "not": "İçine hurma ezmesi konup kakuleyle kokulandırılan, şenliklerde yapılan kurabiye."
   },
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Kamıştan örülmüş mudhif evleri, sazlıkların arasında kemer kemer uzanıyor."
+    "m": "Sazlıkların ortasında mudhifler, altın rengi kemerleriyle suyun kıyısında yükseliyor."
    },
    {
     "k": "arkadas",
-    "m": "Bu evleri kamıştan örmüşler! Ben bir sepeti bile zor örerim."
+    "m": "Koca evi kamıştan örmüşler! Ben bir sepeti bile zor örerim."
    },
    {
     "k": "gezgin",
@@ -579,12 +579,12 @@
   "hatira": {
    "ad": "safran",
    "simge": "🌸",
-   "not": "Mor bir çiçeğin kırmızı tellerinden toplanır; yemeğe altın rengi ve hoş koku verir."
+   "not": "Mor bir çiçeğin kırmızı telleri tek tek toplanıp kurutulur; yemeğe altın sarısı renk ve hoş koku verir."
   },
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Siose Pol köprüsünün kemerleri, akşam ışığında suya altın halkalar düşürüyor."
+    "m": "Otuz üç kemerli Si-o-se Pol, akşam ışığında suya altın halkalar düşürüyor."
    },
    {
     "k": "gezgin",
@@ -592,7 +592,7 @@
    },
    {
     "k": "arkadas",
-    "m": "Mor çiçek, kırmızı tel… Ressam mısın, dedektif mi? Ben ikisine de varım."
+    "m": "Mor çiçek, kırmızı çizgiler… İpucu az ama renkli. Ben dedektifliğe varım!"
    }
   ]
  },
@@ -605,11 +605,11 @@
   "sahne": [
    {
     "k": "anlatici",
-    "m": "İpek Yolu'nun kervanları bir zamanlar bu pazarlardan geçermiş; kavunlar tezgâhlarda parlıyor."
+    "m": "Bir zamanlar İpek Yolu kervanlarının uğradığı pazarda tezgâhlar bal gibi kavunlarla dolu."
    },
    {
     "k": "arkadas",
-    "m": "Şu kavunun kokusu… Hatıra aramaya ara versek? Beş dakika. Tamam, on."
+    "m": "Şu kavunun kokusu… Hatıra avına mola versek? Beş dakika. Tamam, on."
    },
    {
     "k": "gezgin",
@@ -619,7 +619,7 @@
  },
  "AF": {
   "hatira": {
-   "ad": "lapis taşı",
+   "ad": "lacivert taşı",
    "simge": "💎",
    "not": "Dağlardan çıkarılan, altın benekli koyu mavi taş; eskiden ezilip boya yapılırdı."
   },
@@ -634,20 +634,20 @@
    },
    {
     "k": "gezgin",
-    "m": "Gökyüzü bu kadar mavi olunca, haritadaki mavi taş da yakında olmalı."
+    "m": "Gökyüzü bu kadar laciverde dönerken, haritadaki lacivert taş da yakında olmalı."
    }
   ]
  },
  "PK": {
   "hatira": {
-   "ad": "mavi çini",
-   "simge": "🏺",
+   "ad": "Multan çinisi",
+   "simge": "🔷",
    "not": "Beyaz zemine mavi desenler çizilip fırınlanan, parlak sırlı küçük çini karo."
   },
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Süslü kamyonlar, aynalar ve zillerle donanmış hâlde yolda ilerliyor."
+    "m": "Aynalarla, zillerle, rengârenk resimlerle süslü kamyonlar şıngır şıngır yol alıyor."
    },
    {
     "k": "arkadas",
@@ -655,7 +655,7 @@
    },
    {
     "k": "gezgin",
-    "m": "Hunza'nın kayısı bahçelerine varmadan, mavi parlayan bir şeyi bulmalıyız."
+    "m": "Kayısı bahçelerine dalmadan önce, haritadaki masmavi parlayan şeyi bulalım."
    }
   ]
  },
@@ -683,13 +683,13 @@
  "BD": {
   "hatira": {
    "ad": "pitha",
-   "simge": "🍘",
+   "simge": "🍰",
    "not": "Pirinç unundan yapılıp hurma şekeriyle tatlandırılan küçük, yumuşak bir kek."
   },
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Süslü rikşalar zil sesleri arasında sokaklarda kayıyor."
+    "m": "Resimlerle bezenmiş rikşalar, zil çala çala kalabalığın arasından akıyor."
    },
    {
     "k": "arkadas",
@@ -714,7 +714,7 @@
    },
    {
     "k": "arkadas",
-    "m": "Tek ayakla kürek mi? Ben iki ayakla zor duruyorum!"
+    "m": "Tek ayak üstünde hem denge hem kürek! Bunu öğrenmeden buradan gitmem."
    },
    {
     "k": "gezgin",
@@ -725,7 +725,7 @@
  "TH": {
   "hatira": {
    "ad": "mangolu yapışkan pirinç",
-   "simge": "🥭",
+   "simge": "🍚",
    "not": "Hindistan cevizi sütüyle pişen yapışkan pirinç, yanında dilim dilim mangoyla yenir."
   },
   "sahne": [
@@ -735,11 +735,11 @@
    },
    {
     "k": "arkadas",
-    "m": "Pazara kayıkla gelinir mi? Ben bu pazarı çok sevdim."
+    "m": "Burada pazar ayağına gelmiyor, sen pazara kürek çekiyorsun. Bayıldım!"
    },
    {
     "k": "gezgin",
-    "m": "Sarı ve tatlı bir şey arıyoruz. Kayıkların arasında gözümüzü dört açalım."
+    "m": "Haritada sarı bir meyve dilimi çizili. Kayıkların arasında gözümüzü dört açalım."
    }
   ]
  },
@@ -747,7 +747,7 @@
   "hatira": {
    "ad": "gasing topacı",
    "simge": "🌀",
-   "not": "İpe sarılıp fırlatılan, uzun süre dönebilen ağır ahşap bir topaç."
+   "not": "Gövdesine ip sarılıp fırlatılan, çok uzun süre dönebilen ağır ahşap bir topaç."
   },
   "sahne": [
    {
@@ -756,18 +756,18 @@
    },
    {
     "k": "gezgin",
-    "m": "İki fener yan yana… Haritadaki fener de böyle parlıyor muydu acaba?"
+    "m": "İki ışık yan yana durunca gece bile aydınlanıyor. Bunu aklımda tutacağım."
    },
    {
     "k": "arkadas",
-    "m": "Bilmiyorum ama başım döndü. Ya da bu topaç oynayan çocukları izlemekten."
+    "m": "Bilmem, ama başım döndü: ya kulelere bakmaktan ya da şu topaç çeviren çocukları izlemekten."
    }
   ]
  },
  "ID": {
   "hatira": {
    "ad": "angklung",
-   "simge": "🎶",
+   "simge": "🎋",
    "not": "Bambu borulardan yapılır; sallanınca tek bir nota çalar, birlikte çalınınca şarkı olur."
   },
   "sahne": [
@@ -777,11 +777,11 @@
    },
    {
     "k": "gezgin",
-    "m": "Uzaktan tahta borular gibi tıngırdayan bir müzik geliyor."
+    "m": "Şuraya bak: herkesin elinde tek bir bambu çalgı var, ama şarkı hep birlikte çıkıyor."
    },
    {
     "k": "arkadas",
-    "m": "Tek başına bir nota, hepsi birden bir şarkı. Bize benziyor, değil mi?"
+    "m": "Tek başına bir ses, hep birlikte bir şarkı. Bize benziyor, değil mi?"
    }
   ]
  },
@@ -798,18 +798,18 @@
    },
    {
     "k": "arkadas",
-    "m": "Bu tepeler yenmiyor, değil mi? Sadece sordum."
+    "m": "Bin tane çikolata tepesi var, biri bile yenmiyor. Doğanın şakası bu olmalı!"
    },
    {
     "k": "gezgin",
-    "m": "Yenmiyor ama haritada deniz kıyısında küçük bir ışık çizili. Oraya gidelim."
+    "m": "Haritada deniz kabuğundan, içi ışıklı bir şey çizili. Kabuklara dikkat!"
    }
   ]
  },
  "VN": {
   "hatira": {
    "ad": "su kuklası",
-   "simge": "🎭",
+   "simge": "🐉",
    "not": "Bele kadar suya giren kuklacıların arkadan oynattığı, boyalı ahşap bir kukla."
   },
   "sahne": [
@@ -823,7 +823,7 @@
    },
    {
     "k": "arkadas",
-    "m": "Ha Long Körfezi'ndeki kayalar bile bize bakıyor. Bence evet, bir işaret."
+    "m": "Bence evet. Bak, ışıklar suda oynuyor; burada su bile bir sahne gibi."
    }
   ]
  },
@@ -836,11 +836,11 @@
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Bambu ormanında pandalar, hiçbir şey onları acele ettiremezmiş gibi yemek yiyor."
+    "m": "Bambu ormanında pandalar, dünyanın bütün vakti onlarınmış gibi bambu kemiriyor."
    },
    {
     "k": "arkadas",
-    "m": "Pandalar hiç acele etmiyor. Ben de bugün acele etmek istemiyorum."
+    "m": "Pandalar hiç acele etmiyor. Bugün ben de panda olmak istiyorum."
    },
    {
     "k": "gezgin",
@@ -850,9 +850,9 @@
  },
  "KR": {
   "hatira": {
-   "ad": "yut tahtası",
+   "ad": "yut çubukları",
    "simge": "🎲",
-   "not": "Dört tahta çubuk havaya atılıp düşüşlerine göre taşların ilerletildiği bir oyun."
+   "not": "Dört tahta çubuk havaya atılır; düşüşlerine göre taşlar tahtada ilerletilir."
   },
   "sahne": [
    {
@@ -872,28 +872,28 @@
  "JP": {
   "hatira": {
    "ad": "origami turna",
-   "simge": "🦢",
+   "simge": "🐦",
    "not": "Tek bir kare kâğıt kesilmeden ve yapıştırılmadan katlanarak turnaya dönüşür."
   },
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Kiraz ağaçlarının pembe yaprakları, Fuji Dağı'nın önünde kar gibi savruluyor."
+    "m": "Kiraz çiçekleri, Fuji Dağı'nın önünde pembe bir kar gibi savruluyor."
    },
    {
     "k": "arkadas",
-    "m": "Bu yapraklar saçıma takıldı. Şimdi ben de bir kiraz ağacıyım."
+    "m": "Çiçekler başıma kondu, kalkmıyor. Artık ben de bir kiraz ağacıyım."
    },
    {
     "k": "gezgin",
-    "m": "Çok yakıştı! Hadi, kâğıt kadar hafif bir hatıra arıyoruz."
+    "m": "Çok yakıştı! Hadi, haritada kâğıt kadar ince, kanatlı bir şey çizili."
    }
   ]
  },
  "RU": {
   "hatira": {
    "ad": "balalayka",
-   "simge": "🪕",
+   "simge": "🎸",
    "not": "Üç telli, üçgen gövdeli, parmaklarla tıngırdatılarak çalınan bir çalgı."
   },
   "sahne": [
@@ -915,7 +915,7 @@
   "hatira": {
    "ad": "hokey diski",
    "simge": "🏒",
-   "not": "Buz hokeyinde sopayla buz üstünde sürülen, yassı siyah lastik disk."
+   "not": "Buz hokeyinde sopayla sürülen, yassı, siyah, sert lastik bir disk."
   },
   "sahne": [
    {
@@ -949,14 +949,14 @@
    },
    {
     "k": "gezgin",
-    "m": "Yaptı. Hatta galiba birileri cevap verdi. Bir stadyum kalabalığı gibi."
+    "m": "Yaptı! Hatta karşılık veren var: uzaktan tezahürat geliyor. Maç mı oynanıyor?"
    }
   ]
  },
  "MX": {
   "hatira": {
    "ad": "piñata",
-   "simge": "🪅",
+   "simge": "🎉",
    "not": "İçi şekerlerle doldurulan rengârenk bir oyuncak; gözler bağlıyken sopayla kırılır."
   },
   "sahne": [
@@ -966,24 +966,24 @@
    },
    {
     "k": "arkadas",
-    "m": "Göletteki ajolote bana gülümsedi. Sanırım burayı çok sevdi."
+    "m": "Göletteki ajolote bana gülümsedi. Sanırım beni sevdi."
    },
    {
     "k": "gezgin",
-    "m": "Biz de sevdik. Şimdi şekerle dolu, rengârenk bir sürpriz arayalım."
+    "m": "O herkese gülümsüyor! Hadi, şu rengârenk süslerin arasında bir sürpriz saklı olmalı."
    }
   ]
  },
  "CO": {
   "hatira": {
    "ad": "arepa",
-   "simge": "🫓",
+   "simge": "🌽",
    "not": "Mısır unundan yapılan, ızgarada pişirilip içi doldurulabilen yuvarlak, yassı ekmek."
   },
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Kokora vadisinde mum palmiyeleri, bulutlara uzanan ince sütunlar gibi yükseliyor."
+    "m": "Cocora Vadisi'nde mum palmiyeleri, bulutlara uzanan ince sütunlar gibi yükseliyor."
    },
    {
     "k": "arkadas",
@@ -991,15 +991,15 @@
    },
    {
     "k": "gezgin",
-    "m": "Papağanlar, belki. Ama burnumuz bize sıcacık bir ekmek kokusunu söylüyor."
+    "m": "Belki papağanlar. Sen de şu sıcacık mısır ekmeği kokusunu alıyor musun?"
    }
   ]
  },
  "PE": {
   "hatira": {
-   "ad": "And flütü",
-   "simge": "🎼",
-   "not": "Farklı uzunluktaki kamış borular yan yana bağlanır; her boru ayrı bir nota çalar."
+   "ad": "siku (And pan flütü)",
+   "simge": "🎍",
+   "not": "Farklı uzunluktaki kamış borular yan yana bağlanır; her boru ayrı bir ses verir."
   },
   "sahne": [
    {
@@ -1018,14 +1018,14 @@
  },
  "BR": {
   "hatira": {
-   "ad": "bilboquê",
-   "simge": "🪀",
-   "not": "Sapa iple bağlı bir top havaya atılır ve sapın ucuna oturtulmaya çalışılır."
+   "ad": "peteca",
+   "simge": "🏸",
+   "not": "Tüylü, hafif bir top; elle vurularak havada tutulur, yere düşürmemeye çalışılır."
   },
   "sahne": [
    {
     "k": "anlatici",
-    "m": "Amazon ormanında tukanlar ve aralar, rengârenk gagalarıyla ağaçtan ağaca uçuyor."
+    "m": "Amazon ormanında iri gagalı tukanlar ve rengârenk papağanlar ağaçtan ağaca uçuyor."
    },
    {
     "k": "gezgin",
@@ -1033,15 +1033,15 @@
    },
    {
     "k": "arkadas",
-    "m": "O zaman son hatırayı biraz eğlenceyle bulalım. Kim daha önce yakalarsa!"
+    "m": "O zaman buradaki hatırayı oyunla bulalım: kim havada en uzun tutarsa kazanır!"
    }
   ]
  },
  "AR": {
   "hatira": {
    "ad": "mate kabağı",
-   "simge": "🧉",
-   "not": "Kurutulmuş bir su kabağından yapılan fincan; içindeki mate metal bir pipetle sırayla paylaşılır."
+   "simge": "🍵",
+   "not": "Kurutulmuş su kabağından bir kap; içindeki mate metal bir kamışla, elden ele dolaştırılarak içilir."
   },
   "sahne": [
    {
@@ -1050,7 +1050,7 @@
    },
    {
     "k": "arkadas",
-    "m": "Burası dünyanın neredeyse ucu. Hiç bu kadar uzağa gelmemiştim."
+    "m": "Dünyanın ucuna geldik sayılır. Hiç bu kadar uzağa gelmemiştim."
    },
    {
     "k": "gezgin",

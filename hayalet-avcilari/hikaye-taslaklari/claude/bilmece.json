@@ -1,39 +1,39 @@
 {
  "bilmeceler": [
   {
-   "soru": "Ne fırçayla çizilirim ne kalemle;\nÖnce suyun üstünde yüzerim, sonra kâğıda konarım.\nHer doğuşumda başka bir yüzüm olur.",
+   "soru": "Ne tuvale çizilirim ne deftere;\nÖnce suyun üstünde yüzerim, sonra kâğıda konarım.\nBir kez yapılırım, bir eşim daha olmaz.",
    "secenek": [
     "ebru kâğıdı",
     "pısanka",
-    "wycinanki"
+    "kâğıt oyması (wycinanki)"
    ],
    "dogru": 0,
    "bolum": [
     "Beş hatıra yan yana gelince haritanın ilk köşesi ısındı ve bir resim belirdi.",
     "Resimde, ellerinde sönmüş küçük fenerler tutan hayaletler vardı.",
     "Demek ki bizi kovalayanlar kötü değildi; sadece karanlıkta yollarını kaybetmişlerdi.",
-    "O günden sonra onlara biraz daha başka bakmaya başladık."
+    "O günden sonra onlara başka bir gözle baktık: artık kovalamıyor, ışığa uğurluyorduk."
    ]
   },
   {
-   "soru": "Yüzünün üstüne otururum ama yüz değilim;\nKarnavalda gülerim, kimse kim olduğunu bilmez.\nÇıkarınca sen yine sen olursun.",
+   "soru": "Yüze takılırım ama yüz değilim;\nAltınla, renklerle süslenirim.\nKarnavalda beni takanın kim olduğunu bir ben bilirim.",
    "secenek": [
-    "kruvasan",
+    "babuş",
     "Venedik maskesi",
     "kastanyet"
    ],
    "dogru": 1,
    "bolum": [
     "Haritanın ikinci parçası eski bir masal fısıldadı.",
-    "Çok eskiden dünyanın en güney ucunda bir deniz feneri varmış.",
+    "Çok eskiden, uzak bir kıyıda bir deniz feneri varmış.",
     "Gece yolunu kaybeden her ruh, o fenerin ışığını izleyerek evine dönermiş.",
     "Fenerin adı haritanın kenarında silik harflerle yazıyordu: Dostluk Feneri."
    ]
   },
   {
-   "soru": "Tahtamda iki sıra çukur, avucunda tohumlar;\nNe zar atarsın ne kart çekersin,\nSaydıkça, düşündükçe kazanırsın.",
+   "soru": "Tahtamda iki sıra çukur, avucunda tohumlar;\nNe zar atarsın ne kart çekersin.\nSaya saya, düşüne düşüne kazanırsın.",
    "secenek": [
-    "kente kumaşı",
+    "tel araba",
     "kissanje",
     "ayo tahtası"
    ],
@@ -42,11 +42,11 @@
     "Üçüncü parça, haritaya kara bulutlar çizdi.",
     "Bir gece büyük bir fırtına kopmuş ve Dostluk Feneri'nin ışığını söndürmüş.",
     "O geceden beri hayaletler yollarını bulamıyor, dünyanın dört bir yanında dolanıp duruyormuş.",
-    "Artık nereye gittiğimizi biliyorduk; asıl soru, sönen bir ışığın nasıl yakılacağıydı."
+    "Artık neyi aradığımızı biliyorduk; asıl soru, sönen bir ışığın nasıl yakılacağıydı."
    ]
   },
   {
-   "soru": "Çiçekken bir orkideydim, şimdi kapkara bir çubuğum;\nBeni güneş kuruttu, sabır kokuttu.\nKurabiyene kokumu ben veririm.",
+   "soru": "Bir orkidenin meyvesiyim;\nGüneşte kurudukça karardım, karardıkça güzel koktum.\nTatlılara kokusunu ben veririm.",
    "secenek": [
     "vanilya çubuğu",
     "timbila",
@@ -61,9 +61,9 @@
    ]
   },
   {
-   "soru": "Bir ağacın çiçeğinden doğdum ama ağaç beni tanımaz;\nBinlerce minik kanat taşıdı beni.\nKoyu ve tatlıyım, kaşıkla gelirim.",
+   "soru": "Yolculuğum bir ağacın çiçeklerinde başladı;\nBeni binlerce minik kanat taşıdı.\nKoyu renkliyim, tatlıyım, kaşıkla yenirim.",
    "secenek": [
-    "papirüs yer imi",
+    "hibiskus (kerkede) çiçeği",
     "jebena",
     "sidr balı"
    ],
@@ -71,31 +71,31 @@
    "bolum": [
     "Beşinci parçada bir cümle parladı: \"Feneri tek bir kahraman yakamaz.\"",
     "Işığın yeniden yanması için dünyanın farklı köşelerinden gelen dostlar gerekiyormuş.",
-    "Birbirimize baktık; her birimiz başka bir yerden, başka bir hikâyeden geliyorduk.",
-    "Gülümsedik. Harita galiba bizi çoktan seçmişti."
+    "Birbirimize bakıp gülümsedik; her birimiz başka bir yerden, başka bir hikâyeden geliyorduk.",
+    "Harita galiba bizi çoktan seçmişti."
    ]
   },
   {
    "soru": "Mor bir çiçeğin kalbinde üç kırmızı telim;\nBir tutamım pilavı altın sarısına boyar.\nAz olurum ama çok değerliyim.",
    "secenek": [
-    "kleiçe kurabiyesi",
+    "sadu dokuması",
     "safran",
-    "doira"
+    "kleyça kurabiyesi"
    ],
    "dogru": 1,
    "bolum": [
     "O akşam küçük bir hayalet çekinerek yanımıza yaklaştı.",
-    "Korkutmaya çalışmadı; sadece haritayı gösterdi ve sönmüş fenerini kaldırdı.",
-    "Yol soruyordu. Ona, feneri yakınca ilk ışığın onun için olacağına söz verdik.",
-    "O günden sonra peşimizden uzaktan uzağa bir hayalet arkadaşımız da geldi."
+    "Korkutmaya çalışmadı; haritayı gösterdi, sönmüş fenerini kaldırdı: yol soruyordu.",
+    "Ona, feneri yakınca ilk ışığın onun için olacağına söz verdik.",
+    "O günden sonra uzaktan uzağa hep peşimizden geldi."
    ]
   },
   {
-   "soru": "Hasırdan örülmüşüm, içim boştur;\nElini kullanmak yok, ayakla havada kalırım.\nDüşürmeden kaç kez sektirebilirsin?",
+   "soru": "Rattandan örüldüm, tüy gibi hafifim;\nEl değmeden, ayaklarla havada tutulurum.\nYere düşmediğim sürece oyun sürer.",
    "secenek": [
     "çinlon topu",
     "pitha",
-    "lapis taşı"
+    "lacivert taşı"
    ],
    "dogru": 0,
    "bolum": [
@@ -106,7 +106,7 @@
    ]
   },
   {
-   "soru": "Tek başıma sallanırsam tek bir nota söylerim;\nHerkes birimi sallarsa şarkı olurum.\nBen birlikte çalınmayı severim.",
+   "soru": "Bambudanım; sallanınca yalnızca tek bir nota veririm.\nTek başıma şarkı söyleyemem.\nBenim gibiler yan yana gelince ezgi tamamlanır.",
    "secenek": [
     "gasing topacı",
     "angklung",
@@ -121,18 +121,18 @@
    ]
   },
   {
-   "soru": "Kırmızı kâğıttan bir gövdem, içimde küçük bir ışığım var;\nBayram gecesi sokakları süslerim.\nKaranlıkta kalana yol gösteririm.",
+   "soru": "Kırmızı kâğıttan bir gövdem, içimde küçük bir ışığım var;\nŞenlik gecesi sokakları süslerim.\nKaranlıkta kalana yol gösteririm.",
    "secenek": [
-    "yut tahtası",
+    "yut çubukları",
     "origami turna",
     "kâğıt fener"
    ],
    "dogru": 2,
    "bolum": [
-    "Yolun sonuna yaklaşırken hepimiz biraz yorulmuştuk.",
-    "Bir ateşin başında oturup yolculukta en çok neyi sevdiğimizi anlattık: kimi bir yemeği, kimi bir şarkıyı, kimi bir gün batımını.",
-    "Sonunda hepimiz aynı şeyi söyledik: en güzeli, bunları birlikte yaşamaktı.",
-    "O gece haritanın kenarları ilk kez altın gibi parladı."
+    "Yolun sonuna yaklaşırken yorulmuştuk; ateşin başında içimizden biri sordu: \"Ya fener yanmazsa?\"",
+    "Kimse cevap veremedi.",
+    "O sırada küçük hayalet sönmüş fenerini ateşe doğru uzattı ve bekledi; bize güveniyordu.",
+    "Sözümüzü hatırladık. O gece haritanın kenarları ilk kez altın gibi parladı."
    ]
   },
   {
@@ -147,26 +147,26 @@
     "Son parça yerine oturunca Dostluk Haritası baştan sona tamamlandı.",
     "Haritanın en altında yeni bir satır belirdi: \"Arjantin'de, dünyanın ucunda buluşalım.\"",
     "Arkamıza baktığımızda yüzlerce küçük hayaletin sessizce peşimizden geldiğini gördük.",
-    "Hepimiz aynı anda \"Hazırız!\" dedik ve son yolculuğa çıktık."
+    "Hepimiz aynı anda \"Hazırız!\" dedik ve yolun son durağına doğru yola koyulduk."
    ]
   }
  ],
  "final": [
   {
    "k": "anlatici",
-   "m": "Dünyanın ucundaki fenere vardığımızda rüzgâr, uzun zamandır bizi bekliyormuş gibi esiyordu."
+   "m": "Dünyanın ucundaki fener karşımızda; rüzgâr, yıllardır bizi bekliyormuş gibi esiyor."
   },
   {
    "k": "gezgin",
-   "m": "Herkes burada mı? Hiç kimse eksik değil mi? Güzel. O zaman hep birlikte… şimdi!"
+   "m": "Önce mate elden ele dolaşsın; herkes bir yudum alsın, kimse atlanmasın. Sonra eller kapıya!"
   },
   {
    "k": "anlatici",
-   "m": "Ellerimizi aynı anda fenerin kapısına koyduk; kıvılcımlar birleşti ve fener yeniden yandı."
+   "m": "On iki el aynı anda kapıya değiyor. Hatıralardaki kıvılcımlar birleşiyor ve fener yeniden yanıyor."
   },
   {
    "k": "arkadas",
-   "m": "Bak! Işık denizin üstüne altın bir yol çiziyor. Hayaletler el sallayarak evlerine gidiyor!"
+   "m": "Bakın! İlk ışık küçük dostumuzun fenerine düştü. Söz vermiştik, tuttuk!"
   },
   {
    "k": "gezgin",
@@ -174,7 +174,7 @@
   },
   {
    "k": "anlatici",
-   "m": "O gece dünyanın bütün hayaletleri evlerini buldu. Ve öğrendik ki en parlak fener, dostluktur."
+   "m": "Işık denize altın bir yol çiziyor; hayaletler el sallaya sallaya evlerine gidiyor. Fener artık hep yanacak."
   }
  ]
 }

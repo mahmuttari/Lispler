@@ -14,7 +14,7 @@ kod çizimine düşer.
 
 1. ChatGPT'de **yeni bir sohbet** aç ve `CHATGPT-ISTEMI-YOLCULUK.md`'deki **ANA İSTEM**'i bir kez gönder (aynı üslup).
 2. Her paftaya üslup referansı olarak `hamui/U06.png` ve `ham3d/D01.png` ekle.
-3. Her resmi `gorsel/hamek/<KOD>.png` olarak kaydet (K01 … K08). Her paftadan sonra commit ve push yap, ilerlemeyi
+3. Her resmi `gorsel/hamek/<KOD>.png` olarak kaydet (K01 … K11). Her paftadan sonra commit ve push yap, ilerlemeyi
    `gorsel/hamek/DURUM.md`'ye yaz.
 4. Paftaları birlikte kullanıcıya göster.
 5. Giriş, şifre, ödeme ve ChatGPT'nin görsel sınırı kullanıcıya bırakılır. Oyun koduna dokunma.
@@ -27,7 +27,10 @@ Kesim: `araclar/gorsel_kes.py`. Adlar:
 - K05 → `kopru-kapali`, `an-kopru-in-1`, `an-kopru-in-2`, `kopru-acik`, `kilit`, `kilit-acik`;
 - K06 → `donati-fici`, `donati-sandik`, `donati-fener`, `donati-bank`, `donati-tabela`, `donati-saman`;
 - K07 → `donati-cali`, `donati-ciceklik`, `donati-mantar`, `donati-kutuk`, `donati-tas`, `donati-yaprak`;
-- K08 → `donati-balkabagi`, `donati-araba`, `donati-cit`, `donati-korkuluk`, `donati-mum`, `donati-orumcek`.
+- K08 → `donati-balkabagi`, `donati-araba`, `donati-cit`, `donati-korkuluk`, `donati-mum`, `donati-orumcek`;
+- K09 → `yakinda-pamukkale` (tek resim, opak);
+- K10 → `silah-yildiz`, `silah-ejder`, `silah-gokkusagi`, `an-mermi-yildiz-1..3` (4-6. hücre);
+- K11 → `an-efsane-aura-1..3` (1-3), `efsane-rozet`, `efsane-sandik`, `efsane-parilti`.
 
 ## K01: yıldırım çarpma (6 kare, döngü)
 
@@ -128,4 +131,39 @@ Sheet K08: friendly-spooky props, same view and style, TRANSPARENT background, g
 4. a friendly scarecrow with a patched hat
 5. a cluster of three melting candles on a small stone, warm flames
 6. a corner cobweb with a tiny cute spider (flat on the ground, semi-transparent web)
+```
+
+## K09: "Yakında" — yeni tema önizlemesi: Pamukkale
+
+Kullanıcı (25 Kasım 2026): *"Farklı temalar hazırlanacağını belirtelim; bütün bölümler bitince 'Yakında' yazsın, o bölümün önizlemesi;
+dünyadaki ikonik yerleri betimleyeceğiz, birini koy, mesela Pamukkale."*
+
+```
+Illustration K09 (one PNG, 1536 x 1024, opaque): a preview of the next game world "Pamukkale" in the same stylized 3D premium casual
+style, seen from a high 3/4 top-down angle like the game map: dazzling white travertine terraces stepping down a hillside, each
+terrace a shallow pool of turquoise water, little waterfalls between them, the ancient ruins of Hierapolis (columns, a small
+amphitheatre) at the top, warm golden late-afternoon light, a few cute white ghosts floating curiously above the pools, a winding
+path for the hunters. No people, no text, no flags.
+```
+
+## K10: efsane silahlar
+
+```
+Sheet K10: LEGENDARY weapons for the hunters, same style as the approved weapon sheets, TRANSPARENT background, grid 3 x 2, each weapon
+300-380 px long, side view, glowing, clearly more precious than normal weapons (gold trim, gems, soft aura):
+1. "Star Blaster": a golden blaster with a glowing star-shaped crystal at the muzzle
+2. "Dragon Breath": a friendly dragon-head shaped flamethrower in red-gold, small flames at the mouth
+3. "Rainbow Beam": a sleek white-and-pearl ray gun with a rainbow crystal core
+4-6. projectile animation (3 frames) of a spinning golden star bullet with a short sparkle trail, same size in each cell
+```
+
+## K11: efsane parıltı ve rozetler
+
+```
+Sheet K11: LEGENDARY cosmetics, TRANSPARENT background, grid 3 x 2:
+1-3. a looping aura animation (3 frames) drawn around an EMPTY middle (the character is not drawn): soft golden-violet glow ring on the
+     ground with rising sparkles and small floating stars, slightly different in each frame, same size and centre
+4. a "LEGENDARY" badge: a golden shield with a purple gem and laurel leaves (no letters)
+5. a legendary treasure chest, half open, golden light and gems spilling out
+6. a big four-pointed sparkle burst (purchase celebration)
 ```

@@ -9,7 +9,8 @@ gpt kullan, yerel oturumu kullan"*.
    Kullanıcıya göster, onay gelince devam et.
 2. **K05 (hemen ardından):** `CHATGPT-ISTEMI-EK.md` › K05 kilitli köprü ve açılışı (kullanıcı istedi). Kayıt:
    `gorsel/hamek/K05.png`.
-3. **K06–K08:** harita donatıları (`CHATGPT-ISTEMI-EK.md`, kullanıcı istedi).
+3. **K09–K11:** Yakında/Pamukkale önizlemesi, efsane silahlar, efsane parıltılar (`CHATGPT-ISTEMI-EK.md`, kullanıcı istedi).
+3b. **K06–K08:** harita donatıları (`CHATGPT-ISTEMI-EK.md`, kullanıcı istedi).
 4. **H02–H09:** kalan hatıra paftaları (aynı dosya). Toplu göstermek yeterli.
 5. ~~K03, K04~~ yapıldı (bulut Claude kesti; mor bulutlar griye boyandı).
 6. ~~K02 kararı~~ kullanıcı onayladı.

@@ -107,7 +107,9 @@ ANIMASYON = {
     'N20': [('donma', [1, 2, 3], 160), ('cozulme', [4, 5, 6], 160)],
     # Ek paftalar (gorsel/hamek, CHATGPT-ISTEMI-EK.md): yıldırım çarpma efekti (hava.js)
     'K01': [('carpilma', [1, 2, 3, 4, 5, 6], 192)],
-    'K05': [('kopru-in', [2, 3], 256)],  # kilitli köprünün inişi (1. kare K05 hücre 1: kopru-kapali)
+    'K05': [('kopru-in', [2, 3], 256)],
+    'K10': [('mermi-yildiz', [4, 5, 6], 64)],
+    'K11': [('efsane-aura', [1, 2, 3], 256)],  # kilitli köprünün inişi (1. kare K05 hücre 1: kopru-kapali)
 }
 
 
@@ -604,6 +606,8 @@ EK_PAFTALAR = {
     'K06': [('donati-fici', 160), ('donati-sandik', 160), ('donati-fener', 192), ('donati-bank', 160), ('donati-tabela', 160), ('donati-saman', 192)],
     'K07': [('donati-cali', 160), ('donati-ciceklik', 160), ('donati-mantar', 128), ('donati-kutuk', 160), ('donati-tas', 160), ('donati-yaprak', 160)],
     'K08': [('donati-balkabagi', 128), ('donati-araba', 192), ('donati-cit', 160), ('donati-korkuluk', 192), ('donati-mum', 128), ('donati-orumcek', 160)],
+    'K10': [('silah-yildiz', 192), ('silah-ejder', 192), ('silah-gokkusagi', 192), None, None, None],
+    'K11': [None, None, None, ('efsane-rozet', 128), ('efsane-sandik', 192), ('efsane-parilti', 192)],
     'K04': [('yuva-mezarlik', 256), ('yuva-magara', 256), ('yuva-izbe', 256), ('yuva-kovuk', 256), ('yuva-kuyu', 256), ('yuva-kripta', 256)],
 }
 
@@ -674,6 +678,14 @@ def ek_kes():
     ANIMASYON.clear(); ANIMASYON.update(eski_anim)
     ek_hucreler(liste)
     hatiralar(liste)
+    # K09: opak tek resim (Yakında önizlemesi), 768 px genişlik
+    yol = os.path.join(HAMEK, 'K09.png')
+    if os.path.exists(yol):
+        r9 = Image.open(yol).convert('RGB')
+        r9 = r9.resize((768, round(r9.height * 768 / r9.width)), Image.LANCZOS)
+        r9.save(os.path.join(CIKTI, 'yakinda-pamukkale.webp'), 'WEBP', quality=82, method=6)
+        liste['yakinda-pamukkale'] = [r9.width, r9.height]
+        print('✓ K09 (yakında: Pamukkale)')
     govde.update(ANIM_GOVDE)
     with open(os.path.join(CIKTI, 'liste.js'), 'w', encoding='utf-8') as f:
         f.write('// Üretilen dosya: araclar/gorsel_kes.py. Elle düzenleme.\n')

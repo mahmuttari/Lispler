@@ -12,3 +12,6 @@
 | K06 | Donatılar: köy (fıçı, sandık, fener, bank, tabela, saman) | bekliyor |
 | K07 | Donatılar: doğa (çalı, çiçeklik, mantar, kütük, taş, yaprak) | bekliyor |
 | K08 | Donatılar: tatlı-ürkütücü (balkabağı, araba, çit, korkuluk, mum, örümcek ağı) | bekliyor |
+| K09 | Yakında: Pamukkale önizlemesi (tek resim) | bekliyor (kullanıcı istedi) |
+| K10 | Efsane silahlar (3) + yıldız mermisi animasyonu | bekliyor (kullanıcı istedi) |
+| K11 | Efsane aura animasyonu, rozet, sandık, parıltı | bekliyor (kullanıcı istedi) |

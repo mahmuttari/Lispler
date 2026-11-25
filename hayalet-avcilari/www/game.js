@@ -6810,23 +6810,37 @@ function update(dt, now) {
     if (!collidesWalls(nx, g.y, g.r)) { g.x = nx; movedX = true; }
     if (!collidesWalls(g.x, ny, g.r)) { g.y = ny; movedY = true; }
 
+    // Asıl gidiş ekseni tıkalıyken öbür eksendeki küçük kayma "ilerleme" sayılmaz: hayalet duvarın (ör. çıktığı
+    // yuvanın) dibinde yerinde saymasın, dolansın (Y2 sınama botunun bulduğu takılma)
+    const istenen = Math.abs(vx) + Math.abs(vy);
+    const giden = (movedX ? Math.abs(vx) : 0) + (movedY ? Math.abs(vy) : 0);
+    const tikali = istenen > 0 && giden < istenen * 0.35;
     if (!movedX && !movedY && collidesWalls(g.x, g.y, g.r)) {
       // Duvarın içinde kalmış: hareket edemez, mermi duvara çarpar → en yakın boş yere çıkar
       ({ x: g.x, y: g.y } = freeSpot(g.x, g.y, g.r));
       g.detourTime = 0;
-    } else if (!movedX && !movedY) {
-      // İki eksen de tıkalı → 90° döndür ve detour ata
+    } else if (tikali) {
+      // Gidiş tıkalı (iki eksen ya da asıl eksen) → 90° döndür ve detour ata
       if (!g.detourTime || g.detourTime <= 0) {
         const side = Math.random() < 0.5 ? 1 : -1;
         // Oyuncu yönünün dik vektörü
         g.detourVx = -(dy / d) * g.speed * side;
         g.detourVy =  (dx / d) * g.speed * side;
         g.detourTime = 0.5 + Math.random() * 0.6;
+        g.detourGeri = false;
+      } else if (!g.detourGeri) {
+        // Dolanma da tıkalı: önce duvardan geri çekil (her karede yön çevirip yerinde titremesin)
+        g.detourVx = -(dx / d) * g.speed;
+        g.detourVy = -(dy / d) * g.speed;
+        g.detourTime = 0.35;
+        g.detourGeri = true;
       } else {
-        // Detour da tıkalı, ters yöne çevir
-        g.detourVx = -g.detourVx;
-        g.detourVy = -g.detourVy;
+        // Geri çekilme de tıkalı: rastgele bir yöne
+        const a = Math.random() * Math.PI * 2;
+        g.detourVx = Math.cos(a) * g.speed;
+        g.detourVy = Math.sin(a) * g.speed;
         g.detourTime = 0.4;
+        g.detourGeri = false;
       }
     } else if (movedX && movedY) {
       // İki eksen de açık → detour bitir
@@ -7562,7 +7576,7 @@ function spawnGhost(aralik) {
     let enIyiD = -1, enUzak = null;
     const uygun = [];
     for (const yv of game.yuvalar) {
-      if (yv.bolge !== range.bolge) continue;
+      if (yv.bolge !== range.bolge || yv.ulasilir === false) continue; // ağzı kapalı cepteki yuvadan doğum yok
       const agiz = yolculukYuvaAgzi(yv);
       const d = oyunculardanUzaklik(agiz.x, agiz.y);
       if (d >= HAYALET_DOGUM_UZAKLIK) uygun.push(yv);

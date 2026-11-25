@@ -469,9 +469,12 @@ function yolculukHaritaKur() {
         if (!zone && Math.abs(y - A.worldH / 2) < 150) continue; // arena: orta şerit boss ve oyuncu yolu, yuva konmaz
         if (game.yuvalar.some((o) => Math.hypot(o.x - x, o.y - y) < ara)) continue;
         const tur = havuz[Math.min(havuz.length - 1, Math.floor(rnd(bolge, 960 + sy) * havuz.length))];
-        game.yuvalar.push({ x, y, tur, bolge, r });
+        const yv = { x: x, y: y, tur, bolge, r };
+        game.yuvalar.push(yv);
         game.walls.push({ x: bx, y: by, w: bw, h: bh, yuva: true });
-        return true;
+        const kb = yolculukYuvaBolgesi(yv), ag = yolculukYuvaAgzi(yv);
+        if (yolculukBolgedeUlasir(kb.ax, kb.ay, ag.x, ag.y, kb.x0, kb.x1)) return true;
+        game.yuvalar.pop(); game.walls.pop(); // ağzı kapalı cepte: bu aday olmaz
       }
       // Yedek: seyrek ızgara taraması (tohumlu rastgele 600 deneme yetmezse) — yerleşimin garanti olması için
       for (let gy = 110; gy <= A.worldH - 110; gy += 40) {
@@ -485,9 +488,12 @@ function yolculukHaritaKur() {
           if (!zone && Math.abs(gy - A.worldH / 2) < 150) continue;
           if (game.yuvalar.some((o) => Math.hypot(o.x - gx, o.y - gy) < ara)) continue;
           const tur = havuz[Math.min(havuz.length - 1, Math.floor(rnd(bolge, 960 + sy) * havuz.length))];
-          game.yuvalar.push({ x: gx, y: gy, tur, bolge, r });
+          const yv = { x: gx, y: gy, tur, bolge, r };
+          game.yuvalar.push(yv);
           game.walls.push({ x: bx, y: by, w: bw, h: bh, yuva: true });
-          return true;
+          const kb = yolculukYuvaBolgesi(yv), ag = yolculukYuvaAgzi(yv);
+          if (yolculukBolgedeUlasir(kb.ax, kb.ay, ag.x, ag.y, kb.x0, kb.x1)) return true;
+          game.yuvalar.pop(); game.walls.pop(); // ağzı kapalı cepte: bu aday olmaz
         }
       }
       return false;
@@ -528,6 +534,11 @@ function yolculukHaritaKur() {
 
   yolculukDonatilariKur();
   yolculukYoluGarantile();
+  // Son denetim (süs objeleri ve yol açma sonrası): ağzına yürünemeyen yuvadan hayalet doğmaz, yalnız süs kalır
+  for (const yv of game.yuvalar) {
+    const kb = yolculukYuvaBolgesi(yv), ag = yolculukYuvaAgzi(yv);
+    yv.ulasilir = yolculukBolgedeUlasir(kb.ax, kb.ay, ag.x, ag.y, kb.x0, kb.x1);
+  }
 }
 
 // ---------- harita süs objeleri (DON1) ----------
@@ -665,6 +676,49 @@ function yolculukYuruyebilir(x, y, r) {
     return false;
   }
   return true;
+}
+
+// Bölge kutusunda (x0..x1) kaba ızgara taşkın doldurma: (ax, ay) noktasından (hx, hy)'ye yürüme yolu var mı (hücre 40 px).
+// Hayalet yuvasının ağzı kapalı bir cepte kalmasın diye (oradan çıkan hayalet hapsolur, bölge temizlenemez).
+function yolculukBolgedeUlasir(ax, ay, hx, hy, x0, x1) {
+  const A = YOLCULUK_AYAR, HUC = 40, r = 22, y0 = 40;
+  x0 = 20 + Math.floor((x0 - 20) / HUC) * HUC; // yolculukYolVarMi ile aynı ızgara hizası (dar geçitler aynı görünsün)
+  const nx = Math.max(1, Math.ceil((x1 - x0) / HUC)), ny = Math.ceil((A.worldH - 80) / HUC);
+  const bul = (x, y) => Math.max(0, Math.min(ny - 1, Math.round((y - y0) / HUC))) * nx + Math.max(0, Math.min(nx - 1, Math.round((x - x0) / HUC)));
+  // Hedef: ağzın çevresinde yürünebilir noktaların hücreleri (hayalet ağzın biraz altında/yanında belirir)
+  const hedefler = new Set();
+  for (const [ox, oy] of [[0, 0], [0, 20], [0, 40], [20, 0], [-20, 0], [20, 20], [-20, 20]]) {
+    if (yolculukYuruyebilir(hx + ox, hy + oy, r)) hedefler.add(bul(hx + ox, hy + oy));
+  }
+  if (!hedefler.size) return false;
+  const bas = bul(ax, ay);
+  const gorulen = new Uint8Array(nx * ny);
+  const kuyruk = [bas];
+  gorulen[bas] = 1;
+  for (let q = 0; q < kuyruk.length; q++) {
+    const c = kuyruk[q];
+    if (hedefler.has(c)) return true;
+    const ix = c % nx, iy = (c - ix) / nx;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const jx = ix + dx, jy = iy + dy;
+      if (jx < 0 || jy < 0 || jx >= nx || jy >= ny) continue;
+      const k = jy * nx + jx;
+      if (gorulen[k]) continue;
+      gorulen[k] = 1;
+      if (!yolculukYuruyebilir(x0 + jx * HUC, y0 + jy * HUC, r)) continue;
+      kuyruk.push(k);
+    }
+  }
+  return false;
+}
+// Yuvanın bölgesinin kutusu ve oradan kesin yürünebilen çıkış noktası (köprü ağzı ya da arena girişi)
+function yolculukYuvaBolgesi(yv) {
+  const d = game._yolculukDuzen, A = YOLCULUK_AYAR;
+  if (yv.bolge >= 1 && yv.bolge <= A.zoneCount) {
+    const z = d.zones[yv.bolge - 1];
+    return { ax: z.gate.x0 - 70, ay: z.gate.cy, x0: z.x0, x1: z.gate.x0 + 20 };
+  }
+  return { ax: d.arena.x0 + 80, ay: A.worldH / 2, x0: d.arena.x0, x1: d.arena.x1 };
 }
 
 // Kaba ızgara taşkın doldurma: başlangıçtan hedefe yol var mı (hücre 40 px)

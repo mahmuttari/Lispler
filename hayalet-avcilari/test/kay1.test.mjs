@@ -81,7 +81,16 @@ try {
       game.kopruAcik.fill(true);
       const b2 = yolculukBaslangic(), a2 = { x: d.arena.x0 + 200, y: 500 };
       const yol = yolculukYolVarMi(b2.x, b2.y, a2.x, a2.y);
-      kontroller.push({ etiket, sayi, suda, kisa, starta, duvarda, yol, toplam: yv.length });
+      // Her yuvanın ağzına başlangıçtan yürünebilir (kapalı cepte yuva yok; Y2 botunun bulduğu hata)
+      const kapali = yv.filter((y) => {
+        if (y.ulasilir === false) return false; // işaretli: bu yuvadan doğum olmaz
+        const ag = yolculukYuvaAgzi(y);
+        return ![[0, 0], [0, 20], [0, 40], [20, 0], [-20, 0], [20, 20], [-20, 20]]
+          .some(([ox, oy]) => yolculukYuruyebilir(ag.x + ox, ag.y + oy, 22) && yolculukYolVarMi(b2.x, b2.y, ag.x + ox, ag.y + oy));
+      })
+        .map((y) => `b${y.bolge}:${Math.round(y.x)},${Math.round(y.y)}${y.ulasilir === false ? '(işaretli)' : ''}`);
+      const isaretsiz = yv.filter((y) => typeof y.ulasilir !== 'boolean').length;
+      kontroller.push({ etiket, sayi, suda, kisa, starta, duvarda, yol, toplam: yv.length, kapali, isaretsiz });
     };
     for (let L = 1; L <= 6; L++) { __kur(L); denetle(`L${L}`); }
     for (const kod of ulkeler) { __kur(ulkeKodla(kod).sira, kod); denetle(kod); }
@@ -99,6 +108,12 @@ try {
       assert.deepEqual(k.duvarda, [], `${k.etiket} duvarda: ${k.duvarda}`);
       assert.deepEqual(k.kisa, [], `${k.etiket} yakın: ${k.kisa}`);
       assert.deepEqual(k.starta, [], `${k.etiket} başlangıca yakın: ${k.starta}`);
+    }
+  });
+  sina('her yuvanın ağzına yürünebilir (kapalı cepte yuva yok) ve hepsi ulasilir ile işaretli', () => {
+    for (const k of yerlesim) {
+      assert.deepEqual(k.kapali, [], `${k.etiket} kapalı cep: ${k.kapali}`);
+      assert.equal(k.isaretsiz, 0, `${k.etiket}: işaretsiz yuva`);
     }
   });
   sina('yuvalar yolu kapatmaz (başlangıçtan arenaya yol var)', () => {

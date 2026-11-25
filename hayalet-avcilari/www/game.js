@@ -2884,6 +2884,14 @@ function drawGhost(ctx, g) {
   const size = g.size, hp = g.hp, maxHp = g.maxHp;
   ctx.save();
   ctx.translate(g.x, g.y);
+  // Yuvadan belirme (KAY1): 0.6 sn içinde büyüyüp saydamdan tam görünür
+  if (g.cikis > 0) {
+    const k = Math.max(0, Math.min(1, 1 - g.cikis / 0.6));
+    ctx.globalAlpha *= k;
+    ctx.translate(0, (1 - k) * 16);
+    const sc = 0.35 + 0.65 * k;
+    ctx.scale(sc, sc);
+  }
   const s = size / 40;
   // Kod animasyonu (anim.js): süzülme, doğuş, vurulma, göz kırpma; yalnız görüntü
   const animSimdi = performance.now();
@@ -5720,6 +5728,7 @@ function buildWalls() {
     yolculukHaritaKur();
     return;
   }
+  game.yuvalar = [];
   const W = game.worldW, H = game.worldH;
   game.walls = [];
   // Dış sınır
@@ -6338,6 +6347,8 @@ function update(dt, now) {
   for (const g of game.ghosts) {
     // Periyodik hayalet sesi (hayatta olduğu sürece)
     hayaletSesi(g, now);
+    // Yuvadan belirme: süre boyunca hareket etmez, hasar vermez, vurulamaz
+    if (g.cikis > 0) { g.cikis = Math.max(0, g.cikis - dt); continue; }
 
     // Boss minion state machine
     if (g.isBoss && g.minionState) {
@@ -6507,6 +6518,7 @@ function update(dt, now) {
       game.pulseTimer = 0;
       let any = false;
       for (const g of game.ghosts) {
+        if (g.cikis > 0) continue;
         if (Math.hypot(g.x - game.player.x, g.y - game.player.y) < 110) {
           g.hp -= game.player.damage;
           any = true;
@@ -6728,6 +6740,7 @@ function update(dt, now) {
     // Hayalete vurdu mu?
     for (let j = game.ghosts.length - 1; j >= 0; j--) {
       const g = game.ghosts[j];
+      if (g.cikis > 0) continue; // yuvadan yeni çıkan hayalet kısa süre vurulamaz
       if (p.hits && p.hits.includes(g)) continue; // delen mermi aynı hayalete iki kez vurmaz
       if (p.oyuncuMermisi && gorunurPencereDisi(g.x, g.y)) continue; // görünüm dışındaki hayalete hasar yok
       if (Math.hypot(p.x - g.x, p.y - g.y) < g.r + 6) {
@@ -6955,27 +6968,44 @@ function spawnGhost(aralik) {
   const range = aralik && Number.isFinite(aralik.x0) && Number.isFinite(aralik.x1) ? aralik : null;
   const margin = 60;
   let x = 0, y = 0, enIyi = -1;
-  for (let deneme = 0; deneme < 16; deneme++) {
-    let ax, ay;
-    if (range) {
-      // Bölgenin sol/sağ kenarından doğar
-      const kirp = Math.min(80, Math.max(1, (range.x1 - range.x0) * 0.25));
-      ax = Math.random() < 0.5 ? range.x0 + Math.random() * kirp : range.x1 - Math.random() * kirp;
-      ay = margin + Math.random() * (game.worldH - margin * 2);
-    } else {
-      // Haritanın kenarlarından rastgele yerler denenir; oyunculara yeterince uzak ilk yer, yoksa en uzağı
-      const side = Math.floor(Math.random() * 4);
-      if (side === 0) { ax = margin; ay = margin + Math.random() * (game.worldH - margin * 2); }
-      else if (side === 1) { ax = game.worldW - margin; ay = margin + Math.random() * (game.worldH - margin * 2); }
-      else if (side === 2) { ax = margin + Math.random() * (game.worldW - margin * 2); ay = margin; }
-      else { ax = margin + Math.random() * (game.worldW - margin * 2); ay = game.worldH - margin; }
+  // Yolculukta (KAY1) hayalet, bölgenin hayalet yuvasından çıkar. Ağzı oyunculardan yeterince uzak ilk yuva;
+  // yoksa en uzak yuva seçilir. Çevrimdışı eski harita ve çevrimiçi oyun değişmez.
+  let kaynak = null, kaynakAgiz = null;
+  if (range && Number.isFinite(range.bolge) && Array.isArray(game.yuvalar) && game.yuvalar.length && typeof yolculukYuvaAgzi === "function") {
+    let enIyiD = -1;
+    for (const yv of game.yuvalar) {
+      if (yv.bolge !== range.bolge) continue;
+      const agiz = yolculukYuvaAgzi(yv);
+      const d = oyunculardanUzaklik(agiz.x, agiz.y);
+      if (d >= HAYALET_DOGUM_UZAKLIK) { kaynak = yv; kaynakAgiz = agiz; break; }
+      if (d > enIyiD) { enIyiD = d; kaynak = yv; kaynakAgiz = agiz; }
     }
-    const d = oyunculardanUzaklik(ax, ay);
-    if (d > enIyi) { enIyi = d; x = ax; y = ay; }
-    if (d >= HAYALET_DOGUM_UZAKLIK) break;
   }
-  // Duvarın içinde doğmasın: en yakın boş noktaya al (yalnız seçilen yer için; her denemede aramak kare hızını düşürür)
-  ({ x, y } = freeSpot(x, y, 24));
+  if (kaynak) {
+    x = kaynakAgiz.x; y = kaynakAgiz.y;
+  } else {
+    for (let deneme = 0; deneme < 16; deneme++) {
+      let ax, ay;
+      if (range) {
+        // Bölgenin sol/sağ kenarından doğar
+        const kirp = Math.min(80, Math.max(1, (range.x1 - range.x0) * 0.25));
+        ax = Math.random() < 0.5 ? range.x0 + Math.random() * kirp : range.x1 - Math.random() * kirp;
+        ay = margin + Math.random() * (game.worldH - margin * 2);
+      } else {
+        // Haritanın kenarlarından rastgele yerler denenir; oyunculara yeterince uzak ilk yer, yoksa en uzağı
+        const side = Math.floor(Math.random() * 4);
+        if (side === 0) { ax = margin; ay = margin + Math.random() * (game.worldH - margin * 2); }
+        else if (side === 1) { ax = game.worldW - margin; ay = margin + Math.random() * (game.worldH - margin * 2); }
+        else if (side === 2) { ax = margin + Math.random() * (game.worldW - margin * 2); ay = margin; }
+        else { ax = margin + Math.random() * (game.worldW - margin * 2); ay = game.worldH - margin; }
+      }
+      const d = oyunculardanUzaklik(ax, ay);
+      if (d > enIyi) { enIyi = d; x = ax; y = ay; }
+      if (d >= HAYALET_DOGUM_UZAKLIK) break;
+    }
+    // Duvarın içinde doğmasın: en yakın boş noktaya al (yalnız seçilen yer için; her denemede aramak kare hızını düşürür)
+    ({ x, y } = freeSpot(x, y, 24));
+  }
 
   const tier = 1 + Math.floor(game.level / 3);
   const speed = 50 + game.level * 6 + Math.random() * 20;
@@ -7006,6 +7036,16 @@ function spawnGhost(aralik) {
   }
   // İlk ses 0-5 sn arası rastgele zamanda, sonra her 10 sn'de bir
   ghost.nextSound = performance.now() + Math.random() * 5000;
+  // Yuvalar: 0.6 sn belirme (vurulamaz, hasar veremez), birkaç toz/sis parçacığı
+  if (kaynak) {
+    ghost.cikis = 0.6;
+    if (Array.isArray(game.particles)) {
+      for (let i = 0; i < 6; i++) {
+        const a = Math.random() * Math.PI * 2, s = 18 + Math.random() * 26;
+        game.particles.push({ x: kaynakAgiz.x, y: kaynakAgiz.y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 18, life: 0.6, color: "#cbd5e1" });
+      }
+    }
+  }
   game.ghosts.push(ghost);
 }
 
@@ -7601,6 +7641,7 @@ function render() {
   if (typeof yolculukGecitCiz === "function") yolculukGecitCiz(ctx); // yolculuk geçit nehirleri (yolculuk.js)
   koprulerCiz(ctx);   // sallanan ip köprüler (kopru.js)
   if (typeof yolculukCiz === "function") yolculukCiz(ctx); // yolculuk geçitleri (yolculuk.js)
+  if (typeof yolculukYuvalariCiz === "function") yolculukYuvalariCiz(ctx); // yolculuk hayalet yuvaları (yolculuk.js)
   timsahlariCiz(ctx); // sudaki timsahlar (timsah.js)
   calilariCiz(ctx);   // saklanma çalıları (cali.js)
 

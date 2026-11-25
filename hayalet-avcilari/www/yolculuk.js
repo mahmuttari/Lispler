@@ -207,6 +207,28 @@ function yolculukBaslangic() {
   return { x: YOLCULUK_AYAR.startW / 2, y: YOLCULUK_AYAR.worldH / 2 };
 }
 
+// Hayalet yuvası türleri: tema/ülke ailesine göre tohumlu seçilir (KAY1)
+function yolculukYuvaTurleri() {
+  let u = null;
+  try { u = typeof turUlkesi === "function" ? turUlkesi() : null; } catch (e) { u = null; }
+  if (u) {
+    if (u.aile === "SV" || u.aile === "GDA" || u.aile === "KA") return ["magara", "kovuk"];
+    return ["mezarlik", "izbe", "kuyu"];
+  }
+  const i = (((game && game.level ? game.level - 1 : 0) % 6) + 6) % 6;
+  if (i === 0) return ["mezarlik", "izbe"];
+  if (i === 1) return ["magara", "kovuk"];
+  if (i === 2) return ["magara", "izbe"];
+  if (i === 3) return ["magara"];
+  if (i === 4) return ["magara", "mezarlik"];
+  return ["magara"];
+}
+
+// Yuvanın ağzı: hayaletler bu noktada belirir (yuvanın gövdesi katı engeldir, ağız yürünebilir)
+function yolculukYuvaAgzi(y) {
+  return { x: y.x, y: y.y + y.r + 16 };
+}
+
 function dunyaBoyutunuAyarla() {
   if (typeof game === "undefined") return;
   if (yolculukAcik()) { game.worldW = YOLCULUK_AYAR.worldW; game.worldH = YOLCULUK_AYAR.worldH; }
@@ -355,6 +377,7 @@ function yolculukHaritaKur() {
     game.bolgeTemiz[i] = false;
   }
   game._bolgeBossGeldi = false;
+  game.yuvalar = [];
   game.walls = [];
   game.waters = [];
   game.spikes = [];
@@ -425,6 +448,59 @@ function yolculukHaritaKur() {
     yerlestir(game.spikes, 90, 90, spikeSayi);
     yerlestir(game.lavas, 110, 90, lavaSayi);
     oncekiCy = z.gate.cy;
+  }
+
+  // Hayalet yuvaları (KAY1): her bölgede 2, arenada 2. Tohumlu; yürüme koridorundan ve geçit ağzından uzak,
+  // duvar/su ile çakışmaz, aralarında en az 260 px, başlangıç noktasından en az 300 px.
+  {
+    const havuz = yolculukYuvaTurleri();
+    const bas = yolculukBaslangic();
+    let sy = 0;
+    const kaynakKoy = (bolge, zone, oncekiCy, x0, x1) => {
+      for (let deneme = 0; deneme < 600; deneme++) {
+        sy++;
+        const r = 30 + rnd(bolge, 900 + sy * 7) * 8;
+        const x = x0 + r + rnd(bolge, 920 + sy * 13) * Math.max(0, x1 - x0 - 2 * r);
+        const y = 80 + r + rnd(bolge, 940 + sy * 17) * Math.max(0, A.worldH - 160 - 2 * r);
+        const bx = x - r * 0.8, by = y - r * 0.8, bw = r * 1.6, bh = r * 1.6;
+        if (zone && yolculukYasakKutu(bx, by, bw, bh, d, zone, oncekiCy)) continue;
+        if (cak(bx, by, bw, bh, 36)) continue;
+        if (Math.hypot(x - bas.x, y - bas.y) < 300) continue;
+        if (!zone && Math.abs(y - A.worldH / 2) < 150) continue; // arena: orta şerit boss ve oyuncu yolu, yuva konmaz
+        if (game.yuvalar.some((o) => Math.hypot(o.x - x, o.y - y) < 260)) continue;
+        const tur = havuz[Math.min(havuz.length - 1, Math.floor(rnd(bolge, 960 + sy) * havuz.length))];
+        game.yuvalar.push({ x, y, tur, bolge, r });
+        game.walls.push({ x: bx, y: by, w: bw, h: bh, yuva: true });
+        return true;
+      }
+      // Yedek: seyrek ızgara taraması (tohumlu rastgele 600 deneme yetmezse) — yerleşimin garanti olması için
+      for (let gy = 110; gy <= A.worldH - 110; gy += 40) {
+        for (let gx = x0 + 40; gx <= x1 - 40; gx += 40) {
+          sy++;
+          const r = 26 + rnd(bolge, 980 + sy) * 6;
+          const bx = gx - r * 0.8, by = gy - r * 0.8, bw = r * 1.6, bh = r * 1.6;
+          if (zone && yolculukYasakKutu(bx, by, bw, bh, d, zone, oncekiCy)) continue;
+          if (cak(bx, by, bw, bh, 24)) continue;
+          if (Math.hypot(gx - bas.x, gy - bas.y) < 300) continue;
+          if (!zone && Math.abs(gy - A.worldH / 2) < 150) continue;
+          if (game.yuvalar.some((o) => Math.hypot(o.x - gx, o.y - gy) < 260)) continue;
+          const tur = havuz[Math.min(havuz.length - 1, Math.floor(rnd(bolge, 960 + sy) * havuz.length))];
+          game.yuvalar.push({ x: gx, y: gy, tur, bolge, r });
+          game.walls.push({ x: bx, y: by, w: bw, h: bh, yuva: true });
+          return true;
+        }
+      }
+      return false;
+    };
+    for (let i = 1; i <= A.zoneCount; i++) {
+      const z = d.zones[i - 1];
+      const oncekiCy = i === 1 ? A.worldH / 2 : d.zones[i - 2].gate.cy;
+      const icX0 = z.x0 + 30, icX1 = z.gate.x0 - 20;
+      kaynakKoy(i, z, oncekiCy, icX0, icX1);
+      kaynakKoy(i, z, oncekiCy, icX0, icX1);
+    }
+    kaynakKoy(7, null, 0, d.arena.x0 + A.agizBos, d.arena.x1 - 40);
+    kaynakKoy(7, null, 0, d.arena.x0 + A.agizBos, d.arena.x1 - 40);
   }
 
   // Geçit suyu şeritleri (sınırlara girmeden) — en sona eklenir; timsahlar bunları kullanmaz
@@ -513,8 +589,8 @@ function yolculukYoluGarantile() {
       for (let i = liste.length - 1; i >= 0; i--) {
         const o = liste[i];
         if (o.gecit) continue;
-        // Sınır duvarlarını koru
-        if (liste === game.walls && i < 4) continue;
+        // Sınır duvarlarını ve hayalet yuvalarını koru
+        if (liste === game.walls && (i < 4 || o.yuva)) continue;
         liste.splice(i, 1);
         if (yolculukYolVarMi(b.x, b.y, arena.x, arena.y)) { tamam = true; break; }
       }
@@ -774,5 +850,84 @@ function yolculukCiz(ctx) {
       ctx.fillText("🔒", agizX + 12, (y0 + y1) / 2);
     }
     ctx.restore();
+  }
+}
+
+// ---------- hayalet yuvaları (KAY1) ----------
+// Harita objeleriyle birlikte, karakterlerin altında çizilir. Önce "yuva-<tur>" resmi denenir; yoksa tema
+// renkleriyle okunaklı kod çizimi. Ağızda hafif nabız atan sis, hayaletlerin nereden çıktığını gösterir.
+function yolculukYuvalariCiz(ctx) {
+  if (!yolculukAcik() || !game || !game._yolculukDuzen || !Array.isArray(game.yuvalar) || !game.yuvalar.length) return;
+  const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0;
+  const th = typeof getTheme === "function" ? getTheme() : null;
+  const tas = (th && th.wall) || "#64748b", koyu = (th && th.wallDark) || "#1e293b", toprak = (th && th.floor) || "#1e293b";
+  const zaman = performance.now() / 1000;
+  const el = (x, y, rx, ry, renk) => { ctx.fillStyle = renk; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.fill(); };
+  for (const yv of game.yuvalar) {
+    const r = yv.r || 32;
+    if (yv.x + r * 1.4 < cam.x || yv.x - r * 1.4 > cam.x + W || yv.y + r * 1.4 < cam.y || yv.y - r * 1.4 > cam.y + H) continue;
+    ctx.save();
+    ctx.translate(yv.x, yv.y);
+    el(0, r * 0.75, r * 1.12, r * 0.38, "rgba(0,0,0,0.25)"); // yumuşak gölge
+    let resimli = false;
+    if (typeof gorsel === "function" && typeof gorselKutuya === "function" && gorsel("yuva-" + yv.tur)) {
+      resimli = gorselKutuya(ctx, "yuva-" + yv.tur, -r * 1.1, -r * 1.1, r * 2.2, r * 2.2);
+    }
+    if (!resimli) {
+      if (yv.tur === "mezarlik") {
+        // 3-4 mezar taşı ve kırık çit
+        const taslar = [[-0.62, -0.05, 0.34, 0.72, -0.08], [0.02, 0.18, 0.4, 0.88, 0.05], [0.62, 0.02, 0.32, 0.62, 0.12]];
+        for (const [ox, oy, mw, mh, eg] of taslar) {
+          ctx.save(); ctx.translate(ox * r, oy * r); ctx.rotate(eg);
+          const w2 = mw * r, h2 = mh * r;
+          ctx.fillStyle = tas;
+          ctx.beginPath(); ctx.moveTo(-w2 / 2, h2 / 2); ctx.lineTo(-w2 / 2, -h2 / 2 + w2 / 2);
+          ctx.arc(0, -h2 / 2 + w2 / 2, w2 / 2, Math.PI, 0); ctx.lineTo(w2 / 2, h2 / 2); ctx.closePath(); ctx.fill();
+          ctx.fillStyle = "rgba(0,0,0,0.28)"; ctx.fillRect(-w2 * 0.08, -h2 * 0.22, w2 * 0.16, h2 * 0.4);
+          ctx.restore();
+        }
+        ctx.strokeStyle = koyu; ctx.lineWidth = Math.max(2, r * 0.1); ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(-r * 0.9, r * 0.55); ctx.lineTo(-r * 0.9, r * 0.2); ctx.moveTo(-r * 0.55, r * 0.6); ctx.lineTo(-r * 0.4, r * 0.3); ctx.stroke();
+      } else if (yv.tur === "magara") {
+        el(0, r * 0.15, r * 1.02, r * 0.85, tas); // kaya tepesi
+        el(-r * 0.42, r * 0.02, r * 0.42, r * 0.36, "rgba(255,255,255,0.10)");
+        ctx.fillStyle = "#05070d";
+        ctx.beginPath(); ctx.moveTo(-r * 0.42, r * 0.68); ctx.lineTo(-r * 0.42, r * 0.05);
+        ctx.quadraticCurveTo(0, -r * 0.58, r * 0.42, r * 0.05); ctx.lineTo(r * 0.42, r * 0.68); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,0.18)"; ctx.lineWidth = Math.max(2, r * 0.07);
+        ctx.beginPath(); ctx.moveTo(-r * 0.42, r * 0.05); ctx.quadraticCurveTo(0, -r * 0.58, r * 0.42, r * 0.05); ctx.stroke();
+      } else if (yv.tur === "izbe") {
+        ctx.fillStyle = toprak;
+        ctx.beginPath(); ctx.moveTo(-r * 0.75, r * 0.65); ctx.lineTo(-r * 0.68, -r * 0.18); ctx.lineTo(0, -r * 0.32); ctx.lineTo(r * 0.7, -r * 0.15); ctx.lineTo(r * 0.76, r * 0.65); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = koyu; ctx.beginPath(); ctx.moveTo(-r * 0.86, -r * 0.2); ctx.lineTo(-r * 0.1, -r * 0.72); ctx.lineTo(r * 0.2, -r * 0.5); ctx.lineTo(r * 0.82, -r * 0.16); ctx.lineTo(r * 0.55, 0); ctx.lineTo(-r * 0.5, 0); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#05070d"; ctx.fillRect(-r * 0.18, r * 0.12, r * 0.36, r * 0.53); // karanlık kapı
+        ctx.strokeStyle = koyu; ctx.lineWidth = Math.max(2, r * 0.08);
+        ctx.beginPath(); ctx.moveTo(r * 0.1, -r * 0.5); ctx.lineTo(r * 0.28, -r * 0.15); ctx.stroke(); // kırık çatı
+      } else if (yv.tur === "kovuk") {
+        ctx.fillStyle = "#4a2f1b";
+        ctx.beginPath(); ctx.moveTo(-r * 0.32, r * 0.75); ctx.lineTo(-r * 0.22, -r * 0.25);
+        ctx.quadraticCurveTo(-r * 0.1, -r * 0.75, r * 0.12, -r * 0.35); ctx.lineTo(r * 0.3, r * 0.75); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = "#4a2f1b"; ctx.lineWidth = Math.max(3, r * 0.16); ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(-r * 0.05, -r * 0.3); ctx.lineTo(-r * 0.55, -r * 0.62); ctx.moveTo(r * 0.1, -r * 0.15); ctx.lineTo(r * 0.6, -r * 0.48); ctx.stroke();
+        ctx.fillStyle = "#05070d"; ctx.beginPath(); ctx.ellipse(0, r * 0.12, r * 0.2, r * 0.3, 0, 0, Math.PI * 2); ctx.fill(); // kovuk
+      } else {
+        // kuyu
+        el(0, r * 0.35, r * 0.82, r * 0.44, koyu);
+        el(0, r * 0.28, r * 0.72, r * 0.36, tas);
+        el(0, r * 0.3, r * 0.5, r * 0.22, "#05070d");
+        ctx.strokeStyle = "rgba(0,0,0,0.3)"; ctx.lineWidth = Math.max(1, r * 0.05);
+        for (let k = -2; k <= 2; k++) { ctx.beginPath(); ctx.moveTo(k * r * 0.26, r * 0.0); ctx.lineTo(k * r * 0.26, r * 0.52); ctx.stroke(); }
+        ctx.strokeStyle = "#6b4a2a"; ctx.lineWidth = Math.max(2, r * 0.1);
+        ctx.beginPath(); ctx.moveTo(-r * 0.55, -r * 0.6); ctx.lineTo(-r * 0.55, r * 0.2); ctx.moveTo(r * 0.55, -r * 0.6); ctx.lineTo(r * 0.55, r * 0.2); ctx.moveTo(-r * 0.62, -r * 0.55); ctx.lineTo(r * 0.62, -r * 0.55); ctx.stroke();
+      }
+    }
+    ctx.restore();
+    // Ağızda nabız atan hafif sis
+    const agiz = yolculukYuvaAgzi(yv);
+    const p = 0.22 + 0.14 * Math.sin(zaman * 2.2 + yv.x * 0.01);
+    const gr = ctx.createRadialGradient(agiz.x, agiz.y, 0, agiz.x, agiz.y, r * 1.15);
+    gr.addColorStop(0, `rgba(203,213,225,${p})`); gr.addColorStop(1, "rgba(203,213,225,0)");
+    ctx.fillStyle = gr;
+    ctx.beginPath(); ctx.ellipse(agiz.x, agiz.y, r * 1.05, r * 0.7, 0, 0, Math.PI * 2); ctx.fill();
   }
 }

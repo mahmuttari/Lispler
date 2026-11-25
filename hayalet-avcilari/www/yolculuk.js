@@ -3,7 +3,7 @@
    Soldan sağa uzun harita: başlangıç alanı, 6 bölge, boss arenası. Her bölgenin sağ kenarında boydan boya
    geçit (su şeridi) ve ortasında bir köprü vardır. Köprü kapalıyken oyuncu ve hayaletler geçemez; açılınca
    bir daha kapanmaz. Yerleşim bölüm (ve Dünya Turu'nda ülke) tohumundan üretilir; her cihazda aynıdır.
-   Çevrimiçi bu adımda eski 1600x1200 haritayı kullanır (yolculukAcik = !online.mode).
+   Çevrimiçi: oda yj taşıyorsa yolculuk haritası (her cihaz aynı tohumla kurar), yoksa eski 1600x1200 harita.
    ============================================================ */
 
 const YOLCULUK_AYAR = {
@@ -31,7 +31,9 @@ YOLCULUK_AYAR.zorluk = {
 };
 
 function yolculukAcik() {
-  return !(typeof online !== "undefined" && online && online.mode);
+  if (typeof online === "undefined" || !online || !online.mode) return true; // çevrimdışı
+  if (online._yjYok) return false; // eski kurallar: yolculuk alanları yazılamadı
+  return !!(online.cachedRoom && online.cachedRoom.yj);
 }
 
 function yolculukUlkeKodu() {

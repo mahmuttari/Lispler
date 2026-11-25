@@ -287,7 +287,7 @@ const online = {
   selectedUlke: 0,       // Oda Kur: Dünya Turu odasının ülkesi (açık ülkelerden; 0 = en ileri açık ülke)
   turSonUlke: null,      // istemci: son uygulanan ülke (damga için; ortadan katılanda ilk durumda null)
   ortadanKatildi: false, // oyun sürerken katıldı: müzik teaser'sız başlar
-  cachedRoom: null,      // { name, maxPlayers, hostUid, hostName, status, players, tur, level }
+  cachedRoom: null,      // { name, maxPlayers, hostUid, hostName, status, players, tur, level, yj }
   // Oyun içi senkronizasyon
   mode: null,            // null | "host" | "client"
   pushTimer: null,       // MP_PUSH_MS'de bir mpPush
@@ -298,6 +298,7 @@ const online = {
   alinanlar: new Set(),  // istemci: aldığım paraların kimlikleri (host silene kadar yeniden görünmesin)
   _aldBekleyen: new Map(), // istemci: host onayı bekleyen değerli toplanabilirler (kimlik → ödül)
   _aldYok: false,        // kural "ald" alanını kabul etmiyor: durum yazımı onsuz sürer
+  _yjYok: false,         // kural yolculuk (kp/bz/ab/aw) alanlarını kabul etmiyor: eski harita
   vuranlar: new Set(),   // istemci: bana çarpan / vurduğum düşman mermilerinin kimlikleri
   vurduklarim: new Map(),// istemci: hayalet kimliği → son vuruşum (yakalananı kendime saymak için)
   baslatiliyor: false,   // host BAŞLAT'a bastı, durum dinleyicisi oyunu ikinci kez açmasın
@@ -3624,7 +3625,19 @@ async function submitCreateRoom() {
       players: { [uid]: makePlayerEntry(true) },
     };
     if (tur) room.tur = true; // normal odada alan yok: 3.13.x kuralları da kabul eder
-    if (await rtdb.put(`rooms/${id}`, room)) roomId = id;
+    room.yj = 1; // çevrimiçi yolculuk haritası (yeni kurallar)
+    let yazildi = await rtdb.put(`rooms/${id}`, room);
+    if (!yazildi && /permission/i.test(online.lastError || "")) {
+      // Eski kurallar yj/sv alanlarını bilmiyor: onlarsız dene, eski haritayla sür
+      delete room.yj;
+      delete room.players[uid].sv;
+      yazildi = await rtdb.put(`rooms/${id}`, room);
+      if (yazildi && !online._yjUyariGosterildi) {
+        online._yjUyariGosterildi = true;
+        showToast(t("⚠ Çevrimiçi yolculuk için güncelleme bekleniyor"));
+      }
+    }
+    if (yazildi) roomId = id;
     else if (tur && /permission/i.test(online.lastError || "")) { turReddi = true; break; } // kurallar tur alanını bilmiyor
     else if (room.maxPlayers > 5 && /permission/i.test(online.lastError || "")) {
       // Konsoldaki kurallar 3.12.2'den eskiyse (en çok 5 kişi) 6 kişilik oda reddedilir: oda 5 kişilik kurulur
@@ -3656,8 +3669,8 @@ function makeRoomId() {
   return id;
 }
 
-function makePlayerEntry(ready) {
-  return {
+function makePlayerEntry(ready, sv) {
+  const kayit = {
     name: save.playerName || t("Avcı"),
     charKey: save.selectedChar || "kinkin",
     costumeIdx: (save.selectedCostume && save.selectedCostume[save.selectedChar]) || 0,
@@ -3665,6 +3678,8 @@ function makePlayerEntry(ready) {
     joinedAt: sunucuZamani(),
     lastSeen: sunucuZamani(),
   };
+  if (sv !== false) kayit.sv = 2; // yolculuk protokolü sürümü (eski kurallar reddederse sv'siz yeniden denenir)
+  return kayit;
 }
 
 // --- Oda listesi: yalnız son dakikada lobisi açık odalar (oyundaki odaların lastSeen'i 0'dır) ---
@@ -3768,9 +3783,14 @@ async function joinRoom(roomId) {
   if (!room || !room.hostUid) { showToast(t("Oda bulunamadı")); return; }
   const players = room.players || {};
   if (!players[uid] && Object.keys(players).length >= (room.maxPlayers || 5)) { showToast(t("Oda dolu")); return; }
-  const giris = makePlayerEntry(room.status === "playing");
+  const giris = makePlayerEntry(room.status === "playing", !!room.yj); // yolculuk odasında sv yazılır
   if (players[uid] && players[uid].joinedAt) giris.joinedAt = players[uid].joinedAt;
-  if (!await rtdb.put(`rooms/${roomId}/players/${uid}`, giris)) { showToast(t("Oda bulunamadı")); return; }
+  let katildi = await rtdb.put(`rooms/${roomId}/players/${uid}`, giris);
+  if (!katildi && !room.yj && "sv" in giris && /permission/i.test(online.lastError || "")) {
+    delete giris.sv; // eski kurallar sv alanını bilmiyor
+    katildi = await rtdb.put(`rooms/${roomId}/players/${uid}`, giris);
+  }
+  if (!katildi) { showToast(t("Oda bulunamadı")); return; }
   if (room.status === "lobby") rtdb.patch(`rooms/${roomId}`, { lastSeen: sunucuZamani() });
   else showToast(t("🎮 Oyun sürüyor, hemen katılıyorsun!"));
   online.roomId = roomId;
@@ -3785,10 +3805,12 @@ function enterLobby(room) {
   online.cachedRoom = {
     name: room.name, maxPlayers: room.maxPlayers || 5, hostUid: room.hostUid, hostName: room.hostName,
     status: room.status || "lobby", players: room.players || {}, tur: !!room.tur, level: room.level || 1,
+    yj: room.yj ? 1 : 0,
   };
   online.alinanlar = new Set();
   online._aldBekleyen = new Map();
   online._aldYok = false;
+  online._yjYok = false;
   online.vuranlar = new Set();
   online.vurduklarim = new Map();
   showScreen("screen-lobby");
@@ -3899,7 +3921,7 @@ function kaydimiTazele(zorla) {
   const simdi = performance.now();
   if (simdi - _tazeleZamani < 2000) return;
   _tazeleZamani = simdi;
-  const kayit = makePlayerEntry(benim ? !!benim.ready : (!!r && r.status === "playing"));
+  const kayit = makePlayerEntry(benim ? !!benim.ready : (!!r && r.status === "playing"), !!(r && r.yj));
   if (benim && benim.joinedAt) kayit.joinedAt = benim.joinedAt;
   if (game.running && online.mode && game.player) Object.assign(kayit, oyuncuAnlik());
   _sonOyuncuKaydi = {}; // sonraki yazımda bütün alanlar yeniden gider
@@ -4304,6 +4326,15 @@ async function durumuGonder() {
     bt: Math.round((game.bossSpawnTimer || 0) * 10) / 10,
     lt: game.levelTransitioning ? 1 : 0,
   };
+  // Yolculuk: bölge durumu kurucuda (istemciler köprüleri ve etkin bölgeyi bundan alır)
+  if (typeof yolculukAcik === "function" && yolculukAcik() && Array.isArray(game.kopruAcik)) {
+    let kp = 0;
+    for (let i = 0; i < game.kopruAcik.length; i++) if (game.kopruAcik[i]) kp |= (1 << i);
+    govde.kp = kp;
+    govde.bz = game.bolge || 1;
+    govde.ab = game._arenaBossDurum || 0;
+    govde.aw = Math.max(0, Math.round(game._arenaBekleme || 0));
+  }
   const p = [];
   for (const q of game.pickups) {
     if (!Number.isFinite(q.x) || !Number.isFinite(q.y)) continue;
@@ -4315,6 +4346,12 @@ async function durumuGonder() {
   if (imza !== _sonPickupImza) govde.p = p;
   if (game._alindi && game._alindi.length && !online._aldYok) govde.ald = game._alindi;
   let oldu = await rtdb.patch(`rooms/${online.roomId}/state`, govde);
+  if (!oldu && "kp" in govde && !online._yjYok) {
+    // Kural yolculuk alanlarını bilmiyor: alansız yeniden dene; sonraki bölümde eski haritaya dön
+    online._yjYok = true;
+    delete govde.kp; delete govde.bz; delete govde.ab; delete govde.aw;
+    oldu = await rtdb.patch(`rooms/${online.roomId}/state`, govde);
+  }
   if (!oldu && govde.ald) {
     // Kural "ald" alanını henüz bilmiyor: alansız yeniden dene, bir daha gönderme (eski davranış)
     online._aldYok = true;
@@ -4382,6 +4419,14 @@ function durumGeldi(st) {
   game.bossDefeated = !!st.bd;
   game.bossSpawnTimer = st.bt || 0;
   game.levelTransitioning = !!st.lt;
+
+  // Yolculuk: kurucunun bölge durumu (köprüler bir kez açılır, etkin bölge sayacı bz'den)
+  if (Number.isFinite(st.kp) && Array.isArray(game.kopruAcik) && typeof yolculukKopruAc === "function") {
+    for (let i = 0; i < game.kopruAcik.length; i++) {
+      if ((st.kp & (1 << i)) && !game.kopruAcik[i]) yolculukKopruAc(i);
+    }
+  }
+  if (Number.isFinite(st.bz)) game.bolge = st.bz;
 
   // Hayaletler (kimliğe göre)
   const eski = new Map();
@@ -4690,6 +4735,11 @@ function clientApplyLevel(newLevel) {
   buildWalls();
   buildWaters();
   buildHazards();
+  // Yolculuk: yeni bölümde herkes (hayalet olanlar dahil) başlangıçtan başlar
+  if (typeof yolculukAcik === "function" && yolculukAcik() && typeof yolculukBaslangic === "function" && game.player) {
+    const b = yolculukBaslangic();
+    game.player.x = b.x; game.player.y = b.y;
+  }
   petKur(); // yanına alınan pet (pet.js): baygın pet yeni bölüme tam canla başlar
   havaKur(); // yarasalar ve fırtına bulutu (hava.js)
   ensurePlayerSafe();

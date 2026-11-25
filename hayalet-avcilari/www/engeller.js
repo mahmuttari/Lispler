@@ -704,7 +704,7 @@
     for (let ilk = _boyanan === 0; ilk || performance.now() - t0 < ISINMA_MS; ilk = false) {
       let en = null, enD = Infinity;
       for (const l of listeler()) for (const o of l) {
-        if (!o.bicim || o._isinma === s) continue;
+        if (!o.bicim || o._isinma === s || o.gecit) continue;
         const d = Math.hypot(o.x + o.w / 2 - mx, o.y + o.h / 2 - my);
         if (d < enD) { enD = d; en = o; }
       }
@@ -729,7 +729,7 @@
     const zaman = performance.now() / 1000;
     // Sular iki geçişte: önce hepsi kıyısıyla, sonra başka gölle kesişenlerin yalnız suyu yeniden (kesişen göller tek göl
     // gibi birleşir); dalgalar ve canlı süsler en üstte
-    const sular = (game.waters || []).filter((o) => gor(o, 12)), canlilar = sular.map((o) => resimCiz(ctx, o));
+    const sular = (game.waters || []).filter((o) => !o.gecit && gor(o, 12)), canlilar = sular.map((o) => resimCiz(ctx, o));
     sular.forEach((o, i) => {
       const ic = komsuMu(o) ? icResmi(o) : null;
       if (ic) bas(ctx, ic, o.x, o.y, o.w, o.h);

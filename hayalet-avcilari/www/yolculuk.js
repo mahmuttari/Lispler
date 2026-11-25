@@ -47,6 +47,49 @@ function yolculukRastgele(bolum, ulke, bolge, n) {
   return ((h >>> 0) % 1000000) / 1000000;
 }
 
+// Geçit nehri eğrisi: 2-3 sinüsün toplamı, köprü çevresinde (|y-cy| <= köprü yarısı) sıfır,
+// ±130 px içinde smoothstep ile sıfıra süzülür. Tohum bölüm/ülke/bölge; her cihazda aynı.
+function yolculukGecitEgri(z, bolum, ulke) {
+  const A = YOLCULUK_AYAR, g = z.gate;
+  if (bolum == null) bolum = (typeof game !== "undefined" && game.level) || 1;
+  if (ulke == null) ulke = yolculukUlkeKodu();
+  const merkez = (g.x0 + g.x1) / 2;
+  const adet = 2 + Math.floor(yolculukRastgele(bolum, ulke, z.i, 210) * 2); // 2 ya da 3
+  const toplamAmp = 55 + yolculukRastgele(bolum, ulke, z.i, 211) * 30;      // 55-85 px
+  const oranlar = adet === 2 ? [0.85, 0.15] : [0.7, 0.2, 0.1];
+  const parcalar = [];
+  for (let k = 0; k < adet; k++) {
+    parcalar.push({
+      amp: toplamAmp * oranlar[k],
+      dalga: 220 + yolculukRastgele(bolum, ulke, z.i, 220 + k) * 200, // 220-420 px
+      faz: yolculukRastgele(bolum, ulke, z.i, 240 + k) * Math.PI * 2,
+    });
+  }
+  const yumusak = (t) => t * t * (3 - 2 * t);
+  const kopruYari = (g.bridgeY1 - g.bridgeY0) / 2;
+  const offset = (y) => {
+    const dy = Math.abs(y - g.cy);
+    const t = Math.max(0, Math.min(1, (dy - kopruYari) / (130 - kopruYari)));
+    const k = yumusak(t);
+    if (k === 0) return 0;
+    let s = 0;
+    for (const p of parcalar) s += p.amp * Math.sin((2 * Math.PI * (y - g.cy)) / p.dalga + p.faz);
+    return s * k;
+  };
+  return { merkez, yarim: A.gateW / 2, offset };
+}
+
+// 16 px yüksekliğinde yatay dilimler: nehir merkez çizgisini izler (dünya koordinatı)
+function yolculukGecitDilimleri(egri) {
+  const A = YOLCULUK_AYAR, y0 = 30, y1 = A.worldH - 30, out = [];
+  for (let y = y0; y < y1; y += 16) {
+    const h = Math.min(16, y1 - y);
+    const c = egri.merkez + egri.offset(y + h / 2);
+    out.push({ x: c - egri.yarim, y, w: egri.yarim * 2, h });
+  }
+  return out;
+}
+
 function yolculukDuzeni() {
   const A = YOLCULUK_AYAR;
   const bolum = (typeof game !== "undefined" && game.level) || 1;
@@ -186,7 +229,7 @@ function yolculukSpawnGuncelle(dt, spawnInterval, maxGhosts) {
   if (!basla) return;
   game.spawnTimer -= dt;
   if (game.spawnTimer <= 0 && game.ghosts.length < maxGhosts && (game.bolgeDogan[z] || 0) < game.bolgeKota[z]) {
-    spawnGhost({ x0: zone.x0 + 20, x1: zone.gate.x0 - 20, bolge: z });
+    spawnGhost({ x0: zone.x0 + 20, x1: Math.min(zone.gate.x0 - 20, (zone.gecitSol ?? zone.gate.x0) - 30), bolge: z });
     game.bolgeDogan[z] = (game.bolgeDogan[z] || 0) + 1;
     game.spawnTimer = spawnInterval;
   }
@@ -246,10 +289,19 @@ function yolculukHaritaKur() {
     return false;
   };
 
+  // Geçit nehirlerinin geometrisi engellerden önce kurulur: çarpışma, çizim ve hayalet doğum sınırı bunu kullanır
+  d.zones.forEach((z) => {
+    const egri = yolculukGecitEgri(z, bolum, ulke);
+    const dilimler = yolculukGecitDilimleri(egri);
+    let minX = Infinity, maxX = -Infinity;
+    for (const q of dilimler) { if (q.x < minX) minX = q.x; if (q.x + q.w > maxX) maxX = q.x + q.w; }
+    z.gecitSol = minX; z.gecitSag = maxX; z._gecitDilimler = dilimler; z._gecitEgri = egri;
+  });
+
   let oncekiCy = A.worldH / 2;
   for (let i = 1; i <= A.zoneCount; i++) {
     const z = d.zones[i - 1];
-    const icX0 = z.x0 + 30, icX1 = z.gate.x0 - 20;
+    const icX0 = z.x0 + 30, icX1 = z.gate.x0 - 20; // geçit nehri zaten 160 px ağız bandıyla korunur
     const icW = icX1 - icX0;
     // Duvarlar / tema objeleri
     const duvarSayi = 3 + Math.floor((i - 1) / 2);
@@ -294,10 +346,11 @@ function yolculukHaritaKur() {
   const u = typeof turUlkesi === "function" ? turUlkesi() : null;
   const gecitTema = u ? u.kod : (game.level - 1) % 6;
   for (const z of d.zones) {
-    const o = { x: z.gate.x0, y: 30, w: A.gateW, h: A.worldH - 60, gecit: true, tema: gecitTema };
-    // Geçit boydan boya düz bir su şerididir: göl biçimi (yuvarlak) kullanılmaz, dikdörtgen çarpışma
-    o.bicim = [{ t: "k", x: 0, y: 0, w: o.w, h: o.h, rr: 0 }];
-    o.carpisma = [{ t: "k", x: 0, y: 0, w: o.w, h: o.h, rr: 0 }];
+    const dilimler = z._gecitDilimler, minX = z.gecitSol, maxX = z.gecitSag;
+    const o = { x: minX, y: 30, w: maxX - minX, h: A.worldH - 60, gecit: true, tema: gecitTema };
+    // Kıvrılan geçit: çarpışma/biçim, merkez çizgiyi izleyen 16 px'lik yatay dilimlerdir (dikdörtgen makinesi değişmez)
+    o.bicim = dilimler.map((q) => ({ t: "k", x: q.x - minX, y: q.y - 30, w: q.w, h: q.h, rr: 0 }));
+    o.carpisma = o.bicim.map((q) => ({ ...q }));
     o.aile = "gol"; o.pay = 0; o.derinlik = 0; o.yon = null; o.tohum = 1;
     game.waters.push(o);
     gecitSulari.push(o);
@@ -463,35 +516,48 @@ function yolculukGecitCiz(ctx) {
   const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0, A = YOLCULUK_AYAR;
   const gy0 = 30, gy1 = A.worldH - 30;
   if (gy1 < cam.y || gy0 > cam.y + H) return;
-  const T = yolculukGecitDoseme(yolculukGecitTemasi());
+  const th = yolculukGecitTemasi();
   const zaman = performance.now() / 1000;
+  const vy0 = Math.max(gy0, cam.y - 8), vy1 = Math.min(gy1, cam.y + H + 8);
+  if (vy1 <= vy0) return;
   for (const z of game._yolculukDuzen.zones) {
-    const g = z.gate, x0 = g.x0, w = A.gateW;
-    if (x0 + w < cam.x || x0 > cam.x + W) continue;
-    if (T.tuval) {
-      const sy = Math.max(0, Math.floor(cam.y - 8 - gy0));
-      const sh = Math.min(T.h - sy, Math.ceil(H + 16));
-      if (sh > 0) ctx.drawImage(T.tuval, 0, sy, w, sh, x0, gy0 + sy, w, sh);
-    } else {
-      const g2 = ctx.createLinearGradient(0, gy0, 0, gy1);
-      g2.addColorStop(0, "#1e7fd6"); g2.addColorStop(1, "#0a3a8a");
-      ctx.fillStyle = g2; ctx.fillRect(x0, Math.max(gy0, cam.y), w, Math.min(gy1, cam.y + H) - Math.max(gy0, cam.y));
+    const egri = z._gecitEgri;
+    if (!egri || z.gecitSag < cam.x || z.gecitSol > cam.x + W) continue;
+    // Kıyı hattı: her 16 px'de merkez çizgiden (yolculukGecitEgri) sol/sağ bank
+    if (!z._gecitYol) {
+      const bank = (y) => { const c = egri.merkez + egri.offset(y); return [c - egri.yarim, c + egri.yarim]; };
+      const p = new Path2D();
+      let b = bank(gy0);
+      p.moveTo(b[0], gy0);
+      for (let y = gy0 + 16; y <= gy1; y += 16) { b = bank(y); p.lineTo(b[0], y); }
+      b = bank(gy1); p.lineTo(b[1], gy1);
+      for (let y = gy1 - 16; y >= gy0; y -= 16) { b = bank(y); p.lineTo(b[1], y); }
+      p.closePath();
+      z._gecitYol = p;
     }
-    // Aşağı akan parıltı çizgileri: döşemenin üstünde, kıyılara girmeden
+    const yol = z._gecitYol;
+    // Su: kırpma yolu içinde dikey renk geçişi (döşeme varsa onun yerine geçit temasıyla uyumlu geçiş)
     ctx.save();
-    ctx.beginPath(); ctx.rect(x0 + 11, Math.max(gy0, cam.y), w - 22, Math.min(gy1, cam.y + H) - Math.max(gy0, cam.y)); ctx.clip();
-    ctx.strokeStyle = "rgba(255,255,255,0.22)"; ctx.lineWidth = 1.5;
-    const boy = T.h || (gy1 - gy0);
-    for (let k = 0; k < 3; k++) {
-      const y = gy0 + ((zaman * 20 + k * (boy / 3)) % boy);
+    ctx.clip(yol);
+    const g2 = ctx.createLinearGradient(0, gy0, 0, gy1);
+    g2.addColorStop(0, th.waterTop || "#1e7fd6"); g2.addColorStop(1, th.waterBot || "#0a3a8a");
+    ctx.fillStyle = g2;
+    ctx.fillRect(z.gecitSol, vy0, z.gecitSag - z.gecitSol, vy1 - vy0);
+    // Merkez çizgiyi izleyen, aşağı akan parıltı çizgileri (kırpma içinde)
+    ctx.strokeStyle = "rgba(255,255,255,0.20)"; ctx.lineWidth = 1.5;
+    for (let k = -1; k <= 1; k++) {
       ctx.beginPath();
-      for (let x = x0 + 14; x <= x0 + w - 14; x += 8) {
-        const yy = y + Math.sin((x + zaman * 30) / 18 + k) * 2;
-        if (x === x0 + 14) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+      for (let y = vy0; y <= vy1; y += 16) {
+        const x = egri.merkez + egri.offset(y) + k * 18 + Math.sin(y / 23 + zaman * 1.3 + k) * 2.5;
+        if (y === vy0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
       ctx.stroke();
     }
     ctx.restore();
+    // Yumuşak kıyı kenarları: 3 px koyu + 1,2 px açık iç hat (her iki bank)
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = th.wallDark || th.wall || "#1e293b"; ctx.lineWidth = 3; ctx.stroke(yol);
+    ctx.strokeStyle = th.wall || th.floor || "#475569"; ctx.lineWidth = 1.2; ctx.stroke(yol);
   }
 }
 // Kapalı köprü: kalkık asma köprü / parlayan kapı (tema renklerinde, sade)

@@ -523,15 +523,16 @@ function yolculukGecitCiz(ctx) {
   for (const z of game._yolculukDuzen.zones) {
     const egri = z._gecitEgri;
     if (!egri || z.gecitSag < cam.x || z.gecitSol > cam.x + W) continue;
-    // Kıyı hattı: her 16 px'de merkez çizgiden (yolculukGecitEgri) sol/sağ bank
+    // Kıyı hattı: her 4 px'de merkez çizgiden (yolculukGecitEgri) sol/sağ bank
     if (!z._gecitYol) {
       const bank = (y) => { const c = egri.merkez + egri.offset(y); return [c - egri.yarim, c + egri.yarim]; };
       const p = new Path2D();
       let b = bank(gy0);
       p.moveTo(b[0], gy0);
-      for (let y = gy0 + 16; y <= gy1; y += 16) { b = bank(y); p.lineTo(b[0], y); }
+      // 4 px adım: kıyı köşesiz, yumuşak görünür (yol bir kez kurulur; çarpışma dilimleri 16 px kalır)
+      for (let y = gy0 + 4; y <= gy1; y += 4) { b = bank(y); p.lineTo(b[0], y); }
       b = bank(gy1); p.lineTo(b[1], gy1);
-      for (let y = gy1 - 16; y >= gy0; y -= 16) { b = bank(y); p.lineTo(b[1], y); }
+      for (let y = gy1 - 4; y >= gy0; y -= 4) { b = bank(y); p.lineTo(b[1], y); }
       p.closePath();
       z._gecitYol = p;
     }
@@ -547,7 +548,7 @@ function yolculukGecitCiz(ctx) {
     ctx.strokeStyle = "rgba(255,255,255,0.20)"; ctx.lineWidth = 1.5;
     for (let k = -1; k <= 1; k++) {
       ctx.beginPath();
-      for (let y = vy0; y <= vy1; y += 16) {
+      for (let y = vy0; y <= vy1; y += 6) {
         const x = egri.merkez + egri.offset(y) + k * 18 + Math.sin(y / 23 + zaman * 1.3 + k) * 2.5;
         if (y === vy0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }

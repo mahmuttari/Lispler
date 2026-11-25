@@ -178,6 +178,48 @@ try {
   sina('hareketi azalt: çarpılma efekti hatasız çizilir (parlama yok)', () => {
     assert.equal(azR.az, true); assert.equal(azR.hata, null); assert.equal(azR.aktif, true);
   });
+  // YAG1: bulut yağmuru (görsel)
+  const yag = await p.evaluate(() => {
+    __bolum(1); const bl = __bulutKur(); bl.sayac = 1e9;
+    for (let i = 0; i < 60; i++) havaGuncelle(1 / 30); // 2 sn
+    const d = bl.yagmur.damlalar, kam = game.camera;
+    return { adet: d.length, hepsiAltta: d.every((x) => x.y >= 0 && x.y <= 230),
+      gorunur: bl.x + 80 > kam.x && bl.x - 80 < kam.x + game.W };
+  });
+  sina('gezgin bulut yağmuru 26-40 damla, hepsi bulutun altında 230 px içinde', () => {
+    assert.ok(yag.adet >= 26 && yag.adet <= 40, `adet ${yag.adet}`);
+    assert.equal(yag.hepsiAltta, true);
+    assert.equal(yag.gorunur, true);
+  });
+
+  const dura = await p.evaluate(() => {
+    __bolum(1); const bl = __bulutKur(); bl.sayac = 1e9;
+    for (let i = 0; i < 60; i++) havaGuncelle(1 / 30);
+    const d = bl.yagmur.damlalar, once = d.map((x) => x.ox + ',' + x.y).join(';');
+    const cv = document.createElement('canvas'); cv.width = 400; cv.height = 300;
+    let hata = null;
+    try { havaCiz(cv.getContext('2d')); } catch (e) { hata = e.message; }
+    const sonra = d.map((x) => x.ox + ',' + x.y).join(';');
+    return { hata, ayni: once === sonra };
+  });
+  sina('oyun durunca (güncelleme yok) yağmur damlaları yerinde kalır, havaCiz hatasız', () => {
+    assert.equal(dura.hata, null); assert.equal(dura.ayni, true);
+  });
+
+  const azYag = await az.evaluate(() => {
+    startGame(); game.paused = true; game.ghosts = []; game.spawnTimer = -1e9; game.player.invuln = 1e9;
+    game.bot = null; game.pet = null; havaKur();
+    game.hava.bulutSayac = 0; havaGuncelle(1 / 30);
+    const bl = game.hava.bulut; bl.sayac = 1e9;
+    for (let i = 0; i < 60; i++) havaGuncelle(1 / 30);
+    const d = bl.yagmur.damlalar;
+    return { adet: d.length, sifirSicrama: d.every((x) => x.splash === 0) };
+  });
+  sina('hareketi azalt: yağmur 14-20 damla ve sıçrama yok', () => {
+    assert.ok(azYag.adet >= 14 && azYag.adet <= 20, `adet ${azYag.adet}`);
+    assert.equal(azYag.sifirSicrama, true);
+  });
+
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {
   sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);

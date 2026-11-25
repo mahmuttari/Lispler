@@ -170,6 +170,7 @@ function havaGuncelle(dt) {
       h.bulut = { x: soldan ? cam.x - 140 : cam.x + W + 140, y: cam.y + havaRast(0.12, 0.3) * H, yon: soldan ? 1 : -1,
         hiz: havaRast(HAVA.bulutHiz[0], HAVA.bulutHiz[1]), sayac: havaRast(1, 2.5), cakti: 0, tohum: Math.random() * 10,
         resim: bulutResmiSec() };
+      bulutYagmurKur(h.bulut);
     }
   }
   const bl = h.bulut;
@@ -192,6 +193,7 @@ function havaGuncelle(dt) {
       if (bl.boss) { bl.boss = false; bl.yon = bl.x < cam.x + W / 2 ? -1 : 1; } // boss yenildi: bulut çekip gider
     }
     bl.cakti = Math.max(0, bl.cakti - dt);
+    bulutYagmurGuncelle(bl, dt);
     bl.sayac -= dt;
     if (bl.sayac <= 0) {
       simsekCak(bl, boss);
@@ -208,6 +210,61 @@ function havaGuncelle(dt) {
   for (const c of [game.player, game.bot, game.pet]) {
     if (c && c.carpilma) { c.carpilma.kalan -= dt; if (c.carpilma.kalan <= 0) c.carpilma = null; }
   }
+}
+
+// Fırtına bulutunun yağmuru: damla havuzu bulutla birlikte bir kez kurulur (kare başına ayırma yok)
+function bulutYagmurKur(bl) {
+  const az = havaAzHareket();
+  const adet = Math.round(az ? havaRast(14, 20) : havaRast(26, 40));
+  const damlalar = [];
+  for (let i = 0; i < adet; i++) {
+    damlalar.push({ ox: havaRast(-61, 61), y: havaRast(0, 200), boy: havaRast(10, 16), hiz: havaRast(380, 520),
+      mesafe: havaRast(120, 220), aci: havaRast(8, 12) * Math.PI / 180, splash: 0, sx: 0, sy: 0 });
+  }
+  bl.yagmur = { alt: 42, az, damlalar }; // alt: bulutun alt kenarı (yerel koordinat)
+}
+
+function bulutYagmurGuncelle(bl, dt) {
+  const y = bl.yagmur || (bulutYagmurKur(bl), bl.yagmur);
+  const yon = bl.boss ? 1 : bl.yon; // rüzgâr bulutun gittiği yöne doğru (boss bulutunda sabit)
+  for (const d of y.damlalar) {
+    d.y += d.hiz * dt;
+    d.ox += Math.tan(d.aci) * d.hiz * dt * yon;
+    if (d.splash > 0) d.splash = Math.max(0, d.splash - dt);
+    if (d.y >= d.mesafe) {
+      if (!y.az) d.splash = 0.15; // çarpma sıçraması (hareketi azalt açıkken yok)
+      d.sx = d.ox; d.sy = d.y;
+      d.y = 0; d.ox = havaRast(-61, 61); d.mesafe = havaRast(120, 220);
+      d.hiz = havaRast(380, 520); d.boy = havaRast(10, 16); d.aci = havaRast(8, 12) * Math.PI / 180;
+    }
+  }
+}
+
+function bulutYagmurCiz(ctx, bl) {
+  const y = bl.yagmur;
+  if (!y || !y.damlalar.length) return;
+  const cam = game.camera, W = game.W;
+  if (bl.x + 80 < cam.x || bl.x - 80 > cam.x + W) return; // görüşte değilse çizme
+  const yon = bl.boss ? 1 : bl.yon;
+  const alfa = 0.55 + (bl.cakti > 0 ? 0.2 : 0); // şimşek çakınca kısa süre parlak
+  ctx.save();
+  ctx.translate(bl.x, bl.y);
+  ctx.strokeStyle = `rgba(190,210,235,${alfa})`;
+  ctx.lineWidth = 1.7;
+  ctx.lineCap = "round";
+  for (const d of y.damlalar) {
+    const sy = y.alt + d.y, sx = d.ox;
+    ctx.beginPath();
+    ctx.moveTo(sx - Math.sin(d.aci) * d.boy * yon, sy - Math.cos(d.aci) * d.boy);
+    ctx.lineTo(sx, sy);
+    ctx.stroke();
+    if (d.splash > 0) { // küçük halka sıçraması, 0.15 sn'de söner
+      ctx.globalAlpha = d.splash / 0.15;
+      ctx.beginPath(); ctx.ellipse(d.sx, y.alt + d.sy, 4, 1.5, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  }
+  ctx.restore();
 }
 
 // ---------- çizim ----------
@@ -346,7 +403,7 @@ function havaCiz(ctx) {
   const h = game.hava;
   if (!h) return;
   for (const s of h.simsekler) simsekCiz(ctx, s);
-  if (h.bulut) bulutCiz(ctx, h.bulut);
+  if (h.bulut) { bulutYagmurCiz(ctx, h.bulut); bulutCiz(ctx, h.bulut); }
   for (const b of h.yarasalar) yarasaCiz(ctx, b);
   for (const c of [game.player, game.bot, game.pet]) if (c) carpilmaCiz(ctx, c);
 }

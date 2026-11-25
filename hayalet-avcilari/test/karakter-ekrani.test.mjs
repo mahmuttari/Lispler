@@ -111,6 +111,20 @@ try {
     assert.ok(kartlar.some((k) => k.kilit.trim().startsWith('💚 ')), 'kilitli kartta 💚 maliyet yok');
   });
 
+  // 1b) Kartlarda canlı 3D avcı: her kartta canvas.canli-onizleme; 3D hazırsa görünen kartlar "uc3d" alır (yedek resim gizlenir)
+  const kart3d = await p.waitForFunction(() => {
+    const k = [...document.querySelectorAll('#character-list .char-card .char-kart-canli')];
+    if (k.length !== 12 || !k.every((e) => e.querySelector('canvas.canli-onizleme'))) return null;
+    const uc = !!(window.UcAvci && window.UcAvci.hazir);
+    const gorunen = k.filter((e) => { const r = e.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; });
+    if (uc && !gorunen.every((e) => e.classList.contains('uc3d'))) return null;
+    return { uc, gorunen: gorunen.length, uc3d: k.filter((e) => e.classList.contains('uc3d')).length };
+  }, null, { timeout: 8000 }).then((h) => h.jsonValue(), () => null);
+  sina('1b) 12 kartın hepsinde canlı önizleme tuvali; 3D hazırsa görünen kartlar 3D çizilir', () => {
+    assert.ok(kart3d, 'kart önizlemeleri kurulmadı');
+    if (kart3d.uc) assert.ok(kart3d.uc3d >= kart3d.gorunen && kart3d.gorunen > 0, JSON.stringify(kart3d));
+  });
+
   // 2) Panel: 4 stat çubuğu 0-100%; en güçlü karakter o statta %100
   await p.click('.char-card[data-key="fanatik"]');
   await p.waitForSelector('#character-detail.open');

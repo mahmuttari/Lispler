@@ -5147,27 +5147,33 @@ function karakterStatEnBuyuk() {
   return en;
 }
 
-// Kart resmi: GORSEL kart resmi yüklendiyse <img>, yoksa drawCharacter ile statik tuval
+// Kart resmi: canlı 3D avcı (gorsel.js canliOnizleme, yalniz3d). Altında yedek durur: GORSEL kart resmi yüklendiyse
+// <img>, yoksa drawCharacter ile statik tuval; 3D çizilince kap "uc3d" sınıfını alır ve yedek gizlenir.
 function karakterKartResmi(key) {
+  const kap = document.createElement("div");
+  kap.className = "char-kart-canli";
   const im = typeof gorsel === "function" ? gorsel(`kart-${key}`) : null;
   if (im) {
     const el = document.createElement("img");
     el.className = "char-kart-resim";
-    el.src = `gorsel/kart-${key}.webp`;
+    el.src = im.src; // paketli denemede data URL, uygulamada dosya
     el.alt = "";
     el.draggable = false;
-    return el;
+    kap.appendChild(el);
+  } else {
+    const cv = document.createElement("canvas");
+    cv.className = "char-kart-tuval";
+    cv.width = 160; cv.height = 180;
+    drawCharacter(cv.getContext("2d"), key, save.selectedCostume[key] || 0, 80, 120, 160);
+    kap.appendChild(cv);
   }
-  const cv = document.createElement("canvas");
-  cv.className = "char-kart-tuval";
-  cv.width = 160; cv.height = 180;
-  drawCharacter(cv.getContext("2d"), key, save.selectedCostume[key] || 0, 80, 120, 160);
-  return cv;
+  return kap;
 }
 
 function refreshCharacters() {
   document.getElementById("char-zumrut").textContent = save.zumrut;
   const list = document.getElementById("character-list");
+  canliOnizlemeTemizle(list);
   list.innerHTML = "";
 
   Object.keys(CHARACTERS).forEach((key) => {
@@ -5224,6 +5230,8 @@ function refreshCharacters() {
 
     card.addEventListener("click", () => karakterDetayAc(key));
     list.appendChild(card);
+    // Canlı 3D: atışsız, en çok 10 kare/sn; ekran dışındaki kart çizilmez
+    canliOnizleme(img.firstChild, key, save.selectedCostume[key] || 0, { atis: false, yalniz3d: true, aralikMs: 100, olcek: 1.2, ayak: 0.56 });
   });
 
   // Panel açıksa yerinde tazelenir (satın alma, seçme, görsel yüklemesi sonrası)

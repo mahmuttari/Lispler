@@ -263,6 +263,11 @@ function canliOnizleme(el, charKey, costumeIdx, opts = {}) {
   o.charKey = charKey;
   o.costumeIdx = costumeIdx;
   o.atis = opts.atis !== false;
+  o.yalniz3d = !!opts.yalniz3d; // 3D hazır değilse çizilmez; kaptaki resim (kart resmi) görünür kalır
+  o.aralikMs = Number(opts.aralikMs) || 0; // iki çizim arası en az süre (çok sayıda kart: daha seyrek)
+  o.sonCizim = 0;
+  o.olcek = Number(opts.olcek) || 1; // boy çarpanı (karakter kartı 1.2)
+  o.ayak = Number(opts.ayak) || 0.62; // gövde merkezinin kutu yüksekliğine oranı
   o.sonAtis = performance.now(); // ilk atış kayıttan 2.6 sn sonra
   if (_onizlemeAzHareket) canliOnizlemeCiz(o, o.sonAtis, true);
   else if (!_onizlemeRaf) _onizlemeRaf = requestAnimationFrame(canliOnizlemeDongu);
@@ -273,6 +278,18 @@ function canliOnizleme(el, charKey, costumeIdx, opts = {}) {
 // Karakter kutun ortasında, ayakları h*0.62 hizasında; boy min(w, h/1.15)*0.9 (şapka ve ayaklar sığar).
 function canliOnizlemeCiz(o, an, hareketsiz = false) {
   if (!o.el.isConnected || !o.cv.isConnected || o.el.offsetParent === null) return;
+  if (!hareketsiz) {
+    if (o.aralikMs && an - o.sonCizim < o.aralikMs) return;
+    // Kaydırılan listede ekran dışındaki önizleme çizilmez (12 kartlık karakter listesi)
+    const r = o.el.getBoundingClientRect();
+    if (r.bottom < 0 || r.right < 0 || r.top > window.innerHeight || r.left > window.innerWidth) return;
+  }
+  o.sonCizim = an;
+  if (o.yalniz3d) {
+    const uc = !!(window.UcAvci && window.UcAvci.hazir);
+    o.el.classList.toggle("uc3d", uc);
+    if (!uc) { if (o.cv.width > 1) { o.cv.width = 1; o.cv.height = 1; } return; }
+  }
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const w = Math.max(1, Math.round(o.el.clientWidth * dpr));
   const h = Math.max(1, Math.round(o.el.clientHeight * dpr));
@@ -285,7 +302,7 @@ function canliOnizlemeCiz(o, an, hareketsiz = false) {
     if (gecen < 350) geriTepme = 1 - gecen / 350; // 1 → 0 doğrusal
   }
   o.ctx.clearRect(0, 0, w, h);
-  drawCharacter(o.ctx, o.charKey, o.costumeIdx, w / 2, h * 0.62, Math.min(w, h / 1.15) * 0.9, 0, 0, 0, geriTepme);
+  drawCharacter(o.ctx, o.charKey, o.costumeIdx, w / 2, h * o.ayak, Math.min(w, h / 1.15) * 0.9 * o.olcek, 0, 0, 0, geriTepme);
 }
 
 function canliOnizlemeDongu(an) {

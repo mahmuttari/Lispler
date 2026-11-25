@@ -1945,8 +1945,11 @@ details.arkadas-bolum > summary::-webkit-details-marker { display: none; }
   -webkit-appearance: none;
   appearance: none;
 }
-.char-card .char-img { width: 100%; height: 96px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.char-card .char-img { width: 100%; height: 132px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .char-kart-resim, .char-kart-tuval { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.char-kart-canli { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.char-kart-canli > canvas.canli-onizleme { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.char-kart-canli.uc3d > .char-kart-resim, .char-kart-canli.uc3d > .char-kart-tuval { visibility: hidden; }
 .char-card .char-ad { font-family: var(--font-baslik); font-size: 16px; font-weight: 800; margin-top: 2px; }
 .char-card .char-unvan { font-size: 11px; line-height: 1.2; color: var(--soluk); min-height: 26px; }
 .char-card .char-rozet { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 22px; }

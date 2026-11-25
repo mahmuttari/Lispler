@@ -766,6 +766,9 @@ const defaultSave = {
   // Envanter silahları (bütün karakterler ortak): sahip olunanlar ve takılı olan ("" = karakterin kendi silahı)
   ownedGuns: {},
   equippedGun: "",
+  // Efsane özellikler: ikinci yardımcı bot ve +1 azami kalp
+  extraBot: false,
+  extraHeart: false,
   silahSecim: [], // silah çubuğunda gösterilecek en çok 3 tek kullanımlık silah
   // Petler (pet.js): sahip olunanlar ve yanına alınan ("" = petsiz)
   ownedPets: {},
@@ -825,6 +828,8 @@ function loadSave() {
       merged._charUpgradesIsolated = true;
     }
     delete merged.upgrades;
+    merged.extraBot = !!data.extraBot;
+    merged.extraHeart = !!data.extraHeart;
     merged.reklam = reklamKaydiniTemizle(data.reklam);
     merged.dunyaTuru = turKaydiniTemizle(data.dunyaTuru);
     // silahSecim: yalnız bilinen silahlar, en çok 3, tekrarsız
@@ -983,65 +988,80 @@ const CHARACTERS = {
 };
 
 // Kostümler: her karakter için (0 = orijinal, 1 = alternatif)
+const EFSANE_KOSTUM = { name: t("💎 Efsane"), cost: 300, body: "#7c3aed", hair: "#fbbf24", efsane: true };
 const COSTUMES = {
   kinkin: [
     { name: t("Mavi"), cost: 0, body: "#1d4ed8", hair: "#7a3e1d" },
     { name: t("Pembe Prenses"), cost: 5, body: "#ec4899", hair: "#fbbf24" },
     { name: t("✨ Altın Efsane"), cost: 80, body: "#f59e0b", hair: "#fef3c7" },
+    EFSANE_KOSTUM,
   ],
   veryi: [
     { name: t("Klasik"), cost: 0, body: "#6b3410", hair: "#3a1d0a" },
     { name: t("Asker"), cost: 5, body: "#1f5e1a", hair: "#1f1f1f" },
     { name: t("✨ Bronz Şampiyon"), cost: 80, body: "#92400e", hair: "#fbbf24" },
+    EFSANE_KOSTUM,
   ],
   kornet: [
     { name: t("Mor"), cost: 0, body: "#9d4edd", hair: "#ffffff" },
     { name: t("Şeker"), cost: 5, body: "#06d6a0", hair: "#fff7d6" },
     { name: t("✨ Galaksi Sihirbazı"), cost: 100, body: "#0ea5e9", hair: "#a78bfa" },
+    EFSANE_KOSTUM,
   ],
   mark: [
     { name: t("Yeşil"), cost: 0, body: "#10b981", hair: "#5a3825" },
     { name: t("Mavi"), cost: 5, body: "#3b82f6", hair: "#1f2937" },
     { name: t("✨ Altın Maceracı"), cost: 80, body: "#fbbf24", hair: "#7c2d12" },
+    EFSANE_KOSTUM,
   ],
   kent: [
     { name: t("Karanlık"), cost: 0, body: "#1a1a2e", hair: "#1f1f1f" },
     { name: t("Kanlı"), cost: 6, body: "#7f1d1d", hair: "#1f1f1f" },
     { name: t("✨ Hayalet Lordu"), cost: 120, body: "#3b0764", hair: "#0f172a" },
+    EFSANE_KOSTUM,
   ],
   ponko: [
     { name: t("Kırmızı"), cost: 0, body: "#ef4444", hair: "#3a1d0a" },
     { name: t("Sarı"), cost: 5, body: "#f59e0b", hair: "#3a1d0a" },
     { name: t("✨ Altın Şapka"), cost: 80, body: "#fbbf24", hair: "#451a03" },
+    EFSANE_KOSTUM,
   ],
   gul: [
     { name: t("Pembe"), cost: 0, body: "#ec4899", hair: "#3a1d0a" },
     { name: t("Mor"), cost: 5, body: "#8b5cf6", hair: "#3a1d0a" },
     { name: t("✨ Kraliçe"), cost: 100, body: "#f0abfc", hair: "#fbbf24" },
+    EFSANE_KOSTUM,
   ],
   rani: [
     { name: t("Turkuaz"), cost: 0, body: "#06b6d4", hair: "#1f1f1f" },
     { name: t("Limon"), cost: 5, body: "#84cc16", hair: "#1f1f1f" },
     { name: t("✨ Pırıltı"), cost: 80, body: "#fde047", hair: "#7c3aed" },
+    EFSANE_KOSTUM,
   ],
   beti: [
     { name: t("Şeker"), cost: 0, body: "#f43f5e", hair: "#9d4edd" },
     { name: t("Çikolata"), cost: 6, body: "#78350f", hair: "#fbbf24" },
     { name: t("✨ Gökkuşağı Lolipop"), cost: 100, body: "#22d3ee", hair: "#f472b6" },
+    EFSANE_KOSTUM,
   ],
   fanatik: [
     { name: t("Beyaz Gi"), cost: 0, body: "#fafafa", hair: "#0a0a0a" },
     { name: t("Kırmızı Gi"), cost: 8, body: "#dc2626", hair: "#0a0a0a" },
     { name: t("✨ Ejder Ustası"), cost: 150, body: "#1e293b", hair: "#fbbf24" },
+    EFSANE_KOSTUM,
   ],
   silsen: [
     { name: t("Bahar"), cost: 0, body: "#4ade80", hair: "#4a2511" },
     { name: t("Lale"), cost: 5, body: "#f43f5e", hair: "#1f1f1f" },
+    { name: t("✨ Altın Lale"), cost: 80, body: "#fbbf24", hair: "#4a2511" },
+    EFSANE_KOSTUM,
   ],
   sercin: [
     { name: t("Serçe"), cost: 0, body: "#a16207", hair: "#1f1f1f" },
     // Kulaklı ve kanatlı kostüm (çizim: Serçin'in kostümü)
     { name: t("Kanatlı Kedi"), cost: 8, body: "#fb923c", hair: "#7c2d12", ears: true, wings: true },
+    { name: t("✨ Altın Kanat"), cost: 80, body: "#fbbf24", hair: "#7c2d12", ears: true, wings: true },
+    EFSANE_KOSTUM,
   ],
 };
 
@@ -1135,6 +1155,10 @@ const GUNS = {
   yesil:    { name: t("Yeşil Çiftli"),       cost: 500,  desc: t("Her atışta yan yana iki mermi."),             delayMul: 1,    dmgMul: 1, speed: 500, twin: true },
   pompali:  { name: t("Saçmalı Top"),        cost: 800,  desc: t("Bir atışta üç saçma, kısa menzil."),          delayMul: 1.15, dmgMul: 1, speed: 520, spread: [-0.22, 0, 0.22], life: 0.4 },
   bazuka:   { name: t("Dev Bazuka"),         cost: 1200, desc: t("Yavaş ama üç kat hasar."),                    delayMul: 1.3,  dmgMul: 3, speed: 400 },
+  // Efsane silahlar: pahalı, görünür biçimde özel ama yalnızca hafif güçlü
+  yildiz:    { name: t("⭐ Yıldız Tüfeği"),  cost: 25000, desc: t("Her 5. atış büyük bir yıldız fırlatır; küçük alanda iki kat hasar."), delayMul: 0.65, dmgMul: 1, speed: 460, efsane: true, emoji: "⭐" },
+  ejder:     { name: t("🐉 Ejder Nefesi"),   cost: 60000, desc: t("Kısa menzilli alev konisi; hayaletleri 1,5 sn yakar."),           delayMul: 1,    dmgMul: 1.2, speed: 330, spread: [-0.2, 0, 0.2], life: 0.32, efsane: true, emoji: "🐉" },
+  gokkusagi: { name: t("🌈 Gökkuşağı Işını"), cost: 150000, desc: t("Üç hayaleti delen gökkuşağı ışını."),                  delayMul: 0.9,  dmgMul: 1, speed: 720, pierce: 3, efsane: true, emoji: "🌈" },
 };
 
 // Takılı ve sahip olunan silahın anahtarı; yoksa "" (karakterin kendi silahı)
@@ -1637,6 +1661,8 @@ function updateEffects(dt) {
       const t = 1 - Math.max(0, e.life / e.maxLife);
       e.r = e.rMax * (1 - Math.pow(1 - t, 2));
       if (e.life <= 0) game.effects.splice(i, 1);
+    } else if (e.type === "efsane") {
+      if (e.life <= 0) game.effects.splice(i, 1);
     } else if (e.type === "rocket") {
       e.x += e.vx * dt;
       e.y += e.vy * dt;
@@ -1758,6 +1784,20 @@ function drawSparkBolt(ctx, x1, y1, x2, y2, segs) {
 function drawEffects(ctx) {
   if (!game.effects) return;
   for (const e of game.effects) {
+    if (e.type === "efsane") {
+      const a = Math.max(0, e.life / e.maxLife);
+      ctx.save();
+      ctx.globalAlpha = a;
+      ctx.translate(e.x, e.y);
+      const sc = 1.2 + (1 - a) * 0.8;
+      ctx.scale(sc, sc);
+      if (typeof gorselKutuya !== "function" || !gorselKutuya(ctx, "efsane-parilti", -60, -60, 120, 120)) {
+        ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(0, 0, 50, 0, Math.PI * 2); ctx.stroke();
+      }
+      ctx.restore();
+      continue;
+    }
     if (e.type === "spark") {
       const alpha = Math.max(0, e.life / e.maxLife);
       ctx.save();
@@ -3037,12 +3077,79 @@ function drawGhost(ctx, g) {
   ctx.restore();
 }
 
+// Efsane kostüm aurası: avcının altında altın-mor halka + yükselen pırıltılar (2D, ucuz)
+function efsaneAuraCiz(ctx, x, y, now = performance.now()) {
+  const sn = now / 1000;
+  if (typeof animHazir === "function" && animHazir("efsane-aura") && typeof animDongu === "function") {
+    const kare = animDongu("efsane-aura", sn, 10);
+    if (kare && typeof animCiz === "function") { animCiz(ctx, "efsane-aura", kare, x - 46, y - 24, 92, 56); return; }
+  }
+  ctx.save();
+  ctx.translate(x, y + 14);
+  const nabiz = 1 + Math.sin(sn * 3) * 0.08;
+  ctx.scale(nabiz, nabiz);
+  ctx.shadowColor = "#a855f7"; ctx.shadowBlur = 12;
+  ctx.fillStyle = "rgba(168,85,247,0.16)";
+  ctx.beginPath(); ctx.ellipse(0, 0, 32, 12, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = "rgba(251,191,36,0.9)"; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.ellipse(0, 0, 32, 12, 0, 0, Math.PI * 2); ctx.stroke();
+  ctx.shadowBlur = 0;
+  for (let i = 0; i < 6; i++) {
+    const a = sn * 1.6 + i * Math.PI / 3;
+    const px = Math.cos(a) * 30;
+    const py = -((sn * 22 + i * 11) % 30);
+    ctx.globalAlpha = 0.55 + Math.sin(sn * 4 + i) * 0.3;
+    ctx.fillStyle = i % 2 ? "#fde047" : "#c4b5fd";
+    ctx.beginPath(); ctx.arc(px, py, 2.4, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
+
 function drawProjectile(ctx, p) {
   if (typeof aeMermiIziCiz === "function") aeMermiIziCiz(ctx, p); // iz ve parlama (anim-ek.js)
   ctx.save();
   ctx.translate(p.x, p.y);
   const ang = Math.atan2(p.vy, p.vx);
   if (typeof aeMermiKareCiz === "function" && aeMermiKareCiz(ctx, p, ang)) { ctx.restore(); return; }
+  if (p.gun === "yildiz") {
+    const boy = p.buyukYildiz ? 22 : 12;
+    if (typeof animHazir === "function" && animHazir("mermi-yildiz") && typeof animDongu === "function" && typeof animCiz === "function") {
+      const kare = animDongu("mermi-yildiz", performance.now() / 1000, 10);
+      if (kare) { animCiz(ctx, "mermi-yildiz", kare, -boy, -boy, boy * 2, boy * 2); ctx.restore(); return; }
+    }
+    ctx.save();
+    ctx.shadowColor = "#fde047"; ctx.shadowBlur = 14;
+    ctx.fillStyle = "#fbbf24";
+    ctx.beginPath();
+    for (let i = 0; i < 10; i++) {
+      const r = i % 2 ? boy * 0.45 : boy;
+      const a = -Math.PI / 2 + (i * Math.PI) / 5;
+      ctx[i ? "lineTo" : "moveTo"](Math.cos(a) * r, Math.sin(a) * r);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+    ctx.restore(); return;
+  }
+  if (p.gun === "gokkusagi") {
+    const g = ctx.createLinearGradient(-12, 0, 12, 0);
+    g.addColorStop(0, "#ef4444"); g.addColorStop(0.25, "#f59e0b"); g.addColorStop(0.5, "#22c55e");
+    g.addColorStop(0.75, "#3b82f6"); g.addColorStop(1, "#a855f7");
+    ctx.save(); ctx.rotate(ang);
+    ctx.shadowColor = "#a855f7"; ctx.shadowBlur = 12;
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.ellipse(0, 0, 16, 5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.restore(); return;
+  }
+  if (p.gun === "ejder") {
+    ctx.save(); ctx.rotate(ang);
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 11);
+    g.addColorStop(0, "#fef3c7"); g.addColorStop(0.45, "#fb923c"); g.addColorStop(1, "rgba(220,38,38,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.ellipse(0, 0, 12, 7, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.restore(); return;
+  }
   if (p.gun) { drawGunProjectile(ctx, p.gun, ang); ctx.restore(); return; }
   switch (p.charKey) {
     case "kinkin": {
@@ -5442,6 +5549,13 @@ function karakterDetayCiz() {
     ad.className = "char-kostum-ad";
     ad.textContent = cos.name;
     chip.appendChild(ad);
+    if (cos.efsane) {
+      const rozet = document.createElement("span");
+      rozet.className = "efsane-rozet";
+      rozet.style.color = "#fbbf24";
+      rozet.textContent = "✨ Efsane";
+      chip.appendChild(rozet);
+    }
     if (!sahip) {
       const fiyat = document.createElement("span");
       fiyat.className = "char-kostum-fiyat";
@@ -5589,6 +5703,53 @@ function refreshShop() {
 
       content.appendChild(item);
     });
+
+    // Efsane özellikler: pahalı, kalıcı (para ile)
+    const efHeader = document.createElement("div");
+    efHeader.className = "upgrade-header";
+    efHeader.innerHTML = t("✨ <b>Efsane Özellikler</b>");
+    content.appendChild(efHeader);
+    const ozellikler = [
+      { key: "extraBot", ad: t("🤖 İkinci Bot"), desc: t("Yanında ikinci bir yardımcı bot savaşır."), cost: 100000 },
+      { key: "extraHeart", ad: t("❤️ Fazladan Kalp"), desc: t("Bütün karakterlerde azami kalp 3 yerine 4 olur."), cost: 80000 },
+    ];
+    ozellikler.forEach((oz) => {
+      const item = document.createElement("div");
+      item.className = "shop-item";
+      item.style.border = "2px solid #fbbf24";
+      item.style.boxShadow = "0 0 10px rgba(251,191,36,0.35)";
+      const icon = document.createElement("div");
+      icon.className = "item-icon";
+      icon.textContent = oz.key === "extraBot" ? "🤖" : "❤️";
+      item.appendChild(icon);
+      const info = document.createElement("div");
+      info.className = "item-info";
+      info.innerHTML = `<div class="item-name">${oz.ad} <span style="color:#fbbf24">✨ Efsane</span></div><div class="item-desc">${oz.desc}</div>`;
+      item.appendChild(info);
+      const btn = document.createElement("button");
+      if (oz.key === "extraBot" && online.mode) {
+        btn.textContent = t("Yalnız tek kişilik");
+        btn.disabled = true;
+      } else if (save[oz.key]) {
+        btn.textContent = t("✓ Alındı");
+        btn.disabled = true;
+      } else {
+        btn.textContent = `💰 ${oz.cost}`;
+        btn.disabled = save.para < oz.cost;
+        btn.onclick = () => {
+          if (save.para < oz.cost) return;
+          save.para -= oz.cost;
+          save[oz.key] = true;
+          persistSave();
+          refreshShop();
+          efsaneKutlama();
+          showToast(t("✨ {ad} alındı!", { ad: oz.ad }));
+          audio.buy();
+        };
+      }
+      item.appendChild(btn);
+      content.appendChild(item);
+    });
   } else if (currentShopTab === "ammo") {
     const activeChar = save.selectedChar;
     const charName = (CHARACTERS[activeChar] || { name: t("Avcı") }).name;
@@ -5646,22 +5807,36 @@ function refreshShop() {
 
     const takili = equippedGun();
     const satir = (key, ad, aciklama, resim) => {
+      const g = GUNS[key];
       const item = document.createElement("div");
       item.className = "shop-item";
+      if (g && g.efsane) {
+        item.style.border = "2px solid #fbbf24";
+        item.style.boxShadow = "0 0 12px rgba(251,191,36,0.45)";
+      }
       const icon = document.createElement("div");
       icon.className = "item-icon";
-      icon.style.backgroundImage = `url(${resim})`;
-      icon.style.backgroundSize = "contain";
-      icon.style.backgroundRepeat = "no-repeat";
-      icon.style.backgroundPosition = "center";
+      if (g && g.efsane && !(typeof gorsel === "function" && gorsel(`silah-${key}`)) &&
+          !(typeof silah3d === "function" && silah3d(key))) {
+        icon.textContent = g.emoji || "✨";
+        icon.style.fontSize = "26px";
+        icon.style.display = "flex";
+        icon.style.alignItems = "center";
+        icon.style.justifyContent = "center";
+      } else {
+        icon.style.backgroundImage = `url(${resim})`;
+        icon.style.backgroundSize = "contain";
+        icon.style.backgroundRepeat = "no-repeat";
+        icon.style.backgroundPosition = "center";
+      }
       icon.style.height = "44px";
       item.appendChild(icon);
       const info = document.createElement("div");
       info.className = "item-info";
-      info.innerHTML = `<div class="item-name">${ad}</div><div class="item-desc">${aciklama}</div>`;
+      const rozet = g && g.efsane ? ` <span style="color:#fbbf24">✨ Efsane</span>` : "";
+      info.innerHTML = `<div class="item-name">${ad}${rozet}</div><div class="item-desc">${aciklama}</div>`;
       item.appendChild(info);
       const btn = document.createElement("button");
-      const g = GUNS[key];
       if (key && !save.ownedGuns[key]) {
         btn.textContent = `💰 ${g.cost}`;
         btn.disabled = save.para < g.cost;
@@ -5671,6 +5846,7 @@ function refreshShop() {
           save.ownedGuns[key] = true;
           equipGun(key);
           refreshShop();
+          if (g.efsane) efsaneKutlama();
           showToast(t("🔫 {ad} alındı ve takıldı!", { ad: g.name }));
           audio.buy();
         };
@@ -5740,6 +5916,10 @@ function refreshShop() {
         const owned = save.unlockedCostumes[charKey].includes(idx);
         const item = document.createElement("div");
         item.className = "shop-item";
+        if (cos.efsane) {
+          item.style.border = "2px solid #fbbf24";
+          item.style.boxShadow = "0 0 12px rgba(168,85,247,0.55)";
+        }
 
         const cv = document.createElement("canvas");
         cv.width = 50; cv.height = 60;
@@ -5756,7 +5936,8 @@ function refreshShop() {
 
         const info = document.createElement("div");
         info.className = "item-info";
-        info.innerHTML = `<div class="item-name">${CHARACTERS[charKey].name} - ${cos.name}</div>
+        const cosRozet = cos.efsane ? ` <span style="color:#fbbf24">✨ Efsane</span>` : "";
+        info.innerHTML = `<div class="item-name">${CHARACTERS[charKey].name} - ${cos.name}${cosRozet}</div>
                           <div class="item-desc">${t("Kostüm")}</div>`;
         item.appendChild(info);
 
@@ -5784,6 +5965,7 @@ function refreshShop() {
               save.selectedCostume[charKey] = idx;
               persistSave();
               refreshShop();
+              if (cos.efsane) { efsaneKutlama(); audio.buy(); }
               showToast(t("🎉 Yeni kostüm!"));
               audio.unlock();
             }
@@ -6080,8 +6262,8 @@ function startGame(secenek) {
     x: baslangic.x,
     y: baslangic.y,
     r: 22,
-    hp: 3,
-    maxHp: 3,
+    hp: save.extraHeart ? 4 : 3,
+    maxHp: save.extraHeart ? 4 : 3,
     invuln: 0,
     speed: stats.speed * 60, // px / saniye yerine ölçek
     damage: stats.damage,
@@ -6545,6 +6727,20 @@ function update(dt, now) {
     // Yuvadan belirme: süre boyunca hareket etmez, hasar vermez, vurulamaz
     if (g.cikis > 0) { g.cikis = Math.max(0, g.cikis - dt); continue; }
 
+    // Ejder Nefesi yanması: 1,5 sn boyunca 0,5 sn'de bir 1 hasar + turuncu kıvılcım
+    if (g.burnUntil > now) {
+      if (Math.random() < dt * 12) {
+        game.particles.push({ x: g.x + (Math.random() - 0.5) * g.r, y: g.y + (Math.random() - 0.5) * g.r, vx: 0, vy: -40, life: 0.35, color: Math.random() < 0.5 ? "#fb923c" : "#fde047" });
+      }
+      if (now >= (g.burnNext || 0)) {
+        g.burnNext = now + 500;
+        if (online.mode !== "client") {
+          g.hp -= 1;
+          if (g.hp <= 0) { killGhost(g, game.ghosts.indexOf(g)); continue; }
+        }
+      }
+    }
+
     // Boss minion state machine
     if (g.isBoss && g.minionState) {
       if (g.minionState === "minions_alive") {
@@ -6850,6 +7046,7 @@ function update(dt, now) {
   if (GUNS[game.player.gun]) hizCarpani += 1 / GUNS[game.player.gun].delayMul - 1;
   fireDelay = Math.max(60, fireDelay / hizCarpani);
   updateBot(dt, now);
+  if (game.bot2) updateBot(dt, now, game.bot2);
   petGuncelle(dt, now); // pet: oyuncuyu izler, yakındaki hayalete saldırır (pet.js)
   botPetAyir(); // bot ile pet üst üste binmesin
   havaGuncelle(dt); // yarasalar ve fırtına bulutu: yalnız görsel (hava.js)
@@ -6940,7 +7137,33 @@ function update(dt, now) {
       if (p.oyuncuMermisi && gorunurPencereDisi(g.x, g.y)) continue; // görünüm dışındaki hayalete hasar yok
       if (Math.hypot(p.x - g.x, p.y - g.y) < g.r + 6) {
         spawnHitParticles(p.x, p.y);
-        if (p.pierce > 0) { p.pierce--; (p.hits || (p.hits = [])).push(g); }
+        if (p.alan > 0) {
+          // Büyük yıldız: küçük alanda iki kat hasar (görsel patlama)
+          game.projectiles.splice(i, 1);
+          const yildizlar = [];
+          for (const g2 of game.ghosts) {
+            if (g2.cikis > 0) continue;
+            if (Math.hypot(p.x - g2.x, p.y - g2.y) < p.alan + g2.r) yildizlar.push(g2);
+          }
+          for (const g2 of yildizlar) {
+            if (online.mode === "client") uzaktanVur(g2, p.dmg);
+            else {
+              g2.hp -= p.dmg;
+              if (g2.hp <= 0) killGhost(g2, game.ghosts.indexOf(g2));
+            }
+          }
+          for (let z = 0; z < 14; z++) {
+            const a = Math.random() * Math.PI * 2;
+            game.particles.push({ x: p.x, y: p.y, vx: Math.cos(a) * 120, vy: Math.sin(a) * 120, life: 0.45, color: "#fde047" });
+          }
+          audio.hit();
+          break;
+        }
+        if (p.maksVurus > 0) {
+          // Gökkuşağı: tam 3 hayaleti deler (pierce alanı yine 3 kalır)
+          (p.hits || (p.hits = [])).push(g);
+          if (p.hits.length >= p.maksVurus) game.projectiles.splice(i, 1);
+        } else if (p.pierce > 0) { p.pierce--; (p.hits || (p.hits = [])).push(g); }
         else game.projectiles.splice(i, 1);
         if (online.mode === "client") {
           // Client: host'a hit event gönder
@@ -6948,6 +7171,10 @@ function update(dt, now) {
           audio.hit();
         } else {
           g.hp -= p.dmg;
+          if (p.yaki) {
+            g.burnUntil = Math.max(g.burnUntil || 0, now + 1500);
+            if (!g.burnNext || g.burnNext < now) g.burnNext = now + 500;
+          }
           g.uzakVurdu = false; // son vuruş benim: ölürse bana sayılır
           if (g.hp <= 0) {
             killGhost(g, j);
@@ -7580,7 +7807,25 @@ function spawnDeathParticles(x, y) {
   }
 }
 
+// Efsane alım kutlaması: kısa altın-mor pırıltı patlaması (resim varsa resim, yoksa kod parçacıkları)
+function efsaneKutlama() {
+  const x = game.player ? game.player.x : game.camera.x + game.W / 2;
+  const y = game.player ? game.player.y : game.camera.y + game.H / 2;
+  const renkler = ["#fde047", "#fbbf24", "#a855f7", "#e9d5ff"];
+  for (let i = 0; i < 30; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const s = 60 + Math.random() * 180;
+    game.particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 40, life: 0.8, color: renkler[i % renkler.length] });
+  }
+  if (typeof gorsel === "function" && gorsel("efsane-parilti")) {
+    game.effects.push({ type: "efsane", x, y, life: 0.9, maxLife: 0.9 });
+  }
+  if (typeof animEfektEkle === "function") animEfektEkle("kare", x, y, { ad: "efsane-parilti", sure: 0.6, boyut: 90 });
+}
+
 function fireProjectile(target) {
+  game.shotCount = (game.shotCount || 0) + 1;
+  const yildizBuyuk = game.player.gun === "yildiz" && game.shotCount % 5 === 0;
   const dx = target.x - game.player.x;
   const dy = target.y - game.player.y;
   const d = Math.hypot(dx, dy) || 1;
@@ -7614,11 +7859,15 @@ function fireProjectile(target) {
           vx: Math.cos(a) * speed,
           vy: Math.sin(a) * speed,
           life: homing ? 2.2 : ((gun && gun.life) || 1.5),
-          dmg: dmg,
+          dmg: yildizBuyuk ? dmg * 2 : dmg,
           charKey: game.player.charKey,
           gun: game.player.gun || undefined,
           pierce: (gun && gun.pierce) || 0,
+          maksVurus: game.player.gun === "gokkusagi" ? 3 : 0,
           homing,
+          buyukYildiz: yildizBuyuk,
+          alan: yildizBuyuk ? 85 : 0,
+          yaki: game.player.gun === "ejder",
           atBot: target === game.bot,
           oyuncuMermisi: true,
         });
@@ -7750,17 +7999,18 @@ function botPetAyir() {
 
 function spawnBot() {
   game.bot = null;
+  game.bot2 = null;
   if (online.mode || !game.player) return;
-  const yer = freeSpot(game.player.x + 60, game.player.y + 10, 18, botEngel);
-  game.bot = {
+  const yeniBot = (yer) => ({
     x: yer.x, y: yer.y, r: 18, hp: BOT_MAX_HP, maxHp: BOT_MAX_HP,
     walkTimer: 0, lastFire: 0, aimRaise: 0, shootRecoil: 0, hitFlash: 0, stuck: 0,
     sonMesafe: 1e9, ilerlemeSure: 0, kopru: null, kopruAsama: 0,
-  };
+  });
+  game.bot = yeniBot(freeSpot(game.player.x + 60, game.player.y + 10, 18, botEngel));
+  if (save.extraBot) game.bot2 = yeniBot(freeSpot(game.player.x - 60, game.player.y + 10, 18, botEngel));
 }
 
-function updateBot(dt, now) {
-  const b = game.bot;
+function updateBot(dt, now, b = game.bot) {
   if (!b || online.mode) return;
   if (b.hitFlash > 0) b.hitFlash -= dt;
   b.shootRecoil = Math.max(0, b.shootRecoil - dt * 6);
@@ -8098,6 +8348,7 @@ function render() {
   }
 
   if (game.bot) drawBot(ctx, game.bot);
+  if (game.bot2) drawBot(ctx, game.bot2);
   petCiz(ctx, false); // kedi, köpek (pet.js)
   uzakPetleriCiz(ctx, false); // çevrimiçi: öbür oyuncuların petleri
 
@@ -8113,6 +8364,8 @@ function render() {
     ctx.beginPath(); ctx.rect(game.player.x - 90, game.player.y - 160, 180, 168); ctx.clip();
     ctx.translate(0, batma);
   }
+  const _cosEfs = !game.player.dead && (COSTUMES[game.player.charKey] || [])[game.player.costumeIdx];
+  if (_cosEfs && _cosEfs.efsane) efsaneAuraCiz(ctx, game.player.x, game.player.y, performance.now());
   if (game.player.gizli && !game.player.dead) gizliCiz(ctx); // çalıda yalnız gözler (cali.js)
   else if (!blink) {
     const isInvisible = (game.player.invisibleUntil || 0) > performance.now();

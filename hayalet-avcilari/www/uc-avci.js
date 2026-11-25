@@ -523,6 +523,11 @@ function bazukaSilahKur() {
   g.position.set(0, 14, 0); // nişanda omuza yaslanır
   return { grup: g, namlu, dinlen: -1.35, nisan: 0, omuzda: true };
 }
+// Efsane silahlar: var olan silah modeli + küçük altın/gökkuşağı parlaması (yeni büyük geometri yok)
+function efsaneSilahParlak(s, y, renk) {
+  s.grup.add(kure(3.8, renk, 0, y, 0, renk));
+  return s;
+}
 function silahDukkanKur(gunKey) {
   switch (gunKey) {
     case "baloncuk": return baloncukSilahKur();
@@ -530,6 +535,21 @@ function silahDukkanKur(gunKey) {
     case "yesil": return yesilSilahKur();
     case "pompali": return pompaliSilahKur();
     case "bazuka": return bazukaSilahKur();
+    case "yildiz": {
+      const s = baloncukSilahKur();
+      s.grup.add(kutu(11, 2.4, 12, "#fbbf24", 0, -12, 0)); // altın bant
+      return efsaneSilahParlak(s, -31, "#fde047");
+    }
+    case "ejder": {
+      const s = pompaliSilahKur();
+      s.grup.add(kutu(6, 8, 6, "#f59e0b", 0, -10, 0)); // altın alev çekirdeği
+      return efsaneSilahParlak(s, -30, "#fb923c");
+    }
+    case "gokkusagi": {
+      const s = lazerSilahKur();
+      for (const [x, renk] of [[-2.6, "#ef4444"], [0, "#22c55e"], [2.6, "#3b82f6"]]) s.grup.add(kure(2.2, renk, x, -26, 0, renk));
+      return s;
+    }
     default: return null;
   }
 }

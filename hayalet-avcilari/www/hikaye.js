@@ -294,7 +294,7 @@ function hikayeBilmeceAc(n, bitince) {
     `<button class="hikaye-secenek" type="button" data-i="${i}" dir="auto"><bdi>${escapeHtml(s)}</bdi></button>`).join("");
   el.innerHTML = `<div class="hikaye-kutu">` +
     `<div class="hikaye-konusan">🔎 ${escapeHtml(t("Bilmece"))}</div>` +
-    `<p class="hikaye-metin" dir="auto">${escapeHtml(b.soru || "")}</p>` +
+    `<p class="hikaye-metin hikaye-bilmece-soru" dir="auto">${escapeHtml(b.soru || "")}</p>` +
     `<div class="hikaye-secenekler">${secenekler}</div>` +
     `<button class="hikaye-sonra" type="button">${escapeHtml(t("Sonra"))}</button>` +
     `</div>`;

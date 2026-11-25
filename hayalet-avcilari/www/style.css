@@ -2102,6 +2102,7 @@ body.is-tablet .power-bar .power-ring { width: 32px; height: 32px; font-size: 21
 .hikaye-kart { position: absolute; inset: 0; width: 64px; height: 64px; border-radius: 12px; object-fit: cover; }
 .hikaye-konusan { margin-top: 8px; font-family: var(--font-baslik); font-weight: 800; color: var(--altin); overflow-wrap: anywhere; }
 .hikaye-metin { margin: 8px 0 14px; font-size: 16px; line-height: 1.45; overflow-wrap: anywhere; }
+.hikaye-bilmece-soru { white-space: pre-line; }
 .hikaye-ileri {
   min-width: 44px;
   min-height: 44px;

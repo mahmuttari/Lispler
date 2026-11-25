@@ -23,10 +23,10 @@ function sina(ad, fn) {
 }
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args: ['--autoplay-policy=no-user-gesture-required'] });
 const hatalar = [];
-async function sayfaAc(genislik = 390) {
-  const p = await b.newPage({ viewport: { width: genislik, height: 844 }, deviceScaleFactor: 1 });
+async function sayfaAc(genislik = 390, dil = 'tr', yukseklik = 844) {
+  const p = await b.newPage({ viewport: { width: genislik, height: yukseklik }, deviceScaleFactor: 1 });
   p.on('pageerror', (e) => hatalar.push(e.message));
-  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+  await p.addInitScript((d) => { localStorage.setItem('hayaletAvcilariDil', d); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); }, dil);
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForFunction(() => typeof startGame === 'function' && typeof hikayeBolumBasladi === 'function');
@@ -232,6 +232,50 @@ try {
     assert.ok(tasma.ic <= tasma.dis + 1, `${tasma.ic}/${tasma.dis}`); assert.ok(tasma.sayfa <= tasma.genislik + 1, `${tasma.sayfa}/${tasma.genislik}`);
   });
   await rtl.close();
+
+  // --- 7b) Bilmece sorusu satır satır gösterilir (gerçek veri) ---
+  const ps = await sayfaAc();
+  const metin = await kopya(ps, () => {
+    save.dunyaTuru = { acik: 3, damgalar: {}, bitti: 0 };
+    hikayeBilmeceAc(1);
+    const soru = document.querySelector('#hikaye-bilmece .hikaye-bilmece-soru');
+    const stil = getComputedStyle(soru);
+    return {
+      beyaz: stil.whiteSpace,
+      yukseklik: soru.getBoundingClientRect().height,
+      satir: parseFloat(stil.lineHeight),
+      metin: soru.innerText,
+    };
+  });
+  sina('bilmece sorusu satır satır gösterilir (pre-line, en az 3 satır)', () => {
+    assert.equal(metin.beyaz, 'pre-line');
+    assert.ok(metin.yukseklik >= metin.satir * 3 - 1, `${metin.yukseklik}/${metin.satir}`);
+    assert.ok(metin.metin.includes('\n'));
+  });
+  await ps.close();
+
+  const ar = await sayfaAc(340, 'ar', 640);
+  const arTasma = await kopya(ar, () => {
+    document.documentElement.setAttribute('dir', 'rtl');
+    save.dunyaTuru = { acik: 3, damgalar: {}, bitti: 0 };
+    hikayeBilmeceAc(1);
+    const kutu = document.querySelector('#hikaye-bilmece .hikaye-kutu');
+    const secenekler = document.querySelectorAll('#hikaye-bilmece .hikaye-secenek');
+    const son = secenekler[secenekler.length - 1];
+    const sr = son ? son.getBoundingClientRect() : null;
+    return {
+      ic: kutu.scrollWidth, dis: kutu.clientWidth,
+      sayfa: document.documentElement.scrollWidth, genislik: window.innerWidth,
+      sonAlt: sr ? sr.bottom : -1, yuk: window.innerHeight,
+      kaydirilabilir: kutu.scrollHeight > kutu.clientHeight + 1 && getComputedStyle(kutu).overflowY === 'auto',
+    };
+  });
+  sina('Arapça 340 px bilmecede yatay taşma yok, son seçenek sığar', () => {
+    assert.ok(arTasma.ic <= arTasma.dis + 1, `${arTasma.ic}/${arTasma.dis}`);
+    assert.ok(arTasma.sayfa <= arTasma.genislik + 1, `${arTasma.sayfa}/${arTasma.genislik}`);
+    assert.ok(arTasma.sonAlt > 0 && (arTasma.sonAlt <= arTasma.yuk + 1 || arTasma.kaydirilabilir), `${arTasma.sonAlt}/${arTasma.yuk}`);
+  });
+  await ar.close();
 
   // --- 8) Çevrimiçi istemci: hatıra konur ama sahne penceresi açılmaz ---
   const istemci = await kopya(p, () => {

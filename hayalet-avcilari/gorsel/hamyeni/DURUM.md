@@ -17,7 +17,7 @@
 | R11 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): mum alevi, karanlık kovukta parlayan iki göz (koyu kovuk istenen), mavi kristal pırıltı, sıcak buhar kabarcıkları, gülen küçük ateş ruhu, ateş böceği; nesneler ~200-350 px (istem 100-160; küçük çizilecek); hücre sınırı aşılmıyor; toplu gösterim bekleniyor |
 | R12 | üretildi (2. deneme, Chrome'da ChatGPT, referans U06 + D01): mor tuğla kale duvarı (kemerli pencere), külahlı kule, mumlu küçük mezarlık (haçsız yuvarlak taşlar), balkabağı tarlası, taş kenarlı hendek havuzu, kale sınır şeridi; DİKKAT iki denemede de 6. hücredeki şerit x=1012'de başlıyor (5. hücreye 12 px taşıyor) ve x=1532'de bitiyor; havuz x<=959'da bitiyor, arası boş: kesimde 5. hücre x<1012, şerit x=1012-1532 alınmalı; diğer hücreler temiz; toplu gösterim bekleniyor |
 | R13 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): yosunlu kütük çit, kovuğunda parlak gözler olan büyük ağaç (sevimli), dev mantar halkası, eğri ağaç kümesi, sazlı nilüferli gölet, kütük çit sınır şeridi; DİKKAT 6. hücredeki şerit x=1015'te başlıyor (5. hücreye ~9 px taşıyor), gölet x<=976'da bitiyor, 977-1014 arası boş: kesimde 5. hücre x<1015, şerit x>=1015 alınmalı; diğer hücreler temiz; toplu gösterim bekleniyor |
-| R14 | bekliyor |
+| R14 | üretildi (2. deneme, Chrome'da ChatGPT, referans U06 + D01; 1. denemede küpte ankh ve lahitte kanatlı amblem vardı, dini simge kuralı için kaldırtıldı): kumtaşı yıkık duvar ve kırık sütun, yıkık kule, kaktüs bahçesi, sevimli mumyalı lahit ve küpler (yalnız şerit/nokta/zikzak süs), iki palmiyeli vaha, kısa kumtaşı sınır şeridi (hücre içinde, ~437 px); bütün hücreler temiz (en dar kenar 17 px); toplu gösterim bekleniyor |
 | R15 | bekliyor |
 | R16 | bekliyor |
 | R17 | bekliyor |

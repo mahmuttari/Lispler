@@ -13,6 +13,6 @@
 | K07 | Donatılar: doğa (çalı, çiçeklik, mantar, kütük, taş, yaprak) | bekliyor |
 | K08 | Donatılar: tatlı-ürkütücü (balkabağı, araba, çit, korkuluk, mum, örümcek ağı) | bekliyor |
 | K09 | Yakında: Pamukkale önizlemesi (tek resim) | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): opak tek resim 1536x1024 (RGB); beyaz travertenler, turkuaz havuzlar, küçük şelaleler, Hierapolis sütunları ve tiyatro, gün batımı ışığı, 3 sevimli hayalet, kıvrılan taş yol; yazı/bayrak/insan yok; toplu gösterim bekleniyor |
-| K10 | Efsane silahlar (3) + yıldız mermisi animasyonu | bekliyor (kullanıcı istedi) |
+| K10 | Efsane silahlar (3) + yıldız mermisi animasyonu | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): yıldız kristalli altın tabanca, sevimli ejderha başlı alev silahı, inci-beyaz gökkuşağı kristalli ışın tabancası (~440-480 px, yan görünüş); yıldız mermisi 3 kare (yıldız aynı boy, iz kareden kareye uzuyor); yazı yok; hücre sınırı aşılmıyor, en dar kenar 2. hücrede 16 px; toplu gösterim bekleniyor |
 | K11 | Efsane aura animasyonu, rozet, sandık, parıltı | bekliyor (kullanıcı istedi) |
 | K12 | Yuvaların hareketli sisi (yer sisi 3 kare) ve dumanı (yükselen duman 3 kare) | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01 + K04): lavanta yer sisi 3 kare (~430x165 px, alt kenarları hizalı) ve yükselen duman 3 kare (~226 px eninde, 346-390 px boyunda, dipte koyu ağız, alt kenar 61 px'te hizalı); sisin kenarları yumuşak (alfa 1-39 %36, kesici siler; gövde belirgin); hücre sınırı aşılmıyor; toplu gösterim bekleniyor |

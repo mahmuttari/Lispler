@@ -638,13 +638,134 @@
     return Math.min(Math.min(window.devicePixelRatio || 1, 2) * vs, 2);
   }
   function yedekRessam(ctx, w, h, r, p, B) { doldur(ctx, B, "#475569"); return []; }
+  // ---------- ChatGPT engel resimleri (TEM1) ----------
+  // Biçim ve çarpışma değişmez: önce çarpışma biçimi koyu palet rengiyle doldurulur (hiçbir çarpışma pikseli boş kalmaz),
+  // sonra resim yalnız biçimin içine kırpılarak çizilir. Resim yoksa bugünkü kod ressamı çalışır.
+  const engelGorsel = (k) => (typeof gorsel === "function" ? gorsel(k) : null);
+  function engelKoyuRenk(p) {
+    p = p || {};
+    return p.duvarKoyu || p.koyu || p.bazalt || p.tas || p.tahta || p.toprak || p.cim || p.metal || "#334155";
+  }
+  // Resmi kutuya "cover" sığdırır (oran korunur, kutu taşarsa kırpma zaten biçimdir)
+  function resimKapak(ctx, im, x, y, w, h) {
+    const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
+    if (!(iw > 0 && ih > 0)) return;
+    const o = Math.max(w / iw, h / ih), dw = iw * o, dh = ih * o;
+    ctx.drawImage(im, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+  }
+  // Duvar: uzun eksen boyunca duvar resmini döşe (dikeyde 90° döndür), iki uca büyük/kule parçasını koy
+  function duvarResmi(ctx, w, h, p, B, duvarK, kuleK) {
+    const d = B.derinlik || 0, renk = engelKoyuRenk(p);
+    doldur(ctx, B, renk);
+    if (d) doldur(ctx, B, renk, 0, d);
+    const im = engelGorsel(duvarK);
+    if (!im) return [];
+    const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
+    if (!(iw > 0 && ih > 0)) return [];
+    const ar = iw / ih, dikey = h > w;
+    const dose = () => {
+      if (!dikey) {
+        const kh = h + d, kw = Math.max(4, kh * ar);
+        for (let x = -kw; x < w + kw; x += kw) ctx.drawImage(im, x, -d, kw, kh);
+      } else {
+        ctx.save(); ctx.translate(w, 0); ctx.rotate(Math.PI / 2);
+        const ph = w + d, pw = Math.max(4, ph * ar);
+        for (let y = -pw; y < h + pw; y += pw) ctx.drawImage(im, y, -d, pw, ph);
+        ctx.restore();
+      }
+    };
+    const kule = () => {
+      const kim = engelGorsel(kuleK);
+      if (!kim) return;
+      const ki = kim.naturalWidth || kim.width, kj = kim.naturalHeight || kim.height;
+      if (!(ki > 0 && kj > 0)) return;
+      const kalin = dikey ? w : h, kh = Math.max(8, kalin * 1.6), kw = kh * ki / kj;
+      for (const [x, y] of (dikey ? [[w / 2, 0], [w / 2, h]] : [[0, h / 2], [w, h / 2]])) ctx.drawImage(kim, x - kw / 2, y - kh / 2, kw, kh);
+    };
+    kirp(ctx, B, () => { dose(); kule(); });
+    if (d) kirp(ctx, B, dose, 0, d);
+    return [];
+  }
+  // Harita sınırı: yatayda kusursuz şerit; dikey sınırda 90° döndür
+  function sinirResmi(ctx, w, h, p, B, k) {
+    doldur(ctx, B, engelKoyuRenk(p));
+    const im = engelGorsel(k);
+    if (!im) return [];
+    const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
+    if (!(iw > 0 && ih > 0)) return [];
+    const ar = iw / ih, dikey = B.yon === "sol" || B.yon === "sag";
+    kirp(ctx, B, () => {
+      if (!dikey) {
+        const kh = h, kw = Math.max(4, kh * ar);
+        for (let x = -kw; x < w + kw; x += kw) ctx.drawImage(im, x, 0, kw, kh);
+      } else {
+        ctx.save(); ctx.translate(w, 0); ctx.rotate(Math.PI / 2);
+        const ph = w, pw = Math.max(4, ph * ar);
+        for (let y = -pw; y < h + pw; y += pw) ctx.drawImage(im, y, 0, pw, ph);
+        ctx.restore();
+      }
+    });
+    return [];
+  }
+  function objeResmi(ctx, w, h, p, B, k) {
+    const d = B.derinlik || 0, renk = engelKoyuRenk(p);
+    if (d) { doldur(ctx, B, renk, 0, d); doldur(ctx, B, renk, 0, 0, 3); } else doldur(ctx, B, renk, 0, 0, 3); // çarpışma: biçim + 3 (kayada ön yüz de)
+    const im = engelGorsel(k);
+    if (im) {
+      const ciz = () => resimKapak(ctx, im, 0, 0, w, h);
+      kirp(ctx, B, ciz);
+      if (d) kirp(ctx, B, ciz, 0, d);
+    }
+    return [];
+  }
+  function golResmi(ctx, w, h, p, B, k) {
+    doldur(ctx, B, engelKoyuRenk(p));
+    const im = engelGorsel(k);
+    if (im) kirp(ctx, B, () => resimKapak(ctx, im, 0, 0, w, h));
+    return [];
+  }
+  // Bu engel için resim ressamı varsa döndürür (yoksa null: bugünkü kod ressamı çizsin)
+  function engelResimRessami(o) {
+    const dt = typeof o.tema === "string";
+    if (o.tur === "sinir") {
+      if (dt) return null; // Dünya Turu'nda sınır şeridi resmi yok
+      const k = `tema${o.tema + 1}-sinir`;
+      return engelGorsel(k) ? (ctx, w, h, r, p, B) => sinirResmi(ctx, w, h, p, B, k) : null;
+    }
+    if (o.tur === "duvar") {
+      if (dt) {
+        const u = window.ulkeKodla && window.ulkeKodla(o.tema), A = u && u.aile;
+        if (!A) return null;
+        const k = `aile-${A}-duvar`;
+        return engelGorsel(k) ? (ctx, w, h, r, p, B) => duvarResmi(ctx, w, h, p, B, k, `aile-${A}-kule`) : null;
+      }
+      const k = `tema${o.tema + 1}-duvar`;
+      return engelGorsel(k) ? (ctx, w, h, r, p, B) => duvarResmi(ctx, w, h, p, B, k, `tema${o.tema + 1}-buyuk`) : null;
+    }
+    if (o.tur === "obje1" || o.tur === "obje2") {
+      const k = dt ? `ulke-${o.tema}-${o.tur === "obje1" ? 1 : 2}` : `tema${o.tema + 1}-${o.tur}`;
+      return engelGorsel(k) ? (ctx, w, h, r, p, B) => objeResmi(ctx, w, h, p, B, k) : null;
+    }
+    if (o.tur === "su") {
+      const oran = o.w / o.h;
+      if (!(oran >= 0.6 && oran <= 1.7)) return null; // uzun/ince gölde bugünkü su ressamı kalsın
+      let k = null;
+      if (dt) {
+        const u = window.ulkeKodla && window.ulkeKodla(o.tema), A = u && u.aile;
+        if (A) k = `aile-${A}-gol`;
+      } else k = `tema${o.tema + 1}-gol`;
+      return k && engelGorsel(k) ? (ctx, w, h, r, p, B) => golResmi(ctx, w, h, p, B, k) : null;
+    }
+    return null;
+  }
   function ressam(o) {
     if (o.tur === "diken") return [dikenCiz, {}];
     if (o.tur === "lav") return [lavCiz, {}];
     // Dünya Turu'nda tema ülke kodudur: aile duvarı ve suyu, ülkenin objeleri, birleşik palet (ulkeler.js ulkeEngelSeti)
     const T = window.ENGEL_TEMALARI || [];
     const set = typeof o.tema === "string" ? (window.ulkeEngelSeti(o.tema) || {}) : (T[o.tema] || T[0] || {});
-    return [set[o.tur === "sinir" ? "duvar" : o.tur] || yedekRessam, set.palet || {}];
+    const resim = engelResimRessami(o);
+    return [resim || set[o.tur === "sinir" ? "duvar" : o.tur] || yedekRessam, set.palet || {}];
   }
   // Engeli ctx'e yerel koordinatta çizer; canlı katman noktalarını döndürür. Rastgele dizi biçiminkinden ayrı tohumdan.
   function engelBoya(ctx, o) {
@@ -655,6 +776,12 @@
   }
   // Tema dokusu sonradan yüklenince (gorsel.js) suların önbellek resmi yeniden çizilsin
   window.engelSuOnbellegiSil = () => { for (const o of ((typeof game !== "undefined" && game.waters) || [])) o._resim = null; };
+  // Engellerin resmi görseller yüklenmeden çizildiyse "gorsel-yuklendi" olayında önbellek boşaltılır (TEM1)
+  window.engelOnbellegiSil = () => {
+    if (typeof game === "undefined" || !game) return;
+    for (const l of [game.walls || [], game.waters || [], game.spikes || [], game.lavas || []]) for (const o of l) { o._resim = null; o._olcek = 0; o._isinma = 0; }
+  };
+  window.addEventListener("gorsel-yuklendi", () => window.engelOnbellegiSil());
   // Engelin önbellek resmi { c: tuval, canli: noktalar }; ölçek değişmişse yeniden çizilir. Tuval oluşturulamazsa null
   // (çağıran o karede doğrudan çizer).
   let _boyanan = 0; // bu karede çizilen resim (engelleriCiz sıfırlar; ısınma bütçesi için)

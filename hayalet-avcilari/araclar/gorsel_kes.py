@@ -700,7 +700,7 @@ def bulutu_grile(hucre, damla_sil):
     return hucre.crop(kutu) if kutu else hucre
 
 # Arka planı saydam yerine hafif gri pusla gelen paftalar: belirgin nesneden (alfa ≥ 150) ~7 px'ten uzak pus silinir
-PUS_PAFTALAR = {'R49', 'K07'}
+PUS_PAFTALAR = {'R49', 'K07', 'R28'}
 # Hücrede aynı nesneden birkaç tane var, oyun her birini ayrı çizer: yalnız en büyük parça kesilir
 TEK_PARCA = {'mermi-pompali', 'mermi-yesil', 'tema6-gol'}
 # Parıltısı komşusuna değen nesneler: hücre içinde elle kırpılır (x0, y0, x1, y1; sütun yoğunluğunun en düşük yerinden)
@@ -708,12 +708,17 @@ YATAY_DIKISSIZ = {f'tema{n}-sinir' for n in range(1, 7)}  # yan yana döşenen s
 HUCRE_KIRP = {'mermi-yesil': (0, 0, 297, 512)}
 
 
-def pusu_sil(hucre):
+# Pusu koyu ve nesneye yapışık gelen paftalar: dar kenar payı (≈2 px) ve yüksek eşik (alfa < 90 silinir), hale kalmasın
+PUS_GUCLU = {'R28'}
+
+
+def pusu_sil(hucre, guclu=False):
     from PIL import ImageChops, ImageFilter
     a = hucre.getchannel('A')
-    yakin = a.point(lambda v: 255 if v >= 150 else 0).filter(ImageFilter.MaxFilter(15))
+    esik, pay, alt = (200, 5, 90) if guclu else (150, 15, 30)
+    yakin = a.point(lambda v: 255 if v >= esik else 0).filter(ImageFilter.MaxFilter(pay))
     hucre = hucre.copy()
-    hucre.putalpha(ImageChops.multiply(a, yakin).point(lambda v: 0 if v < 30 else v))
+    hucre.putalpha(ImageChops.multiply(a, yakin).point(lambda v: 0 if v < alt else v))
     return hucre
 
 
@@ -738,7 +743,7 @@ def ek_hucreler(liste):
             if anahtar in TEK_PARCA:
                 hucre = en_buyuk_parca(hucre)
             if pafta in PUS_PAFTALAR:
-                hucre = pusu_sil(hucre)
+                hucre = pusu_sil(hucre, pafta in PUS_GUCLU)
             kutu = hucre.getbbox()
             if not kutu:
                 sys.exit(f'{pafta} hücre {i + 1} ({anahtar}) boş')

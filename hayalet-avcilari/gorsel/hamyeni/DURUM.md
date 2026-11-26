@@ -6,7 +6,7 @@
 |---|---|
 | R01 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): mavi enerji topu, kahverengi taş, mor yıldızlı küre, yeşil tüylü ok (sağa), dönen fırlatma bıçağı (shuriken biçiminde), altın mermi (sağa); nesneler ~280-420 px (istem 120-200); hücre sınırı aşılmıyor; toplu gösterim bekleniyor |
 | R02 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): kalp uçlu pembe-altın ok, gri sapan taşı, burgulu şeker top, rüzgâr yumruğu şok dalgası, dönen papatya, beyaz-mavi tüy; nesneler ~330-400 px; hücre sınırı aşılmıyor; toplu gösterim bekleniyor |
-| R03 | bekliyor |
+| R03 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): kırmızı lazer, ikiz yeşil enerji, üç turuncu saçma, üzgün yüzlü mor hayalet atışı, taçlı kırmızı boss küresi, kırmızı tehlike halkası (ortası boş); nesneler hücre içinde; yalnız 5. hücredeki tacın soluk parıltısı (alfa 40-90) satır 507-511'de 2. hücreye 5 px taşıyor (90 eşiğinde 1 px, kesimde sorun değil); toplu gösterim bekleniyor |
 | R04 | bekliyor |
 | R05 | bekliyor |
 | R06 | bekliyor |

@@ -24,7 +24,7 @@
 | R18 | üretildi (2. deneme, Chrome'da ChatGPT, referans U06 + D01; 1. denemede parçalar ~490 px idi ve dört sınırda taşıyordu, küçültme istemiyle düzeldi): Avrupa kalesi taş duvarı, kırmızı külahlı kule, babalı taş rıhtım havuzu; kervansaray kemerli duvarı, mavi kubbeli kule, sekiz köşeli çini havuz (yalnız geometrik desen); parçalar ~220-350 px; bütün hücreler temiz (en dar kenar 49 px); toplu gösterim bekleniyor |
 | R19 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): kerpiç duvar, kerpiç kule, palmiyeli vaha göleti; ahşap kazıklı Sahel çamur duvarı, saz çatılı kazıklı kule, sazlı nehir kıyısı göleti; parçalar ~230-380 px; bütün hücreler temiz (en dar kenar 37 px); toplu gösterim bekleniyor |
 | R20 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): ahşap kazık çit, saz çatılı kazık kule, sazlı su birikintisi; oymalı kumtaşı duvar (yalnız çiçek/geometrik oyma), kubbeli köşk kule, basamaklı taş havuz; parçalar ~220-400 px; bütün hücreler temiz (en dar kenar 26 px); toplu gösterim bekleniyor |
-| R21 | bekliyor |
+| R21 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): bambu çit, bambu gözetleme kulesi, nilüferli gölet; kiremit çatılı duvar, kiremit çatılı ahşap gözetleme kulesi, koi göleti (taş bahçe feneri ve çiçekli ağaçla); parçalar ~335-450 px; bütün hücreler temiz (en dar kenar 5. hücrede üstte 8 px); toplu gösterim bekleniyor |
 | R22 | bekliyor |
 | R23 | bekliyor |
 | R24 | bekliyor |

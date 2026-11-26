@@ -653,37 +653,46 @@
     const o = Math.max(w / iw, h / ih), dw = iw * o, dh = ih * o;
     ctx.drawImage(im, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
   }
-  // Duvar: uzun eksen boyunca duvar resmini döşe (dikeyde 90° döndür), iki uca büyük/kule parçasını koy
+  // Duvar: resim dönmez, kırpılmaz; tamamı görünür, en-boy oranı korunur, taban yerde.
+  // Yatayda parçalar yan yana (en çok ±%15 esnetme), dikeyde yukarıdan aşağı ~%30 örtüşerek yığılır.
   function duvarResmi(ctx, w, h, p, B, duvarK, kuleK) {
-    const d = B.derinlik || 0, renk = engelKoyuRenk(p);
-    doldur(ctx, B, renk);
-    if (d) doldur(ctx, B, renk, 0, d);
+    // Çarpışma alanı (ön yüz derinliği dahil) yumuşak gölgeyle boyanır: görünmez duvara çarpılmasın
+    const d = B.derinlik || 0;
+    doldur(ctx, B, "rgba(0,0,0,0.25)");
+    if (d) doldur(ctx, B, "rgba(0,0,0,0.25)", 0, d);
     const im = engelGorsel(duvarK);
     if (!im) return [];
     const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
     if (!(iw > 0 && ih > 0)) return [];
-    const ar = iw / ih, dikey = h > w;
-    const dose = () => {
-      if (!dikey) {
-        const kh = h + d, kw = Math.max(4, kh * ar);
-        for (let x = -kw; x < w + kw; x += kw) ctx.drawImage(im, x, -d, kw, kh);
-      } else {
-        ctx.save(); ctx.translate(w, 0); ctx.rotate(Math.PI / 2);
-        const ph = w + d, pw = Math.max(4, ph * ar);
-        for (let y = -pw; y < h + pw; y += pw) ctx.drawImage(im, y, -d, pw, ph);
-        ctx.restore();
+    const ar = iw / ih, dikey = h >= 1.3 * w, yatay = w >= 1.3 * h;
+    if (yatay) {
+      const kh = Math.max(4, h), temel = Math.max(4, kh * ar);
+      const lor = Math.ceil(w / temel / 1.15 - 1e-9), hir = Math.floor(w / temel / 0.85 + 1e-9);
+      let n = Math.max(1, Math.round(w / temel));
+      if (hir >= Math.max(1, lor)) n = Math.min(Math.max(n, Math.max(1, lor)), hir);
+      const pw = w / n;
+      for (let i = 0; i < n; i++) ctx.drawImage(im, i * pw, 0, pw, kh);
+    } else {
+      // Dikey ve kareye yakın duvar: resim dik, genişliğe ölçekli; yukarıdan aşağı ~%30 örtüşerek yığılır, kutunun
+      // tamamını kaplar (kareye yakın duvarda tek "contain" parça üstü boş bırakıyordu: görünmeyen duvara çarpılıyordu).
+      // Resim kutudan uzunsa tek parça, tabanı kutunun tabanında.
+      const pw = Math.max(4, w), ph = Math.max(4, pw * ih / iw), adim = ph * 0.7;
+      if (ph >= h) ctx.drawImage(im, 0, h - ph, pw, ph);
+      else {
+        let y = 0;
+        ctx.drawImage(im, 0, y, pw, ph);
+        while (y + ph < h - 0.5) { y = Math.min(y + adim, h - ph); ctx.drawImage(im, 0, y, pw, ph); if (y >= h - ph - 1e-6) break; }
       }
-    };
-    const kule = () => {
-      const kim = engelGorsel(kuleK);
-      if (!kim) return;
+    }
+    const kim = engelGorsel(kuleK);
+    if (kim) {
       const ki = kim.naturalWidth || kim.width, kj = kim.naturalHeight || kim.height;
-      if (!(ki > 0 && kj > 0)) return;
-      const kalin = dikey ? w : h, kh = Math.max(8, kalin * 1.6), kw = kh * ki / kj;
-      for (const [x, y] of (dikey ? [[w / 2, 0], [w / 2, h]] : [[0, h / 2], [w, h / 2]])) ctx.drawImage(kim, x - kw / 2, y - kh / 2, kw, kh);
-    };
-    kirp(ctx, B, () => { dose(); kule(); });
-    if (d) kirp(ctx, B, dose, 0, d);
+      if (ki > 0 && kj > 0) {
+        const kalin = dikey ? w : h, kh = Math.max(8, kalin * 1.6), kw = kh * ki / kj;
+        const uclar = dikey ? [[w / 2, 0], [w / 2, h]] : [[0, h], [w, h]];
+        for (const [x, y] of uclar) ctx.drawImage(kim, x - kw / 2, y - kh, kw, kh);
+      }
+    }
     return [];
   }
   // Harita sınırı: yatayda kusursuz şerit; dikey sınırda 90° döndür
@@ -844,12 +853,20 @@
   }
   // Obje önbelleğinin tuval payı: resim ve gölge kutunun dışına taşabilsin (sağ/sol %30, üst %40, alt %30)
   function objePayi(o) { return { x: Math.ceil(o.w * 0.3), y: Math.ceil(o.h * 0.4), alt: Math.ceil(o.h * 0.3) }; }
+  // Duvar önbelleğinin tuval payı: uç kuleleri kutunun üstünden/yanından taşabilsin (FIXG2)
+  function duvarPayi(o) {
+    const w = o.w, h = o.h, alt = Math.ceil(h * 0.3);
+    if (h >= 1.3 * w) return { x: Math.ceil(w * 2), y: Math.ceil(w * 1.7), alt };
+    if (w >= 1.3 * h) return { x: Math.ceil(h * 2), y: Math.ceil(h * 0.7), alt };
+    const b = Math.ceil(Math.max(w, h) * 0.5);
+    return { x: b, y: b, alt };
+  }
   function engelResmi(o) {
     const s = engelOlcegi();
     if (o._resim && o._olcek === s) return o._resim;
     o._resim = null; o._olcek = s;
     // Obje payı resim henüz yüklenmemişken de verilir: gölge önbellek kenarında kesilmesin.
-    const pay = (o.tur === "obje1" || o.tur === "obje2") ? objePayi(o) : null;
+    const pay = (o.tur === "obje1" || o.tur === "obje2") ? objePayi(o) : o.tur === "duvar" ? duvarPayi(o) : null;
     const px = pay ? pay.x : 0, py = pay ? pay.y : 0, palt = pay ? pay.alt : 0;
     const gw = Math.ceil((o.w + 2 * px) * s), gh = Math.ceil((o.h + py + palt) * s);
     if (!(gw > 0 && gh > 0)) return null;

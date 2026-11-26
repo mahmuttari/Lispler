@@ -1182,7 +1182,10 @@ function yolculukCiz(ctx) {
     const kapali = acik ? Math.min(1, anim / 0.6) : 1; // 1 → kapalı, 0 → açık
     const x0 = g.x0 - 4, x1 = g.x1 + 4, y0 = g.bridgeY0, y1 = g.bridgeY1;
     const pay = (typeof KOPRU !== "undefined" ? KOPRU.karaPay : 30); // açık köprünün bank taşması
-    const rx = x0 - pay, rw = (x1 - x0) + pay * 2;
+    // Kapalı köprü resmi açık köprünün kutusuna, taban hizalı çizilir (direkler açılışta zıplamasın)
+    const yari = (typeof KOPRU !== "undefined" ? KOPRU.kalin : 56) / 2;
+    const boyResim = typeof yolculukKopruResimBoyu === "function" ? yolculukKopruResimBoyu() : y1 - y0;
+    const acikX = g.x0 - pay - yari, acikW = (g.x1 - g.x0) + pay * 2 + yari * 2, acikY = (y0 + y1) / 2 - boyResim / 2;
     const kilitX = g.x0 + 14, kilitY = (y0 + y1) / 2;
     const kilitPop = () => { // açılışın ilk 0,4 sn: büyüyüp sönen açık kilit
       const gecen = 0.6 - anim;
@@ -1197,18 +1200,14 @@ function yolculukCiz(ctx) {
     // Kapalı köprü resmi varsa kod çizimi yerine o çizilir (çarpışma kutusu değişmez)
     const kapaliK = temaKapali || "kopru-kapali";
     if (!acik && gorsel(kapaliK)) {
-      ctx.fillStyle = "rgba(0,0,0,0.25)";
-      ctx.fillRect(x0, y0 + 4, x1 - x0, y1 - y0);
-      gorselKutuya(ctx, kapaliK, rx, y0, rw, y1 - y0);
+      gorselKutuya(ctx, kapaliK, acikX, acikY, acikW, boyResim, true);
       ctx.restore(); continue;
     }
     // Tema köprüsü varsa açılış: %50'ye kadar kapalı, sonra açık resim (an-kopru-in-* yalnız genel köprüde)
     if (acik && anim > 0 && temaKapali && temaAcik) {
       const ilerleme = Math.min(1, Math.max(0, 1 - anim / 0.6));
       const kare = ilerleme < 0.5 ? temaKapali : temaAcik;
-      ctx.fillStyle = "rgba(0,0,0,0.25)";
-      ctx.fillRect(x0, y0 + 4, x1 - x0, y1 - y0);
-      gorselKutuya(ctx, kare, rx, y0, rw, y1 - y0);
+      gorselKutuya(ctx, kare, acikX, acikY, acikW, boyResim, true);
       kilitPop();
       ctx.restore(); continue;
     }
@@ -1216,9 +1215,7 @@ function yolculukCiz(ctx) {
     if (acik && anim > 0 && gorsel("kopru-kapali") && gorsel("kopru-acik") && animHazir("kopru-in") >= 2) {
       const ilerleme = Math.min(1, Math.max(0, 1 - anim / 0.6));
       const kare = ilerleme < 0.25 ? "kopru-kapali" : ilerleme < 0.5 ? "an-kopru-in-1" : ilerleme < 0.75 ? "an-kopru-in-2" : "kopru-acik";
-      ctx.fillStyle = "rgba(0,0,0,0.25)";
-      ctx.fillRect(x0, y0 + 4, x1 - x0, y1 - y0);
-      gorselKutuya(ctx, kare, rx, y0, rw, y1 - y0);
+      gorselKutuya(ctx, kare, acikX, acikY, acikW, boyResim, true);
       kilitPop();
       ctx.restore(); continue;
     }

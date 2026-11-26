@@ -8,7 +8,7 @@ gpt kullan, yerel oturumu kullan"*.
 > Devam eden işi bozma."* Bu listedeki **bütün** paftalar Chrome'da chatgpt.com sohbetinde ürettirilir. Oyun koduna (`www/`, `test/`)
 > dokunulmaz (bulutta Evren görevleri yazılıyor); yalnız PNG ve DURUM.md commit edilir, `git pull --no-rebase` sonra push.
 
-0. **Z01–Z07 (EN ÖNCE, kullanıcı istedi 26 Kasım 2026):** `CHATGPT-ISTEMI-ZEMIN.md` — zemin süsleri ve yollar ("donatılar zemin
+0. **Z02–Z07 (EN ÖNCE, HEMEN; Z01 yapıldı ve kullanıcı onayladı, 26 Kasım 2026: "zeminleri neden ChatGPT'ye ürettirmiyorsun"):** `CHATGPT-ISTEMI-ZEMIN.md` — zemin süsleri ve yollar ("donatılar zemin
    ile uyum içinde olsun, kenarlarda çimenler kayalarla, zeminde yollar ... harita zeminlerini çevre ile uyumlu hale getirelim").
    Z04: patika ayrımlarına tabelalar (yazısız) ve yol kenarı taş/çimen süsleri ("yollar kaotik, patika gibi olmalı").
    Z05–Z07: bütün harita zeminleri yeniden, istem dosyasındaki **Üslup** bloğuyla (yüksek üç çeyrek açı, sol üstten ışık, el

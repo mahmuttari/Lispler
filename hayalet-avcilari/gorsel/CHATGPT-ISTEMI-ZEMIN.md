@@ -14,7 +14,7 @@ oyun kod çizimiyle çalışır.
 2. Üslup referansı olarak `hamui/U06.png` ve `ham3d/D01.png` ekle.
 3. Her resmi `gorsel/hamzemin/<KOD>.png` olarak kaydet (Z01 … Z07). Her paftadan sonra commit ve push yap, ilerlemeyi
    `gorsel/hamzemin/DURUM.md`'ye yaz.
-4. Z01'i kullanıcıya göster; onay gelince Z02–Z07. Her paftanın başına aşağıdaki **Üslup** bloğunu ekle.
+4. Z01 onaylandı (26 Kasım 2026); Z02–Z07 onay beklemeden sırayla. Her paftanın başına aşağıdaki **Üslup** bloğunu ekle.
 
 Z04 (26 Kasım 2026, kullanıcı: *"yollar tamamen kaotik, patika yollar gibi olmalı, düzgün kenarı olmamalı, kıyılarında taşlar,
 çimenler ... bazen ayrımlarda tabela gibi şeyler de olabilir"*): tabelalar ve patika kenarı süsleri. Tabelalarda yazı yok.

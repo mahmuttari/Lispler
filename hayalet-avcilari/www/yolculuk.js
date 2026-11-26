@@ -1035,9 +1035,14 @@ function yolculukGecitCiz(ctx) {
       ctx.fillStyle = nehirDesen;
       ctx.fillRect(z.gecitSol, vy0, z.gecitSag - z.gecitSol, vy1 - vy0);
     } else {
-      const g2 = ctx.createLinearGradient(0, gy0, 0, gy1);
-      g2.addColorStop(0, th.waterTop || "#1e7fd6"); g2.addColorStop(1, th.waterBot || "#0a3a8a");
-      ctx.fillStyle = g2;
+      // Renk geçişi kare başına yeniden kurulmaz (tema/ölçü değişince bir kez)
+      const anahtar = [gy0, gy1, th.waterTop, th.waterBot].join("|");
+      if (!z._gecitGrad || z._gecitGradAnahtar !== anahtar) {
+        const g2 = ctx.createLinearGradient(0, gy0, 0, gy1);
+        g2.addColorStop(0, th.waterTop || "#1e7fd6"); g2.addColorStop(1, th.waterBot || "#0a3a8a");
+        z._gecitGrad = g2; z._gecitGradAnahtar = anahtar;
+      }
+      ctx.fillStyle = z._gecitGrad;
       ctx.fillRect(z.gecitSol, vy0, z.gecitSag - z.gecitSol, vy1 - vy0);
     }
     // Kanal derinliği: banklara yakın iç gölge (geniş sonra ince) ve orta çizgide açık bant
@@ -1045,17 +1050,23 @@ function yolculukGecitCiz(ctx) {
     ctx.strokeStyle = "rgba(0,0,0,0.16)"; ctx.lineWidth = 7; ctx.stroke(yol);
     ctx.strokeStyle = "rgba(255,255,255,0.10)"; ctx.lineWidth = 28; ctx.stroke(orta);
     // Merkez çizgiyi izleyen, aşağı akan parıltı çizgileri (banklara yakın olanlar ince ve soluk)
-    for (let k = -1; k <= 1; k++) {
-      const kenar = k !== 0;
-      ctx.strokeStyle = kenar ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.22)";
-      ctx.lineWidth = kenar ? 1 : 1.6;
-      ctx.beginPath();
+    // İki yan çizgi aynı biçimde: tek yolda toplanıp bir kez çizilir (orta çizgi ayrı)
+    ctx.strokeStyle = "rgba(255,255,255,0.10)"; ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (const k of [-1, 1]) {
       for (let y = vy0; y <= vy1; y += 6) {
         const x = egri.merkez + egri.offset(y) + k * 18 + Math.sin(y / 23 + zaman * 1.3 + k) * 2.5;
         if (y === vy0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
-      ctx.stroke();
     }
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,0.22)"; ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    for (let y = vy0; y <= vy1; y += 6) {
+      const x = egri.merkez + egri.offset(y) + Math.sin(y / 23 + zaman * 1.3) * 2.5;
+      if (y === vy0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
     // Küçük şelaleler (seviye düşmeleri): yalnız görünür olanlar
     const zt = azHareket ? 0 : zaman;
     for (const d of z._gecitDusmeler || []) {

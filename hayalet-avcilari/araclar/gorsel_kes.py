@@ -629,8 +629,14 @@ EK_PAFTALAR = {
     'R10': [('diken-plaka', 192), None, None, None, ('kalp-aura', 128), ('hatira-parilti', 160)],
     # R11: engel üstü küçük canlılar (engeller.js ENGEL_CANLI anahtarları; 6-15 px çizilir)
     'R11': [('canli-mum', 64), ('canli-goz', 64), ('canli-parilti', 64), ('canli-buhar', 64), ('canli-alevruhu', 64), ('canli-atesbocegi', 64)],
-    # R12–R17: klasik temaların engel parçaları (tema<n>: game.js THEMES sırası); sınır şeridi yatayda dikişsiz (YATAY_DIKISSIZ)
-    'R12': [('tema1-duvar', 256), ('tema1-kule', 256), ('tema1-mezar', 256), ('tema1-tarla', 256), ('tema1-gol', 256), ('tema1-sinir', 512)],
+    # R12–R17: klasik temaların engel parçaları (tema<n>: game.js THEMES sırası). Adlar temadan bağımsız: duvar (duvar parçası),
+    # buyuk (büyük obje: kule, ağaç…), obje1, obje2 (iki obje), gol (göl kıyısı), sinir (yatayda dikişsiz sınır şeridi, YATAY_DIKISSIZ)
+    'R12': [('tema1-duvar', 256), ('tema1-buyuk', 256), ('tema1-obje1', 256), ('tema1-obje2', 256), ('tema1-gol', 256), ('tema1-sinir', 512)],
+    'R13': [('tema2-duvar', 256), ('tema2-buyuk', 256), ('tema2-obje1', 256), ('tema2-obje2', 256), ('tema2-gol', 256), ('tema2-sinir', 512)],
+    'R14': [('tema3-duvar', 256), ('tema3-buyuk', 256), ('tema3-obje1', 256), ('tema3-obje2', 256), ('tema3-gol', 256), ('tema3-sinir', 512)],
+    'R15': [('tema4-duvar', 256), ('tema4-buyuk', 256), ('tema4-obje1', 256), ('tema4-obje2', 256), ('tema4-gol', 256), ('tema4-sinir', 512)],
+    'R16': [('tema5-duvar', 256), ('tema5-buyuk', 256), ('tema5-obje1', 256), ('tema5-obje2', 256), ('tema5-gol', 256), ('tema5-sinir', 512)],
+    'R17': [('tema6-duvar', 256), ('tema6-buyuk', 256), ('tema6-obje1', 256), ('tema6-obje2', 256), ('tema6-gol', 256), ('tema6-sinir', 512)],
     'K06': [('donati-fici', 160), ('donati-sandik', 160), ('donati-fener', 192), ('donati-bank', 160), ('donati-tabela', 160), ('donati-saman', 192)],
     'K07': [('donati-cali', 160), ('donati-ciceklik', 160), ('donati-mantar', 128), ('donati-kutuk', 160), ('donati-tas', 160), ('donati-yaprak', 160)],
     'K08': [('donati-balkabagi', 128), ('donati-araba', 192), ('donati-cit', 160), ('donati-korkuluk', 192), ('donati-mum', 128), ('donati-orumcek', 160)],

@@ -4487,6 +4487,7 @@ function hayaletGitti(g) {
   kasirgaSavur(iz, g);
   game.effects.push(iz);
   spawnDeathParticles(g.x, g.y);
+  if (typeof aeOlumPopEkle === "function") aeOlumPopEkle(g); // AKI1: istemcide de yerel ölüm popu
   if (g.isBoss) { showToast(t("👑 BOSS YENİLDİ! Kalan hayaletleri temizle!")); audio.bossDie(); }
   const vurus = online.vurduklarim.get(g._idx);
   online.vurduklarim.delete(g._idx);
@@ -4750,6 +4751,7 @@ function clientApplyLevel(newLevel) {
   petKur(); // yanına alınan pet (pet.js): baygın pet yeni bölüme tam canla başlar
   havaKur(); // yarasalar ve fırtına bulutu (hava.js)
   ensurePlayerSafe();
+  kameraAniKonumla();
   yenidenDog();
   showToast(bolumBildirimi());
   // Çevrimiçi istemci: kutlama gördüyse yeni bölümde başlık kartı (perde yok)
@@ -6342,6 +6344,7 @@ function startGame(secenek) {
   game.pulseTimer = 0;
   // Oyuncu duvar/su içinde kalmasın
   ensurePlayerSafe();
+  kameraAniKonumla();
   spawnBot();
   petKur(); // yanına alınan pet (pet.js)
   havaKur(); // yarasalar ve fırtına bulutu (hava.js)
@@ -6523,7 +6526,7 @@ function gameLoop(now, no) {
   const kareBas = performance.now();
   const dt = Math.min(0.05, (now - game.lastFrame) / 1000);
   game.lastFrame = now;
-  if (!game.paused) {
+  if (!game.paused && now >= (game._hitStopUntil || 0)) { // AKI1: kısa vuruş donması (yalnız tek kişilik)
     game.oynananSure = (game.oynananSure || 0) + dt;
     try { update(dt, now); }
     catch (e) {
@@ -6631,6 +6634,61 @@ function kayarakYuru(o, dx, dy, engel, mesafe) {
   return yurudu;
 }
 
+// ====== AKI1: yumuşak kamera (yalnız görüntü) ======
+// Kamera hedefi: oyuncu merkezde + hareket yönünde küçük ileri bakış (en çok 36 px), dünyaya kenetli.
+function kameraGuncelle(dt, ani) {
+  const p = game.player;
+  if (!p) return;
+  const az = typeof aeAzHareket === "function" && aeAzHareket();
+  let hedefBakX = 0, hedefBakY = 0;
+  if (!ani && !az) {
+    const dx = p.x - (game._kameraOyuncuX ?? p.x);
+    const dy = p.y - (game._kameraOyuncuY ?? p.y);
+    const d = Math.hypot(dx, dy);
+    if (d > 0.01) { hedefBakX = (dx / d) * 36; hedefBakY = (dy / d) * 36; }
+  }
+  game._kameraOyuncuX = p.x; game._kameraOyuncuY = p.y;
+  const kb = ani ? 1 : 1 - Math.exp(-dt * 4);
+  game.kameraBakX = (game.kameraBakX || 0) + (hedefBakX - (game.kameraBakX || 0)) * kb;
+  game.kameraBakY = (game.kameraBakY || 0) + (hedefBakY - (game.kameraBakY || 0)) * kb;
+  let tx = p.x + (game.kameraBakX || 0) - game.W / 2;
+  let ty = p.y + (game.kameraBakY || 0) - game.H / 2;
+  tx = Math.max(0, Math.min(game.worldW - game.W, tx));
+  ty = Math.max(0, Math.min(game.worldH - game.H, ty));
+  if (ani) {
+    game.camera.x = tx; game.camera.y = ty;
+    game.kameraBakX = 0; game.kameraBakY = 0;
+    return;
+  }
+  const k = 1 - Math.exp(-dt * 9);
+  game.camera.x += (tx - game.camera.x) * k;
+  game.camera.y += (ty - game.camera.y) * k;
+}
+// Bölüm başında/ışınlanmada kamerayı anında hedefe oturt (uçarak gelmesin)
+function kameraAniKonumla() {
+  if (game.player) { game._kameraOyuncuX = game.player.x; game._kameraOyuncuY = game.player.y; }
+  kameraGuncelle(0, true);
+}
+
+// AKI1: yön ters dönüşünde kısa ezilme ile avcıyı çiz (yalnız görüntü).
+function oyuncuCiz(...a) {
+  const ctx = a[0];
+  const bas = game.player && game.player.__aeDonus;
+  let q = 0;
+  if (bas) {
+    q = 1 - Math.min(1, (performance.now() - bas) / 120);
+    if (q > 0 && !(typeof aeAzHareket === "function" && aeAzHareket())) {
+      const p = game.player;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.scale(1 + 0.12 * q, 1 - 0.10 * q);
+      ctx.translate(-p.x, -p.y);
+    } else q = 0;
+  }
+  drawCharacter(...a);
+  if (q > 0) ctx.restore();
+}
+
 function update(dt, now) {
   // Oyuncu hareketi
   let dirX = game.inputDir.x;
@@ -6645,6 +6703,10 @@ function update(dt, now) {
   if (mag > 0.15 && (isSpectator || !playerFrozen)) {
     let mx = dirX, my = dirY;
     if (mag > 1) { mx /= mag; my /= mag; }
+    // AKI1: yön tersine dönünce kısa ezilme (yalnız görüntü)
+    const yon = mx > 0.15 ? 1 : mx < -0.15 ? -1 : 0;
+    if (yon && game._sonYonX && yon !== game._sonYonX) game.player.__aeDonus = performance.now();
+    if (yon) game._sonYonX = yon;
     game.player.facing = Math.atan2(my, mx);
     // 3D karelerin bakış yönü: yalnız belirgin yatay hareketle değişsin (|cos| > 0.2), dururken son yön korunur
     if (Math.abs(Math.cos(game.player.facing)) > 0.2) game.player.bakisSol = Math.cos(game.player.facing) < 0;
@@ -6680,8 +6742,15 @@ function update(dt, now) {
   // Yürüme animasyonu fazı
   if (movedThisFrame) {
     game.player.walkTimer = (game.player.walkTimer || 0) + dt;
+    // AKI1: yürürken ayak tozları (0.22 sn'de bir, havuzlu)
+    game._tozZaman = (game._tozZaman || 0) + dt;
+    if (game._tozZaman >= 0.22) {
+      game._tozZaman = 0;
+      if (typeof aeTozEkle === "function") aeTozEkle(game.player.x, game.player.y + 22);
+    }
   } else {
     game.player.walkTimer = 0;
+    game._tozZaman = 0;
   }
 
   // Tehlike temasları (spectator iken atla)
@@ -7258,6 +7327,8 @@ function update(dt, now) {
           if (g.hp <= 0) {
             killGhost(g, j);
           } else {
+            hasarPuani(g, p.dmg, false); // AKI1: uçan hasar sayısı
+            vurusGeriIt(g, p.vx, p.vy);  // AKI1: mermi yönünde 6 px geri itme
             audio.hit();
           }
         }
@@ -7337,11 +7408,8 @@ function update(dt, now) {
 
   // Kasırga görseli render'da çizilir (anim.js kasirgaCiz: dönen hortumlar, rüzgâr halkası, uçuşan yapraklar)
 
-  // Kamera takibi
-  game.camera.x = game.player.x - game.W / 2;
-  game.camera.y = game.player.y - game.H / 2;
-  game.camera.x = Math.max(0, Math.min(game.worldW - game.W, game.camera.x));
-  game.camera.y = Math.max(0, Math.min(game.worldH - game.H, game.camera.y));
+  // Kamera takibi: kare hızından bağımsız yumuşatma + ileri bakış (AKI1)
+  kameraGuncelle(dt, false);
 
   updateHUD();
 }
@@ -7509,6 +7577,7 @@ function nextLevel() {
     game.player.x = b.x; game.player.y = b.y;
   }
   ensurePlayerSafe();
+  kameraAniKonumla();
   spawnBot();
   petKur(); // yanına alınan pet (pet.js)
   havaKur(); // yarasalar ve fırtına bulutu (hava.js)
@@ -7752,6 +7821,19 @@ function killGhost(g, idx) {
   game.effects.push(iz);
   game.ghosts.splice(idx, 1);
   spawnDeathParticles(g.x, g.y);
+  // AKI1: ölüm popu + altın hasar sayısı + vuruş donması (tek kişilik)
+  if (typeof aeOlumPopEkle === "function") aeOlumPopEkle(g);
+  if (!g.uzakVurdu) hasarPuani(g, game.player ? game.player.damage : 1, true);
+  if (!online.mode && !(typeof aeAzHareket === "function" && aeAzHareket())) {
+    if (g.isBoss) hitStopBaslat();
+    else {
+      const sn = performance.now();
+      game._olumler = game._olumler || [];
+      game._olumler.push(sn);
+      while (game._olumler.length && sn - game._olumler[0] > 200) game._olumler.shift();
+      if (game._olumler.length >= 3) { game._olumler.length = 0; hitStopBaslat(); }
+    }
+  }
   const bana = !g.uzakVurdu; // son vuruş başka oyuncudansa o kendine sayar (hayaletGitti)
 
   if (g.isBoss) {
@@ -7852,15 +7934,18 @@ function collectPickup(p) {
   if (typeof toplamaEfekti === "function") toplamaEfekti(p);
   if (p.kind === "para") {
     game.runPara += p.value;
-    showFloat(`+${p.value} 💰`, p.x, p.y);
+    showFloat(`+${p.value} 💰`, p.x, p.y, "#fbbf24");
+    if (typeof aeUcusEkle === "function") aeUcusEkle(p.x, p.y, "para"); // HUD sayacına uçuş (AKI1)
     audio.pickup();
   } else if (p.kind === "elmas") {
     game.runElmas += p.value;
-    showFloat(`+${p.value} 💎`, p.x, p.y);
+    showFloat(`+${p.value} 💎`, p.x, p.y, "#93c5fd");
+    if (typeof aeUcusEkle === "function") aeUcusEkle(p.x, p.y, "elmas");
     audio.gem();
   } else if (p.kind === "zumrut") {
     game.runZumrut += p.value;
-    showFloat(`+${p.value} 💚`, p.x, p.y);
+    showFloat(`+${p.value} 💚`, p.x, p.y, "#34d399");
+    if (typeof aeUcusEkle === "function") aeUcusEkle(p.x, p.y, "para");
     audio.emerald();
   } else if (p.kind === "guc") {
     activatePower(game.player.charKey);
@@ -7878,8 +7963,30 @@ function collectPickup(p) {
   }
 }
 
-function showFloat(text, x, y) {
-  game.particles.push({ x, y, vx: 0, vy: -40, life: 0.8, text, color: "#ffd166" });
+function showFloat(text, x, y, renk) {
+  // Yalnız "+N" ödül sayıları kısa uçan sayı havuzuna (AKI1); uyarı yazıları ("🌿 Saklandın!" gibi) okunur kalsın diye eski yolda
+  if (typeof aePuanEkle === "function" && /^[+-]?\d/.test(String(text))) { aePuanEkle(x, y, text, renk || "#ffd166"); return; }
+  game.particles.push({ x, y, vx: 0, vy: -40, life: 0.8, text, color: renk || "#ffd166" });
+}
+
+// AKI1: vuruş donması — yalnız tek kişilik oyunda ve hareket azaltma kapalıyken 45 ms simülasyon durur.
+function hitStopBaslat() {
+  if (online.mode) return;
+  if (typeof aeAzHareket === "function" && aeAzHareket()) return;
+  game._hitStopUntil = performance.now() + 45;
+}
+// AKI1: mermi yönünde 6 px geri itme; hayaleti duvarın içine sokmaz.
+function vurusGeriIt(g, dx, dy) {
+  if (!g) return;
+  const d = Math.hypot(dx, dy) || 1;
+  const nx = g.x + (dx / d) * 6, ny = g.y + (dy / d) * 6;
+  if (!collidesWalls(nx, g.y, g.r)) g.x = nx;
+  if (!collidesWalls(g.x, ny, g.r)) g.y = ny;
+}
+// AKI1: uçan hasar sayısı (öldürmede altın).
+function hasarPuani(g, dmg, oldu) {
+  if (typeof aePuanEkle !== "function" || !g) return;
+  aePuanEkle(g.x, g.y - (g.r || 20), String(Math.max(1, Math.round(dmg || 1))), oldu ? "#fde047" : "#ffffff");
 }
 
 function spawnHitParticles(x, y) {
@@ -8383,10 +8490,12 @@ function render() {
 
   // Ölen hayaletlerin solan izleri (canlı hayaletlerin altında)
   drawGhostFades(ctx);
+  if (typeof aeTozlariCiz === "function") aeTozlariCiz(ctx, performance.now()); // ayak tozları (AKI1)
 
   // Hayaletler (boss en üstte)
   for (const g of game.ghosts) if (!g.isBoss) drawGhost(ctx, g);
   for (const g of game.ghosts) if (g.isBoss) drawGhost(ctx, g);
+  if (typeof aeOlumPoplariCiz === "function") aeOlumPoplariCiz(ctx, performance.now()); // ölüm popu (AKI1)
   // Donmuş hayaletlerin buz kaplaması (anim-ek.js)
   if (typeof aeBuzKaplamaCiz === "function") for (const g of game.ghosts) aeBuzKaplamaCiz(ctx, g, performance.now());
 
@@ -8474,10 +8583,10 @@ function render() {
       if (typeof aeGorunmezParilti === "function") aeGorunmezParilti(ctx, game.player, performance.now());
       ctx.save();
       ctx.globalAlpha = typeof aeGorunmezAlfa === "function" ? aeGorunmezAlfa(performance.now()) : 0.4;
-      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol, game.player.aci3d, "ben", ozel3d);
+      oyuncuCiz(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol, game.player.aci3d, "ben", ozel3d);
       ctx.restore();
     } else {
-      drawCharacter(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol, game.player.aci3d, "ben", ozel3d);
+      oyuncuCiz(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol, game.player.aci3d, "ben", ozel3d);
     }
   }
   if (batma) ctx.restore();
@@ -8501,10 +8610,12 @@ function render() {
     }
     ctx.restore();
   }
+  if (typeof aePuanlariCiz === "function") aePuanlariCiz(ctx, performance.now()); // uçan hasar/ödül sayıları (AKI1)
   havaCiz(ctx); // yarasalar, fırtına bulutu ve şimşek (hava.js)
   if (typeof gec1DunyaCiz === "function") gec1DunyaCiz(ctx, performance.now()); // portal + konfeti (GEC1)
 
   ctx.restore();
+  if (typeof aeUcuslarCiz === "function") aeUcuslarCiz(ctx, performance.now()); // HUD'a para uçuşu (AKI1)
   if (typeof gec1EkranCiz === "function") gec1EkranCiz(ctx, performance.now()); // iris/soluk perde + başlık kartı
   if (typeof aeEkranEfektleriCiz === "function") aeEkranEfektleriCiz(ctx, performance.now());
   havaParlamaCiz(ctx); // şimşeğin ekran parlaması

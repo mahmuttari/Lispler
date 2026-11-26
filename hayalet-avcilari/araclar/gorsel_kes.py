@@ -613,6 +613,9 @@ EK_PAFTALAR = {
     # R01–R02: karakter mermileri (anahtar CHARACTERS: mermi-<karakter>; yön sağa)
     'R01': [('mermi-kinkin', 128), ('mermi-veryi', 128), ('mermi-kornet', 128), ('mermi-mark', 128), ('mermi-kent', 128), ('mermi-ponko', 128)],
     'R02': [('mermi-gul', 128), ('mermi-rani', 128), ('mermi-beti', 128), ('mermi-fanatik', 128), ('mermi-silsen', 128), ('mermi-sercin', 128)],
+    # R03: silah mermileri (mermi-<silah>; yesil ve pompali hücrelerinde birden çok saçma var, HUCRE_KIRP / TEK_PARCA ile yalnız biri alınır)
+    # ve düşman atışları
+    'R03': [('mermi-lazer', 128), ('mermi-yesil', 64), ('mermi-pompali', 64), ('atis-hayalet', 96), ('atis-boss', 128), ('tehlike-halka', 192)],
     'K06': [('donati-fici', 160), ('donati-sandik', 160), ('donati-fener', 192), ('donati-bank', 160), ('donati-tabela', 160), ('donati-saman', 192)],
     'K07': [('donati-cali', 160), ('donati-ciceklik', 160), ('donati-mantar', 128), ('donati-kutuk', 160), ('donati-tas', 160), ('donati-yaprak', 160)],
     'K08': [('donati-balkabagi', 128), ('donati-araba', 192), ('donati-cit', 160), ('donati-korkuluk', 192), ('donati-mum', 128), ('donati-orumcek', 160)],
@@ -653,6 +656,10 @@ def bulutu_grile(hucre, damla_sil):
 
 # Arka planı saydam yerine hafif gri pusla gelen paftalar: belirgin nesneden (alfa ≥ 150) ~7 px'ten uzak pus silinir
 PUS_PAFTALAR = {'R49', 'K07'}
+# Hücrede aynı nesneden birkaç tane var, oyun her birini ayrı çizer: yalnız en büyük parça kesilir
+TEK_PARCA = {'mermi-pompali', 'mermi-yesil'}
+# Parıltısı komşusuna değen nesneler: hücre içinde elle kırpılır (x0, y0, x1, y1; sütun yoğunluğunun en düşük yerinden)
+HUCRE_KIRP = {'mermi-yesil': (0, 0, 297, 512)}
 
 
 def pusu_sil(hucre):
@@ -680,6 +687,10 @@ def ek_hucreler(liste):
             anahtar, en = hc
             x0, y0 = (i % 3) * 512, (i // 3) * 512
             hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
+            if anahtar in HUCRE_KIRP:
+                hucre = hucre.crop(HUCRE_KIRP[anahtar])
+            if anahtar in TEK_PARCA:
+                hucre = en_buyuk_parca(hucre)
             if pafta in PUS_PAFTALAR:
                 hucre = pusu_sil(hucre)
             kutu = hucre.getbbox()

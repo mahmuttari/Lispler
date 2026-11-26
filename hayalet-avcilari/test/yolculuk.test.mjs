@@ -156,7 +156,8 @@ try {
     game.player.x = game.worldW - 60; game.player.y = game.worldH / 2;
     game.inputDir.x = 0; game.inputDir.y = 0;
     game.spawnTimer = 1e9; game.bossSpawnTimer = 1e9;
-    update(1 / 60, performance.now());
+    // Kamera yumuşak izler (AKI1): 2 sn sonra hedefe oturmuş olmalı
+    for (let i = 0; i < 120; i++) update(1 / 60, performance.now());
     return { x, y, camX: game.camera.x, beklenen: Math.max(0, Math.min(game.worldW - game.W, game.worldW - 60 - game.W / 2)) };
   });
   sina('oyuncu başlangıç alanında (solda), kamera sağ uca kadar izliyor', () => {

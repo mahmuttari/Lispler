@@ -9,7 +9,8 @@ const ANIM = {
   dogusSn: 0.45,          // normal hayaletin belirmesi
   bossInisSn: 0.8,        // boss'un yukarıdan inişi
   bossInisYukseklik: 140, // boss kaç piksel yukarıdan düşer
-  vurulmaSn: 0.16,        // vurulunca beyaz parlama ve basılma
+  vurulmaSn: 0.1,         // vurulunca beyaz parlama (AKI1: 0,1 sn)
+  vurulmaEzilmeSn: 0.14,  // vurulunca basılma (AKI1: 0,14 sn, 1,18 / 0,84)
   vurulmaAra: 220,        // ms; sürekli hasarda (kasırga) parlama en çok bu sıklıkta
   kirpmaAra: [2.6, 5.2],  // sn; göz kırpma aralığı
   kirpmaSn: 0.13,
@@ -86,9 +87,11 @@ function hayaletAnim(g, now) {
     g.__sonHp = g.hp;
   }
   const vk = (now - (g.__vurulma || -1e9)) / (ANIM.vurulmaSn * 1000);
-  if (vk >= 0 && vk < 1) {
-    a.beyaz = 1 - vk;
-    if (!az) { const b = Math.sin(vk * Math.PI) * 0.14; a.sx *= 1 + b; a.sy *= 1 - b; }
+  if (vk >= 0 && vk < 1) a.beyaz = 1 - vk;
+  const ek = (now - (g.__vurulma || -1e9)) / (ANIM.vurulmaEzilmeSn * 1000);
+  if (ek >= 0 && ek < 1 && !az) {
+    const b = Math.sin(ek * Math.PI) * (g.isBoss ? 0.09 : 0.18); // boss: yarım ezilme
+    a.sx *= 1 + b; a.sy *= 1 - b;
   }
 
   // Atıcı hayalet ve boss: atıştan hemen önce hazırlanır (yalnız atış zamanını bilen cihazda; istemcide yok)

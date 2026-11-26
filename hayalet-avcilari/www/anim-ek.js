@@ -843,3 +843,137 @@ function gec1EkranCiz(ctx, now = performance.now()) {
     }
   }
 }
+
+function aeEkranda(x, y, pay = 80) {
+  if (typeof game !== "object" || !game || !game.camera) return true;
+  return x > game.camera.x - pay && x < game.camera.x + game.W + pay &&
+         y > game.camera.y - pay && y < game.camera.y + game.H + pay;
+}
+
+// ====== AKI1: oyun hissi (yalnız görüntü; havuzlu, en çok sayıda sınırlı) ======
+// Ölüm "pop"u: hayaletin son görüntüsü 0.18 sn içinde 1.35'e büyür ve solar.
+const AE_POP_MAX = 24;
+AE.poplar = [];
+function aeOlumPopEkle(g) {
+  if (!g) return;
+  const e = AE.poplar.length >= AE_POP_MAX ? AE.poplar.shift() : {};
+  e.g = g; e.bas = performance.now(); e.boyut = g.size || 40;
+  AE.poplar.push(e);
+}
+function aeOlumPoplariCiz(ctx, now = performance.now()) {
+  for (let i = AE.poplar.length - 1; i >= 0; i--) {
+    const e = AE.poplar[i];
+    const k = (now - e.bas) / 180;
+    if (k >= 1) { AE.poplar.splice(i, 1); continue; }
+    if (k < 0) continue;
+    const g = e.g;
+    if (!aeEkranda(g.x, g.y, 90)) continue; // yalnız ekrandaki efekt çizilir
+    const sc = 1 + 0.35 * (1 - Math.pow(1 - k, 2));
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, 1 - k) * 0.9;
+    ctx.translate(g.x, g.y);
+    ctx.scale(sc, sc);
+    ctx.translate(-g.x, -g.y);
+    drawGhost(ctx, g);
+    ctx.restore();
+  }
+}
+
+// Uçan sayılar: hasar (beyaz), öldürme (altın). En çok 24; havuzdaki nesne yeniden kullanılır.
+const AE_PUAN_MAX = 24;
+AE.puanlar = [];
+function aePuanEkle(x, y, text, renk) {
+  const e = AE.puanlar.length >= AE_PUAN_MAX ? AE.puanlar.shift() : {};
+  e.x = x; e.y = y; e.text = String(text); e.renk = renk || "#ffffff"; e.bas = performance.now();
+  AE.puanlar.push(e);
+}
+function aePuanlariCiz(ctx, now = performance.now()) {
+  for (let i = AE.puanlar.length - 1; i >= 0; i--) {
+    const e = AE.puanlar[i];
+    const k = (now - e.bas) / 600;
+    if (k >= 1) { AE.puanlar.splice(i, 1); continue; }
+    if (k < 0) continue;
+    if (!aeEkranda(e.x, e.y, 60)) continue;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, 1 - k);
+    ctx.textAlign = "center";
+    ctx.font = "900 15px Nunito, sans-serif";
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "rgba(0,0,0,0.75)";
+    const yy = e.y - 26 * k;
+    ctx.strokeText(e.text, e.x, yy);
+    ctx.fillStyle = e.renk;
+    ctx.fillText(e.text, e.x, yy);
+    ctx.restore();
+  }
+}
+
+// Toplanan paranın HUD sayacına uçuşu (ekran uzayı; yay çizerek, hızlanarak).
+const AE_UCUS_MAX = 20;
+AE.ucuslar = [];
+function aeUcusEkle(x, y, tip) {
+  const el = document.getElementById(tip === "elmas" ? "run-elmas" : "run-para") || document.getElementById("run-para");
+  const vs = (game && game.viewScale) || 1;
+  const e = AE.ucuslar.length >= AE_UCUS_MAX ? AE.ucuslar.shift() : {};
+  e.bas = performance.now(); e.sure = 450; e.tip = tip;
+  e.sx = x - (game ? game.camera.x : 0); e.sy = y - (game ? game.camera.y : 0);
+  if (el) {
+    const r = el.getBoundingClientRect();
+    e.hx = (r.left + r.width / 2) / vs; e.hy = (r.top + r.height / 2) / vs;
+  } else { e.hx = (game ? game.W : 800) - 60; e.hy = 24; }
+  AE.ucuslar.push(e);
+}
+function aeUcuslarCiz(ctx, now = performance.now()) {
+  for (let i = AE.ucuslar.length - 1; i >= 0; i--) {
+    const e = AE.ucuslar[i];
+    const k = (now - e.bas) / e.sure;
+    if (k >= 1) { AE.ucuslar.splice(i, 1); continue; }
+    if (k < 0) continue;
+    if (game && (e.sx < -60 || e.sx > game.W + 60 || e.sy < -60 || e.sy > game.H + 60)) continue;
+    const t = k * k; // ease-in
+    const x = e.sx + (e.hx - e.sx) * t;
+    const y = e.sy + (e.hy - e.sy) * t - Math.sin(k * Math.PI) * 60;
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, 1.2 - k);
+    ctx.fillStyle = e.tip === "elmas" ? "#60a5fa" : "#fbbf24";
+    ctx.strokeStyle = "rgba(0,0,0,0.5)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#fff7cc";
+    ctx.beginPath(); ctx.arc(x - 1.6, y - 1.6, 2, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+}
+
+// Avcının ayak tozları: yürürken 0.22 sn'de bir birkaç küçük yumuşak parçacık. Havuzlu.
+const AE_TOZ_MAX = 48;
+AE.tozlar = [];
+function aeTozEkle(x, y) {
+  const n = aeAzHareket() ? 1 : 2 + ((Math.random() * 2) | 0);
+  for (let i = 0; i < n; i++) {
+    const e = AE.tozlar.length >= AE_TOZ_MAX ? AE.tozlar.shift() : {};
+    e.x = x + (Math.random() - 0.5) * 14;
+    e.y = y + (Math.random() - 0.5) * 4;
+    e.vx = (Math.random() - 0.5) * 18;
+    e.vy = -6 - Math.random() * 10;
+    e.bas = performance.now(); e.sure = 380 + Math.random() * 160;
+    AE.tozlar.push(e);
+  }
+}
+function aeTozlariCiz(ctx, now = performance.now()) {
+  for (let i = AE.tozlar.length - 1; i >= 0; i--) {
+    const e = AE.tozlar[i];
+    const k = (now - e.bas) / e.sure;
+    if (k >= 1) { AE.tozlar.splice(i, 1); continue; }
+    if (k < 0) continue;
+    if (!aeEkranda(e.x, e.y, 40)) continue;
+    ctx.save();
+    ctx.globalAlpha = (1 - k) * 0.35;
+    ctx.fillStyle = "#e7e5e4";
+    ctx.beginPath();
+    ctx.arc(e.x + e.vx * k, e.y + e.vy * k, 2.5 + k * 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}

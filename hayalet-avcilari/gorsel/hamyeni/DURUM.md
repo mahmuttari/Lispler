@@ -45,7 +45,7 @@
 | R39 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Japonya kiraz ağaçları, Fuji Dağı; Rusya matruşka bebekleri, oymalı ahşap izba; Kanada akçaağaç ve şurup kovası, sevimli kunduzlu baraj; bütün hücreler temiz (en dar kenar 16 px); toplu gösterim bekleniyor |
 | R40 | üretildi (1. deneme, Chrome ChatGPT; hücre sınırları temiz; 1. hücre heykel ~484 px boyunda, hücre içinde) |
 | R41 | üretildi (1. deneme, Chrome ChatGPT; hücre sınırları temiz) |
-| R42 | bekliyor |
+| R42 | üretildi (2. deneme, Chrome ChatGPT; 1. denemede tüm arka planda beyaz pus vardı; hücre sınırları temiz; hücre 6 dokusu alfa ≈253 (en az 179), oyunda opak çizilmeli) |
 | R43 | bekliyor |
 | R44 | bekliyor |
 | R45 | bekliyor |

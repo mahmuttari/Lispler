@@ -159,8 +159,18 @@ def karakterler(liste):
 ANIM_GOVDE = {}  # ad → ilk karenin dolu alanı, birleşik kutuya oranla [x, y, w, h]: oyun gövdeyi bu kutuya oturtur
 
 
+# --ek ardından pafta kodları verilirse (ör. --ek R47 J02) yalnız onlar kesilir; verilmezse bütün ek paftalar
+SECILI = set()
+
+
+def secili_mi(kod):
+    return not SECILI or kod in SECILI
+
+
 def animasyonlar(liste):
     for pafta, animler in ANIMASYON.items():
+        if not secili_mi(pafta):
+            continue
         yol = ham_yolu(pafta)
         if not os.path.exists(yol):
             yol = os.path.join(HAMYENI, f'{pafta}.png')
@@ -509,6 +519,8 @@ def hatiralar(liste):
     ulkeler = json.load(open(os.path.join(KOK, 'hikaye-taslaklari', 'ulkeler.json')))
     kodlar = [u['kod'] for u in sorted(ulkeler, key=lambda u: u['sira'])]
     for p in range(9):
+        if not secili_mi(f'H{p + 1:02d}'):
+            continue
         yol = os.path.join(HAMHIKAYE, f'H{p + 1:02d}.png')
         if not os.path.exists(yol):
             continue
@@ -731,6 +743,8 @@ def pusu_sil(hucre, guclu=False):
 
 def ek_hucreler(liste):
     for pafta, hucreler in EK_PAFTALAR.items():
+        if not secili_mi(pafta):
+            continue
         yol = os.path.join(HAMEK, f'{pafta}.png')
         if not os.path.exists(yol):
             yol = os.path.join(HAMYENI, f'{pafta}.png')  # R paftaları (CHATGPT-ISTEMI-YENILEME.md)
@@ -818,6 +832,8 @@ ZEMIN_SOLUK = {'aile-KS-zemin': 0.5}
 
 def doku_hucreleri(liste):
     for pafta, hucreler in DOKU_PAFTALARI.items():
+        if not secili_mi(pafta):
+            continue
         yol = os.path.join(HAMYENI, f'{pafta}.png')
         if not os.path.exists(yol):
             continue
@@ -844,6 +860,8 @@ def doku_hucreleri(liste):
 
 def yol_hucreleri(liste):
     for n in range(1, 7):
+        if not secili_mi(f'J{n:02d}'):
+            continue
         yol = os.path.join(HAMYOL, f'J{n:02d}.png')
         if not os.path.exists(yol):
             continue
@@ -872,7 +890,7 @@ def yol_hucreleri(liste):
 
 def ek_kes():
     """Yalnız ek paftaları (K01–K04) ve hatıraları (H01–H09) keser; öbür görsellere dokunmaz, liste.js'e ekler.
-    Kullanım: python3 hayalet-avcilari/araclar/gorsel_kes.py --ek"""
+    Kullanım: python3 hayalet-avcilari/araclar/gorsel_kes.py --ek [PAFTA …]  (pafta verilirse yalnız onlar kesilir)"""
     import re
     metin = open(os.path.join(CIKTI, 'liste.js'), encoding='utf-8').read()
     al = lambda ad: json.loads(re.search(r'const ' + ad + r' = (\{.*?\});', metin, re.S).group(1))
@@ -887,7 +905,7 @@ def ek_kes():
     hatiralar(liste)
     # K09: opak tek resim (Yakında önizlemesi), 768 px genişlik
     yol = os.path.join(HAMEK, 'K09.png')
-    if os.path.exists(yol):
+    if secili_mi('K09') and os.path.exists(yol):
         r9 = Image.open(yol).convert('RGB')
         r9 = r9.resize((768, round(r9.height * 768 / r9.width)), Image.LANCZOS)
         r9.save(os.path.join(CIKTI, 'yakinda-pamukkale.webp'), 'WEBP', quality=82, method=6)
@@ -896,7 +914,7 @@ def ek_kes():
     # R45-R46: opak dikey ekran arka planları (menü ekranları; çevrimiçi/arkadaş ekranları), 768 × 1152
     for pafta, anahtar in (('R45', 'arka-gece'), ('R46', 'arka-kasaba')):
         yol = os.path.join(HAMYENI, f'{pafta}.png')
-        if os.path.exists(yol):
+        if secili_mi(pafta) and os.path.exists(yol):
             ra = Image.open(yol).convert('RGB').resize((768, 1152), Image.LANCZOS)
             ra.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=80, method=6)
             liste[anahtar] = [768, 1152]
@@ -914,4 +932,8 @@ def ek_kes():
 
 
 if __name__ == '__main__':
-    ek_kes() if '--ek' in sys.argv else kes()
+    if '--ek' in sys.argv:
+        SECILI.update(a for a in sys.argv[sys.argv.index('--ek') + 1:] if not a.startswith('-'))
+        ek_kes()
+    else:
+        kes()

@@ -620,9 +620,10 @@ EK_PAFTALAR = {
     # R03: silah mermileri (mermi-<silah>; yesil ve pompali hücrelerinde birden çok saçma var, HUCRE_KIRP / TEK_PARCA ile yalnız biri alınır)
     # ve düşman atışları
     'R03': [('mermi-lazer', 128), ('mermi-yesil', 64), ('mermi-pompali', 64), ('atis-hayalet', 96), ('atis-boss', 128), ('tehlike-halka', 192)],
-    # R08–R09: güç aurası (avcının etrafında, ortası boş): guc-imza-<karakter>, POWERS sırası
+    # R08–R09: güç aurası (avcının etrafında, ortası boş): guc-imza-<karakter>
     'R08': [('guc-imza-kinkin', 192), ('guc-imza-veryi', 192), ('guc-imza-kornet', 192), ('guc-imza-mark', 192), ('guc-imza-kent', 192), ('guc-imza-ponko', 192)],
-    'R09': [('guc-imza-gul', 192), ('guc-imza-rani', 192), ('guc-imza-beti', 192), ('guc-imza-fanatik', 192), ('guc-imza-silsen', 192), ('guc-imza-sercin', 192)],
+    # R09 istemi: 4 çiçek yaprağı (silsen), 5 tüy (sercin), 6 genel mermi izi parıltısı; Fanatik'in (Tornado Tekme) aurası yok
+    'R09': [('guc-imza-gul', 192), ('guc-imza-rani', 192), ('guc-imza-beti', 192), ('guc-imza-silsen', 192), ('guc-imza-sercin', 192), ('mermi-iz-parilti', 128)],
     'K06': [('donati-fici', 160), ('donati-sandik', 160), ('donati-fener', 192), ('donati-bank', 160), ('donati-tabela', 160), ('donati-saman', 192)],
     'K07': [('donati-cali', 160), ('donati-ciceklik', 160), ('donati-mantar', 128), ('donati-kutuk', 160), ('donati-tas', 160), ('donati-yaprak', 160)],
     'K08': [('donati-balkabagi', 128), ('donati-araba', 192), ('donati-cit', 160), ('donati-korkuluk', 192), ('donati-mum', 128), ('donati-orumcek', 160)],

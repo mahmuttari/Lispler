@@ -197,7 +197,8 @@ try {
       const a = [];
       for (let r = 0; r < 7; r++) {
         const bas = performance.now();
-        for (let i = 0; i < 300; i++) zeminKatmaniCiz(game.ctx);
+        for (let i = 0; i < 3000; i++) zeminKatmaniCiz(game.ctx); // 300 çizim ~1 ms sürüyordu: saat çözünürlüğü ve yük oranı oynatıyordu
+        game.ctx.getImageData(0, 0, 1, 1); // GPU kuyruğunu boşalt
         a.push(performance.now() - bas);
       }
       a.sort((x, y) => x - y);

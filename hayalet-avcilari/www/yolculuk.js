@@ -751,38 +751,60 @@ function yolculukDonatilariKur() {
   game._yolculukDonatilar = liste;
 }
 
-function yolculukDonatilariCiz(ctx) {
+function yolculukDonatilariCiz(ctx, kip) {
   if (!yolculukAcik() || !game || !Array.isArray(game._yolculukDonatilar) || !game._yolculukDonatilar.length) return;
   const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0;
+  const Z = window.ZEM3A;
   for (const p of game._yolculukDonatilar) {
     if (p.x + p.w / 2 < cam.x || p.x - p.w / 2 > cam.x + W || p.y + p.h / 2 < cam.y || p.y - p.h / 2 > cam.y + H) continue;
     if (!yolculukDonatiVar(p.tur)) continue;
-    gorselKutuya(ctx, "donati-" + p.tur, p.x - p.w / 2, p.y - p.h / 2, p.w, p.h, true);
+    const bx = p.x - p.w / 2, by = p.y - p.h / 2;
+    const on = Z ? Z.onKutu(bx, by, p.w, p.h, p.y + p.h / 2) : false;
+    if (kip === "arka" && on) continue;
+    if (kip === "on" && !on) continue;
+    if (!on) p._solma = 1;
+    const eski = ctx.globalAlpha;
+    if (on) { const a = Z.alfa(p, bx, by, p.w, p.h); if (a !== 1) ctx.globalAlpha = eski * a; }
+    gorselKutuya(ctx, "donati-" + p.tur, bx, by, p.w, p.h, true);
+    ctx.globalAlpha = eski;
   }
 }
 
 // GOR1C: tema parçaları — arena girişi, başlangıç tabelası, temizlenen bölgenin bayrağı. Yalnız ekranda olan çizilir;
 // hiçbiri duvar/çarpışma eklemez, oyuncunun arkasında (hayaletlerden ve oyuncudan önce) çizilir.
-function yolculukTemaParcalariCiz(ctx) {
+function yolculukTemaParcalariCiz(ctx, kip) {
   if (!yolculukAcik() || !game || !game._yolculukDuzen) return;
   const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0, A = YOLCULUK_AYAR, d = game._yolculukDuzen;
   const gorunur = (x, y, w, h) => !(x + w < cam.x || x > cam.x + W || y + h < cam.y || y > cam.y + H);
+  const Z = window.ZEM3A;
+  const durumlar = game._zem3aTema || (game._zem3aTema = {});
+  const parca = (anahtar, x, y, w, h, alt) => {
+    const on = Z ? Z.onKutu(x, y, w, h, alt == null ? y + h : alt) : false;
+    if (kip === "arka" && on) return;
+    if (kip === "on" && !on) return;
+    const durum = durumlar[anahtar] || (durumlar[anahtar] = {});
+    if (!on) durum._solma = 1;
+    const eski = ctx.globalAlpha;
+    if (on) { const a = Z.alfa(durum, x, y, w, h); if (a !== 1) ctx.globalAlpha = eski * a; }
+    gorselKutuya(ctx, anahtar, x, y, w, h, anahtar !== yolculukTemaParca("arena"));
+    ctx.globalAlpha = eski;
+  };
   const arenaK = yolculukTemaParca("arena");
   if (arenaK) {
     const aw = 220, ax = d.arena.x0 - aw / 2, ay = A.worldH / 2 - aw / 2;
-    if (gorunur(ax, ay, aw, aw)) gorselKutuya(ctx, arenaK, ax, ay, aw, aw);
+    if (gorunur(ax, ay, aw, aw)) parca(arenaK, ax, ay, aw, aw, ay + aw);
   }
   const tabelaK = yolculukTemaParca("tabela");
   if (tabelaK) {
     const b = yolculukBaslangic(), tw = 70, th = 70, tx = b.x + 70 - tw / 2, ty = b.y - 220;
-    if (gorunur(tx, ty, tw, th)) gorselKutuya(ctx, tabelaK, tx, ty, tw, th, true);
+    if (gorunur(tx, ty, tw, th)) parca(tabelaK, tx, ty, tw, th, ty + th);
   }
   const bayrakK = yolculukTemaParca("bayrak");
   if (bayrakK && Array.isArray(game.kopruAcik)) {
     for (let i = 0; i < d.zones.length; i++) {
       if (!game.kopruAcik[i]) continue;
       const g = d.zones[i].gate, bw = 56, bh = 56, bx = g.x1 + 10, by = g.cy - bh;
-      if (gorunur(bx, by, bw, bh)) gorselKutuya(ctx, bayrakK, bx, by, bw, bh, true);
+      if (gorunur(bx, by, bw, bh)) parca(bayrakK, bx, by, bw, bh, by + bh);
     }
   }
 }
@@ -1315,7 +1337,7 @@ function yolculukYuvaSisiCiz(ctx, yv, r, zaman, az) {
 
 // Harita objeleriyle birlikte, karakterlerin altında çizilir. Önce "yuva-<tur>" resmi denenir; yoksa tema
 // renkleriyle okunaklı kod çizimi. Ardından yuvanın ağzında canlı sis katmanı çizilir.
-function yolculukYuvalariCiz(ctx) {
+function yolculukYuvalariCiz(ctx, kip) {
   if (!yolculukAcik() || !game || !game._yolculukDuzen || !Array.isArray(game.yuvalar) || !game.yuvalar.length) return;
   const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0;
   const th = typeof getTheme === "function" ? getTheme() : null;
@@ -1323,9 +1345,17 @@ function yolculukYuvalariCiz(ctx) {
   const zaman = performance.now() / 1000;
   const az = yolculukAzHareket();
   const el = (x, y, rx, ry, renk) => { ctx.fillStyle = renk; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.fill(); };
+  const Z = window.ZEM3A;
   for (const yv of game.yuvalar) {
     const r = yv.r || 32;
     if (yv.x + r * 1.4 < cam.x || yv.x - r * 1.4 > cam.x + W || yv.y + r * 1.4 < cam.y || yv.y - r * 1.4 > cam.y + H) continue;
+    const bx = yv.x - r * 1.1, by = yv.y - r * 1.1, bw = r * 2.2, bh = r * 2.2;
+    const on = Z ? Z.onKutu(bx, by, bw, bh, yv.y + r * 0.75) : false;
+    if (kip === "arka" && on) continue;
+    if (kip === "on" && !on) continue;
+    if (!on) yv._solma = 1;
+    const eskiAlfa = ctx.globalAlpha;
+    if (on) { const a = Z.alfa(yv, bx, by, bw, bh); if (a !== 1) ctx.globalAlpha = eskiAlfa * a; }
     ctx.save();
     ctx.translate(yv.x, yv.y);
     el(0, r * 0.75, r * 1.12, r * 0.38, "rgba(0,0,0,0.25)"); // yumuşak gölge
@@ -1383,5 +1413,6 @@ function yolculukYuvalariCiz(ctx) {
     }
     ctx.restore();
     yolculukYuvaSisiCiz(ctx, yv, r, zaman, az);
+    ctx.globalAlpha = eskiAlfa;
   }
 }

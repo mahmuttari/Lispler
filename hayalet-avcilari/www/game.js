@@ -8864,13 +8864,13 @@ function render() {
 
   // Engeller: su, diken, lav, duvar ve objeler — eğri hatlı, temaya özel, önbellekli (engeller.js)
   if (typeof zeminKatmaniCiz === "function") zeminKatmaniCiz(ctx); // zemin yolları (zemin-katmani.js)
-  engelleriCiz(ctx);
+  engelleriCiz(ctx, "arka");
   if (typeof yolculukGecitCiz === "function") yolculukGecitCiz(ctx); // yolculuk geçit nehirleri (yolculuk.js)
   koprulerCiz(ctx);   // sallanan ip köprüler (kopru.js)
   if (typeof yolculukCiz === "function") yolculukCiz(ctx); // yolculuk geçitleri (yolculuk.js)
-  if (typeof yolculukDonatilariCiz === "function") yolculukDonatilariCiz(ctx); // yolculuk süs objeleri (yolculuk.js)
-  if (typeof yolculukTemaParcalariCiz === "function") yolculukTemaParcalariCiz(ctx); // tema parçaları (GOR1C)
-  if (typeof yolculukYuvalariCiz === "function") yolculukYuvalariCiz(ctx); // yolculuk hayalet yuvaları (yolculuk.js)
+  if (typeof yolculukDonatilariCiz === "function") yolculukDonatilariCiz(ctx, "arka"); // yolculuk süs objeleri (yolculuk.js)
+  if (typeof yolculukTemaParcalariCiz === "function") yolculukTemaParcalariCiz(ctx, "arka"); // tema parçaları (GOR1C)
+  if (typeof yolculukYuvalariCiz === "function") yolculukYuvalariCiz(ctx, "arka"); // yolculuk hayalet yuvaları (yolculuk.js)
   timsahlariCiz(ctx); // sudaki timsahlar (timsah.js)
   calilariCiz(ctx);   // saklanma çalıları (cali.js)
 
@@ -8989,6 +8989,12 @@ function render() {
   dususCiz(ctx);
   petCiz(ctx, true); // kuş oyuncunun üstünde uçar (pet.js)
   uzakPetleriCiz(ctx, true);
+
+  // ZEM3A: oyuncunun önünde kalan yüksek nesneler (duvar/obje, yolculuk süsü, tema parçası, yuva) oyuncudan sonra
+  engelleriCiz(ctx, "on");
+  if (typeof yolculukDonatilariCiz === "function") yolculukDonatilariCiz(ctx, "on");
+  if (typeof yolculukTemaParcalariCiz === "function") yolculukTemaParcalariCiz(ctx, "on");
+  if (typeof yolculukYuvalariCiz === "function") yolculukYuvalariCiz(ctx, "on");
 
   // Parçacıklar
   for (const p of game.particles) {

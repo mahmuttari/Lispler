@@ -171,8 +171,11 @@ try {
       zeminKatmaniSil(); __tumParcalar(); zeminKatmaniSil(); __tumParcalar(); // ısınma
       const a = [];
       for (let r = 0; r < 7; r++) {
+        // 3000 çizim + piksel okuma (GPU kuyruğunu boşaltır): 300 çizim ~1 ms sürüyordu, saat çözünürlüğü ve makine
+        // yükü oranı 1,4-1,75'e oynatıyordu
         const bas = performance.now();
-        for (let i = 0; i < 300; i++) zeminKatmaniCiz(game.ctx);
+        for (let i = 0; i < 3000; i++) zeminKatmaniCiz(game.ctx);
+        game.ctx.getImageData(0, 0, 1, 1);
         a.push(performance.now() - bas);
       }
       a.sort((x, y) => x - y);

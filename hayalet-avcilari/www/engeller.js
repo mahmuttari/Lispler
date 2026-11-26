@@ -920,6 +920,44 @@
     for (const k of canli) { const f = ENGEL_CANLI[k.tur]; if (f) f(ctx, o.x + k.x, o.y + k.y, zaman, k.n || 0, k); }
   }
 
+  // ---------- ZEM3A: derinlik sırası ve örtme solması (yalnız görsel) ----------
+  // Referans çizgisi oyuncunun ayakları. Ölü/oyuncu yoksa +Infinity: her şey "arka" (bugünkü davranış).
+  function zem3aRefY() {
+    if (typeof game === "undefined" || !game || !game.player || game.player.dead) return Infinity;
+    const p = game.player;
+    if (!Number.isFinite(p.y)) return Infinity;
+    return p.y + (Number.isFinite(p.r) ? p.r : 22);
+  }
+  // Yakındaki (yatayda oyuncudan en çok 160 px) ve tabanı referansın önünde olan nesne "ön"dür.
+  function zem3aOnKutu(x, y, w, h, alt) {
+    const r = zem3aRefY();
+    if (!Number.isFinite(r)) return false;
+    const taban = alt == null ? y + h : alt;
+    if (!(taban > r)) return false;
+    if (typeof game === "undefined" || !game || !game.player) return false;
+    const px = game.player.x;
+    return x < px + 160 && x + w > px - 160;
+  }
+  // Ön nesne oyuncunun 30×60 gövde kutusunu örtüyorsa 0.5 saydamlığa, örtmüyorsa 1'e yumuşak geçiş.
+  function zem3aAlfa(o, x, y, w, h) {
+    const p = (typeof game !== "undefined" && game && game.player) || null;
+    let hedef = 1;
+    if (p && !p.dead) {
+      const px = p.x, py = p.y;
+      if (x < px + 15 && x + w > px - 15 && y < py && y + h > py - 60) hedef = 0.5;
+    }
+    const simdi = performance.now();
+    const dt = o._solmaSon ? Math.max(0, Math.min(100, simdi - o._solmaSon)) : 16;
+    o._solmaSon = simdi;
+    let s = typeof o._solma === "number" ? o._solma : 1;
+    const adim = (dt / 150) * 0.5;
+    s += Math.max(-adim, Math.min(adim, hedef - s));
+    if (Math.abs(hedef - s) <= 0.05) s = hedef;
+    o._solma = s;
+    return s;
+  }
+  window.ZEM3A = { refY: zem3aRefY, onKutu: zem3aOnKutu, alfa: zem3aAlfa };
+
   // ---------- çizim hattı (render her karede çağırır; ctx dünya koordinatında) ----------
   let _sonOlcek = 0, _sira = null;
   // Donatılar yolculuk.js'te çizilir; süzülmüş duvar listesi her karede yeniden kurulmaz (duvar dizisi ya da boyu değişince)
@@ -996,7 +1034,7 @@
     ctx.restore();
     return true;
   }
-  function engelleriCiz(ctx) {
+  function engelleriCiz(ctx, kip) {
     if (typeof game === "undefined") return;
     const t0 = performance.now();
     _boyanan = 0;
@@ -1008,39 +1046,49 @@
     const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0;
     const gor = (o, b) => o.x - b < cam.x + W && o.x + o.w + b > cam.x && o.y - b < cam.y + H && o.y + o.h + b > cam.y;
     const zaman = performance.now() / 1000;
-    // Sular iki geçişte: önce hepsi kıyısıyla, sonra başka gölle kesişenlerin yalnız suyu yeniden (kesişen göller tek göl
-    // gibi birleşir); dalgalar ve canlı süsler en üstte
-    const sular = (game.waters || []).filter((o) => !o.gecit && gor(o, 12)), canlilar = sular.map((o) => resimCiz(ctx, o));
-    sular.forEach((o, i) => {
-      const ic = komsuMu(o) ? icResmi(o) : null;
-      if (ic) bas(ctx, ic, o.x, o.y, o.w, o.h);
-      dalgalar(ctx, o, zaman);
-      canliCiz(ctx, o, canlilar[i], zaman);
-    });
-    for (const o of game.spikes || []) if (gor(o, 6)) resimCiz(ctx, o);
-    for (const o of game.lavas || []) {
-      if (!gor(o, 40)) continue;
-      const parlama = parlamaResmi(o);
-      if (parlama) {
-        const eski = ctx.globalAlpha;
-        ctx.globalAlpha = eski * (0.6 + Math.sin(zaman * 1000 / 220) * 0.25);
-        bas(ctx, parlama, o.x - PARLAMA, o.y - PARLAMA, o.w + 2 * PARLAMA, o.h + 2 * PARLAMA);
-        ctx.globalAlpha = eski;
+    // "on" geçişi yalnız öndeki duvar/objeleri çizer; düz katmanlar (su, diken, lav) her zaman "arka"da kalır.
+    if (kip !== "on") {
+      // Sular iki geçişte: önce hepsi kıyısıyla, sonra başka gölle kesişenlerin yalnız suyu yeniden (kesişen göller tek göl
+      // gibi birleşir); dalgalar ve canlı süsler en üstte
+      const sular = (game.waters || []).filter((o) => !o.gecit && gor(o, 12)), canlilar = sular.map((o) => resimCiz(ctx, o));
+      sular.forEach((o, i) => {
+        const ic = komsuMu(o) ? icResmi(o) : null;
+        if (ic) bas(ctx, ic, o.x, o.y, o.w, o.h);
+        dalgalar(ctx, o, zaman);
+        canliCiz(ctx, o, canlilar[i], zaman);
+      });
+      for (const o of game.spikes || []) if (gor(o, 6)) resimCiz(ctx, o);
+      for (const o of game.lavas || []) {
+        if (!gor(o, 40)) continue;
+        const parlama = parlamaResmi(o);
+        if (parlama) {
+          const eski = ctx.globalAlpha;
+          ctx.globalAlpha = eski * (0.6 + Math.sin(zaman * 1000 / 220) * 0.25);
+          bas(ctx, parlama, o.x - PARLAMA, o.y - PARLAMA, o.w + 2 * PARLAMA, o.h + 2 * PARLAMA);
+          ctx.globalAlpha = eski;
+        }
+        resimCiz(ctx, o);
+        lavCanli(ctx, o.x, o.y, o.w, o.h, o.bicim);
+        alevler(ctx, o, zaman);
       }
-      resimCiz(ctx, o);
-      lavCanli(ctx, o.x, o.y, o.w, o.h, o.bicim);
-      alevler(ctx, o, zaman);
     }
     let animSayaci = 0;
     for (const o of duvarSirasi()) {
       if (!gor(o, 8)) continue;
+      const on = zem3aOnKutu(o.x, o.y, o.w, o.h, o.y + o.h);
+      if (kip === "arka" && on) continue; // ön sırada çizilecek
+      if (kip === "on" && !on) continue;
+      if (!on) o._solma = 1; // arka nesne hiç solmaz
+      const eskiAlfa = ctx.globalAlpha;
+      if (on) { const a = zem3aAlfa(o, o.x, o.y, o.w, o.h); if (a !== 1) ctx.globalAlpha = eskiAlfa * a; }
       canliCiz(ctx, o, resimCiz(ctx, o), zaman);
       if (animSayaci < 3) {
         const a = objeAnimKare(o, zaman);
         if (a && objeAnimCiz(ctx, o, a[0], a[1])) animSayaci++;
       }
+      ctx.globalAlpha = eskiAlfa;
     }
-    onbellegiIsit(t0, s);
+    if (kip !== "on") onbellegiIsit(t0, s);
   }
 
   Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, engelBicimleriniKur, engelCarpisir, engelMesafesi, ENGEL_AILELERI,

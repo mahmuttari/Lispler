@@ -870,10 +870,13 @@ DOKU_PAFTALARI = {
     # Z05–Z07: üç çeyrek açılı, ışığı işlenmiş el boyaması zeminler (kullanıcı, 26 Kasım 2026). Diskte varsa eski kaynakların
     # (tema paftaları, R23/R24) aynı adlı zeminlerinin yerine geçer: bkz. yeni_zemin_var.
     'Z05': [(f'tema{n}-zemin', 'iki') for n in range(1, 7)],
-    'Z06': [('aile-K-zemin', 'iki'), ('aile-KS-zemin', 'iki'), ('aile-KP-zemin', 'iki'), ('aile-SH-zemin', 'iki'),
-            ('aile-SV-zemin', 'iki'), ('aile-GA-zemin', 'iki')],
-    'Z07': [('aile-GDA-zemin', 'iki'), ('aile-DA-zemin', 'iki'), ('aile-KA-zemin', 'iki'), ('aile-LA-zemin', 'iki'),
-            ('zemin-orman', 'iki'), ('zemin-catlak-tas', 'iki')],
+    # Hücre → aile, ailenin karakterine göre (ulke-aileleri.js ULKE_AILELERI): K Avrupa çayır, KS Anadolu/Ortadoğu taşlı yamaç,
+    # SV savan kuru bozkır, KP Kuzey Afrika çölü, SH Sahel kızıl toprak, GA Güney Asya tropik toprak; LA Latin Amerika nemli
+    # yeşil, DA Doğu Asya dağ kayası, GDA Güneydoğu Asya teras yeşili, KA Kuzey Amerika orman tabanı (iğne yaprak)
+    'Z06': [('aile-K-zemin', 'iki'), ('aile-KS-zemin', 'iki'), ('aile-SV-zemin', 'iki'), ('aile-KP-zemin', 'iki'),
+            ('aile-SH-zemin', 'iki'), ('aile-GA-zemin', 'iki')],
+    'Z07': [('aile-LA-zemin', 'iki'), ('aile-DA-zemin', 'iki'), ('zemin-kiragi', 'iki'), ('aile-GDA-zemin', 'iki'),
+            ('aile-KA-zemin', 'iki'), ('zemin-catlak-tas', 'iki')],
 }
 YENI_ZEMIN_PAFTALARI = ('Z05', 'Z06', 'Z07')
 TEMA_ZEMIN_HEDEF = (68, 18)  # Z05 tema zeminleri: koyu denge ama boyamanın ayrıntısı korunur (sapma 10'da desen düzleşiyordu)

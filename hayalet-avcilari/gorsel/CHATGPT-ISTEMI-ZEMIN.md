@@ -120,5 +120,6 @@ Sheet Z07: OPAQUE seamless ground tiles (repeat on ALL sides), grid 3 x 2:
 `zemin-kum`, `zemin-yosunlu-tas`), Z02 ve Z03 saydam süsler (`sus-cimen`, `sus-kaya`, `sus-cicek`, `sus-cimen-serit`,
 `sus-cakil`, `sus-yaprak`, `sus-basamak`, `sus-tahta-yol`, `sus-su-birikintisi`, `sus-yosun`, `sus-cali`, `sus-mantar`), Z04 patika süsleri (`tabela-1`, `tabela-2`, `tabela-tas`, `sus-yol-taslari`,
 `sus-toprak-leke`, `sus-uzun-cimen`). Z05 tema zeminleri (`tema1-zemin` … `tema6-zemin`), Z06–Z07 Dünya Turu aile
-zeminleri (Z06: K, KS, KP, SH, SV, GA; Z07: GDA, DA, KA, LA, sonra `zemin-orman`, `zemin-catlak-tas`). Z05–Z07 diskte varsa
+zeminleri (Z06: K çayır, KS taşlı yamaç, SV kuru bozkır, KP çöl, SH kızıl savan, GA tropik; Z07: LA nemli yeşil, DA dağ kayası,
+`zemin-kiragi`, GDA teras yeşili, KA orman tabanı, `zemin-catlak-tas`). Z05–Z07 diskte varsa
 eski kaynakların (tema paftaları, R23/R24) aynı adlı zeminlerinin yerine geçer.

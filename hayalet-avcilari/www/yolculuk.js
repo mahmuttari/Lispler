@@ -513,15 +513,25 @@ function yolculukHaritaKur() {
       game.walls.push({ x, y, w, h });
       k++;
     }
-    // Sular
-    for (let k = 0, deneme = 0; k < 2 && deneme < 80; deneme++) {
-      const w = 110 + rnd(i, k * 29 + deneme * 31 + 3) * 80;
-      const h = 80 + rnd(i, k * 37 + deneme * 41 + 4) * 70;
-      const x = icX0 + rnd(i, k * 43 + deneme * 47 + 5) * Math.max(0, icW - w);
-      const y = 80 + rnd(i, k * 53 + deneme * 59 + 6) * Math.max(0, A.worldH - 160 - h);
-      if (yolculukYasakKutu(x, y, w, h, d, z, oncekiCy) || cak(x, y, w, h, 16)) continue;
-      game.waters.push({ x, y, w, h });
-      k++;
+    // Sular: bölge başına TEK büyük göl (kenarlar ×1,3, alan ~1,7 kat; eskiden iki küçük göl vardı; toplam su alanı biraz azalır,
+    // yuvalara ve donatılara yer kalır). Büyük hâli sığmazsa o göl eski boyunda kalır.
+    for (let k = 0, deneme = 0; k < 1 && deneme < 80; deneme++) {
+      const w0 = 110 + rnd(i, k * 29 + deneme * 31 + 3) * 80;
+      const h0 = 80 + rnd(i, k * 37 + deneme * 41 + 4) * 70;
+      let eklendi = false;
+      for (const [w, h] of [[w0 * 1.3, h0 * 1.3], [w0, h0]]) {
+        const aday = w > w0 ? 40 : 1;
+        for (let t = 0; t < aday; t++) {
+          const x = icX0 + rnd(i, k * 43 + deneme * 47 + 5 + t * 71) * Math.max(0, icW - w);
+          const y = 80 + rnd(i, k * 53 + deneme * 59 + 6 + t * 83) * Math.max(0, A.worldH - 160 - h);
+          if (yolculukYasakKutu(x, y, w, h, d, z, oncekiCy) || cak(x, y, w, h, 16)) continue;
+          game.waters.push({ x, y, w, h });
+          k++;
+          eklendi = true;
+          break;
+        }
+        if (eklendi) break;
+      }
     }
     // Diken ve lav (bölge ilerledikçe artar)
     const spikeSayi = Math.min(3, Math.floor(i / 2));

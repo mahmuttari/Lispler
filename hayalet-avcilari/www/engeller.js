@@ -707,14 +707,74 @@
     });
     return [];
   }
-  function objeResmi(ctx, w, h, p, B, k) {
+  // Obje resminin doğal en büyük kenarı (dünya px). Engel kutusu bundan büyükse resim doğal boyunda çizilir;
+  // küçük şeyler (çiçek, fener, kulübe, araç) 90-110, büyük anıtlar 200-260. 200 ve üstü anıtlar asla tekrarlanmaz.
+  const OBJE_DOGAL_BOY = {
+    "ulke-TR-1": 200, "ulke-TR-2": 100, "ulke-UA-1": 110, "ulke-UA-2": 160,
+    "ulke-PL-1": 190, "ulke-PL-2": 105, "ulke-DE-1": 150, "ulke-DE-2": 170,
+    "ulke-GB-1": 100, "ulke-GB-2": 210, "ulke-FR-1": 250, "ulke-FR-2": 100,
+    "ulke-IT-1": 240, "ulke-IT-2": 160, "ulke-ES-1": 200, "ulke-ES-2": 160,
+    "ulke-MA-1": 170, "ulke-MA-2": 105, "ulke-DZ-1": 230, "ulke-DZ-2": 210,
+    "ulke-CI-1": 130, "ulke-CI-2": 180, "ulke-GH-1": 110, "ulke-GH-2": 190,
+    "ulke-NG-1": 220, "ulke-NG-2": 105, "ulke-CD-1": 170, "ulke-CD-2": 160,
+    "ulke-AO-1": 230, "ulke-AO-2": 105, "ulke-ZA-1": 250, "ulke-ZA-2": 110,
+    "ulke-MZ-1": 170, "ulke-MZ-2": 180, "ulke-MG-1": 230, "ulke-MG-2": 120,
+    "ulke-TZ-1": 260, "ulke-TZ-2": 140, "ulke-UG-1": 150, "ulke-UG-2": 230,
+    "ulke-KE-1": 190, "ulke-KE-2": 180, "ulke-ET-1": 210, "ulke-ET-2": 105,
+    "ulke-SD-1": 220, "ulke-SD-2": 140, "ulke-EG-1": 250, "ulke-EG-2": 160,
+    "ulke-YE-1": 180, "ulke-YE-2": 200, "ulke-SA-1": 160, "ulke-SA-2": 210,
+    "ulke-PS-1": 150, "ulke-PS-2": 110, "ulke-IQ-1": 150, "ulke-IQ-2": 160,
+    "ulke-IR-1": 210, "ulke-IR-2": 160, "ulke-UZ-1": 170, "ulke-UZ-2": 100,
+    "ulke-AF-1": 100, "ulke-AF-2": 140, "ulke-PK-1": 170, "ulke-PK-2": 140,
+    "ulke-IN-1": 230, "ulke-IN-2": 110, "ulke-BD-1": 100, "ulke-BD-2": 200,
+    "ulke-MM-1": 150, "ulke-MM-2": 100, "ulke-TH-1": 105, "ulke-TH-2": 100,
+    "ulke-MY-1": 250, "ulke-MY-2": 100, "ulke-ID-1": 160, "ulke-ID-2": 200,
+    "ulke-PH-1": 230, "ulke-PH-2": 100, "ulke-VN-1": 230, "ulke-VN-2": 95,
+    "ulke-CN-1": 160, "ulke-CN-2": 160, "ulke-KR-1": 170, "ulke-KR-2": 100,
+    "ulke-JP-1": 190, "ulke-JP-2": 260, "ulke-RU-1": 95, "ulke-RU-2": 170,
+    "ulke-CA-1": 180, "ulke-CA-2": 150, "ulke-US-1": 230, "ulke-US-2": 250,
+    "ulke-MX-1": 140, "ulke-MX-2": 100, "ulke-CO-1": 200, "ulke-CO-2": 170,
+    "ulke-PE-1": 230, "ulke-PE-2": 150, "ulke-BR-1": 150, "ulke-BR-2": 240,
+    "ulke-AR-1": 240, "ulke-AR-2": 170,
+    "tema1-obje1": 170, "tema1-obje2": 100, "tema2-obje1": 190, "tema2-obje2": 100,
+    "tema3-obje1": 110, "tema3-obje2": 150, "tema4-obje1": 110, "tema4-obje2": 120,
+    "tema5-obje1": 170, "tema5-obje2": 190, "tema6-obje1": 160, "tema6-obje2": 170,
+  };
+  function objeResmi(ctx, w, h, p, B, k, r) {
     const d = B.derinlik || 0, renk = engelKoyuRenk(p);
     if (d) { doldur(ctx, B, renk, 0, d); doldur(ctx, B, renk, 0, 0, 3); } else doldur(ctx, B, renk, 0, 0, 3); // çarpışma: biçim + 3 (kayada ön yüz de)
     const im = engelGorsel(k);
     if (im) {
-      const ciz = () => resimKapak(ctx, im, 0, 0, w, h);
-      kirp(ctx, B, ciz);
-      if (d) kirp(ctx, B, ciz, 0, d);
+      const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
+      const dogal = OBJE_DOGAL_BOY[k] || 150, kutu = Math.max(w, h);
+      if (!(iw > 0 && ih > 0) || kutu <= dogal) {
+        // Kutu doğal boyu aşmıyorsa eski davranış: resim kutuya "cover" sığar
+        const ciz = () => resimKapak(ctx, im, 0, 0, w, h);
+        kirp(ctx, B, ciz);
+        if (d) kirp(ctx, B, ciz, 0, d);
+      } else {
+        const olcek = dogal / Math.max(iw, ih), dw = iw * olcek, dh = ih * olcek;
+        const ciz = () => {
+          if (dogal >= 200) { ctx.drawImage(im, (w - dw) / 2, (h - dh) / 2, dw, dh); return; } // anıt: tek, doğal boyda
+          // Küçük obje: doğal boyda, hafif kaydırmalı ızgarada 2-6 kopya; alt sıra üsttekiyle örtüşsün diye y'ye göre sıralı
+          const n = Math.max(2, Math.min(6, Math.round((w / dw) * (h / dh))));
+          const sut = Math.max(1, Math.ceil(Math.sqrt(n * w / Math.max(1, h)))), sat = Math.ceil(n / sut), yerler = [];
+          for (let i = 0; i < n; i++) {
+            const cw = w / sut, ch = h / sat;
+            yerler.push({ x: (i % sut + 0.5) * cw + (r() - 0.5) * cw * 0.4, y: (Math.floor(i / sut) + 0.5) * ch + (r() - 0.5) * ch * 0.4 });
+          }
+          yerler.sort((a, b) => a.y - b.y);
+          for (const y of yerler) {
+            const v = 0.9 + r() * 0.2;
+            let cw = dw * v, ch = dh * v;
+            const eb = Math.max(cw, ch);
+            if (eb > dogal) { const q = dogal / eb; cw *= q; ch *= q; } // her kopya en çok doğal boy
+            ctx.drawImage(im, y.x - cw / 2, y.y - ch / 2, cw, ch);
+          }
+        };
+        kirp(ctx, B, ciz);
+        if (d) kirp(ctx, B, ciz, 0, d);
+      }
     }
     return [];
   }
@@ -744,7 +804,7 @@
     }
     if (o.tur === "obje1" || o.tur === "obje2") {
       const k = dt ? `ulke-${o.tema}-${o.tur === "obje1" ? 1 : 2}` : `tema${o.tema + 1}-${o.tur}`;
-      return engelGorsel(k) ? (ctx, w, h, r, p, B) => objeResmi(ctx, w, h, p, B, k) : null;
+      return engelGorsel(k) ? (ctx, w, h, r, p, B) => objeResmi(ctx, w, h, p, B, k, r) : null;
     }
     if (o.tur === "su") {
       const oran = o.w / o.h;

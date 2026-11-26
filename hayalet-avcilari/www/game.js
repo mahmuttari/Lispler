@@ -6460,22 +6460,33 @@ function buildWaters() {
   const { cx, cy } = layoutCenter();
   let placed = 0;
   for (let i = 0; i < 25 && placed < count; i++) {
-    const w = 110 + rand(i) * 90;
-    const h = 80 + rand(i + 31) * 80;
-    const x = 80 + rand(i * 5) * (W - 160 - w);
-    const y = 80 + rand(i * 11) * (H - 160 - h);
-    // Oyuncu spawn alanına yakın olmasın
-    if (Math.hypot(x + w/2 - cx, y + h/2 - cy) < 200) continue;
-    // Duvarlarla çakışmasın
-    let overlap = false;
-    for (const wall of game.walls) {
-      if (x < wall.x + wall.w && x + w > wall.x && y < wall.y + wall.h && y + h > wall.y) {
-        overlap = true; break;
+    const w0 = 110 + rand(i) * 90;
+    const h0 = 80 + rand(i + 31) * 80;
+    // Göller ~1,6 kat alan (kenarlar ×1,25); büyük hâli kurallara sığmazsa o göl eski boyunda kalır.
+    // Büyük boy için birkaç aday konum denenir (kurallar aynı), sonra eski boya dönülür.
+    let eklendi = false;
+    for (const [w, h] of [[w0 * 1.25, h0 * 1.25], [w0, h0]]) {
+      const deneme = w > w0 ? 40 : 1;
+      for (let t = 0; t < deneme; t++) {
+        const x = 80 + rand(i * 5 + t * 97) * (W - 160 - w);
+        const y = 80 + rand(i * 11 + t * 89) * (H - 160 - h);
+        // Oyuncu spawn alanına yakın olmasın
+        if (Math.hypot(x + w/2 - cx, y + h/2 - cy) < 200) continue;
+        // Duvarlarla çakışmasın
+        let overlap = false;
+        for (const wall of game.walls) {
+          if (x < wall.x + wall.w && x + w > wall.x && y < wall.y + wall.h && y + h > wall.y) {
+            overlap = true; break;
+          }
+        }
+        if (overlap) continue;
+        game.waters.push({ x, y, w, h });
+        placed++;
+        eklendi = true;
+        break;
       }
+      if (eklendi) break;
     }
-    if (overlap) continue;
-    game.waters.push({ x, y, w, h });
-    placed++;
   }
   engelBicimleriniKur();
 }

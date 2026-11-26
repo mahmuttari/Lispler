@@ -996,8 +996,24 @@
           continue;
         }
         if (!kurulan) {
-          onbellek.set(anahtar, parcaKur(zemin, cx, cy, s) || 0);
+          // Kurulan parça aynı karede çizilir (eskiden bir sonraki kareye kalıyordu: kamera kayınca dikdörtgen boşluk)
+          const yeni = parcaKur(zemin, cx, cy, s) || 0;
+          onbellek.set(anahtar, yeni);
+          if (yeni) ctx.drawImage(yeni, cx * PARCA, cy * PARCA, PARCA, PARCA);
           kurulan = true;
+        }
+      }
+    }
+    // Ekrandaki parçaların hepsi hazırsa bu karede görünüm çevresinden (bir parça pay) bir parça önceden kurulur:
+    // kamera kayarken yeni açılan bölge hazır olur, parçalar gecikmeli belirmez
+    if (!kurulan) {
+      dis: for (let cy = y0 - 1; cy <= y1 + 1; cy++) {
+        for (let cx = x0 - 1; cx <= x1 + 1; cx++) {
+          if (cx < 0 || cy < 0 || cx * PARCA > (game.worldW || 0) || cy * PARCA > (game.worldH || 0)) continue;
+          const anahtar = cx + "|" + cy + "|" + s;
+          if (onbellek.get(anahtar) !== undefined) continue;
+          onbellek.set(anahtar, parcaKur(zemin, cx, cy, s) || 0);
+          break dis;
         }
       }
     }

@@ -1,4 +1,4 @@
-# Hayalet Avcıları: zemin süsleri ve yollar için ChatGPT istem paketi (Z01–Z03)
+# Hayalet Avcıları: zemin süsleri ve yollar için ChatGPT istem paketi (Z01–Z04)
 
 Hazırlandı: 26 Kasım 2026. Kullanıcının isteği: *"ekrana yerleşen donatılar zemin ile uyum içinde olsun, kenarlarda çimenler
 kayalarla, hatta zeminde yollar olmalı, binalar arasında geçiş yolları vs. ... tüm harita zemini tek olmak zorunda değil, harita
@@ -12,9 +12,12 @@ oyun kod çizimiyle çalışır.
 
 1. Aynı ChatGPT sohbetinde (ya da yeni sohbette önce `CHATGPT-ISTEMI-YOLCULUK.md` › **ANA İSTEM**) devam et.
 2. Üslup referansı olarak `hamui/U06.png` ve `ham3d/D01.png` ekle.
-3. Her resmi `gorsel/hamzemin/<KOD>.png` olarak kaydet (Z01 … Z03). Her paftadan sonra commit ve push yap, ilerlemeyi
+3. Her resmi `gorsel/hamzemin/<KOD>.png` olarak kaydet (Z01 … Z04). Her paftadan sonra commit ve push yap, ilerlemeyi
    `gorsel/hamzemin/DURUM.md`'ye yaz.
-4. Z01'i kullanıcıya göster; onay gelince Z02 ve Z03.
+4. Z01'i kullanıcıya göster; onay gelince Z02, Z03 ve Z04.
+
+Z04 (26 Kasım 2026, kullanıcı: *"yollar tamamen kaotik, patika yollar gibi olmalı, düzgün kenarı olmamalı, kıyılarında taşlar,
+çimenler ... bazen ayrımlarda tabela gibi şeyler de olabilir"*): tabelalar ve patika kenarı süsleri. Tabelalarda yazı yok.
 
 Ortak kurallar: 1536 × 1024 PNG, 3 × 2 ızgara (512 px hücre), TEPEDEN görünüm, yazı/harf/rakam yok. Zemin parçaları **sakin ve
 düşük kontrastlı** olmalı (karakterler ve hayaletler üstünde net seçilsin), parlak değil orta-koyu tonlarda.
@@ -54,8 +57,20 @@ Sheet Z03: TRANSPARENT background, grid 3 x 2, path and ground details seen from
 6. a tiny cluster of three small mushrooms
 ```
 
+```
+Sheet Z04: TRANSPARENT background, grid 3 x 2, footpath details seen from above (slight 3/4 depth so posts read as upright),
+rustic and hand-made, NO letters, NO numbers, NO symbols on any sign, each 200-380 px:
+1. a weathered wooden signpost with two blank arrow-shaped boards pointing left and right, small grass tuft at its foot
+2. a crooked wooden signpost with one blank arrow board and a tiny hanging lantern
+3. a small mossy stone waymarker (rounded standing stone) with a few pebbles around it
+4. a loose row of flat path-side stones half sunk in dirt with grass between them (horizontal, about 340 x 110 px)
+5. a small irregular patch of crumbly packed dirt with ragged, broken edges (no hard outline)
+6. a clump of tall wild grass with two small stones
+```
+
 ## Kesim (bulut Claude)
 
-`araclar/gorsel_kes.py --ek Z01 Z02 Z03`: Z01 opak dokular (`zemin-yol-toprak`, `zemin-yol-tas`, `zemin-cimen`, `zemin-kuru`,
+`araclar/gorsel_kes.py --ek Z01 Z02 Z03 Z04`: Z01 opak dokular (`zemin-yol-toprak`, `zemin-yol-tas`, `zemin-cimen`, `zemin-kuru`,
 `zemin-kum`, `zemin-yosunlu-tas`), Z02 ve Z03 saydam süsler (`sus-cimen`, `sus-kaya`, `sus-cicek`, `sus-cimen-serit`,
-`sus-cakil`, `sus-yaprak`, `sus-basamak`, `sus-tahta-yol`, `sus-su-birikintisi`, `sus-yosun`, `sus-cali`, `sus-mantar`).
+`sus-cakil`, `sus-yaprak`, `sus-basamak`, `sus-tahta-yol`, `sus-su-birikintisi`, `sus-yosun`, `sus-cali`, `sus-mantar`), Z04 patika süsleri (`tabela-1`, `tabela-2`, `tabela-tas`, `sus-yol-taslari`,
+`sus-toprak-leke`, `sus-uzun-cimen`).

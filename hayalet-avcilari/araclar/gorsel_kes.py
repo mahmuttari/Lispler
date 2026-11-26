@@ -22,7 +22,7 @@ HAMUI = os.path.join(KOK, 'gorsel', 'hamui')
 HAMEK = os.path.join(KOK, 'gorsel', 'hamek')
 HAMYENI = os.path.join(KOK, 'gorsel', 'hamyeni')  # yenileme paftaları R01–R49  # ek paftalar (CHATGPT-ISTEMI-EK.md, K01–K04)
 HAMYOL = os.path.join(KOK, 'gorsel', 'hamyol')  # yolculuk paftaları J01–J12 (CHATGPT-ISTEMI-YOLCULUK.md)
-HAMZEMIN = os.path.join(KOK, 'gorsel', 'hamzemin')  # zemin süsleri ve yollar Z01–Z03 (CHATGPT-ISTEMI-ZEMIN.md)
+HAMZEMIN = os.path.join(KOK, 'gorsel', 'hamzemin')  # zemin süsleri ve yollar Z01–Z04 (CHATGPT-ISTEMI-ZEMIN.md)
 CIKTI = os.path.join(KOK, 'www', 'gorsel')
 
 # Pafta → hücre anahtarları (None: kullanılmaz). Anahtar → en uzun kenar (px).
@@ -695,6 +695,8 @@ EK_PAFTALAR = {
     # Z02–Z03: engel ve donatı diplerine, yol kenarlarına zemin süsleri (CHATGPT-ISTEMI-ZEMIN.md)
     'Z02': [('sus-cimen', 192), ('sus-kaya', 192), ('sus-cicek', 160), ('sus-cimen-serit', 256), ('sus-cakil', 160), ('sus-yaprak', 192)],
     'Z03': [('sus-basamak', 192), ('sus-tahta-yol', 192), ('sus-su-birikintisi', 192), ('sus-yosun', 192), ('sus-cali', 160), ('sus-mantar', 128)],
+    # Z04: patika ayrımlarında tabelalar ve yol kenarı süsleri (CHATGPT-ISTEMI-ZEMIN.md; tabelada yazı yok)
+    'Z04': [('tabela-1', 192), ('tabela-2', 192), ('tabela-tas', 160), ('sus-yol-taslari', 256), ('sus-toprak-leke', 192), ('sus-uzun-cimen', 192)],
     'K06': [('donati-fici', 160), ('donati-sandik', 160), ('donati-fener', 192), ('donati-bank', 160), ('donati-tabela', 160), ('donati-saman', 192)],
     'K07': [('donati-cali', 160), ('donati-ciceklik', 160), ('donati-mantar', 128), ('donati-kutuk', 160), ('donati-tas', 160), ('donati-yaprak', 160)],
     'K08': [('donati-balkabagi', 128), ('donati-araba', 192), ('donati-cit', 160), ('donati-korkuluk', 192), ('donati-mum', 128), ('donati-orumcek', 160)],

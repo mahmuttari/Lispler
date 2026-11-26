@@ -158,6 +158,7 @@ try {
     const A = YOLCULUK_AYAR, d = game._yolculukDuzen, z = d.zones[0], g = z.gate;
     game.W = 8000; game.H = 1000; game.camera = { x: 0, y: 0 };
     const y = __sil('yol1-');
+    const y2 = __sil('nehir-doku');
     const o = {};
     game.kopruAcik = new Array(6).fill(false); game._kopruAnim = {};
     o.kapali = __ciz((x) => yolculukCiz(x));
@@ -165,7 +166,7 @@ try {
     o.acik = __ciz((x) => yolculukCiz(x));
     o.nehir = __ciz((x) => yolculukGecitCiz(x));
     o.parcalar = __ciz((x) => yolculukTemaParcalariCiz(x));
-    __geri(y);
+    __geri(y); __geri(y2);
     return o;
   });
   sina('görseller yokken köprü kod çizimi çalışır (yol1 yok)', () => {

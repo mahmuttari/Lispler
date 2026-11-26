@@ -85,7 +85,8 @@ const _temaDesen = {};
 function temaDeseni(n, tur) {
   const k = `tema${n}-${tur}`;
   if (_temaDesen[k]) return _temaDesen[k];
-  const im = gorsel(k);
+  // Tema 5'in su resmi (tema5-su) kesilmiyor: kaplıca dokusu aynı döşemeyle kullanılır
+  const im = gorsel(k) || (n === 5 && tur === "su" ? gorsel("doku-kaplica") : null);
   if (!im) return null;
   const desen = document.createElement("canvas").getContext("2d").createPattern(im, "repeat");
   if (desen && desen.setTransform && typeof DOMMatrix === "function") {

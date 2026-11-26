@@ -74,35 +74,46 @@ function turUlkesi() {
   return typeof game !== "undefined" && game.dunyaTuru ? ulkeSirada(game.level) : null;
 }
 
-// Dünya Turu zemini: ailenin zemin(ctx, boyut, palet) ressamı 96 px'lik desen tuvaline bir kez çizer (önbellek ülke kodu
-// ve ölçekle). Tuval önce ülkenin zemin rengiyle dolar, ressam yalnız soluk deseni çizer. Desen dünya alanına tek dolguyla
+// Dünya Turu zemini: ailenin zemin resmi (gorsel "aile-<aile>-zemin") varsa 192 birimlik desen tuvaline ölçeklenir; yoksa
+// ailenin zemin(ctx, boyut, palet) ressamı 96 px'lik tuvale bir kez çizer (önbellek ülke kodu, ölçek ve resimle).
+// Tuval önce ülkenin zemin rengiyle dolar, ressam yalnız soluk deseni çizer. Desen dünya alanına tek dolguyla
 // döşenir ve true döner. Ressam yoksa (ya da tuval kurulamazsa) false: render bugünkü zemini ve ızgarayı çizer.
 // Desen tuvali çizilen tuvalin cihaz ölçeğinde kurulur (bir desen pikseli bir cihaz pikseli; döşemenin dünya boyu
 // n / ölçek, 96'dan en çok yarım cihaz pikseli farklı) ve her karede cihaz pikseline hizalanır (engel resimlerindeki
 // bas() gibi; en çok yarım cihaz pikseli kayar): kamera kesirli konumdayken desen süzgeçle taranmaz. Telefonda ölçek dpr,
 // tablette dpr × 1,35 (1,35 ya da 2,7). Hizasız dolgu yazılımsal taramada ekranın tamamında karede birkaç ms tutar
 // (kamera kayarken kare hızı yarıya iner). Tuval döndürülmüş ya da eşit ölçeksizse desen engelOlcegi()'nde, hizasız.
-const TUR_ZEMIN_BOYUT = 96;
+const TUR_ZEMIN_BOYUT = 96, TUR_ZEMIN_RESIM_BOYUT = 192;
 let _turZemini = null; // { anahtar, desen, k: desen tuvalinin birim başına pikseli, hizali }
 function turZeminCiz(ctx) {
-  const u = turUlkesi(), a = u && window.ULKE_AILELERI[u.aile];
-  if (!a || typeof a.zemin !== "function") return false;
+  const u = turUlkesi();
+  if (!u) return false;
+  const a = window.ULKE_AILELERI[u.aile];
+  const zeminIm = typeof gorsel === "function" ? gorsel("aile-" + u.aile + "-zemin") : null;
+  if (!zeminIm && (!a || typeof a.zemin !== "function")) return false;
   // Desen dönüşümü olmayan tarayıcıda tuval ölçeksiz çizilir (döşeme 96 birimde kalsın)
   const donusum = typeof DOMMatrix === "function" && typeof CanvasPattern !== "undefined" && !!CanvasPattern.prototype.setTransform
     && typeof ctx.getTransform === "function";
   const m = donusum ? ctx.getTransform() : null;
   const hizali = !!m && m.b === 0 && m.c === 0 && m.a === m.d && m.a > 0;
-  const s = !donusum ? 1 : hizali ? m.a : engelOlcegi(), anahtar = u.kod + "|" + s + "|" + hizali;
+  const s = !donusum ? 1 : hizali ? m.a : engelOlcegi();
+  const anahtar = u.kod + "|" + s + "|" + hizali + "|" + (zeminIm ? 1 : 0);
   if (!_turZemini || _turZemini.anahtar !== anahtar) {
     _turZemini = { anahtar, desen: null, k: 1, hizali };
     try {
-      const n = Math.max(1, Math.round(TUR_ZEMIN_BOYUT * s)), c = document.createElement("canvas");
+      const boyut = zeminIm ? TUR_ZEMIN_RESIM_BOYUT : TUR_ZEMIN_BOYUT;
+      const n = Math.max(1, Math.round(boyut * s)), c = document.createElement("canvas");
       c.width = n; c.height = n;
-      const cx = c.getContext("2d"), palet = ulkeEngelSeti(u.kod).palet;
-      cx.scale(n / TUR_ZEMIN_BOYUT, n / TUR_ZEMIN_BOYUT);
-      cx.fillStyle = palet.zemin; cx.fillRect(0, 0, TUR_ZEMIN_BOYUT, TUR_ZEMIN_BOYUT);
-      a.zemin(cx, TUR_ZEMIN_BOYUT, palet);
-      _turZemini.k = hizali ? s : n / TUR_ZEMIN_BOYUT;
+      const cx = c.getContext("2d");
+      if (zeminIm) {
+        cx.drawImage(zeminIm, 0, 0, n, n);
+      } else {
+        const palet = ulkeEngelSeti(u.kod).palet;
+        cx.scale(n / TUR_ZEMIN_BOYUT, n / TUR_ZEMIN_BOYUT);
+        cx.fillStyle = palet.zemin; cx.fillRect(0, 0, TUR_ZEMIN_BOYUT, TUR_ZEMIN_BOYUT);
+        a.zemin(cx, TUR_ZEMIN_BOYUT, palet);
+      }
+      _turZemini.k = hizali ? s : n / boyut;
       _turZemini.desen = ctx.createPattern(c, "repeat");
     } catch (_) { _turZemini.desen = null; }
   }

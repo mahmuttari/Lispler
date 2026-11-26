@@ -1012,7 +1012,9 @@ function yolculukGecitCiz(ctx) {
     // Su: kırpma yolu içinde dikey renk geçişi (döşeme varsa onun yerine geçit temasıyla uyumlu geçiş)
     ctx.save();
     ctx.clip(yol);
-    const nehirK = yolculukTemaParca("nehir"), nehirIm = nehirK ? gorsel(nehirK) : null;
+    const nehirK = yolculukTemaParca("nehir");
+    // Tema nehir resmi yoksa (Dünya Turu ve tema 2+) ortak nehir dokusu kullanılır
+    const nehirIm = nehirK ? gorsel(nehirK) : (typeof gorsel === "function" ? gorsel("nehir-doku") : null);
     const nehirDesen = nehirIm ? yolculukNehirDesen(ctx, nehirIm) : null;
     if (nehirDesen) {
       ctx.fillStyle = nehirDesen;

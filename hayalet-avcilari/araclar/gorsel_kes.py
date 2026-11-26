@@ -773,6 +773,35 @@ def donem_kirp(im):
     return dikissiz_dikey(serit.transpose(Image.ROTATE_90), 6).transpose(Image.ROTATE_270)
 
 
+# Opak döşeme dokuları (gorsel/hamyeni): anahtar → (yön); 'iki' her yönde, 'dikey' yalnız alt-üst dikişsiz. Tam hücre alınır,
+# dikissiz_dikey ile önce dikey, sonra (90° çevrilerek) yatay ek yeri giderilir, 256 px kareye indirilir.
+DOKU_PAFTALARI = {
+    'R23': [('aile-K-zemin', 'iki'), ('aile-KS-zemin', 'iki'), ('aile-KP-zemin', 'iki'), ('aile-SH-zemin', 'iki'),
+            ('aile-SV-zemin', 'iki'), ('doku-kaplica', 'iki')],
+    'R24': [('aile-GA-zemin', 'iki'), ('aile-GDA-zemin', 'iki'), ('aile-DA-zemin', 'iki'), ('aile-KA-zemin', 'iki'),
+            ('aile-LA-zemin', 'iki'), ('nehir-doku', 'dikey')],
+}
+
+
+def doku_hucreleri(liste):
+    for pafta, hucreler in DOKU_PAFTALARI.items():
+        yol = os.path.join(HAMYENI, f'{pafta}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGB')
+        if resim.size != (1536, 1024):
+            sys.exit(f'{pafta}: boyut {resim.size}, 1536 × 1024 olmalı')
+        for i, (anahtar, yon) in enumerate(hucreler):
+            x0, y0 = (i % 3) * 512, (i // 3) * 512
+            hucre = dikissiz_dikey(resim.crop((x0, y0, x0 + 512, y0 + 512)))
+            if yon == 'iki':
+                hucre = dikissiz_dikey(hucre.transpose(Image.ROTATE_90)).transpose(Image.ROTATE_270)
+            hucre = hucre.resize((256, 256), Image.LANCZOS)
+            hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=86, method=6)
+            liste[anahtar] = [256, 256]
+        print(f'✓ {pafta} (doku)')
+
+
 def yol_hucreleri(liste):
     for n in range(1, 7):
         yol = os.path.join(HAMYOL, f'J{n:02d}.png')
@@ -814,6 +843,7 @@ def ek_kes():
     ANIMASYON.clear(); ANIMASYON.update(eski_anim)
     ek_hucreler(liste)
     yol_hucreleri(liste)
+    doku_hucreleri(liste)
     hatiralar(liste)
     # K09: opak tek resim (Yakında önizlemesi), 768 px genişlik
     yol = os.path.join(HAMEK, 'K09.png')

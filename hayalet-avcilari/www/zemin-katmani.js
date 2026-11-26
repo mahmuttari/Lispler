@@ -19,7 +19,8 @@
 
   // Parçanın görünür kutusunu yol genişliği kadar büyütüp kesişim sınar
   function yolParcaKesiyor(yol, ox, oy, boy) {
-    const p = yol.noktalar, yari = (yol.gen || 64) / 2 + 8;
+    const p = (Array.isArray(yol.ornekler) && yol.ornekler.length) ? yol.ornekler : yol.noktalar;
+    const yari = (yol.gen || 64) / 2 + 28;
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     for (const q of p) {
       if (q.x < minX) minX = q.x; if (q.x > maxX) maxX = q.x;
@@ -463,6 +464,159 @@
     yollar.push({ noktalar: pts, gen: 64, dongu: true });
   }
 
+  // ---------- ZEM2A: organik yol geometrisi ve düzensiz dolgu ----------
+  // Tohumlu karma (Math.random yok): aynı girdi her zaman aynı 0..1 değerini verir
+  function tohumHash(a, b, c) {
+    let h = (a | 0) * 374761393 + (b | 0) * 668265263 + (c | 0) * 1442695040;
+    h = (h ^ (h >>> 13)) * 1274126177;
+    h = h ^ (h >>> 16);
+    return (h >>> 0) / 4294967296;
+  }
+
+  // Yol polyline'ını ~20 px'de bir yeniden örnekler; orta çizgi yumuşak gürültüyle
+  // yana kayar, her örnekte 0.7..1.3 arası bir genişlik katsayısı (w) tutulur.
+  // İlk/son nokta sabit kalır (köprü ağzı, arena girişi).
+  function yolOrnekle(yol, bolum, ulke, sira) {
+    const q = yol && yol.noktalar;
+    if (!Array.isArray(q) || q.length < 2) { if (yol) yol.ornekler = null; return; }
+    const patika = !!yol.patika;
+    const amp = patika ? 8 : 16;
+    const parcaL = []; let L = 0;
+    for (let i = 0; i < q.length - 1; i++) { const d = Math.hypot(q[i + 1].x - q[i].x, q[i + 1].y - q[i].y); parcaL.push(d); L += d; }
+    if (L < 4) { yol.ornekler = q.map((p) => ({ x: p.x, y: p.y, w: 1 })); return; }
+    const rnd = (k) => typeof yolculukRastgele === "function" ? yolculukRastgele(bolum, ulke, 50000 + sira * 131 + k, 7) : 0.5;
+    const l1 = 120 + rnd(1) * 280, l2 = 120 + rnd(2) * 280, l3 = 120 + rnd(3) * 280;
+    const f1 = rnd(4) * Math.PI * 2, f2 = rnd(5) * Math.PI * 2, f3 = rnd(6) * Math.PI * 2;
+    const gl1 = 160 + rnd(7) * 240, gl2 = 160 + rnd(8) * 240, gl3 = 160 + rnd(9) * 240;
+    const g1 = rnd(10) * Math.PI * 2, g2 = rnd(11) * Math.PI * 2, g3 = rnd(12) * Math.PI * 2;
+    const n = Math.max(2, Math.round(L / 20));
+    const ornekler = [];
+    let seg = 0, segBas = 0;
+    for (let k = 0; k <= n; k++) {
+      const d = L * k / n;
+      while (seg < parcaL.length - 1 && segBas + parcaL[seg] < d) { segBas += parcaL[seg]; seg++; }
+      const sl = parcaL[seg] || 1, t = Math.max(0, Math.min(1, (d - segBas) / sl));
+      const a = q[seg], b = q[seg + 1] || a;
+      const dx = b.x - a.x, dy = b.y - a.y, uz = Math.hypot(dx, dy) || 1;
+      const nx = -dy / uz, ny = dx / uz;
+      const kenar = Math.min(1, d / 45, (L - d) / 45); // uçlarda kayma sıfıra iner
+      const gur = 0.6 * Math.sin((d / l1) * Math.PI * 2 + f1) + 0.3 * Math.sin((d / l2) * Math.PI * 2 + f2) + 0.1 * Math.sin((d / l3) * Math.PI * 2 + f3);
+      const wn = 0.5 + 0.5 * (0.7 * Math.sin((d / gl1) * Math.PI * 2 + g1) + 0.2 * Math.sin((d / gl2) * Math.PI * 2 + g2) + 0.1 * Math.sin((d / gl3) * Math.PI * 2 + g3));
+      ornekler.push({
+        x: a.x + dx * t + nx * amp * kenar * gur,
+        y: a.y + dy * t + ny * amp * kenar * gur,
+        w: 1 + (wn - 0.5) * 0.6 * kenar,
+      });
+    }
+    ornekler[0] = { x: q[0].x, y: q[0].y, w: 1 };
+    ornekler[n] = { x: q[q.length - 1].x, y: q[q.length - 1].y, w: 1 };
+    yol.ornekler = ornekler;
+  }
+
+  // Düzensiz çokgen benek (6-9 köşe, köşe yarıçapı ±25 % tohumlu)
+  function benekCiz(c, x, y, r, tohum) {
+    if (!(r > 0.3)) return;
+    const n = 6 + Math.floor(tohumHash(tohum, 0, 1) * 4);
+    c.beginPath();
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2;
+      const rr = r * (0.75 + tohumHash(tohum, i + 1, 2) * 0.5);
+      const px = x + Math.cos(a) * rr, py = y + Math.sin(a) * rr;
+      if (i === 0) c.moveTo(px, py); else c.lineTo(px, py);
+    }
+    c.closePath(); c.fill();
+  }
+
+  // Yolu stroke yerine üst üste binen beneklerle döşer: orta gövde, taşan kenar
+  // parçaları, ortada soluk aşınma şeridi ve kenarı kemiren destination-out ısırıkları
+  function yolBenekleriCiz(kc, yol, sira, ox, oy, tas) {
+    const S = Array.isArray(yol.ornekler) && yol.ornekler.length > 1 ? yol.ornekler : yol.noktalar;
+    if (!Array.isArray(S) || S.length < 2) return;
+    const yari = (yol.gen || 64) / 2;
+    const desen = yolDeseni(kc, tas);
+    const tohumTemel = 60000 + sira * 1000;
+    let tohum = 0;
+    const kutu = { x0: ox - 28, y0: oy - 28, x1: ox + PARCA + 28, y1: oy + PARCA + 28 };
+    const cizBenek = (x, y, r) => {
+      if (x + r < kutu.x0 || x - r > kutu.x1 || y + r < kutu.y0 || y - r > kutu.y1) return;
+      benekCiz(kc, x, y, r, tohumTemel + (tohum++));
+    };
+    kc.fillStyle = desen || (tas ? "rgba(91,88,102,0.9)" : "rgba(107,90,67,0.9)");
+    // a) Gövde: örnekler arası ~0.30 r adımla, r = gen*w/2
+    for (let i = 0; i < S.length - 1; i++) {
+      const a = S[i], b = S[i + 1];
+      const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy);
+      if (L < 0.01) continue;
+      const wa = a.w || 1, wb = b.w || 1;
+      let d = 0;
+      while (d <= L) {
+        const t = d / L, w = wa + (wb - wa) * t, r = yari * w;
+        cizBenek(a.x + dx * t, a.y + dy * t, r);
+        d += Math.max(4, r * 0.30);
+      }
+    }
+    // b) Kenarlardan taşan küçük toprak parçaları (her ~30 px'de yan başına 1-3)
+    for (let i = 0; i < S.length - 1; i++) {
+      const a = S[i], b = S[i + 1];
+      const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy);
+      if (L < 0.01) continue;
+      const nx = -dy / L, ny = dx / L;
+      const wa = a.w || 1, wb = b.w || 1;
+      let d = 0;
+      while (d <= L) {
+        const t = d / L, w = wa + (wb - wa) * t, r = yari * w;
+        const x = a.x + dx * t, y = a.y + dy * t;
+        for (const yon of [-1, 1]) {
+          const adet = 1 + Math.floor(tohumHash(tohumTemel + i, Math.round(d), yon > 0 ? 1 : 2) * 3);
+          for (let j = 0; j < adet; j++) {
+            const h = tohumHash(tohumTemel + i * 7 + j, Math.round(d), yon > 0 ? 3 : 4);
+            const br = 3 + h * 4;
+            const dis = r - br * 0.4 + tohumHash(tohumTemel + i * 7 + j, Math.round(d), yon > 0 ? 5 : 6) * 6;
+            cizBenek(x + nx * dis * yon, y + ny * dis * yon, br);
+          }
+        }
+        d += 30;
+      }
+    }
+    // c) Ortada soluk aşınma şeridi (yol genişliğinin %35'i, benek tabanlı)
+    kc.fillStyle = "rgba(0,0,0,0.08)";
+    for (let i = 0; i < S.length - 1; i++) {
+      const a = S[i], b = S[i + 1];
+      const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy);
+      if (L < 0.01) continue;
+      const wa = a.w || 1, wb = b.w || 1;
+      let d = 0;
+      while (d <= L) {
+        const t = d / L, w = wa + (wb - wa) * t, r = yari * w * 0.175;
+        cizBenek(a.x + dx * t, a.y + dy * t, r);
+        d += Math.max(4, r * 0.6);
+      }
+    }
+    // b) Kenara giren ısırıklar: çimen alttan görünür
+    kc.globalCompositeOperation = "destination-out";
+    for (let i = 0; i < S.length - 1; i++) {
+      const a = S[i], b = S[i + 1];
+      const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy);
+      if (L < 0.01) continue;
+      const nx = -dy / L, ny = dx / L;
+      const wa = a.w || 1, wb = b.w || 1;
+      let d = 15;
+      while (d <= L) {
+        const t = d / L, w = wa + (wb - wa) * t, r = yari * w;
+        const x = a.x + dx * t, y = a.y + dy * t;
+        for (const yon of [-1, 1]) {
+          const h = tohumHash(tohumTemel + i * 11, Math.round(d), yon > 0 ? 7 : 8);
+          if (h > 0.55) continue;
+          const br = 3 + tohumHash(tohumTemel + i * 13, Math.round(d), yon > 0 ? 9 : 10) * 6;
+          const dis = r * 0.95 - h * 3;
+          cizBenek(x + nx * dis * yon, y + ny * dis * yon, br);
+        }
+        d += 30;
+      }
+    }
+    kc.globalCompositeOperation = "source-over";
+  }
+
   // Tek bir 512x512 dünya parçasını (ölçekli tuval) yol çizgileriyle boyar
   function parcaKur(zemin, cx, cy, s) {
     let tuval;
@@ -490,24 +644,42 @@
       c.globalAlpha = 1;
     }
     const tas = tasYolMu();
-    let patikaSira = 0;
+    // ZEM2A: yollar doğrudan tuvale değil, aynı dönüşümlü küçük bir yol katmanına çizilir
+    let katman = null, kc = null;
+    function yolKatmani() {
+      if (kc) return kc;
+      try {
+        katman = document.createElement("canvas");
+        katman.width = tuval.width; katman.height = tuval.height;
+        kc = katman.getContext("2d");
+        if (!kc) { katman = null; return null; }
+        kc.setTransform(s, 0, 0, s, -ox * s, -oy * s);
+        kc.lineCap = "round"; kc.lineJoin = "round";
+      } catch (e) { kc = null; katman = null; return null; }
+      return kc;
+    }
+    let patikaSira = 0, yolSira = 0;
     for (const yol of zemin.yollar.concat(zemin.patikalar || [])) {
       if (!yol || !Array.isArray(yol.noktalar) || yol.noktalar.length < 2) continue;
       if (!yolParcaKesiyor(yol, ox, oy, PARCA)) continue;
+      const sira = yolSira++;
       if (yol.patika && patikaSira < 3) {
         patikaSira++;
         if (basamakCiz(c, yol)) continue; // sus-basamak varsa patika taşlarla döşenir
       } else if (yol.patika) patikaSira++;
+      const kctx = yolKatmani();
+      if (!kctx) continue;
+      yolBenekleriCiz(kctx, yol, sira, ox, oy, tas);
+    }
+    // Düzensiz yol katmanını parçaya bindir (hafif dış gölge + kendisi)
+    if (kc && katman) {
+      c.save();
+      c.setTransform(1, 0, 0, 1, 0, 0);
+      c.globalAlpha = 0.12;
+      c.drawImage(katman, 0, Math.round(2 * s));
       c.globalAlpha = 1;
-      c.strokeStyle = "rgba(0,0,0,0.18)";
-      c.lineWidth = (yol.gen || 64) + 6;
-      yolEgri(c, yol.noktalar); c.stroke();
-      c.globalAlpha = 0.9;
-      c.lineWidth = yol.gen || 64;
-      const desen = yolDeseni(c, tas);
-      c.strokeStyle = desen || (tas ? "rgba(91,88,102,0.85)" : "rgba(107,90,67,0.85)");
-      yolEgri(c, yol.noktalar); c.stroke();
-      c.globalAlpha = 1;
+      c.drawImage(katman, 0, 0);
+      c.restore();
     }
     // ZEM1B: temas gölgeleri ve taban süsleri (yolların üstüne; parça başına bir kez)
     for (const g of (zemin.golgeler || [])) {
@@ -572,6 +744,10 @@
       klasikDonguKur(yollar, bolum, ulke);
     }
     patikalarEkle(yollar, patikalar);
+    // ZEM2A: her yol/patika için organik orta çizgi ve genişlik örnekleri (tohumlu)
+    let osira = 0;
+    for (const yol of yollar) yolOrnekle(yol, bolum, ulke, osira++);
+    for (const yol of patikalar) yolOrnekle(yol, bolum, ulke, osira++);
     // ZEM1B: taban süsleri/gölgeler yollar kurulduktan sonra tohumlanır (yol kontrolü hazır)
     suslariKur(game._zeminKatmani, bolum, ulke);
   }
@@ -622,11 +798,12 @@
     const yollar = (z.yollar || []).concat(z.patikalar || []);
     if (!Array.isArray(yollar)) return false;
     for (const yol of yollar) {
-      const p = yol && yol.noktalar;
+      const p = (Array.isArray(yol.ornekler) && yol.ornekler.length > 1) ? yol.ornekler : (yol && yol.noktalar);
       if (!Array.isArray(p) || p.length < 2) continue;
       const yari = (yol.gen || 64) / 2;
       for (let i = 0; i < p.length - 1; i++) {
-        if (noktaCizgiUzaklik(x, y, p[i].x, p[i].y, p[i + 1].x, p[i + 1].y) <= yari) return true;
+        const w = ((p[i].w || 1) + (p[i + 1].w || 1)) / 2;
+        if (noktaCizgiUzaklik(x, y, p[i].x, p[i].y, p[i + 1].x, p[i + 1].y) <= yari * w) return true;
       }
     }
     return false;

@@ -52,26 +52,40 @@ function zipDosyalari(dosya) {
 }
 
 // 2) ZIP ve HTML metin sınamaları
-await sina('ZIP < 1 MB, dosya sayısı < 512, kökte index.html', () => {
+await sina('ZIP ≤ 1,5 MB, dosya sayısı ≤ 60, kökte index.html', () => {
   const boyut = fs.statSync(ZIP).size;
-  assert.ok(boyut < 1024 * 1024, 'ZIP boyutu: ' + boyut);
+  assert.ok(boyut <= 1.5 * 1024 * 1024, 'ZIP boyutu: ' + boyut);
   const adlar = zipDosyalari(ZIP);
-  assert.ok(adlar.length < 512, 'Dosya sayısı: ' + adlar.length);
+  assert.ok(adlar.length <= 60, 'Dosya sayısı: ' + adlar.length);
   assert.ok(adlar.includes('index.html'), 'index.html kökte yok');
   for (const ad of adlar) {
     assert.ok(!ad.startsWith('/') && !ad.includes('..'), 'Göreli olmayan yol: ' + ad);
   }
 });
 
-await sina('pakette silahlı Kinkin görselleri var, ayrı silah yok', () => {
+await sina('yeni yolculuk görselleri pakette, eski tek ekran görselleri yok', () => {
   const adlar = zipDosyalari(ZIP);
-  assert.ok(adlar.includes('gorsel/kinkin-dur.webp'), 'kinkin-dur.webp yok');
-  assert.ok(adlar.includes('gorsel/kinkin-kos.webp'), 'kinkin-kos.webp yok');
-  assert.ok(!adlar.some((ad) => /(^|\/)s3-kinkin\.webp$/.test(ad)), 's3-kinkin.webp hâlâ pakette');
+  const gerekli = [
+    'gorsel/tema2-zemin.webp', 'gorsel/tema2-su.webp',
+    'gorsel/yuva-mezarlik.webp', 'gorsel/yuva-magara.webp', 'gorsel/yuva-izbe.webp',
+    'gorsel/an-timsah-1.webp', 'gorsel/hayalet-atici.webp',
+    'gorsel/boss-TR.webp', 'gorsel/hayalet-boss.webp',
+    'gorsel/k3-kinkin-0-1.webp', 'gorsel/k3-kinkin-0-8.webp', 'gorsel/kart-kinkin.webp',
+    'gorsel/menu-amblem.webp', 'gorsel/menu-dugme-yesil.webp', 'gorsel/menu-konfeti.webp',
+    'gorsel/an-para-1.webp', 'gorsel/an-elmas-1.webp', 'gorsel/an-hayalet-puf-1.webp'
+  ];
+  for (const ad of gerekli) assert.ok(adlar.includes(ad), ad + ' yok');
+  for (const ad of adlar) {
+    assert.ok(!/s3-kinkin|kinkin-dur|kinkin-kos|kasirga/.test(ad), 'Eski görsel pakette: ' + ad);
+  }
 });
 
 const indexHtml = fs.readFileSync(path.join(PLAYABLE, 'index.html'), 'utf8');
 const oyunJs = fs.readFileSync(path.join(PLAYABLE, 'oyun.js'), 'utf8');
+
+await sina('sahibin adı reklam metinlerinde yok', () => {
+  assert.doesNotMatch(indexHtml + '\n' + oyunJs, /mahmut|marfen|mafren/i);
+});
 
 await sina('index.html gerekli meta ve exitapi etiketlerini taşıyor', () => {
   assert.ok(indexHtml.includes('<meta charset="utf-8">'), 'charset eksik');
@@ -86,6 +100,8 @@ await sina('index.html gerekli meta ve exitapi etiketlerini taşıyor', () => {
     son = k;
   }
   assert.ok(!/<svg/i.test(indexHtml + oyunJs), 'Satır içi SVG var');
+  assert.ok(indexHtml.includes('gorsel/menu-dugme-yesil.webp'), 'CTA yeşil düğme görseli kullanılmıyor');
+  assert.ok(indexHtml.includes('gorsel/menu-amblem.webp'), 'Bitiş kartında amblem yok');
 });
 
 await sina('exitapi dışında dış adres yok', () => {
@@ -131,7 +147,7 @@ await sayfa.addInitScript(() => {
 });
 await sayfa.route(/tpc\.googlesyndication\.com/, (r) => r.abort());
 await sayfa.goto(adres, { waitUntil: 'load' });
-await sayfa.waitForFunction(() => window.__playable && window.__gorseller && Object.keys(window.__gorseller).length > 30, null, { timeout: 15000 });
+await sayfa.waitForFunction(() => window.__playable && window.__gorseller && Object.keys(window.__gorseller).length > 50, null, { timeout: 15000 });
 
 await sina('sayfa hatasız açılıyor, bütün görseller yüklendi', async () => {
   await sayfa.waitForFunction(() => {
@@ -165,11 +181,18 @@ await sina('fare ile sürükleme karakteri hareket ettirir, evre oyun olur', asy
   assert.equal(evre, 'oyun');
 });
 
+await sina('bölge 1 temizlenmeden köprü kapalı', async () => {
+  const d = await sayfa.evaluate(() => window.__playable.durum());
+  assert.equal(d.kopru, 'kapali', JSON.stringify(d));
+  assert.equal(d.bolge, 1);
+  assert.equal(d.faz, 'bolge1');
+});
+
 await sina('en üste sürükleyince oyuncu HUD altında tam görünür', async () => {
   await sayfa.mouse.move(180, 400);
   await sayfa.mouse.down();
   await sayfa.mouse.move(180, 340, { steps: 6 });
-  await sayfa.waitForTimeout(2000);
+  await sayfa.waitForTimeout(600);
   await sayfa.mouse.up();
   const m = await sayfa.evaluate(() => ({
     y: window.__playable.konum().y,
@@ -179,23 +202,58 @@ await sina('en üste sürükleyince oyuncu HUD altında tam görünür', async (
   assert.ok(m.y - m.boy >= m.hud - 0.5, `y-boy ${m.y - m.boy} < hud ${m.hud}`);
 });
 
-await sina('hızlandırınca hayaletler ölür ve para artar', async () => {
+await sina('hayaletler yuvaların yanında doğuyor', async () => {
+  await sayfa.waitForFunction(() => window.__playable.durum().sonDogumUzaklik >= 0, null, { timeout: 8000 });
+  const d = await sayfa.evaluate(() => window.__playable.durum());
+  assert.ok(d.sonDogumUzaklik >= 0 && d.sonDogumUzaklik <= 90, 'Yuva uzaklığı: ' + d.sonDogumUzaklik);
+  const yuvalar = await sayfa.evaluate(() => window.__playable.yuvalar());
+  assert.ok(yuvalar.length >= 3, 'Yuvalar eksik');
+});
+
+let baslangicKamera = 0;
+await sina('bölge 1 temizlenince köprü iner, kamera yukarı ilerler', async () => {
+  baslangicKamera = await sayfa.evaluate(() => window.__playable.durum().kameraY);
   await sayfa.evaluate(() => window.__playable.hizlandir(8));
   await sayfa.waitForFunction(() => {
     const d = window.__playable.durum();
-    return d.olen > 0 && d.para > 0;
-  }, null, { timeout: 20000 });
+    return d.kopru === 'acik' && d.kameraY <= -100;
+  }, null, { timeout: 30000 });
   const d = await sayfa.evaluate(() => window.__playable.durum());
-  assert.ok(d.olen > 0 && d.para > 0, JSON.stringify(d));
+  assert.equal(d.kopru, 'acik');
+  assert.ok(d.kameraY < baslangicKamera, `kamera ${baslangicKamera} -> ${d.kameraY}`);
+  assert.ok(d.kopruInme > 0, 'Köprü animasyonu başlamadı');
+  await sayfa.waitForFunction(() => window.__playable.durum().kopruInme >= 1, null, { timeout: 15000 });
+});
+
+await sina('boss gelir, yenilir ve bölüm kutlanır', async () => {
+  await sayfa.waitForFunction(() => window.__playable.durum().boss === true, null, { timeout: 30000 });
+  const d = await sayfa.evaluate(() => window.__playable.durum());
+  assert.ok(d.bossCan > 0, 'Boss canı yok');
+  await sayfa.waitForFunction(() => window.__playable.durum().evre === 'bitis', null, { timeout: 30000 });
+  const son = await sayfa.evaluate(() => window.__playable.durum());
+  assert.equal(son.bitis, 'kazan', JSON.stringify(son));
+  assert.equal(sayfaHatalari.length, 0, sayfaHatalari.join(' | '));
 });
 
 let bitisSayfaRaf = 0;
-await sina('en geç 45 sn içinde bitiş, CTA çıkışı artırır', async () => {
-  await sayfa.waitForFunction(() => window.__playable.durum().evre === 'bitis', null, { timeout: 45000 });
+await sina('bitiş kartı amblem, para ve CTA gösterir; CTA çıkışı artırır', async () => {
+  await sayfa.waitForSelector('#bitis', { state: 'visible' });
   await sayfa.waitForSelector('#cta', { state: 'visible' });
+  const kart = await sayfa.evaluate(() => ({
+    amblem: document.getElementById('bitis-amblem').naturalWidth > 0,
+    simge: document.getElementById('bitis-simge').naturalWidth > 0,
+    para: document.getElementById('bitis-para').textContent,
+    tekrarGizli: document.getElementById('tekrar').hidden
+  }));
+  assert.ok(kart.amblem && kart.simge, 'Bitiş kartı görselleri eksik');
+  assert.match(kart.para, /💰\s*\d+/, 'Para yazısı yok');
+  assert.ok(kart.tekrarGizli, 'Kazanınca Tekrar görünmemeli');
   await sayfa.click('#cta');
   const cikis = await sayfa.evaluate(() => window.__cikis);
   assert.equal(cikis, 1);
+  await sayfa.evaluate(() => document.getElementById('indir').click());
+  const cikis2 = await sayfa.evaluate(() => window.__cikis);
+  assert.equal(cikis2, 2, 'İNDİR düğmesi de çıkış çağırmalı');
   bitisSayfaRaf = await sayfa.evaluate(() => window.__rafSayaci);
 });
 

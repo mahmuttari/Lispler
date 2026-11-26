@@ -68,6 +68,14 @@
     text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
     white-space: nowrap;
   }
+  #para.pop {
+    animation: para-pop 0.28s ease-out 0s 1;
+  }
+  @keyframes para-pop {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.28); }
+    100% { transform: scale(1); }
+  }
   .dugme {
     pointer-events: auto;
     border: 0;
@@ -158,12 +166,19 @@
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
     animation: kutu-gel 0.35s ease-out 0s 1, kutu-parla 1.2s ease-in-out 0.35s 3;
   }
-  #bitis-simge {
-    width: 82px;
-    height: 82px;
-    border-radius: 20px;
+  #bitis-amblem {
+    width: 86px;
+    height: 86px;
     display: block;
-    margin: 0 auto 8px;
+    margin: 0 auto 4px;
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.5));
+  }
+  #bitis-simge {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    display: block;
+    margin: 14px auto 0;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
   }
   #bitis-baslik {
@@ -195,9 +210,12 @@
     border-radius: 16px;
     font-size: clamp(18px, 5.2vw, 25px);
     letter-spacing: 0.5px;
-    background: linear-gradient(180deg, #4ade80, #16a34a);
+    background-color: #16a34a;
+    background-image: linear-gradient(180deg, rgba(74, 222, 128, 0.10), rgba(22, 163, 74, 0.10)), url("gorsel/menu-dugme-yesil.webp");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
     box-shadow: 0 8px 0 #14532d, 0 12px 24px rgba(34, 197, 94, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.4);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.55);
   }
   #cta:active {
     transform: translateY(3px);
@@ -254,12 +272,13 @@
   <div id="buyuk-yazi"></div>
   <div id="bitis" hidden>
     <div id="bitis-kutu">
-      <img id="bitis-simge" src="gorsel/simge.png" alt="">
+      <img id="bitis-amblem" src="gorsel/menu-amblem.webp" alt="">
       <h1 id="bitis-baslik">Hayalet Avcıları</h1>
       <p id="bitis-alt"></p>
       <div id="bitis-para">💰 0</div>
       <button id="cta" class="dugme" type="button">ÜCRETSİZ OYNA</button>
       <button id="tekrar" class="dugme" type="button">Tekrar</button>
+      <img id="bitis-simge" src="gorsel/simge.png" alt="">
     </div>
   </div>
 </div>

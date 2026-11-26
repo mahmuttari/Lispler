@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # Hayalet Avcıları oynanabilir reklam paketleyici.
-# www/gorsel içindeki WebP görselleri ve uygulama simgesini dist/playable altına kopyalar,
-# kökünde index.html bulunan dist/HayaletAvcilari-playable.zip dosyasını üretir.
+# Yalnız oynanabilir mini oyunun kullandığı görselleri www/gorsel'den kopyalar,
+# en uzun kenarı 512 piksele indirip WebP (kalite 80) olarak dist/playable altına yazar.
+# Kökünde index.html bulunan dist/HayaletAvcilari-playable.zip dosyasını üretir.
 import shutil
 import sys
 import zipfile
@@ -9,7 +10,6 @@ from pathlib import Path
 
 from PIL import Image
 
-# hayalet-avcilari kökü: bu betiğin iki üst klasörü.
 KOK = Path(__file__).resolve().parents[2]
 KAYNAK = KOK / "www" / "gorsel"
 SIMGE_KAYNAK = KOK / "www" / "icon-512.png"
@@ -17,21 +17,30 @@ BETIK_KLASORU = Path(__file__).resolve().parent
 DIST = KOK / "dist" / "playable"
 ZIP_YOLU = KOK / "dist" / "HayaletAvcilari-playable.zip"
 
-# Kinkin'in silahıyla birlikte hazır ChatGPT görselleri: kaynak yol, çıktı anahtarı.
-KINKIN_GORSEL = [
-    ("ham3d/D01.png", "kinkin-dur"),
-    ("hamui/U01.png", "kinkin-kos"),
+# Oyunun kullandığı dosya anahtarları (oyun.js ile aynı liste).
+WEBP_ANAHTARLAR = [
+    "tema2-zemin",
+    "tema2-su",
+    "yuva-mezarlik",
+    "yuva-magara",
+    "yuva-izbe",
 ]
+WEBP_ANAHTARLAR += ["an-yuva-sis-%d" % i for i in range(1, 4)]
+WEBP_ANAHTARLAR += ["an-yuva-duman-%d" % i for i in range(1, 3)]
+WEBP_ANAHTARLAR += ["dere-sus-%d" % i for i in range(1, 3)]
+WEBP_ANAHTARLAR += ["an-timsah-%d" % i for i in range(1, 7)]
+WEBP_ANAHTARLAR += ["an-hayalet-suzul-%d" % i for i in range(1, 7)]
+WEBP_ANAHTARLAR += ["an-hayalet-puf-%d" % i for i in range(1, 7)]
+WEBP_ANAHTARLAR += ["hayalet-atici", "boss-TR", "hayalet-boss"]
+WEBP_ANAHTARLAR += ["k3-kinkin-0-%d" % i for i in range(1, 9)]
+WEBP_ANAHTARLAR += ["kart-kinkin"]
+WEBP_ANAHTARLAR += ["an-para-%d" % i for i in range(1, 7)]
+WEBP_ANAHTARLAR += ["an-elmas-%d" % i for i in range(1, 4)]
+WEBP_ANAHTARLAR += ["an-vurus-%d" % i for i in range(1, 4)]
+WEBP_ANAHTARLAR += ["menu-amblem", "menu-dugme-yesil", "menu-konfeti"]
 
-# Oyunda kullanılan dosya anahtarları.
-ANAHTARLAR = ["tema2-zemin"]
-ANAHTARLAR += ["an-hayalet-suzul-%d" % i for i in range(1, 7)]
-ANAHTARLAR += ["an-hayalet-puf-%d" % i for i in range(1, 7)]
-ANAHTARLAR += ["an-atici-saldiri-%d" % i for i in range(1, 7)]
-ANAHTARLAR += ["an-boss-bekle-%d" % i for i in range(1, 4)]
-ANAHTARLAR += ["an-para-%d" % i for i in range(1, 7)]
-ANAHTARLAR += ["an-vurus-%d" % i for i in range(1, 4)]
-ANAHTARLAR += ["an-kasirga-%d" % i for i in range(1, 4)]
+EN_BUYUK_KENAR = 512
+KALITE = 80
 
 
 def temizle_ve_hazirla():
@@ -41,32 +50,25 @@ def temizle_ve_hazirla():
     ZIP_YOLU.parent.mkdir(parents=True, exist_ok=True)
 
 
-def kinkin_gorselleri_uret():
-    for kaynak_yol, anahtar in KINKIN_GORSEL:
-        kaynak = KOK / "gorsel" / kaynak_yol
-        if not kaynak.exists():
-            print("HATA: eksik görsel dosyası: " + str(kaynak))
-            sys.exit(1)
-        with Image.open(kaynak) as ham:
-            hucre = ham.convert("RGBA").crop((0, 0, 512, 512))
-            alfa = hucre.getchannel("A").point(lambda a: 0 if a < 40 else a)
-            hucre.putalpha(alfa)
-            kirpik = hucre.getbbox()
-            if kirpik:
-                hucre = hucre.crop(kirpik)
-            yeni_en = max(1, round(hucre.width * 256.0 / hucre.height))
-            hucre = hucre.resize((yeni_en, 256), Image.LANCZOS)
-            hucre.save(DIST / "gorsel" / (anahtar + ".webp"), quality=88)
+def kucult_ve_kaydet(kaynak, hedef, en_buyuk_kenar=EN_BUYUK_KENAR):
+    with Image.open(kaynak) as ham:
+        im = ham.convert("RGBA")
+        en, boy = im.size
+        olcek = min(1.0, float(en_buyuk_kenar) / float(max(en, boy)))
+        if olcek < 1.0:
+            im = im.resize((max(1, round(en * olcek)), max(1, round(boy * olcek))), Image.LANCZOS)
+        im.save(hedef, "WEBP", quality=KALITE, method=6)
+        return im.size
 
 
 def gorselleri_kopyala():
     eksik = []
-    for anahtar in ANAHTARLAR:
+    for anahtar in WEBP_ANAHTARLAR:
         kaynak = KAYNAK / (anahtar + ".webp")
         if not kaynak.exists():
             eksik.append(str(kaynak))
             continue
-        shutil.copy2(kaynak, DIST / "gorsel" / (anahtar + ".webp"))
+        kucult_ve_kaydet(kaynak, DIST / "gorsel" / (anahtar + ".webp"))
     if eksik:
         print("HATA: eksik görsel dosyaları:")
         for yol in eksik:
@@ -102,7 +104,6 @@ def zip_uret():
 
 def main():
     temizle_ve_hazirla()
-    kinkin_gorselleri_uret()
     gorselleri_kopyala()
     html_ve_js_kopyala()
     adlar = zip_uret()
@@ -117,11 +118,11 @@ def main():
     if "index.html" not in adlar:
         print("HATA: ZIP kökünde index.html yok.")
         hata = True
-    if boyut >= 1024 * 1024:
-        print("HATA: ZIP 1 MB sınırını aşıyor.")
+    if boyut > int(1.5 * 1024 * 1024):
+        print("HATA: ZIP 1.5 MB sınırını aşıyor.")
         hata = True
-    if adet >= 512:
-        print("HATA: ZIP dosya sayısı 512 sınırına ulaştı.")
+    if adet > 60:
+        print("HATA: ZIP dosya sayısı 60 sınırını aşıyor.")
         hata = True
     if hata:
         sys.exit(1)

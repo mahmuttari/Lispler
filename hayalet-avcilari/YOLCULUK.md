@@ -94,3 +94,32 @@ Kodu Evren yazar (kullanıcının kuralı). Bu belge şartnamedir; sayılar `YOL
    tablosu buna göre düzenlenir.
 3. **Y3:** Çevrimiçi. Bölge durumu, köprüler, arena bekleme kuralı, kurallar ve sürüm işareti (kural yayını onaydan sonra).
 4. **Y4:** Hikâye bağı ve cilalama: hatıra bölgeleri, varış sahnesi, köprü animasyonu ve sesleri, mağaza görselleri, sürüm notu.
+
+## Y2 denge ölçümü
+
+Ölçüm botu `test/y2-denge.mjs` (yaklaşık 1 dakika): yolculuk bölümünü simülasyon zamanında kendi oynar; en yakın hayalete uygun
+mesafede yana kayar, mermi/kıyı/timsahtan kaçar, bölge temizlenince köprüye yürür, duvarı 20-40 px ızgarada BFS ile dolanır.
+Her satır 3 tohum, 600 sn üst sınır; "tamam" bitirilen deneme sayısı, süre ortalama, ❤ kaybedilen kalp. Geliştirmeli = kinkin, dört
+özellik 5. Bot iki oyun hatası buldu (duvar dibinde takılan hayalet, kapalı cepteki yuva; 65aac73).
+
+| Avcı | Bölüm | Önce (26 Kas) | Sonra |
+|---|---|---|---|
+| geliştirmeli | 1 | 3/3 · 95 sn · 0,3❤ | 3/3 · 82 sn · 0,7❤ |
+| geliştirmeli | 3 | 3/3 · 131 sn · 0,7❤ | 3/3 · 98 sn · 0,3❤ |
+| geliştirmeli | 5 | 3/3 · 212 sn · 3❤ | 3/3 · 137 sn · 2,3❤ |
+| geliştirmeli | 7 | 1/3 · 557 sn | 3/3 · 109 sn · 1,7❤ |
+| geliştirmeli | 10 | 0/3 | 2/3 · 345 sn · 11❤ |
+| geliştirmesiz | 1 | 0/3 | 1/3 · 508 sn · 6❤ |
+| geliştirmesiz | 3 | 0/3 | 0/3 |
+| geliştirmesiz | 5, 7, 10 | 0/3 | 0/3 |
+
+Değişen ayarlar (eski değerler kodda yorum olarak duruyor):
+- `YOLCULUK_AYAR.kota`: `(10 + 3·bölüm)·(0,8 + 0,08·bölge)` → `(10 + 1,6·bölüm)·(0,75 + 0,06·bölge)`: bölüm başına hayalet sayısı
+  bölümle daha yavaş büyür (uzun haritada bir bölüm 6 bölge demek).
+- `zorluk.hiz`: bölge başına %4 → %2,5; `zorluk.ates`: bölge başına 0,02 → 0,012. `zorluk.can` aynı.
+- Yalnız yolculuk haritasında: doğum aralığı `0,8 − 0,06·bölüm` → `0,9 − 0,05·bölüm` (en az 0,3 sn), aynı anda en çok hayalet
+  `12 + 4·bölüm (≤ 40)` → `7 + bölüm (≤ 15)`. Eski harita ve çevrimiçi eski harita değişmedi.
+
+Hedef henüz tutmadı: geliştirmesiz avcı 1. ve 3. bölümü rahat geçmeli (şu an 1/3 ve 0/3). Sonraki adım ilk bölümlerin hayalet
+hızı/kotası (Y2D).
+

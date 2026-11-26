@@ -53,7 +53,7 @@ export function botKur() {
     game.lastFire = 0;
     game.player.hp = game.player.maxHp; game.player.dead = false;
     game.player.invuln = 0; game.player.power = null; game.player.dusus = null; game.player.frozenUntil = 0;
-    window.__y2Stuck = null; window.__y2Hedef = null; window.__y2Rota = null; game._y2Sim = 0;
+    window.__y2Stuck = null; window.__y2Hedef = null; window.__y2Rota = null; window.__y2Kor = false; game._y2Sim = 0;
     if (typeof ensurePlayerSafe === 'function') ensurePlayerSafe();
     return game;
   };
@@ -86,7 +86,7 @@ export function botKur() {
   // Duvarı dolanmak için ara nokta: oyuncunun çevresindeki 1600 x 1000 px kutuda 40 px ızgarada BFS (oyunun
   // yolculukYolVarMi yöntemi). Hedefe ulaşılamıyorsa hedefe en yakın ulaşılabilir hücreye gidilir.
   const araNokta = (hx, hy) => {
-    const P = game.player, HUC = 40;
+    const P = game.player, HUC = 20;
     const x0 = Math.max(20, P.x - 800), y0 = 40;
     const nx = Math.ceil((Math.min(game.worldW - 20, P.x + 800) - x0) / HUC), ny = Math.ceil((game.worldH - 80) / HUC);
     const hucre = (i) => ({ x: x0 + (i % nx) * HUC, y: y0 + Math.floor(i / nx) * HUC });
@@ -183,8 +183,13 @@ export function botKur() {
       else hedef = { x: enYakin.x + vx * ideal - vy * 95, y: enYakin.y + vy * ideal + vx * 95 };
       // Savaşırken bile bölge koridoruna / dünya ortasına dön (köşeye sıkışmayı önler)
       if (zNow >= 1 && zNow <= 6 && !hedef.gor) {
-        const cy = bolgeY(P.x);
-        if (Math.abs(P.y - cy) > 120) hedef = { x: (hedef.x + P.x) / 2, y: cy };
+        const cy = bolgeY(P.x), fark = Math.abs(P.y - cy);
+        // Histerezis: koridora dönüş 200 px'te açılır, 80 px'e girince kapanır. Eşikte aç/kapa
+        // yapınca bot aşağı-yukarı salınıp kilitleniyordu (Y2).
+        if (window.__y2Kor || fark > 200) {
+          if (fark < 80) window.__y2Kor = false;
+          else { window.__y2Kor = true; hedef = { x: (hedef.x + P.x) / 2, y: cy }; }
+        }
       }
       if (!hedef.gor && P.y < 130) hedef.y = Math.max(hedef.y, P.y + 120);
       if (!hedef.gor && P.y > game.worldH - 130) hedef.y = Math.min(hedef.y, P.y - 120);

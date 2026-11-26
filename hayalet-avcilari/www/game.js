@@ -6720,8 +6720,10 @@ function update(dt, now) {
   }
 
   // Hayalet spawn — boss yenildikten sonra yeni hayalet gelmesin (2 katı: hem cap hem hız)
-  const spawnInterval = Math.max(0.25, 0.8 - game.level * 0.06);
-  const maxGhosts = Math.min(40, 12 + game.level * 4);
+  // Yolculuk haritasında Y2 denge ölçümüne göre daha seyrek doğum ve daha az aynı anda hayalet (bölge kotaları
+  // zaten uzun bir bölüm demek); eski harita ve çevrimiçi eski harita değişmez: 0.8 - 0.06·bölüm, 12 + 4·bölüm (en çok 40)
+  const spawnInterval = yolculuk ? Math.max(0.3, 0.9 - game.level * 0.05) : Math.max(0.25, 0.8 - game.level * 0.06);
+  const maxGhosts = yolculuk ? Math.min(15, 7 + game.level) : Math.min(40, 12 + game.level * 4);
   if (yolculuk) {
     if (!gec1SpawnKilit() && typeof yolculukSpawnGuncelle === "function") yolculukSpawnGuncelle(dt, spawnInterval, maxGhosts);
   } else {

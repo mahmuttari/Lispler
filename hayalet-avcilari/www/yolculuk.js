@@ -19,15 +19,18 @@ const YOLCULUK_AYAR = {
   koridor: 130, // bölge içindeki yürüme koridorunun yarı genişliği (px)
 };
 YOLCULUK_AYAR.zoneW = (YOLCULUK_AYAR.worldW - YOLCULUK_AYAR.startW - YOLCULUK_AYAR.arenaW) / YOLCULUK_AYAR.zoneCount;
-// Bölge kotası: bölgede doğacak hayalet sayısı (Y2'de ayarlanacak)
+// Bölge kotası: bölgede doğacak hayalet sayısı (Y2 ölçümüne göre)
+// eski: Math.max(1, Math.round((10 + 3 * bolum) * (0.8 + 0.08 * bolge))); ara: (8 + 2.5 * bolum) * (0.75 + 0.06 * bolge)
 YOLCULUK_AYAR.kota = function (bolum, bolge) {
-  return Math.max(1, Math.round((10 + 3 * bolum) * (0.8 + 0.08 * bolge)));
+  return Math.max(1, Math.round((10 + 1.6 * bolum) * (0.75 + 0.06 * bolge)));
 };
-// Bölge zorluk çarpanları (Y2'de ayarlanacak)
+// Bölge zorluk çarpanları (Y2 ölçümüne göre)
 YOLCULUK_AYAR.zorluk = {
   can: (bolge) => Math.floor((bolge - 1) / 2),
-  hiz: (bolge) => 1 + 0.04 * (bolge - 1),
-  ates: (bolge) => 0.02 * (bolge - 1),
+  // eski: 1 + 0.04 * (bolge - 1)
+  hiz: (bolge) => 1 + 0.025 * (bolge - 1),
+  // eski: 0.02 * (bolge - 1)
+  ates: (bolge) => 0.012 * (bolge - 1),
 };
 
 function yolculukAcik() {

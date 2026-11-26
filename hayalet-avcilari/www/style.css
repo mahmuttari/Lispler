@@ -276,6 +276,26 @@ html, body {
   #screen-menu .ana-menu .btn-big.btn-play { max-width: none; }
 }
 
+/* Kısa yatay ekran: iki sütun korunur, dikey boşluklar daraltılarak kayma sıfırlanır */
+@media (orientation: landscape) and (max-height: 430px) {
+  .ana-menu .menu-amblem { width: 48px; height: 48px; margin-bottom: 0; }
+  .ana-menu .title-small { margin-bottom: 2px; }
+  .ana-menu .player-bar { margin-bottom: 2px; }
+  .ana-menu .resources { margin: 2px 0; }
+  #screen-menu .ana-menu .resources.aki-sayac-cerceve { padding: 2px 10px; }
+  /* Sıkışan yatay düzende spot konisi sayaç şeridinin altında kalsın (sayaç simgeleri örtülmesin) */
+  .ana-menu .resources { position: relative; z-index: 2; }
+  .hunter-spot { top: -14px; height: 160px; }
+  .ana-menu .hunter-sahne { margin-top: 2px; }
+  .ana-menu .character-preview { width: 80px; height: 90px; }
+  .ana-menu .hunter-kaide { width: 110px; height: 26px; }
+  .ana-menu .character-name { font-size: 18px; margin-top: 2px; }
+  .ana-menu .character-stats { margin: 0; }
+  .ana-menu .menu-buttons { margin-top: 6px; }
+  .ana-menu .menu-footer-row { margin-top: 6px; gap: 6px; }
+  .ana-menu .menu-footer-row .btn { min-height: 44px; }
+}
+
 /* ====== HESAP ====== */
 .btn-google {
   background: #ffffff;

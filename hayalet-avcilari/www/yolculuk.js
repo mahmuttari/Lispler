@@ -955,12 +955,29 @@ function yolculukGecitDoseme(th) {
 }
 // GOR1C: tema nehir resmi deseni (resim başına bir kez kurulur; karo genişliği şerit genişliğine ölçeklenir)
 let _gecitNehirDesen = null;
+// Geçit nehrinin suyu: kod kıvrımlı kıyıyı kendisi çizer ve içini kırpar; içine yalnız KIYISIZ su dokusu döşenir.
+// (yol<n>-nehir ve nehir-doku resimlerinin kendi kıyısı ve çimeni var; kıvrımlı kanala uymuyor, ortada düz şerit kalıyordu.)
+// Normal temada tema<n>-su (Volkan'da kaplıca suyu), Dünya Turu'nda berrak mavi tema4-su.
+function yolculukNehirSuyu() {
+  if (typeof gorsel !== "function") return null;
+  let k = "tema4-su";
+  if (typeof game !== "undefined" && game && !game.dunyaTuru) {
+    let n = 1;
+    try {
+      const th = typeof getTheme === "function" ? getTheme() : null;
+      if (th && typeof LEVEL_THEMES !== "undefined") { const i = LEVEL_THEMES.indexOf(th); if (i >= 0) n = i + 1; }
+    } catch (e) { n = 1; }
+    k = n === 5 ? "doku-kaplica" : `tema${n}-su`;
+  }
+  return gorsel(k) || gorsel("tema4-su") || null;
+}
+const NEHIR_SU_KARO = 256; // su dokusunun dünyadaki karo boyu (göllerdeki tema suyuyla aynı ölçek)
 function yolculukNehirDesen(ctx, im) {
   if (_gecitNehirDesen && _gecitNehirDesen.im === im) return _gecitNehirDesen.desen;
   let desen = null;
   try {
     desen = ctx.createPattern(im, "repeat");
-    const o = YOLCULUK_AYAR.gateW / (im.naturalWidth || im.width || 1);
+    const o = NEHIR_SU_KARO / (im.naturalWidth || im.width || 1);
     if (desen && desen.setTransform && typeof DOMMatrix === "function") desen.setTransform(new DOMMatrix([o, 0, 0, o, 0, 0]));
   } catch (e) { desen = null; }
   _gecitNehirDesen = { im, desen };
@@ -1012,9 +1029,7 @@ function yolculukGecitCiz(ctx) {
     // Su: kırpma yolu içinde dikey renk geçişi (döşeme varsa onun yerine geçit temasıyla uyumlu geçiş)
     ctx.save();
     ctx.clip(yol);
-    const nehirK = yolculukTemaParca("nehir");
-    // Tema nehir resmi yoksa (Dünya Turu ve tema 2+) ortak nehir dokusu kullanılır
-    const nehirIm = nehirK ? gorsel(nehirK) : (typeof gorsel === "function" ? gorsel("nehir-doku") : null);
+    const nehirIm = yolculukNehirSuyu();
     const nehirDesen = nehirIm ? yolculukNehirDesen(ctx, nehirIm) : null;
     if (nehirDesen) {
       ctx.fillStyle = nehirDesen;

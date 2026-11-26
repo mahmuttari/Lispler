@@ -53,9 +53,9 @@ try {
     window.__ciz = (fn) => {
       const cv = document.createElement('canvas'); cv.width = 600; cv.height = 600;
       const x = cv.getContext('2d');
-      let say = 0, desen = 0; const srcs = [];
+      let say = 0, desen = 0; const srcs = [], patSrcs = [];
       const ad = x.drawImage.bind(x); x.drawImage = (im, ...a) => { say++; if (im && im.src) srcs.push(im.src); return ad(im, ...a); };
-      const cp = x.createPattern.bind(x); x.createPattern = (im, kip) => { desen++; return cp(im, kip); };
+      const cp = x.createPattern.bind(x); x.createPattern = (im, kip) => { desen++; if (im && im.src) patSrcs.push(im.src); return cp(im, kip); };
       const fs = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, 'fillStyle');
       Object.defineProperty(x, 'fillStyle', {
         configurable: true,
@@ -63,7 +63,7 @@ try {
         set(v) { if (typeof CanvasPattern !== 'undefined' && v instanceof CanvasPattern) desen++; fs.set.call(x, v); },
       });
       fn(x);
-      return { say, desen, srcs };
+      return { say, desen, srcs, patSrcs };
     };
     window.__sil = (onek) => {
       const ks = Object.keys(GORSEL).filter((k) => k.startsWith(onek));
@@ -108,15 +108,20 @@ try {
     assert.ok(!kopru.son.srcs.some((s) => s.includes('an-kopru-in')), JSON.stringify(kopru.son.srcs));
   });
 
-  // 3) Nehir: tema resmi desen olarak döşenir (drawImage yerine createPattern)
+  // 3) Nehir: temanın kıyısız su dokusu (tema1-su) desen olarak döşenir (drawImage yerine createPattern)
   const nehir = await p.evaluate(() => {
     __kur(1);
     const z = game._yolculukDuzen.zones[0];
     game.W = 8000; game.H = 1000; game.camera = { x: 0, y: 0 };
-    return __ciz((x) => yolculukGecitCiz(x));
+    const r = __ciz((x) => yolculukGecitCiz(x));
+    r.su = yolculukNehirSuyu() === gorsel('tema1-su');
+    r.nehirResmi = yolculukNehirSuyu() === gorsel('yol1-nehir') || yolculukNehirSuyu() === gorsel('nehir-doku');
+    return r;
   });
-  sina('nehir şeridi tema resmi deseniyle döşenir', () => {
+  sina('nehir şeridi temanın su dokusuyla döşenir (kıyılı nehir resmi kullanılmaz)', () => {
     assert.ok(nehir.desen >= 1, `createPattern ${nehir.desen}`);
+    assert.equal(nehir.su, true, 'su dokusu tema1-su değil');
+    assert.equal(nehir.nehirResmi, false, 'kıyılı nehir resmi kullanılıyor');
   });
 
   // 4) Arena girişi, başlangıç tabelası ve temizlenen bölge bayrağı
@@ -158,7 +163,7 @@ try {
     const A = YOLCULUK_AYAR, d = game._yolculukDuzen, z = d.zones[0], g = z.gate;
     game.W = 8000; game.H = 1000; game.camera = { x: 0, y: 0 };
     const y = __sil('yol1-');
-    const y2 = __sil('nehir-doku');
+    const y2 = __sil('tema1-su'), y3 = __sil('tema4-su');
     const o = {};
     game.kopruAcik = new Array(6).fill(false); game._kopruAnim = {};
     o.kapali = __ciz((x) => yolculukCiz(x));
@@ -166,7 +171,7 @@ try {
     o.acik = __ciz((x) => yolculukCiz(x));
     o.nehir = __ciz((x) => yolculukGecitCiz(x));
     o.parcalar = __ciz((x) => yolculukTemaParcalariCiz(x));
-    __geri(y); __geri(y2);
+    __geri(y); __geri(y2); __geri(y3);
     return o;
   });
   sina('görseller yokken köprü kod çizimi çalışır (yol1 yok)', () => {

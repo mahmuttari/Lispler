@@ -1,5 +1,5 @@
 // Hayalet Avcıları: TEM2 — ChatGPT zemin/su/nehir dokuları (çevrimdışı sınama).
-// Dünya Turu zemini aile zemin resmini, tema 5 suyu doku-kaplica'yı, tema 2 geçit nehri nehir-doku'yu kullanır;
+// Dünya Turu zemini aile zemin resmini, tema 5 suyu doku-kaplica'yı, tema 2 geçit nehri tema2-su'yu kullanır;
 // resim yoksa kod çizimine döner. Çalıştırma: node test/tem2.test.mjs
 import http from 'node:http';
 import fs from 'node:fs';
@@ -119,7 +119,7 @@ try {
     assert.equal(su.yok, null);
   });
 
-  // 3) Tema 2 geçit nehri nehir-doku ile döşenir (yol2-nehir yok)
+  // 3) Tema 2 geçit nehri temanın kıyısız su dokusuyla (tema2-su) döşenir; kıyılı nehir-doku kanala uymadığı için kullanılmaz
   const nehir = await p.evaluate(() => {
     __kur(2);
     game.W = 8000; game.H = 1000; game.camera = { x: 0, y: 0 };
@@ -127,10 +127,10 @@ try {
     const r = __ciz((c) => yolculukGecitCiz(c));
     return { parca: yolculukTemaParca("nehir"), patSrcs: r.patSrcs, desen: r.desen };
   });
-  sina("tema 2 geçit nehri nehir-doku deseniyle döşenir", () => {
+  sina("tema 2 geçit nehri tema2-su deseniyle döşenir", () => {
     assert.equal(nehir.parca, null);
     assert.ok(nehir.desen >= 1, `createPattern ${nehir.desen}`);
-    assert.ok(nehir.patSrcs.some((s) => s.includes("nehir-doku")), JSON.stringify(nehir.patSrcs));
+    assert.ok(nehir.patSrcs.some((s) => s.includes("tema2-su")), JSON.stringify(nehir.patSrcs));
   });
 
   sina("sayfa hatası yok", () => { assert.deepEqual(hatalar, []); });

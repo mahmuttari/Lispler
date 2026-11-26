@@ -124,6 +124,246 @@
     } catch (e) { return null; }
   }
 
+  // ---------- ZEM1B: taban süsleri ve temas gölgeleri ----------
+  // Çevreye göre süs ailesi (Z02/Z03 resimleri; yoksa dere-sus-* yedeği)
+  function susAilesi() {
+    try {
+      if (typeof game !== "undefined" && game && game.dunyaTuru) {
+        const u = typeof turUlkesi === "function" ? turUlkesi() : null;
+        const a = u && u.aile;
+        if (a === "GDA" || a === "KA" || a === "LA" || a === "K") return ["sus-cimen", "sus-cicek", "sus-cali"];
+        if (a === "KP" || a === "SH" || a === "SV" || a === "GA") return ["sus-cakil", "sus-kaya", "sus-cimen-kuru"];
+        if (a === "KS" || a === "DA") return ["sus-kaya", "sus-yosun", "sus-cicek"];
+      }
+      const th = typeof getTheme === "function" ? getTheme() : null;
+      if (!th || typeof LEVEL_THEMES === "undefined") return ["sus-cimen", "sus-kaya"];
+      const i = LEVEL_THEMES.indexOf(th);
+      if (i === 0) return ["sus-kaya", "sus-yosun", "sus-mantar"];
+      if (i === 1) return ["sus-cimen", "sus-cicek", "sus-mantar", "sus-cali"];
+      if (i === 2) return ["sus-cakil", "sus-kaya"];
+      if (i === 3) return ["sus-kaya-buz"];
+      if (i === 4) return ["sus-kaya", "sus-cakil"];
+      if (i === 5) return ["sus-cakil"];
+    } catch (e) { /* varsayılan */ }
+    return ["sus-cimen", "sus-kaya"];
+  }
+
+  const SUS_YEDEK = ["dere-sus-1", "dere-sus-2", "dere-sus-3", "dere-sus-4", "dere-sus-5", "dere-sus-6"];
+
+  // Süs resmi: önce Z02/Z03 anahtarı, yoksa dere-sus-* yedeği. Kuru çimen renklendirilmiş kopya.
+  function susResmi(ad, sira) {
+    try {
+      if (ad === "sus-cimen-kuru") {
+        const k = (typeof gorsel === "function" && gorsel("sus-cimen")) ? "sus-cimen" : SUS_YEDEK[sira % SUS_YEDEK.length];
+        return (typeof gorselRenkli === "function" ? gorselRenkli(k, "#b28a2a") : null) || (typeof gorsel === "function" ? gorsel(k) : null);
+      }
+      if (ad === "sus-kaya-buz") { // Buz teması: kayalar açık maviye boyanır
+        const k = (typeof gorsel === "function" && gorsel("sus-kaya")) ? "sus-kaya" : SUS_YEDEK[sira % SUS_YEDEK.length];
+        return (typeof gorselRenkli === "function" ? gorselRenkli(k, "#bae6fd") : null) || (typeof gorsel === "function" ? gorsel(k) : null);
+      }
+      const im = typeof gorsel === "function" ? gorsel(ad) : null;
+      if (im) return im;
+      return typeof gorsel === "function" ? gorsel(SUS_YEDEK[sira % SUS_YEDEK.length]) : null;
+    } catch (e) { return null; }
+  }
+
+  // Yumuşak temas gölgesi (dünya koordinatında parçaya bir kez çizilir)
+  function golgeCiz(c, x, y, rx, ry) {
+    if (!(rx > 0 && ry > 0)) return;
+    c.save();
+    c.translate(x, y); c.scale(rx, ry);
+    let g = null;
+    try {
+      g = c.createRadialGradient(0, 0, 0.15, 0, 0, 1);
+      g.addColorStop(0, "rgba(0,0,0,0.22)");
+      g.addColorStop(0.65, "rgba(0,0,0,0.12)");
+      g.addColorStop(1, "rgba(0,0,0,0)");
+    } catch (e) { g = null; }
+    c.fillStyle = g || "rgba(0,0,0,0.22)";
+    c.beginPath(); c.arc(0, 0, 1, 0, Math.PI * 2); c.fill();
+    c.restore();
+  }
+
+  // Resim yoksa kısa çimen tutamı (paletin çim rengi)
+  function tutamCiz(c, x, y, boy, renk) {
+    c.save();
+    c.strokeStyle = renk || "#3f7d3f";
+    c.lineWidth = Math.max(1, boy * 0.09);
+    c.lineCap = "round";
+    const n = 3 + Math.floor((boy * 7) % 3);
+    for (let i = 0; i < n; i++) {
+      const sap = ((i / Math.max(1, n - 1)) - 0.5) * boy * 0.55;
+      c.beginPath(); c.moveTo(x + sap * 0.25, y);
+      c.quadraticCurveTo(x + sap * 0.7, y - boy * 0.55, x + sap, y - boy);
+      c.stroke();
+    }
+    c.restore();
+  }
+
+  function susCiz(c, s) {
+    const im = susResmi(s.ad, s.idx);
+    if (im && im.width) {
+      const b = s.boy;
+      try { typeof resmiKutuyaCiz === "function" ? resmiKutuyaCiz(c, im, s.x - b / 2, s.y - b, b, b, true) : c.drawImage(im, s.x - b / 2, s.y - b, b, b); }
+      catch (e) { /* çizim hatası oyunu durdurmasın */ }
+      return;
+    }
+    let renk = "#3f7d3f";
+    try { const th = typeof getTheme === "function" ? getTheme() : null; if (th && th.floor) renk = "#3f7d3f"; } catch (e) { /* varsayılan */ }
+    if (s.ad === "sus-cimen-kuru") renk = "#9a7b32";
+    tutamCiz(c, s.x, s.y, s.boy, renk);
+  }
+
+  // Kısa patikada dokulu yol yerine sus-basamak taşları (yalnız resim varsa)
+  function basamakCiz(c, yol) {
+    const im = typeof gorsel === "function" ? gorsel("sus-basamak") : null;
+    if (!im) return false;
+    const q = yol.noktalar;
+    let birikim = 0, hedef = 22;
+    for (let i = 0; i < q.length - 1; i++) {
+      const L = Math.hypot(q[i + 1].x - q[i].x, q[i + 1].y - q[i].y);
+      let d = hedef - birikim;
+      while (d <= L) {
+        const t = d / L, x = q[i].x + (q[i + 1].x - q[i].x) * t, y = q[i].y + (q[i + 1].y - q[i].y) * t;
+        try { typeof resmiKutuyaCiz === "function" ? resmiKutuyaCiz(c, im, x - 13, y - 13, 26, 26, true) : c.drawImage(im, x - 13, y - 13, 26, 26); }
+        catch (e) { return true; }
+        d += hedef;
+      }
+      birikim += L;
+    }
+    return true;
+  }
+
+  // Köprü ağzına 60 px'den yakın süs konmaz
+  function kopruYakin(x, y) {
+    if (typeof game === "undefined" || !game || !Array.isArray(game.kopruler)) return false;
+    for (const k of game.kopruler) {
+      if (!k) continue;
+      const cx = (k.a + k.b) / 2, hw = Math.abs(k.b - k.a) / 2;
+      if (Math.abs(x - cx) < hw + 60 && Math.abs(y - k.c) < 60) return true;
+    }
+    return false;
+  }
+
+  // Süs noktası uygun mu: suda, yolda, duvarda ya da dünya dışında olmasın
+  function susUygun(x, y) {
+    const W = (typeof game !== "undefined" && game && game.worldW) || 0;
+    const H = (typeof game !== "undefined" && game && game.worldH) || 0;
+    if (W && (x < 8 || x > W - 8 || y < 8 || y > H - 8)) return false;
+    try { if (typeof collidesWaters === "function" && collidesWaters(x, y, 0)) return false; } catch (e) { /* yok */ }
+    try { if (typeof collidesWalls === "function" && collidesWalls(x, y, 0)) return false; } catch (e) { /* yok */ }
+    try { if (zeminKatmaniYolMu(x, y)) return false; } catch (e) { /* yok */ }
+    if (kopruYakin(x, y)) return false;
+    return true;
+  }
+
+  function susTohum(bolum, ulke, sira, n) {
+    return typeof yolculukRastgele === "function" ? yolculukRastgele(bolum, ulke, sira, n) : 0.5;
+  }
+
+  // Bir engel/prop çevresine 2-10 süs: çevre uzunluğuna göre, çarpışma kenarının 0-14 px dışına
+  function cevreSusEkle(zemin, bolum, ulke, x0, y0, w, h, aile, sira0) {
+    const perim = 2 * (w + h);
+    const n = Math.max(2, Math.min(10, Math.round(perim / 80)));
+    let eklenen = 0;
+    for (let i = 0; i < n; i++) {
+      let tamam = false;
+      for (let t = 0; t < 12 && !tamam; t++) {
+        const seed = sira0 + i * 13 + t;
+        const kenar = Math.floor(susTohum(bolum, ulke, seed, 1) * 4);
+        const u = susTohum(bolum, ulke, seed, 2);
+        const dis = susTohum(bolum, ulke, seed, 3) * 14;
+        let x, y;
+        if (kenar === 0) { x = x0 + u * w; y = y0 - dis; }
+        else if (kenar === 1) { x = x0 + w + dis; y = y0 + u * h; }
+        else if (kenar === 2) { x = x0 + u * w; y = y0 + h + dis; }
+        else { x = x0 - dis; y = y0 + u * h; }
+        if (!susUygun(x, y)) continue;
+        const ad = aile[Math.floor(susTohum(bolum, ulke, seed, 4) * aile.length) % aile.length];
+        const boy = 18 + susTohum(bolum, ulke, seed, 5) * 28;
+        zemin.suslar.push({ x, y, boy, ad, idx: Math.floor(susTohum(bolum, ulke, seed, 6) * 6) });
+        eklenen++; tamam = true;
+      }
+    }
+    return eklenen;
+  }
+
+  // Haritadaki bütün taban süslerini ve gölgeleri tohumlu kur (parça önbelleğinde çizilir)
+  function suslariKur(zemin, bolum, ulke) {
+    if (!zemin || typeof game === "undefined" || !game) return;
+    zemin.suslar = zemin.suslar || [];
+    zemin.golgeler = zemin.golgeler || [];
+    const aile = susAilesi();
+    let sira = 0;
+    const W = game.worldW || 0, H = game.worldH || 0;
+    // 1) Engeller: duvar, obje1, obje2 (sınır ve yuva duvarları hariç)
+    for (const o of (game.walls || [])) {
+      if (!o || o.yuva) continue;
+      if (o.tur !== "duvar" && o.tur !== "obje1" && o.tur !== "obje2") continue;
+      zemin.golgeler.push({ x: o.x + o.w / 2, y: o.y + o.h / 2 + 4, rx: o.w * 0.525, ry: Math.max(6, o.h * 0.22) });
+      cevreSusEkle(zemin, bolum, ulke, o.x, o.y, o.w, o.h, aile, 10000 + (sira += 37));
+    }
+    // 2) Yolculuk donatıları (x,y merkez)
+    for (const p of (game._yolculukDonatilar || [])) {
+      if (!p || !(p.w > 0) || !(p.h > 0)) continue;
+      const px = p.x - p.w / 2, py = p.y - p.h / 2;
+      zemin.golgeler.push({ x: p.x, y: p.y + 4, rx: p.w * 0.525, ry: Math.max(6, p.h * 0.22) });
+      cevreSusEkle(zemin, bolum, ulke, px, py, p.w, p.h, aile, 20000 + (sira += 37));
+    }
+    // 3) Hayalet yuvaları: yalnız temas gölgesi
+    for (const yv of (game.yuvalar || [])) {
+      if (!yv) continue;
+      const r = yv.r || 30;
+      zemin.golgeler.push({ x: yv.x, y: yv.y + 4, rx: r * 1.05, ry: Math.max(6, r * 0.5) });
+    }
+    // 4) Göl ve nehir kıyıları: her 50-70 px'de kaya/çimen (köprü ağzı ve su içi hariç)
+    const kiysiAile = ["sus-kaya", "sus-cimen"];
+    let ky = 0;
+    for (const o of (game.waters || [])) {
+      if (!o || !(o.w > 0) || !(o.h > 0)) continue;
+      const adim = 50 + susTohum(bolum, ulke, 30000 + ky, 1) * 20;
+      ky += 11;
+      const koy = (x, y) => {
+        if (!susUygun(x, y)) return;
+        const ad = kiysiAile[Math.floor(susTohum(bolum, ulke, 31000 + ky, x + y) * 2) % 2];
+        const boy = 18 + susTohum(bolum, ulke, 32000 + ky, x - y) * 16;
+        zemin.suslar.push({ x, y, boy, ad, idx: Math.floor(susTohum(bolum, ulke, 33000 + ky, x * 0.5 + y) * 6) });
+      };
+      for (let x = o.x + 12; x <= o.x + o.w - 12; x += adim) { koy(x, o.y - 6); koy(x, o.y + o.h + 6); }
+      for (let y = o.y + 12; y <= o.y + o.h - 12; y += adim) { koy(o.x - 6, y); koy(o.x + o.w + 6, y); }
+    }
+    // 5) Yol kenarları: her 70-110 px'de çimen tutamı/çakıl (iki yan)
+    const kenarAile = aile.indexOf("sus-cakil") >= 0 ? ["sus-cakil", "sus-cimen"] : ["sus-cimen", "sus-cakil"];
+    let py2 = 0;
+    for (const yol of (zemin.yollar || []).concat(zemin.patikalar || [])) {
+      const q = yol && yol.noktalar;
+      if (!Array.isArray(q) || q.length < 2) continue;
+      let birikim = 0, hedef = 70 + susTohum(bolum, ulke, 40000 + py2, 1) * 40;
+      py2 += 7;
+      for (let i = 0; i < q.length - 1; i++) {
+        const ax = q[i].x, ay = q[i].y, bx = q[i + 1].x, by = q[i + 1].y;
+        const L = Math.hypot(bx - ax, by - ay);
+        if (L < 1) continue;
+        const nx = -(by - ay) / L, ny = (bx - ax) / L, yari = (yol.gen || 64) / 2;
+        let d = hedef - birikim;
+        while (d <= L) {
+          const t = d / L, x = ax + (bx - ax) * t, y = ay + (by - ay) * t;
+          for (const yon of [-1, 1]) {
+            const dis = yari + 6 + susTohum(bolum, ulke, 41000 + py2, Math.round(d) + (yon > 0 ? 1 : 2)) * 10;
+            const sx = x + nx * dis * yon, sy = y + ny * dis * yon;
+            if (!susUygun(sx, sy)) continue;
+            const ad = kenarAile[Math.floor(susTohum(bolum, ulke, 42000 + py2, Math.round(d) + yon) * 2) % 2];
+            const boy = 18 + susTohum(bolum, ulke, 43000 + py2, Math.round(d) - yon) * 12;
+            zemin.suslar.push({ x: sx, y: sy, boy, ad, idx: Math.floor(susTohum(bolum, ulke, 44000 + py2, Math.round(d)) * 6) });
+          }
+          d += hedef;
+          hedef = 70 + susTohum(bolum, ulke, 45000 + py2 + Math.round(d), 1) * 40;
+        }
+        birikim += L;
+      }
+    }
+  }
+
   // Harita genişliğine göre 6-12 yumuşak leke / 2000 px; su üstüne konmaz
   function lekeleriKur(bolum, ulke) {
     const W = (typeof game !== "undefined" && game && game.worldW) || 0;
@@ -250,9 +490,14 @@
       c.globalAlpha = 1;
     }
     const tas = tasYolMu();
+    let patikaSira = 0;
     for (const yol of zemin.yollar.concat(zemin.patikalar || [])) {
       if (!yol || !Array.isArray(yol.noktalar) || yol.noktalar.length < 2) continue;
       if (!yolParcaKesiyor(yol, ox, oy, PARCA)) continue;
+      if (yol.patika && patikaSira < 3) {
+        patikaSira++;
+        if (basamakCiz(c, yol)) continue; // sus-basamak varsa patika taşlarla döşenir
+      } else if (yol.patika) patikaSira++;
       c.globalAlpha = 1;
       c.strokeStyle = "rgba(0,0,0,0.18)";
       c.lineWidth = (yol.gen || 64) + 6;
@@ -263,6 +508,19 @@
       c.strokeStyle = desen || (tas ? "rgba(91,88,102,0.85)" : "rgba(107,90,67,0.85)");
       yolEgri(c, yol.noktalar); c.stroke();
       c.globalAlpha = 1;
+    }
+    // ZEM1B: temas gölgeleri ve taban süsleri (yolların üstüne; parça başına bir kez)
+    for (const g of (zemin.golgeler || [])) {
+      if (!g) continue;
+      const r = Math.max(g.rx, g.ry);
+      if (g.x + r < ox || g.x - r > ox + PARCA || g.y + r < oy || g.y - r > oy + PARCA) continue;
+      golgeCiz(c, g.x, g.y, g.rx, g.ry);
+    }
+    for (const s of (zemin.suslar || [])) {
+      if (!s) continue;
+      const b = s.boy;
+      if (s.x + b < ox || s.x - b > ox + PARCA || s.y + b < oy || s.y - b > oy + PARCA) continue;
+      susCiz(c, s);
     }
     return tuval;
   }
@@ -314,6 +572,8 @@
       klasikDonguKur(yollar, bolum, ulke);
     }
     patikalarEkle(yollar, patikalar);
+    // ZEM1B: taban süsleri/gölgeler yollar kurulduktan sonra tohumlanır (yol kontrolü hazır)
+    suslariKur(game._zeminKatmani, bolum, ulke);
   }
 
   function zeminKatmaniSil() {

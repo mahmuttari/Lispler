@@ -20,9 +20,11 @@ const YOLCULUK_AYAR = {
 };
 YOLCULUK_AYAR.zoneW = (YOLCULUK_AYAR.worldW - YOLCULUK_AYAR.startW - YOLCULUK_AYAR.arenaW) / YOLCULUK_AYAR.zoneCount;
 // Bölge kotası: bölgede doğacak hayalet sayısı (Y2 ölçümüne göre)
-// eski: Math.max(1, Math.round((10 + 3 * bolum) * (0.8 + 0.08 * bolge))); ara: (8 + 2.5 * bolum) * (0.75 + 0.06 * bolge)
+// eski: Math.max(1, Math.round((10 + 3 * bolum) * (0.8 + 0.08 * bolge))); Y2C: (10 + 1.6 * bolum) * (0.75 + 0.06 * bolge)
+// Y2D: erken bölümler daha az hayalet (8 + 0,35·bölüm + 0,08·bölüm²), bölge çarpanı yumuşatıldı (0,83 + 0,03·bölge);
+// bölüm ve bölgeyle tekdüze artar.
 YOLCULUK_AYAR.kota = function (bolum, bolge) {
-  return Math.max(1, Math.round((10 + 1.6 * bolum) * (0.75 + 0.06 * bolge)));
+  return Math.max(1, Math.round((8 + 0.35 * bolum + 0.08 * bolum * bolum) * (0.83 + 0.03 * bolge)));
 };
 // Bölge zorluk çarpanları (Y2 ölçümüne göre)
 YOLCULUK_AYAR.zorluk = {

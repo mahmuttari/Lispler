@@ -351,8 +351,10 @@ async function ana() {
     await p.goto(adres, { waitUntil: 'load' });
     await p.waitForFunction(() => typeof startGame === 'function' && typeof yolculukHaritaKur === 'function');
     await p.evaluate(botKur);
-    const seviyeler = [1, 3, 5, 7, 10], tohumlar = [1, 2, 3];
-    for (const up of [false, true]) {
+    // --hizli: yalnız geliştirmesiz avcı, 1. ve 3. bölüm, 3 tohum (ayar denerken hızlı ölçüm)
+    const hizli = process.argv.includes('--hizli');
+    const seviyeler = hizli ? [1, 3] : [1, 3, 5, 7, 10], tohumlar = [1, 2, 3];
+    for (const up of (hizli ? [false] : [false, true])) {
       const s = await p.evaluate((o) => window.__y2Calis(o), { levels: seviyeler, seeds: tohumlar, up });
       tum.push(...s);
       process.stderr.write(`  ${up ? 'geliştirmeli' : 'geliştirmesiz'} bitti\n`);

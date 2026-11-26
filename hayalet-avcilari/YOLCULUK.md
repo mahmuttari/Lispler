@@ -102,16 +102,16 @@ mesafede yana kayar, mermi/kıyı/timsahtan kaçar, bölge temizlenince köprüy
 Her satır 3 tohum, 600 sn üst sınır; "tamam" bitirilen deneme sayısı, süre ortalama, ❤ kaybedilen kalp. Geliştirmeli = kinkin, dört
 özellik 5. Bot iki oyun hatası buldu (duvar dibinde takılan hayalet, kapalı cepteki yuva; 65aac73).
 
-| Avcı | Bölüm | Önce (26 Kas) | Sonra |
-|---|---|---|---|
-| geliştirmeli | 1 | 3/3 · 95 sn · 0,3❤ | 3/3 · 82 sn · 0,7❤ |
-| geliştirmeli | 3 | 3/3 · 131 sn · 0,7❤ | 3/3 · 98 sn · 0,3❤ |
-| geliştirmeli | 5 | 3/3 · 212 sn · 3❤ | 3/3 · 137 sn · 2,3❤ |
-| geliştirmeli | 7 | 1/3 · 557 sn | 3/3 · 109 sn · 1,7❤ |
-| geliştirmeli | 10 | 0/3 | 2/3 · 345 sn · 11❤ |
-| geliştirmesiz | 1 | 0/3 | 1/3 · 508 sn · 6❤ |
-| geliştirmesiz | 3 | 0/3 | 0/3 |
-| geliştirmesiz | 5, 7, 10 | 0/3 | 0/3 |
+| Avcı | Bölüm | Önce (26 Kas) | Sonra (Tur 1) | Tur 2 |
+|---|---|---|---|---|
+| geliştirmeli | 1 | 3/3 · 95 sn · 0,3❤ | 3/3 · 82 sn · 0,7❤ | 3/3 · 71 sn · 0❤ |
+| geliştirmeli | 3 | 3/3 · 131 sn · 0,7❤ | 3/3 · 98 sn · 0,3❤ | 3/3 · 90 sn · 0,3❤ |
+| geliştirmeli | 5 | 3/3 · 212 sn · 3❤ | 3/3 · 137 sn · 2,3❤ | 3/3 · 73 sn · 0,7❤ |
+| geliştirmeli | 7 | 1/3 · 557 sn | 3/3 · 109 sn · 1,7❤ | 3/3 · 89 sn · 0,3❤ |
+| geliştirmeli | 10 | 0/3 | 2/3 · 345 sn · 11❤ | 2/3 · 263 sn · 9❤ |
+| geliştirmesiz | 1 | 0/3 | 1/3 · 508 sn · 6❤ | 3/3 · 235 sn · 1,7❤ |
+| geliştirmesiz | 3 | 0/3 | 0/3 | 3/3 · 377 sn · 2,3❤ |
+| geliştirmesiz | 5, 7, 10 | 0/3 | 0/3 | 0/3 |
 
 Değişen ayarlar (eski değerler kodda yorum olarak duruyor):
 - `YOLCULUK_AYAR.kota`: `(10 + 3·bölüm)·(0,8 + 0,08·bölge)` → `(10 + 1,6·bölüm)·(0,75 + 0,06·bölge)`: bölüm başına hayalet sayısı
@@ -120,6 +120,14 @@ Değişen ayarlar (eski değerler kodda yorum olarak duruyor):
 - Yalnız yolculuk haritasında: doğum aralığı `0,8 − 0,06·bölüm` → `0,9 − 0,05·bölüm` (en az 0,3 sn), aynı anda en çok hayalet
   `12 + 4·bölüm (≤ 40)` → `7 + bölüm (≤ 15)`. Eski harita ve çevrimiçi eski harita değişmedi.
 
-Hedef henüz tutmadı: geliştirmesiz avcı 1. ve 3. bölümü rahat geçmeli (şu an 1/3 ve 0/3). Sonraki adım ilk bölümlerin hayalet
-hızı/kotası (Y2D).
+Tur 2 (Y2D) değişen ayarlar — hepsi yalnız yolculuk haritasında, eski harita ve çevrimiçi eski harita değişmedi:
+- `YOLCULUK_AYAR.kota`: Tur 1'in `(10 + 1,6·bölüm)·(0,75 + 0,06·bölge)` formülü → `(8 + 0,35·bölüm + 0,08·bölüm²)·(0,83 + 0,03·bölge)`.
+  Erken bölümlerde hayalet sayısı azalır, bölge çarpanı yumuşatılır; bölüm ve bölgeyle tekdüze artar.
+- Hayalet hızı (`spawnGhost`): yolculukta 1-4. bölümler `50 + bölüm·6` yerine sırasıyla 32/30/26/44 taban hızıyla başlar, 5. bölümde
+  bugünkü değere döner (`+ rastgele 0-20` her bölümde aynı).
+- Yuvasından yeni çıkan yolculuk hayaleti ilk 1,5 sn yarı hızda yaklaşır.
+- Yolculukta 1-3. bölümlerin boss minyonları 90 + bölüm·5 yerine 55 hızla doğar.
+
+Tur 2 hedefi tuttu: geliştirmesiz avcı 1. bölüm 3/3 (1,7❤), 3. bölüm 3/3 (2,3❤); geliştirmeli avcı 1-7. bölümler 3/3 ve ortalama
+süre 60-200 sn aralığında (72-90 sn). 10. bölüm geliştirmeli 2/3 kalıyor (zor kalmasına izin verildi).
 

@@ -6850,8 +6850,14 @@ function update(dt, now) {
     const dx = tx - g.x;
     const dy = ty - g.y;
     const d = Math.hypot(dx, dy) || 1;
-    const seekVx = (dx / d) * g.speed;
-    const seekVy = (dy / d) * g.speed;
+    // Y2D: yuvadan yeni çıkan hayalet kısa süre yarı hızda yaklaşır
+    let hiz = g.speed;
+    if (g._yumusakBas > 0) {
+      g._yumusakBas -= dt;
+      hiz *= 0.5;
+    }
+    const seekVx = (dx / d) * hiz;
+    const seekVy = (dy / d) * hiz;
 
     let vx = seekVx, vy = seekVy;
     // Aktif detour varsa onu kullan
@@ -7594,9 +7600,11 @@ function spawnBossMinion(boss) {
   y = Math.max(40, Math.min(game.worldH - 40, y));
   // Duvar/su içinde kalmasın
   ({ x, y } = freeSpot(x, y, 18, (px, py, pr) => collidesWalls(px, py, pr) || collidesWaters(px, py, pr)));
+  // Y2D: yolculukta erken bölümlerin boss minyonları da yumuşak başlar (eski: 90 + game.level * 5)
+  const minyonHiz = (typeof yolculukAcik === "function" && yolculukAcik() && game.level <= 3) ? 55 : 90 + game.level * 5;
   game.ghosts.push({
     x, y, r: 14,
-    speed: 90 + game.level * 5,
+    speed: minyonHiz,
     hp: 1, maxHp: 1,
     size: 26,
     fromBoss: true,
@@ -7674,12 +7682,21 @@ function spawnGhost(aralik) {
   }
 
   const tier = 1 + Math.floor(game.level / 3);
-  const speed = 50 + game.level * 6 + Math.random() * 20;
+  // Y2D: yolculukta erken bölümler daha yumuşak başlar, 5. bölümde bugünkü hıza ulaşır.
+  // eski: const speed = 50 + game.level * 6 + Math.random() * 20;
+  let hizTaban = 50 + game.level * 6;
+  if (typeof yolculukAcik === "function" && yolculukAcik()) {
+    const erken = { 1: 32, 2: 30, 3: 26, 4: 44 }[game.level];
+    if (erken) hizTaban = erken;
+  }
+  const speed = hizTaban + Math.random() * 20;
   const hp = tier;
   const bolge = range && Number.isFinite(range.bolge) ? range.bolge : null;
   const Z = YOLCULUK_AYAR && YOLCULUK_AYAR.zorluk;
   // Bölüm 5+: %18 ihtimalle ateş edebilen yavaş hayalet; yolculukta bölgeyle oran artar
-  const atesSans = (game.level >= 5 ? 0.18 : 0) + (bolge && Z ? Z.ates(bolge) : 0);
+  let atesSans = (game.level >= 5 ? 0.18 : 0) + (bolge && Z ? Z.ates(bolge) : 0);
+  // Y2D: yolculukta 1-2. bölümlerde ateş eden hayalet yok (bölge çarpanı sonraki bölgelerde devreye girer)
+  if (bolge && game.level <= 2) atesSans = 0;
   const isShooter = Math.random() < atesSans;
   const ghost = {
     x, y, r: 22,
@@ -7700,6 +7717,8 @@ function spawnGhost(aralik) {
     ghost.fireRate = 2400;
     ghost.nextShot = performance.now() + 1500 + Math.random() * 1500;
   }
+  // Y2D: yuvasından yeni çıkan hayalet ilk 1,5 sn yarı hızda (yalnız yolculuk)
+  if (bolge) ghost._yumusakBas = 1.5;
   // İlk ses 0-5 sn arası rastgele zamanda, sonra her 10 sn'de bir
   ghost.nextSound = performance.now() + Math.random() * 5000;
   // Yuvalar: 0.6 sn belirme (vurulamaz, hasar veremez), birkaç toz/sis parçacığı

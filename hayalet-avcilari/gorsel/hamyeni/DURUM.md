@@ -20,7 +20,7 @@
 | R14 | üretildi (2. deneme, Chrome'da ChatGPT, referans U06 + D01; 1. denemede küpte ankh ve lahitte kanatlı amblem vardı, dini simge kuralı için kaldırtıldı): kumtaşı yıkık duvar ve kırık sütun, yıkık kule, kaktüs bahçesi, sevimli mumyalı lahit ve küpler (yalnız şerit/nokta/zikzak süs), iki palmiyeli vaha, kısa kumtaşı sınır şeridi (hücre içinde, ~437 px); bütün hücreler temiz (en dar kenar 17 px); toplu gösterim bekleniyor |
 | R15 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): sarkıtlı buz tuğla duvar (kemerli), karlı kubbeli buz kulesi, iki sevimli kardan adam, mavi kristal kümesi, buz kenarlı donmuş göl, kısa buz tuğla sınır şeridi (hücre içinde, ~417 px); bütün hücreler temiz (en dar kenar 2. hücrede 8 px); toplu gösterim bekleniyor |
 | R16 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): kırmızı çatlaklı bazalt duvar (kemerli), bazalt sivri kaya, yumurtalı yuvada sevimli yavru ejderha, üstünde sevimli ateş ruhları olan kayalar, buharlı kaplıca, kısa bazalt sınır şeridi (hücre içinde); DİKKAT 5. hücredeki kaplıcanın sol kayası x=508'de başlıyor (4. hücreye 4 px), 482-507 arası boş: kesimde 4. hücre x<508, 5. hücre x>=508 alınmalı; diğerleri temiz; toplu gösterim bekleniyor |
-| R17 | bekliyor |
+| R17 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): pencereli metal istasyon duvarı, ışıklı istasyon kulesi, mor kristalli göktaşı, düşmüş UFO ve el sallayan sevimli uzaylı, metal kenarlı parlayan havuz, kısa metal sınır şeridi (hücre içinde); 2. hücredeki kule tabanı y=512'ye 1 px kenar yumuşatmasıyla değiyor (220 eşiğinde 0), 513-556 boş: kesimde 2. hücre y<513; diğerleri temiz; toplu gösterim bekleniyor |
 | R18 | bekliyor |
 | R19 | bekliyor |
 | R20 | bekliyor |

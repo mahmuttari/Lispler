@@ -826,8 +826,23 @@ DOKU_PAFTALARI = {
             ('aile-LA-zemin', 'iki'), ('nehir-doku', 'dikey')],
     'R42': [None, None, None, None, None, ('dere-su', 'iki')],
 }
-# Fazla kontrastlı zemin dokuları (karakterler okunur kalsın): ortalama renge doğru karıştırma oranı
-ZEMIN_SOLUK = {'aile-KS-zemin': 0.5}
+# Dünya Turu zeminleri ChatGPT'den parlak (120-180) ve çok desenli (sapma 12-29) geliyor; oyunun renk dengesi koyu zemine
+# kurulu (klasik temalar 35 / 5-10). Her aile zemini rengini koruyarak bu parlaklığa ve en çok bu desen sapmasına çekilir.
+ZEMIN_HEDEF = (95, 9)  # (ortalama parlaklık, en büyük parlaklık sapması), 0-255
+
+
+def zemin_sakinlestir(im):
+    """Zemin dokusunu ZEMIN_HEDEF'e çeker: desen sapması (parlaklık) en çok hedef kadar, ortalama parlaklık hedefte; renk tonu korunur."""
+    import numpy as np
+    a = np.asarray(im.convert('RGB'), dtype=np.float32)
+    lum = a @ np.array([0.299, 0.587, 0.114], dtype=np.float32)
+    m, sd = float(lum.mean()), float(lum.std()) or 1.0
+    hedef_m, hedef_sd = ZEMIN_HEDEF
+    k = min(1.0, hedef_sd / sd)
+    ort = a.reshape(-1, 3).mean(axis=0)
+    a = ort + (a - ort) * k            # deseni sakinleştir (ortalama renge yaklaştır)
+    a = a * (hedef_m / max(1.0, m))    # parlaklığı hedefe çek (ton ve doygunluk oranı korunur)
+    return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
 
 
 def doku_hucreleri(liste):
@@ -849,10 +864,8 @@ def doku_hucreleri(liste):
             if yon == 'iki':
                 hucre = dikissiz_dikey(hucre.transpose(Image.ROTATE_90)).transpose(Image.ROTATE_270)
             hucre = hucre.resize((256, 256), Image.LANCZOS)
-            if anahtar in ZEMIN_SOLUK:  # kontrastı düşür: dokunun ortalama rengine doğru karıştır
-                from PIL import ImageStat
-                ort = tuple(round(v) for v in ImageStat.Stat(hucre).mean)
-                hucre = Image.blend(hucre, Image.new('RGB', hucre.size, ort), ZEMIN_SOLUK[anahtar])
+            if anahtar.startswith('aile-') and anahtar.endswith('-zemin'):
+                hucre = zemin_sakinlestir(hucre)
             hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=86, method=6)
             liste[anahtar] = [256, 256]
         print(f'✓ {pafta} (doku)')

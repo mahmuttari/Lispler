@@ -738,7 +738,7 @@ def bulutu_grile(hucre, damla_sil):
 # Arka planı saydam yerine hafif gri pusla gelen paftalar: belirgin nesneden (alfa ≥ 150) ~7 px'ten uzak pus silinir
 PUS_PAFTALAR = {'R49', 'K07', 'R28'}
 # Hücrede aynı nesneden birkaç tane var, oyun her birini ayrı çizer: yalnız en büyük parça kesilir
-TEK_PARCA = {'mermi-pompali', 'mermi-yesil', 'tema6-gol'}
+TEK_PARCA = {'mermi-pompali', 'mermi-yesil', 'tema6-gol', 'tema1-gol'}
 # Parıltısı komşusuna değen nesneler: hücre içinde elle kırpılır (x0, y0, x1, y1; sütun yoğunluğunun en düşük yerinden)
 YATAY_DIKISSIZ = {f'tema{n}-sinir' for n in range(1, 7)}  # yan yana döşenen sınır şeritleri
 HUCRE_KIRP = {'mermi-yesil': (0, 0, 297, 512)}

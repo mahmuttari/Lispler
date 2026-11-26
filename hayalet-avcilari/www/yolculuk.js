@@ -1099,6 +1099,13 @@ function yolculukGecitCiz(ctx) {
       // Alt su seviyesi: koyu basamak çizgisi
       ctx.strokeStyle = "rgba(0,0,0,0.38)"; ctx.lineWidth = 5;
       ctx.beginPath(); ctx.moveTo(cx - ker, d.y); ctx.lineTo(cx + ker, d.y); ctx.stroke();
+      // ChatGPT şelale kareleri (N-selale): nehir genişliğine oturur; yoksa aşağıdaki köpük kalır
+      const sim = typeof gorsel === "function" ? gorsel("an-selale-1") : null;
+      if (sim && typeof animCiz === "function") {
+        const gen = d.yarim * 2 + 30, boy = gen * sim.naturalHeight / sim.naturalWidth;
+        const kare = animDongu("selale", zt + d.tohum, 6);
+        if (kare && animCiz(ctx, "selale", kare, cx - gen / 2, d.y - boy * 0.55, gen, boy)) continue;
+      }
       // Köpük bandı (düzensiz, yarı saydam)
       ctx.beginPath();
       for (let i = 0; i <= 8; i++) {

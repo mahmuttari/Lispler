@@ -232,7 +232,7 @@ function bulutYagmurGuncelle(bl, dt) {
     d.ox += Math.tan(d.aci) * d.hiz * dt * yon;
     if (d.splash > 0) d.splash = Math.max(0, d.splash - dt);
     if (d.y >= d.mesafe) {
-      if (!y.az) d.splash = 0.15; // çarpma sıçraması (hareketi azalt açıkken yok)
+      if (!y.az) d.splash = 0.3; // çarpma sıçraması (hareketi azalt açıkken yok)
       d.sx = d.ox; d.sy = d.y;
       d.y = 0; d.ox = havaRast(-61, 61); d.mesafe = havaRast(120, 220);
       d.hiz = havaRast(380, 520); d.boy = havaRast(10, 16); d.aci = havaRast(8, 12) * Math.PI / 180;
@@ -254,13 +254,21 @@ function bulutYagmurCiz(ctx, bl) {
   ctx.lineCap = "round";
   for (const d of y.damlalar) {
     const sy = y.alt + d.y, sx = d.ox;
-    ctx.beginPath();
-    ctx.moveTo(sx - Math.sin(d.aci) * d.boy * yon, sy - Math.cos(d.aci) * d.boy);
-    ctx.lineTo(sx, sy);
-    ctx.stroke();
-    if (d.splash > 0) { // küçük halka sıçraması, 0.15 sn'de söner
-      ctx.globalAlpha = d.splash / 0.15;
-      ctx.beginPath(); ctx.ellipse(d.sx, y.alt + d.sy, 4, 1.5, 0, 0, Math.PI * 2); ctx.stroke();
+    // ChatGPT damlası (yagmur-damla): yağış yönüne eğik, ~10 × 14 px; yoksa bugünkü çizgi
+    if (typeof gorselKutuya === "function") {
+      ctx.save();
+      ctx.translate(sx, sy - 7);
+      ctx.rotate(d.aci * yon);
+      if (gorselKutuya(ctx, "yagmur-damla", -5, -7, 10, 14)) { ctx.restore(); }
+      else { ctx.restore(); ctx.beginPath(); ctx.moveTo(sx - Math.sin(d.aci) * d.boy * yon, sy - Math.cos(d.aci) * d.boy); ctx.lineTo(sx, sy); ctx.stroke(); }
+    } else {
+      ctx.beginPath(); ctx.moveTo(sx - Math.sin(d.aci) * d.boy * yon, sy - Math.cos(d.aci) * d.boy); ctx.lineTo(sx, sy); ctx.stroke();
+    }
+    if (d.splash > 0) { // küçük halka sıçraması, 0.3 sn'de söner
+      ctx.globalAlpha = d.splash / 0.3;
+      if (!(typeof gorselKutuya === "function" && gorselKutuya(ctx, "su-halka", d.sx - 9, y.alt + d.sy - 5, 18, 11))) {
+        ctx.beginPath(); ctx.ellipse(d.sx, y.alt + d.sy, 4, 1.5, 0, 0, Math.PI * 2); ctx.stroke();
+      }
       ctx.globalAlpha = 1;
     }
   }

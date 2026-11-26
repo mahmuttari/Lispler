@@ -747,15 +747,20 @@
     if (im) {
       const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
       const dogal = OBJE_DOGAL_BOY[k] || 150, kutu = Math.max(w, h);
+      // Yerleşim kaydı: canlı kareler (GOR2 objeAnimCiz) durağan resmin AYNI kutularına çizilsin diye biçimde saklanır
+      const kayit = [];
+      if (B) B._objeYerlesim = { kapak: false, d, kayit };
       if (!(iw > 0 && ih > 0) || kutu <= dogal) {
         // Kutu doğal boyu aşmıyorsa eski davranış: resim kutuya "cover" sığar
+        if (B) B._objeYerlesim.kapak = true;
         const ciz = () => resimKapak(ctx, im, 0, 0, w, h);
         kirp(ctx, B, ciz);
         if (d) kirp(ctx, B, ciz, 0, d);
       } else {
         const olcek = dogal / Math.max(iw, ih), dw = iw * olcek, dh = ih * olcek;
         const ciz = () => {
-          if (dogal >= 200) { ctx.drawImage(im, (w - dw) / 2, (h - dh) / 2, dw, dh); return; } // anıt: tek, doğal boyda
+          const liste = []; kayit.push(liste);
+          if (dogal >= 200) { liste.push([(w - dw) / 2, (h - dh) / 2, dw, dh]); ctx.drawImage(im, (w - dw) / 2, (h - dh) / 2, dw, dh); return; } // anıt: tek, doğal boyda
           // Küçük obje: doğal boyda, hafif kaydırmalı ızgarada 2-6 kopya; alt sıra üsttekiyle örtüşsün diye y'ye göre sıralı
           const n = Math.max(2, Math.min(6, Math.round((w / dw) * (h / dh))));
           const sut = Math.max(1, Math.ceil(Math.sqrt(n * w / Math.max(1, h)))), sat = Math.ceil(n / sut), yerler = [];
@@ -769,6 +774,7 @@
             let cw = dw * v, ch = dh * v;
             const eb = Math.max(cw, ch);
             if (eb > dogal) { const q = dogal / eb; cw *= q; ch *= q; } // her kopya en çok doğal boy
+            liste.push([y.x - cw / 2, y.y - ch / 2, cw, ch]);
             ctx.drawImage(im, y.x - cw / 2, y.y - ch / 2, cw, ch);
           }
         };
@@ -954,6 +960,42 @@
       else if (en.tur === "su" && komsuMu(en)) icResmi(en);
     }
   }
+  // ---- Canlı ülke objeleri (GOR2): an-<obje anahtarı>-1..3 kareleri ----
+  // Her obje tohumundan 4–8 sn'lik dönem; dönemin ilk 5/8 sn'si 1-2-3-2-1 (8 kare/sn). Kare 1 durağan resimle
+  // aynıdır. Yalnız görüşteki, kareleri hazır objelerde; kare başına en çok birkaç obje (çağıran sayaç verir).
+  const OBJE_ANIM_SIRA = [1, 2, 3, 2, 1];
+  function objeAnimKare(o, zaman) {
+    if (o.tur !== "obje1" && o.tur !== "obje2") return null;
+    if (typeof animHazir !== "function" || typeof animCiz !== "function") return null;
+    if (typeof aeAzHareket === "function" && aeAzHareket()) return null;
+    const dt = typeof o.tema === "string";
+    const k = dt ? `ulke-${o.tema}-${o.tur === "obje1" ? 1 : 2}` : `tema${o.tema + 1}-${o.tur}`;
+    if (animHazir(k) < 3) return null;
+    const h = (o.tohum >>> 0) || 0x9e3779b9;
+    const periyot = 4 + ((h % 997) / 997) * 4;          // 4–8 sn
+    const faz = (((h >>> 10) % 997) / 997) * periyot;
+    const t = (zaman + faz) % periyot, sure = OBJE_ANIM_SIRA.length / 8;
+    if (t >= sure) return null;
+    return [k, OBJE_ANIM_SIRA[Math.min(OBJE_ANIM_SIRA.length - 1, Math.floor(t * 8))]];
+  }
+  // Durağan resmin (objeResmi) kaydettiği AYNI kutulara ve kırpmaya çizer: kutuya "cover" sığan tek resim, doğal boylu anıt
+  // ya da küçük objenin 2-6 kopyası (FIX3). Durağan resim henüz çizilmediyse (kayıt yok) canlı kare de çizilmez.
+  function objeAnimCiz(ctx, o, k, kare) {
+    const im = typeof gorsel === "function" ? gorsel(`an-${k}-${kare}`) : null;
+    const B = o.bicim, Y = B && B._objeYerlesim;
+    if (!im || !Y) return false;
+    ctx.save();
+    ctx.translate(o.x, o.y);
+    if (Y.kapak) {
+      const ciz = () => resimKapak(ctx, im, 0, 0, o.w, o.h);
+      kirp(ctx, B, ciz);
+      if (Y.d) kirp(ctx, B, ciz, 0, Y.d);
+    } else {
+      Y.kayit.forEach((liste, j) => kirp(ctx, B, () => { for (const q of liste) ctx.drawImage(im, q[0], q[1], q[2], q[3]); }, 0, j ? Y.d : 0));
+    }
+    ctx.restore();
+    return true;
+  }
   function engelleriCiz(ctx) {
     if (typeof game === "undefined") return;
     const t0 = performance.now();
@@ -989,12 +1031,20 @@
       lavCanli(ctx, o.x, o.y, o.w, o.h, o.bicim);
       alevler(ctx, o, zaman);
     }
-    for (const o of duvarSirasi()) if (gor(o, 8)) canliCiz(ctx, o, resimCiz(ctx, o), zaman);
+    let animSayaci = 0;
+    for (const o of duvarSirasi()) {
+      if (!gor(o, 8)) continue;
+      canliCiz(ctx, o, resimCiz(ctx, o), zaman);
+      if (animSayaci < 3) {
+        const a = objeAnimKare(o, zaman);
+        if (a && objeAnimCiz(ctx, o, a[0], a[1])) animSayaci++;
+      }
+    }
     onbellegiIsit(t0, s);
   }
 
   Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, engelBicimleriniKur, engelCarpisir, engelMesafesi, ENGEL_AILELERI,
-    engelOlcegi, engelResmi, engelBoya, engelleriCiz, lavCanli, ENGEL_CANLI });
+    engelOlcegi, engelResmi, engelBoya, engelleriCiz, lavCanli, ENGEL_CANLI, objeAnimKare, objeAnimCiz });
   window.ENGEL = { yol, doldur, cizgi, kirp, hatCiz, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, kutuYolu, tasOrgu, gozler, cimTutami, sinirla, parcaUzaklik,
     kayalikKenar, suTabani, dikenCiz, lavCiz };
 })();

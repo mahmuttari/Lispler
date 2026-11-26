@@ -252,6 +252,12 @@ function hikayeSahneYuvasi(slot, key, ayna) {
   return true;
 }
 
+// Küçük ikon: görsel yüklendiyse <img> (gorsel(k).src), yoksa bugünkü emoji.
+function hikayeIkonHTML(k, emoji) {
+  const im = typeof gorsel === "function" ? gorsel(k) : null;
+  return im && im.src ? `<img class="hikaye-ikon" src="${im.src}" alt="">` : emoji;
+}
+
 function hikayeKonusan(rol, s) {
   const k = hikayeKayit();
   const gezgin = k.gezgin || (typeof save !== "undefined" ? save.selectedChar : "");
@@ -352,7 +358,7 @@ function hikayeSahneCiz() {
 
   // Konuşma balonu (konuşan avcıya uzanan kuyruk) ya da anlatıcı parşömen kutusu.
   if (anlatim) {
-    ust.innerHTML = `<div class="hikaye-anlatim"><span class="hikaye-anlatim-simge" aria-hidden="true">📜</span>` +
+    ust.innerHTML = `<div class="hikaye-anlatim"><span class="hikaye-anlatim-simge" aria-hidden="true">${hikayeIkonHTML("ikon-parsomen", "📜")}</span>` +
       `<p class="hikaye-metin" dir="auto" aria-hidden="true"></p>` +
       `<span class="hikaye-sr">${escapeHtml(metin)}</span></div>`;
   } else {
@@ -643,7 +649,7 @@ function hikayeDefterCiz() {
         `<bdi class="defter-ad">${escapeHtml(veri.hatira.ad || "")}</bdi></button>`;
     } else {
       html += `<button class="defter-yuva bos" type="button" onclick="hikayeHatiraTikla('${kod}')">` +
-        `<span class="defter-simge" aria-hidden="true">❔</span><span class="defter-sira">${s}</span></button>`;
+        `<span class="defter-simge" aria-hidden="true">${hikayeIkonHTML("ikon-defter-bos", "❔")}</span><span class="defter-sira">${s}</span></button>`;
     }
   }
   html += `</div><div id="defter-tip" class="defter-tip" hidden></div></div>`;

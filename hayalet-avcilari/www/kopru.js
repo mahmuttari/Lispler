@@ -224,9 +224,15 @@ function dususCiz(ctx) {
   ctx.save();
   for (let i = 0; i < 3; i++) {
     const u = (z * 1.4 + i / 3) % 1;
-    ctx.strokeStyle = `rgba(255,255,255,${0.6 * (1 - u)})`;
-    ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.ellipse(p.x, p.y + 8, 20 + u * 26, (20 + u * 26) * 0.45, 0, 0, Math.PI * 2); ctx.stroke();
+    const r = 20 + u * 26;
+    ctx.globalAlpha = 0.6 * (1 - u);
+    // ChatGPT su halkası (su-halka): ~50 px, genişleyip söner; yoksa bugünkü çizgi
+    if (!(typeof gorselKutuya === "function" && gorselKutuya(ctx, "su-halka", p.x - r, p.y + 8 - r * 0.45, r * 2, r * 0.9))) {
+      ctx.strokeStyle = `rgba(255,255,255,${0.6 * (1 - u)})`;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.ellipse(p.x, p.y + 8, r, r * 0.45, 0, 0, Math.PI * 2); ctx.stroke();
+    }
   }
+  ctx.globalAlpha = 1;
   ctx.restore();
 }

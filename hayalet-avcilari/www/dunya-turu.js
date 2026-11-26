@@ -212,7 +212,9 @@ function damgaGoster(u) {
 function ucakGecisi(onceki, sonraki, bitince) {
   const el = document.getElementById("tur-gecis");
   const ad = (u, sinif) => `<div class="tur-gecis-ad ${sinif}"><span class="tur-gecis-sira">${u.sira}</span> <bdi>${escapeHtml(u.ad)}</bdi></div>`;
-  el.innerHTML = `<div class="tur-perde-kutu tur-gecis-kutu">${ad(onceki, "bas")}<div class="tur-gecis-yol"><span class="tur-ucak">✈️</span></div>${ad(sonraki, "son")}</div>`;
+  const ucsrc = turGorselSrc("tur-ucak-yan");
+  const uc = ucsrc ? `<img class="tur-ucak-resim" src="${ucsrc}" alt="">` : "✈️";
+  el.innerHTML = `<div class="tur-perde-kutu tur-gecis-kutu">${ad(onceki, "bas")}<div class="tur-gecis-yol"><span class="tur-ucak">${uc}</span></div>${ad(sonraki, "son")}</div>`;
   const no = perdeAc(el);
   game._turSonraki = sonraki;
   turMuzigiBaslat(sonraki.kod); // teaser uçakla başlar, tanıtım bildirimine sarkar (muzik.js)
@@ -290,6 +292,15 @@ function tekrarOyna() {
 
 // ---------- Ekran: rota ve pasaport (spec §3, §5.6) ----------
 const TUR_DURUM_SIMGE = { kilitli: "🔒", acik: "✈️", damgali: "🛂" };
+// Resim yalnız görünüş: dosya yoksa bugünkü emoji kalır. DOM'da her zaman gorsel(k).src kullanılır.
+function turGorselSrc(k) {
+  const im = typeof gorsel === "function" ? gorsel(k) : null;
+  return im && im.src ? im.src : "";
+}
+function turDurumSimgeHTML(durum) {
+  const src = turGorselSrc(durum === "kilitli" ? "tur-kilit" : durum === "acik" ? "tur-ucak-simge" : "tur-pasaport");
+  return src ? `<img class="tur-durum-resim" src="${src}" alt="">` : TUR_DURUM_SIMGE[durum];
+}
 let _turSecili = 1;
 function turDurumu(u, k) {
   return k.damgalar[u.kod] ? "damgali" : u.sira <= k.acik ? "acik" : "kilitli";
@@ -355,7 +366,7 @@ function renderDunyaTuru() {
     html += `<button class="tur-kart ${durum}${u.sira === _turSecili ? " secili" : ""}" data-sira="${u.sira}" onclick="turUlkeSec(${u.sira})"` +
       `${durum === "kilitli" ? ' aria-disabled="true"' : ""}><span class="tur-sira">${u.sira}</span>` +
       (resim ? `<img class="tur-resim" src="${resim}" alt="">` : `<span class="tur-resim bos" aria-hidden="true"></span>`) +
-      `<bdi class="tur-ad">${escapeHtml(u.ad)}</bdi><span class="tur-durum">${TUR_DURUM_SIMGE[durum]}</span></button>`;
+      `<bdi class="tur-ad">${escapeHtml(u.ad)}</bdi><span class="tur-durum">${turDurumSimgeHTML(durum)}</span></button>`;
   }
   html += turYakindaKartHtml();
   document.getElementById("tur-liste").innerHTML = html;
@@ -375,8 +386,9 @@ function turSekmesi(ad) {
   if (defter && df && typeof akiListeGiris === "function") akiListeGiris(df, ".defter-yuva");
   if (pasaport) {
     const k = turKaydi();
+    const cerceve = turGorselSrc("tur-damga");
     pp.innerHTML = ULKELER.map((u) => (k.damgalar[u.kod]
-      ? `<div class="damga">${damgaSvg(u)}</div>`
+      ? `<div class="damga${cerceve ? " cerceveli" : ""}"${cerceve ? ` style="background-image:url('${cerceve}')"` : ""}>${damgaSvg(u)}</div>`
       : `<div class="damga bos"><span>${u.sira}</span></div>`)).join("");
     damgaYazilariniSigdir(pp);
   }

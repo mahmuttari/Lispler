@@ -5849,6 +5849,7 @@ document.addEventListener("keydown", (e) => {
 
 // Görseller yüklenince açık ekranın kartları (ve paneli) yeniden çizilir: kart-* resimleri <img> olur
 window.addEventListener("gorsel-yuklendi", () => {
+  ekranGorselleriKur();
   menuSimgeleriniUygula();
   menuSayacCercevesi();
   if (typeof menuDekoruKur === "function") menuDekoruKur();
@@ -6701,6 +6702,31 @@ function resizeCanvas() {
   game.W = window.innerWidth / viewScale;
   game.H = window.innerHeight / viewScale;
   if (game.running) layoutWeaponBar(); // ekran dönünce silah çubuğu HUD'a binmesin
+}
+
+// ====== EKRAN GÖRSELLERİ (GOR2) ======
+// Menü dışı ekranların arka planı ve joystick resimleri: gorsel(k).src ile, görsel yoksa CSS bugünkü gibi kalır.
+// Arka planın üstünde koyu katman var (metin okunurluğu); resim cover, ekranı taşırmaz (yatay taşma yok).
+function ekranGorselleriKur() {
+  if (typeof gorsel !== "function") return;
+  const arka = (id, k) => {
+    const kap = document.getElementById(id), bg = kap && kap.querySelector(".menu-bg");
+    const im = gorsel(k);
+    if (!bg || !im || !im.src) return;
+    bg.style.background = `linear-gradient(rgba(10, 8, 30, 0.55), rgba(10, 8, 30, 0.55)), url("${im.src}") center / cover no-repeat`;
+  };
+  for (const id of ["screen-shop", "screen-characters", "screen-account"]) arka(id, "arka-gece");
+  for (const id of ["screen-online", "screen-friends", "screen-room-list", "screen-create-room", "screen-lobby"]) arka(id, "arka-kasaba");
+  const simge = (el, k) => {
+    const im = gorsel(k);
+    if (!el || !im || !im.src) return;
+    el.style.backgroundImage = `url("${im.src}")`;
+    el.style.backgroundSize = "cover";
+    el.style.backgroundPosition = "center";
+    el.style.backgroundRepeat = "no-repeat";
+  };
+  simge(document.getElementById("joystick"), "joystick-taban");
+  simge(document.getElementById("joystick-knob"), "joystick-topuz");
 }
 
 // ====== JOYSTICK ======
@@ -9315,6 +9341,7 @@ function init() {
   drawGreeter();
   menuSimgeleriniUygula(); // dilUygula sonrası: resmi olan menü simgeleri emojinin yerine geçer
   menuDekoruKur(); // ana menü süsü (emblem, kaide, dekoratif katmanlar)
+  ekranGorselleriKur(); // dükkân/karakter/hesap ve çevrimiçi ekranlarının arka planı, joystick resimleri
   // Hoşgeldin ekranında ismi varsa göster
   if (save.playerName) {
     document.getElementById("welcome-text").innerHTML =

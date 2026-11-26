@@ -27,4 +27,4 @@
 # (yapıldı 2026-11-26, koşu 45756600980: 8 fark, 7 ekleme + players/$uid/.validate'e yj odası sv ≥ 2 koşulu eklendi; silinen yok) durum
 
 # istek 2026-11-26: aynı kuralları yayınla (kullanıcının açık onayı: "kuralları yayınla, onaylıyorum"; fark yukarıda, beklenenle aynı)
-yayinla
+# (yapıldı 2026-11-26, koşu 45756831763: {"status":"ok"}; geri okunan kurallar depodakiyle AYNI) yayinla

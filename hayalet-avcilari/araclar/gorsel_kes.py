@@ -876,7 +876,7 @@ DOKU_PAFTALARI = {
             ('zemin-orman', 'iki'), ('zemin-catlak-tas', 'iki')],
 }
 YENI_ZEMIN_PAFTALARI = ('Z05', 'Z06', 'Z07')
-TEMA_ZEMIN_HEDEF = (70, 10)  # Z05 tema zeminleri: klasik temaların koyu dengesine yakın
+TEMA_ZEMIN_HEDEF = (68, 18)  # Z05 tema zeminleri: koyu denge ama boyamanın ayrıntısı korunur (sapma 10'da desen düzleşiyordu)
 KATMAN_HEDEF = (80, 16)  # Z01 yol ve leke dokuları: koyu tema zemininde (35) seçilir ama göz almaz; ayrıntı korunur
 
 

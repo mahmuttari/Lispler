@@ -114,6 +114,8 @@ ANIMASYON = {
     'K11': [('efsane-aura', [1, 2, 3], 256)],
     'K12': [('yuva-sis', [1, 2, 3], 256), ('yuva-duman', [4, 5, 6], 256)],  # yuvaların hareketli sisi (yolculuk.js)
     'R48': [('menu-hayalet', [1, 2, 3], 160)],
+    'R04': [('hayalet-dogus', [1, 2, 3], 192), ('hayalet-sarj', [4, 5, 6], 128)],  # yuvadan doğuş girdabı, atıcının şarjı
+    'R05': [('toplama-halka', [1, 2, 3], 192), ('mucevher-parilti', [4, 5, 6], 128)],  # toplama halkası, mücevher pırıltısı
     'R50': [('havai-fisek', [2, 3, 4], 256)],  # kilitli köprünün inişi (1. kare K05 hücre 1: kopru-kapali)
 }
 

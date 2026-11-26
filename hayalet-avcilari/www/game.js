@@ -1972,10 +1972,10 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
   const nefes = typeof avciNefes === "function" ? avciNefes(performance.now(), isWalking) : 0;
   if (nefes) { ctx.translate(0, 45 * s); ctx.scale(1 - nefes * 0.5, 1 + nefes); ctx.translate(0, -45 * s); }
 
-  // Gölge
+  // Gölge (sol üst ışık: 3,5 px sağa, 2 px aşağı kayar; boyut değişmez)
   ctx.fillStyle = "rgba(0,0,0,0.3)";
   ctx.beginPath();
-  ctx.ellipse(0, 45 * s, 22 * s, 7 * s, 0, 0, Math.PI * 2);
+  ctx.ellipse(3.5, 45 * s + 2, 22 * s, 7 * s, 0, 0, Math.PI * 2);
   ctx.fill();
 
   // Gerçek 3D avcı (uc-avci.js): gölgeden sonra model; çizdiyse 2D gövdeye hiç girilmez. Ölçüm sırasında (_karKodla) kapalı.
@@ -2979,10 +2979,10 @@ function drawGhost(ctx, g) {
     ctx.fill();
   }
 
-  // Gölge
+  // Gölge (sol üst ışık: 3,5 px sağa, 2 px aşağı kayar; boyut değişmez)
   ctx.fillStyle = "rgba(0,0,0,0.3)";
   ctx.beginPath();
-  ctx.ellipse(0, 22 * s, 18 * s, 5 * s, 0, 0, Math.PI * 2);
+  ctx.ellipse(3.5, 22 * s + 2, 18 * s, 5 * s, 0, 0, Math.PI * 2);
   ctx.fill();
 
   if (an) {
@@ -9017,6 +9017,10 @@ function render() {
   if (typeof gec1DunyaCiz === "function") gec1DunyaCiz(ctx, performance.now()); // portal + konfeti (GEC1)
 
   ctx.restore();
+  // ZEM3B: oyuncu çevresinde ekran uzayında yumuşak ışık halkası (dünyanın üstünde, HUD'un altında)
+  if (typeof isikHalkasiCiz === "function" && game.player) {
+    isikHalkasiCiz(ctx, game.player.x - game.camera.x + sars.x, game.player.y - game.camera.y + sars.y);
+  }
   if (typeof aeUcuslarCiz === "function") aeUcuslarCiz(ctx, performance.now()); // HUD'a para uçuşu (AKI1)
   if (typeof gec1EkranCiz === "function") gec1EkranCiz(ctx, performance.now()); // iris/soluk perde + başlık kartı
   if (typeof aeEkranEfektleriCiz === "function") aeEkranEfektleriCiz(ctx, performance.now());

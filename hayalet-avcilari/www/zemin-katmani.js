@@ -8,6 +8,7 @@
 (function () {
   "use strict";
   const PARCA = 512;
+  let ISIK_HALKASI = true; // ZEM3B: oyuncu çevresi ışık halkası (kapatmak için false)
 
   // Bir noktanın (px,py) AB doğru parçasına uzaklığı (dünya px)
   function noktaCizgiUzaklik(px, py, ax, ay, bx, by) {
@@ -168,8 +169,8 @@
     } catch (e) { return null; }
   }
 
-  // Yumuşak temas gölgesi (dünya koordinatında parçaya bir kez çizilir)
-  function golgeCiz(c, x, y, rx, ry) {
+  // Yumuşak temas gölgesi: taban elipsi + sol üst ışığa göre sağ alta uzayan yönlü gölge
+  function golgeCiz(c, x, y, rx, ry, h) {
     if (!(rx > 0 && ry > 0)) return;
     c.save();
     c.translate(x, y); c.scale(rx, ry);
@@ -183,6 +184,24 @@
     c.fillStyle = g || "rgba(0,0,0,0.22)";
     c.beginPath(); c.arc(0, 0, 1, 0, Math.PI * 2); c.fill();
     c.restore();
+    // ZEM3B: yönlü gölge — nesne yüksekliğinin %35'i kadar sağ alta sünmüş yumuşak biçim
+    const L = Math.max(0, (h || 0) * 0.35);
+    if (L > 1) {
+      c.save();
+      c.translate(x + L * 0.34, y + L * 0.27);
+      c.rotate(0.62);
+      c.scale(L * 0.62 + rx * 0.18, Math.max(2, ry * 0.62));
+      let g2 = null;
+      try {
+        g2 = c.createRadialGradient(0, 0, 0.1, 0, 0, 1);
+        g2.addColorStop(0, "rgba(0,0,0,0.20)");
+        g2.addColorStop(0.55, "rgba(0,0,0,0.11)");
+        g2.addColorStop(1, "rgba(0,0,0,0)");
+      } catch (e) { g2 = null; }
+      c.fillStyle = g2 || "rgba(0,0,0,0.20)";
+      c.beginPath(); c.arc(0, 0, 1, 0, Math.PI * 2); c.fill();
+      c.restore();
+    }
   }
 
   // Resim yoksa kısa çimen tutamı (paletin çim rengi)
@@ -330,21 +349,21 @@
     for (const o of (game.walls || [])) {
       if (!o || o.yuva) continue;
       if (o.tur !== "duvar" && o.tur !== "obje1" && o.tur !== "obje2") continue;
-      zemin.golgeler.push({ x: o.x + o.w / 2, y: o.y + o.h / 2 + 4, rx: o.w * 0.525, ry: Math.max(6, o.h * 0.22) });
+      zemin.golgeler.push({ x: o.x + o.w / 2, y: o.y + o.h / 2 + 4, rx: o.w * 0.525, ry: Math.max(6, o.h * 0.22), h: o.h });
       cevreSusEkle(zemin, bolum, ulke, o.x, o.y, o.w, o.h, aile, 10000 + (sira += 37));
     }
     // 2) Yolculuk donatıları (x,y merkez)
     for (const p of (game._yolculukDonatilar || [])) {
       if (!p || !(p.w > 0) || !(p.h > 0)) continue;
       const px = p.x - p.w / 2, py = p.y - p.h / 2;
-      zemin.golgeler.push({ x: p.x, y: p.y + 4, rx: p.w * 0.525, ry: Math.max(6, p.h * 0.22) });
+      zemin.golgeler.push({ x: p.x, y: p.y + 4, rx: p.w * 0.525, ry: Math.max(6, p.h * 0.22), h: p.h });
       cevreSusEkle(zemin, bolum, ulke, px, py, p.w, p.h, aile, 20000 + (sira += 37));
     }
     // 3) Hayalet yuvaları: yalnız temas gölgesi
     for (const yv of (game.yuvalar || [])) {
       if (!yv) continue;
       const r = yv.r || 30;
-      zemin.golgeler.push({ x: yv.x, y: yv.y + 4, rx: r * 1.05, ry: Math.max(6, r * 0.5) });
+      zemin.golgeler.push({ x: yv.x, y: yv.y + 4, rx: r * 1.05, ry: Math.max(6, r * 0.5), h: r * 2 });
     }
     // 4) Göl ve nehir kıyıları: her 50-70 px'de kaya/çimen (köprü ağzı ve su içi hariç)
     const kiysiAile = ["sus-kaya", "sus-cimen"];
@@ -768,6 +787,31 @@
       }
     }
     kc.globalCompositeOperation = "source-over";
+    // ZEM3B: çukur yolun iç pervazı — sol üst kenar koyu (gölgede), sağ alt kenar açık (ışık alır)
+    const pervazlar = [
+      { koyu: true, kal: 3, renk: "rgba(0,0,0,0.18)" },
+      { koyu: false, kal: 2, renk: "rgba(255,240,210,0.12)" },
+    ];
+    for (const pv of pervazlar) {
+      kc.fillStyle = pv.renk;
+      for (let i = 0; i < S.length - 1; i++) {
+        const a = S[i], b = S[i + 1];
+        const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy);
+        if (L < 0.01) continue;
+        const nx = -dy / L, ny = dx / L;
+        const yon = pv.koyu ? ((nx + ny) <= 0 ? 1 : -1) : ((nx + ny) <= 0 ? -1 : 1);
+        const wa = a.w || 1, wb = b.w || 1;
+        let d = 0;
+        while (d <= L) {
+          const t = d / L, w = wa + (wb - wa) * t, r = yari * w;
+          const h = tohumHash(tohumTemel + i * 17, Math.round(d), pv.koyu ? 11 : 12);
+          const br = pv.kal * (0.7 + h * 0.6);
+          const dis = r - br * 0.55 - h * 1.2;
+          if (dis > 0) cizBenek(a.x + dx * t + nx * dis * yon, a.y + dy * t + ny * dis * yon, br);
+          d += Math.max(4, br * 1.5);
+        }
+      }
+    }
   }
 
   // Tek bir 512x512 dünya parçasını (ölçekli tuval) yol çizgileriyle boyar
@@ -839,7 +883,7 @@
       if (!g) continue;
       const r = Math.max(g.rx, g.ry);
       if (g.x + r < ox || g.x - r > ox + PARCA || g.y + r < oy || g.y - r > oy + PARCA) continue;
-      golgeCiz(c, g.x, g.y, g.rx, g.ry);
+      golgeCiz(c, g.x, g.y, g.rx, g.ry, g.h);
     }
     for (const s of (zemin.suslar || [])) {
       if (!s) continue;
@@ -971,7 +1015,70 @@
     return false;
   }
 
+  // ---------- ZEM3B: oyuncu çevresi ışık halkası (ekran uzayı, önceden bir kez çizilir) ----------
+  let _isikTuv = null, _isikBoyut = "", _isikAlfa = 0, _isikSon = 0;
+
+  // Ekran boyutu için iki katı büyüklükte halka tuvali (boyut değişince yeniden kurulur)
+  function isikHalkasiTuvall(W, H) {
+    const anahtar = W + "x" + H;
+    if (_isikTuv && _isikBoyut === anahtar) return _isikTuv;
+    try {
+      const tv = document.createElement("canvas");
+      tv.width = Math.max(2, W * 2); tv.height = Math.max(2, H * 2);
+      const c = tv.getContext("2d");
+      if (!c) return null;
+      const r0 = 0.42 * Math.min(W, H);
+      const r1 = Math.hypot(W, H) / 2;
+      const g = c.createRadialGradient(W, H, r0, W, H, Math.max(r0 + 1, r1));
+      g.addColorStop(0, "rgba(255,200,120,0.04)"); // içte çok hafif sıcak ton
+      g.addColorStop(0.45, "rgba(10,8,20,0.12)");
+      g.addColorStop(1, "rgba(10,8,20,0.34)"); // ekran köşelerinde koyulaşır
+      c.fillStyle = g;
+      c.fillRect(0, 0, tv.width, tv.height);
+      _isikTuv = tv; _isikBoyut = anahtar;
+      return tv;
+    } catch (e) { return null; }
+  }
+
+  // Işık halkasını oyuncunun ekran konumuna çiz; menüde/ölüyken/uçuşta 300 ms'de söner
+  function isikHalkasiCiz(ctx, ekranX, ekranY) {
+    if (!ctx || typeof game === "undefined" || !game) return false;
+    const g = game;
+    const aktif = !!(ISIK_HALKASI && g.running && !g.paused && !g.menude && !g._turGeciste && g.player && !g.player.dead);
+    const simdi = performance.now();
+    const dt = _isikSon ? Math.min(120, Math.max(0, simdi - _isikSon)) : 16;
+    _isikSon = simdi;
+    const hedef = aktif ? 1 : 0;
+    if (_isikAlfa < hedef) _isikAlfa = Math.min(hedef, _isikAlfa + dt / 300);
+    else if (_isikAlfa > hedef) _isikAlfa = Math.max(hedef, _isikAlfa - dt / 300);
+    if (_isikAlfa <= 0.002) return false;
+    const W = g.W || (ctx.canvas && ctx.canvas.width) || 0;
+    const H = g.H || (ctx.canvas && ctx.canvas.height) || 0;
+    if (!(W > 0 && H > 0) || !g.player) return false;
+    const tv = isikHalkasiTuvall(W, H);
+    if (!tv) return false;
+    const px = Number.isFinite(ekranX) ? ekranX : (g.player.x - ((g.camera && g.camera.x) || 0));
+    const py = Number.isFinite(ekranY) ? ekranY : (g.player.y - ((g.camera && g.camera.y) || 0));
+    ctx.save();
+    ctx.globalAlpha = _isikAlfa;
+    ctx.drawImage(tv, px - W, py - H);
+    ctx.restore();
+    return true;
+  }
+
+  try {
+    Object.defineProperty(window, "ISIK_HALKASI", {
+      configurable: true,
+      get() { return ISIK_HALKASI; },
+      set(v) { ISIK_HALKASI = !!v; },
+    });
+  } catch (e) { /* tarayıcı yok */ }
+
   window.addEventListener("gorsel-yuklendi", () => zeminKatmaniSil());
 
-  Object.assign(window, { zeminKatmaniKur, zeminKatmaniCiz, zeminKatmaniSil, zeminKatmaniYolMu });
+  Object.assign(window, {
+    zeminKatmaniKur, zeminKatmaniCiz, zeminKatmaniSil, zeminKatmaniYolMu,
+    isikHalkasiCiz, zeminGolgeCiz: golgeCiz,
+    isikHalkasiDurum: () => ({ alfa: _isikAlfa, acik: ISIK_HALKASI }),
+  });
 })();

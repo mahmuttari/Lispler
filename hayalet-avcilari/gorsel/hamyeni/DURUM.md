@@ -30,7 +30,7 @@
 | R24 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): opak zemin dokuları (RGB, her hücre dolu): kumtaşı döşeme, hasır, taş döşeme, çam iğneli çimen, pişmiş toprak karo, iki yanı yeşil kıyılı dikey nehir şeridi; dikiş ölçümü (kenar renk farkı / iç referans): 1 12-14/16, 2 34-26/18 (hasır deseni kenarda kayıyor), 3 10-17/22, 4 11/8, 5 6-10/4, 6 14-16/5; toplu gösterim bekleniyor |
 | R25 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Türkiye peri bacaları, lale bahçesi; Ukrayna ayçiçeği tarlası, saz çatılı beyaz ev; Polonya Wawel ejderi (kaya üstünde ateş püskürten heykel), direk üstünde leylek yuvaları; parçalar ~330-430 px; bütün hücreler temiz (en dar kenar 4. hücrede 8 px); toplu gösterim bekleniyor |
 | R26 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Almanya guguklu saat evi, yarım ahşap evler; Birleşik Krallık iki kırmızı telefon kulübesi (yazısız), saat kulesi (rakamsız kadran); Fransa Eyfel Kulesi, lavanta tarlası; parçalar ~305-450 px; bütün hücreler temiz (en dar kenar 5. hücrede üstte 7 px); toplu gösterim bekleniyor |
-| R27 | bekliyor |
+| R27 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): İtalya Kolezyum, gondollu kanal iskelesi; İspanya La Mancha yel değirmenleri, Elhamra Aslanlı Çeşme; Fas Şefşavan mavi sokak köşesi, fenerli çarşı tezgâhı; parçalar ~415-440 px; bütün hücreler temiz (en dar kenar 32 px); toplu gösterim bekleniyor |
 | R28 | bekliyor |
 | R29 | bekliyor |
 | R30 | bekliyor |

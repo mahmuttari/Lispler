@@ -31,7 +31,7 @@
 | R25 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Türkiye peri bacaları, lale bahçesi; Ukrayna ayçiçeği tarlası, saz çatılı beyaz ev; Polonya Wawel ejderi (kaya üstünde ateş püskürten heykel), direk üstünde leylek yuvaları; parçalar ~330-430 px; bütün hücreler temiz (en dar kenar 4. hücrede 8 px); toplu gösterim bekleniyor |
 | R26 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Almanya guguklu saat evi, yarım ahşap evler; Birleşik Krallık iki kırmızı telefon kulübesi (yazısız), saat kulesi (rakamsız kadran); Fransa Eyfel Kulesi, lavanta tarlası; parçalar ~305-450 px; bütün hücreler temiz (en dar kenar 5. hücrede üstte 7 px); toplu gösterim bekleniyor |
 | R27 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): İtalya Kolezyum, gondollu kanal iskelesi; İspanya La Mancha yel değirmenleri, Elhamra Aslanlı Çeşme; Fas Şefşavan mavi sokak köşesi, fenerli çarşı tezgâhı; parçalar ~415-440 px; bütün hücreler temiz (en dar kenar 32 px); toplu gösterim bekleniyor |
-| R28 | bekliyor |
+| R28 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Cezayir Sahra kumulları, Tassili kaya kemerleri; Fildişi Sahili kakao bahçesi, sevimli fil ailesi; Gana kente dokuma tezgâhı (geometrik kumaş), Kakum kanopi köprüsü; DİKKAT arka planı her yerde alfa 20-100 beyaz pus kaplıyor: kesimde bu pafta için eşik 120 olmalı (ya da alfa 100->0, 160->255 yumuşak eşleme); 120 eşiğiyle bütün hücreler temiz ve sınırlar boş; toplu gösterim bekleniyor |
 | R29 | bekliyor |
 | R30 | bekliyor |
 | R31 | bekliyor |

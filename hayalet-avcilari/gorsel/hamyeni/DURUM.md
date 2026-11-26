@@ -42,7 +42,7 @@
 | R36 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Bangladeş süslü rikşalar, Sundarbans ve sevimli Bengal kaplanı; Myanmar Inle Gölü ayakla kürek çeken balıkçı, Pathein şemsiyeleri; Tayland yüzen pazar kayığı (kız satıcı), tuk-tuk; DİKKAT 5. hücredeki kayığın burnu x=509'da başlıyor (4. hücreye 3 px), 481-508 boş: kesimde 4. hücre x<509, 5. hücre x>=509; diğerleri temiz; toplu gösterim bekleniyor |
 | R37 | üretildi (2. deneme, Chrome'da ChatGPT, referans U06 + D01; 1. denemede jeepney tavanında Filipin bayrağını andıran güneş deseni vardı, bayrak kuralı için değiştirtildi): Malezya Petronas İkiz Kuleleri, Rafflesia çiçeği; Endonezya sevimli Komodo ejderleri, pirinç terasları; Filipinler Çikolata Tepeleri, çiçek-yıldız süslü jeepney (yazısız); bütün hücreler temiz (en dar kenar 28 px); toplu gösterim bekleniyor |
 | R38 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Vietnam Ha Long Körfezi ve jonk, Hoi An ipek fenerleri; Çin sevimli pandalar ve bambu, ejder dansı kuklası; Güney Kore hanok evleri, kimçi küpleri; bütün hücreler temiz (en dar kenar 10 px); toplu gösterim bekleniyor |
-| R39 | bekliyor |
+| R39 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Japonya kiraz ağaçları, Fuji Dağı; Rusya matruşka bebekleri, oymalı ahşap izba; Kanada akçaağaç ve şurup kovası, sevimli kunduzlu baraj; bütün hücreler temiz (en dar kenar 16 px); toplu gösterim bekleniyor |
 | R40 | bekliyor |
 | R41 | bekliyor |
 | R42 | bekliyor |

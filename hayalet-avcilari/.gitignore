@@ -7,3 +7,4 @@ __pycache__/
 test/ciktilar/
 *-debug.log
 .ceviri-gecici/
+test/ekran/

@@ -35,7 +35,7 @@
 | R29 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Nijerya Zuma Kayası, konuşan davullar; Kongo DC sevimli okapi, nehirde iki pirog; Angola Kalandula Şelalesi, welwitschia bitkisi; DİKKAT 6. hücredeki yaprak ucu x=1021'de başlıyor (5. hücreye 3 px), 986-1020 boş: kesimde 5. hücre x<1021, 6. hücre x>=1021; diğerleri temiz; toplu gösterim bekleniyor |
 | R30 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Güney Afrika Masa Dağı, sevimli Afrika penguenleri; Mozambik dau yelkenlileri, kaju ağaçları; Madagaskar Baobab Caddesi, sevimli lemurlar; parçalar ~435-460 px; bütün hücreler temiz (en dar kenar 15 px); toplu gösterim bekleniyor |
 | R31 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Tanzanya Kilimanjaro, oymalı Zanzibar kapısı; Uganda sevimli dağ gorilleri, Murchison Şelalesi; Kenya zürafalar ve akasya, flamingolu göl; parçalar ~440-480 px; bütün hücreler temiz (en dar kenar 15 px); toplu gösterim bekleniyor |
-| R32 | bekliyor |
+| R32 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Etiyopya Aksum dikili taşları (simgesiz), sevimli gelada maymunları; Sudan Meroe piramitleri, deve pazarı; Mısır Gize piramitleri ve Sfenks, Nil'de felukalar; parçalar ~410-460 px; bütün hücreler temiz (en dar kenar 21 px); toplu gösterim bekleniyor |
 | R33 | bekliyor |
 | R34 | bekliyor |
 | R35 | bekliyor |

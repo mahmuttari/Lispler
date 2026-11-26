@@ -935,13 +935,24 @@ function aeUcuslarCiz(ctx, now = performance.now()) {
     const y = e.sy + (e.hy - e.sy) * t - Math.sin(k * Math.PI) * 60;
     ctx.save();
     ctx.globalAlpha = Math.min(1, 1.2 - k);
-    ctx.fillStyle = e.tip === "elmas" ? "#60a5fa" : "#fbbf24";
-    ctx.strokeStyle = "rgba(0,0,0,0.5)";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = "#fff7cc";
-    ctx.beginPath(); ctx.arc(x - 1.6, y - 1.6, 2, 0, Math.PI * 2); ctx.fill();
+    let resimli = false;
+    if (e.tip === "elmas") {
+      if (typeof gorsel === "function" && gorsel("esya-elmas") && typeof gorselKutuya === "function") {
+        resimli = gorselKutuya(ctx, "esya-elmas", x - 8, y - 8, 16, 16);
+      }
+    } else if (typeof animHazir === "function" && animHazir("para") && typeof animDongu === "function" && typeof animCiz === "function") {
+      const kare = animDongu("para", (typeof aeAzHareket === "function" && aeAzHareket()) ? 0 : now / 1000, 12);
+      if (kare) resimli = animCiz(ctx, "para", kare, x - 8, y - 8, 16, 16);
+    }
+    if (!resimli) {
+      ctx.fillStyle = e.tip === "elmas" ? "#60a5fa" : "#fbbf24";
+      ctx.strokeStyle = "rgba(0,0,0,0.5)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#fff7cc";
+      ctx.beginPath(); ctx.arc(x - 1.6, y - 1.6, 2, 0, Math.PI * 2); ctx.fill();
+    }
     ctx.restore();
   }
 }

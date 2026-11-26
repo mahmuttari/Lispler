@@ -1753,6 +1753,19 @@ function drawEnemyProjectile(ctx, p) {
   ctx.save();
   ctx.translate(p.x, p.y);
   const r = p.isBoss ? 9 : 6;
+  if (typeof gorsel === "function" && typeof gorselKutuya === "function" && gorsel(p.isBoss ? "atis-boss" : "atis-hayalet")) {
+    const boy = r * 5;
+    if (p.isBoss) {
+      ctx.rotate(Math.atan2(p.vy, p.vx));
+      gorselKutuya(ctx, "atis-boss", -boy / 2, -boy / 2, boy, boy);
+    } else {
+      // Yüzü yukarı kalsın: döndürme yok; izi sola baktığı için sağa giderken aynala
+      if (p.vx > 0) ctx.scale(-1, 1);
+      gorselKutuya(ctx, "atis-hayalet", -boy / 2, -boy / 2, boy, boy);
+    }
+    ctx.restore();
+    return;
+  }
   const color = p.isBoss ? "#dc2626" : "#a855f7";
   // Glow halo
   const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, r * 2.5);
@@ -3115,6 +3128,18 @@ function drawProjectile(ctx, p) {
   ctx.translate(p.x, p.y);
   const ang = Math.atan2(p.vy, p.vx);
   if (typeof aeMermiKareCiz === "function" && aeMermiKareCiz(ctx, p, ang)) { ctx.restore(); return; }
+  if (!p.gun && p.charKey) {
+    const yaricap = { kinkin: 8, veryi: 8, kornet: 9, mark: 13, gul: 13, kent: 9, ponko: 8, rani: 5.5, beti: 7, fanatik: 10, silsen: 7, sercin: 18 }[p.charKey];
+    if (yaricap && typeof gorsel === "function" && gorsel("mermi-" + p.charKey) && typeof gorselKutuya === "function") {
+      const boy = yaricap * 2.6;
+      ctx.save();
+      if (p.charKey === "kent" || p.charKey === "silsen") { if (typeof aeAzHareket !== "function" || !aeAzHareket()) ctx.rotate(performance.now() / 90); }
+      else ctx.rotate(ang);
+      gorselKutuya(ctx, "mermi-" + p.charKey, -boy / 2, -boy / 2, boy, boy);
+      ctx.restore();
+      ctx.restore(); return;
+    }
+  }
   if (p.gun === "yildiz") {
     const boy = p.buyukYildiz ? 22 : 12;
     if (typeof animHazir === "function" && animHazir("mermi-yildiz") && typeof animDongu === "function" && typeof animCiz === "function") {
@@ -3348,6 +3373,9 @@ function drawGunProjectile(ctx, gunKey, ang) {
       break;
     }
     case "lazer":
+      if (typeof gorsel === "function" && gorsel("mermi-lazer") && typeof gorselKutuya === "function") {
+        ctx.save(); ctx.rotate(ang); gorselKutuya(ctx, "mermi-lazer", -10, -10, 20, 20); ctx.restore(); return;
+      }
       ctx.rotate(ang);
       ctx.shadowColor = "#f87171"; ctx.shadowBlur = 12;
       ctx.fillStyle = "#ef4444";
@@ -3356,11 +3384,17 @@ function drawGunProjectile(ctx, gunKey, ang) {
       ctx.fillRect(-8, -0.6, 16, 1.2);
       break;
     case "yesil":
+      if (typeof gorsel === "function" && gorsel("mermi-yesil") && typeof gorselKutuya === "function") {
+        ctx.save(); ctx.rotate(ang); gorselKutuya(ctx, "mermi-yesil", -6.75, -6.75, 13.5, 13.5); ctx.restore(); return;
+      }
       ctx.fillStyle = "#22c55e";
       ctx.beginPath(); ctx.arc(0, 0, 4.5, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = "#14532d"; ctx.lineWidth = 1; ctx.stroke();
       break;
     case "pompali":
+      if (typeof gorsel === "function" && gorsel("mermi-pompali") && typeof gorselKutuya === "function") {
+        ctx.save(); ctx.rotate(ang); gorselKutuya(ctx, "mermi-pompali", -6, -6, 12, 12); ctx.restore(); return;
+      }
       ctx.fillStyle = "#1f2937";
       ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#9ca3af";

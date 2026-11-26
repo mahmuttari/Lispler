@@ -648,7 +648,7 @@ def bulutu_grile(hucre, damla_sil):
     return hucre.crop(kutu) if kutu else hucre
 
 # Arka planı saydam yerine hafif gri pusla gelen paftalar: belirgin nesneden (alfa ≥ 150) ~7 px'ten uzak pus silinir
-PUS_PAFTALAR = {'R49'}
+PUS_PAFTALAR = {'R49', 'K07'}
 
 
 def pusu_sil(hucre):

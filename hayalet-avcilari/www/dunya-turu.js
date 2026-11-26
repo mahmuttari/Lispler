@@ -361,6 +361,7 @@ function turSekmesi(ad) {
   if (df) df.style.display = defter ? "" : "none";
   turYakindaBannerCiz();
   if (defter && typeof hikayeDefterCiz === "function") hikayeDefterCiz();
+  if (defter && df && typeof akiListeGiris === "function") akiListeGiris(df, ".defter-yuva");
   if (pasaport) {
     const k = turKaydi();
     pp.innerHTML = ULKELER.map((u) => (k.damgalar[u.kod]

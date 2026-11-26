@@ -3512,10 +3512,114 @@ function drawPickup(ctx, p) {
   ctx.restore();
 }
 
+// ====== AKI2: canlı arayüz (hareket, sayaç, giriş) ======
+// Az hareket tercihi her çağrıda yeniden okunur (sınama emülasyonu sayfa açıldıktan sonra da çalışsın).
+function akiAzHareket() {
+  return typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+// Liste ögelerine sırayla giriş: 220 ms, 35 ms arayla, en çok 12 öge (sonrası 12'nin gecikmesiyle).
+function akiListeGiris(kap, secici) {
+  if (!kap || akiAzHareket()) return;
+  const ogeler = [...kap.querySelectorAll(secici)];
+  ogeler.forEach((el, i) => {
+    el.style.animationDelay = `${Math.min(i, 11) * 35}ms`;
+    el.classList.add("aki-giris");
+  });
+}
+
+// Para/elmas/zümrüt sayaçları eski değerden yenisine yumuşak geçer (350 ms).
+const _akiSayac = new WeakMap();
+function akiSayacYaz(el, deger) {
+  if (!el) return;
+  const hedef = Number(deger) || 0;
+  const onceki = Number(String(el.textContent).replace(/[^\d.-]/g, "")) || 0;
+  const eski = _akiSayac.get(el);
+  if (eski) cancelAnimationFrame(eski.raf);
+  if (akiAzHareket()) { el.textContent = hedef; _akiSayac.delete(el); return; }
+  // Aynı hedefe ikinci çağrı (ekran yeniden tazelenince): beklemeden bitir; metin hemen doğru okunur.
+  if (eski && eski.hedef === hedef) { el.textContent = hedef; _akiSayac.delete(el); return; }
+  if (onceki === hedef || !el.isConnected) { el.textContent = hedef; return; }
+  const fark = hedef - onceki, bas = performance.now();
+  const kayit = { hedef, raf: 0 };
+  _akiSayac.set(el, kayit);
+  const adim = (an) => {
+    const k = Math.min(1, (an - bas) / 350);
+    const yum = 1 - Math.pow(1 - k, 3);
+    el.textContent = Math.round(onceki + fark * yum);
+    if (k < 1) kayit.raf = requestAnimationFrame(adim);
+    else { el.textContent = hedef; _akiSayac.delete(el); }
+  };
+  kayit.raf = requestAnimationFrame(adim);
+  if (hedef > onceki) { // artışta kısa bir "pop" (0.15 s)
+    el.classList.remove("aki-sayi-pop");
+    void el.offsetWidth;
+    el.classList.add("aki-sayi-pop");
+  }
+}
+
+// R49 menü-şeridi: dört sayaç hapının arkasına resim çerçeve (yüklenmemişse bugünkü görünüm kalır).
+function menuSayacCercevesi() {
+  const el = document.querySelector("#screen-menu .resources");
+  if (!el) return;
+  const im = typeof gorsel === "function" ? gorsel("menu-sayac") : null;
+  if (!im) { el.classList.remove("aki-sayac-cerceve"); el.style.backgroundImage = ""; return; }
+  el.classList.add("aki-sayac-cerceve");
+  el.style.backgroundImage = `url("${im.src}")`;
+}
+
+// R49 konfeti: satın alma ve bölüm kutlamasında ortada bir kez patlar (resim yoksa sessizce atlanır).
+function konfetiPatlat() {
+  if (akiAzHareket()) return;
+  const im = typeof gorsel === "function" ? gorsel("menu-konfeti") : null;
+  if (!im) return;
+  const kap = document.createElement("div");
+  kap.className = "aki-konfeti";
+  const resim = document.createElement("img");
+  resim.src = im.src;
+  resim.alt = "";
+  kap.appendChild(resim);
+  document.body.appendChild(kap);
+  setTimeout(() => kap.remove(), 800);
+}
+
+// R49 parıltı: seçili karakter kartında ve sahip olunan efsane eşyalarda minik ışıltı.
+function akiPariltiEkle(el) {
+  if (!el) return;
+  const im = typeof gorsel === "function" ? gorsel("menu-parilti") : null;
+  if (!im || el.querySelector(".aki-parilti")) return;
+  el.classList.add("aki-parilti-kap");
+  const p = document.createElement("span");
+  p.className = "aki-parilti";
+  p.setAttribute("aria-hidden", "true");
+  p.style.backgroundImage = `url("${im.src}")`;
+  el.appendChild(p);
+}
+
 // ====== EKRAN YÖNETİMİ ======
 function showScreen(id) {
-  document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  const yeni = document.getElementById(id);
+  const az = akiAzHareket();
+  document.querySelectorAll(".screen").forEach((s) => {
+    if (s === yeni) return;
+    const eskiAktif = s.classList.contains("active");
+    s.classList.remove("active", "screen-giris");
+    if (eskiAktif && !az) { // eski ekran 120 ms solarken altta kalır (yeni ekran üstte)
+      s.classList.add("screen-cikis");
+      clearTimeout(s._akiCikis);
+      s._akiCikis = setTimeout(() => s.classList.remove("screen-cikis"), 130);
+    } else s.classList.remove("screen-cikis");
+  });
+  if (!yeni) return;
+  yeni.classList.remove("screen-cikis");
+  yeni.classList.add("active"); // .active her zaman eşzamanlı (testler ve kod bunu bekler)
+  if (!az) {
+    yeni.classList.remove("screen-giris");
+    void yeni.offsetWidth;
+    yeni.classList.add("screen-giris");
+    clearTimeout(yeni._akiGiris);
+    yeni._akiGiris = setTimeout(() => yeni.classList.remove("screen-giris"), 200);
+  }
   if (typeof menuDekorDurum === "function") menuDekorDurum(id === "screen-menu");
   eskiToastuKapat();
 }
@@ -5127,6 +5231,7 @@ function renderLeaderboard(list, sourceLabel) {
 
     container.appendChild(row);
   });
+  akiListeGiris(container, ".leaderboard-row");
   // Uzun listede kendi satırına git (ilk 10'da değilse)
   const ben = list.findIndex((e) => e.name === save.playerName);
   if (ben >= 10) {
@@ -5194,10 +5299,11 @@ function drawGreeter() {
 // ====== MENÜ ======
 function refreshMenu() {
   document.getElementById("menu-player").textContent = save.playerName || t("Avcı");
-  document.getElementById("menu-para").textContent = save.para;
-  document.getElementById("menu-elmas").textContent = save.elmas;
-  document.getElementById("menu-zumrut").textContent = save.zumrut;
-  document.getElementById("menu-kupa").textContent = save.kupa || 0;
+  akiSayacYaz(document.getElementById("menu-para"), save.para);
+  akiSayacYaz(document.getElementById("menu-elmas"), save.elmas);
+  akiSayacYaz(document.getElementById("menu-zumrut"), save.zumrut);
+  akiSayacYaz(document.getElementById("menu-kupa"), save.kupa || 0);
+  menuSayacCercevesi();
 
   // Karakter önizleme: canlı (gorsel.js canliOnizleme); eskiden data URL'e bir kez çizilirdi
   const charKey = save.selectedChar;
@@ -5396,7 +5502,7 @@ function karakterKartResmi(key) {
 }
 
 function refreshCharacters() {
-  document.getElementById("char-zumrut").textContent = save.zumrut;
+  akiSayacYaz(document.getElementById("char-zumrut"), save.zumrut);
   const list = document.getElementById("character-list");
   canliOnizlemeTemizle(list);
   list.innerHTML = "";
@@ -5454,10 +5560,12 @@ function refreshCharacters() {
     card.appendChild(durum);
 
     card.addEventListener("click", () => karakterDetayAc(key));
+    if (selected) akiPariltiEkle(card); // R49: seçili kartta pırıltı
     list.appendChild(card);
     // Canlı 3D: atışsız, en çok 10 kare/sn; ekran dışındaki kart çizilmez
     canliOnizleme(img.firstChild, key, save.selectedCostume[key] || 0, { atis: false, yalniz3d: true, aralikMs: 100, olcek: 1.2, ayak: 0.56 });
   });
+  akiListeGiris(list, ".char-card");
 
   // Panel açıksa yerinde tazelenir (satın alma, seçme, görsel yüklemesi sonrası)
   if (charDetayKey && CHARACTERS[charDetayKey]) karakterDetayCiz();
@@ -5516,6 +5624,7 @@ function karakterAlVeyaSec(key) {
         persistSave();
         refreshCharacters();
         refreshMenu();
+        konfetiPatlat();
         showToast(t("🎉 {ad} açıldı!", { ad: c.name }));
         audio.unlock();
       }
@@ -5676,6 +5785,7 @@ document.addEventListener("keydown", (e) => {
 // Görseller yüklenince açık ekranın kartları (ve paneli) yeniden çizilir: kart-* resimleri <img> olur
 window.addEventListener("gorsel-yuklendi", () => {
   menuSimgeleriniUygula();
+  menuSayacCercevesi();
   if (typeof menuDekoruKur === "function") menuDekoruKur();
   const ekran = document.getElementById("screen-characters");
   if (ekran && ekran.classList.contains("active")) refreshCharacters();
@@ -5706,8 +5816,8 @@ function showShopTab(tab) {
 }
 
 function refreshShop() {
-  document.getElementById("shop-para").textContent = save.para;
-  document.getElementById("shop-elmas").textContent = save.elmas;
+  akiSayacYaz(document.getElementById("shop-para"), save.para);
+  akiSayacYaz(document.getElementById("shop-elmas"), save.elmas);
   const content = document.getElementById("shop-content");
   content.innerHTML = "";
 
@@ -5753,6 +5863,7 @@ function refreshShop() {
             save.upgradesByChar[activeChar][key]++;
             persistSave();
             refreshShop();
+            konfetiPatlat();
             showToast(t("{ad} {yukseltme} yükseltildi!", { ad: charName, yukseltme: u.name }));
             audio.buy();
           }
@@ -5802,11 +5913,13 @@ function refreshShop() {
           persistSave();
           refreshShop();
           efsaneKutlama();
+          konfetiPatlat();
           showToast(t("✨ {ad} alındı!", { ad: oz.ad }));
           audio.buy();
         };
       }
       item.appendChild(btn);
+      if (save[oz.key]) akiPariltiEkle(item);
       content.appendChild(item);
     });
   } else if (currentShopTab === "ammo") {
@@ -5906,6 +6019,7 @@ function refreshShop() {
           equipGun(key);
           refreshShop();
           if (g.efsane) efsaneKutlama();
+          konfetiPatlat();
           showToast(t("🔫 {ad} alındı ve takıldı!", { ad: g.name }));
           audio.buy();
         };
@@ -5917,6 +6031,7 @@ function refreshShop() {
         btn.onclick = () => { equipGun(key); refreshShop(); showToast(`🎒 ${ad}`); };
       }
       item.appendChild(btn);
+      if (g && g.efsane && save.ownedGuns[key]) akiPariltiEkle(item);
       content.appendChild(item);
     };
     satir("", t("Normal silah"), t("Karakterin kendi silahı ve mermisi."), charIconUrl(save.selectedChar));
@@ -5952,6 +6067,7 @@ function refreshShop() {
           save.pet = key;
           persistSave();
           refreshShop();
+          konfetiPatlat();
           showToast(t("🐾 {ad} artık yanında!", { ad: pt.ad }));
           audio.buy();
         };
@@ -6025,17 +6141,20 @@ function refreshShop() {
               persistSave();
               refreshShop();
               if (cos.efsane) { efsaneKutlama(); audio.buy(); }
+              konfetiPatlat();
               showToast(t("🎉 Yeni kostüm!"));
               audio.unlock();
             }
           };
         }
         item.appendChild(btn);
+        if (owned && cos.efsane) akiPariltiEkle(item);
 
         content.appendChild(item);
       });
     });
   }
+  akiListeGiris(content, ".shop-item");
 }
 
 // ====== STAT HESAPLAMA ======
@@ -7494,6 +7613,7 @@ function gec1Basla() {
     wipeBas: 0, kartBas: 0, fisekIdx: 0, sonYazi: 0, baslik: "", tema: "",
   };
   if (P && !P.dead) P.sevincUntil = now + 2200; // mevcut sevinç pozu
+  konfetiPatlat();
   gec1BannerYaz(now, true);
   let caldi = false;
   try { if (typeof audio.hikayeSes === "function") caldi = !!audio.hikayeSes("rozet"); } catch (e) { caldi = false; }

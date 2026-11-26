@@ -6335,6 +6335,89 @@ function freeSpot(x, y, r, blocked) {
   return best;
 }
 
+// FIX1: hayaletin çevresinde 8 yönde 24 px serbestlik var mı? (hareket kodu yalnız duvarları engel sayar)
+function hayaletYolAcik(x, y, r) {
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2;
+    if (!collidesWalls(x + Math.cos(a) * 24, y + Math.sin(a) * 24, r)) return true;
+  }
+  return false;
+}
+
+// Sıkışan doğum noktası çevresinde (30-90 px) serbest yönü olan bir yer ara.
+function hayaletYakinYer(x, y, r) {
+  for (let i = 0; i < 12; i++) {
+    const a = Math.random() * Math.PI * 2, rr = 30 + Math.random() * 60;
+    const p = freeSpot(x + Math.cos(a) * rr, y + Math.sin(a) * rr, r);
+    if (hayaletYolAcik(p.x, p.y, r)) return p;
+  }
+  return null;
+}
+
+// 20 px ızgarada BFS: hedefe doğru ilk ara nokta (yaklaşık 40 px ileride). Yol yoksa null.
+function hayaletBfsYon(sx, sy, tx, ty, r) {
+  const HUC = 20, x0 = 40, y0 = 40;
+  const nx = Math.max(2, Math.ceil((game.worldW - 80) / HUC));
+  const ny = Math.max(2, Math.ceil((game.worldH - 80) / HUC));
+  const hucre = (i) => ({ x: x0 + (i % nx) * HUC, y: y0 + Math.floor(i / nx) * HUC });
+  const bul = (x, y) => Math.max(0, Math.min(ny - 1, Math.round((y - y0) / HUC))) * nx + Math.max(0, Math.min(nx - 1, Math.round((x - x0) / HUC)));
+  const bas = bul(sx, sy), hedef = bul(tx, ty);
+  const ata = new Int32Array(nx * ny).fill(-1);
+  ata[bas] = bas;
+  const kuyruk = [bas];
+  let en = bas, enD = Infinity;
+  for (let q = 0; q < kuyruk.length && q < 12000; q++) {
+    const c = kuyruk[q], hc = hucre(c), dd = Math.hypot(hc.x - tx, hc.y - ty);
+    if (dd < enD) { enD = dd; en = c; }
+    if (c === hedef) { en = c; break; }
+    const ix = c % nx, iy = Math.floor(c / nx);
+    for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+      const jx = ix + ox, jy = iy + oy;
+      if (jx < 0 || jy < 0 || jx >= nx || jy >= ny) continue;
+      const j = jy * nx + jx;
+      if (ata[j] !== -1) continue;
+      const hj = hucre(j);
+      if (collidesWalls(hj.x, hj.y, r)) { ata[j] = -2; continue; }
+      ata[j] = c; kuyruk.push(j);
+    }
+  }
+  const yol = [];
+  for (let c = en; c !== bas && ata[c] >= 0 && yol.length < 3000; c = ata[c]) yol.push(c);
+  if (!yol.length) return null;
+  yol.reverse();
+  return { nokta: hucre(yol[Math.min(yol.length - 1, 2)]) };
+}
+
+// Sıkışan hayaleti 120 px içinde ızgarada ulaşılabilir, yolu açık en yakın hücreye taşımak için nokta arar.
+function hayaletKurtarmaNoktasi(g) {
+  const HUC = 20, x0 = 40, y0 = 40;
+  const nx = Math.max(2, Math.ceil((game.worldW - 80) / HUC));
+  const ny = Math.max(2, Math.ceil((game.worldH - 80) / HUC));
+  const hucre = (i) => ({ x: x0 + (i % nx) * HUC, y: y0 + Math.floor(i / nx) * HUC });
+  const bul = (x, y) => Math.max(0, Math.min(ny - 1, Math.round((y - y0) / HUC))) * nx + Math.max(0, Math.min(nx - 1, Math.round((x - x0) / HUC)));
+  const bas = bul(g.x, g.y);
+  const ata = new Int32Array(nx * ny).fill(-1);
+  ata[bas] = bas;
+  const kuyruk = [bas];
+  let en = null, enD = Infinity;
+  for (let q = 0; q < kuyruk.length; q++) {
+    const c = kuyruk[q], hc = hucre(c), dd = Math.hypot(hc.x - g.x, hc.y - g.y);
+    if (dd > 140) continue;
+    if (dd > 1 && !collidesWalls(hc.x, hc.y, g.r) && hayaletYolAcik(hc.x, hc.y, g.r) && dd < enD) { enD = dd; en = hc; }
+    const ix = c % nx, iy = Math.floor(c / nx);
+    for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+      const jx = ix + ox, jy = iy + oy;
+      if (jx < 0 || jy < 0 || jx >= nx || jy >= ny) continue;
+      const j = jy * nx + jx;
+      if (ata[j] !== -1) continue;
+      const hj = hucre(j);
+      if (collidesWalls(hj.x, hj.y, g.r)) { ata[j] = -2; continue; }
+      ata[j] = c; kuyruk.push(j);
+    }
+  }
+  return en;
+}
+
 function buildWalls() {
   if (typeof dunyaBoyutunuAyarla === "function") dunyaBoyutunuAyarla();
   if (typeof yolculukAcik === "function" && yolculukAcik() && typeof yolculukHaritaKur === "function") {
@@ -7114,11 +7197,76 @@ function update(dt, now) {
     const seekVx = (dx / d) * hiz;
     const seekVy = (dy / d) * hiz;
 
+    // FIX1: sıkışma ölçümü — son 1,5 sn'de 12 px'ten az ilerleyen hayalet kurtarma dizisine girer.
+    if (g._sikisBasX === undefined) {
+      g._sikisBasX = g.x; g._sikisBasY = g.y; g._sikisT = 0; g._sikisSay = 0;
+      g._sikisUzunX = g.x; g._sikisUzunY = g.y; g._sikisUzunSay = 0;
+    }
+    g._sikisSay += dt; g._sikisUzunSay += dt;
+    // Dar bir dairede dolanan hayalet de sıkışmış sayılır: 3 sn'de 40 px'ten az net ilerleme.
+    let uzunDusuk = false;
+    if (g._sikisUzunSay >= 3) {
+      uzunDusuk = Math.hypot(g.x - g._sikisUzunX, g.y - g._sikisUzunY) < 40;
+      g._sikisUzunX = g.x; g._sikisUzunY = g.y; g._sikisUzunSay = 0;
+    }
+    if (g._sikisSay >= 1.5) {
+      const ilerleme = Math.hypot(g.x - g._sikisBasX, g.y - g._sikisBasY);
+      g._sikisBasX = g.x; g._sikisBasY = g.y; g._sikisSay = 0;
+      g._sikisT = (ilerleme < 12 || uzunDusuk) ? (g._sikisT || 0) + 1.5 : 0;
+      if (g._sikisT >= 6) {
+        // 3) 6 sn: 120 px içinde ızgarada ulaşılabilir, yolu açık en yakın hücreye taşı + küçük toz bulutu
+        const yer = hayaletKurtarmaNoktasi(g);
+        if (yer) {
+          if (Array.isArray(game.particles)) {
+            for (let i = 0; i < 6; i++) {
+              const a = Math.random() * Math.PI * 2;
+              game.particles.push({ x: g.x, y: g.y, vx: Math.cos(a) * 30, vy: Math.sin(a) * 30 - 12, life: 0.5, color: "#cbd5e1" });
+            }
+          }
+          g.x = yer.x; g.y = yer.y;
+        }
+        g._sikisT = 0; g._kacisT = 0; g._bfsUntil = 0; g._bfsHedef = null;
+        g._sikisBasX = g.x; g._sikisBasY = g.y;
+        g._sikisUzunX = g.x; g._sikisUzunY = g.y; g._sikisUzunSay = 0;
+      } else if (g._sikisT >= 3) {
+        // 2) 3 sn: 20 px ızgarada BFS ile hedefe doğru ara nokta (2 sn)
+        g._bfsUntil = now + 2000; g._bfsSonra = 0; g._kacisT = 0;
+      } else if (g._sikisT >= 1.5) {
+        // 1) 1,5 sn: 8 pusula yönünden en uzun açık olanı 0,6-1 sn izle
+        let enIyiA = null, enIyiS = -1;
+        for (let i = 0; i < 8; i++) {
+          const a = (i / 8) * Math.PI * 2, cx = Math.cos(a), cy2 = Math.sin(a);
+          let s = 0;
+          for (const adim of [20, 40, 60]) { if (collidesWalls(g.x + cx * adim, g.y + cy2 * adim, g.r)) break; s += adim; }
+          if (s > enIyiS) { enIyiS = s; enIyiA = { x: cx, y: cy2 }; }
+        }
+        if (enIyiA && enIyiS >= 20) {
+          g._kacisVx = enIyiA.x * g.speed; g._kacisVy = enIyiA.y * g.speed;
+          g._kacisT = 0.6 + Math.random() * 0.4;
+        }
+      }
+    }
+
     let vx = seekVx, vy = seekVy;
     // Aktif detour varsa onu kullan
     if (g.detourTime && g.detourTime > 0) {
       vx = g.detourVx; vy = g.detourVy;
       g.detourTime -= dt;
+    }
+    // FIX1 kurtarma, detour'dan önce gelir: BFS ara noktası ya da kaçış yönü
+    if (g._bfsUntil && now < g._bfsUntil) {
+      if (now >= (g._bfsSonra || 0)) {
+        g._bfsSonra = now + 350;
+        g._bfsHedef = hayaletBfsYon(g.x, g.y, tx, ty, g.r);
+      }
+      const bp = g._bfsHedef && g._bfsHedef.nokta;
+      if (bp) {
+        const bdx = bp.x - g.x, bdy = bp.y - g.y, bd = Math.hypot(bdx, bdy) || 1;
+        vx = (bdx / bd) * g.speed; vy = (bdy / bd) * g.speed;
+      }
+    } else if (g._kacisT > 0) {
+      g._kacisT -= dt;
+      vx = g._kacisVx; vy = g._kacisVy;
     }
 
     const nx = g.x + vx * dt;
@@ -7911,8 +8059,25 @@ function spawnGhost(aralik) {
     }
   }
   if (kaynak) {
+    // FIX1: ağzında hiçbir yöne çıkamayan (duvara sıkışmış) yuvadan doğum yapma.
+    let yer = kaynakAgiz;
+    if (!hayaletYolAcik(yer.x, yer.y, 24)) {
+      const yakin = hayaletYakinYer(yer.x, yer.y, 24);
+      if (yakin) yer = yakin;
+      else {
+        for (const yv of game.yuvalar) {
+          if (yv === kaynak || yv.bolge !== range.bolge || yv.ulasilir === false) continue;
+          const p = freeSpot(yolculukYuvaAgzi(yv).x, yolculukYuvaAgzi(yv).y, 24);
+          if (!hayaletYolAcik(p.x, p.y, 24)) continue;
+          kaynak = yv; game._sonYuva = yv;
+          yer = hayaletYakinYer(p.x, p.y, 24) || p;
+          break;
+        }
+      }
+    }
     kaynak._dogumAn = performance.now();
-    x = kaynakAgiz.x; y = kaynakAgiz.y;
+    kaynakAgiz = yer;
+    x = yer.x; y = yer.y;
   } else {
     for (let deneme = 0; deneme < 16; deneme++) {
       let ax, ay;
@@ -7935,6 +8100,11 @@ function spawnGhost(aralik) {
     }
     // Duvarın içinde doğmasın: en yakın boş noktaya al (yalnız seçilen yer için; her denemede aramak kare hızını düşürür)
     ({ x, y } = freeSpot(x, y, 24));
+    // FIX1: doğduğu noktadan hiçbir yöne çıkamıyorsa çevresinde (30-90 px) açık bir yer ara.
+    if (!hayaletYolAcik(x, y, 24)) {
+      const p = hayaletYakinYer(x, y, 24);
+      if (p) { x = p.x; y = p.y; }
+    }
   }
 
   const tier = 1 + Math.floor(game.level / 3);

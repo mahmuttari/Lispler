@@ -9,7 +9,7 @@
 | R03 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): kırmızı lazer, ikiz yeşil enerji, üç turuncu saçma, üzgün yüzlü mor hayalet atışı, taçlı kırmızı boss küresi, kırmızı tehlike halkası (ortası boş); nesneler hücre içinde; yalnız 5. hücredeki tacın soluk parıltısı (alfa 40-90) satır 507-511'de 2. hücreye 5 px taşıyor (90 eşiğinde 1 px, kesimde sorun değil); toplu gösterim bekleniyor |
 | R04 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): üst sıra hayalet doğuş girdabı 3 kare (küçükten büyüğe, pırıltılı), alt sıra şarj küresi 3 kare (parlaklık artıyor); merkezler yakın, boy kareye göre büyüyor (animasyon gereği); hücre sınırı aşılmıyor; toplu gösterim bekleniyor |
 | R05 | üretildi (2. deneme, Chrome'da ChatGPT, referans U06 + D01; 1. denemede 3. hücredeki para parıltısı 2. hücreye 2-3 px taşıyordu, yerleşim istemiyle düzeldi): üst sıra büyüyen altın toplama halkası ve paralar 3 kare, alt sıra mavi mücevher pırıltısı 3 kare; hücre sınırı aşılmıyor (en dar kenar 13 px); arka planda her yerde alfa 1-39 pus var (%78, kesici siler); toplu gösterim bekleniyor |
-| R06 | bekliyor |
+| R06 | üretildi (2. deneme, Chrome'da ChatGPT, referans U06 + D01; 1. denemede 3. hücredeki kaya 2. hücreye taşıyordu, hücre merkezleri verilerek düzeldi): üst sıra boss iniş şok halkası (çatlak zemin, toz, kaya) 3 kare, alt sıra seviye atlama ışını ve yıldızlar 3 kare; hücre sınırı aşılmıyor (en dar kenar 36 px); toplu gösterim bekleniyor |
 | R07 | bekliyor |
 | R08 | bekliyor |
 | R09 | bekliyor |

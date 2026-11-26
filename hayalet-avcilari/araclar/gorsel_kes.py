@@ -664,6 +664,10 @@ EK_PAFTALAR = {
     'R41': [('ulke-PE-1', 256), ('ulke-PE-2', 256), ('ulke-BR-1', 256), ('ulke-BR-2', 256), ('ulke-AR-1', 256), ('ulke-AR-2', 256)],  # Machu Picchu terasları; lamalar; Amazon tukanları ve araları; Şeker Somunu Dağı; Perito Moreno Buzulu; Caminito'nun renkli evleri
     # R42: yağmur çizgisi + sıçrama, suya düşme halkaları (1-3 şelale animasyonu, 6 opak dere suyu dokusu: DOKU_PAFTALARI)
     'R42': [None, None, None, ('yagmur-damla', 128), ('su-halka', 160), None],
+    # R43: Dünya Turu pasaport damgası, uçak (yandan / üstten) ve harita simgeleri (kilitli, şimdiki, gezilmiş)
+    'R43': [('tur-damga', 192), ('tur-ucak-yan', 192), ('tur-ucak-ust', 192), ('tur-kilit', 96), ('tur-ucak-simge', 96), ('tur-pasaport', 96)],
+    # R44: oyun arayüzü: joystick tabanı ve topuzu, fenerli hayalet amblemi, anlatıcı parşömeni, boş defter yuvası, güç yıldızı
+    'R44': [('joystick-taban', 192), ('joystick-topuz', 128), ('amblem-hayalet', 192), ('ikon-parsomen', 96), ('ikon-defter-bos', 128), ('ikon-guc-yildiz', 96)],
     'K06': [('donati-fici', 160), ('donati-sandik', 160), ('donati-fener', 192), ('donati-bank', 160), ('donati-tabela', 160), ('donati-saman', 192)],
     'K07': [('donati-cali', 160), ('donati-ciceklik', 160), ('donati-mantar', 128), ('donati-kutuk', 160), ('donati-tas', 160), ('donati-yaprak', 160)],
     'K08': [('donati-balkabagi', 128), ('donati-araba', 192), ('donati-cit', 160), ('donati-korkuluk', 192), ('donati-mum', 128), ('donati-orumcek', 160)],
@@ -889,6 +893,14 @@ def ek_kes():
         r9.save(os.path.join(CIKTI, 'yakinda-pamukkale.webp'), 'WEBP', quality=82, method=6)
         liste['yakinda-pamukkale'] = [r9.width, r9.height]
         print('✓ K09 (yakında: Pamukkale)')
+    # R45-R46: opak dikey ekran arka planları (menü ekranları; çevrimiçi/arkadaş ekranları), 768 × 1152
+    for pafta, anahtar in (('R45', 'arka-gece'), ('R46', 'arka-kasaba')):
+        yol = os.path.join(HAMYENI, f'{pafta}.png')
+        if os.path.exists(yol):
+            ra = Image.open(yol).convert('RGB').resize((768, 1152), Image.LANCZOS)
+            ra.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=80, method=6)
+            liste[anahtar] = [768, 1152]
+            print(f'✓ {pafta} (arka plan: {anahtar})')
     govde.update(ANIM_GOVDE)
     with open(os.path.join(CIKTI, 'liste.js'), 'w', encoding='utf-8') as f:
         f.write('// Üretilen dosya: araclar/gorsel_kes.py. Elle düzenleme.\n')

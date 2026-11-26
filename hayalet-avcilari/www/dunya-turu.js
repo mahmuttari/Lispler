@@ -101,7 +101,8 @@ function turZeminCiz(ctx) {
   if (!_turZemini || _turZemini.anahtar !== anahtar) {
     _turZemini = { anahtar, desen: null, k: 1, hizali };
     try {
-      const boyut = zeminIm ? TUR_ZEMIN_RESIM_BOYUT : TUR_ZEMIN_BOYUT;
+      // Tek parça büyük aile zemini (Z14-Z23, en az 700 px) 768 birimde döşenir (gorsel.js zeminBirimi)
+      const boyut = zeminIm ? (typeof zeminBirimi === "function" ? zeminBirimi(zeminIm, TUR_ZEMIN_RESIM_BOYUT) : TUR_ZEMIN_RESIM_BOYUT) : TUR_ZEMIN_BOYUT;
       const n = Math.max(1, Math.round(boyut * s)), c = document.createElement("canvas");
       c.width = n; c.height = n;
       const cx = c.getContext("2d");

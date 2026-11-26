@@ -879,12 +879,26 @@ DOKU_PAFTALARI = {
             ('aile-KA-zemin', 'iki'), ('zemin-catlak-tas', 'iki')],
 }
 YENI_ZEMIN_PAFTALARI = ('Z05', 'Z06', 'Z07')
+# Z08-Z23: TEK PARÇA kaotik zemin dokuları (kullanıcı: "zemin görselleri çok fazla kendini tekrar ediyor, daha kaotik
+# olmalı"; hamzemin/DURUM.md). Bütün resim alınır, iki yönde dikişsiz yapılır, 768 px'e indirilir; oyunda 768 birimde
+# döşenir (gorsel.js zeminBirimi). Diskte varsa Z05-Z07 ve eski kaynakların aynı adlı zeminlerinin yerine geçer.
+TEK_DOKU = {f'Z{8 + i:02d}': f'tema{i + 1}-zemin' for i in range(6)}
+TEK_DOKU.update({f'Z{14 + i:02d}': f'aile-{a}-zemin' for i, a in enumerate(['K', 'KS', 'KP', 'SH', 'SV', 'GA', 'GDA', 'DA', 'KA', 'LA'])})
+TEK_DOKU_BOY = 768
 TEMA_ZEMIN_HEDEF = (68, 18)  # Z05 tema zeminleri: koyu denge ama boyamanın ayrıntısı korunur (sapma 10'da desen düzleşiyordu)
 KATMAN_HEDEF = (80, 16)  # Z01 yol ve leke dokuları: koyu tema zemininde (35) seçilir ama göz almaz; ayrıntı korunur
 
 
+def tek_doku_var(anahtar):
+    """Anahtar, diskte bulunan tek parça bir Z08–Z23 dokusunda kesiliyorsa True."""
+    return any(k == anahtar and os.path.exists(os.path.join(HAMZEMIN, f'{p}.png')) for p, k in TEK_DOKU.items())
+
+
 def yeni_zemin_var(anahtar):
-    """Anahtar, diskte bulunan bir Z05–Z07 paftasında kesiliyorsa True: eski kaynak bu zemini yazmaz."""
+    """Anahtar, diskte bulunan bir Z05–Z07 paftasında ya da tek parça Z08–Z23 dokusunda kesiliyorsa True: eski kaynak bu
+    zemini yazmaz."""
+    if tek_doku_var(anahtar):
+        return True
     for pafta in YENI_ZEMIN_PAFTALARI:
         if any(hc and hc[0] == anahtar for hc in DOKU_PAFTALARI[pafta]) and \
                 os.path.exists(os.path.join(HAMZEMIN, f'{pafta}.png')):
@@ -925,7 +939,7 @@ def doku_hucreleri(liste):
             if not hc:
                 continue
             anahtar, yon = hc
-            if pafta not in YENI_ZEMIN_PAFTALARI and yeni_zemin_var(anahtar):
+            if (pafta not in YENI_ZEMIN_PAFTALARI and yeni_zemin_var(anahtar)) or tek_doku_var(anahtar):
                 continue
             x0, y0 = (i % 3) * 512, (i // 3) * 512
             hucre = dikissiz_dikey(resim.crop((x0, y0, x0 + 512, y0 + 512)))
@@ -942,6 +956,25 @@ def doku_hucreleri(liste):
             hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=86, method=6)
             liste[anahtar] = [boy, boy]
         print(f'✓ {pafta} (doku)')
+
+
+def tek_dokular(liste):
+    for pafta, anahtar in TEK_DOKU.items():
+        if not secili_mi(pafta):
+            continue
+        yol = os.path.join(HAMZEMIN, f'{pafta}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGB')
+        k = min(resim.size)
+        resim = resim.crop(((resim.width - k) // 2, (resim.height - k) // 2, (resim.width - k) // 2 + k, (resim.height - k) // 2 + k))
+        doku = dikissiz_dikey(resim, 64)
+        doku = dikissiz_dikey(doku.transpose(Image.ROTATE_90), 64).transpose(Image.ROTATE_270)
+        doku = doku.resize((TEK_DOKU_BOY, TEK_DOKU_BOY), Image.LANCZOS)
+        doku = zemin_sakinlestir(doku, TEMA_ZEMIN_HEDEF if anahtar.startswith('tema') else ZEMIN_HEDEF)
+        doku.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=84, method=6)
+        liste[anahtar] = [TEK_DOKU_BOY, TEK_DOKU_BOY]
+        print(f'✓ {pafta} (tek doku: {anahtar})')
 
 
 def yol_hucreleri(liste):
@@ -990,6 +1023,7 @@ def ek_kes():
     ek_hucreler(liste)
     yol_hucreleri(liste)
     doku_hucreleri(liste)
+    tek_dokular(liste)
     hatiralar(liste)
     # K09: opak tek resim (Yakında önizlemesi), 768 px genişlik
     yol = os.path.join(HAMEK, 'K09.png')

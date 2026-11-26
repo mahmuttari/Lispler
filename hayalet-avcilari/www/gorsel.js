@@ -80,6 +80,10 @@ function gorselRenkli(k, renk, kip = "renk") {
 // ---- Tema dokuları (T1–T6): zemin ve su ----
 // n: 1-6 (LEVEL_THEMES sırası), tur: "zemin" | "su". Döşeme oyunda TEMA_DOKU_BIRIM birim. Yoksa null (kod çizimi).
 const TEMA_DOKU_BIRIM = 256;
+// Tek parça büyük zemin dokusu (Z08-Z23, en az 700 px): 768 birimde döşenir, aynı desen ekranda tekrar tekrar görünmez
+// (kullanıcı: "zemin görselleri çok fazla kendini tekrar ediyor"). Eski 512 px dokular 256 birimde kalır.
+const TEMA_ZEMIN_BUYUK_BIRIM = 768;
+const zeminBirimi = (im, kucuk) => ((im && (im.naturalWidth || im.width)) >= 700 ? TEMA_ZEMIN_BUYUK_BIRIM : kucuk);
 const _temaDesen = {};
 // Su: engelin önbellek tuvaline bir kez çizilir (engeller.js suTabani); desen yerel birimde, ölçeği tuval verir
 function temaDeseni(n, tur) {
@@ -90,12 +94,13 @@ function temaDeseni(n, tur) {
   if (!im) return null;
   const desen = document.createElement("canvas").getContext("2d").createPattern(im, "repeat");
   if (desen && desen.setTransform && typeof DOMMatrix === "function") {
-    const o = TEMA_DOKU_BIRIM / im.naturalWidth;
+    const o = (tur === "zemin" ? zeminBirimi(im, TEMA_DOKU_BIRIM) : TEMA_DOKU_BIRIM) / im.naturalWidth;
     desen.setTransform(new DOMMatrix([o, 0, 0, o, 0, 0]));
   }
   return (_temaDesen[k] = desen);
 }
 window.temaDeseni = temaDeseni;
+window.zeminBirimi = zeminBirimi;
 
 // Zemin: her karede bütün ekrana döşenir. Dünya Turu zemini gibi (dunya-turu.js turZeminCiz) desen ekranın piksel
 // ölçeğinde bir kez hazırlanır ve piksele hizalı döşenir; her karede yeniden ölçekleme olmaz (kare hızı). Karartma
@@ -112,12 +117,13 @@ function temaZeminiCiz(ctx, n, x, y, w, h) {
   if (!_zeminDesen || _zeminDesen.anahtar !== anahtar) {
     _zeminDesen = { anahtar, desen: null, k: 1 };
     try {
-      const px = Math.max(1, Math.round(TEMA_DOKU_BIRIM * s)), c = document.createElement("canvas");
+      const birim = zeminBirimi(im, TEMA_DOKU_BIRIM);
+      const px = Math.max(1, Math.round(birim * s)), c = document.createElement("canvas");
       c.width = px; c.height = px;
       const cx = c.getContext("2d");
       cx.drawImage(im, 0, 0, px, px);
       cx.fillStyle = "rgba(0, 0, 0, 0.24)"; cx.fillRect(0, 0, px, px);
-      _zeminDesen.k = px / TEMA_DOKU_BIRIM;
+      _zeminDesen.k = px / birim;
       _zeminDesen.desen = ctx.createPattern(c, "repeat");
     } catch (_) { _zeminDesen.desen = null; }
   }

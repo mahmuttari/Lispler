@@ -957,10 +957,10 @@ function yolculukGecitDoseme(th) {
 let _gecitNehirDesen = null;
 // Geçit nehrinin suyu: kod kıvrımlı kıyıyı kendisi çizer ve içini kırpar; içine yalnız KIYISIZ su dokusu döşenir.
 // (yol<n>-nehir ve nehir-doku resimlerinin kendi kıyısı ve çimeni var; kıvrımlı kanala uymuyor, ortada düz şerit kalıyordu.)
-// Normal temada tema<n>-su (Volkan'da kaplıca suyu), Dünya Turu'nda berrak mavi tema4-su.
+// Normal temada tema<n>-su (Volkan'da kaplıca suyu), Dünya Turu'nda dere suyu dokusu (dere-su; yoksa berrak mavi tema4-su).
 function yolculukNehirSuyu() {
   if (typeof gorsel !== "function") return null;
-  let k = "tema4-su";
+  let k = gorsel("dere-su") ? "dere-su" : "tema4-su";
   if (typeof game !== "undefined" && game && !game.dunyaTuru) {
     let n = 1;
     try {

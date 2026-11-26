@@ -119,6 +119,7 @@ ANIMASYON = {
     'R06': [('boss-inis', [1, 2, 3], 256), ('seviye-atla', [4, 5, 6], 256)],  # boss iniş şok halkası, seviye atlama patlaması
     'R07': [('hasar-patlama', [1, 2, 3], 192), ('gorunmez-parilti', [4, 5, 6], 192)],  # oyuncu hasar alınca, görünmezlik
     'R10': [('lav', [2, 3, 4], 256)],  # kayalık kıyılı lav gölü, kabarcık ve alev
+    'R42': [('selale', [1, 2, 3], 256)],  # dere üstündeki küçük şelale basamağı (köpük bandı)
     'R50': [('havai-fisek', [2, 3, 4], 256)],  # kilitli köprünün inişi (1. kare K05 hücre 1: kopru-kapali)
 }
 
@@ -661,6 +662,8 @@ EK_PAFTALAR = {
     'R39': [('ulke-JP-1', 256), ('ulke-JP-2', 256), ('ulke-RU-1', 256), ('ulke-RU-2', 256), ('ulke-CA-1', 256), ('ulke-CA-2', 256)],  # kiraz ağaçları; Fuji Dağı; matruşka bebekleri; oymalı ahşap izba; akçaağaç ormanı ve şurup; kunduz barajı
     'R40': [('ulke-US-1', 256), ('ulke-US-2', 256), ('ulke-MX-1', 256), ('ulke-MX-2', 256), ('ulke-CO-1', 256), ('ulke-CO-2', 256)],  # Özgürlük Heykeli; Büyük Kanyon; papel picado süslü pazar; ajolote göleti; Kokora mum palmiyeleri; Cartagena'nın balkonlu evleri
     'R41': [('ulke-PE-1', 256), ('ulke-PE-2', 256), ('ulke-BR-1', 256), ('ulke-BR-2', 256), ('ulke-AR-1', 256), ('ulke-AR-2', 256)],  # Machu Picchu terasları; lamalar; Amazon tukanları ve araları; Şeker Somunu Dağı; Perito Moreno Buzulu; Caminito'nun renkli evleri
+    # R42: yağmur çizgisi + sıçrama, suya düşme halkaları (1-3 şelale animasyonu, 6 opak dere suyu dokusu: DOKU_PAFTALARI)
+    'R42': [None, None, None, ('yagmur-damla', 128), ('su-halka', 160), None],
     'K06': [('donati-fici', 160), ('donati-sandik', 160), ('donati-fener', 192), ('donati-bank', 160), ('donati-tabela', 160), ('donati-saman', 192)],
     'K07': [('donati-cali', 160), ('donati-ciceklik', 160), ('donati-mantar', 128), ('donati-kutuk', 160), ('donati-tas', 160), ('donati-yaprak', 160)],
     'K08': [('donati-balkabagi', 128), ('donati-araba', 192), ('donati-cit', 160), ('donati-korkuluk', 192), ('donati-mum', 128), ('donati-orumcek', 160)],
@@ -803,7 +806,10 @@ DOKU_PAFTALARI = {
             ('aile-SV-zemin', 'iki'), ('doku-kaplica', 'iki')],
     'R24': [('aile-GA-zemin', 'iki'), ('aile-GDA-zemin', 'iki'), ('aile-DA-zemin', 'iki'), ('aile-KA-zemin', 'iki'),
             ('aile-LA-zemin', 'iki'), ('nehir-doku', 'dikey')],
+    'R42': [None, None, None, None, None, ('dere-su', 'iki')],
 }
+# Fazla kontrastlı zemin dokuları (karakterler okunur kalsın): ortalama renge doğru karıştırma oranı
+ZEMIN_SOLUK = {'aile-KS-zemin': 0.5}
 
 
 def doku_hucreleri(liste):
@@ -814,12 +820,19 @@ def doku_hucreleri(liste):
         resim = Image.open(yol).convert('RGB')
         if resim.size != (1536, 1024):
             sys.exit(f'{pafta}: boyut {resim.size}, 1536 × 1024 olmalı')
-        for i, (anahtar, yon) in enumerate(hucreler):
+        for i, hc in enumerate(hucreler):
+            if not hc:
+                continue
+            anahtar, yon = hc
             x0, y0 = (i % 3) * 512, (i // 3) * 512
             hucre = dikissiz_dikey(resim.crop((x0, y0, x0 + 512, y0 + 512)))
             if yon == 'iki':
                 hucre = dikissiz_dikey(hucre.transpose(Image.ROTATE_90)).transpose(Image.ROTATE_270)
             hucre = hucre.resize((256, 256), Image.LANCZOS)
+            if anahtar in ZEMIN_SOLUK:  # kontrastı düşür: dokunun ortalama rengine doğru karıştır
+                from PIL import ImageStat
+                ort = tuple(round(v) for v in ImageStat.Stat(hucre).mean)
+                hucre = Image.blend(hucre, Image.new('RGB', hucre.size, ort), ZEMIN_SOLUK[anahtar])
             hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=86, method=6)
             liste[anahtar] = [256, 256]
         print(f'✓ {pafta} (doku)')

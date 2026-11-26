@@ -8658,6 +8658,7 @@ function render() {
   koprulerCiz(ctx);   // sallanan ip köprüler (kopru.js)
   if (typeof yolculukCiz === "function") yolculukCiz(ctx); // yolculuk geçitleri (yolculuk.js)
   if (typeof yolculukDonatilariCiz === "function") yolculukDonatilariCiz(ctx); // yolculuk süs objeleri (yolculuk.js)
+  if (typeof yolculukTemaParcalariCiz === "function") yolculukTemaParcalariCiz(ctx); // tema parçaları (GOR1C)
   if (typeof yolculukYuvalariCiz === "function") yolculukYuvalariCiz(ctx); // yolculuk hayalet yuvaları (yolculuk.js)
   timsahlariCiz(ctx); // sudaki timsahlar (timsah.js)
   calilariCiz(ctx);   // saklanma çalıları (cali.js)

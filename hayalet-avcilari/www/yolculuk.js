@@ -214,6 +214,18 @@ function yolculukBaslangic() {
   return { x: YOLCULUK_AYAR.startW / 2, y: YOLCULUK_AYAR.worldH / 2 };
 }
 
+// GOR1C: normal oyun temasının (1-6) yol parçası resmi; Dünya Turu'nda ya da resim yoksa null (bugünkü çizim kalır)
+function yolculukTemaParca(parca) {
+  if (typeof game === "undefined" || !game || game.dunyaTuru) return null;
+  let n = 1;
+  try {
+    const th = typeof getTheme === "function" ? getTheme() : null;
+    if (th && typeof LEVEL_THEMES !== "undefined") { const i = LEVEL_THEMES.indexOf(th); if (i >= 0) n = i + 1; }
+  } catch (e) { return null; }
+  const k = `yol${n}-${parca}`;
+  return (typeof gorsel === "function" && gorsel(k)) ? k : null;
+}
+
 // Hayalet yuvası türleri: tema/ülke ailesine göre tohumlu seçilir (KAY1)
 function yolculukYuvaTurleri() {
   let u = null;
@@ -729,6 +741,32 @@ function yolculukDonatilariCiz(ctx) {
   }
 }
 
+// GOR1C: tema parçaları — arena girişi, başlangıç tabelası, temizlenen bölgenin bayrağı. Yalnız ekranda olan çizilir;
+// hiçbiri duvar/çarpışma eklemez, oyuncunun arkasında (hayaletlerden ve oyuncudan önce) çizilir.
+function yolculukTemaParcalariCiz(ctx) {
+  if (!yolculukAcik() || !game || !game._yolculukDuzen) return;
+  const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0, A = YOLCULUK_AYAR, d = game._yolculukDuzen;
+  const gorunur = (x, y, w, h) => !(x + w < cam.x || x > cam.x + W || y + h < cam.y || y > cam.y + H);
+  const arenaK = yolculukTemaParca("arena");
+  if (arenaK) {
+    const aw = 220, ax = d.arena.x0 - aw / 2, ay = A.worldH / 2 - aw / 2;
+    if (gorunur(ax, ay, aw, aw)) gorselKutuya(ctx, arenaK, ax, ay, aw, aw);
+  }
+  const tabelaK = yolculukTemaParca("tabela");
+  if (tabelaK) {
+    const b = yolculukBaslangic(), tw = 70, th = 70, tx = b.x + 70 - tw / 2, ty = b.y - 220;
+    if (gorunur(tx, ty, tw, th)) gorselKutuya(ctx, tabelaK, tx, ty, tw, th, true);
+  }
+  const bayrakK = yolculukTemaParca("bayrak");
+  if (bayrakK && Array.isArray(game.kopruAcik)) {
+    for (let i = 0; i < d.zones.length; i++) {
+      if (!game.kopruAcik[i]) continue;
+      const g = d.zones[i].gate, bw = 56, bh = 56, bx = g.x1 + 10, by = g.cy - bh;
+      if (gorunur(bx, by, bw, bh)) gorselKutuya(ctx, bayrakK, bx, by, bw, bh, true);
+    }
+  }
+}
+
 // Yürünebilir mi: duvar, diken, lav ve (köprü şeridi dışında) su engel
 function yolculukYuruyebilir(x, y, r) {
   if (typeof collidesWalls === "function" && collidesWalls(x, y, r)) return false;
@@ -915,6 +953,19 @@ function yolculukGecitDoseme(th) {
   YOLCULUK_GECIT.anahtar = anahtar; YOLCULUK_GECIT.tuval = c; YOLCULUK_GECIT.h = h;
   return YOLCULUK_GECIT;
 }
+// GOR1C: tema nehir resmi deseni (resim başına bir kez kurulur; karo genişliği şerit genişliğine ölçeklenir)
+let _gecitNehirDesen = null;
+function yolculukNehirDesen(ctx, im) {
+  if (_gecitNehirDesen && _gecitNehirDesen.im === im) return _gecitNehirDesen.desen;
+  let desen = null;
+  try {
+    desen = ctx.createPattern(im, "repeat");
+    const o = YOLCULUK_AYAR.gateW / (im.naturalWidth || im.width || 1);
+    if (desen && desen.setTransform && typeof DOMMatrix === "function") desen.setTransform(new DOMMatrix([o, 0, 0, o, 0, 0]));
+  } catch (e) { desen = null; }
+  _gecitNehirDesen = { im, desen };
+  return desen;
+}
 function yolculukGecitCiz(ctx) {
   if (!yolculukAcik() || !game._yolculukDuzen) return;
   const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0, A = YOLCULUK_AYAR;
@@ -961,10 +1012,17 @@ function yolculukGecitCiz(ctx) {
     // Su: kırpma yolu içinde dikey renk geçişi (döşeme varsa onun yerine geçit temasıyla uyumlu geçiş)
     ctx.save();
     ctx.clip(yol);
-    const g2 = ctx.createLinearGradient(0, gy0, 0, gy1);
-    g2.addColorStop(0, th.waterTop || "#1e7fd6"); g2.addColorStop(1, th.waterBot || "#0a3a8a");
-    ctx.fillStyle = g2;
-    ctx.fillRect(z.gecitSol, vy0, z.gecitSag - z.gecitSol, vy1 - vy0);
+    const nehirK = yolculukTemaParca("nehir"), nehirIm = nehirK ? gorsel(nehirK) : null;
+    const nehirDesen = nehirIm ? yolculukNehirDesen(ctx, nehirIm) : null;
+    if (nehirDesen) {
+      ctx.fillStyle = nehirDesen;
+      ctx.fillRect(z.gecitSol, vy0, z.gecitSag - z.gecitSol, vy1 - vy0);
+    } else {
+      const g2 = ctx.createLinearGradient(0, gy0, 0, gy1);
+      g2.addColorStop(0, th.waterTop || "#1e7fd6"); g2.addColorStop(1, th.waterBot || "#0a3a8a");
+      ctx.fillStyle = g2;
+      ctx.fillRect(z.gecitSol, vy0, z.gecitSag - z.gecitSol, vy1 - vy0);
+    }
     // Kanal derinliği: banklara yakın iç gölge (geniş sonra ince) ve orta çizgide açık bant
     ctx.strokeStyle = "rgba(0,0,0,0.26)"; ctx.lineWidth = 15; ctx.stroke(yol);
     ctx.strokeStyle = "rgba(0,0,0,0.16)"; ctx.lineWidth = 7; ctx.stroke(yol);
@@ -1056,12 +1114,24 @@ function yolculukCiz(ctx) {
       gorselKutuya(ctx, "kilit-acik", kilitX - s / 2, kilitY - s / 2, s, s);
       ctx.globalAlpha = 1;
     };
+    const temaKapali = yolculukTemaParca("kopru-kapali"), temaAcik = yolculukTemaParca("kopru-acik");
     ctx.save();
     // Kapalı köprü resmi varsa kod çizimi yerine o çizilir (çarpışma kutusu değişmez)
-    if (!acik && gorsel("kopru-kapali")) {
+    const kapaliK = temaKapali || "kopru-kapali";
+    if (!acik && gorsel(kapaliK)) {
       ctx.fillStyle = "rgba(0,0,0,0.25)";
       ctx.fillRect(x0, y0 + 4, x1 - x0, y1 - y0);
-      gorselKutuya(ctx, "kopru-kapali", rx, y0, rw, y1 - y0);
+      gorselKutuya(ctx, kapaliK, rx, y0, rw, y1 - y0);
+      ctx.restore(); continue;
+    }
+    // Tema köprüsü varsa açılış: %50'ye kadar kapalı, sonra açık resim (an-kopru-in-* yalnız genel köprüde)
+    if (acik && anim > 0 && temaKapali && temaAcik) {
+      const ilerleme = Math.min(1, Math.max(0, 1 - anim / 0.6));
+      const kare = ilerleme < 0.5 ? temaKapali : temaAcik;
+      ctx.fillStyle = "rgba(0,0,0,0.25)";
+      ctx.fillRect(x0, y0 + 4, x1 - x0, y1 - y0);
+      gorselKutuya(ctx, kare, rx, y0, rw, y1 - y0);
+      kilitPop();
       ctx.restore(); continue;
     }
     // Açılış kareleri: kapalı → in-1 → in-2 → açık

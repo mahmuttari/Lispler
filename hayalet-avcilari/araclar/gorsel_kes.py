@@ -857,6 +857,7 @@ DOKU_PAFTALARI = {
 }
 YENI_ZEMIN_PAFTALARI = ('Z05', 'Z06', 'Z07')
 TEMA_ZEMIN_HEDEF = (70, 10)  # Z05 tema zeminleri: klasik temaların koyu dengesine yakın
+KATMAN_HEDEF = (80, 16)  # Z01 yol ve leke dokuları: koyu tema zemininde (35) seçilir ama göz almaz; ayrıntı korunur
 
 
 def yeni_zemin_var(anahtar):
@@ -913,6 +914,8 @@ def doku_hucreleri(liste):
                 hucre = zemin_sakinlestir(hucre)
             elif anahtar.startswith('tema') and anahtar.endswith('-zemin'):
                 hucre = zemin_sakinlestir(hucre, TEMA_ZEMIN_HEDEF)
+            elif anahtar.startswith('zemin-'):
+                hucre = zemin_sakinlestir(hucre, KATMAN_HEDEF)
             hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=86, method=6)
             liste[anahtar] = [boy, boy]
         print(f'✓ {pafta} (doku)')

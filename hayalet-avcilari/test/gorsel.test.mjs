@@ -28,8 +28,8 @@ const LISTE = JSON.parse(listeKaynak.match(/= (\{.*\});/)[1]);
 const dosyalar = fs.readdirSync(path.join(WWW, 'gorsel')).filter((f) => f.endsWith('.webp'));
 sina('liste.js ile diskteki WebP dosyaları aynı', () => { assert.deepEqual(dosyalar.map((f) => f.slice(0, -5)).sort(), Object.keys(LISTE).sort()); });
 const toplam = dosyalar.reduce((t, f) => t + fs.statSync(path.join(WWW, 'gorsel', f)).size, 0);
-sina('görseller küçük: toplam 14 MB (bütün görseller ChatGPT resmi: kullanıcı kararı, 25 Kasım 2026), her kenar en çok 256 px (tema dokuları 512, menü arka planı 1152, kahraman kartı 320, giriş resmi 1152, Yakında önizlemesi 768)', () => {
-  assert.ok(toplam < 14 * 1024 * 1024, String(toplam));
+sina('görseller küçük: toplam 16 MB (bütün görseller ChatGPT resmi: kullanıcı kararı, 25 Kasım 2026; zemin paftaları Z01–Z07 eklendi, 26 Kasım), her kenar en çok 256 px (tema dokuları 512, menü arka planı 1152, kahraman kartı 320, giriş resmi 1152, Yakında önizlemesi 768)', () => {
+  assert.ok(toplam < 16 * 1024 * 1024, String(toplam));
   for (const [k, [w, h]] of Object.entries(LISTE)) { const en = k.startsWith('tema') ? 512 : (k === 'menu-arka' || k === 'giris-kahraman' || k.startsWith('arka-')) ? 1152 : k.startsWith('kart-') ? 320 : k.startsWith('yakinda-') ? 768 : 256; assert.ok(w <= en && h <= en, k); }
 });
 
@@ -167,7 +167,9 @@ try {
       return [...new Set(cagri)];
     };
     // render() zemin için temaZeminiCiz'i (game.js), su için window.temaDeseni'ni (engeller.js) çağırır
-    for (let n = 1; n <= 6; n++) o[n] = { zemin: !!liste[`tema${n}-zemin`], su: !!liste[`tema${n}-su`], cagri: dene(n) };
+    // Su deseni yalnız uzun/ince gölde kullanılır (oran 0,6-1,7 dışı); öbür göller tema göl resmiyle (engeller.js engelResimRessami)
+    const uzunGolVar = () => (game.waters || []).some((w) => !w.gecit && !(w.w / w.h >= 0.6 && w.w / w.h <= 1.7));
+    for (let n = 1; n <= 6; n++) { const cagri = dene(n); o[n] = { zemin: !!liste[`tema${n}-zemin`], su: !!liste[`tema${n}-su`], uzunGol: uzunGolVar(), cagri }; }
     temaZeminiCiz = zeminAsil; window.temaDeseni = asil;
     o.dikis = (() => { // dikişsiz: dokunun sol ve sağ kenar sütunu birbirine yakın
       const k = Object.keys(liste).find((x) => /^tema\d+-zemin$/.test(x)); if (!k) return 0; // zemin dokusu (tema parçaları saydam nesnedir)
@@ -184,7 +186,7 @@ try {
       const t = tema[n];
       if (t.zemin) { gelen++; assert.ok(t.cagri.includes(`${n}-zemin-var`), `T${n} zemin: ${t.cagri}`); }
       else assert.ok(!t.cagri.some((c) => c.startsWith(`${n}-zemin-var`)), `T${n} zemin yok ama kullanıldı`);
-      if (t.su) assert.ok(t.cagri.includes(`${n}-su-var`), `T${n} su: ${t.cagri}`);
+      if (t.su && t.uzunGol) assert.ok(t.cagri.includes(`${n}-su-var`), `T${n} su: ${t.cagri}`);
     }
     assert.ok(gelen >= 1, 'hiç tema dokusu yok');
   });

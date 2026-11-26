@@ -780,11 +780,13 @@
   window.engelOnbellegiSil = () => {
     if (typeof game === "undefined" || !game) return;
     for (const l of [game.walls || [], game.waters || [], game.spikes || [], game.lavas || []]) for (const o of l) { o._resim = null; o._olcek = 0; o._isinma = 0; }
+    _isinmaTamam = 0;
   };
   window.addEventListener("gorsel-yuklendi", () => window.engelOnbellegiSil());
   // Engelin önbellek resmi { c: tuval, canli: noktalar }; ölçek değişmişse yeniden çizilir. Tuval oluşturulamazsa null
   // (çağıran o karede doğrudan çizer).
   let _boyanan = 0; // bu karede çizilen resim (engelleriCiz sıfırlar; ısınma bütçesi için)
+  let _isinmaTamam = 0, _isinmaN = -1, _isinmaW = null; // bütün engeller bu ölçekte ısındı: kare başına tarama yapılmaz (PERF1)
   function engelResmi(o) {
     const s = engelOlcegi();
     if (o._resim && o._olcek === s) return o._resim;
@@ -874,6 +876,9 @@
   // oyun ortasında ilk çizim sıçraması olmaz. Her engel ölçek başına bir kez denenir (tuval oluşturulamazsa döngü yok).
   const ISINMA_MS = 6;
   function onbellegiIsit(t0, s) {
+    const n = (game.walls || []).length + (game.waters || []).length + (game.spikes || []).length + (game.lavas || []).length;
+    if (_isinmaTamam === s && _isinmaN === n && _isinmaW === game.walls) return; // yeni bölümde dizi değişir: yeniden ısınır
+    _isinmaTamam = 0;
     const cam = game.camera || { x: 0, y: 0 }, mx = cam.x + (game.W || 0) / 2, my = cam.y + (game.H || 0) / 2;
     for (let ilk = _boyanan === 0; ilk || performance.now() - t0 < ISINMA_MS; ilk = false) {
       let en = null, enD = Infinity;
@@ -882,7 +887,7 @@
         const d = Math.hypot(o.x + o.w / 2 - mx, o.y + o.h / 2 - my);
         if (d < enD) { enD = d; en = o; }
       }
-      if (!en) return;
+      if (!en) { _isinmaTamam = s; _isinmaN = n; _isinmaW = game.walls; return; }
       en._isinma = s;
       engelResmi(en);
       if (en.tur === "lav") parlamaResmi(en);
@@ -894,7 +899,7 @@
     const t0 = performance.now();
     _boyanan = 0;
     const s = engelOlcegi();
-    if (s !== _sonOlcek) { for (const l of listeler()) for (const o of l) { o._resim = null; o._olcek = 0; o._isinma = 0; } _sonOlcek = s; } // ekran döndü: hepsi yeniden
+    if (s !== _sonOlcek) { for (const l of listeler()) for (const o of l) { o._resim = null; o._olcek = 0; o._isinma = 0; } _sonOlcek = s; _isinmaTamam = 0; } // ekran döndü: hepsi yeniden
     if (listeler().some((l) => l.some((o) => !o.bicim))) engelBicimleriniKur();
     const m = ctx.getTransform ? ctx.getTransform() : null;
     _matris = m && { a: m.a, e: m.e, f: m.f, bir: m.b === 0 && m.c === 0 && m.a === m.d && Math.abs(m.a - s) < 1e-9 };

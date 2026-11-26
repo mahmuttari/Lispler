@@ -15,3 +15,4 @@
 | H03 | Hatıralar ülke 13–18 | üretildi (1. deneme, Chrome ChatGPT; hücre sınırları temiz; arka planda alfa 1–9 görünmez pus, kesim eşiği 10) |
 | H04 | Hatıralar ülke 19–24 | üretildi (1. deneme, Chrome ChatGPT; hücre sınırları temiz; arka planda alfa 1–9 görünmez pus, kesim eşiği 10) |
 | H05 | Hatıralar ülke 25–30 | üretildi (1. deneme, Chrome ChatGPT; hücre sınırları temiz, pus yok; kil tablette okunmaz soyut çivi izleri) |
+| H06 | Hatıralar ülke 31–36 | üretildi (1. deneme, Chrome ChatGPT; hücre sınırları temiz; arka planda alfa 1–9 görünmez pus, kesim eşiği 10) |

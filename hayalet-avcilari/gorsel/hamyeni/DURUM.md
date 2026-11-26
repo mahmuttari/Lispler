@@ -4,7 +4,7 @@
 
 | Pafta | Durum |
 |---|---|
-| R01 | bekliyor |
+| R01 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): mavi enerji topu, kahverengi taş, mor yıldızlı küre, yeşil tüylü ok (sağa), dönen fırlatma bıçağı (shuriken biçiminde), altın mermi (sağa); nesneler ~280-420 px (istem 120-200); hücre sınırı aşılmıyor; toplu gösterim bekleniyor |
 | R02 | bekliyor |
 | R03 | bekliyor |
 | R04 | bekliyor |

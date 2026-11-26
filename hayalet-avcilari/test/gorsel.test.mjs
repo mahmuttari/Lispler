@@ -170,7 +170,7 @@ try {
     for (let n = 1; n <= 6; n++) o[n] = { zemin: !!liste[`tema${n}-zemin`], su: !!liste[`tema${n}-su`], cagri: dene(n) };
     temaZeminiCiz = zeminAsil; window.temaDeseni = asil;
     o.dikis = (() => { // dikişsiz: dokunun sol ve sağ kenar sütunu birbirine yakın
-      const k = Object.keys(liste).find((x) => x.startsWith('tema')); if (!k) return 0;
+      const k = Object.keys(liste).find((x) => /^tema\d+-zemin$/.test(x)); if (!k) return 0; // zemin dokusu (tema parçaları saydam nesnedir)
       const im = GORSEL[k], c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight;
       const x = c.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, c.width, c.height).data;
       let fark = 0; for (let y = 0; y < c.height; y++) { const a = (y * c.width) * 4, b = (y * c.width + c.width - 1) * 4; fark += Math.abs(d[a] - d[b]) + Math.abs(d[a + 1] - d[b + 1]) + Math.abs(d[a + 2] - d[b + 2]); }

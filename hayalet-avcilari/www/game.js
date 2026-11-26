@@ -6995,6 +6995,7 @@ function oyuncuCiz(...a) {
 }
 
 function update(dt, now) {
+  if (typeof yuvaCanlilariGuncelle === "function") yuvaCanlilariGuncelle(dt); // YUV1: yuva fareleri/yarasaları
   // Oyuncu hareketi
   let dirX = game.inputDir.x;
   let dirY = game.inputDir.y;
@@ -8115,6 +8116,7 @@ function spawnGhost(aralik) {
         }
       }
     }
+    if (typeof yuvaCanlilariUrkut === "function") yuvaCanlilariUrkut(kaynak); // YUV1: yuvadan hayalet çıkınca kaçış
     kaynak._dogumAn = performance.now();
     kaynakAgiz = yer;
     x = yer.x; y = yer.y;
@@ -8871,6 +8873,7 @@ function render() {
   if (typeof yolculukDonatilariCiz === "function") yolculukDonatilariCiz(ctx, "arka"); // yolculuk süs objeleri (yolculuk.js)
   if (typeof yolculukTemaParcalariCiz === "function") yolculukTemaParcalariCiz(ctx, "arka"); // tema parçaları (GOR1C)
   if (typeof yolculukYuvalariCiz === "function") yolculukYuvalariCiz(ctx, "arka"); // yolculuk hayalet yuvaları (yolculuk.js)
+  if (typeof yuvaCanlilariCiz === "function") yuvaCanlilariCiz(ctx, "arka"); // YUV1: yuva fareleri (yolculuk.js)
   timsahlariCiz(ctx); // sudaki timsahlar (timsah.js)
   calilariCiz(ctx);   // saklanma çalıları (cali.js)
 
@@ -8995,6 +8998,7 @@ function render() {
   if (typeof yolculukDonatilariCiz === "function") yolculukDonatilariCiz(ctx, "on");
   if (typeof yolculukTemaParcalariCiz === "function") yolculukTemaParcalariCiz(ctx, "on");
   if (typeof yolculukYuvalariCiz === "function") yolculukYuvalariCiz(ctx, "on");
+  if (typeof yuvaCanlilariCiz === "function") yuvaCanlilariCiz(ctx, "on"); // YUV1: yuva yarasaları her şeyin üstünde
 
   // Parçacıklar
   for (const p of game.particles) {

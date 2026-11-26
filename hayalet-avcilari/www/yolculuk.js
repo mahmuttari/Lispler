@@ -451,6 +451,7 @@ function yolculukHaritaKur() {
   const A = YOLCULUK_AYAR, d = yolculukDuzeni();
   const bolum = game.level || 1, ulke = yolculukUlkeKodu();
   game._yolculukDuzen = d;
+  if (typeof yuvaCanlilariSifirla === "function") yuvaCanlilariSifirla(); // YUV1: canlı durumları yeni bölümde sıfırlanır
   game.yolculuk = true;
   game.kopruAcik = new Array(A.zoneCount).fill(false);
   game._kopruAnim = {};

@@ -1176,6 +1176,9 @@ function equipGun(key) {
 
 const _gunIconCache = {};
 function gunIconUrl(key) {
+  // ChatGPT silah resmi yüklüyse onun adresi (paketli denemede data URL); yoksa koddan çizilen simge
+  const im = typeof gorsel === "function" ? gorsel(`silah-${key}`) : null;
+  if (im) return im.src;
   if (_gunIconCache[key]) return _gunIconCache[key];
   const cv = document.createElement("canvas");
   cv.width = 96; cv.height = 72;

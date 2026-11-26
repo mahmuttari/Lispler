@@ -111,7 +111,7 @@ ANIMASYON = {
     'K05': [('kopru-in', [2, 3], 256)],
     'K10': [('mermi-yildiz', [4, 5, 6], 64)],
     'K11': [('efsane-aura', [1, 2, 3], 256)],
-    'K12': [('yuva-sis', [1, 2, 3], 320), ('yuva-duman', [4, 5, 6], 256)],  # yuvaların hareketli sisi (yolculuk.js)
+    'K12': [('yuva-sis', [1, 2, 3], 256), ('yuva-duman', [4, 5, 6], 256)],  # yuvaların hareketli sisi (yolculuk.js)
     'R48': [('menu-hayalet', [1, 2, 3], 160)],
     'R50': [('havai-fisek', [2, 3, 4], 256)],  # kilitli köprünün inişi (1. kare K05 hücre 1: kopru-kapali)
 }

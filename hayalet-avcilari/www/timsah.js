@@ -27,6 +27,7 @@ const TIMSAH = {
   susSure: 2.4,     // süs gözlerinin su üstünde kaldığı süre (sn)
   susAra: [5, 9],   // iki süs arası (sn)
   icPay: 18,        // timsahın çıktığı nokta kıyıdan bu kadar içeride (px)
+  adim: 32,          // FIX2: kıyıdan karaya atılış (24-40 px); ısırık sonunda bu kadar dışarıda
   bosOlasilik: 0.45, // süs timsahının boşa ısırık atma olasılığı
 };
 let _timsahNo = 0;   // her timsahın kimliği (çevrimiçi değişiklik imzası)
@@ -133,7 +134,20 @@ function timsahIsirir(tm) {
   const p = game.player;
   if (!p || p.dead || p.invuln > 0 || game.devamBekliyor) return false;
   if ((p.invisibleUntil || 0) > performance.now()) return false;
-  return Math.hypot(p.x - tm.x, p.y - tm.y) < TIMSAH.menzil;
+  const k = timsahKonum(tm);
+  return Math.hypot(p.x - k.x, p.y - k.y) < TIMSAH.menzil;
+}
+
+// FIX2: timsahın o anki konumu. tm.x/tm.y su içindeki çıkış noktasıdır; atılışta kıyıdan karaya
+// icPay + adim kadar ilerler (adim ≈ 32 px dışarı), ısırıktan sonra suya geri çekilir.
+function timsahKonum(tm) {
+  const { uyari, atilma, batis } = TIMSAH;
+  let u = 0;
+  if (tm.t <= uyari) u = 0;
+  else if (tm.t < uyari + atilma) u = (tm.t - uyari) / atilma;
+  else u = 1 - Math.min(1, (tm.t - uyari - atilma) / batis);
+  const d = (TIMSAH.icPay + TIMSAH.adim) * u;
+  return { x: tm.x + Math.cos(tm.a) * d, y: tm.y + Math.sin(tm.a) * d };
 }
 
 // update() her karede çağırır (duraklatınca çağrılmaz)
@@ -252,23 +266,58 @@ function uzakTimsahlariAl(metin) {
   return out;
 }
 
+// FIX2: su sıçraması yalnız suyun biçimi içinde çizilir; gölden dışarı taşmaz.
+// (x, y) suyun içinde bir noktadır; halkalar orada kalır, karaya taşmaz.
+function timsahSuYolu(ctx, o) {
+  ctx.beginPath();
+  const parcalar = o.carpisma || [{ t: "k", x: 0, y: 0, w: o.w, h: o.h, rr: 0 }];
+  for (const q of parcalar) {
+    const x = o.x + (q.x || 0), y = o.y + (q.y || 0);
+    if (typeof ctx.roundRect === "function") ctx.roundRect(x, y, q.w, q.h, q.rr || 0);
+    else ctx.rect(x, y, q.w, q.h);
+  }
+}
+function timsahSplashCiz(ctx, tm) {
+  const { su } = enYakinSu(tm.x, tm.y);
+  if (!su) return;
+  ctx.save();
+  timsahSuYolu(ctx, su);
+  ctx.clip();
+  const z = tm.t, { uyari, atilma, batis } = TIMSAH;
+  if (tm.tur === "sus") {
+    const u = z / TIMSAH.susSure, alfa = Math.min(1, u * 5, (1 - u) * 5);
+    halka(ctx, tm.x, tm.y, 14 + u * 18, 0.35 * alfa);
+  } else if (z < uyari) {
+    const u = z / uyari;
+    for (let i = 0; i < 3; i++) halka(ctx, tm.x + Math.sin(i * 2.1 + z * 6) * 10, tm.y + Math.cos(i * 1.7 + z * 5) * 6, 6 + ((u * 3 + i / 3) % 1) * 22, 0.55 * (1 - ((u * 3 + i / 3) % 1)));
+  } else if (z < uyari + atilma) {
+    const u = (z - uyari) / atilma;
+    halka(ctx, tm.x, tm.y, 26 + u * 10, 0.5);
+  } else {
+    const u = Math.min(1, (z - uyari - atilma) / batis);
+    halka(ctx, tm.x, tm.y, 36 + u * 14, 0.4 * (1 - u));
+  }
+  ctx.restore();
+}
+
 // ChatGPT timsah kareleri (N12: dalga, gözler, baş, açık ağız, kapma, batış). Kareler yandan çizildiği için döndürülmez;
 // sola atılan timsah aynalanır, baş atılış yönünde ilerler. Hazır değilse false (kod çizimi).
 function timsahKareCiz(ctx, tm) {
   if (typeof animHazir !== "function" || !animHazir("timsah")) return false;
   const { uyari, atilma, batis } = TIMSAH;
-  let kare, ilerle = 0, alfa = 1;
+  let kare, alfa = 1;
   if (tm.tur === "sus") {
     const u = tm.t / TIMSAH.susSure;
     kare = 2; alfa = Math.min(1, u * 5, (1 - u) * 5);
   } else {
     const z = tm.t;
     if (z < uyari) { const u = z / uyari; kare = u < 0.5 ? 1 : 2; alfa = Math.min(1, u * 3 + 0.3); }
-    else if (z < uyari + atilma) { const u = (z - uyari) / atilma; kare = u < 0.3 ? 3 : u < 0.8 ? 4 : 5; ilerle = u * 32; }
-    else { const u = Math.min(1, (z - uyari - atilma) / batis); kare = 6; ilerle = 32 * (1 - u); alfa = 1 - u; }
+    else if (z < uyari + atilma) { const u = (z - uyari) / atilma; kare = u < 0.3 ? 3 : u < 0.75 ? 4 : 5; } // son kare: ağız kapandı
+    else { const u = Math.min(1, (z - uyari - atilma) / batis); kare = 6; alfa = 1 - u; }
   }
+  const konum = timsahKonum(tm);
   ctx.save();
-  ctx.translate(tm.x + Math.cos(tm.a) * ilerle, tm.y + Math.sin(tm.a) * ilerle);
+  ctx.translate(konum.x, konum.y);
   if (Math.cos(tm.a) < 0) ctx.scale(-1, 1);
   ctx.globalAlpha *= Math.max(0, alfa);
   animCiz(ctx, "timsah", kare, -40, -30, 80, 56);
@@ -277,13 +326,14 @@ function timsahKareCiz(ctx, tm) {
 }
 
 function timsahCiz(ctx, tm) {
+  timsahSplashCiz(ctx, tm);
   if (timsahKareCiz(ctx, tm)) return;
   {
+    const konum = timsahKonum(tm);
     ctx.save();
-    ctx.translate(tm.x, tm.y);
+    ctx.translate(konum.x, konum.y);
     if (tm.tur === "sus") {
       const u = tm.t / TIMSAH.susSure, alfa = Math.min(1, u * 5, (1 - u) * 5);
-      halka(ctx, 0, 0, 14 + u * 18, 0.35 * alfa);
       ctx.globalAlpha = alfa;
       ctx.rotate(tm.a + Math.sin(tm.t * 1.7) * 0.25);
       ctx.translate(0, Math.sin(tm.t * 3) * 1.2);
@@ -292,23 +342,20 @@ function timsahCiz(ctx, tm) {
       ctx.beginPath(); ctx.arc(22, -2.5, 1.4, 0, Math.PI * 2); ctx.arc(22, 2.5, 1.4, 0, Math.PI * 2); ctx.fill();
     } else {
       const { uyari, atilma, batis } = TIMSAH, z = tm.t;
-      if (z < uyari) {                                                             // kabarcık ve yükselen gözler
+      if (z < uyari) {                                                             // yükselen gözler
         const u = z / uyari;
-        for (let i = 0; i < 3; i++) halka(ctx, Math.sin(i * 2.1 + z * 6) * 10, Math.cos(i * 1.7 + z * 5) * 6, 6 + ((u * 3 + i / 3) % 1) * 22, 0.55 * (1 - ((u * 3 + i / 3) % 1)));
         ctx.globalAlpha = Math.min(1, u * 2);
         ctx.rotate(tm.a);
         timsahGozleri(ctx, 9, 0.6 + u * 0.4);
-      } else if (z < uyari + atilma) {                                             // ağız açık atılış, sonunda kapanır
+      } else if (z < uyari + atilma) {                                             // karaya atılış; sonunda çene kapanır
         const u = (z - uyari) / atilma;
-        halka(ctx, 0, 0, 26 + u * 10, 0.5);
         ctx.rotate(tm.a);
-        timsahKafa(ctx, u * 32, u < 0.8 ? 1 : (1 - u) * 5);
+        timsahKafa(ctx, 0, u < 0.8 ? 1 : (1 - u) * 5);
       } else {                                                                     // geri çekilip batar
         const u = Math.min(1, (z - uyari - atilma) / batis);
-        halka(ctx, 0, 0, 36 + u * 14, 0.4 * (1 - u));
         ctx.globalAlpha = 1 - u;
         ctx.rotate(tm.a);
-        timsahKafa(ctx, 32 * (1 - u), 0);
+        timsahKafa(ctx, 0, 0);
       }
     }
     ctx.restore();

@@ -79,7 +79,7 @@ try {
     assert.equal(d.zones[5].x1, d.arena.x0);
     for (const z of d.zones) {
       assert.ok(Math.abs((z.gate.x1 - z.gate.x0) - 90) < 1e-6);
-      assert.ok(Math.abs((z.gate.bridgeY1 - z.gate.bridgeY0) - 120) < 1e-6);
+      assert.ok(Math.abs((z.gate.bridgeY1 - z.gate.bridgeY0) - 156) < 1e-6);
       assert.equal(z.gate.x1, z.x1);
     }
     assert.deepEqual(duzen.bolgeler, [0, 1, 6, 7]);

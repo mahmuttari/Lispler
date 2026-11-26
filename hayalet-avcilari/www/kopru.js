@@ -78,17 +78,19 @@ function koprulerHazir() {
 }
 
 // (x, y) bir köprünün şeridindeyse o köprü
-function koprudeki(x, y) {
+function koprudeki(x, y, r) {
   for (const k of koprulerHazir()) {
     const boy = k.yatay ? x : y, en = k.yatay ? y : x;
-    if (boy >= k.a - 4 && boy <= k.b + 4 && Math.abs(en - k.c) <= KOPRU.serbest) return k;
+    // Geçit köprüsünde şerit, görünür güvertenin (korkuluklar arası) içidir; göl köprüsü KOPRU.serbest kalır
+    const serbest = (k.su && k.su.gecit && typeof yolculukKopruYurumeYari === "function") ? yolculukKopruYurumeYari(r) : KOPRU.serbest;
+    if (boy >= k.a - 4 && boy <= k.b + 4 && Math.abs(en - k.c) <= serbest) return k;
   }
   return null;
 }
-function koprudeMi(x, y) { return !!koprudeki(x, y); }
+function koprudeMi(x, y, r) { return !!koprudeki(x, y, r); }
 
 // Oyuncunun yürüyüşü için su: köprünün şeridinde engel değil
-function kopruluSuCarpar(x, y, r) { return collidesWaters(x, y, r) && !koprudeMi(x, y); }
+function kopruluSuCarpar(x, y, r) { return collidesWaters(x, y, r) && !koprudeMi(x, y, r); }
 function kopruluSuMesafesi(x, y, r) { return koprudeMi(x, y) ? Infinity : engelMesafesi(game.waters, x, y, r); }
 
 function kopruUclari(k) {
@@ -161,7 +163,12 @@ function koprulerCiz(ctx) {
     // Göl köprüleri (su.gecit yok) değişmez; kapalı geçit köprüsünü yolculukCiz çizer.
     if (k.su && k.su.gecit && typeof gorsel === "function" && gorsel("kopru-acik")) {
       const gecitAcik = !(game.kopruAcik && k.sira != null && !game.kopruAcik[k.sira]);
-      if (gecitAcik) gorselKutuya(ctx, "kopru-acik", Math.min(x0, x1) - yari, Math.min(y0, y1) - yari, Math.abs(x1 - x0) + yari * 2, Math.abs(y1 - y0) + yari * 2);
+      if (gecitAcik) {
+        // FIX2: resim yüksekliği güverte bandına göre (bridgeW); güverte yürünebilir şeritle hizalanır
+        const boyResim = (typeof YOLCULUK_AYAR !== "undefined" && YOLCULUK_AYAR.bridgeW) ? YOLCULUK_AYAR.bridgeW : yari * 2;
+        const orta = (y0 + y1) / 2;
+        gorselKutuya(ctx, "kopru-acik", Math.min(x0, x1) - yari, orta - boyResim / 2, Math.abs(x1 - x0) + yari * 2, boyResim);
+      }
       continue;
     }
     const ustunde = p && !p.dead && koprudeki(p.x, p.y) === k;

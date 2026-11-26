@@ -13,12 +13,22 @@ const YOLCULUK_AYAR = {
   zoneCount: 6,
   arenaW: 900,
   gateW: 90,
-  bridgeW: 120,
+  bridgeW: 156, // FIX2: eski 120; görünür güverteye göre ~%30 genişletildi
   kenar: 80,
   agizBos: 160, // köprü ağzının önünde/arkasında boş bırakılan alan (px)
   koridor: 130, // bölge içindeki yürüme koridorunun yarı genişliği (px)
 };
 YOLCULUK_AYAR.zoneW = (YOLCULUK_AYAR.worldW - YOLCULUK_AYAR.startW - YOLCULUK_AYAR.arenaW) / YOLCULUK_AYAR.zoneCount;
+// FIX2: açık köprü resminin güvertesi (korkuluklar arası) resim yüksekliğinin ~%62'sidir
+// (yol1-kopru-acik.webp alfa ölçümü: 146 px resimde 23..111. satırlar, 89/146 ≈ 0,61). Çizimde resim
+// yüksekliği = güverte / oran seçilir; böylece güverte, yürünebilir şeritle aynı yere gelir.
+const KOPRU_GUVERTE_ORANI = 0.62;
+// Görünür güverte bandının yarı yüksekliği (oyuncu merkezi değil, tahtanın tamamı)
+function yolculukKopruDeckYari() { return (YOLCULUK_AYAR.bridgeW * KOPRU_GUVERTE_ORANI) / 2; }
+// Oyuncu merkezinin köprüde gidebileceği yarı genişlik: güverte eksi oyuncu yarıçapı
+function yolculukKopruYurumeYari(r) { return Math.max(2, yolculukKopruDeckYari() - (r || 0)); }
+// Köprü resminin çizileceği yükseklik (güverte bandı / destek oranı = bridgeW)
+function yolculukKopruResimBoyu() { return (yolculukKopruDeckYari() * 2) / KOPRU_GUVERTE_ORANI; }
 // Bölge kotası: bölgede doğacak hayalet sayısı (Y2 ölçümüne göre)
 // eski: Math.max(1, Math.round((10 + 3 * bolum) * (0.8 + 0.08 * bolge))); Y2C: (10 + 1.6 * bolum) * (0.75 + 0.06 * bolge)
 // Y2D: erken bölümler daha az hayalet (8 + 0,35·bölüm + 0,08·bölüm²), bölge çarpanı yumuşatıldı (0,83 + 0,03·bölge);
@@ -773,10 +783,11 @@ function yolculukYuruyebilir(x, y, r) {
   if (typeof collidesSpikes === "function" && collidesSpikes(x, y, r)) return false;
   if (typeof collidesLavas === "function" && collidesLavas(x, y, r)) return false;
   if (typeof collidesWaters === "function" && collidesWaters(x, y, r)) {
-    if (typeof koprudeMi === "function" && koprudeMi(x, y)) return true;
+    if (typeof koprudeMi === "function" && koprudeMi(x, y, r)) return true;
     if (game._yolculukDuzen) {
+      const yari = yolculukKopruYurumeYari(r);
       for (const z of game._yolculukDuzen.zones) {
-        if (x >= z.gate.x0 - 20 && x <= z.gate.x1 + 20 && Math.abs(y - z.gate.cy) <= 42) return true;
+        if (x >= z.gate.x0 - 20 && x <= z.gate.x1 + 20 && Math.abs(y - z.gate.cy) <= yari) return true;
       }
     }
     return false;

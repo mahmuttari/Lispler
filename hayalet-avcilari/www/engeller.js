@@ -740,48 +740,30 @@
     "tema3-obje1": 110, "tema3-obje2": 150, "tema4-obje1": 110, "tema4-obje2": 120,
     "tema5-obje1": 170, "tema5-obje2": 190, "tema6-obje1": 160, "tema6-obje2": 170,
   };
-  function objeResmi(ctx, w, h, p, B, k, r) {
-    const d = B.derinlik || 0, renk = engelKoyuRenk(p);
-    if (d) { doldur(ctx, B, renk, 0, d); doldur(ctx, B, renk, 0, 0, 3); } else doldur(ctx, B, renk, 0, 0, 3); // çarpışma: biçim + 3 (kayada ön yüz de)
-    const im = engelGorsel(k);
-    if (im) {
-      const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
-      const dogal = OBJE_DOGAL_BOY[k] || 150, kutu = Math.max(w, h);
-      // Yerleşim kaydı: canlı kareler (GOR2 objeAnimCiz) durağan resmin AYNI kutularına çizilsin diye biçimde saklanır
-      const kayit = [];
-      if (B) B._objeYerlesim = { kapak: false, d, kayit };
-      if (!(iw > 0 && ih > 0) || kutu <= dogal) {
-        // Kutu doğal boyu aşmıyorsa eski davranış: resim kutuya "cover" sığar
-        if (B) B._objeYerlesim.kapak = true;
-        const ciz = () => resimKapak(ctx, im, 0, 0, w, h);
-        kirp(ctx, B, ciz);
-        if (d) kirp(ctx, B, ciz, 0, d);
-      } else {
-        const olcek = dogal / Math.max(iw, ih), dw = iw * olcek, dh = ih * olcek;
-        const ciz = () => {
-          const liste = []; kayit.push(liste);
-          if (dogal >= 200) { liste.push([(w - dw) / 2, (h - dh) / 2, dw, dh]); ctx.drawImage(im, (w - dw) / 2, (h - dh) / 2, dw, dh); return; } // anıt: tek, doğal boyda
-          // Küçük obje: doğal boyda, hafif kaydırmalı ızgarada 2-6 kopya; alt sıra üsttekiyle örtüşsün diye y'ye göre sıralı
-          const n = Math.max(2, Math.min(6, Math.round((w / dw) * (h / dh))));
-          const sut = Math.max(1, Math.ceil(Math.sqrt(n * w / Math.max(1, h)))), sat = Math.ceil(n / sut), yerler = [];
-          for (let i = 0; i < n; i++) {
-            const cw = w / sut, ch = h / sat;
-            yerler.push({ x: (i % sut + 0.5) * cw + (r() - 0.5) * cw * 0.4, y: (Math.floor(i / sut) + 0.5) * ch + (r() - 0.5) * ch * 0.4 });
-          }
-          yerler.sort((a, b) => a.y - b.y);
-          for (const y of yerler) {
-            const v = 0.9 + r() * 0.2;
-            let cw = dw * v, ch = dh * v;
-            const eb = Math.max(cw, ch);
-            if (eb > dogal) { const q = dogal / eb; cw *= q; ch *= q; } // her kopya en çok doğal boy
-            liste.push([y.x - cw / 2, y.y - ch / 2, cw, ch]);
-            ctx.drawImage(im, y.x - cw / 2, y.y - ch / 2, cw, ch);
-          }
-        };
-        kirp(ctx, B, ciz);
-        if (d) kirp(ctx, B, ciz, 0, d);
-      }
+  // Obje resmi: dönmez, kırpılmaz; tek resim en-boy oranı korunarak kutuya (×1.15, alt-orta hizalı) sığdırılır.
+  // Çarpışma alanı koyu renkle doldurulmaz; yerde yumuşak bir gölge elipsi kalır. Resim kutunun üstünden/yanından taşabilir.
+  function objeResmi(ctx, w, h, p, B, k) {
+    // Yumuşak zemin gölgesi: çarpışma ayak izini kaplayan, kenara doğru sönen elips
+    if (w > 0 && h > 0) {
+      ctx.save();
+      ctx.translate(w / 2, h / 2); ctx.scale(1, h / w);
+      const gr = ctx.createRadialGradient(0, 0, 0, 0, 0, w * 0.78);
+      gr.addColorStop(0, "rgba(0,0,0,0.22)");
+      gr.addColorStop(0.55, "rgba(0,0,0,0.2)");
+      gr.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(0, 0, w * 0.78, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
     }
+    const im = engelGorsel(k);
+    if (!im) return [];
+    const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
+    if (!(iw > 0 && ih > 0)) return [];
+    // Hedef kutu: nesne kutusunun ×1.15'i, alt-orta hizalı; resim altı kutunun 4 px altında
+    const tw = w * 1.15, th = h * 1.15, alt = h + 4;
+    const olcek = Math.min(tw / iw, th / ih), dw = iw * olcek, dh = ih * olcek;
+    const rect = [w / 2 - dw / 2, alt - dh, dw, dh];
+    if (B) B._objeYerlesim = { kapak: false, kayit: [rect] };
+    ctx.drawImage(im, rect[0], rect[1], rect[2], rect[3]);
     return [];
   }
   function golResmi(ctx, w, h, p, B, k) {
@@ -853,19 +835,31 @@
   // (çağıran o karede doğrudan çizer).
   let _boyanan = 0; // bu karede çizilen resim (engelleriCiz sıfırlar; ısınma bütçesi için)
   let _isinmaTamam = 0, _isinmaN = -1, _isinmaW = null; // bütün engeller bu ölçekte ısındı: kare başına tarama yapılmaz (PERF1)
+  // Obje resmi varsa anahtarı (objeResmi resim çizer); yoksa null. Önbellek payı buna göre büyütülür.
+  function objeResimAnahtar(o) {
+    if (o.tur !== "obje1" && o.tur !== "obje2") return null;
+    const dt = typeof o.tema === "string";
+    const k = dt ? `ulke-${o.tema}-${o.tur === "obje1" ? 1 : 2}` : `tema${o.tema + 1}-${o.tur}`;
+    return engelGorsel(k) ? k : null;
+  }
+  // Obje önbelleğinin tuval payı: resim ve gölge kutunun dışına taşabilsin (sağ/sol %30, üst %40, alt %30)
+  function objePayi(o) { return { x: Math.ceil(o.w * 0.3), y: Math.ceil(o.h * 0.4), alt: Math.ceil(o.h * 0.3) }; }
   function engelResmi(o) {
     const s = engelOlcegi();
     if (o._resim && o._olcek === s) return o._resim;
     o._resim = null; o._olcek = s;
-    const gw = Math.ceil(o.w * s), gh = Math.ceil(o.h * s);
+    // Obje payı resim henüz yüklenmemişken de verilir: gölge önbellek kenarında kesilmesin.
+    const pay = (o.tur === "obje1" || o.tur === "obje2") ? objePayi(o) : null;
+    const px = pay ? pay.x : 0, py = pay ? pay.y : 0, palt = pay ? pay.alt : 0;
+    const gw = Math.ceil((o.w + 2 * px) * s), gh = Math.ceil((o.h + py + palt) * s);
     if (!(gw > 0 && gh > 0)) return null;
     let c = null, cx = null;
     try { c = document.createElement("canvas"); c.width = gw; c.height = gh; cx = c.getContext("2d"); } catch (_) { cx = null; }
     if (!cx || c.width !== gw || c.height !== gh) return null;
-    cx.scale(s, s);
+    cx.scale(s, s); cx.translate(px, py);
     _boyanan++;
     const canli = engelBoya(cx, o);
-    return (o._resim = { c, canli });
+    return (o._resim = { c, canli, pay });
   }
   // Su başka bir gölle kesişiyor mu (kesişen göller ikinci geçişte maskeli iç resimle birleşir)
   function komsuMu(o) {
@@ -909,7 +903,12 @@
   }
   function resimCiz(ctx, o) {
     const R = engelResmi(o);
-    if (R) { bas(ctx, R.c, o.x, o.y, o.w, o.h); return R.canli; }
+    if (R) {
+      const p = R.pay;
+      if (p) bas(ctx, R.c, o.x - p.x, o.y - p.y, o.w + 2 * p.x, o.h + p.y + p.alt);
+      else bas(ctx, R.c, o.x, o.y, o.w, o.h);
+      return R.canli;
+    }
     ctx.save(); ctx.translate(o.x, o.y);
     const canli = engelBoya(ctx, o);
     ctx.restore();
@@ -1016,21 +1015,15 @@
     if (t >= sure) return null;
     return [k, OBJE_ANIM_SIRA[Math.min(OBJE_ANIM_SIRA.length - 1, Math.floor(t * 8))]];
   }
-  // Durağan resmin (objeResmi) kaydettiği AYNI kutulara ve kırpmaya çizer: kutuya "cover" sığan tek resim, doğal boylu anıt
-  // ya da küçük objenin 2-6 kopyası (FIX3). Durağan resim henüz çizilmediyse (kayıt yok) canlı kare de çizilmez.
+  // Durağan resmin (objeResmi) kaydettiği TEK hedef dikdörtgenine, kırpmadan çizer: resim kutuya "contain" sığar,
+  // alt-orta hizalıdır. Durağan resim henüz çizilmediyse (kayıt yok) canlı kare de çizilmez.
   function objeAnimCiz(ctx, o, k, kare) {
     const im = typeof gorsel === "function" ? gorsel(`an-${k}-${kare}`) : null;
-    const B = o.bicim, Y = B && B._objeYerlesim;
-    if (!im || !Y) return false;
+    const B = o.bicim, Y = B && B._objeYerlesim, q = Y && Y.kayit && Y.kayit[0];
+    if (!im || !q) return false;
     ctx.save();
     ctx.translate(o.x, o.y);
-    if (Y.kapak) {
-      const ciz = () => resimKapak(ctx, im, 0, 0, o.w, o.h);
-      kirp(ctx, B, ciz);
-      if (Y.d) kirp(ctx, B, ciz, 0, Y.d);
-    } else {
-      Y.kayit.forEach((liste, j) => kirp(ctx, B, () => { for (const q of liste) ctx.drawImage(im, q[0], q[1], q[2], q[3]); }, 0, j ? Y.d : 0));
-    }
+    ctx.drawImage(im, q[0], q[1], q[2], q[3]);
     ctx.restore();
     return true;
   }
@@ -1075,12 +1068,15 @@
     let animSayaci = 0;
     for (const o of duvarSirasi()) {
       if (!gor(o, 8)) continue;
-      const on = zem3aOnKutu(o.x, o.y, o.w, o.h, o.y + o.h);
+      // Objede görsel kutu = çizilen resmin hedef dikdörtgeni (dünya koordinatı); taban çizgisi çarpışma kutusunun altı
+      const q = o.bicim && o.bicim._objeYerlesim && o.bicim._objeYerlesim.kayit && o.bicim._objeYerlesim.kayit[0];
+      const kx = q ? o.x + q[0] : o.x, ky = q ? o.y + q[1] : o.y, kw = q ? q[2] : o.w, kh = q ? q[3] : o.h;
+      const on = zem3aOnKutu(kx, ky, kw, kh, o.y + o.h);
       if (kip === "arka" && on) continue; // ön sırada çizilecek
       if (kip === "on" && !on) continue;
       if (!on) o._solma = 1; // arka nesne hiç solmaz
       const eskiAlfa = ctx.globalAlpha;
-      if (on) { const a = zem3aAlfa(o, o.x, o.y, o.w, o.h); if (a !== 1) ctx.globalAlpha = eskiAlfa * a; }
+      if (on) { const a = zem3aAlfa(o, kx, ky, kw, kh); if (a !== 1) ctx.globalAlpha = eskiAlfa * a; }
       canliCiz(ctx, o, resimCiz(ctx, o), zaman);
       if (animSayaci < 3) {
         const a = objeAnimKare(o, zaman);

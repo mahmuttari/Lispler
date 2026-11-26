@@ -70,7 +70,7 @@ const olcekDenetimi = (p) => p.evaluate(() => {
   const s = engelOlcegi(), cam = game.camera;
   const gor = [...game.walls, ...game.waters, ...game.spikes, ...game.lavas]
     .filter((o) => o.x < cam.x + game.W && o.x + o.w > cam.x && o.y < cam.y + game.H && o.y + o.h > cam.y);
-  const kotu = gor.filter((o) => o._olcek !== s || !o._resim || o._resim.c.width !== Math.ceil(o.w * s));
+  const kotu = gor.filter((o) => { const p = o._resim && o._resim.pay; const px = p ? p.x : 0; return o._olcek !== s || !o._resim || o._resim.c.width !== Math.ceil((o.w + 2 * px) * s); });
   return { s, vs: game.viewScale, n: gor.length, kotu: kotu.length };
 });
 const oyunBaslat = (p) => p.evaluate(() => { save.playerName = 'Defne'; persistSave(); startGame(); game.player.invuln = 1e9; });
@@ -241,13 +241,17 @@ try {
     const denetle = (o, ad) => {
       const R = engelResmi(o);
       if (!R || !R.c) { sorun.push(`${ad} resim yok`); return; }
-      const c = R.c, s = c.width / o.w, d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
-      const alfa = (x, y) => d[(Math.min(c.height - 1, Math.floor(y * s)) * c.width + Math.min(c.width - 1, Math.floor(x * s))) * 4 + 3];
+      // FIXG1: obje önbelleği resim/gölge kutunun dışına taşsın diye paylı büyütüldü; örnekleme pay kadar kaydırılır.
+      const c = R.c, pay = R.pay || { x: 0, y: 0 }, s = c.width / (o.w + 2 * pay.x), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+      const alfa = (x, y) => d[(Math.min(c.height - 1, Math.floor((y + pay.y) * s)) * c.width + Math.min(c.width - 1, Math.floor((x + pay.x) * s))) * 4 + 3];
+      const obje = o.tur === 'obje1' || o.tur === 'obje2';
       let bos = null, tasan = null;
       for (let y = 1; y < o.h; y += 2) for (let x = 1; x < o.w; x += 2) {
+        // FIXG1: objede çarpışma alanı koyu dolgu yerine gölge/resimle boyanır; ölçüt "boyalı" (alfa > 0).
         if (!bos && engelUzaklik(o.carpisma, x, y) < -2 && alfa(x, y) === 0) bos = `${x},${y}`;
+        // FIXG1: obje resmi bilerek biçimin dışına taşar (tam resim görünsün): taşma denetimi objede yapılmaz.
         const dis = o.derinlik ? engelUzaklik(o.carpisma, x, y) : engelUzaklik(o.bicim, x, y);
-        if (!tasan && dis > o.pay + 3 && alfa(x, y) > 0) tasan = `${x},${y} (${dis.toFixed(1)} px)`;
+        if (!obje && !tasan && dis > o.pay + 3 && alfa(x, y) > 0) tasan = `${x},${y} (${dis.toFixed(1)} px)`;
       }
       if (bos) sorun.push(`${ad} çarpışma içi boş: ${bos}`);
       if (tasan) sorun.push(`${ad} biçim dışı boyalı: ${tasan}`);

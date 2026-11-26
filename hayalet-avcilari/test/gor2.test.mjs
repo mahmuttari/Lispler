@@ -242,11 +242,10 @@ try {
     assert.ok(canli.icinde.some((s) => s.includes('an-ulke-CN-1-')), JSON.stringify(canli.icinde));
     assert.ok(!canli.disinda.some((s) => s.includes('an-ulke-CN-1-')), JSON.stringify(canli.disinda));
   });
-  // 9b) Küçük obje (doğal boyu kutudan küçük, FIX3 kopyaları): canlı kare her kopyanın KENDİ kutusuna çizilir, kutunun tamamına
-  // tek dev resim çizilmez (Polonya leylek yuvası, doğal boy 105)
+  // 9b) Obje (FIXG1): canlı kare durağan resmin TEK hedef dikdörtgenine, kırpmadan çizilir; kopya yok.
   const kopya = await p.evaluate(() => {
     __kur('PL');
-    const o = game.walls.find((w) => w.tema === 'PL' && w.tur === 'obje2' && Math.max(w.w, w.h) > 105);
+    const o = game.walls.find((w) => w.tema === 'PL' && w.tur === 'obje2');
     if (!o) return { yok: true };
     const kayit = { walls: game.walls, waters: game.waters, spikes: game.spikes, lavas: game.lavas };
     game.walls = [o]; game.waters = []; game.spikes = []; game.lavas = [];
@@ -255,20 +254,21 @@ try {
     const Y = o.bicim._objeYerlesim;
     const kutular = [];
     const cv = document.createElement('canvas'); cv.width = 600; cv.height = 600; const x = cv.getContext('2d');
-    const od = x.drawImage.bind(x);
+    let kirp = 0; const od = x.drawImage.bind(x); const ok = x.clip.bind(x);
+    x.clip = (...a) => { kirp++; return ok(...a); };
     x.drawImage = (im, ...a) => { if (im && im.src && im.src.includes('an-ulke-PL-2-2')) kutular.push(a.slice(-4).map(Math.round)); return od(im, ...a); };
-    const ok = objeAnimCiz(x, o, 'ulke-PL-2', 2);
+    const cizdi = objeAnimCiz(x, o, 'ulke-PL-2', 2);
     game.walls = kayit.walls; game.waters = kayit.waters; game.spikes = kayit.spikes; game.lavas = kayit.lavas;
-    const beklenen = Y && !Y.kapak ? Y.kayit.flat().map((q) => q.map(Math.round)) : [];
-    return { yok: false, ok, kapak: Y && Y.kapak, kutular, beklenen, w: Math.round(o.w), h: Math.round(o.h) };
+    const beklenen = Y && !Y.kapak && Y.kayit ? Y.kayit.map((q) => q.map(Math.round)) : [];
+    return { yok: false, ok: cizdi, kapak: Y && Y.kapak, kutular, beklenen, kirp };
   });
-  sina('canlı ülke objesi: küçük objede kareler kopyaların kendi kutularına çizilir (tek dev resim yok)', () => {
-    assert.ok(!kopya.yok, 'PL obje2 (kutusu doğal boydan büyük) bulunamadı');
+  sina('canlı ülke objesi: kare durağan resmin tek kırpmasız hedef dikdörtgenine çizilir', () => {
+    assert.ok(!kopya.yok, 'PL obje2 bulunamadı');
     assert.equal(kopya.ok, true);
     assert.equal(kopya.kapak, false);
-    assert.ok(kopya.kutular.length >= 2, JSON.stringify(kopya));
+    assert.equal(kopya.kirp, 0, `clip ${kopya.kirp}`);
+    assert.equal(kopya.kutular.length, 1, JSON.stringify(kopya));
     assert.deepEqual(kopya.kutular, kopya.beklenen);
-    for (const k of kopya.kutular) assert.ok(Math.max(k[2], k[3]) <= 106, `kopya ${k} doğal boydan büyük`);
   });
 
   sina('canlı ülke objesi: kareler yokken canlı katman yok', () => {

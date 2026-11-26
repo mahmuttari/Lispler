@@ -53,15 +53,16 @@ try {
     };
   });
   const lale = await p.evaluate(() => __ciz('obje2', 'TR', 200, 200));
-  sina(`lale bahçesi (ulke-TR-2) büyük kutuda ≥2 kopya, her biri ≤ doğal 100 px`, () => {
-    assert.ok(lale.length >= 2, `kopya ${lale.length}`);
-    assert.ok(lale.length <= 6, `kopya ${lale.length}`);
-    for (const q of lale) assert.ok(Math.max(q.dw, q.dh) <= 100 + 1e-6, JSON.stringify(q));
+  // FIXG1: kopyalama kaldırıldı; her obje tek, kırpmasız resim olarak çizilir (eski "≥2 kopya" denetimi değişti)
+  sina(`lale bahçesi (ulke-TR-2) tek kopya, resim ×1.15 kutuda`, () => {
+    assert.equal(lale.length, 1, `kopya ${lale.length}`);
+    for (const q of lale) assert.ok(Math.max(q.dw, q.dh) <= 200 * 1.15 + 1e-6, JSON.stringify(q));
   });
   const anit = await p.evaluate(() => __ciz('obje1', 'FR', 300, 300));
-  sina(`Eyfel Kulesi (ulke-FR-1) tek kopya, doğal 250 px`, () => {
+  // FIXG1: anıt da doğal boy tablosundan bağımsız, tek ve kırpmasız çizilir (eski "doğal 250 px" denetimi değişti)
+  sina(`Eyfel Kulesi (ulke-FR-1) tek kopya, resim ×1.15 kutuda`, () => {
     assert.equal(anit.length, 1, `kopya ${anit.length}`);
-    assert.ok(Math.max(anit[0].dw, anit[0].dh) <= 250 + 1e-6, JSON.stringify(anit[0]));
+    assert.ok(Math.max(anit[0].dw, anit[0].dh) <= 300 * 1.15 + 1e-6, JSON.stringify(anit[0]));
   });
 
   // 3) Göller: eski boy (aynı tohum ve kurallar) ile yeni boyun alan ortalamasını karşılaştır
@@ -109,13 +110,17 @@ try {
     const denetle = (o, ad) => {
       const R = engelResmi(o);
       if (!R || !R.c) { sorun.push(`${ad} resim yok`); return; }
-      const c = R.c, s = c.width / o.w, d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
-      const alfa = (x, y) => d[(Math.min(c.height - 1, Math.floor(y * s)) * c.width + Math.min(c.width - 1, Math.floor(x * s))) * 4 + 3];
+      const c = R.c, pay = R.pay || { x: 0, y: 0 }, s = c.width / (o.w + 2 * pay.x);
+      const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+      // FIXG1: önbellek obje için paylı büyütüldü; örnekleme pay kadar kaydırılır
+      const alfa = (x, y) => d[(Math.min(c.height - 1, Math.floor((y + pay.y) * s)) * c.width + Math.min(c.width - 1, Math.floor((x + pay.x) * s))) * 4 + 3];
       let bos = null, tasan = null;
+      const obje = o.tur === 'obje1' || o.tur === 'obje2';
       for (let y = 1; y < o.h; y += 2) for (let x = 1; x < o.w; x += 2) {
         if (!bos && engelUzaklik(o.carpisma, x, y) < -2 && alfa(x, y) === 0) bos = `${x},${y}`;
+        // Obje resmi bilerek biçimin dışına taşar (tam resim görünsün): taşma denetimi objede yapılmaz
         const dis = o.derinlik ? engelUzaklik(o.carpisma, x, y) : engelUzaklik(o.bicim, x, y);
-        if (!tasan && dis > o.pay + 3 && alfa(x, y) > 0) tasan = `${x},${y} (${dis.toFixed(1)} px)`;
+        if (!obje && !tasan && dis > o.pay + 3 && alfa(x, y) > 0) tasan = `${x},${y} (${dis.toFixed(1)} px)`;
       }
       if (bos) sorun.push(`${ad} çarpışma içi boş: ${bos}`);
       if (tasan) sorun.push(`${ad} biçim dışı boyalı: ${tasan}`);

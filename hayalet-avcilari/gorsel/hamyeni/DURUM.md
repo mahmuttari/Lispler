@@ -48,8 +48,8 @@
 | R42 | üretildi (2. deneme, Chrome ChatGPT; 1. denemede tüm arka planda beyaz pus vardı; hücre sınırları temiz; hücre 6 dokusu alfa ≈253 (en az 179), oyunda opak çizilmeli) |
 | R43 | üretildi (1. deneme, Chrome ChatGPT; hücre sınırları temiz; arka planda alfa 1–9 çok hafif pus (%17), kesimde eşik 10) |
 | R44 | üretildi (1. deneme, Chrome ChatGPT; hücre sınırları temiz; joystick tabanı çoğunlukla opak, saydamlığı oyunda verilebilir) |
-| R45 | üretildi (1. deneme, Chrome ChatGPT; 1024x1536 RGB opak, yazısız; dolunay, yıldızlar, 4 dost hayalet, tepeler) |
-| R46 | bekliyor |
+| R45 | üretildi (1. deneme, Chrome ChatGPT; 1024x1536 RGB opak, yazısız; dolunay, yıldızlar, 3 dost hayalet, tepeler) |
+| R46 | üretildi (1. deneme, Chrome ChatGPT; 1024x1536 RGB opak, yazısız; ChatGPT iki seçenek sundu, taş yollu 2. seçildi; dini yapı yok, uçan fenerler, 3 dost hayalet) |
 | R47 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): arma, kaide, spot ışığı, yeşil/mor/turuncu hap düğme; nesneler hücre içinde, sınırlarda yalnız 1-4 tek tük pus pikseli (alfa >= 40); spot ışığı yarı saydam (alfa 1-39 %20); kullanıcıya gösterilecek |
 | R48 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): el sallayan hayalet 3 kare (aynı boy ve merkez), kayan yıldız, yarasa, fener; hücre sınırı aşılmıyor, en dar kenar 5. hücrede (yarasa kanadı) 11 px; kullanıcıya gösterilecek |
 | R49 | üretildi (2. deneme, Chrome'da ChatGPT, referans U06 + D01; 1. denemede turkuaz hap ve para sayacı 2. hücreye taşıyordu, yerleşim istemiyle düzeldi; 3. deneme arka plana sahte dama deseni çizdiği için alınmadı): DİKKAT arka planda yer yer alfa 40-80 beyaz pus var; kesimde bu pafta için alfa eşiği 90 olmalı (90 eşiğiyle hücre sınırı aşılmıyor, en dar kenar 6. hücrede 8 px); kullanıcıya gösterilecek |

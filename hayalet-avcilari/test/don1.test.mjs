@@ -11,12 +11,14 @@ const WWW = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'www')
 const PW = process.env.PLAYWRIGHT_MODULE || '/opt/node22/lib/node_modules/playwright/index.mjs';
 const { chromium } = await import(pathToFileURL(PW).href);
 const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.woff2': 'font/woff2', '.webp': 'image/webp', '.m4a': 'audio/mp4' };
-// 1x1 saydam PNG: donati-* görselleri yerine sunulur (asıl dosyalar henüz yok)
+// 1x1 saydam PNG: donati-* görselleri yerine sunulur (testler gerçek resim boyutundan bağımsız kalsın)
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
 let donatiSun = true;
 const sunucu = http.createServer((q, r) => {
   const yol = decodeURIComponent(new URL(q.url, 'http://x').pathname);
-  if (donatiSun && /\/gorsel\/donati-[^/]+\.webp$/.test(yol)) {
+  if (/\/gorsel\/donati-[^/]+\.webp$/.test(yol)) {
+    // Görselsiz senaryo: asıl dosyalar da (K06 vb.) yokmuş gibi davranılır
+    if (!donatiSun) { r.writeHead(404); return r.end(); }
     r.writeHead(200, { 'content-type': 'image/png' }); return r.end(PNG);
   }
   const f = path.join(WWW, yol.replace(/^\/+/, '') || 'index.html');
@@ -64,6 +66,11 @@ async function sayfaAc() {
       const src = cv.toDataURL('image/png');
       const imler = await Promise.all(adlar.map((ad) => new Promise((coz) => { const im = new Image(); im.onload = () => coz(im); im.src = src; })));
       adlar.forEach((ad, i) => { GORSEL['donati-' + ad] = imler[i]; GORSEL_LISTESI['donati-' + ad] = src; });
+    });
+  } else {
+    await p.evaluate(() => {
+      for (const k of Object.keys(GORSEL)) if (k.startsWith('donati-')) delete GORSEL[k];
+      for (const k of Object.keys(GORSEL_LISTESI)) if (k.startsWith('donati-')) delete GORSEL_LISTESI[k];
     });
   }
   return p;

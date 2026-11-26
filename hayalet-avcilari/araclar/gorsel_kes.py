@@ -629,6 +629,8 @@ EK_PAFTALAR = {
     'R10': [('diken-plaka', 192), None, None, None, ('kalp-aura', 128), ('hatira-parilti', 160)],
     # R11: engel üstü küçük canlılar (engeller.js ENGEL_CANLI anahtarları; 6-15 px çizilir)
     'R11': [('canli-mum', 64), ('canli-goz', 64), ('canli-parilti', 64), ('canli-buhar', 64), ('canli-alevruhu', 64), ('canli-atesbocegi', 64)],
+    # R12–R17: klasik temaların engel parçaları (tema<n>: game.js THEMES sırası); sınır şeridi yatayda dikişsiz (YATAY_DIKISSIZ)
+    'R12': [('tema1-duvar', 256), ('tema1-kule', 256), ('tema1-mezar', 256), ('tema1-tarla', 256), ('tema1-gol', 256), ('tema1-sinir', 512)],
     'K06': [('donati-fici', 160), ('donati-sandik', 160), ('donati-fener', 192), ('donati-bank', 160), ('donati-tabela', 160), ('donati-saman', 192)],
     'K07': [('donati-cali', 160), ('donati-ciceklik', 160), ('donati-mantar', 128), ('donati-kutuk', 160), ('donati-tas', 160), ('donati-yaprak', 160)],
     'K08': [('donati-balkabagi', 128), ('donati-araba', 192), ('donati-cit', 160), ('donati-korkuluk', 192), ('donati-mum', 128), ('donati-orumcek', 160)],
@@ -672,6 +674,7 @@ PUS_PAFTALAR = {'R49', 'K07'}
 # Hücrede aynı nesneden birkaç tane var, oyun her birini ayrı çizer: yalnız en büyük parça kesilir
 TEK_PARCA = {'mermi-pompali', 'mermi-yesil'}
 # Parıltısı komşusuna değen nesneler: hücre içinde elle kırpılır (x0, y0, x1, y1; sütun yoğunluğunun en düşük yerinden)
+YATAY_DIKISSIZ = {f'tema{n}-sinir' for n in range(1, 7)}  # yan yana döşenen sınır şeritleri
 HUCRE_KIRP = {'mermi-yesil': (0, 0, 297, 512)}
 
 
@@ -710,6 +713,8 @@ def ek_hucreler(liste):
             if not kutu:
                 sys.exit(f'{pafta} hücre {i + 1} ({anahtar}) boş')
             hucre = hucre.crop(kutu)
+            if anahtar in YATAY_DIKISSIZ:
+                hucre = donem_kirp(hucre)
             if anahtar in GRI_BULUT:
                 hucre = bulutu_grile(hucre, anahtar == 'bulut-4')
             oran = en / max(hucre.size)
@@ -735,6 +740,25 @@ def dikissiz_dikey(im, k=48):
         satir = Image.blend(im.crop((0, h - k + y, w, h - k + y + 1)), im.crop((0, y, w, y + 1)), t)
         out.paste(satir, (0, y))
     return out
+
+
+def donem_kirp(im):
+    """Yan yana döşenecek şerit: desenin tekrar aralığı (sütun benzerliğiyle) bulunur, şerit tam sayıda aralıktan kesilir;
+    sağ uç sol uca kendiliğinden oturur (geçişli karıştırma kemer gibi belirgin desende hayalet çift görüntü bırakıyor)."""
+    import numpy as np
+    a = np.asarray(im.convert('RGBA'), dtype=np.float32)
+    w = a.shape[1]
+    pay = max(4, w // 20)
+    en_iyi = None
+    for p in range(max(16, w // 10), w // 2):
+        fark = np.abs(a[:, pay:w - pay - p] - a[:, pay + p:w - pay]).mean()
+        if en_iyi is None or fark < en_iyi[0] - 1e-6:
+            en_iyi = (fark, p)
+    p = en_iyi[1]
+    n = max(1, (w - 2 * pay) // p)
+    serit = im.crop((pay, 0, pay + n * p + 6, im.height))
+    # ek yerindeki küçük renk sıçraması için 6 px geçiş (dönem kesiminden sonra çift görüntü bırakmaz)
+    return dikissiz_dikey(serit.transpose(Image.ROTATE_90), 6).transpose(Image.ROTATE_270)
 
 
 def yol_hucreleri(liste):

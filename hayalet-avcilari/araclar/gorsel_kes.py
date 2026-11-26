@@ -21,6 +21,7 @@ HAM = os.path.join(KOK, 'gorsel', 'ham')
 HAMUI = os.path.join(KOK, 'gorsel', 'hamui')
 HAMEK = os.path.join(KOK, 'gorsel', 'hamek')
 HAMYENI = os.path.join(KOK, 'gorsel', 'hamyeni')  # yenileme paftaları R01–R49  # ek paftalar (CHATGPT-ISTEMI-EK.md, K01–K04)
+HAMYOL = os.path.join(KOK, 'gorsel', 'hamyol')  # yolculuk paftaları J01–J12 (CHATGPT-ISTEMI-YOLCULUK.md)
 CIKTI = os.path.join(KOK, 'www', 'gorsel')
 
 # Pafta → hücre anahtarları (None: kullanılmaz). Anahtar → en uzun kenar (px).
@@ -692,6 +693,51 @@ def ek_hucreler(liste):
         print(f'✓ {pafta}')
 
 
+# Yolculuk paftaları (gorsel/hamyol, CHATGPT-ISTEMI-YOLCULUK.md): J01–J06 normal oyunun 6 teması (tema sırası game.js THEMES).
+# Hücre 1 opak, dikeyde dikişsiz nehir dokusu; öbürleri saydam (pusla gelir, pusu_sil). Anahtar: yol<tema>-<parça>.
+YOL_HUCRELER = [('nehir', 256), ('kopru-acik', 256), ('kopru-kapali', 256), ('arena', 256), ('tabela', 160), ('bayrak', 128)]
+
+
+def dikissiz_dikey(im, k=48):
+    """ChatGPT'nin "dikişsiz" dokusu tam dikişsiz gelmez: alt k satır üst k satırla yumuşak geçişle karıştırılıp kesilir
+    (çıktının son satırı ilk satırına komşu olur, dikeyde döşenince dikiş görünmez)."""
+    w, h = im.size
+    out = im.crop((0, 0, w, h - k))
+    for y in range(k):
+        t = (y + 0.5) / k
+        satir = Image.blend(im.crop((0, h - k + y, w, h - k + y + 1)), im.crop((0, y, w, y + 1)), t)
+        out.paste(satir, (0, y))
+    return out
+
+
+def yol_hucreleri(liste):
+    for n in range(1, 7):
+        yol = os.path.join(HAMYOL, f'J{n:02d}.png')
+        if not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGBA')
+        if resim.size != (1536, 1024):
+            sys.exit(f'J{n:02d}: boyut {resim.size}, 1536 × 1024 olmalı')
+        for i, (parca, en) in enumerate(YOL_HUCRELER):
+            x0, y0 = (i % 3) * 512, (i // 3) * 512
+            hucre = resim.crop((x0, y0, x0 + 512, y0 + 512))
+            if parca == 'nehir':
+                hucre = dikissiz_dikey(hucre.convert('RGB')).resize((en, en), Image.LANCZOS)
+            else:
+                hucre = pusu_sil(soluklari_sil(hucre))
+                kutu = hucre.getbbox()
+                if not kutu:
+                    sys.exit(f'J{n:02d} hücre {i + 1} ({parca}) boş')
+                hucre = hucre.crop(kutu)
+                oran = en / max(hucre.size)
+                if oran < 1:
+                    hucre = hucre.resize((max(1, round(hucre.width * oran)), max(1, round(hucre.height * oran))), Image.LANCZOS)
+            anahtar = f'yol{n}-{parca}'
+            hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=88, method=6)
+            liste[anahtar] = [hucre.width, hucre.height]
+        print(f'✓ J{n:02d} (yol{n})')
+
+
 def ek_kes():
     """Yalnız ek paftaları (K01–K04) ve hatıraları (H01–H09) keser; öbür görsellere dokunmaz, liste.js'e ekler.
     Kullanım: python3 hayalet-avcilari/araclar/gorsel_kes.py --ek"""
@@ -704,6 +750,7 @@ def ek_kes():
     animasyonlar(liste)
     ANIMASYON.clear(); ANIMASYON.update(eski_anim)
     ek_hucreler(liste)
+    yol_hucreleri(liste)
     hatiralar(liste)
     # K09: opak tek resim (Yakında önizlemesi), 768 px genişlik
     yol = os.path.join(HAMEK, 'K09.png')

@@ -8,7 +8,7 @@
 | K02 | Dere kıyısı süsleri (6 parça) | **tamam**: 1. denemede kullanıcı bu açıyla onayladı (referans U06 + D01); tepeden değil üç çeyrek açı (T1 nesneleri gibi), parçalar ~420-450 px (istem 120-180 px); hücre sınırı aşılmıyor |
 | K03 | Fırtına bulutu çeşitleri ve yıldırım çizgileri | üretildi (2. deneme, referans U06 + D01; 1. denemede 1. ve 2. bulut hücre sınırını aşıyordu, düzeltme istemiyle yeniden üretildi); hücre sınırı aşılmıyor; şimşekler hücre boyunu dolduruyor (üst boşluk 13-19 px); arka planda her yerde alfa 1-39 pus var, kesici siler; toplu gösterim bekleniyor |
 | K04 | Hayalet yuvaları: mezarlık, mağara, izbe ev, kovuk, kuyu, kripta | üretildi (1. deneme, referans U06 + D01); hücre sınırı aşılmıyor; nesneler ~420-490 px (istem 300-380 px), en dar kenar boşluğu 2. hücrede 8 px; mezar taşlarında haç yok; toplu gösterim bekleniyor |
-| K05 | Kilitli köprü, iniş kareleri, açık köprü, kilit | bekliyor (kullanıcı istedi) |
+| K05 | Kilitli köprü, iniş kareleri, açık köprü, kilit | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): kapalı köprü (kalkık tahta, zincir, altın kilit ve ışık çizgisi), iniyor 45 derece, neredeyse düz (toz), açık köprü (halat korkuluk); her karede taş ayaklar aynı yerde (~440 px); kilit kapalı ve açık (pırıltılı); görünüm tam tepeden değil üç çeyrek açı (K02/K04 gibi); hücre sınırı aşılmıyor; toplu gösterim bekleniyor |
 | K06 | Donatılar: köy (fıçı, sandık, fener, bank, tabela, saman) | bekliyor |
 | K07 | Donatılar: doğa (çalı, çiçeklik, mantar, kütük, taş, yaprak) | bekliyor |
 | K08 | Donatılar: tatlı-ürkütücü (balkabağı, araba, çit, korkuluk, mum, örümcek ağı) | bekliyor |

@@ -647,6 +647,19 @@ def bulutu_grile(hucre, damla_sil):
     kutu = hucre.getbbox()
     return hucre.crop(kutu) if kutu else hucre
 
+# Arka planı saydam yerine hafif gri pusla gelen paftalar: belirgin nesneden (alfa ≥ 150) ~7 px'ten uzak pus silinir
+PUS_PAFTALAR = {'R49'}
+
+
+def pusu_sil(hucre):
+    from PIL import ImageChops, ImageFilter
+    a = hucre.getchannel('A')
+    yakin = a.point(lambda v: 255 if v >= 150 else 0).filter(ImageFilter.MaxFilter(15))
+    hucre = hucre.copy()
+    hucre.putalpha(ImageChops.multiply(a, yakin).point(lambda v: 0 if v < 30 else v))
+    return hucre
+
+
 def ek_hucreler(liste):
     for pafta, hucreler in EK_PAFTALAR.items():
         yol = os.path.join(HAMEK, f'{pafta}.png')
@@ -663,6 +676,8 @@ def ek_hucreler(liste):
             anahtar, en = hc
             x0, y0 = (i % 3) * 512, (i // 3) * 512
             hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
+            if pafta in PUS_PAFTALAR:
+                hucre = pusu_sil(hucre)
             kutu = hucre.getbbox()
             if not kutu:
                 sys.exit(f'{pafta} hücre {i + 1} ({anahtar}) boş')

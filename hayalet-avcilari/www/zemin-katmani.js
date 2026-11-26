@@ -202,6 +202,35 @@
   }
 
   function susCiz(c, s) {
+    // ZEM2B: yol kenarı süslerinde tür belliyse resim/yedek seçimi türe göre yapılır
+    if (s && (s.tur === "cimen" || s.tur === "cicek" || s.tur === "tas")) {
+      let im = null;
+      try {
+        if (typeof gorsel === "function") {
+          if (s.tur === "cimen") im = gorsel("sus-cimen") || gorsel("sus-uzun-cimen");
+          else if (s.tur === "cicek") im = gorsel("sus-cicek");
+          else im = gorsel("sus-yol-taslari") || gorsel("sus-cakil") || gorsel(SUS_YEDEK[s.idx % SUS_YEDEK.length]);
+        }
+      } catch (e) { im = null; }
+      if (im && im.width) {
+        const b = s.boy;
+        try { typeof resmiKutuyaCiz === "function" ? resmiKutuyaCiz(c, im, s.x - b / 2, s.y - b, b, b, true) : c.drawImage(im, s.x - b / 2, s.y - b, b, b); }
+        catch (e) { /* çizim hatası oyunu durdurmasın */ }
+        return;
+      }
+      if (s.tur === "tas") { // son yedek: gri çakıl elipsi + açık parlama
+        const b = s.boy;
+        c.save();
+        c.fillStyle = "#8a8a86";
+        c.beginPath(); c.ellipse(s.x, s.y - b * 0.32, b * 0.48, b * 0.34, 0, 0, Math.PI * 2); c.fill();
+        c.fillStyle = "rgba(255,255,255,0.35)";
+        c.beginPath(); c.ellipse(s.x - b * 0.13, s.y - b * 0.44, b * 0.16, b * 0.1, 0, 0, Math.PI * 2); c.fill();
+        c.restore();
+        return;
+      }
+      tutamCiz(c, s.x, s.y, s.boy, s.tur === "cicek" ? "#c95a8a" : (s.ad === "sus-uzun-cimen" ? "#4a8a3a" : "#3f7d3f"));
+      return;
+    }
     const im = susResmi(s.ad, s.idx);
     if (im && im.width) {
       const b = s.boy;
@@ -363,6 +392,130 @@
         birikim += L;
       }
     }
+  }
+
+  // ---------- ZEM2B: yol kenarı kaosu (taş, çimen, çiçek) ve çatal tabelaları ----------
+  function arenaIcinde(x, y) {
+    try {
+      if (typeof game === "undefined" || !game) return false;
+      const d = game._yolculukDuzen;
+      return !!(d && d.arena && x >= d.arena.x0);
+    } catch (e) { return false; }
+  }
+
+  // Yolun düzensiz kenarının 2-14 px dışına, her 35-70 px'de iki yana bir süs koyar.
+  // Yalnız görsel; su, duvar, başka yol, köprü ağzı ve arena dışlanır.
+  function kenarSuslariKur(zemin, bolum, ulke) {
+    if (!zemin) return;
+    zemin.suslar = zemin.suslar || [];
+    let py = 0;
+    for (const yol of (zemin.yollar || []).concat(zemin.patikalar || [])) {
+      const S = Array.isArray(yol.ornekler) && yol.ornekler.length > 1 ? yol.ornekler : (yol && yol.noktalar);
+      if (!Array.isArray(S) || S.length < 2) continue;
+      const yari = (yol.gen || 64) / 2;
+      py += 17;
+      // kalan: bu parçanın başından bir sonraki süse olan yol boyu (parçadan parçaya taşınır; her 35-70 px'de bir süs)
+      let kalan = 35 + susTohum(bolum, ulke, 80000 + py, 0) * 35, sira = 0;
+      for (let i = 0; i < S.length - 1; i++) {
+        const a = S[i], b = S[i + 1];
+        const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy);
+        if (L < 0.01) continue;
+        const nx = -dy / L, ny = dx / L;
+        const wa = a.w || 1, wb = b.w || 1;
+        let d = kalan;
+        while (d <= L) {
+          sira++;
+          const t = d / L, w = wa + (wb - wa) * t, r = yari * w;
+          const x = a.x + dx * t, y = a.y + dy * t;
+          for (const yon of [-1, 1]) {
+            const sd = 80000 + py * 13 + sira * 2 + (yon > 0 ? 1 : 0);
+            const dis = r + 2 + susTohum(bolum, ulke, sd, 1) * 12;
+            const sx = x + nx * dis * yon, sy = y + ny * dis * yon;
+            if (!susUygun(sx, sy) || arenaIcinde(sx, sy)) continue;
+            const turR = susTohum(bolum, ulke, sd, 2);
+            const boyR = susTohum(bolum, ulke, sd, 3);
+            const adR = susTohum(bolum, ulke, sd, 4);
+            let tur, ad, boy;
+            if (turR < 0.10) { tur = "cicek"; ad = "sus-cicek"; boy = 16 + boyR * 10; }
+            else if (turR < 0.55) { tur = "tas"; ad = adR < 0.5 ? "sus-yol-taslari" : "sus-cakil"; boy = 14 + boyR * 12; }
+            else { tur = "cimen"; ad = adR < 0.5 ? "sus-cimen" : "sus-uzun-cimen"; boy = 16 + boyR * 16; }
+            zemin.suslar.push({ x: sx, y: sy, boy, ad, idx: Math.floor(susTohum(bolum, ulke, sd, 5) * 6), tur, kenar: true });
+          }
+          d += 35 + susTohum(bolum, ulke, 80000 + py * 13 + sira * 2, 6) * 35;
+        }
+        kalan = d - L;
+      }
+    }
+  }
+
+  // Çatal noktaları: patikaların ana yola değdiği başlangıç ve yolculuk yolunun başı.
+  // En çok 4 tabela, aralarında en az 500 px; yol/su/duvar üstüne konmaz.
+  function tabelalariKur(zemin, bolum, ulke) {
+    if (!zemin) return;
+    zemin.tabelalar = [];
+    const adaylar = [];
+    const ilk = zemin.yollar && zemin.yollar[0];
+    if (ilk && Array.isArray(ilk.noktalar) && ilk.noktalar.length >= 2) {
+      const q = ilk.noktalar;
+      adaylar.push({ x: q[0].x, y: q[0].y, dx: q[1].x - q[0].x, dy: q[1].y - q[0].y });
+    }
+    for (const p of (zemin.patikalar || [])) {
+      const q = p && p.noktalar;
+      if (!Array.isArray(q) || q.length < 2) continue;
+      adaylar.push({ x: q[0].x, y: q[0].y, dx: q[1].x - q[0].x, dy: q[1].y - q[0].y });
+    }
+    let i = 0;
+    for (const a of adaylar) {
+      if (zemin.tabelalar.length >= 4) break;
+      const L = Math.hypot(a.dx, a.dy);
+      if (L < 1) { i++; continue; }
+      let yer = null;
+      for (let ek = 0; ek < 3 && !yer; ek++) {
+        for (let t = 0; t < 16 && !yer; t++) {
+          const ac = (t / 16) * Math.PI * 2 + susTohum(bolum, ulke, 90000 + i * 17, 1) * 0.5;
+          const dis = 22 + susTohum(bolum, ulke, 90000 + i * 17, t + 2) * 8 + ek * 22;
+          const x = a.x + Math.cos(ac) * dis, y = a.y + Math.sin(ac) * dis;
+          if (!susUygun(x, y)) continue;
+          if (zemin.tabelalar.some((tb) => Math.hypot(tb.x - x, tb.y - y) < 500)) continue;
+          yer = { x, y };
+        }
+      }
+      if (yer) {
+        zemin.tabelalar.push({ x: yer.x, y: yer.y, k: i % 2 === 0 ? "tabela-1" : "tabela-2", aci: Math.atan2(a.dy, a.dx) });
+      }
+      i++;
+    }
+  }
+
+  // Tabelayı zemine düz (üstten) çiz: resim varsa 56 px boyunda, yoksa kod yedeği
+  function tabelaCiz(c, tb) {
+    let im = null;
+    try { im = typeof gorsel === "function" ? (gorsel(tb.k) || gorsel("tabela-tas")) : null; } catch (e) { im = null; }
+    if (im && im.width) {
+      try { typeof resmiKutuyaCiz === "function" ? resmiKutuyaCiz(c, im, tb.x - 28, tb.y - 56, 56, 56, true) : c.drawImage(im, tb.x - 28, tb.y - 56, 56, 56); }
+      catch (e) { /* çizim hatası oyunu durdurmasın */ }
+      return;
+    }
+    const aci = tb.aci || 0, ux = Math.cos(aci), uy = Math.sin(aci), px = -uy, py = ux;
+    c.save();
+    c.fillStyle = "rgba(40,28,16,0.9)";
+    c.fillRect(tb.x - 4, tb.y - 40, 8, 40);
+    c.fillStyle = "#6b4a2b";
+    c.fillRect(tb.x - 3, tb.y - 40, 6, 40);
+    const cx = tb.x, cy = tb.y - 48;
+    const plank = (yar, kal, renk) => {
+      c.beginPath();
+      c.moveTo(cx + px * kal - ux * yar, cy + py * kal - uy * yar);
+      c.lineTo(cx + px * kal + ux * (yar - 4), cy + py * kal + uy * (yar - 4));
+      c.lineTo(cx + ux * yar, cy + uy * yar);
+      c.lineTo(cx - px * kal + ux * (yar - 4), cy - py * kal + uy * (yar - 4));
+      c.lineTo(cx - px * kal - ux * yar, cy - py * kal - uy * yar);
+      c.closePath();
+      c.fillStyle = renk; c.fill();
+    };
+    plank(16.5, 6.5, "rgba(40,28,16,0.9)");
+    plank(15, 5, "#9a6b3a");
+    c.restore();
   }
 
   // Harita genişliğine göre 6-12 yumuşak leke / 2000 px; su üstüne konmaz
@@ -694,6 +847,12 @@
       if (s.x + b < ox || s.x - b > ox + PARCA || s.y + b < oy || s.y - b > oy + PARCA) continue;
       susCiz(c, s);
     }
+    // ZEM2B: çatal tabelaları süslerin üstünde, taban noktasına oturur
+    for (const tb of (zemin.tabelalar || [])) {
+      if (!tb) continue;
+      if (tb.x + 40 < ox || tb.x - 40 > ox + PARCA || tb.y + 12 < oy || tb.y - 60 > oy + PARCA) continue;
+      tabelaCiz(c, tb);
+    }
     return tuval;
   }
 
@@ -750,6 +909,9 @@
     for (const yol of patikalar) yolOrnekle(yol, bolum, ulke, osira++);
     // ZEM1B: taban süsleri/gölgeler yollar kurulduktan sonra tohumlanır (yol kontrolü hazır)
     suslariKur(game._zeminKatmani, bolum, ulke);
+    // ZEM2B: yoğun yol kenarı kaosu ve çatal tabelaları
+    kenarSuslariKur(game._zeminKatmani, bolum, ulke);
+    tabelalariKur(game._zeminKatmani, bolum, ulke);
   }
 
   function zeminKatmaniSil() {

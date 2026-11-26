@@ -36,7 +36,7 @@
 | R30 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Güney Afrika Masa Dağı, sevimli Afrika penguenleri; Mozambik dau yelkenlileri, kaju ağaçları; Madagaskar Baobab Caddesi, sevimli lemurlar; parçalar ~435-460 px; bütün hücreler temiz (en dar kenar 15 px); toplu gösterim bekleniyor |
 | R31 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Tanzanya Kilimanjaro, oymalı Zanzibar kapısı; Uganda sevimli dağ gorilleri, Murchison Şelalesi; Kenya zürafalar ve akasya, flamingolu göl; parçalar ~440-480 px; bütün hücreler temiz (en dar kenar 15 px); toplu gösterim bekleniyor |
 | R32 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Etiyopya Aksum dikili taşları (simgesiz), sevimli gelada maymunları; Sudan Meroe piramitleri, deve pazarı; Mısır Gize piramitleri ve Sfenks, Nil'de felukalar; parçalar ~410-460 px; bütün hücreler temiz (en dar kenar 21 px); toplu gösterim bekleniyor |
-| R33 | bekliyor |
+| R33 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): Yemen Sokotra ejder kanı ağaçları, Sana kule evleri; Suudi Arabistan hurma bahçesi, AlUla Fil Kayası; Filistin zeytin bahçesi, Hayat Ağacı mozaiği (ağaç, kuş, asma); parçalar ~440-470 px; bütün hücreler temiz (en dar kenar 5. hücrede solda 4 px); toplu gösterim bekleniyor |
 | R34 | bekliyor |
 | R35 | bekliyor |
 | R36 | bekliyor |

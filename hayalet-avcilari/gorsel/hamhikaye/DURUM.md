@@ -16,3 +16,4 @@
 | H04 | Hatıralar ülke 19–24 | üretildi (1. deneme, Chrome ChatGPT; hücre sınırları temiz; arka planda alfa 1–9 görünmez pus, kesim eşiği 10) |
 | H05 | Hatıralar ülke 25–30 | üretildi (1. deneme, Chrome ChatGPT; hücre sınırları temiz, pus yok; kil tablette okunmaz soyut çivi izleri) |
 | H06 | Hatıralar ülke 31–36 | üretildi (1. deneme, Chrome ChatGPT; hücre sınırları temiz; arka planda alfa 1–9 görünmez pus, kesim eşiği 10) |
+| H07 | Hatıralar ülke 37-42 | üretildi (1. deneme, Chrome'da ChatGPT Pro, sohbet 'Game Art Brief', ekler U06 + D01, istem sonuna __PARILTI + __SON): ahşap gasing topacı (ipli), bambu angklung, sedef rüzgâr çanı, Vietnam phin süzgeci (bardakta kahve), ahşap boncuklu abaküs, iki renkli katlı ttakji; parçalar alfa 250-254, arka planda alfa 1-9 hafif pus (%14, kesici siler), parıltı pusu yok; nesneler iri (~290-450 px); hücre sınırı aşılmıyor, en dar kenar 5. hücrenin solunda 2 px; yazı yok |

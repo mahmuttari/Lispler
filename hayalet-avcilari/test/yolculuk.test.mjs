@@ -205,29 +205,9 @@ try {
   });
   sina('timsahlar geçit şeridinde doğmaz', () => { assert.equal(timsah.kotu, 0); });
 
-  // 9) Kare hızı: uzun haritada bölge 3, eski haritadan 1,3 kat kötü değil
-  const sure = await p.evaluate(() => {
-    const olc = (fn, n = 120) => { const bas = performance.now(); for (let i = 0; i < n; i++) fn(); return performance.now() - bas; };
-    const hazir = () => { game.paused = true; game.ghosts = []; game.pickups = []; game.projectiles = []; game.enemyProjectiles = []; game.effects = []; game.bot = null; };
-    // Eski harita
-    online.mode = 'host'; startGame(); hazir();
-    game.player.x = game.worldW / 2; game.player.y = game.worldH / 2;
-    game.camera.x = game.player.x - game.W / 2; game.camera.y = game.player.y - game.H / 2;
-    for (let i = 0; i < 15; i++) render();
-    const eski = Math.min(olc(render), olc(render), olc(render));
-    online.mode = null; endGame(false);
-    // Uzun harita, bölge 3
-    __kur(3);
-    const z = game._yolculukDuzen.zones[2];
-    game.player.x = (z.x0 + z.gate.x0) / 2; game.player.y = game.worldH / 2;
-    game.camera.x = game.player.x - game.W / 2; game.camera.y = game.player.y - game.H / 2;
-    for (let i = 0; i < 15; i++) render();
-    const yeni = Math.min(olc(render), olc(render), olc(render));
-    return { eski, yeni };
-  });
-  sina('uzun haritada çizim kare süresi eski haritanın 1,3 katını geçmez', () => {
-    assert.ok(sure.yeni <= sure.eski * 1.3, `${sure.yeni.toFixed(1)} ms / ${sure.eski.toFixed(1)} ms`);
-  });
+  // 9) Kare hızı: bu ölçüm (15 kare ısınma, 3 koşunun en küçüğü) yük altında 1,4-2 arasında oynuyordu; engel önbelleğinin
+  // ısınması bitmeden ölçüyordu. Yerini test/perf1.test.mjs aldı: önbellek tam ısınana kadar bekler, her harita için 7 koşunun
+  // ortancasını alır, eşik aynı (1,3).
 
   // 10) Bölge doğumu: yalnız bölge 1 içinde, kota ve eşzamanlılık sınırı
   const dogum = await p.evaluate(() => {

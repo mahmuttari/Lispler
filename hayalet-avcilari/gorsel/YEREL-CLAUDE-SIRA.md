@@ -15,6 +15,9 @@ gpt kullan, yerel oturumu kullan"*.
    boyaması, derinlik hissi; kullanıcı istedi). Üslup bloğu Z01–Z04'e de eklenir.
    Kayıt `gorsel/hamzemin/`. Ardından ülke canlılarının küçük animasyonları R51–R59 (kare düzeni: 1. kare R paftasındaki durağan
    objenin AYNISI, yalnız hareketli parça değişir; aynı boy ve merkez), sonra H02–H09, J02–J12.
+0b. **K13 (Z02-Z07 ile aynı öncelikte, kullanıcı istedi 26 Kasım 2026):** `CHATGPT-ISTEMI-EK.md` › K13 kilitli köprü
+   yeniden: köprü düz ve dik, kapalıyken ortasında kilitli kapı (eskisi yan yatık duruyordu). Kayıt `gorsel/hamek/K13.png`.
+   J02-J12'nin 3. hücresi de artık düz köprü + kilitli kapı (istem dosyası güncellendi).
 1. **H01 (hemen):** `CHATGPT-ISTEMI-HIKAYE.md` › "Hatıra paftaları" › H01 (ülke 1–6; 1. hücre Türkiye'nin **bakır kahve cezvesi**:
    uzun saplı, el dövmesi bakır, köpüklü kahveli küçük cezve; fincan DEĞİL). Kayıt: `gorsel/hamhikaye/H01.png`.
    Kullanıcıya göster, onay gelince devam et.

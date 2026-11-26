@@ -114,6 +114,7 @@ ANIMASYON = {
     'K10': [('mermi-yildiz', [4, 5, 6], 64)],
     'K11': [('efsane-aura', [1, 2, 3], 256)],
     'K12': [('yuva-sis', [1, 2, 3], 256), ('yuva-duman', [4, 5, 6], 256)],  # yuvaların hareketli sisi (yolculuk.js)
+    'K13': [('kopru-in', [2, 3], 256)],  # dik duran kilitli köprü, kapı açılışı (K05'in yerine geçer)
     'R48': [('menu-hayalet', [1, 2, 3], 160)],
     'R04': [('hayalet-dogus', [1, 2, 3], 192), ('hayalet-sarj', [4, 5, 6], 128)],  # yuvadan doğuş girdabı, atıcının şarjı
     'R05': [('toplama-halka', [1, 2, 3], 192), ('mucevher-parilti', [4, 5, 6], 128)],  # toplama halkası, mücevher pırıltısı
@@ -192,6 +193,8 @@ def animasyonlar(liste):
         if resim.size != (1536, 1024):
             sys.exit(f'{pafta}: boyut {resim.size}, 1536 × 1024 olmalı')
         for ad, hucreler, en in animler:
+            if yerine_gecildi(ad, pafta):
+                continue
             kareler = []
             for no in hucreler:
                 i = no - 1
@@ -640,6 +643,8 @@ EK_PAFTALAR = {
     'K02': [('dere-sus-1', 160), ('dere-sus-2', 160), ('dere-sus-3', 160), ('dere-sus-4', 160), ('dere-sus-5', 160), ('dere-sus-6', 160)],
     'K03': [('bulut-2', 256), ('bulut-3', 256), ('bulut-4', 256), ('simsek-1', 256), ('simsek-2', 256), ('simsek-3', 256)],
     'K05': [('kopru-kapali', 256), None, None, ('kopru-acik', 256), ('kilit', 128), ('kilit-acik', 128)],
+    # K13: kilitli köprü yeniden (kullanıcı: görseller yatık duruyor): dik, düz köprü + kilitli kapı; K05 ve J01 3. hücrenin yerine geçer
+    'K13': [('kopru-kapali', 256), None, None, ('kopru-acik', 256), ('yol1-kopru-kapali', 256), None],
     # R01–R02: karakter mermileri (anahtar CHARACTERS: mermi-<karakter>; yön sağa)
     'R01': [('mermi-kinkin', 128), ('mermi-veryi', 128), ('mermi-kornet', 128), ('mermi-mark', 128), ('mermi-kent', 128), ('mermi-ponko', 128)],
     'R02': [('mermi-gul', 128), ('mermi-rani', 128), ('mermi-beti', 128), ('mermi-fanatik', 128), ('mermi-silsen', 128), ('mermi-sercin', 128)],
@@ -738,6 +743,18 @@ def bulutu_grile(hucre, damla_sil):
 # Arka planı saydam yerine hafif gri pusla gelen paftalar: belirgin nesneden (alfa ≥ 150) ~7 px'ten uzak pus silinir
 PUS_PAFTALAR = {'R49', 'K07', 'R28'}
 # Hücrede aynı nesneden birkaç tane var, oyun her birini ayrı çizer: yalnız en büyük parça kesilir
+# Yeniden üretilen paftalar: diskte varsa aynı adlı resimleri ve animasyonları eski paftalar yazmaz
+YERINE_GECEN = {'K13': {'kopru-kapali', 'kopru-acik', 'yol1-kopru-kapali', 'kopru-in'}}
+
+
+def yerine_gecildi(anahtar, pafta):
+    """Anahtar (resim ya da animasyon adı), diskte bulunan daha yeni bir paftada üretiliyorsa True (pafta o pafta değilse)."""
+    for yeni, adlar in YERINE_GECEN.items():
+        if yeni != pafta and anahtar in adlar and os.path.exists(os.path.join(HAMEK, f'{yeni}.png')):
+            return True
+    return False
+
+
 TEK_PARCA = {'mermi-pompali', 'mermi-yesil', 'tema6-gol', 'tema1-gol'}
 # Parıltısı komşusuna değen nesneler: hücre içinde elle kırpılır (x0, y0, x1, y1; sütun yoğunluğunun en düşük yerinden)
 YATAY_DIKISSIZ = {f'tema{n}-sinir' for n in range(1, 7)}  # yan yana döşenen sınır şeritleri
@@ -776,6 +793,8 @@ def ek_hucreler(liste):
             if not hc:
                 continue
             anahtar, en = hc
+            if yerine_gecildi(anahtar, pafta):
+                continue
             x0, y0 = (i % 3) * 512, (i // 3) * 512
             hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
             if anahtar in HUCRE_KIRP:
@@ -946,6 +965,8 @@ def yol_hucreleri(liste):
                 if oran < 1:
                     hucre = hucre.resize((max(1, round(hucre.width * oran)), max(1, round(hucre.height * oran))), Image.LANCZOS)
             anahtar = f'yol{n}-{parca}'
+            if yerine_gecildi(anahtar, f'J{n:02d}'):
+                continue
             hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=88, method=6)
             liste[anahtar] = [hucre.width, hucre.height]
         print(f'✓ J{n:02d} (yol{n})')

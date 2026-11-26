@@ -183,3 +183,25 @@ ghosts, no text. Every frame in a row has the SAME size and the SAME centre so t
      than wide, swirling upward and thinning out at the top; between frames the swirls climb and twist (frame 3 must lead back to 4).
 ```
 
+## K13: kilitli köprü yeniden, dik ve düz (26 Kasım 2026)
+
+Kullanıcı: *"Haritaya eklenen görsellerde değişik durumlar var. Kimisi tam çıkmamış, kimisi yatık duruyor."* K05'in
+kapalı köprüsü yukarı kalkık ve çapraz çizildiği için haritada yan yatık duruyor. K13 aynı köprüyü DÜZ yatar hâlde, önüne
+kilitli bir kapı koyarak çizer; açılış kapının açılmasıdır. Kesim (`gorsel_kes.py`, YERINE_GECEN): K13 diskte varsa
+`kopru-kapali`, `an-kopru-in-1/2`, `kopru-acik` ve `yol1-kopru-kapali` K05 ve J01 yerine K13'ten kesilir.
+
+```
+Sheet K13: a wooden rope bridge over a river gap, seen from DIRECTLY ABOVE (top-down), spanning LEFT to RIGHT, lying FLAT and
+perfectly level (NOT raised, NOT tilted, NOT diagonal), TRANSPARENT background (no water, no ground: only the bridge pieces),
+grid 3 x 2. Cells 1-4: the SAME bridge, same size and same position in the cell (about 440 px long, 150 px wide), the two pairs
+of wooden posts at both ends exactly in the same place in every cell:
+1. CLOSED: the flat bridge with a sturdy wooden double gate standing across its middle (two gate halves meeting in the
+   centre), an iron chain across the gate and a big shiny golden padlock on it, soft golden glow
+2. OPENING frame 1: the padlock and chain gone, the two gate halves swinging open a little (a few sparkles)
+3. OPENING frame 2: the gate halves almost fully open, folded against the rope rails, small dust puffs
+4. OPEN: the flat bridge with no gate, wooden planks, rope rails with wooden posts at both ends
+5. CLOSED variant for the purple castle theme: the same flat bridge and closed gate in dark stone-and-purple castle materials
+   (grey stone posts, dark wood, purple banner tassels), golden padlock
+6. leave EMPTY (transparent)
+Cute premium casual style, warm wood, everything upright and symmetric, no text.
+```

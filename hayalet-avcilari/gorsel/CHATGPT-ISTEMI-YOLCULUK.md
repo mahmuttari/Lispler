@@ -49,8 +49,8 @@ Cell 1: RIVER TILE, opaque, seamless top-to-bottom: a vertical river strip 360 p
         curved banks on both sides in the theme's ground colour and a few small rocks/plants; the strip must tile vertically
         without seams (top edge continues the bottom edge)
 Cell 2: OPEN BRIDGE spanning left to right, seen from above, about 440 px long and 150 px wide, in materials fitting the theme
-Cell 3: CLOSED BRIDGE: the same bridge raised up on the left bank like a drawbridge (planks tilted up, two chains), with a glowing
-        barrier line and a small padlock in front of it
+Cell 3: CLOSED BRIDGE: the same bridge lying FLAT and level in the same position as cell 2 (NOT raised, NOT tilted), with a
+        closed wooden double gate standing across its middle, an iron chain and a small golden padlock on the gate
 Cell 4: BOSS ARENA ENTRANCE: a big decorated gate arch seen from above, in the theme's style, with a small crown ornament
 Cell 5: START SIGNPOST: a cheerful wooden signpost with a rolled map hanging from it (no writing)
 Cell 6: ZONE MARKER: a small banner on a pole in the theme's colours, to mark a cleared zone (no symbols)
@@ -62,8 +62,8 @@ Cell 1: RIVER TILE, opaque, seamless top-to-bottom: a vertical river strip 360 p
         curved banks on both sides in the theme's ground colour and a few small rocks/plants; the strip must tile vertically
         without seams (top edge continues the bottom edge)
 Cell 2: OPEN BRIDGE spanning left to right, seen from above, about 440 px long and 150 px wide, in materials fitting the theme
-Cell 3: CLOSED BRIDGE: the same bridge raised up on the left bank like a drawbridge (planks tilted up, two chains), with a glowing
-        barrier line and a small padlock in front of it
+Cell 3: CLOSED BRIDGE: the same bridge lying FLAT and level in the same position as cell 2 (NOT raised, NOT tilted), with a
+        closed wooden double gate standing across its middle, an iron chain and a small golden padlock on the gate
 Cell 4: BOSS ARENA ENTRANCE: a big decorated gate arch seen from above, in the theme's style, with a small crown ornament
 Cell 5: START SIGNPOST: a cheerful wooden signpost with a rolled map hanging from it (no writing)
 Cell 6: ZONE MARKER: a small banner on a pole in the theme's colours, to mark a cleared zone (no symbols)
@@ -75,8 +75,8 @@ Cell 1: RIVER TILE, opaque, seamless top-to-bottom: a vertical river strip 360 p
         curved banks on both sides in the theme's ground colour and a few small rocks/plants; the strip must tile vertically
         without seams (top edge continues the bottom edge)
 Cell 2: OPEN BRIDGE spanning left to right, seen from above, about 440 px long and 150 px wide, in materials fitting the theme
-Cell 3: CLOSED BRIDGE: the same bridge raised up on the left bank like a drawbridge (planks tilted up, two chains), with a glowing
-        barrier line and a small padlock in front of it
+Cell 3: CLOSED BRIDGE: the same bridge lying FLAT and level in the same position as cell 2 (NOT raised, NOT tilted), with a
+        closed wooden double gate standing across its middle, an iron chain and a small golden padlock on the gate
 Cell 4: BOSS ARENA ENTRANCE: a big decorated gate arch seen from above, in the theme's style, with a small crown ornament
 Cell 5: START SIGNPOST: a cheerful wooden signpost with a rolled map hanging from it (no writing)
 Cell 6: ZONE MARKER: a small banner on a pole in the theme's colours, to mark a cleared zone (no symbols)
@@ -88,8 +88,8 @@ Cell 1: RIVER TILE, opaque, seamless top-to-bottom: a vertical river strip 360 p
         curved banks on both sides in the theme's ground colour and a few small rocks/plants; the strip must tile vertically
         without seams (top edge continues the bottom edge)
 Cell 2: OPEN BRIDGE spanning left to right, seen from above, about 440 px long and 150 px wide, in materials fitting the theme
-Cell 3: CLOSED BRIDGE: the same bridge raised up on the left bank like a drawbridge (planks tilted up, two chains), with a glowing
-        barrier line and a small padlock in front of it
+Cell 3: CLOSED BRIDGE: the same bridge lying FLAT and level in the same position as cell 2 (NOT raised, NOT tilted), with a
+        closed wooden double gate standing across its middle, an iron chain and a small golden padlock on the gate
 Cell 4: BOSS ARENA ENTRANCE: a big decorated gate arch seen from above, in the theme's style, with a small crown ornament
 Cell 5: START SIGNPOST: a cheerful wooden signpost with a rolled map hanging from it (no writing)
 Cell 6: ZONE MARKER: a small banner on a pole in the theme's colours, to mark a cleared zone (no symbols)
@@ -101,8 +101,8 @@ Cell 1: RIVER TILE, opaque, seamless top-to-bottom: a vertical river strip 360 p
         curved banks on both sides in the theme's ground colour and a few small rocks/plants; the strip must tile vertically
         without seams (top edge continues the bottom edge)
 Cell 2: OPEN BRIDGE spanning left to right, seen from above, about 440 px long and 150 px wide, in materials fitting the theme
-Cell 3: CLOSED BRIDGE: the same bridge raised up on the left bank like a drawbridge (planks tilted up, two chains), with a glowing
-        barrier line and a small padlock in front of it
+Cell 3: CLOSED BRIDGE: the same bridge lying FLAT and level in the same position as cell 2 (NOT raised, NOT tilted), with a
+        closed wooden double gate standing across its middle, an iron chain and a small golden padlock on the gate
 Cell 4: BOSS ARENA ENTRANCE: a big decorated gate arch seen from above, in the theme's style, with a small crown ornament
 Cell 5: START SIGNPOST: a cheerful wooden signpost with a rolled map hanging from it (no writing)
 Cell 6: ZONE MARKER: a small banner on a pole in the theme's colours, to mark a cleared zone (no symbols)
@@ -114,8 +114,8 @@ Cell 1: RIVER TILE, opaque, seamless top-to-bottom: a vertical river strip 360 p
         curved banks on both sides in the theme's ground colour and a few small rocks/plants; the strip must tile vertically
         without seams (top edge continues the bottom edge)
 Cell 2: OPEN BRIDGE spanning left to right, seen from above, about 440 px long and 150 px wide, in materials fitting the theme
-Cell 3: CLOSED BRIDGE: the same bridge raised up on the left bank like a drawbridge (planks tilted up, two chains), with a glowing
-        barrier line and a small padlock in front of it
+Cell 3: CLOSED BRIDGE: the same bridge lying FLAT and level in the same position as cell 2 (NOT raised, NOT tilted), with a
+        closed wooden double gate standing across its middle, an iron chain and a small golden padlock on the gate
 Cell 4: BOSS ARENA ENTRANCE: a big decorated gate arch seen from above, in the theme's style, with a small crown ornament
 Cell 5: START SIGNPOST: a cheerful wooden signpost with a rolled map hanging from it (no writing)
 Cell 6: ZONE MARKER: a small banner on a pole in the theme's colours, to mark a cleared zone (no symbols)

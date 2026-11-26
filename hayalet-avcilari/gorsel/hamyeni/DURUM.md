@@ -12,7 +12,7 @@
 | R06 | üretildi (2. deneme, Chrome'da ChatGPT, referans U06 + D01; 1. denemede 3. hücredeki kaya 2. hücreye taşıyordu, hücre merkezleri verilerek düzeldi): üst sıra boss iniş şok halkası (çatlak zemin, toz, kaya) 3 kare, alt sıra seviye atlama ışını ve yıldızlar 3 kare; hücre sınırı aşılmıyor (en dar kenar 36 px); toplu gösterim bekleniyor |
 | R07 | üretildi (2. deneme, Chrome'da ChatGPT; 1. denemede efektlerin çevresinde kare kare opak siyah lekeler vardı, saydam zemin istemiyle düzeldi): üst sıra kırmızı-beyaz hasar patlaması 3 kare (büyüyor), alt sıra mavi-beyaz görünmezlik pırıltısı 3 kare (sönüyor, ortası boş); hücre sınırı aşılmıyor (en dar kenar 26 px); arka planda alfa 1-39 pus (%76, kesici siler); toplu gösterim bekleniyor |
 | R08 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): ortası boş güç auraları: beyaz hız çizgileri, kırmızı öfke halesi, dönen üç mavi küre, mavi-kırmızı mıknatıs yayları, mor pelerin parıltısı, turuncu alev halkası; hücre sınırı aşılmıyor (en dar kenar 5. hücrede 10 px); toplu gösterim bekleniyor |
-| R09 | bekliyor |
+| R09 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): ortası boş güç auraları: fitil kıvılcım halkası, pembe kalp halkası, şeker pırıltıları, dönen çiçek yaprakları, tüy halkası; 6. hücre üç altın mermi izi (yatay); hücre sınırı aşılmıyor (en dar kenar 33 px); toplu gösterim bekleniyor |
 | R10 | bekliyor |
 | R11 | bekliyor |
 | R12 | bekliyor |

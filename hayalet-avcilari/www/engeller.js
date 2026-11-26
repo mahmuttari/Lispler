@@ -393,6 +393,20 @@
   }
   // Diken plakası (bütün temalarda): kırmızı kenar, taş zemin, metal sivri uçlar
   function dikenCiz(ctx, w, h, r, p, B) {
+    // ChatGPT diken plakası varsa: çarpışma biçimi bugünkü taban renkleriyle doldurulur, plakalar biçimin içine kırpılarak
+    // döşenir (boyalı alan çarpışma alanıyla birebir örtüşür; görünmeyen diken olmaz)
+    const plaka = typeof gorsel === "function" ? gorsel("diken-plaka") : null;
+    if (plaka && typeof resmiKutuyaCiz === "function") {
+      doldur(ctx, B, "#7f1d1d", 0, 0, 2.5);
+      doldur(ctx, B, "#2a2430");
+      const hucre = Math.max(48, Math.min(110, Math.min(w, h)));
+      kirp(ctx, B, () => {
+        for (let y = 0, k = 0; y < h; y += hucre * 0.8, k++) for (let x = (k % 2) * -hucre / 2; x < w; x += hucre * 0.9) {
+          resmiKutuyaCiz(ctx, plaka, x, y, hucre, hucre);
+        }
+      });
+      return [];
+    }
     doldur(ctx, B, "#7f1d1d", 0, 0, 2.5);
     doldur(ctx, B, "#2a2430");
     kirp(ctx, B, () => {
@@ -448,6 +462,14 @@
   // durağan renk geçişi önbellekte (lavCiz). Eski dikdörtgen kenar çizgileri biçimin dışında kaldığı, saydam dolgunun
   // gölgesi de hiç görünmediği için taşınmadı; parlama engelleriCiz'de hazır resimle.
   function lavCanli(ctx, x, y, w, h, B) {
+    // ChatGPT lav kareleri hazırsa lavın dikdörtgenine sığdırılır (4 kare/sn, lav başına faz); yoksa kod lavı
+    const n = typeof animHazir === "function" ? animHazir("lav") : 0;
+    if (n >= 3) {
+      if (B && B.__lavFaz === undefined) B.__lavFaz = x * 0.013 + y * 0.017;
+      const az = typeof animAzHareket === "function" && animAzHareket();
+      const kare = typeof animDongu === "function" ? animDongu("lav", (B ? B.__lavFaz : 0) + performance.now() / 1000, 4) : 0;
+      if (kare) { animCiz(ctx, "lav", az ? 1 : kare, x, y, w, h); return; }
+    }
     const simdi = performance.now(), t = simdi / 300;
     const satirlar = (B && B._catlaklar) || [0, 1, 2, 3].map((k) => {
       const yy = 12 + k * (h - 24) / 4;
@@ -508,10 +530,23 @@
 
   // ---------- canlı katman: ressamların bıraktığı noktalara her karede küçük şekiller ----------
   // (ctx, x, y, zaman, n, k): x, y dünya koordinatı; zaman saniye; n [0,1) noktanın evresi; k noktanın kaydı
+  // Canlı süsün ChatGPT resmi varsa, bugünkü titreme/süzülme dönüşüm olarak uygulanıp çizilir
+  function canliResim(ctx, ad, x, y, boy, sc = 1, dx = 0, dy = 0) {
+    const im = typeof gorsel === "function" ? gorsel("canli-" + ad) : null;
+    if (!im) return false;
+    ctx.save();
+    ctx.translate(x + dx, y + dy);
+    ctx.scale(sc, sc);
+    resmiKutuyaCiz(ctx, im, -boy / 2, -boy / 2, boy, boy);
+    ctx.restore();
+    return true;
+  }
+
   const ENGEL_CANLI = {
     // mum alevi titrer (x, y mumun üstü)
     mum(ctx, x, y, zaman, n) {
       const t = 1 + Math.sin(zaman * 13 + n * 40) * 0.12 + Math.sin(zaman * 7.3 + n * 9) * 0.08;
+      if (canliResim(ctx, "mum", x, y - 11, 13, t, 0, -(t - 1) * 4)) return;
       elips(ctx, x, y - 11, 5.5 * t, 6.5 * t, "rgba(251, 191, 36, 0.22)");
       elips(ctx, x, y - 11 - (t - 1) * 4, 2 * t, 3.5 * t, "#fde047");
       elips(ctx, x, y - 10, 0.9, 1.4, "#fffbeb");
@@ -519,6 +554,7 @@
     // kovukta parlayan gözler: 3 sn'de bir 150 ms kırpar
     goz(ctx, x, y, zaman, n, k) {
       const ara = (k && k.ara) || 2.2, rr = (k && k.rr) || 1.5;
+      if (canliResim(ctx, "goz", x, y, 10 + rr * 2)) return;
       if ((zaman + n * 3) % 3 < 0.15) {
         ctx.strokeStyle = "#fde047"; ctx.lineWidth = 1; ctx.lineCap = "round"; ctx.beginPath();
         ctx.moveTo(x - ara - rr, y); ctx.lineTo(x - ara + rr, y); ctx.moveTo(x + ara - rr, y); ctx.lineTo(x + ara + rr, y); ctx.stroke();
@@ -530,6 +566,7 @@
     // kristal ve buz parıltısı: dört kollu yıldız belirip kaybolur
     parilti(ctx, x, y, zaman, n) {
       const a = Math.sin(zaman * 2.2 + n * 6.283);
+      if (canliResim(ctx, "parilti", x, y, 10, 0.6 + Math.max(0, a) * 0.8)) return;
       if (a < 0.08) return;
       const s = 2 + a * 3.5, eski = ctx.globalAlpha;
       ctx.globalAlpha = eski * a;
@@ -541,6 +578,7 @@
     },
     // sıcak su buharı: kabarcıklar yükselip söner
     buhar(ctx, x, y, zaman, n) {
+      if (canliResim(ctx, "buhar", x, y - 8, 12, 1, Math.sin(zaman * 3 + n * 9) * 2)) return;
       const eski = ctx.globalAlpha;
       for (const k of [0, 0.5]) {
         const t = (zaman * 0.55 + n + k) % 1;
@@ -552,6 +590,7 @@
     // gülen alev ruhu: titreyen alev, iki göz ve gülümseme
     alevruhu(ctx, x, y, zaman, n) {
       const t = 1 + Math.sin(zaman * 9 + n * 30) * 0.08, sal = Math.sin(zaman * 5 + n * 12) * 1.5, h = 15 * t, g = 6.5;
+      if (canliResim(ctx, "alevruhu", x, y - h * 0.4, 16, t, sal)) return;
       elips(ctx, x, y - h * 0.4, g * 1.8, h * 0.75, "rgba(249, 115, 22, 0.2)");
       for (const [renk, o] of [["#f97316", 1], ["#facc15", 0.62]]) {
         ctx.fillStyle = renk; ctx.beginPath(); ctx.moveTo(x - g * o, y);
@@ -583,6 +622,7 @@
     // ateş böceği: sinüsle parlar, hafifçe süzülür
     atesbocegi(ctx, x, y, zaman, n) {
       const a = 0.5 + 0.5 * Math.sin(zaman * 2.6 + n * 6.283), dx = Math.sin(zaman * 0.9 + n * 11) * 2.5, dy = Math.cos(zaman * 1.1 + n * 7) * 2;
+      if (canliResim(ctx, "atesbocegi", x, y, 9, 0.7 + a * 0.5, dx, dy)) return;
       const eski = ctx.globalAlpha;
       ctx.globalAlpha = eski * (0.25 + a * 0.75);
       elips(ctx, x + dx, y + dy, 5, 5, "rgba(190, 242, 100, 0.3)");

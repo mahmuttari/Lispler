@@ -141,7 +141,9 @@ function hikayeCiz(ctx) {
   ctx.translate(h.x, h.y + bob);
   const g = 32 + Math.sin(sn * 2) * 2;
   ctx.globalAlpha = 0.85 + Math.sin(sn * 2.4) * 0.12;
-  ctx.drawImage(hikayeParilti(), -g, -g, g * 2, g * 2);
+  // ChatGPT hatıra parıltısı varsa onun baloncuğu, yoksa kod parıltısı
+  if (!(typeof gorselKutuya === "function" && gorselKutuya(ctx, "hatira-parilti", -g, -g, g * 2, g * 2)))
+    ctx.drawImage(hikayeParilti(), -g, -g, g * 2, g * 2);
   ctx.globalAlpha = 1;
   const hatiraResmi = (h.kod && typeof gorsel === "function") ? gorsel(`hatira-${h.kod}`) : null;
   if (hatiraResmi) ctx.drawImage(hatiraResmi, -20, -20, 40, 40);

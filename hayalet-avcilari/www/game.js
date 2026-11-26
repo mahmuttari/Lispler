@@ -2955,7 +2955,12 @@ function drawGhost(ctx, g) {
   // Kod animasyonu (anim.js): süzülme, doğuş, vurulma, göz kırpma; yalnız görüntü
   const animSimdi = performance.now();
   const an = typeof hayaletAnim === "function" ? hayaletAnim(g, animSimdi) : null;
-  if (an && an.inis) animEfektEkle("dalga", g.x, g.y + 22 * s, { renk: "248, 113, 113", olcek: s * 0.9 });
+  if (an && an.inis) {
+    // Boss iniş dalgası: ChatGPT kareleri (N05) hazırsa onlar, değilse kod halkası
+    if (typeof animHazir === "function" && animHazir("boss-inis"))
+      animEfektEkle("kare", g.x, g.y + 20 * s, { ad: "boss-inis", sure: 0.45, boyut: 2.6 * size });
+    else animEfektEkle("dalga", g.x, g.y + 22 * s, { renk: "248, 113, 113", olcek: s * 0.9 });
+  }
   // Dünya Turu bossu ülkenin geleneksel kıyafetini giyer (kostumler.js); kayıt bozuksa bugünkü taçlı kırmızı boss
   const turUlke = g.isBoss && game.dunyaTuru ? turUlkesi() : null;
   const kostum = turUlke && kostumGecerliMi(turUlke.kostum) ? turUlke.kostum : null;
@@ -3424,19 +3429,44 @@ function drawPickup(ctx, p) {
   const bob = Math.sin(performance.now() / 200 + p.x) * 3;
   ctx.translate(0, bob);
 
+  // Elmas/zümrüt üstünde dört köşeli parıltı (N07): ~1,6 sn'de bir, konuma göre faz; yalnız ekrandaki mücevherlerde
+  if ((p.kind === "elmas" || p.kind === "zumrut") && typeof animHazir === "function" && animHazir("mucevher-parilti")) {
+    const cam = game.camera, W = game.W, H = game.H;
+    const gorunur = !cam || (p.x > cam.x - 20 && p.x < cam.x + W + 20 && p.y > cam.y - 20 && p.y < cam.y + H + 20);
+    if (gorunur) {
+      const faz = p.x * 0.017 + p.y * 0.011;
+      const dongu = (((performance.now() / 1000 + faz) / 1.6) % 1 + 1) % 1;
+      const az = typeof animAzHareket === "function" && animAzHareket();
+      if (az || dongu < 0.25) { // 0,4 sn parıltı / 1,6 sn döngü; az harekette tek sabit kare
+        const n = animHazir("mucevher-parilti");
+        const kare = az ? 1 : 1 + Math.min(n - 1, Math.floor((dongu / 0.25) * n));
+        animCiz(ctx, "mucevher-parilti", kare, -14, -14, 28, 28);
+      }
+    }
+  }
+
   if (p.kind === "kalp") {
     // Pulsing kırmızı kalp — çok dikkat çekici
     const t = performance.now() / 180;
     const sc = 1 + Math.sin(t) * 0.18;
     ctx.scale(sc, sc);
     // Aura
-    const aura = ctx.createRadialGradient(0, 0, 0, 0, 0, 22);
-    aura.addColorStop(0, "rgba(252, 165, 165, 0.6)");
-    aura.addColorStop(1, "rgba(252, 165, 165, 0)");
-    ctx.fillStyle = aura;
-    ctx.beginPath();
-    ctx.arc(0, 0, 22, 0, Math.PI * 2);
-    ctx.fill();
+    // ChatGPT kalp aurası varsa resim (nabız bugünkü gibi), yoksa kod ışıması
+    const kalpAura = typeof gorsel === "function" ? gorsel("kalp-aura") : null;
+    if (kalpAura) {
+      ctx.save();
+      ctx.globalAlpha = 0.55 + Math.sin(t) * 0.2;
+      resmiKutuyaCiz(ctx, kalpAura, -24, -24, 48, 48);
+      ctx.restore();
+    } else {
+      const aura = ctx.createRadialGradient(0, 0, 0, 0, 0, 22);
+      aura.addColorStop(0, "rgba(252, 165, 165, 0.6)");
+      aura.addColorStop(1, "rgba(252, 165, 165, 0)");
+      ctx.fillStyle = aura;
+      ctx.beginPath();
+      ctx.arc(0, 0, 22, 0, Math.PI * 2);
+      ctx.fill();
+    }
     // Kalp gövdesi
     if (!(typeof gorselKutuya === "function" && gorselKutuya(ctx, "kalp", -12, -13, 24, 22))) {
       ctx.shadowColor = "#fca5a5";

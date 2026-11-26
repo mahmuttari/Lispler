@@ -110,6 +110,17 @@ function hayaletDogusGirdabi(ctx, g, s, now) {
   if (g.isBoss || g.__dogus === undefined) return;
   const k = (now - g.__dogus) / 1000 / (ANIM.dogusSn * 1.3);
   if (k < 0 || k >= 1) return;
+  // ChatGPT doğuş girdabı kareleri (N01): 1→3 doğuş ilerlemesine göre, hayaletin altında, ~2,2 × hayalet boyu
+  const n = typeof animHazir === "function" ? animHazir("hayalet-dogus") : 0;
+  if (n >= 3) {
+    const kare = animAzHareket() ? 1 : 1 + Math.min(n - 1, Math.floor(k * n));
+    const w = 2.2 * (g.size || 40), h = w * 0.62;
+    ctx.save();
+    ctx.globalAlpha = (1 - k) * 0.85;
+    animCiz(ctx, "hayalet-dogus", kare, -w / 2, 18 * s - h / 2, w, h);
+    ctx.restore();
+    return;
+  }
   ctx.save();
   ctx.globalAlpha = (1 - k) * 0.8;
   ctx.strokeStyle = "#c4b5fd";
@@ -127,6 +138,14 @@ function hayaletDogusGirdabi(ctx, g, s, now) {
 // Atıştan önceki mor enerji küresi (ağzın önünde büyür)
 function hayaletSarjCiz(ctx, s, sarj, boss) {
   if (!(sarj > 0)) return;
+  // ChatGPT şarj küresi kareleri (N01): 1→3 şarj ilerlemesine göre, ağzın önünde, ~0,8 × hayalet boyu
+  const n = typeof animHazir === "function" ? animHazir("hayalet-sarj") : 0;
+  if (n >= 3) {
+    const kare = animAzHareket() ? 1 : 1 + Math.min(n - 1, Math.floor(sarj * n));
+    const boy = (boss ? 64 : 40) * s * 0.8;
+    animCiz(ctx, "hayalet-sarj", kare, -boy / 2, 3 * s - boy / 2, boy, boy);
+    return;
+  }
   const r = (2 + sarj * (boss ? 9 : 6)) * s;
   const y = 3 * s;
   ctx.save();
@@ -228,6 +247,11 @@ function animEfektEkle(tur, x, y, secenek = {}) {
 
 function toplamaEfekti(p) {
   if (!p) return;
+  // Para/elmas/zümrüt: altın toplama halkası (N13) hazırsa o, değilse renkli halka
+  if ((p.kind === "para" || p.kind === "elmas" || p.kind === "zumrut") && typeof animHazir === "function" && animHazir("toplama-halka")) {
+    animEfektEkle("kare", p.x, p.y, { ad: "toplama-halka", sure: 0.35, boyut: 70 });
+    return;
+  }
   // Kalp ve güç yıldızı: ChatGPT toplama kareleri (N13) hazırsa onlar, değilse renkli halka
   const ad = p.kind === "kalp" ? "kalp-topla" : p.kind === "guc" ? "yildiz-topla" : null;
   if (ad && typeof animHazir === "function" && animHazir(ad)) { animEfektEkle("kare", p.x, p.y, { ad, sure: 0.45, boyut: 52 }); return; }

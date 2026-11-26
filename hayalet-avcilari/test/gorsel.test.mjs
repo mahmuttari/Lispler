@@ -126,7 +126,7 @@ try {
     // Efekt kareleri: animEfektleri listesindeki "kare" efekti resimden çizilir, süresi bitince silinir
     animEfektleri.length = 0; animEfektEkle('kare', 50, 50, { ad: 'vurus', sure: 0.3, boyut: 30, now: 1000 });
     say = 0; animEfektleriCiz(x, 1100); o.kareEfekt = say; animEfektleriCiz(x, 1500); o.kareBitti = animEfektleri.length;
-    // Toplama: kalp ve yıldızda kare efekti, parada halka
+    // Toplama: kalp ve yıldızda kare efekti, parada toplama halkası karesi
     toplamaEfekti({ kind: 'kalp', x: 0, y: 0 }); toplamaEfekti({ kind: 'para', x: 0, y: 0 });
     o.toplama = animEfektleri.map((e) => e.tur + (e.ad ? ':' + e.ad : '')); animEfektleri.length = 0;
     // Atıcı: şarjda küre karesi (2-5), dururken 1
@@ -140,8 +140,8 @@ try {
     assert.ok(an.yuruyus.kinkin >= 3, String(an.yuruyus.kinkin)); assert.ok(an.yuruyus.fanatik >= 3, String(an.yuruyus.fanatik)); assert.equal(an.yuruyus.kent, 1);
   });
   sina('ölen hayalet ve boss "puf" kareleriyle; Dünya Turu bossu kodla', () => { assert.equal(an.puf, true); assert.equal(an.bossYenilgi, true); assert.equal(an.turBossu, false); });
-  sina('efekt kareleri çizilir, süresi bitince silinir; kalpte toplama karesi, parada halka', () => {
-    assert.equal(an.kareEfekt, 1); assert.equal(an.kareBitti, 0); assert.deepEqual(an.toplama, ['kare:kalp-topla', 'topla']);
+  sina('efekt kareleri çizilir, süresi bitince silinir; kalpte toplama karesi, parada toplama halkası karesi', () => {
+    assert.equal(an.kareEfekt, 1); assert.equal(an.kareBitti, 0); assert.deepEqual(an.toplama, ['kare:kalp-topla', 'kare:toplama-halka']); // para: ChatGPT toplama halkası (R05)
   });
   sina('atıcı hayalet kare kare çizilir', () => { assert.ok(an.atici >= 1, String(an.atici)); });
   sina('hayaletin can kademesi rengi ve donma rengi resimde de görünür; renkli kopya önbellekte', () => {

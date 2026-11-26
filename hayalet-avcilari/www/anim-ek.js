@@ -177,6 +177,7 @@ function aeSifaCiz(ctx, e, k) {
 }
 
 function aeHasarCiz(ctx, e, k) {
+  if (typeof animHazir === "function" && animHazir("hasar-patlama")) return; // ChatGPT karesi çizilir
   ctx.globalAlpha = 1 - k;
   ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 3 * (1 - k) + 1;
   for (let j = 0; j < 8; j++) {
@@ -247,6 +248,7 @@ function aeSimsekCiz(ctx, e, k, now) {
 }
 
 function aeSeviyeCiz(ctx, e, k) {
+  if (typeof animHazir === "function" && animHazir("seviye-atla")) return; // ChatGPT karesi çizilir
   ctx.globalAlpha = 1 - k;
   const r = 12 + k * 70;
   ctx.strokeStyle = "#fde047"; ctx.lineWidth = 4 * (1 - k) + 1;
@@ -433,8 +435,17 @@ function aeGucAuraCiz(ctx, player, power, now = performance.now()) {
       aeYildiz(ctx, x, y, 2.2 * (1 - d) + 0.6);
     }
   }
-  // ChatGPT guc-aura kareleri (beyaz kare boyanır)
-  if (typeof animHazir === "function" && animHazir("guc-aura") && !aeAzHareket()) {
+  // ChatGPT guc-aura kareleri (beyaz kare boyanır); karakterin kendi imza halkası varsa o kullanılır
+  const imza = typeof gorsel === "function" ? gorsel(`guc-imza-${charKey}`) : null;
+  if (imza) {
+    const boy = 126; // ~1,8 × oyuncunun çizilen boyu (70)
+    ctx.save();
+    ctx.globalAlpha = alfa * 0.85;
+    ctx.translate(player.x, player.y - 6);
+    if (!aeAzHareket()) ctx.rotate(t * 0.6); // yavaş dönüş; az harekette sabit
+    resmiKutuyaCiz(ctx, imza, -boy / 2, -boy / 2, boy, boy);
+    ctx.restore();
+  } else if (typeof animHazir === "function" && animHazir("guc-aura") && !aeAzHareket()) {
     const kare = animDongu("guc-aura", t, 8);
     const im = kare ? aeRenkliKare("guc-aura", kare, renk) : null;
     if (im) {
@@ -553,6 +564,18 @@ function aeGorunmezAlfa(now = performance.now()) {
 function aeGorunmezParilti(ctx, player, now = performance.now()) {
   if (!player || aeAzHareket()) return;
   const t = now / 1000;
+  // ChatGPT görünmezlik parıltısı kareleri (N10): 6 kare/sn döngü, ~1,6 × oyuncu boyu
+  if (typeof animHazir === "function" && animHazir("gorunmez-parilti")) {
+    const kare = animDongu("gorunmez-parilti", t, 6);
+    if (kare) {
+      const boy = 1.6 * 70;
+      ctx.save();
+      ctx.globalAlpha = 0.8;
+      animCiz(ctx, "gorunmez-parilti", kare, player.x - boy / 2, player.y - boy / 2 - 4, boy, boy);
+      ctx.restore();
+      return;
+    }
+  }
   ctx.save();
   ctx.globalAlpha = 0.8;
   for (let i = 0; i < 4; i++) {
@@ -575,6 +598,20 @@ function aeMermiIziGuncelle(p) {
 function aeMermiIziCiz(ctx, p) {
   if (!p || p.charKey === "bot") return;
   const t = performance.now() / 1000;
+  // ChatGPT kuyruklu yıldız izi (W): özel silahsız avcı mermisinin arkasında, mermi yönüne döndürülür
+  if (!p.gun && p.charKey && typeof gorsel === "function" && gorsel("mermi-" + p.charKey)) {
+    const im = gorsel("mermi-iz-parilti");
+    if (im) {
+      const yaricap = { kinkin: 8, veryi: 8, kornet: 9, mark: 13, gul: 13, kent: 9, ponko: 8, rani: 5.5, beti: 7, fanatik: 10, silsen: 7, sercin: 18 }[p.charKey] || 7;
+      const uz = yaricap * 3, yuk = uz * (im.naturalHeight || im.height) / (im.naturalWidth || im.width);
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      if (!aeAzHareket()) ctx.rotate(Math.atan2(p.vy, p.vx));
+      ctx.globalAlpha = 0.7;
+      ctx.drawImage(im, -uz, -yuk / 2, uz, yuk);
+      ctx.restore();
+    }
+  }
   // İz: eskiden yeniye solan noktalar
   if (p.iz && p.iz.length > 1) {
     for (let i = 0; i < p.iz.length - 1; i++) {
@@ -717,13 +754,19 @@ function aeRenkRgb(hex) {
   return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
 }
 function aeHasarEkle(px, py) {
+  // ChatGPT hasar patlaması (N11) varsa kare olarak; kod efekti geriye dönük kayıt olarak durur, resim varken çizilmez
   aeEkle("hasar", px, py, { sure: 0.35, renk: "239, 68, 68" });
+  if (typeof animHazir === "function" && animHazir("hasar-patlama") && typeof animEfektEkle === "function")
+    animEfektEkle("kare", px, py, { ad: "hasar-patlama", sure: 0.3, boyut: 90 });
   aeVinyet(0.3);
   aeSarsinti(0.2, 4);
 }
 function aeSeviyeEkle(player, level) {
   if (player) {
     aeEkle("seviye", player.x, player.y, { sure: 0.7 });
+    // ChatGPT seviye atlama ışınları (N12) varsa kare olarak; kod halkası resim varken çizilmez
+    if (typeof animHazir === "function" && animHazir("seviye-atla") && typeof animEfektEkle === "function")
+      animEfektEkle("kare", player.x, player.y, { ad: "seviye-atla", sure: 0.6, boyut: 160 });
     aeEkle("guc-patlama", player.x, player.y, { sure: 0.5, renk: "253, 224, 71" });
   }
   aeBanner(t("Bölüm {n}", { n: level }), 1200);

@@ -10,6 +10,7 @@ OTOMATİK: `node ios-ortak/app-store.mjs --md` yazar; kaynak Play metinleri ve `
 - **Tanıtım metni (155/170):** Akşam ne yesek, hangi filmi izlesek? Oda kur, kodu paylaş, herkes kartları kaydırsın; herkesin beğendiği seçenek ortak karar olur. Üyelik yok, kurulum yok.
 - **Destek:** https://letspicky.com/gizlilik.html
 - **Gizlilik:** https://letspicky.com/gizlilik.html
+- **Pazarlama (Developer Website):** https://letspicky.com
 
 ### Açıklama (1795/4000)
 
@@ -49,6 +50,7 @@ Bir dahaki "ne yapsak?" sorusunda tartışmayın, Let's Picky'yi açın!
 - **Tanıtım metni (158/170):** What should we eat tonight? Which movie? Create a room, share the code and swipe together; the option everyone likes becomes your decision. No sign-up needed.
 - **Destek:** https://letspicky.com/gizlilik.html
 - **Gizlilik:** https://letspicky.com/gizlilik.html
+- **Pazarlama (Developer Website):** https://letspicky.com
 
 ### Açıklama (1819/4000)
 

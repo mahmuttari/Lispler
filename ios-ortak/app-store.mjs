@@ -9,6 +9,9 @@
  *     açıklamasının "📐 SU TERAZİSİ" gibi başlıkları düz "SU TERAZİSİ" olur.
  *   - Alt başlık, anahtar sözcükler ve tanıtım metni app-store.json › "yerel"den; ad verilmemişse Play'deki ad.
  *   - Destek adresi ve gizlilik politikası adresi app-store.json'dan.
+ *   - İsteğe bağlı: pazarlama adresi (App Store'daki "Developer Website"; AdMob iOS'ta app-ads.txt'yi bu alan adında arar)
+ *     app-store.json › "pazarlama"dan; sürüm notu (What's New, en çok 4000 karakter) "yerel" › "yenilikler"den. Apple sürüm
+ *     notunu ilk sürümde kabul etmez; yalnız güncellemelerde yazılır.
  *
  *   node ios-ortak/app-store.mjs <uygulama>     metinleri yazdırır (gözden geçirme için)
  *   node ios-ortak/app-store.mjs --md           her uygulama için <klasör>/magaza/APP-STORE.md yazar (tam metin)
@@ -28,6 +31,8 @@ export const YEREL = {
   ru: 'ru-RU', 'ar-SA': 'ar', ja: 'ja-JP', ko: 'ko-KR',
 };
 export const SINIR = { ad: 30, altBaslik: 30, anahtar: 100, tanitim: 170, aciklama: 4000 };
+/** Sürüm notu (What's New) sınırı; isteğe bağlı olduğu için SINIR'da değil (SINIR'daki her alan zorunlu sınanır) */
+export const YENILIK_SINIR = 4000;
 export const EULA = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 export const KLASOR = { unitica: 'unitica', calqora: 'calqora', 'smart-measure': 'smart-measure', letspicky: 'letspicky' };
 
@@ -90,7 +95,11 @@ export function metinler(uygulama) {
       aciklama: [emojisiz(uzun).replace(/\n{3,}/g, '\n\n').trim(), alt].filter(Boolean).join('\n\n'),
       destek: a.destek,
       gizlilik: a.gizlilik,
+      ...(a.pazarlama ? { pazarlama: a.pazarlama } : {}),
+      ...(y.yenilikler ? { yenilikler: emojisiz(y.yenilikler).trim() } : {}),
     };
+    const n = [...(out[yerel].yenilikler || '')].length;
+    if (n > YENILIK_SINIR) throw new Error(`${uygulama} ${yerel}: sürüm notu ${n} > ${YENILIK_SINIR} karakter`);
   }
   return out;
 }
@@ -103,7 +112,9 @@ export function md(uygulama) {
   for (const [yerel, x] of Object.entries(m)) {
     s.push(`## ${yerel}`, '', `- **Ad (${x.ad.length}/30):** ${x.ad}`, `- **Alt başlık (${x.altBaslik.length}/30):** ${x.altBaslik}`,
       `- **Anahtar sözcükler (${x.anahtar.length}/100):** ${x.anahtar}`, `- **Tanıtım metni (${x.tanitim.length}/170):** ${x.tanitim}`,
-      `- **Destek:** ${x.destek}`, `- **Gizlilik:** ${x.gizlilik}`, '', `### Açıklama (${x.aciklama.length}/4000)`, '', x.aciklama, '');
+      `- **Destek:** ${x.destek}`, `- **Gizlilik:** ${x.gizlilik}`, ...(x.pazarlama ? [`- **Pazarlama (Developer Website):** ${x.pazarlama}`] : []),
+      '', `### Açıklama (${x.aciklama.length}/4000)`, '', x.aciklama, '');
+    if (x.yenilikler) s.push(`### Yenilikler (${x.yenilikler.length}/${YENILIK_SINIR})`, '', x.yenilikler, '');
   }
   return s.join('\n');
 }

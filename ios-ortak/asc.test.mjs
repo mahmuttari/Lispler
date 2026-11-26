@@ -258,9 +258,10 @@ test("Let's Picky (reklamlı, aboneliksiz): yaşta reklam Evet; metin 2 dilde, a
     for (const x of s) {
       assert.doesNotMatch(x.description, /stdeula|EULA/);
       assert.equal(x.supportUrl, 'https://letspicky.com/gizlilik.html');
+      assert.equal(x.marketingUrl, 'https://letspicky.com', "AdMob iOS'ta app-ads.txt'yi bu alan adında arar");
     }
     const v = istekler.find((x) => x.yol === '/v1/appStoreVersions/V1' && x.yontem === 'PATCH').govde.data.attributes;
-    assert.equal(v.versionString, '1.0.0', 'App Store Connect kaydının açtığı 1.0 → 1.0.0');
+    assert.equal(v.versionString, '1.0.1', 'App Store Connect kaydının açtığı 1.0 → build.gradle versionName');
     await assert.rejects(asc.abonelik('letspicky'), /aboneliği yok/);
   } finally { veri.apps.pop(); }
 });

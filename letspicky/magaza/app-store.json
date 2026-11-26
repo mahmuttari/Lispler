@@ -1,8 +1,9 @@
 {
-  "_": "App Store metinleri (ios-ortak/app-store.mjs). Açıklama Play'deki uzun açıklamadan (aciklamalar.md, diller/en-US.md). App Store Connect emoji kabul etmediği için emoji tepkileri cümlesi düz metne çevrilir. Abonelik yok (reklam var: AdMob): Apple'ın abonelik açıklaması eklenmez. Destek adresi gizlilik sayfası (letspicky.com ana sayfasında iletişim bilgisi yok; Apple 1.5 destek sayfasında iletişim yolu ister).",
+  "_": "App Store metinleri (ios-ortak/app-store.mjs). Açıklama Play'deki uzun açıklamadan (aciklamalar.md, diller/en-US.md). App Store Connect emoji kabul etmediği için emoji tepkileri cümlesi düz metne çevrilir. Abonelik yok (reklam var: AdMob): Apple'ın abonelik açıklaması eklenmez. Destek adresi gizlilik sayfası (letspicky.com ana sayfasında iletişim bilgisi yok; Apple 1.5 destek sayfasında iletişim yolu ister). Pazarlama adresi (App Store'daki Developer Website) letspicky.com: AdMob iOS'ta app-ads.txt'yi bu alan adında arar.",
   "abonelik": false,
   "destek": "https://letspicky.com/gizlilik.html",
   "gizlilik": "https://letspicky.com/gizlilik.html",
+  "pazarlama": "https://letspicky.com",
   "kategori": [
     "LIFESTYLE",
     "ENTERTAINMENT"

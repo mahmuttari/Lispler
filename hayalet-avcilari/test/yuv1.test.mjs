@@ -129,6 +129,13 @@ try {
     game.player.x = yv.x + 200; game.player.y = yv.y;
     game.camera.x = yv.x - game.W / 2; game.camera.y = yv.y - game.H / 2;
     for (let i = 0; i < 6; i++) yuvaCanlilariGuncelle(0.016); // kaçış başlasın
+    // Gerçek fare kareleri (K14) varsa "resim yokken" denetimi için geçici olarak kaldırılır, sonda geri konur
+    const gercek = [];
+    for (const ad of ['fare-kos', 'fare-bekle']) for (let i = 1; i <= 3; i++) {
+      const k = `an-${ad}-${i}`;
+      if (k in GORSEL || k in GORSEL_LISTESI) { gercek.push([k, GORSEL[k], GORSEL_LISTESI[k]]); delete GORSEL[k]; delete GORSEL_LISTESI[k]; }
+    }
+    if (typeof _animSayi === 'object') { _animSayi['fare-kos'] = undefined; _animSayi['fare-bekle'] = undefined; }
     const cv = document.createElement('canvas'); cv.width = 400; cv.height = 300;
     const ctx = cv.getContext('2d');
     let rot = 0, imgs = [];
@@ -152,7 +159,8 @@ try {
     const yarasaCizilen = imgs.filter((im) => ["an-yarasa-1", "an-yarasa-2", "an-yarasa-3"].some((k) => GORSEL[k] === im)).length;
     const yarasaRot = rot;
     for (let i = 1; i <= 3; i++) { delete GORSEL_LISTESI[`an-fare-kos-${i}`]; delete GORSEL[`an-fare-kos-${i}`]; }
-    if (typeof _animSayi === 'object') _animSayi['fare-kos'] = undefined;
+    for (const [k, im, boy] of gercek) { if (im !== undefined) GORSEL[k] = im; if (boy !== undefined) GORSEL_LISTESI[k] = boy; }
+    if (typeof _animSayi === 'object') { _animSayi['fare-kos'] = undefined; _animSayi['fare-bekle'] = undefined; }
     return { yedekFare, yedekRot, fareCizilen, fareRot, yarasaCizilen, yarasaRot };
   });
   sina('(e) resim yokken kod yedeği: fare-* drawImage ve rotate yok', () => {
@@ -209,18 +217,19 @@ try {
     game.camera.x = game.player.x - game.W / 2; game.camera.y = game.player.y - game.H / 2;
     for (const yv of game.yuvalar) if (Math.abs(yv.x - game.player.x) < 900) yuvaCanliDurum(yv, game.yuvalar.indexOf(yv));
     const ctx = game.ctx, gid = ctx.getImageData.bind(ctx);
-    const olc = () => {
-      const a = [];
-      for (let r = 0; r < 5; r++) { const t0 = performance.now(); for (let i = 0; i < 40; i++) { render(); gid(0, 0, 8, 8); } a.push(performance.now() - t0); }
-      a.sort((x, y) => x - y); return a[2];
-    };
-    const gercek = window.yuvaCanlilariCiz;
+    // Açık ve kapalı ölçümler dönüşümlü (7 tur), her birinin ortancası: art arda ölçmek ısınma ve makine yükü yüzünden
+    // oranı 1,2-1,5 arasında oynatıyordu (K14 fare kareleri gelince denetim zaman zaman düşüyordu)
+    const gercek = window.yuvaCanlilariCiz, bos = () => {};
+    const parti = () => { const t0 = performance.now(); for (let i = 0; i < 40; i++) { render(); gid(0, 0, 8, 8); } return performance.now() - t0; };
     for (let i = 0; i < 60; i++) render();
-    const acik = olc();
-    window.yuvaCanlilariCiz = () => {};
-    for (let i = 0; i < 60; i++) render();
-    const kapali = olc();
+    const A = [], K = [];
+    for (let r = 0; r < 7; r++) {
+      window.yuvaCanlilariCiz = gercek; A.push(parti());
+      window.yuvaCanlilariCiz = bos; K.push(parti());
+    }
     window.yuvaCanlilariCiz = gercek;
+    const ort = (a) => a.slice().sort((x, y) => x - y)[3];
+    const acik = ort(A), kapali = ort(K);
     return { acik, kapali, oran: acik / kapali };
   });
   sina('(i) performans: canlı çizimi oranı ≤ 1.3', () => assert.ok(perf.oran <= 1.3, JSON.stringify(perf)));

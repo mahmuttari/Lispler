@@ -13,7 +13,7 @@
   ve oyuna bağlatmak. Akıl yürüten işler (şartname, inceleme, hata ayıklama planı) Fable modeliyle alt ajana verilir. Kod
   Evren'e (deepseek-v4.1-flash, glm-5.3) ya da NVIDIA modellerine yazdırılır.
 - **Kod:** Oyun kodunu Evren yazar; Claude şartname, inceleme, sınama, commit ve belge işini yapar. Birkaç satırlık düzeltme doğrudan.
-  Evren hesabı aynı anda en çok 2 istek kabul eder.
+  Evren hesabı aynı anda en çok 1 istek kabul eder (26 Kasım 2026 akşamı ölçüldü; ikinci istek "model yoğun" hatası alır).
 - **Yayın:** Kullanıcı açıkça **"yayınla"** demeden Play'e hiçbir şey yüklenmez, yayınlanmaz, incelemeye gönderilmez ("gönder",
   "hazırla" yayın izni değildir).
 - Ses efektleri ElevenLabs ile; müzik Suno (kredi biterse ElevenLabs müzik).

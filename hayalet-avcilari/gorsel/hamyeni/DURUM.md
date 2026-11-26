@@ -27,7 +27,7 @@
 | R21 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): bambu çit, bambu gözetleme kulesi, nilüferli gölet; kiremit çatılı duvar, kiremit çatılı ahşap gözetleme kulesi, koi göleti (taş bahçe feneri ve çiçekli ağaçla); parçalar ~335-450 px; bütün hücreler temiz (en dar kenar 5. hücrede üstte 8 px); toplu gösterim bekleniyor |
 | R22 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): ahşap palisat, saz çatılı palisat kule, kütük iskeleli gölet; renkli sıvalı Latin duvarı (çiçekli), kiremit çatılı sarı kule, saksılı çini kanal havuzu; parçalar ~340-430 px; bütün hücreler temiz (en dar kenar 18 px); toplu gösterim bekleniyor |
 | R23 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): opak zemin dokuları (RGB, her hücre 512x512 dolu): Arnavut kaldırımı, geometrik çini, dalgalı kum, kırmızı toprak, çatlak kuru toprak, turuncu-turkuaz kaplıca suyu; dikiş ölçümü (kenar renk farkı / iç referans): 1 20/16, 2 sol-sağ 33 ama üst-alt 72 (çini deseni dikeyde eşleşmiyor), 3 15/5, 4 11/7, 5 17/10, 6 sol-sağ 29/6; gerekirse kodda ayna ile dikiş giderilir; toplu gösterim bekleniyor |
-| R24 | bekliyor |
+| R24 | üretildi (1. deneme, Chrome'da ChatGPT, referans U06 + D01): opak zemin dokuları (RGB, her hücre dolu): kumtaşı döşeme, hasır, taş döşeme, çam iğneli çimen, pişmiş toprak karo, iki yanı yeşil kıyılı dikey nehir şeridi; dikiş ölçümü (kenar renk farkı / iç referans): 1 12-14/16, 2 34-26/18 (hasır deseni kenarda kayıyor), 3 10-17/22, 4 11/8, 5 6-10/4, 6 14-16/5; toplu gösterim bekleniyor |
 | R25 | bekliyor |
 | R26 | bekliyor |
 | R27 | bekliyor |

@@ -226,9 +226,10 @@
       let im = null;
       try {
         if (typeof gorsel === "function") {
-          if (s.tur === "cimen") im = gorsel("sus-cimen") || gorsel("sus-uzun-cimen");
-          else if (s.tur === "cicek") im = gorsel("sus-cicek");
-          else im = gorsel("sus-yol-taslari") || gorsel("sus-cakil") || gorsel(SUS_YEDEK[s.idx % SUS_YEDEK.length]);
+          // Z02-Z04 resimleri yokken mevcut ChatGPT resimleri kullanılır (döndürme yok)
+          if (s.tur === "cimen") im = gorsel("dere-sus-1");
+          else if (s.tur === "cicek") im = gorsel("dere-sus-6");
+          else im = gorsel("dere-sus-3");
         }
       } catch (e) { im = null; }
       if (im && im.width) {
@@ -237,14 +238,8 @@
         catch (e) { /* çizim hatası oyunu durdurmasın */ }
         return;
       }
-      if (s.tur === "tas") { // son yedek: gri çakıl elipsi + açık parlama
-        const b = s.boy;
-        c.save();
-        c.fillStyle = "#8a8a86";
-        c.beginPath(); c.ellipse(s.x, s.y - b * 0.32, b * 0.48, b * 0.34, 0, 0, Math.PI * 2); c.fill();
-        c.fillStyle = "rgba(255,255,255,0.35)";
-        c.beginPath(); c.ellipse(s.x - b * 0.13, s.y - b * 0.44, b * 0.16, b * 0.1, 0, 0, Math.PI * 2); c.fill();
-        c.restore();
+      if (s.tur === "tas") { // dere-sus-3 de yoksa sade çakıl tutamı
+        tutamCiz(c, s.x, s.y, s.boy, "#8a8a86");
         return;
       }
       tutamCiz(c, s.x, s.y, s.boy, s.tur === "cicek" ? "#c95a8a" : (s.ad === "sus-uzun-cimen" ? "#4a8a3a" : "#3f7d3f"));
@@ -515,25 +510,36 @@
       catch (e) { /* çizim hatası oyunu durdurmasın */ }
       return;
     }
-    const aci = tb.aci || 0, ux = Math.cos(aci), uy = Math.sin(aci), px = -uy, py = ux;
+    // Tabela asla döndürülmez: direk dikey, tahta yatay; ok ucu yöne göre sola/sağa bakar
+    const yon = Math.cos(tb.aci || 0) < 0 ? -1 : 1;
     c.save();
     c.fillStyle = "rgba(40,28,16,0.9)";
     c.fillRect(tb.x - 4, tb.y - 40, 8, 40);
     c.fillStyle = "#6b4a2b";
     c.fillRect(tb.x - 3, tb.y - 40, 6, 40);
     const cx = tb.x, cy = tb.y - 48;
-    const plank = (yar, kal, renk) => {
+    const plank = (yar, kal, renk, kay) => {
       c.beginPath();
-      c.moveTo(cx + px * kal - ux * yar, cy + py * kal - uy * yar);
-      c.lineTo(cx + px * kal + ux * (yar - 4), cy + py * kal + uy * (yar - 4));
-      c.lineTo(cx + ux * yar, cy + uy * yar);
-      c.lineTo(cx - px * kal + ux * (yar - 4), cy - py * kal + uy * (yar - 4));
-      c.lineTo(cx - px * kal - ux * yar, cy - py * kal - uy * yar);
+      c.moveTo(cx - yar + kay, cy - kal);
+      c.lineTo(cx + yar + kay, cy - kal);
+      c.lineTo(cx + yar + kay, cy + kal);
+      c.lineTo(cx - yar + kay, cy + kal);
       c.closePath();
       c.fillStyle = renk; c.fill();
     };
-    plank(16.5, 6.5, "rgba(40,28,16,0.9)");
-    plank(15, 5, "#9a6b3a");
+    const okUcu = (kal, renk, kay) => {
+      const bx = cx + kay + yon * 15;
+      c.beginPath();
+      c.moveTo(bx, cy - kal);
+      c.lineTo(bx + yon * 8, cy);
+      c.lineTo(bx, cy + kal);
+      c.closePath();
+      c.fillStyle = renk; c.fill();
+    };
+    plank(14, 6.5, "rgba(40,28,16,0.9)", 0);
+    plank(12.5, 5, "#9a6b3a", 0);
+    okUcu(6.5, "rgba(40,28,16,0.9)", 0);
+    okUcu(5, "#9a6b3a", 0);
     c.restore();
   }
 

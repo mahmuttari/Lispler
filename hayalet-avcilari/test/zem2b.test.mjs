@@ -184,8 +184,8 @@ try {
 
   // (c) Z resimleri yokken yedekler: kod çimen tutamı ve kod tabela çizilir, hata yok
   const yedek = await p.evaluate(() => {
-    for (const k of Object.keys(GORSEL)) if (k.startsWith('sus-') || k.startsWith('tabela-')) delete GORSEL[k];
-    for (const k of Object.keys(GORSEL_LISTESI)) if (k.startsWith('sus-') || k.startsWith('tabela-')) delete GORSEL_LISTESI[k];
+    for (const k of Object.keys(GORSEL)) if (k.startsWith('sus-') || k.startsWith('tabela-') || k.startsWith('dere-sus-')) delete GORSEL[k];
+    for (const k of Object.keys(GORSEL_LISTESI)) if (k.startsWith('sus-') || k.startsWith('tabela-') || k.startsWith('dere-sus-')) delete GORSEL_LISTESI[k];
     __kur(2);
     zeminKatmaniSil();
     let stroke = 0, rect = 0;

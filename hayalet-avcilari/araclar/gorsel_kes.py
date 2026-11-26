@@ -510,7 +510,7 @@ def tema_dokulari(liste):
             sys.exit(f'T{n}: boyut {resim.size}, 1536 × 1024 olmalı')
         for tur, i in TEMA_HUCRE.items():
             x0 = i * 512
-            if f'tema{n}-{tur}' in DOKU_HARIC:
+            if f'tema{n}-{tur}' in DOKU_HARIC or yeni_zemin_var(f'tema{n}-{tur}'):
                 continue
             hucre = resim.crop((x0 + DOKU_KENAR, DOKU_KENAR, x0 + 512 - DOKU_KENAR, 512 - DOKU_KENAR))
             doku = dikissiz(hucre).resize((DOKU, DOKU), Image.LANCZOS)
@@ -847,19 +847,37 @@ DOKU_PAFTALARI = {
     # Z01: zemin katmanı dokuları (yollar ve alan lekeleri; CHATGPT-ISTEMI-ZEMIN.md)
     'Z01': [('zemin-yol-toprak', 'iki'), ('zemin-yol-tas', 'iki'), ('zemin-cimen', 'iki'), ('zemin-kuru', 'iki'),
             ('zemin-kum', 'iki'), ('zemin-yosunlu-tas', 'iki')],
+    # Z05–Z07: üç çeyrek açılı, ışığı işlenmiş el boyaması zeminler (kullanıcı, 26 Kasım 2026). Diskte varsa eski kaynakların
+    # (tema paftaları, R23/R24) aynı adlı zeminlerinin yerine geçer: bkz. yeni_zemin_var.
+    'Z05': [(f'tema{n}-zemin', 'iki') for n in range(1, 7)],
+    'Z06': [('aile-K-zemin', 'iki'), ('aile-KS-zemin', 'iki'), ('aile-KP-zemin', 'iki'), ('aile-SH-zemin', 'iki'),
+            ('aile-SV-zemin', 'iki'), ('aile-GA-zemin', 'iki')],
+    'Z07': [('aile-GDA-zemin', 'iki'), ('aile-DA-zemin', 'iki'), ('aile-KA-zemin', 'iki'), ('aile-LA-zemin', 'iki'),
+            ('zemin-orman', 'iki'), ('zemin-catlak-tas', 'iki')],
 }
+YENI_ZEMIN_PAFTALARI = ('Z05', 'Z06', 'Z07')
+TEMA_ZEMIN_HEDEF = (70, 10)  # Z05 tema zeminleri: klasik temaların koyu dengesine yakın
+
+
+def yeni_zemin_var(anahtar):
+    """Anahtar, diskte bulunan bir Z05–Z07 paftasında kesiliyorsa True: eski kaynak bu zemini yazmaz."""
+    for pafta in YENI_ZEMIN_PAFTALARI:
+        if any(hc and hc[0] == anahtar for hc in DOKU_PAFTALARI[pafta]) and \
+                os.path.exists(os.path.join(HAMZEMIN, f'{pafta}.png')):
+            return True
+    return False
 # Dünya Turu zeminleri ChatGPT'den parlak (120-180) ve çok desenli (sapma 12-29) geliyor; oyunun renk dengesi koyu zemine
 # kurulu (klasik temalar 35 / 5-10). Her aile zemini rengini koruyarak bu parlaklığa ve en çok bu desen sapmasına çekilir.
 ZEMIN_HEDEF = (95, 9)  # (ortalama parlaklık, en büyük parlaklık sapması), 0-255
 
 
-def zemin_sakinlestir(im):
+def zemin_sakinlestir(im, hedef=None):
     """Zemin dokusunu ZEMIN_HEDEF'e çeker: desen sapması (parlaklık) en çok hedef kadar, ortalama parlaklık hedefte; renk tonu korunur."""
     import numpy as np
     a = np.asarray(im.convert('RGB'), dtype=np.float32)
     lum = a @ np.array([0.299, 0.587, 0.114], dtype=np.float32)
     m, sd = float(lum.mean()), float(lum.std()) or 1.0
-    hedef_m, hedef_sd = ZEMIN_HEDEF
+    hedef_m, hedef_sd = hedef or ZEMIN_HEDEF
     k = min(1.0, hedef_sd / sd)
     ort = a.reshape(-1, 3).mean(axis=0)
     a = ort + (a - ort) * k            # deseni sakinleştir (ortalama renge yaklaştır)
@@ -883,15 +901,20 @@ def doku_hucreleri(liste):
             if not hc:
                 continue
             anahtar, yon = hc
+            if pafta not in YENI_ZEMIN_PAFTALARI and yeni_zemin_var(anahtar):
+                continue
             x0, y0 = (i % 3) * 512, (i // 3) * 512
             hucre = dikissiz_dikey(resim.crop((x0, y0, x0 + 512, y0 + 512)))
             if yon == 'iki':
                 hucre = dikissiz_dikey(hucre.transpose(Image.ROTATE_90)).transpose(Image.ROTATE_270)
-            hucre = hucre.resize((256, 256), Image.LANCZOS)
+            boy = DOKU if anahtar.startswith('tema') else 256  # tema zeminleri eskisi gibi 512 px (oyunda 256 birim)
+            hucre = hucre.resize((boy, boy), Image.LANCZOS)
             if anahtar.startswith('aile-') and anahtar.endswith('-zemin'):
                 hucre = zemin_sakinlestir(hucre)
+            elif anahtar.startswith('tema') and anahtar.endswith('-zemin'):
+                hucre = zemin_sakinlestir(hucre, TEMA_ZEMIN_HEDEF)
             hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=86, method=6)
-            liste[anahtar] = [256, 256]
+            liste[anahtar] = [boy, boy]
         print(f'✓ {pafta} (doku)')
 
 

@@ -4920,6 +4920,7 @@ function clientApplyLevel(newLevel) {
   havaKur(); // yarasalar ve fırtına bulutu (hava.js)
   ensurePlayerSafe();
   kameraAniKonumla();
+  if (typeof zeminKatmaniKur === "function") zeminKatmaniKur();
   yenidenDog();
   showToast(bolumBildirimi());
   // Çevrimiçi istemci: kutlama gördüyse yeni bölümde başlık kartı (perde yok)
@@ -6622,6 +6623,7 @@ function startGame(secenek) {
   // Oyuncu duvar/su içinde kalmasın
   ensurePlayerSafe();
   kameraAniKonumla();
+  if (typeof zeminKatmaniKur === "function") zeminKatmaniKur();
   spawnBot();
   petKur(); // yanına alınan pet (pet.js)
   havaKur(); // yarasalar ve fırtına bulutu (hava.js)
@@ -7921,6 +7923,7 @@ function nextLevel() {
   }
   ensurePlayerSafe();
   kameraAniKonumla();
+  if (typeof zeminKatmaniKur === "function") zeminKatmaniKur();
   spawnBot();
   petKur(); // yanına alınan pet (pet.js)
   havaKur(); // yarasalar ve fırtına bulutu (hava.js)
@@ -8834,6 +8837,7 @@ function render() {
   }
 
   // Engeller: su, diken, lav, duvar ve objeler — eğri hatlı, temaya özel, önbellekli (engeller.js)
+  if (typeof zeminKatmaniCiz === "function") zeminKatmaniCiz(ctx); // zemin yolları (zemin-katmani.js)
   engelleriCiz(ctx);
   if (typeof yolculukGecitCiz === "function") yolculukGecitCiz(ctx); // yolculuk geçit nehirleri (yolculuk.js)
   koprulerCiz(ctx);   // sallanan ip köprüler (kopru.js)

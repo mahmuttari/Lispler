@@ -637,6 +637,12 @@ EK_PAFTALAR = {
     'R15': [('tema4-duvar', 256), ('tema4-buyuk', 256), ('tema4-obje1', 256), ('tema4-obje2', 256), ('tema4-gol', 256), ('tema4-sinir', 512)],
     'R16': [('tema5-duvar', 256), ('tema5-buyuk', 256), ('tema5-obje1', 256), ('tema5-obje2', 256), ('tema5-gol', 256), ('tema5-sinir', 512)],
     'R17': [('tema6-duvar', 256), ('tema6-buyuk', 256), ('tema6-obje1', 256), ('tema6-obje2', 256), ('tema6-gol', 256), ('tema6-sinir', 512)],
+    # R18–R22: Dünya Turu bölge aileleri (ulkeler.js aile kodu): aile-<KOD>-duvar, -kule, -gol; üst satır 1. aile, alt satır 2. aile
+    'R18': [('aile-K-duvar', 256), ('aile-K-kule', 256), ('aile-K-gol', 256), ('aile-KS-duvar', 256), ('aile-KS-kule', 256), ('aile-KS-gol', 256)],
+    'R19': [('aile-KP-duvar', 256), ('aile-KP-kule', 256), ('aile-KP-gol', 256), ('aile-SH-duvar', 256), ('aile-SH-kule', 256), ('aile-SH-gol', 256)],
+    'R20': [('aile-SV-duvar', 256), ('aile-SV-kule', 256), ('aile-SV-gol', 256), ('aile-GA-duvar', 256), ('aile-GA-kule', 256), ('aile-GA-gol', 256)],
+    'R21': [('aile-GDA-duvar', 256), ('aile-GDA-kule', 256), ('aile-GDA-gol', 256), ('aile-DA-duvar', 256), ('aile-DA-kule', 256), ('aile-DA-gol', 256)],
+    'R22': [('aile-KA-duvar', 256), ('aile-KA-kule', 256), ('aile-KA-gol', 256), ('aile-LA-duvar', 256), ('aile-LA-kule', 256), ('aile-LA-gol', 256)],
     'K06': [('donati-fici', 160), ('donati-sandik', 160), ('donati-fener', 192), ('donati-bank', 160), ('donati-tabela', 160), ('donati-saman', 192)],
     'K07': [('donati-cali', 160), ('donati-ciceklik', 160), ('donati-mantar', 128), ('donati-kutuk', 160), ('donati-tas', 160), ('donati-yaprak', 160)],
     'K08': [('donati-balkabagi', 128), ('donati-araba', 192), ('donati-cit', 160), ('donati-korkuluk', 192), ('donati-mum', 128), ('donati-orumcek', 160)],

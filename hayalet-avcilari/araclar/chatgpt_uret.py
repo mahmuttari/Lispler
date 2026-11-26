@@ -32,6 +32,7 @@ PAKET = {
     'K': ('CHATGPT-ISTEMI-EK.md', ('CHATGPT-ISTEMI-YOLCULUK.md', 'ANA İSTEM'), 'hamek'),
     'R': ('CHATGPT-ISTEMI-YENILEME.md', ('CHATGPT-ISTEMI-YOLCULUK.md', 'ANA İSTEM'), 'hamyeni'),
     'J': ('CHATGPT-ISTEMI-YOLCULUK.md', ('CHATGPT-ISTEMI-YOLCULUK.md', 'ANA İSTEM'), 'hamyol'),
+    'Z': ('CHATGPT-ISTEMI-ZEMIN.md', ('CHATGPT-ISTEMI-YOLCULUK.md', 'ANA İSTEM'), 'hamzemin'),
 }
 
 

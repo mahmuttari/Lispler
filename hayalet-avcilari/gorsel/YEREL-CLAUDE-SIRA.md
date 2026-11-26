@@ -8,6 +8,10 @@ gpt kullan, yerel oturumu kullan"*.
 > Devam eden işi bozma."* Bu listedeki **bütün** paftalar Chrome'da chatgpt.com sohbetinde ürettirilir. Oyun koduna (`www/`, `test/`)
 > dokunulmaz (bulutta Evren görevleri yazılıyor); yalnız PNG ve DURUM.md commit edilir, `git pull --no-rebase` sonra push.
 
+0. **Z01–Z03 (EN ÖNCE, kullanıcı istedi 26 Kasım 2026):** `CHATGPT-ISTEMI-ZEMIN.md` — zemin süsleri ve yollar ("donatılar zemin
+   ile uyum içinde olsun, kenarlarda çimenler kayalarla, zeminde yollar ... harita zeminlerini çevre ile uyumlu hale getirelim").
+   Kayıt `gorsel/hamzemin/`. Ardından ülke canlılarının küçük animasyonları R51–R59 (kare düzeni: 1. kare R paftasındaki durağan
+   objenin AYNISI, yalnız hareketli parça değişir; aynı boy ve merkez), sonra H02–H09, J02–J12.
 1. **H01 (hemen):** `CHATGPT-ISTEMI-HIKAYE.md` › "Hatıra paftaları" › H01 (ülke 1–6; 1. hücre Türkiye'nin **bakır kahve cezvesi**:
    uzun saplı, el dövmesi bakır, köpüklü kahveli küçük cezve; fincan DEĞİL). Kayıt: `gorsel/hamhikaye/H01.png`.
    Kullanıcıya göster, onay gelince devam et.

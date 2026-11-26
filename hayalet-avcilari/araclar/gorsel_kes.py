@@ -22,6 +22,7 @@ HAMUI = os.path.join(KOK, 'gorsel', 'hamui')
 HAMEK = os.path.join(KOK, 'gorsel', 'hamek')
 HAMYENI = os.path.join(KOK, 'gorsel', 'hamyeni')  # yenileme paftaları R01–R49  # ek paftalar (CHATGPT-ISTEMI-EK.md, K01–K04)
 HAMYOL = os.path.join(KOK, 'gorsel', 'hamyol')  # yolculuk paftaları J01–J12 (CHATGPT-ISTEMI-YOLCULUK.md)
+HAMZEMIN = os.path.join(KOK, 'gorsel', 'hamzemin')  # zemin süsleri ve yollar Z01–Z03 (CHATGPT-ISTEMI-ZEMIN.md)
 CIKTI = os.path.join(KOK, 'www', 'gorsel')
 
 # Pafta → hücre anahtarları (None: kullanılmaz). Anahtar → en uzun kenar (px).
@@ -120,6 +121,17 @@ ANIMASYON = {
     'R07': [('hasar-patlama', [1, 2, 3], 192), ('gorunmez-parilti', [4, 5, 6], 192)],  # oyuncu hasar alınca, görünmezlik
     'R10': [('lav', [2, 3, 4], 256)],  # kayalık kıyılı lav gölü, kabarcık ve alev
     'R42': [('selale', [1, 2, 3], 256)],  # dere üstündeki küçük şelale basamağı (köpük bandı)
+    # R51–R59: ülke objelerindeki canlıların küçük döngüleri (üst satır 1. obje, alt satır 2. obje; 1. kare durağan objenin aynısı).
+    # Anahtar an-<obje>-1..3: kod durağan <obje> yerine arada (4-8 sn'de bir) 1-2-3-2-1 oynatır.
+    'R51': [('ulke-CN-1', [1, 2, 3], 256), ('ulke-ID-1', [4, 5, 6], 256)],
+    'R52': [('ulke-PL-1', [1, 2, 3], 256), ('ulke-PL-2', [4, 5, 6], 256)],
+    'R53': [('ulke-CI-2', [1, 2, 3], 256), ('ulke-ZA-2', [4, 5, 6], 256)],
+    'R54': [('ulke-MG-2', [1, 2, 3], 256), ('ulke-KE-1', [4, 5, 6], 256)],
+    'R55': [('ulke-KE-2', [1, 2, 3], 256), ('ulke-ET-2', [4, 5, 6], 256)],
+    'R56': [('ulke-SD-2', [1, 2, 3], 256), ('ulke-IN-2', [4, 5, 6], 256)],
+    'R57': [('ulke-BD-2', [1, 2, 3], 256), ('ulke-CA-2', [4, 5, 6], 256)],
+    'R58': [('ulke-MX-2', [1, 2, 3], 256), ('ulke-PE-2', [4, 5, 6], 256)],
+    'R59': [('ulke-BR-1', [1, 2, 3], 256), ('tema5-obje1', [4, 5, 6], 256)],
     'R50': [('havai-fisek', [2, 3, 4], 256)],  # kilitli köprünün inişi (1. kare K05 hücre 1: kopru-kapali)
 }
 
@@ -680,6 +692,9 @@ EK_PAFTALAR = {
     'R43': [('tur-damga', 192), ('tur-ucak-yan', 192), ('tur-ucak-ust', 192), ('tur-kilit', 96), ('tur-ucak-simge', 96), ('tur-pasaport', 96)],
     # R44: oyun arayüzü: joystick tabanı ve topuzu, fenerli hayalet amblemi, anlatıcı parşömeni, boş defter yuvası, güç yıldızı
     'R44': [('joystick-taban', 192), ('joystick-topuz', 128), ('amblem-hayalet', 192), ('ikon-parsomen', 96), ('ikon-defter-bos', 128), ('ikon-guc-yildiz', 96)],
+    # Z02–Z03: engel ve donatı diplerine, yol kenarlarına zemin süsleri (CHATGPT-ISTEMI-ZEMIN.md)
+    'Z02': [('sus-cimen', 192), ('sus-kaya', 192), ('sus-cicek', 160), ('sus-cimen-serit', 256), ('sus-cakil', 160), ('sus-yaprak', 192)],
+    'Z03': [('sus-basamak', 192), ('sus-tahta-yol', 192), ('sus-su-birikintisi', 192), ('sus-yosun', 192), ('sus-cali', 160), ('sus-mantar', 128)],
     'K06': [('donati-fici', 160), ('donati-sandik', 160), ('donati-fener', 192), ('donati-bank', 160), ('donati-tabela', 160), ('donati-saman', 192)],
     'K07': [('donati-cali', 160), ('donati-ciceklik', 160), ('donati-mantar', 128), ('donati-kutuk', 160), ('donati-tas', 160), ('donati-yaprak', 160)],
     'K08': [('donati-balkabagi', 128), ('donati-araba', 192), ('donati-cit', 160), ('donati-korkuluk', 192), ('donati-mum', 128), ('donati-orumcek', 160)],
@@ -748,6 +763,8 @@ def ek_hucreler(liste):
         yol = os.path.join(HAMEK, f'{pafta}.png')
         if not os.path.exists(yol):
             yol = os.path.join(HAMYENI, f'{pafta}.png')  # R paftaları (CHATGPT-ISTEMI-YENILEME.md)
+        if not os.path.exists(yol):
+            yol = os.path.join(HAMZEMIN, f'{pafta}.png')  # Z paftaları (CHATGPT-ISTEMI-ZEMIN.md)
         if not os.path.exists(yol):
             continue
         resim = Image.open(yol).convert('RGBA')
@@ -825,6 +842,9 @@ DOKU_PAFTALARI = {
     'R24': [('aile-GA-zemin', 'iki'), ('aile-GDA-zemin', 'iki'), ('aile-DA-zemin', 'iki'), ('aile-KA-zemin', 'iki'),
             ('aile-LA-zemin', 'iki'), ('nehir-doku', 'dikey')],
     'R42': [None, None, None, None, None, ('dere-su', 'iki')],
+    # Z01: zemin katmanı dokuları (yollar ve alan lekeleri; CHATGPT-ISTEMI-ZEMIN.md)
+    'Z01': [('zemin-yol-toprak', 'iki'), ('zemin-yol-tas', 'iki'), ('zemin-cimen', 'iki'), ('zemin-kuru', 'iki'),
+            ('zemin-kum', 'iki'), ('zemin-yosunlu-tas', 'iki')],
 }
 # Dünya Turu zeminleri ChatGPT'den parlak (120-180) ve çok desenli (sapma 12-29) geliyor; oyunun renk dengesi koyu zemine
 # kurulu (klasik temalar 35 / 5-10). Her aile zemini rengini koruyarak bu parlaklığa ve en çok bu desen sapmasına çekilir.
@@ -850,6 +870,8 @@ def doku_hucreleri(liste):
         if not secili_mi(pafta):
             continue
         yol = os.path.join(HAMYENI, f'{pafta}.png')
+        if not os.path.exists(yol):
+            yol = os.path.join(HAMZEMIN, f'{pafta}.png')
         if not os.path.exists(yol):
             continue
         resim = Image.open(yol).convert('RGB')

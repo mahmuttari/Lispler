@@ -118,6 +118,7 @@ ANIMASYON = {
     'R05': [('toplama-halka', [1, 2, 3], 192), ('mucevher-parilti', [4, 5, 6], 128)],  # toplama halkası, mücevher pırıltısı
     'R06': [('boss-inis', [1, 2, 3], 256), ('seviye-atla', [4, 5, 6], 256)],  # boss iniş şok halkası, seviye atlama patlaması
     'R07': [('hasar-patlama', [1, 2, 3], 192), ('gorunmez-parilti', [4, 5, 6], 192)],  # oyuncu hasar alınca, görünmezlik
+    'R10': [('lav', [2, 3, 4], 256)],  # kayalık kıyılı lav gölü, kabarcık ve alev
     'R50': [('havai-fisek', [2, 3, 4], 256)],  # kilitli köprünün inişi (1. kare K05 hücre 1: kopru-kapali)
 }
 
@@ -624,6 +625,10 @@ EK_PAFTALAR = {
     'R08': [('guc-imza-kinkin', 192), ('guc-imza-veryi', 192), ('guc-imza-kornet', 192), ('guc-imza-mark', 192), ('guc-imza-kent', 192), ('guc-imza-ponko', 192)],
     # R09 istemi: 4 çiçek yaprağı (silsen), 5 tüy (sercin), 6 genel mermi izi parıltısı; Fanatik'in (Tornado Tekme) aurası yok
     'R09': [('guc-imza-gul', 192), ('guc-imza-rani', 192), ('guc-imza-beti', 192), ('guc-imza-silsen', 192), ('guc-imza-sercin', 192), ('mermi-iz-parilti', 128)],
+    # R10: diken plakası, kalp toplama aurası, yerdeki hatıranın parıltısı (2-4. hücreler lav animasyonu: ANIMASYON)
+    'R10': [('diken-plaka', 192), None, None, None, ('kalp-aura', 128), ('hatira-parilti', 160)],
+    # R11: engel üstü küçük canlılar (engeller.js ENGEL_CANLI anahtarları; 6-15 px çizilir)
+    'R11': [('canli-mum', 64), ('canli-goz', 64), ('canli-parilti', 64), ('canli-buhar', 64), ('canli-alevruhu', 64), ('canli-atesbocegi', 64)],
     'K06': [('donati-fici', 160), ('donati-sandik', 160), ('donati-fener', 192), ('donati-bank', 160), ('donati-tabela', 160), ('donati-saman', 192)],
     'K07': [('donati-cali', 160), ('donati-ciceklik', 160), ('donati-mantar', 128), ('donati-kutuk', 160), ('donati-tas', 160), ('donati-yaprak', 160)],
     'K08': [('donati-balkabagi', 128), ('donati-araba', 192), ('donati-cit', 160), ('donati-korkuluk', 192), ('donati-mum', 128), ('donati-orumcek', 160)],

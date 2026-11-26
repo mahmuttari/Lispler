@@ -18,6 +18,8 @@ gpt kullan, yerel oturumu kullan"*.
 0b. **K13 (Z02-Z07 ile aynı öncelikte, kullanıcı istedi 26 Kasım 2026):** `CHATGPT-ISTEMI-EK.md` › K13 kilitli köprü
    yeniden: köprü düz ve dik, kapalıyken ortasında kilitli kapı (eskisi yan yatık duruyordu). Kayıt `gorsel/hamek/K13.png`.
    J02-J12'nin 3. hücresi de artık düz köprü + kilitli kapı (istem dosyası güncellendi).
+0c. **K14 (K13'ten hemen sonra, kullanıcı istedi 26 Kasım 2026):** `CHATGPT-ISTEMI-EK.md` › K14 yuvanın fareleri (koşu ve
+   bekleme kareleri; "hayaletlerin çıktığı yere yaklaşınca fareler, yarasalar kaçışsın"). Kayıt `gorsel/hamek/K14.png`.
 1. **H01 (hemen):** `CHATGPT-ISTEMI-HIKAYE.md` › "Hatıra paftaları" › H01 (ülke 1–6; 1. hücre Türkiye'nin **bakır kahve cezvesi**:
    uzun saplı, el dövmesi bakır, köpüklü kahveli küçük cezve; fincan DEĞİL). Kayıt: `gorsel/hamhikaye/H01.png`.
    Kullanıcıya göster, onay gelince devam et.

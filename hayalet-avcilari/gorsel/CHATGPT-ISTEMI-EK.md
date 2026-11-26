@@ -205,3 +205,19 @@ of wooden posts at both ends exactly in the same place in every cell:
 6. leave EMPTY (transparent)
 Cute premium casual style, warm wood, everything upright and symmetric, no text.
 ```
+
+## K14: yuvanın fareleri (26 Kasım 2026)
+
+Kullanıcı: *"Hayaletlerin çıktığı yere yaklaştığında fareler, yarasalar kaçışsın."* Yarasa kareleri var (N11,
+`an-yarasa-1..3`); fareler için kareler gerekiyor. Kesim: `fare-kos` (1-3) ve `fare-bekle` (4-6) animasyonları.
+
+```
+Sheet K14: a small cute grey-brown RAT, seen from above at a slight 3/4 angle (same view as the game's characters), facing
+RIGHT, TRANSPARENT background, grid 3 x 2, the SAME rat at the SAME size and position in every cell (about 180 px long including
+the tail), no shadow, no ground:
+1-3. RUNNING cycle, 3 frames: legs stretched / legs gathered / legs stretched the other way, tail streaming behind, ears back,
+     a little scared expression
+4-6. SITTING idle by its hole, 3 frames: sniffing with whiskers twitching (frame 4 neutral, frame 5 nose up, frame 6 head
+     turned slightly), ears up, tail curled
+Cute premium casual style matching the game's characters, soft lighting from the upper left, no text.
+```

@@ -2425,65 +2425,42 @@
     "kredi": {}
   },
   "CA": {
-    "gorev": "7a901babcf0b88d60f11913cc758c43b",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ca-1.mp3",
-        "sure": 118.741,
-        "tempo": 131.09,
+        "dosya": "CA.mp3",
+        "sure": 121.96,
+        "tempo": 97.25,
         "dongu": {
-          "bas": 42.6014,
-          "uzunluk": 29.23767,
-          "vurus": 64
+          "bas": 40.3945,
+          "uzunluk": 27.12033,
+          "vurus": 44
         },
-        "ekYeri": 0.9875,
-        "sabitlik": 0.8558,
-        "puan": 0.935,
+        "ekYeri": 0.9428,
+        "sabitlik": 0.771,
+        "puan": 0.749,
         "teaser": {
-          "bas": 62.2575,
-          "son": 66.3675
-        },
-        "id": "1d7d99b7-e7f7-47ab-8646-85d6ae84af12",
-        "etiketler": "Quebecois fiddle reel, upbeat energetic, playful and heroic, steady danceable groove around 128 BPM for adventure video game background music; bright warm acoustic mix, loop-friendly seamless repetition; instrumental; fiddle leads with a counter-melody in a rich polyphonic ensemble, accordion, foot tapping, spoons and guitar driving constant energy, no breakdown or fade-out."
-      },
-      {
-        "dosya": "hayalet-avcilari-ca-2.mp3",
-        "sure": 119.221,
-        "tempo": 130.82,
-        "dongu": {
-          "bas": 36.7577,
-          "uzunluk": 29.40985,
-          "vurus": 64
-        },
-        "ekYeri": 0.9857,
-        "sabitlik": 0.878,
-        "puan": 0.9422,
-        "teaser": {
-          "bas": 67.0546,
-          "son": 71.1878
-        },
-        "id": "9940afae-a3b3-4658-b422-072ed4a3238e",
-        "etiketler": "Quebecois fiddle reel, instrumental; upbeat energetic, playful and heroic, around 128 BPM; bright warm acoustic mix, loop-friendly; fiddle lead melody, interweaving accordion counter-melody, foot tapping, spoons and guitar shape a rich polyphonic ensemble and driving rhythm section, sustaining constant adventure video game background music energy from start to finish."
+          "bas": 19.5337,
+          "son": 23.2256
+        }
       }
     ],
-    "lufs": -18.0,
+    "lufs": -17.9,
     "tepe": -5.3,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3332,
-    "ekOrani": 0.246,
+    "girisSure": 4.8919,
+    "ekOrani": 0.046,
     "dosyalar": {
       "dongu": "muzik/CA-dongu.ogg",
       "giris": "muzik/CA-giris.ogg"
     },
-    "bas": 0.105,
-    "son": 29.51485,
-    "tempo": 130.82,
-    "kredi": {
-      "kalan": 236.5
-    }
+    "bas": 0.1025,
+    "son": 27.22283,
+    "tempo": 97.25,
+    "kredi": {}
   },
   "US": {
     "gorev": "64310ce68a371ba60532bb6149af3254",

@@ -16,10 +16,10 @@ kesildi, gölet ve diken tuzaklar sınır yöntemiyle (organik leke biçimi + k�
    denetimi, botun ip köprüsünde takılması, yolculuk-perf, cizim fps, dunya-turu 2 denetim, anim 1 denetim). Şartname
    `gorevTST1.md`. Yamayı temiz ağaçta uygula, testleri koş, eksikleri tamamla. (engel-bicim kapsama ve fix3 göl kuralı
    bu oturumda değişti; yamada çakışma olabilir.)
-3. **Mac/ChatGPT'den beklenen paftalar** (`gorsel/YEREL-CLAUDE-SIRA.md`): Y02, Y03 (yerleşim JSON; gelince
-   `python3 araclar/yerlesim_derle.py`), N14 geldi (`gorsel/ham/N14.png`) ama kesilmedi: `--ek` kipi animasyonlardan yalnız K/R ile başlayanları keser (ek_kes'te
-   `k[0] in 'KR'` süzgeci); N paftaları için süzgeç genişletilip `ek_hucreler`in `HAM` yolu denenmeli, N15-N20,
-   K15/K16, H10-H12, B01-B10, A01-A03. K15/K16 gelince GOR4 (efekt bağlama), hikâye sahneleri gelince HIK3 yazılacak.
+3. **Mac/ChatGPT paftaları:** Y01-Y03 (22 plan oyunda), K15/K16 ve N14-N20 kesildi. Kalan: K15/K16'yı oyuna bağlayacak
+   GOR4 görevi (efekt-gokkusagi, -ejder-alev, -bot-isin, -kasirga, -cali-goz, timsah-bakis, efekt-pence, -toz, -olum-pop,
+   gol-kopru-tahta, efekt-parilti-kucuk, ui-can-cubugu: kod çizimlerinin yerine, kod yedek), hikâye sahneleri H10-H12 ve
+   B01-B10 (gorsel/hamhikaye; kesim tarifi ve HIK3 bağlama görevi yazılmadı), A01-A03 bekleniyor.
 4. FIX4 (klasik haritada takılan hayaletler, %6,1) ve REK2 (oynanabilir reklam kamerası, tehlike-halka davranışı):
    önce Fable şartnamesi.
 5. Görsel üst üste binme denetimi (kullanıcı, 27 Kasım): gölet/diken/lav sınır yöntemiyle çiziliyor (kıyılı göl resmi ve diken plakası resmi kullanılmıyor). Kalan iki bulgu:

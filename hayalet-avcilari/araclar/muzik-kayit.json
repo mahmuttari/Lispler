@@ -557,65 +557,42 @@
     }
   },
   "NG": {
-    "gorev": "e57bbd0c319475bb12436af7037bfdd5",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ng-1.mp3",
-        "sure": 118.909,
-        "tempo": 129.11,
+        "dosya": "NG.mp3",
+        "sure": 124.8,
+        "tempo": 96.53,
         "dongu": {
-          "bas": 23.5242,
-          "uzunluk": 29.73669,
-          "vurus": 64
+          "bas": 51.1244,
+          "uzunluk": 29.88477,
+          "vurus": 48
         },
-        "ekYeri": 0.9822,
-        "sabitlik": 0.9026,
-        "puan": 0.9563,
+        "ekYeri": 0.9461,
+        "sabitlik": 0.5688,
+        "puan": 0.6863,
         "teaser": {
-          "bas": 63.521,
-          "son": 67.7006
-        },
-        "id": "ab78dfe3-cfa6-4d5f-adf7-d0dbb1d41e63",
-        "etiketler": "Nigerian juju, bright warm acoustic mix, cheerful adventure video game background music, steady danceable groove around 128 BPM, dundun talking drum and shekere anchor interlocking guitars, rich polyphonic ensemble with lead melody, counter-melody and rhythm section, constant energy, loop-friendly instrumental arrangement."
-      },
-      {
-        "dosya": "hayalet-avcilari-ng-2.mp3",
-        "sure": 118.813,
-        "tempo": 130.15,
-        "dongu": {
-          "bas": 53.6849,
-          "uzunluk": 27.63529,
-          "vurus": 60
-        },
-        "ekYeri": 0.9773,
-        "sabitlik": 0.8694,
-        "puan": 0.9387,
-        "teaser": {
-          "bas": 84.5727,
-          "son": 88.7291
-        },
-        "id": "c7373755-5f33-49d6-afe2-82e633033504",
-        "etiketler": "Nigerian juju, cheerful adventure video game background music with a steady danceable groove around 128 BPM, instrumental; bright warm acoustic mix, constant energy and loop-friendly continuity; rich polyphonic ensemble with dundun talking drum, shekere and interlocking guitars, lead melody, counter-melody and interlocking rhythm section."
+          "bas": 100.4076,
+          "son": 104.1692
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -4.8,
+    "tepe": -5.0,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3796,
-    "ekOrani": 0.386,
+    "girisSure": 4.9616,
+    "ekOrani": 0.249,
     "dosyalar": {
       "dongu": "muzik/NG-dongu.ogg",
       "giris": "muzik/NG-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 29.83669,
-    "tempo": 129.11,
-    "kredi": {
-      "kalan": 608.5
-    }
+    "bas": 0.105,
+    "son": 29.98977,
+    "tempo": 96.53,
+    "kredi": {}
   },
   "SD": {
     "gorev": "d47fae3c425d92d897afc7e2bd539136",

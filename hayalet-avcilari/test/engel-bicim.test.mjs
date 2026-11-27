@@ -248,7 +248,9 @@ try {
       let bos = null, tasan = null;
       for (let y = 1; y < o.h; y += 2) for (let x = 1; x < o.w; x += 2) {
         // FIXG1: objede çarpışma alanı koyu dolgu yerine gölge/resimle boyanır; ölçüt "boyalı" (alfa > 0).
-        if (!bos && engelUzaklik(o.carpisma, x, y) < -2 && alfa(x, y) === 0) bos = `${x},${y}`;
+        // Lav kareleri hazırsa lav her karede canlı çizilir (lavCanli), önbellekte zemin yoktur: içi boş denetimi lavda yapılmaz
+        const lavCanliCizim = o.tur === 'lav' && typeof animHazir === 'function' && animHazir('lav') >= 3;
+        if (!bos && !lavCanliCizim && engelUzaklik(o.carpisma, x, y) < -2 && alfa(x, y) === 0) bos = `${x},${y}`;
         // FIXG1: obje resmi bilerek biçimin dışına taşar (tam resim görünsün): taşma denetimi objede yapılmaz.
         const dis = o.derinlik ? engelUzaklik(o.carpisma, x, y) : engelUzaklik(o.bicim, x, y);
         // FIXG2: duvarın uç kuleleri ve dik yığılan parçaları da bilerek biçimin dışına taşar

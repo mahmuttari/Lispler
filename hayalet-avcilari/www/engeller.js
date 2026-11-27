@@ -430,6 +430,8 @@
   // Lav tabanı (önbellek): kayalık kıyı ve eski drawLava'nın durağan kızgın renk geçişi; çatlak, kabarcık, 🔥 ve alevler
   // her karede üstüne çizilir
   function lavCiz(ctx, w, h, r, p, B) {
+    // ChatGPT lav kareleri hazırsa (lavCanli her karede çizer) eski kod zemini çizilmez: kayalık kenarı resmin altından taşıyordu
+    if (typeof animHazir === "function" && animHazir("lav") >= 3) return [];
     doldur(ctx, B, "#1a0b0b", 0, 0, 6);
     kayalikKenar(ctx, B, "#3f3f46", r, 8, 2, 6.5);
     const g = ctx.createRadialGradient(w / 2, h / 2, 4, w / 2, h / 2, Math.max(w, h) * 0.7);

@@ -14,6 +14,7 @@ kesildi, gölet ve diken tuzaklar sınır yöntemiyle (organik leke biçimi + k�
    Müzik: 50 ülkeye sanatsal istemler hazır (araclar/muzik-istekleri-sanatsal.json; üretim: python3 araclar/muzik_eleven.py KOD…); ElevenLabs kotası 5 Aralık'ta yenilenir. Önce tek ülke üretip krediyi ölç (100 sn = 1375 kredi).
 1. **DT1 bitti** (Dünya Turu köprüleri, arena, ortak nehir, yolculuk çubuğu simgeleri; commit edildi).
 2. **zem3b (c)** "yolun üst/sol pervazı… yeterli örnek yok: 6" HEAD'de de düşüyor (yerleşim şablonları/KPR1 sonrası; örnek noktalar azalmış): TST1'e ekle.
+   **animasyon-ek** "ilk yardım… şifa efekti çizilir" N16 şifa kareleri gelince düşüyor (kare yolu kod efektinin yerine geçti): beklenti güncellenmeli.
    **TST1** zaman aşımına uğradı: yarım iş `araclar/evren-gorev/yarim-TST1.patch` (engel-bicim'in önceden düşen 5
    denetimi, botun ip köprüsünde takılması, yolculuk-perf, cizim fps, dunya-turu 2 denetim, anim 1 denetim). Şartname
    `gorevTST1.md`. Yamayı temiz ağaçta uygula, testleri koş, eksikleri tamamla. (engel-bicim kapsama ve fix3 göl kuralı

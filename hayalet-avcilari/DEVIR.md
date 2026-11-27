@@ -7,7 +7,7 @@ hiçbir iş olmasın". Kalıcı kurallar `CLAUDE.md`'de (görseller yalnız Chat
 ## Bitenler (bu oturum)
 SES1 (23 ElevenLabs sesi oyunda), YER1 (bölgeler ChatGPT yerleşim planlarıyla; Y01'in 7 planı derlendi), GOR3a (patlama,
 boss halkası, robot, seviye rozeti, zemin süsleri), GOR3b (dükkân/menü/oyun sonu görselleri), J01-J12 yolculuk paftaları
-kesildi, göller kesilmeden (gol-su.js çarpışma tablosu), bot görseli.
+kesildi, gölet ve diken tuzaklar sınır yöntemiyle (organik leke biçimi + kıyı/çerçeve, içi ChatGPT dokusu; kullanıcı kararı), bot görseli.
 
 ## Süren / kalan işler
 1. **DT1** (Evren'de çalışıyordu): J07-J12'yi Dünya Turu'na bağlama. Şartname `araclar/evren-gorev/gorevDT1.md`.
@@ -22,7 +22,7 @@ kesildi, göller kesilmeden (gol-su.js çarpışma tablosu), bot görseli.
    K15/K16, H10-H12, B01-B10, A01-A03. K15/K16 gelince GOR4 (efekt bağlama), hikâye sahneleri gelince HIK3 yazılacak.
 4. FIX4 (klasik haritada takılan hayaletler, %6,1) ve REK2 (oynanabilir reklam kamerası, tehlike-halka davranışı):
    önce Fable şartnamesi.
-5. Görsel üst üste binme denetimi (kullanıcı, 27 Kasım): göller ve diken/lav düzeltildi. Kalan iki bulgu:
+5. Görsel üst üste binme denetimi (kullanıcı, 27 Kasım): gölet/diken/lav sınır yöntemiyle çiziliyor (kıyılı göl resmi ve diken plakası resmi kullanılmıyor). Kalan iki bulgu:
    (a) dikey duvarda (h ≥ 1,3w) aynı duvar resmi alt alta yığılıyor, "üst üste binmiş" görünüyor: dikey duvara tek
    kule resmi (tema<n>-buyuk / aile-<A>-kule) boyunca bir kez, gerekirse ChatGPT'den dikey duvar paftası istenmeli;
    (b) uzun/yayvan kutudaki obje küçük kalıyor, çarpışma kutusu gölge sütunu olarak görünüyor (görünmez duvar): objeyi

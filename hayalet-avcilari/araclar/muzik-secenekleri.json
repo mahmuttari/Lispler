@@ -1,0 +1,4020 @@
+{
+ "ulkeler": [
+  {
+   "kod": "RU",
+   "ad": "Rusya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Rus masalı: gusli",
+     "aciklama": "Gusli (Rus kanunu) ışıl ışıl önde; yedi telli gitar ve hafif domra.",
+     "calgilar": [
+      "gusli",
+      "yedi telli gitar",
+      "domra"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Gusli psaltery leading Russian romance and fairytale chamber style, with seven-string Russian guitar and soft domra. Gusli psaltery in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Lyrical melody in natural minor turning to bright major, graceful and storybook-like, harp-like sweeps. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Gusli+Russian+romance+and+fairytale"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Gusli+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Vo pole beryoza",
+     "aciklama": "Balalayka huş ağacı ezgisini çıtır çıtır çalar; domra ve gusli eşlik eder.",
+     "calgilar": [
+      "balalayka",
+      "domra",
+      "gusli"
+     ],
+     "ezgi": {
+      "ad": "Vo pole beryoza stoyala (Во поле берёза стояла)",
+      "koken": "Rusya, 18. yüzyıl halk şarkısı",
+      "kamu_mali_gerekce": "Anonim halk ezgisi; bestecisi bilinmiyor, kuşaktan kuşağa aktarılmış.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 100,
+     "stil": "Balalaika leading Russian folk style, with domra and soft gusli psaltery. Balalaika in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Simple round-dance khorovod tune in natural minor within a narrow range, light and lilting, melody inspired by the traditional folk tune Vo pole beryoza stoyala. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Vo+pole+beryoza+stoyala"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Balalaika+Russian+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: domra",
+     "aciklama": "Mandoline benzeyen domra tek başına; parlak ve net, altında hafif gusli.",
+     "calgilar": [
+      "domra",
+      "gusli"
+     ],
+     "ezgi": null,
+     "bpm": 104,
+     "stil": "Solo domra leading Russian folk-instrument music, with soft gusli arpeggios. Solo domra in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Playful melody in minor brightening to major, light tremolo on long notes and quick plucked runs. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=domra+Russian+folk-instrument"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=domra+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 1,
+   "simdiki": 137
+  },
+  {
+   "kod": "PS",
+   "ad": "Filistin",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Klasik Şam takımı: kanun",
+     "aciklama": "Kanun pırıl pırıl önde; ud ve hafif rik, muvaşşah tarzı şiirsel ezgi.",
+     "calgilar": [
+      "kanun",
+      "ud",
+      "rik"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Qanun leading Palestinian and Levantine classical takht music, with oud and soft riq. Qanun in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Lyrical instrumental muwashshah-style melody in maqam Bayati turning to the bright maqam Ajam, graceful ornaments. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Qanun+Palestinian+and+Levantine+classical"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Qanun+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Ya Zarif et-Tul",
+     "aciklama": "Buzuk düğün ezgisini parlak tel sesiyle çalar; ud ve hafif darbuka.",
+     "calgilar": [
+      "buzuk",
+      "ud",
+      "darbuka"
+     ],
+     "ezgi": {
+      "ad": "Ya Zarif al-Tul (يا ظريف الطول)",
+      "koken": "Filistin/Şam bölgesi, anonim halk şarkısı",
+      "kamu_mali_gerekce": "Anonim halk ezgisi; bestecisi bilinmiyor, kuşaktan kuşağa aktarılmış.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 104,
+     "stil": "Buzuq leading Palestinian folk style, with oud and soft darbuka. Buzuq in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Warm village wedding tune in maqam Bayati with a softened dabke lilt and short repeated phrases, melody inspired by the traditional folk tune Ya Zarif al-Tul. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Ya+Zarif+al-Tul"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Buzuq+Palestinian+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: ud",
+     "aciklama": "Tek ud, sıcak ama net; altında çok hafif def.",
+     "calgilar": [
+      "ud",
+      "def"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Solo oud leading Palestinian and Levantine oud music, with very soft daf. Solo oud in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Measured taqsim-like melody in maqam Bayati with quarter-tone colour brightening to Ajam, short tremolo and gentle ornaments. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=oud+Palestinian+and+Levantine+oud"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=oud+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 2,
+   "simdiki": 136
+  },
+  {
+   "kod": "UZ",
+   "ad": "Özbekistan",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Şaşmakam: tanbur",
+     "aciklama": "Metal mızraplı tanburun parlak sesi önde; dutar ve hafif doyra.",
+     "calgilar": [
+      "tanbur",
+      "dutar",
+      "doyra"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Tanbur long-necked lute leading Uzbek Shashmaqam classical music of Bukhara and Samarkand, with dutar and soft doira frame drum. Tanbur long-necked lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Stately but bright melody in maqam Rast with nola slides and mordents. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Tanbur+Uzbek+Shashmaqam+classical"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Tanbur+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Geleneksel: Tanovar",
+     "aciklama": "Özbek santuru çang ezgiyi ışıl ışıl çalar; dutar ve hafif doyra.",
+     "calgilar": [
+      "çang",
+      "dutar",
+      "doyra"
+     ],
+     "ezgi": {
+      "ad": "Tanovar",
+      "koken": "Özbekistan (Fergana vadisi), geleneksel dans ezgisi",
+      "kamu_mali_gerekce": "Anonim geleneksel ezgi; birçok yöresel çeşitlemesi var.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 100,
+     "stil": "Chang hammered dulcimer leading Uzbek Fergana valley traditional style, with dutar and soft doira. Chang hammered dulcimer in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Graceful lyrical dance tune with gentle usul rhythm and nola ornaments, melody inspired by the traditional folk tune Tanovar. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Tanovar"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Chang+Uzbek+Fergana+valley+traditional"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Kaşgar rubabı",
+     "aciklama": "Özbek rubabı tek başına; parlak, tok ve net bir tezene sesi.",
+     "calgilar": [
+      "rubab (Kaşgar)",
+      "doyra"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Solo Kashgar rubab leading Uzbek Fergana-Tashkent style music, with very soft doira frame drum. Solo Kashgar rubab in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright dance-like melody in a major-leaning mode, rapid tremolo on long notes and rhythmic strokes. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Kashgar+rubab+Uzbek+Fergana-Tashkent"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Kashgar+rubab+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 3,
+   "simdiki": 135
+  },
+  {
+   "kod": "CO",
+   "ad": "Kolombiya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "And üçlüsü: bandola",
+     "aciklama": "Bandola parlak tremolosuyla önde; tiple ve gitar eşliğinde zarif pasillo.",
+     "calgilar": [
+      "bandola",
+      "tiple",
+      "gitar"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Bandola leading Colombian Andean chamber music by a trio andino, with tiple and guitar. Bandola in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Refined pasillo style melody with delicate tremolo in a bright major key with tender minor shades. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Bandola+Colombian+Andean"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Bandola+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Eski bambuco: Cuatro Preguntas",
+     "aciklama": "On iki telli tiple ezgiyi parlak ve net çalar; gitar ve hafif bandola.",
+     "calgilar": [
+      "tiple",
+      "gitar",
+      "bandola"
+     ],
+     "ezgi": {
+      "ad": "Cuatro Preguntas",
+      "koken": "Kolombiya, bambuco; beste Pedro Morales Pino (1863-1926)",
+      "kamu_mali_gerekce": "Besteci 1926'da öldü; söz kullanılmıyor.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 100,
+     "stil": "Tiple leading Colombian Andean bambuco style, with guitar and a quiet bandola. Tiple in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Tender syncopated tune in the 6/8 against 3/4 bambuco rhythm moving between minor and bright major, melody inspired by the traditional tune Cuatro Preguntas. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Cuatro+Preguntas"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Tiple+Colombian+Andean+bambuco"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: chonta marimbası",
+     "aciklama": "Pasifik kıyısının palmiye ağacı marimbası tek başına; su gibi berrak.",
+     "calgilar": [
+      "marimba de chonta",
+      "guasá"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Solo marimba de chonta leading Colombian Pacific coast music, with very soft guasa shaker. Solo marimba de chonta in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright bubbling interlocking patterns in a 6/8 currulao lilt kept slow and gentle, pentatonic-leaning melody. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=marimba+de+chonta+Colombian+Pacific+coast"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=marimba+de+chonta+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 4,
+   "simdiki": 134
+  },
+  {
+   "kod": "PL",
+   "ad": "Polonya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Saray lavtası: Polonya dansları",
+     "aciklama": "Rönesans lavtası net ve kuru tınısıyla eski Polonya saray danslarını çalar.",
+     "calgilar": [
+      "lavta",
+      "klavsen",
+      "blok flüt"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Renaissance lute leading Polish Renaissance court dances (taniec polski), with soft harpsichord and a quiet recorder. Renaissance lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Graceful dance melody in the Lydian and Mixolydian modes, light running divisions and cadential trills, gentle triple-time lilt. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Renaissance+Polish+Renaissance+court+dances"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Renaissance+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Szła dzieweczka",
+     "aciklama": "Polonya santuru cymbały ezgiyi çıtır çıtır söyler; köy kemanı ve klarnet çok hafif.",
+     "calgilar": [
+      "cymbały",
+      "keman",
+      "klarnet",
+      "basy"
+     ],
+     "ezgi": {
+      "ad": "Szła dzieweczka do laseczka",
+      "koken": "Polonya (Silezya), 19. yüzyıl başı halk şarkısı",
+      "kamu_mali_gerekce": "Anonim halk ezgisi; bestecisi bilinmiyor, kuşaktan kuşağa aktarılmış.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 104,
+     "stil": "Cymbaly hammered dulcimer leading a Polish village kapela, with a very soft folk fiddle, quiet clarinet and light basy plucks. Cymbaly hammered dulcimer in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Cheerful bouncing major-key tune in 2/4 with simple turns, melody inspired by the traditional folk tune Szla dzieweczka do laseczka. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Sz%C5%82a+dzieweczka+do+laseczka"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Cymbaly+a+Polish+village+kapela"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: piyano mazurka",
+     "aciklama": "Tek piyano, berrak ve hafif dokunuşlu zarif bir mazurka.",
+     "calgilar": [
+      "piyano"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Solo piano leading a Polish Romantic salon mazurka in 3/4, with no other instruments. Solo piano in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Lydian raised-fourth colour, dotted mazurka rhythm with the accent on the second beat, light staccato left hand, grace notes and trills, upper register. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=piano+a+Polish+Romantic+salon"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=piano+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 5,
+   "simdiki": 134
+  },
+  {
+   "kod": "BR",
+   "ad": "Brezilya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Choro salonu: bandolim",
+     "aciklama": "Bandolim (Brezilya mandolini) parlak ve net önde; kavakinyo ve çok hafif pandeiro.",
+     "calgilar": [
+      "bandolim",
+      "kavakinyo",
+      "yedi telli gitar",
+      "pandeiro"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Bandolim leading Brazilian choro chamber music in a calm lyrical style, with cavaquinho, seven-string guitar and very soft pandeiro. Bandolim in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Elegant chromatic melody in a bright major key with playful modulations and light syncopation. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Bandolim+Brazilian+choro"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Bandolim+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Peixe Vivo",
+     "aciklama": "On telli viola caipira ezgiyi çınlayan tellerle çalar; hafif üçgen zil.",
+     "calgilar": [
+      "viola caipira",
+      "gitar",
+      "üçgen zil"
+     ],
+     "ezgi": {
+      "ad": "Peixe Vivo",
+      "koken": "Brezilya (Minas Gerais), geleneksel halk şarkısı",
+      "kamu_mali_gerekce": "Anonim halk şarkısı olarak aktarılır; bestecisi bilinmiyor.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 100,
+     "stil": "Viola caipira ten-string guitar leading Brazilian rural folk style, with soft guitar and a quiet triangle. Viola caipira ten-string guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Sweet simple major-key cantiga tune in parallel thirds with a gentle swaying pulse, melody inspired by the traditional folk tune Peixe Vivo. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Peixe+Vivo"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Viola+caipira+Brazilian+rural+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Brezilya gitarı",
+     "aciklama": "Naylon telli tek gitar (violão), vals-choro havasında; net ve sıcak.",
+     "calgilar": [
+      "gitar (violão)",
+      "kaşişi"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Solo Brazilian nylon-string guitar leading a Brazilian valsa-choro and modinha style piece, with very soft caxixi shaker. Solo Brazilian nylon-string guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Singing melody over walking bass lines in a bright major key with tender minor turns. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Brazilian+a+Brazilian+valsa-choro"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Brazilian+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 6,
+   "simdiki": 133
+  },
+  {
+   "kod": "CN",
+   "ad": "Çin",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Jiangnan ipek-bambu: yangqin",
+     "aciklama": "Çin santuru yangqin ışıl ışıl önde; pipa eşlik eder, dizi çok hafif.",
+     "calgilar": [
+      "yangqin",
+      "pipa",
+      "dizi"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Yangqin hammered dulcimer leading Chinese Jiangnan sizhu silk-and-bamboo chamber music, with pipa and a very quiet dizi flute. Yangqin hammered dulcimer in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Flowing elegant melody in the pentatonic gong mode with delicate added-note ornaments, soft wooden clapper. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Yangqin+Chinese+Jiangnan+sizhu+silk-and-bamboo"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Yangqin+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Mo Li Hua",
+     "aciklama": "Pipa yasemin çiçeği ezgisini tane tane, net çalar; yangqin eşlik eder.",
+     "calgilar": [
+      "pipa",
+      "yangqin",
+      "küçük çan"
+     ],
+     "ezgi": {
+      "ad": "Mo Li Hua (茉莉花)",
+      "koken": "Çin (Jiangsu), 18. yüzyıl halk şarkısı",
+      "kamu_mali_gerekce": "Anonim halk şarkısı; 18. yüzyıldan beri notaya alınmış.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 96,
+     "stil": "Pipa leading Chinese Jiangsu folk style, with soft yangqin and a small quiet bell. Pipa in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Sweet graceful tune in the pentatonic zhi mode with smooth stepwise curves and light tremolo, melody inspired by the traditional folk tune Mo Li Hua. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Mo+Li+Hua"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Pipa+Chinese+Jiangsu+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: guzheng",
+     "aciklama": "Guzheng tek başına akar; berrak, parlak ve ferah.",
+     "calgilar": [
+      "guzheng"
+     ],
+     "ezgi": null,
+     "bpm": 92,
+     "stil": "Solo guzheng leading Chinese zither music, with no other instruments except a faint xiao flute answer. Solo guzheng in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Flowing pentatonic glissandi, bent notes and tremolo in the gong mode, a bright springtime melody with spacious phrasing. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=guzheng+Chinese"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=guzheng+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 7,
+   "simdiki": 133
+  },
+  {
+   "kod": "IQ",
+   "ad": "Irak",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Bağdat çalgısı: santur",
+     "aciklama": "Irak santuru ışıl ışıl önde; ud ve hafif rik, Rast makamında.",
+     "calgilar": [
+      "santur",
+      "ud",
+      "rik"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Santur hammered dulcimer leading Iraqi maqam art music by a chalghi baghdadi ensemble, with oud and soft riq. Santur hammered dulcimer in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Poised instrumental melody in the bright maqam Rast with delicate hammered shimmer and tremolo. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Santur+Iraqi+maqam"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Santur+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Fog el-Nahal",
+     "aciklama": "Kanun ezgiyi pırıl pırıl söyler; ud eşlik eder, salınan yumuşak ritim.",
+     "calgilar": [
+      "kanun",
+      "ud",
+      "dümbek"
+     ],
+     "ezgi": {
+      "ad": "Fog el-Nakhal (فوق النخل)",
+      "koken": "Irak, geleneksel; kimi kaynaklar Molla Osman el-Mevsili'ye (ö. 1923) bağlar",
+      "kamu_mali_gerekce": "Anonim sayılır; besteci olarak anılan kişi de 1923'te ölmüştür.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 100,
+     "stil": "Qanun leading the Iraqi traditional song style, with oud and soft dumbak. Qanun in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Gently swaying tune in maqam Hijaz with long graceful phrases and tasteful ornaments, melody inspired by the traditional folk tune Fog el-Nakhal. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Fog+el-Nakhal"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Qanun+Iraqi+traditional+song"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Bağdat udu",
+     "aciklama": "Irak ud okulunun berrak, tiz perdeli tek udu; çok hafif rik.",
+     "calgilar": [
+      "ud",
+      "rik"
+     ],
+     "ezgi": null,
+     "bpm": 92,
+     "stil": "Solo oud leading the Baghdad school of oud playing, with very soft riq. Solo oud in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Clear ringing high-register melody in maqam Ajam and maqam Rast, fine tremolo, arpeggiated figures and delicate ornaments. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=oud+Baghdad+school"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=oud+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 8,
+   "simdiki": 133
+  },
+  {
+   "kod": "IT",
+   "ad": "İtalya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Venedik barok: klavsen",
+     "aciklama": "Klavsen ve barok mandolin önde, güneşli ve şarkı söyler gibi.",
+     "calgilar": [
+      "klavsen",
+      "mandolin",
+      "viyolonsel (pizzicato)"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Harpsichord and baroque mandolin leading an Italian Baroque chamber concerto in the Venetian style, with light pizzicato cello. Harpsichord and baroque mandolin in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Sunny major-key sequences, a singing bel canto style melody with trills and echo phrases. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Harpsichord+and+baroque+mandolin+an+Italian+Baroque+concerto"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Harpsichord+and+baroque+mandolin+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Santa Lucia",
+     "aciklama": "Napoli mandolini ezgiyi berrak tremoloyla söyler; gitar ve çok hafif okarina.",
+     "calgilar": [
+      "mandolin",
+      "gitar",
+      "okarina"
+     ],
+     "ezgi": {
+      "ad": "Santa Lucia",
+      "koken": "İtalya (Napoli), geleneksel kayıkçı şarkısı; 1849'da Teodoro Cottrau yayımladı",
+      "kamu_mali_gerekce": "Napoli halk ezgisi; yayımlayan Cottrau 1879'da öldü.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 92,
+     "stil": "Neapolitan mandolin leading an Italian folk serenade, with classical guitar and a very soft Budrio ocarina. Neapolitan mandolin in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Swaying barcarolle in 3/8 in a warm major key with sweet parallel thirds, melody inspired by the traditional folk tune Santa Lucia. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Santa+Lucia"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Neapolitan+mandolin+an+Italian+folk+serenade"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: İtalyan arpı",
+     "aciklama": "Viggiano sokak arpı geleneğinden tek arp; ışıltılı ve sade.",
+     "calgilar": [
+      "arp",
+      "gitar"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Solo Italian folk harp leading an Italian serenade in the Viggiano street-harp tradition, with soft classical guitar. Solo Italian folk harp in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Tender melody in a sunny major key with a gentle tarantella-like 6/8 lilt kept slow and light, rippling arpeggios. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Italian+folk+harp+an+Italian+serenade"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Italian+folk+harp+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 9,
+   "simdiki": 133
+  },
+  {
+   "kod": "MX",
+   "ad": "Meksika",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Meksika salon valsi: salterio",
+     "aciklama": "Meksika salteriosu parlak tremolosuyla önde; gitar ve hafif guitarrón.",
+     "calgilar": [
+      "salterio",
+      "gitar",
+      "guitarrón"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Mexican salterio plucked psaltery leading Mexican salon music in the orquesta tipica tradition, with guitar and soft guitarron. Mexican salterio plucked psaltery in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Elegant vals mexicano melody in a sunny major key with sweet parallel thirds and tremolo. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Mexican+salterio+plucked+Mexican+salon+in+orquesta"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Mexican+salterio+plucked+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: La Cucaracha",
+     "aciklama": "Chiapas marimbası şakacı ezgiyi tok ve net çalar; requinto ve hafif jarana.",
+     "calgilar": [
+      "Chiapas marimbası",
+      "requinto jarocho",
+      "jarana"
+     ],
+     "ezgi": {
+      "ad": "La Cucaracha",
+      "koken": "Meksika/İspanya kökenli, anonim halk şarkısı (corrido)",
+      "kamu_mali_gerekce": "Anonim halk ezgisi; bestecisi bilinmiyor, kuşaktan kuşağa aktarılmış.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 108,
+     "stil": "Chiapas marimba leading Mexican folk style, with requinto jarocho and softly strummed jarana. Chiapas marimba in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Jaunty teasing major-key corrido tune with bouncing repeated notes, melody inspired by the traditional folk tune La Cucaracha. 108 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=La+Cucaracha"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Chiapas+marimba+Mexican+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: jarocho arpı",
+     "aciklama": "Veracruz arpı tek başına ışıldar; altında hafif jarana.",
+     "calgilar": [
+      "arpa jarocha",
+      "jarana"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Solo arpa jarocha harp leading Mexican son jarocho from Veracruz, with softly strummed jarana. Solo arpa jarocha harp in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Sparkling arpeggios and a bright major-key melody over the sesquialtera 6/8 against 3/4 lilt, kept gentle. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=arpa+jarocha+harp+Mexican+son+jarocho+from"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=arpa+jarocha+harp+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 10,
+   "simdiki": 133
+  },
+  {
+   "kod": "BD",
+   "ad": "Bangladeş",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Bengal klasik: sarod",
+     "aciklama": "Sarodun metalik, net tezene sesi önde, Khamaj ragasında; hafif tabla.",
+     "calgilar": [
+      "sarod",
+      "tabla",
+      "bansuri"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Sarod leading Bengali classical art music, with soft tabla and a very quiet bansuri. Sarod in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Lyrical melody in raga Khamaj in the refined Bengali tradition, flowing meend slides and crisp jhala strokes kept gentle. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Sarod+Bengali+classical"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Sarod+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Baul ezgisi: Oçin Pakhi",
+     "aciklama": "Dotara baul ezgisini zıplayan net tellerle çalar; ektara ve hafif dubki.",
+     "calgilar": [
+      "dotara",
+      "ektara",
+      "dubki"
+     ],
+     "ezgi": {
+      "ad": "Khachar Bhitor Ochin Pakhi (খাঁচার ভিতর অচিন পাখি)",
+      "koken": "Bangladeş (Kuştiya), Lalon Fakir (ö. 1890)",
+      "kamu_mali_gerekce": "Lalon 1890'da öldü; ezgi sözlü gelenekle aktarılıyor.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 100,
+     "stil": "Dotara plucked lute leading Bangladeshi Baul folk style, with ektara rhythmic plucks and soft dubki tambourine. Dotara plucked lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Wandering-minstrel tune with a bouncing plucked pulse in a Khamaj-like folk mode, melody inspired by the traditional folk tune Khachar Bhitor Ochin Pakhi. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Khachar+Bhitor+Ochin+Pakhi"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Dotara+plucked+Bangladeshi+Baul+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: dotara",
+     "aciklama": "Tek dotara, kuzey Bengal bhavaiya havasında; kuru ve net.",
+     "calgilar": [
+      "dotara",
+      "khol"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Solo dotara leading Bangladeshi bhawaiya folk music, with very soft khol drum. Solo dotara in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Lilting melody in a pentatonic-leaning folk mode with quick hammer-ons and repeated-note rhythm. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=dotara+Bangladeshi+bhawaiya+folk"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=dotara+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 11,
+   "simdiki": 132
+  },
+  {
+   "kod": "ID",
+   "ad": "Endonezya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Cava saray gamelanı (yumuşak)",
+     "aciklama": "Tunç gender ve saron önde, saray gamelanının en sessiz hali; slendro akordu.",
+     "calgilar": [
+      "gender",
+      "saron",
+      "gambang",
+      "kendhang"
+     ],
+     "ezgi": null,
+     "bpm": 92,
+     "stil": "Gender and saron bronze metallophones leading Javanese court gamelan in the soft style of the Yogyakarta and Surakarta palaces, with gambang wooden xylophone, quiet kendhang and one soft gong. Gender and saron bronze metallophones in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Serene bright melody in slendro tuning with interlocking patterns. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Gender+and+saron+bronze+metallophones+Javanese+court+gamelan"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Gender+and+saron+bronze+metallophones+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Çocuk ezgisi: Lir-ilir",
+     "aciklama": "Cava kanunu siter ezgiyi parlak tellerle çalar; gambang ve hafif kendhang.",
+     "calgilar": [
+      "siter",
+      "gambang",
+      "kendhang"
+     ],
+     "ezgi": {
+      "ad": "Lir-ilir",
+      "koken": "Endonezya (Cava), 15.-16. yüzyıl; Sunan Kalijaga'ya atfedilir",
+      "kamu_mali_gerekce": "Yüzyıllar önceki geleneksel tembang dolanan; anonim sayılır.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 100,
+     "stil": "Siter plucked zither leading the Javanese dolanan children's-song style, with gambang wooden xylophone and soft kendhang. Siter plucked zither in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Gentle awakening tune in slendro pentatonic tuning with simple repeating phrases, melody inspired by the traditional folk tune Lir-ilir. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Lir-ilir"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Siter+Javanese+dolanan+children%27s-song"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Sunda kacapisi",
+     "aciklama": "Batı Cava'nın kacapi kanunu tek başına; suling çok uzakta, saydam ve dingin.",
+     "calgilar": [
+      "kacapi",
+      "kacapi rincik",
+      "suling"
+     ],
+     "ezgi": null,
+     "bpm": 90,
+     "stil": "Kacapi zither leading Sundanese music from West Java, with a small kacapi rincik and a very quiet suling flute. Kacapi zither in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Rippling plucked patterns in the pelog degung pentatonic scale, gentle ornamented melody. 90 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Kacapi+Sundanese+from+West+Java"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Kacapi+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 12,
+   "simdiki": 132
+  },
+  {
+   "kod": "JP",
+   "ad": "Japonya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Jiuta oda müziği: şamisen",
+     "aciklama": "Şamisen kuru ve net tezenesiyle önde; koto eşlik eder, şakuhaçi çok hafif.",
+     "calgilar": [
+      "şamisen",
+      "koto",
+      "şakuhaçi"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Shamisen leading Japanese Edo-period jiuta sankyoku chamber music, with koto and a very quiet shakuhachi. Shamisen in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Gentle elegant melody blending the in and yo pentatonic scales with a bright spring mood, lightly played. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Shamisen+Japanese+Edo-period+jiuta+sankyoku"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Shamisen+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Sakura Sakura",
+     "aciklama": "Koto kiraz çiçeği ezgisini berrak çalar; çok hafif şinobue ve küçük davul.",
+     "calgilar": [
+      "koto",
+      "şinobue",
+      "kotsuzumi"
+     ],
+     "ezgi": {
+      "ad": "Sakura Sakura (さくらさくら)",
+      "koken": "Japonya, Edo dönemi koto ezgisi",
+      "kamu_mali_gerekce": "Edo döneminden kalma anonim ezgi; bestecisi bilinmiyor.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 92,
+     "stil": "Koto leading Japanese traditional koto style, with a very quiet shinobue flute and soft kotsuzumi taps. Koto in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Graceful cherry-blossom tune in the in (miyako-bushi) pentatonic scale answered by brighter yo-scale phrases, melody inspired by the traditional folk tune Sakura Sakura. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Sakura+Sakura"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Koto+Japanese+traditional+koto"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Okinava sanşini",
+     "aciklama": "Okinava'nın üç telli sanşini tek başına; parlak, neşeli Ryukyu gamı.",
+     "calgilar": [
+      "sanşin",
+      "sanba"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Solo sanshin leading Japanese Okinawan island music, with very soft sanba wooden castanets. Solo sanshin in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Sunny bouncing melody in the Ryukyu pentatonic scale with a light lilting rhythm. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=sanshin+Japanese+Okinawan+island"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=sanshin+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 13,
+   "simdiki": 132
+  },
+  {
+   "kod": "PH",
+   "ad": "Filipinler",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Rondalla serenadı",
+     "aciklama": "Bandurria parlak tremolosuyla önde; laúd ve gitar eşlik eder.",
+     "calgilar": [
+      "bandurria",
+      "laúd",
+      "gitar"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Bandurria leading Filipino rondalla art music in the kundiman and danza serenade tradition, with laud and guitar. Bandurria in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Tender tremolo melody moving from minor to bright major, graceful habanera lilt. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Bandurria+Filipino+rondalla+in+kundiman"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Bandurria+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Leron Leron Sinta",
+     "aciklama": "Harana gitarı şakacı ezgiyi net çalar; bandurria yanıtlar.",
+     "calgilar": [
+      "gitar",
+      "bandurria",
+      "bajo de uñas"
+     ],
+     "ezgi": {
+      "ad": "Leron Leron Sinta",
+      "koken": "Filipinler (Tagalog), geleneksel halk şarkısı",
+      "kamu_mali_gerekce": "Anonim halk şarkısı olarak aktarılır; bestecisi bilinmiyor.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 104,
+     "stil": "Classical guitar leading Filipino Tagalog harana and folk style, with bandurria answers and soft bajo de unas bass. Classical guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Playful skipping major-key tune with simple question-and-answer phrases, melody inspired by the traditional folk tune Leron Leron Sinta. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Leron+Leron+Sinta"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Classical+guitar+Filipino+Tagalog+harana"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: kulintang",
+     "aciklama": "Mindanao'nun tunç gong dizisi kulintang yumuşak çalınır; çın çın ve net.",
+     "calgilar": [
+      "kulintang",
+      "kudyapi",
+      "dabakan"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Kulintang bronze gong-chime leading southern Philippine Maguindanao music from Mindanao, with kudyapi boat lute and a very soft dabakan drum. Kulintang bronze gong-chime in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright pentatonic melody with gentle repeating rhythmic cells, played softly. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Kulintang+bronze+southern+Philippine+Maguindanao+from"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Kulintang+bronze+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 14,
+   "simdiki": 132
+  },
+  {
+   "kod": "VN",
+   "ad": "Vietnam",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Huế saray müziği: đàn tranh",
+     "aciklama": "Vietnam kanunu đàn tranh ışıl ışıl önde; ay lavtası eşlik eder.",
+     "calgilar": [
+      "đàn tranh",
+      "đàn nguyệt",
+      "song lang",
+      "sáo trúc"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Dan tranh zither leading Vietnamese chamber art music of the Hue court and ca Hue tradition, with dan nguyet moon lute, soft song lang clapper and a very quiet sao flute. Dan tranh zither in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright pentatonic Bac mode with bending ornaments and rippling glissandi. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Dan+tranh+Vietnamese"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Dan+tranh+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Lý ngựa ô",
+     "aciklama": "Ay lavtası đàn nguyệt tırıs giden ezgiyi net çalar; đàn tranh eşlik eder.",
+     "calgilar": [
+      "đàn nguyệt",
+      "đàn tranh",
+      "song lang"
+     ],
+     "ezgi": {
+      "ad": "Lý ngựa ô",
+      "koken": "Vietnam, geleneksel lý halk şarkısı (Huế ve güney çeşitlemeleri)",
+      "kamu_mali_gerekce": "Anonim halk ezgisi; bestecisi bilinmiyor, kuşaktan kuşağa aktarılmış.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 104,
+     "stil": "Dan nguyet moon lute leading the Vietnamese folk ly-song style, with dan tranh zither and soft song lang clapper. Dan nguyet moon lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Cheerful trotting tune in the bright pentatonic Bac mode with lively grace notes, melody inspired by the traditional folk tune Ly ngua o. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=L%C3%BD+ng%E1%BB%B1a+%C3%B4"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Dan+nguyet+moon+Vietnamese+folk+ly-song"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: đàn t'rưng",
+     "aciklama": "Orta yaylaların bambu ksilofonu t'rưng tek başına; su damlası gibi berrak.",
+     "calgilar": [
+      "đàn t'rưng",
+      "đàn tranh"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Solo dan t'rung bamboo xylophone leading Vietnamese Central Highlands music, with soft dan tranh zither. Solo dan t'rung bamboo xylophone in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright bubbling pentatonic melody with quick rolls and echo phrases, like running water. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=dan+t%27rung+Vietnamese+Central+Highlands"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=dan+t%27rung+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 15,
+   "simdiki": 132
+  },
+  {
+   "kod": "CA",
+   "ad": "Kanada",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Québec salon müziği: piyano",
+     "aciklama": "Piyano net ve hafif dokunuşla bir hava çalar; Kelt arpı ve gitar eşlik eder.",
+     "calgilar": [
+      "piyano",
+      "Kelt arpı",
+      "gitar",
+      "keman"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Piano leading Canadian Quebecois and Maritime parlour music, with Celtic harp, acoustic guitar and a very quiet fiddle. Piano in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Sweet melody in the Dorian and major modes like a slow air, light grace notes. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Piano+Canadian+Quebecois+and+Maritime"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Piano+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Alouette",
+     "aciklama": "Mandolin neşeli ezgiyi çıtır çıtır çalar; gitar, kaşık ve çok hafif keman.",
+     "calgilar": [
+      "mandolin",
+      "gitar",
+      "kaşık",
+      "keman"
+     ],
+     "ezgi": {
+      "ad": "Alouette",
+      "koken": "Kanada (Québec), 19. yüzyıl Fransız-Kanada halk şarkısı (ilk basım 1879)",
+      "kamu_mali_gerekce": "Anonim halk ezgisi; bestecisi bilinmiyor, kuşaktan kuşağa aktarılmış.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 106,
+     "stil": "Mandolin leading Canadian Quebecois folk style, with acoustic guitar, soft wooden spoons and a very quiet fiddle. Mandolin in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright bouncy major-key singalong tune with repeating cumulative phrases, melody inspired by the traditional folk tune Alouette. 106 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Alouette"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Mandolin+Canadian+Quebecois+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: akustik gitar",
+     "aciklama": "Parmak stili akustik gitar bir Québec havası çalar; yalnız hafif ayak ritmi.",
+     "calgilar": [
+      "akustik gitar"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Solo fingerstyle acoustic guitar leading a Quebecois reel played gently, with soft foot-tapping only. Solo fingerstyle acoustic guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Gentle slow reel in a major key with Mixolydian touches, hammer-ons and pull-offs. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=fingerstyle+acoustic+guitar+a+Quebecois+reel+played"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=fingerstyle+acoustic+guitar+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 16,
+   "simdiki": 131
+  },
+  {
+   "kod": "EG",
+   "ad": "Mısır",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Klasik taht: kanun",
+     "aciklama": "Kanun pırıl pırıl önde, Rast makamında zarif Mısır fasıl müziği; ud ve hafif rik.",
+     "calgilar": [
+      "kanun",
+      "ud",
+      "rik",
+      "ney"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Qanun leading an Egyptian classical Arabic takht ensemble, with oud, soft riq and a very quiet nay. Qanun in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Elegant instrumental tahmila-style piece in the bright maqam Rast with quarter-tone colour, refined ornaments and short solo answers. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Qanun+an+Egyptian+classical+Arabic"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Qanun+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Eski şarkı: El Helwa Di",
+     "aciklama": "Ud sabah şarkısını net ve neşeli çalar; kanun yanıtlar, hafif rik.",
+     "calgilar": [
+      "ud",
+      "kanun",
+      "rik"
+     ],
+     "ezgi": {
+      "ad": "El Helwa Di (الحلوة دي)",
+      "koken": "Mısır, Seyyid Derviş (1892-1923)",
+      "kamu_mali_gerekce": "Besteci Seyyid Derviş 1923'te öldü; söz yazarı Bedii Hayri 1966'da öldü, ama burada söz kullanılmıyor.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 104,
+     "stil": "Oud leading the Egyptian early twentieth-century popular song style, with qanun answers and soft riq. Oud in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Cheerful early-morning working-day tune with short catchy phrases and Egyptian maqam inflection, melody inspired by the traditional tune El Helwa Di. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=El+Helwa+Di"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Oud+Egyptian+early+twentieth-century+popular"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: simsimiyye",
+     "aciklama": "Süveyş kıyısının liri simsimiyye tek başına; parlak, tıngırtılı ve neşeli.",
+     "calgilar": [
+      "simsimiyye",
+      "rik"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Solo simsimiyya lyre leading Egyptian Suez Canal coastal music, with very soft riq. Solo simsimiyya lyre in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright strummed-and-plucked melody in a narrow range in maqam Rast and Ajam colour, short repeating phrases. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=simsimiyya+Egyptian+Suez+Canal+coastal"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=simsimiyya+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 17,
+   "simdiki": 131
+  },
+  {
+   "kod": "ES",
+   "ad": "İspanya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Saray müziği: vihuela ve arp",
+     "aciklama": "Vihuela ve İspanyol arpı net tınılarıyla folía üzerine zarif çeşitlemeler çalar.",
+     "calgilar": [
+      "vihuela",
+      "İspanyol arpı",
+      "barok gitar"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Vihuela and Spanish harp leading Spanish Renaissance and Baroque court music, with soft baroque guitar. Vihuela and Spanish harp in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Graceful diferencias variations over folia and canarios grounds, Phrygian and Dorian colours with bright major turns. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Vihuela+and+Spanish+harp+Spanish+Renaissance+and+Baroque"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Vihuela+and+Spanish+harp+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: El Vito",
+     "aciklama": "Bandurria ezgiyi parlak ve çıtır bir sesle çalar; gitar ve çok hafif kastanyet.",
+     "calgilar": [
+      "bandurria",
+      "klasik gitar",
+      "laúd",
+      "kastanyet"
+     ],
+     "ezgi": {
+      "ad": "El Vito",
+      "koken": "İspanya (Endülüs), 18.-19. yüzyıl halk dansı ezgisi",
+      "kamu_mali_gerekce": "Anonim halk ezgisi; bestecisi bilinmiyor, kuşaktan kuşağa aktarılmış.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 104,
+     "stil": "Bandurria leading Spanish Andalusian folk style, with classical guitar, laud and very soft castanets. Bandurria in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Playful dance tune in 3/8 on the Andalusian cadence in the Phrygian mode kept light and unhurried, melody inspired by the traditional folk tune El Vito. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=El+Vito"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Bandurria+Spanish+Andalusian+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: İspanyol gitarı",
+     "aciklama": "Tek klasik gitar, net parmak vuruşlarıyla; arada çok hafif kastanyet.",
+     "calgilar": [
+      "klasik gitar",
+      "kastanyet"
+     ],
+     "ezgi": null,
+     "bpm": 92,
+     "stil": "Solo Spanish classical guitar leading Spanish guitar art music, with very soft castanet touches. Solo Spanish classical guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Fingerstyle melody on the Andalusian cadence in the Phrygian mode brightening to major, gentle tremolo and arpeggios, no strumming. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Spanish+classical+guitar+Spanish+guitar"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Spanish+classical+guitar+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 18,
+   "simdiki": 131
+  },
+  {
+   "kod": "KR",
+   "ad": "Güney Kore",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Saray oda müziği: yanggeum",
+     "aciklama": "Kore santuru yanggeum metalik, net sesiyle önde; gayageum ve hafif janggu.",
+     "calgilar": [
+      "yanggeum",
+      "gayageum",
+      "janggu",
+      "danso"
+     ],
+     "ezgi": null,
+     "bpm": 90,
+     "stil": "Yanggeum hammered dulcimer leading Korean jeongak court chamber music in a brighter pungnyu style, with gayageum, soft janggu and a very quiet danso flute. Yanggeum hammered dulcimer in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Graceful melody in the pyeongjo pentatonic mode, poised and unhurried. 90 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Yanggeum+Korean+jeongak+court"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Yanggeum+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Arirang",
+     "aciklama": "Gayageum ezgiyi net tezeneyle çalar; hafif janggu, üçlü salınım.",
+     "calgilar": [
+      "gayageum",
+      "yanggeum",
+      "janggu"
+     ],
+     "ezgi": {
+      "ad": "Arirang (아리랑)",
+      "koken": "Kore, geleneksel halk şarkısı (yaygın biçimi 1926)",
+      "kamu_mali_gerekce": "Anonim halk ezgisi; yaygın biçimi 1926'dan, o düzenlemeyi yapan Kim Yeong-hwan da 1930'larda öldü.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 96,
+     "stil": "Gayageum leading Korean minyo folk style, with soft yanggeum and quiet janggu in a gentle triple-lilt semachi rhythm. Gayageum in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Warm rising-and-falling pentatonic tune made hopeful and bright, melody inspired by the traditional folk tune Arirang. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Arirang"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Gayageum+Korean+minyo+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: gayageum",
+     "aciklama": "Gayageum tek başına; altında çok hafif janggu.",
+     "calgilar": [
+      "gayageum",
+      "janggu"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Solo gayageum leading Korean sanjo-inspired music, with very soft janggu. Solo gayageum in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Light melody in the bright ujo and pyeongjo pentatonic modes, nonghyeon vibrato, bends and plucked flicks. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=gayageum+Korean+sanjo-inspired"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=gayageum+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 19,
+   "simdiki": 131
+  },
+  {
+   "kod": "AR",
+   "ad": "Arjantin",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Salon tangosu: piyano",
+     "aciklama": "Piyano net ve zarif bir oda tangosu çalar; gitar ve pizzicato kontrbas.",
+     "calgilar": [
+      "piyano",
+      "gitar",
+      "kontrbas"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Piano leading Argentine chamber tango in a tender salon style, with criollo guitar and light pizzicato double bass. Piano in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Lyrical melody in a minor key brightening to major over a soft habanera and milonga pulse, no percussion. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Piano+Argentine+tango"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Piano+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Zamba de Vargas",
+     "aciklama": "Charango eski zambayı parlak ve net çalar; gitar ve çok hafif bombo.",
+     "calgilar": [
+      "charango",
+      "gitar",
+      "bombo legüero"
+     ],
+     "ezgi": {
+      "ad": "Zamba de Vargas",
+      "koken": "Arjantin (Santiago del Estero/La Rioja), 19. yüzyıl anonim zamba",
+      "kamu_mali_gerekce": "Anonim; 1906'da derlendi. Derleyen Andrés Chazarreta'nın (ö. 1960) düzenlemesi kullanılmıyor.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 98,
+     "stil": "Charango leading Argentine northwestern folk style, with criollo guitar and very quiet bombo leguero. Charango in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Graceful zamba in the 6/8 against 3/4 lilt in a minor key with bright major turns, melody inspired by the traditional folk tune Zamba de Vargas. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Zamba+de+Vargas"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Charango+Argentine+northwestern+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: kreol gitarı",
+     "aciklama": "Pampa'nın tek gitarı, milonga campera havasında; net ve sade.",
+     "calgilar": [
+      "kreol gitarı"
+     ],
+     "ezgi": null,
+     "bpm": 92,
+     "stil": "Solo criollo guitar leading Argentine pampas music, with no other instruments. Solo criollo guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Milonga campera with steady thumb bass pattern and a singing melody in minor brightening to major, gentle arpeggios. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=criollo+guitar+Argentine+pampas"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=criollo+guitar+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 20,
+   "simdiki": 130
+  },
+  {
+   "kod": "DE",
+   "ad": "Almanya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Barok klavsen oda müziği",
+     "aciklama": "Klavsenin parlak, net sesi önde; lavta ve çok hafif yan flüt eşlik eder.",
+     "calgilar": [
+      "klavsen",
+      "lavta",
+      "traverso flüt"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Harpsichord leading German Baroque chamber music, with baroque lute and a very soft traverso flute. Harpsichord in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright major-key dance-suite style with gavotte and bourree character, clear two-part counterpoint, trills and mordents. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Harpsichord+German+Baroque"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Harpsichord+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Alle Vögel",
+     "aciklama": "Bavyera santuru hackbrett ezgiyi ışıl ışıl çalar; zither ve gitar eşlik eder.",
+     "calgilar": [
+      "hackbrett",
+      "zither",
+      "gitar",
+      "blok flüt"
+     ],
+     "ezgi": {
+      "ad": "Alle Vögel sind schon da",
+      "koken": "Almanya, 18. yüzyıldan kalma halk ezgisi (söz 1835)",
+      "kamu_mali_gerekce": "Ezgi anonim ve 18. yüzyıldan; söz yazarı Hoffmann von Fallersleben 1874'te öldü.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 104,
+     "stil": "Hackbrett hammered dulcimer leading German and Bavarian Stubenmusik, with concert zither, soft guitar and a quiet recorder. Hackbrett hammered dulcimer in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Sunny simple major-key children's spring tune with stepwise phrases, melody inspired by the traditional folk tune Alle Voegel sind schon da. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Alle+V%C3%B6gel+sind+schon+da"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Hackbrett+German+and+Bavarian+Stubenmusik"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: zither",
+     "aciklama": "Alp zitheri tek başına tatlı bir Ländler çalar; gitar çok hafif.",
+     "calgilar": [
+      "zither",
+      "gitar"
+     ],
+     "ezgi": null,
+     "bpm": 92,
+     "stil": "Solo Alpine concert zither leading Bavarian Alpine folk music, with soft guitar accompaniment. Solo Alpine concert zither in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Gentle Laendler in 3/4 in a bright major key, yodel-like broken-chord leaps, sweet tremolo and parallel thirds. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Alpine+concert+Bavarian+Alpine+folk"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Alpine+concert+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 21,
+   "simdiki": 130
+  },
+  {
+   "kod": "DZ",
+   "ad": "Cezayir",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Cezayir san'ası: kanun",
+     "aciklama": "Kanun önde, kuitra lavtası eşlikte; zarif ve aydınlık bir nuba ezgisi.",
+     "calgilar": [
+      "kanun",
+      "kuitra",
+      "tar (tef)"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Qanun leading Algerian Andalusi classical music of the Algiers san'a and Tlemcen gharnati schools, with kwitra lute and soft tar tambourine. Qanun in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Elegant nuba-style melody in the bright tab' Mezmoum, rippling tremolo and ornamented lines. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Qanun+Algerian+Andalusi+classical"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Qanun+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Geleneksel: Kum Tara",
+     "aciklama": "Cezayir mandolü ezgiyi parlak tezeneyle çalar; kanun ve hafif darbuka.",
+     "calgilar": [
+      "mandol",
+      "kanun",
+      "darbuka"
+     ],
+     "ezgi": {
+      "ad": "Qum Tara (قم ترى)",
+      "koken": "Cezayir/Mağrip, Endülüs nuba dağarı (insiraf)",
+      "kamu_mali_gerekce": "Sözlü aktarılan anonim Endülüs dağarı parçası.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 100,
+     "stil": "Algerian mandole leading an Algerian Andalusi and hawzi ensemble, with qanun and soft derbouka. Algerian mandole in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright springtime tune with a lilting 6/8 insiraf rhythm and graceful ornaments, melody inspired by the traditional tune Qum Tara. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Qum+Tara"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Algerian+mandole+an+Algerian+Andalusi"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: kuitra",
+     "aciklama": "Cezayir'in dört çift telli lavtası kuitra tek başına; net ve sıcak.",
+     "calgilar": [
+      "kuitra",
+      "tar (tef)"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Solo kwitra lute leading Algerian Andalusi music, with very soft tar tambourine. Solo kwitra lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Warm plucked phrases in the sika and mezmoum modes, measured istikhbar-into-melody style, short tremolo and quick ornaments. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=kwitra+Algerian+Andalusi"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=kwitra+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 22,
+   "simdiki": 130
+  },
+  {
+   "kod": "GB",
+   "ad": "Birleşik Krallık",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Elizabeth dönemi virginal",
+     "aciklama": "Virginalin (küçük klavsen) pırıltılı sesi önde; lavta ve hafif blok flüt.",
+     "calgilar": [
+      "virginal",
+      "lavta",
+      "blok flüt"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Virginal harpsichord leading English Elizabethan chamber music, with lute and a quiet recorder. Virginal harpsichord in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Sweet melody in the Dorian and Mixolydian modes with a courtly galliard lilt, running divisions and graceful cadential trills. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Virginal+harpsichord+English+Elizabethan"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Virginal+harpsichord+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Greensleeves",
+     "aciklama": "Lavta ezgiyi net ve sıcak çalar; blok flüt uzaktan yanıtlar, sakin 6/8.",
+     "calgilar": [
+      "lavta",
+      "blok flüt",
+      "sittern"
+     ],
+     "ezgi": {
+      "ad": "Greensleeves",
+      "koken": "İngiltere, 16. yüzyıl (ilk kayıt 1580)",
+      "kamu_mali_gerekce": "Bestecisi bilinmiyor; 400 yılı aşkın süredir kamu malı.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 92,
+     "stil": "Lute leading English Tudor and folk style, with soft cittern strums and a quiet recorder. Lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Flowing 6/8 Dorian melody over a romanesca ground bass, warm with bright major turns, melody inspired by the traditional folk tune Greensleeves. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Greensleeves"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Lute+English+Tudor+and+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Kelt arpı",
+     "aciklama": "Galler ve İskoç geleneğinin arpı tek başına; berrak ve ışıltılı.",
+     "calgilar": [
+      "Kelt arpı (clàrsach)"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Solo Celtic harp leading British pastoral harp music in the Welsh and Scottish tradition, with no other instruments except a faint fiddle answer. Solo Celtic harp in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Pastoral air in the Mixolydian mode and major pentatonic, Scotch-snap rhythms, gentle grace notes and rolled chords. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Celtic+harp+British+pastoral+harp"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Celtic+harp+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 23,
+   "simdiki": 130
+  },
+  {
+   "kod": "IN",
+   "ad": "Hindistan",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Hindustani: santur ve Bhupali",
+     "aciklama": "Keşmir santuru ışıl ışıl önde, Bhupali ragasında; sitar ve hafif tabla.",
+     "calgilar": [
+      "santur (santoor)",
+      "sitar",
+      "tabla"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Santoor hammered dulcimer leading Indian Hindustani classical music, with sitar answers and soft tabla. Santoor hammered dulcimer in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Tender gat in raga Bhupali (major pentatonic) in a light medium teental, shimmering tremolo and short alap-like phrases. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Santoor+Indian+Hindustani+classical"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Santoor+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Kesariya Balam",
+     "aciklama": "Sitar Racastan'ın karşılama ezgisini net çalar; svarmandal ve hafif dholak.",
+     "calgilar": [
+      "sitar",
+      "svarmandal",
+      "dholak",
+      "kartal"
+     ],
+     "ezgi": {
+      "ad": "Kesariya Balam",
+      "koken": "Hindistan (Racastan), geleneksel Maand halk şarkısı",
+      "kamu_mali_gerekce": "Yüzyıllardır sözlü aktarılan anonim halk şarkısı.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 100,
+     "stil": "Sitar leading Indian Rajasthani Maand style, with swarmandal sweeps, soft dholak and quiet khartal. Sitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Warm welcoming desert tune in the Maand mode with flowing murki ornaments and long graceful phrases, melody inspired by the traditional folk tune Kesariya Balam. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Kesariya+Balam"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Sitar+Indian+Rajasthani+Maand"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Karnatik vina",
+     "aciklama": "Güney Hindistan'ın vinası tek başına; çok hafif mridangam.",
+     "calgilar": [
+      "vina",
+      "mridangam"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Solo Saraswati veena leading South Indian Carnatic music, with very soft mridangam. Solo Saraswati veena in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright melody in raga Mohanam (major pentatonic) in adi tala, gamaka oscillations and slides. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Saraswati+veena+South+Indian+Carnatic"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Saraswati+veena+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 24,
+   "simdiki": 130
+  },
+  {
+   "kod": "MA",
+   "ad": "Fas",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Endülüs nubası: kanun",
+     "aciklama": "Kanun pırıl pırıl önde; ud ve hafif tef ile Fas'ın Endülüs saray müziği.",
+     "calgilar": [
+      "kanun",
+      "ud",
+      "tar (tef)"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Qanun leading Moroccan Andalusi art music of the al-Ala nuba tradition, with oud and soft tar tambourine. Qanun in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Graceful melody in a bright tab' of the Andalusi modal system, flowing ornamented lines with tremolo and octave doubling. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Qanun+Moroccan+Andalusi"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Qanun+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Geleneksel: Şems el-Aşiyye",
+     "aciklama": "Ud ezgiyi net ve sıcak söyler; kanun yanıtlar, hafif darbuka.",
+     "calgilar": [
+      "ud",
+      "kanun",
+      "darbuka"
+     ],
+     "ezgi": {
+      "ad": "Shams al-Ashiya (شمس العشية)",
+      "koken": "Fas, el-Âla Endülüs dağarı (Nubat el-Maya san'ası)",
+      "kamu_mali_gerekce": "Yüzyıllardır sözlü aktarılan anonim Endülüs dağarı parçası.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 100,
+     "stil": "Oud leading a Moroccan Andalusi ensemble, with qanun answers and soft darbuka. Oud in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Warm joyful sunset tune in a bright Andalusi mode with ornamented turns and call-and-answer phrases, melody inspired by the traditional tune Shams al-Ashiya. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Shams+al-Ashiya"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Oud+a+Moroccan+Andalusi+ensemble"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Amaziğ lutarı",
+     "aciklama": "Atlas dağlarının lutar'ı tek başına; kuru, tok ve net bir tezene sesi.",
+     "calgilar": [
+      "lutar",
+      "bendir"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Solo loutar lute leading Moroccan Amazigh music of the Atlas and Souss, with very soft bendir. Solo loutar lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Anhemitonic pentatonic Amazigh melody with repeated short phrases and quick grace notes. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=loutar+Moroccan+Amazigh"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=loutar+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 25,
+   "simdiki": 130
+  },
+  {
+   "kod": "MM",
+   "ad": "Myanmar",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Mahagita: saung arpı",
+     "aciklama": "Burma arpı saung gauk ipeksi ama net sesiyle önde; bambu ksilofon eşlik eder.",
+     "calgilar": [
+      "saung gauk",
+      "pattala",
+      "si ve wa"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Saung gauk arched harp leading Burmese classical chamber music of the Mahagita tradition, with pattala bamboo xylophone and soft si and wa bell-and-clapper timekeeping. Saung gauk arched harp in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Graceful melody in the than yoe heptatonic tuning with octave-leaping figures. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Saung+gauk+arched+harp+Burmese+classical"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Saung+gauk+arched+harp+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Burma halk dansı deyişi",
+     "aciklama": "Bambu ksilofon pattala oynak ezgiyi tok ve net çalar; gong çemberi yumuşakça.",
+     "calgilar": [
+      "pattala",
+      "kyi waing",
+      "si ve wa"
+     ],
+     "ezgi": null,
+     "bpm": 104,
+     "stil": "Pattala bamboo xylophone leading the Burmese folk-dance idiom, with a softly played kyi waing gong circle and si and wa timekeeping. Pattala bamboo xylophone in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Original playful melody with sudden gentle pauses and skipping octave figures in Burmese heptatonic tuning. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Pattala+Burmese+folk-dance+idiom"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Pattala+solo"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: saung arpı",
+     "aciklama": "Saung gauk tek başına; yalnız küçük zil ve çalpara.",
+     "calgilar": [
+      "saung gauk",
+      "si ve wa"
+     ],
+     "ezgi": null,
+     "bpm": 90,
+     "stil": "Solo saung gauk harp leading Burmese court music, with very soft si bell and wa clapper. Solo saung gauk harp in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Silky plucked melody with octave-leaping figures and quick grace notes in the than yoe tuning, calm and courtly. 90 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=saung+gauk+harp+Burmese+court"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=saung+gauk+harp+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 26,
+   "simdiki": 130
+  },
+  {
+   "kod": "MY",
+   "ad": "Malezya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Malay asli sanatı: gambus",
+     "aciklama": "Gambus lavtası net ve sıcak önde; hafif rebana ve gong, süslü asli ezgisi.",
+     "calgilar": [
+      "gambus",
+      "rebana",
+      "gong",
+      "keman (biola)"
+     ],
+     "ezgi": null,
+     "bpm": 92,
+     "stil": "Gambus lute leading Malay asli art music, with soft rebana frame drum, a small gong and a very quiet violin. Gambus lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Flowing ornamented asli melody with graceful patah lagu turns in a bright Malay mode, slow elegant rhythm. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Gambus+Malay+asli"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Gambus+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Rasa Sayang",
+     "aciklama": "Tunç çanak dizisi caklempong ezgiyi çın çın çalar; gambus ve hafif rebana.",
+     "calgilar": [
+      "caklempong",
+      "gambus",
+      "rebana"
+     ],
+     "ezgi": {
+      "ad": "Rasa Sayang",
+      "koken": "Malay dünyası (Malezya/Endonezya), anonim halk şarkısı",
+      "kamu_mali_gerekce": "Bestecisi bilinmeyen halk şarkısı; iki ülke de sahiplenir, ikisi de anonim sayar.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 104,
+     "stil": "Caklempong bronze gong-chime leading Malay folk style, with gambus lute and soft rebana. Caklempong bronze gong-chime in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Cheerful singalong major-key tune with a light skipping joget lilt, melody inspired by the traditional folk tune Rasa Sayang. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Rasa+Sayang"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Caklempong+bronze+Malay+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: sape",
+     "aciklama": "Borneo'nun sape lavtası tek başına; berrak, dingin ve pentatonik.",
+     "calgilar": [
+      "sape",
+      "jatung utang"
+     ],
+     "ezgi": null,
+     "bpm": 92,
+     "stil": "Solo sape lute leading Malaysian Borneo Orang Ulu music from Sarawak, with very soft jatung utang wooden xylophone. Solo sape lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Serene pentatonic melody with hammer-on ornaments and gentle repeated figures. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=sape+Malaysian+Borneo+Orang+Ulu"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=sape+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 27,
+   "simdiki": 130
+  },
+  {
+   "kod": "PK",
+   "ad": "Pakistan",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Lahor klasik: sitar",
+     "aciklama": "Sitar parlak ve net önde, Pahadi ragasında gülümseyen bir gat; hafif tabla.",
+     "calgilar": [
+      "sitar",
+      "tabla",
+      "bansuri"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Sitar leading Pakistani Hindustani classical chamber music of the Lahore tradition, with soft tabla and a very quiet bansuri. Sitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Gentle gat in raga Pahadi at a light medium tempo, meend slides, lyrical and smiling. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Sitar+Pakistani+Hindustani+classical"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Sitar+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Lathe Di Chadar",
+     "aciklama": "Tek telli tumbi ezgiyi çıtır çıtır çalar; hafif dholak ve çimta.",
+     "calgilar": [
+      "tumbi",
+      "dholak",
+      "çimta"
+     ],
+     "ezgi": {
+      "ad": "Lathe Di Chadar (لٹھے دی چادر)",
+      "koken": "Pakistan (Pencap), geleneksel halk şarkısı",
+      "kamu_mali_gerekce": "Anonim Pencap halk şarkısı olarak aktarılır.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 104,
+     "stil": "Tumbi one-string lute leading Pakistani Punjabi folk style, with soft dholak and quiet chimta. Tumbi one-string lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Teasing cheerful tune in a bright Bilawal-like scale with a light kaharwa lilt, melody inspired by the traditional folk tune Lathe Di Chadar. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Lathe+Di+Chadar"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Tumbi+one-string+Pakistani+Punjabi+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Peşaver rababı",
+     "aciklama": "Peştun rababı tek başına; tok, net ve sıcak.",
+     "calgilar": [
+      "rabab",
+      "tabla"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Solo Pashtun rabab leading Pakistani Pashtun music of Peshawar, with very soft tabla. Solo Pashtun rabab in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Lively but gentle melody in a bright major-leaning mode with rhythmic strokes and quick ornaments. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Pashtun+rabab+Pakistani+Pashtun"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Pashtun+rabab+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 28,
+   "simdiki": 130
+  },
+  {
+   "kod": "SA",
+   "ad": "Suudi Arabistan",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Hicaz salon sanatı: kanun",
+     "aciklama": "Kanun pırıl pırıl önde; ud ve hafif mirvas, Hicaz'dan Acem'e açılan ezgi.",
+     "calgilar": [
+      "kanun",
+      "ud",
+      "mirvas"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Qanun leading Hejazi urban art music of the Jeddah salons, with oud and soft mirwas. Qanun in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Refined instrumental danah-style melody in maqam Hijaz moving to the bright maqam Ajam, graceful ornaments. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Qanun+Hejazi+urban"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Qanun+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Necid samri deyişi",
+     "aciklama": "Ud salınan samri havasını net çalar; çerçeve davullar çok hafif.",
+     "calgilar": [
+      "ud",
+      "tar (çerçeve davul)"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Oud leading the Saudi Najdi traditional idiom, with very soft tar frame drums in a swaying samri rhythm. Oud in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Original narrow-range melody in maqam Bayati with gentle turns and repeated answering phrases. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Oud+Saudi+Najdi+traditional+idiom"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Oud+solo"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Yanbu simsimiyyesi",
+     "aciklama": "Kızıldeniz kıyısı Yanbu'nun liri tek başına; parlak ve neşeli.",
+     "calgilar": [
+      "simsimiyye",
+      "mirvas"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Solo simsimiyya lyre leading Saudi Red Sea coast music of Yanbu, with very soft mirwas drum. Solo simsimiyya lyre in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright strummed-and-plucked melody in maqam Rast and Ajam colour, short sailor-song phrases. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=simsimiyya+Saudi+Red+Sea+coast"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=simsimiyya+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 29,
+   "simdiki": 130
+  },
+  {
+   "kod": "TH",
+   "ad": "Tayland",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Mahori saray müziği: ranat ek",
+     "aciklama": "Tay ksilofonu ranat ek tok ve net önde; khim ve hafif çing zili.",
+     "calgilar": [
+      "ranat ek",
+      "khim",
+      "çing",
+      "khlui"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Ranat ek xylophone leading Thai classical court music by a small mahori ensemble, with khim dulcimer, soft ching cymbals and a very quiet khlui flute. Ranat ek xylophone in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Graceful melody in the seven-tone equidistant Thai tuning with pentatonic outline, light tremolo rolls and octave doubling. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Ranat+ek+Thai+classical+court"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Ranat+ek+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Klasik ezgi: Lao Duang Duean",
+     "aciklama": "Tay santuru khim ay ışığı ezgisini ışıl ışıl çalar; cakhe ve hafif çing.",
+     "calgilar": [
+      "khim",
+      "cakhe",
+      "çing",
+      "khlui"
+     ],
+     "ezgi": {
+      "ad": "Lao Duang Duean (ลาวดวงเดือน)",
+      "koken": "Tayland, Prens Benbadhanabongse (1882-1909)",
+      "kamu_mali_gerekce": "Besteci 1909'da öldü; eser yüz yılı aşkın süredir kamu malı.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 96,
+     "stil": "Khim hammered dulcimer leading a Thai classical khrueang sai string ensemble, with chakhe floor zither, soft ching cymbals and a very quiet khlui flute. Khim hammered dulcimer in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Tender moonlit tune in a Lao-accent pentatonic style with gentle tremolo and long phrases, melody inspired by the traditional tune Lao Duang Duean. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Lao+Duang+Duean"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Khim+a+Thai+classical+khrueang"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: İsan phin'i",
+     "aciklama": "Kuzeydoğu Tayland'ın phin lavtası tek başına; parlak ve oynak.",
+     "calgilar": [
+      "phin",
+      "pong lang"
+     ],
+     "ezgi": null,
+     "bpm": 102,
+     "stil": "Solo phin lute leading northeastern Thai Isan music, with soft pong lang wooden xylophone. Solo phin lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bouncy pentatonic lam-style melody in the lai yai and lai noi modes, kept light and easy. 102 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=phin+northeastern+Thai+Isan"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=phin+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 30,
+   "simdiki": 130
+  },
+  {
+   "kod": "UA",
+   "ad": "Ukrayna",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Kobzar sanatı: bandura",
+     "aciklama": "Net ve parlak tınılı bandura önde; dumka tarzı şiirsel ezgiye hafif tsimbalı eşlik eder.",
+     "calgilar": [
+      "bandura",
+      "tsimbalı",
+      "sopilka"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Bandura leading Ukrainian kobzar art music, with soft tsymbaly hammered dulcimer and a very quiet sopilka flute. Bandura in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Lyrical dumka-style melody in the Ukrainian Dorian mode with raised fourth, harp-like plucked arpeggios and gentle grace notes. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Bandura+Ukrainian+kobzar"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Bandura+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Tı j mene pidmanula",
+     "aciklama": "Çekiçle çalınan tsimbalı ezgiyi pırıl pırıl söyler; bandura ve çok hafif keman eşlik eder.",
+     "calgilar": [
+      "tsimbalı",
+      "bandura",
+      "keman",
+      "sopilka"
+     ],
+     "ezgi": {
+      "ad": "Ty zh mene pidmanula (Ти ж мене підманула)",
+      "koken": "Ukrayna, anonim şaka türküsü",
+      "kamu_mali_gerekce": "Anonim halk ezgisi; bestecisi bilinmiyor, kuşaktan kuşağa aktarılmış.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 104,
+     "stil": "Tsymbaly hammered dulcimer leading a Ukrainian village folk ensemble, with bandura, a very soft fiddle and quiet sopilka flute. Tsymbaly hammered dulcimer in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Playful bouncing minor-key tune with bright major turns and quick mordents, melody inspired by the traditional folk tune Ty zh mene pidmanula. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Ty+zh+mene+pidmanula"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Tsymbaly+a+Ukrainian+village+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo bandura",
+     "aciklama": "Yalnız bandura: arp gibi berrak, kuru ve temiz bir ses.",
+     "calgilar": [
+      "bandura"
+     ],
+     "ezgi": null,
+     "bpm": 92,
+     "stil": "Solo bandura leading an intimate Ukrainian solo piece, with no other instruments except a faint tsymbaly echo. Solo bandura in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Tender melody in natural minor with Dorian raised-fourth colour over light arpeggios, gentle tremolo and rolled chords. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=bandura+an+intimate+Ukrainian+solo"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=bandura+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 31,
+   "simdiki": 130
+  },
+  {
+   "kod": "US",
+   "ad": "ABD",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Klasik ragtime salonu",
+     "aciklama": "Piyano net ve zarif bir ragtime çalar; pizzicato kontrbas çok hafif.",
+     "calgilar": [
+      "piyano",
+      "kontrbas",
+      "banjo"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Piano leading American classic ragtime parlour music, with light pizzicato upright bass and a very soft banjo. Piano in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Slow graceful rag with syncopated right-hand melody over a steady light left hand, major key with sweet chromatic passing notes. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Piano+American+classic+ragtime+parlour"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Piano+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Eski ezgi: Simple Gifts",
+     "aciklama": "Amerikan santuru (hammered dulcimer) ezgiyi ışıl ışıl çalar; gitar ve mandolin.",
+     "calgilar": [
+      "hammered dulcimer",
+      "gitar",
+      "mandolin",
+      "keman"
+     ],
+     "ezgi": {
+      "ad": "Simple Gifts",
+      "koken": "ABD (Maine), Shaker ezgisi, Joseph Brackett, 1848",
+      "kamu_mali_gerekce": "Besteci Joseph Brackett 1882'de öldü; ezgi 1848 tarihli.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 100,
+     "stil": "Hammered dulcimer leading American Appalachian folk style, with acoustic guitar, mandolin and a very quiet fiddle. Hammered dulcimer in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Plain joyful major-key dance tune with open fifths and stepwise turns, melody inspired by the traditional folk tune Simple Gifts. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Simple+Gifts"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Hammered+American+Appalachian+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: banjo",
+     "aciklama": "Beş telli banjo yumuşak clawhammer ile; parlak ve net, hafif gitar.",
+     "calgilar": [
+      "banjo",
+      "gitar"
+     ],
+     "ezgi": null,
+     "bpm": 104,
+     "stil": "Solo five-string banjo leading American old-time Appalachian music in gentle clawhammer style, with quiet acoustic guitar. Solo five-string banjo in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Major pentatonic melody with open-string ring, hammer-ons and pull-offs. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=five-string+banjo+American+old-time+Appalachian"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=five-string+banjo+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 32,
+   "simdiki": 130
+  },
+  {
+   "kod": "IR",
+   "ad": "İran",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Mahur destgâhı: santur",
+     "aciklama": "İran santuru ışıl ışıl önde; tar ve hafif tombak ile parlak Mahur.",
+     "calgilar": [
+      "santur",
+      "tar",
+      "tombak"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Santur hammered dulcimer leading Persian classical music in the bright dastgah Mahur, with tar and soft tombak. Santur hammered dulcimer in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Graceful pishdaramad and reng style melody with delicate tahrir-like ornaments and riz tremolo. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Santur+Persian+classical+in+bright"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Santur+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Gol-e Pamçal",
+     "aciklama": "Tar neşeli 6/8 Gilan ezgisini parlak mızrapla çalar; hafif dayere.",
+     "calgilar": [
+      "tar",
+      "santur",
+      "dayere"
+     ],
+     "ezgi": {
+      "ad": "Gol-e Pamchal (گل پامچال)",
+      "koken": "İran (Gilan), geleneksel halk şarkısı",
+      "kamu_mali_gerekce": "Gilan yöresinin anonim halk ezgisi olarak aktarılır.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 104,
+     "stil": "Tar lute leading Persian Gilaki folk style from the Caspian coast, with soft santur and quiet dayereh frame drum. Tar lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Lilting 6/8 spring-flower tune with koron quarter-tone colour and short lively phrases, melody inspired by the traditional folk tune Gol-e Pamchal. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Gol-e+Pamchal"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Tar+Persian+Gilaki+folk+from"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: setar",
+     "aciklama": "İncecik, net sesli setar tek başına; çok hafif tombak.",
+     "calgilar": [
+      "setar",
+      "tombak"
+     ],
+     "ezgi": null,
+     "bpm": 92,
+     "stil": "Solo setar leading intimate Persian classical music, with very soft tombak. Solo setar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Melody in avaz Bayat-e Tork, delicate riz tremolo and tahrir-like grace notes, gentle chaharmezrab pulse. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=setar+intimate+Persian+classical"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=setar+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 33,
+   "simdiki": 129
+  },
+  {
+   "kod": "KE",
+   "ad": "Kenya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Lir sanatı: nyatiti",
+     "aciklama": "Luo liri nyatiti kuru ve net tınısıyla önde; litungu eşlik eder.",
+     "calgilar": [
+      "nyatiti",
+      "litungu",
+      "kayamba"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Nyatiti lyre leading the Kenyan lyre art tradition, with Luhya litungu lyre and soft kayamba shaker. Nyatiti lyre in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Flowing storyteller-style pentatonic melody over a gentle plucked ostinato. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Nyatiti+Kenyan+tradition"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Nyatiti+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Kıyı Mijikenda ezgi deyişi",
+     "aciklama": "Kıyı marimbası ezgiyi net çalar; kayamba hafif, flüt çok uzakta.",
+     "calgilar": [
+      "marimba",
+      "kayamba",
+      "chivoti"
+     ],
+     "ezgi": null,
+     "bpm": 104,
+     "stil": "Marimba xylophone leading the Kenyan coastal Mijikenda traditional idiom, with soft kayamba raft rattle and a very quiet chivoti flute. Marimba xylophone in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Original lilting 6/8 melody on a hexatonic scale, gentle call-and-answer. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Marimba+Kenyan+coastal+Mijikenda+traditional"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Marimba+solo"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: omutibo gitarı",
+     "aciklama": "Batı Kenya'nın parmak stili akustik gitarı; net, kuru ve neşeli.",
+     "calgilar": [
+      "akustik gitar",
+      "şişe tıkırtısı"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Solo fingerstyle acoustic guitar leading Kenyan Luhya omutibo dry-guitar music, with soft bottle taps. Solo fingerstyle acoustic guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright major-key picked melody with a rolling thumb bass and gentle syncopation. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=fingerstyle+acoustic+guitar+Kenyan+Luhya+omutibo+dry-guitar"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=fingerstyle+acoustic+guitar+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 34,
+   "simdiki": 129
+  },
+  {
+   "kod": "MG",
+   "ad": "Madagaskar",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Merina saray müziği: valiha",
+     "aciklama": "Bambu valiha arp gibi berrak önde; marovany eşlik eder, flüt çok hafif.",
+     "calgilar": [
+      "valiha",
+      "marovany",
+      "sodina"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Valiha tube zither leading Malagasy highland Merina court art music, with marovany box zither and a very quiet sodina flute. Valiha tube zither in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Sparkling arpeggios in a bright major mode with a lilting 6/8 sway. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Valiha+tube+Malagasy+highland+Merina+court"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Valiha+tube+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Geleneksel: Afindrafindrao",
+     "aciklama": "Kutu kanunu marovany ezgiyi parlak tellerle çalar; kabosy ve hafif kaiamba.",
+     "calgilar": [
+      "marovany",
+      "kabosy",
+      "kaiamba"
+     ],
+     "ezgi": {
+      "ad": "Afindrafindrao",
+      "koken": "Madagaskar, 19. yüzyıl Merina saray dansı (kadril)",
+      "kamu_mali_gerekce": "19. yüzyıldan kalma geleneksel dans ezgisi; bestecisi bilinmiyor.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 102,
+     "stil": "Marovany box zither leading a Malagasy court dance, with soft kabosy lute and kaiamba shaker. Marovany box zither in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Stately yet cheerful major-key quadrille tune with bright arpeggios, melody inspired by the traditional tune Afindrafindrao. 102 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Afindrafindrao"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Marovany+box+a+Malagasy+court+dance"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: valiha",
+     "aciklama": "Valiha tek başına; pırıl pırıl, kuru ve temiz.",
+     "calgilar": [
+      "valiha",
+      "kaiamba"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Solo valiha tube zither leading Malagasy highland music, with very soft kaiamba shaker. Solo valiha tube zither in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Harp-like sparkling arpeggios in a bright major mode, lilting 6/8 against 3/4 sway. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=valiha+tube+Malagasy+highland"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=valiha+tube+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 35,
+   "simdiki": 129
+  },
+  {
+   "kod": "NG",
+   "ad": "Nijerya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Hausa saray müziği: molo",
+     "aciklama": "Molo lavtası kuru ve net sesiyle önde; kabak vurmalı çok hafif.",
+     "calgilar": [
+      "molo",
+      "kuntigi",
+      "kabak vurmalı"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Molo lute leading Nigerian Hausa emirate court chamber music, with kuntigi one-string lute and soft calabash percussion. Molo lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Graceful courtly pentatonic melody, ornamented and flowing, short repeated praise-song phrases. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Molo+Nigerian+Hausa+emirate+court"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Molo+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Yoruba ezgi deyişi",
+     "aciklama": "Parmak stili akustik gitar konuşur gibi bir Yoruba ezgisi çalar; agidigbo ve sekere.",
+     "calgilar": [
+      "akustik gitar",
+      "agidigbo",
+      "sekere"
+     ],
+     "ezgi": null,
+     "bpm": 104,
+     "stil": "Fingerstyle acoustic guitar leading the Nigerian Yoruba palm-wine and traditional idiom, with agidigbo bass thumb piano and soft sekere. Fingerstyle acoustic guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Original pentatonic speech-tone melody with gentle call-and-answer phrases and light syncopation. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Fingerstyle+acoustic+guitar+Nigerian+Yoruba+palm-wine"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Fingerstyle+acoustic+guitar+solo"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: İgbo ubo",
+     "aciklama": "İgbo başparmak piyanosu ubo tek başına çın çın öter; hafif udu çömleği.",
+     "calgilar": [
+      "ubo",
+      "udu"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Solo ubo thumb piano leading Nigerian Igbo music, with soft udu clay pot drum. Solo ubo thumb piano in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright short pentatonic and hexatonic ostinato phrases, gentle and bubbling. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=ubo+Nigerian+Igbo"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=ubo+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 36,
+   "simdiki": 129
+  },
+  {
+   "kod": "SD",
+   "ad": "Sudan",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Hakibe şehir sanatı: ud",
+     "aciklama": "Ud net ve sıcak önde; Sudan pentatoniğinde salınan zarif ezgi, hafif rik.",
+     "calgilar": [
+      "ud",
+      "tambur (lir)",
+      "rik"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Oud leading Sudanese haqiba-style urban art music, with tambour lyre and soft riq. Oud in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Graceful swaying melody on the Sudanese anhemitonic pentatonic scale, call-and-answer between oud and lyre. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Oud+Sudanese+haqiba-+urban"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Oud+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Eski şarkı: Azza fi Hawak",
+     "aciklama": "1930 dolaylarının sevilen şarkısı; ud ezgiyi tane tane söyler, hafif rik.",
+     "calgilar": [
+      "ud",
+      "rik",
+      "keman"
+     ],
+     "ezgi": {
+      "ad": "Azza fi Hawak (عزة في هواك)",
+      "koken": "Sudan, Halil Ferah (1894-1932), y. 1930",
+      "kamu_mali_gerekce": "Söz ve beste Halil Ferah'a ait; 1932'de öldü. Vatan sevgisi şarkısıdır, marş değildir.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 100,
+     "stil": "Oud leading the Sudanese early urban song style, with soft riq and a very quiet violin answer. Oud in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Proud warm pentatonic tune with a gentle marching sway and long singing phrases, melody inspired by the traditional tune Azza fi Hawak. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Azza+fi+Hawak"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Oud+Sudanese+early+urban+song"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Nubya liri",
+     "aciklama": "Nil kıyısının tambur (kisir) liri tek başına; tıngırtılı ve net.",
+     "calgilar": [
+      "tambur / kisir (lir)",
+      "tar (çerçeve davul)"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Solo tambour lyre leading Sudanese Nubian music, with very soft tar frame drum. Solo tambour lyre in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Strummed and plucked anhemitonic pentatonic patterns, a gentle rocking river-song melody. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=tambour+Sudanese+Nubian"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=tambour+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 37,
+   "simdiki": 129
+  },
+  {
+   "kod": "TZ",
+   "ad": "Tanzanya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Zanzibar taarab: kanun",
+     "aciklama": "Kanun pırıl pırıl önde; ud ve hafif tef ile Svahili kıyısının zarif müziği.",
+     "calgilar": [
+      "kanun",
+      "ud",
+      "rika (tef)"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Qanun leading Zanzibar taarab art music of the Swahili coast, with oud and soft rika tambourine. Qanun in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Elegant instrumental bashraf-style melody in the bright maqam Rast with Swahili lilt, delicate tremolo. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Qanun+Zanzibar+taarab"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Qanun+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Tanzanya anakara deyişi",
+     "aciklama": "Zaramo marimbası ezgiyi tok ve net çalar; ilimba ve hafif kayamba.",
+     "calgilar": [
+      "marimba",
+      "ilimba",
+      "kayamba"
+     ],
+     "ezgi": null,
+     "bpm": 102,
+     "stil": "Marimba xylophone leading the Tanzanian mainland traditional idiom, with ilimba thumb piano and soft kayamba shaker. Marimba xylophone in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Original melody on the Gogo overtone-derived pentatonic scale, gentle interlocking lines with a swaying 6/8 feel. 102 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Marimba+Tanzanian+mainland+traditional+idiom"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Marimba+solo"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: ilimba",
+     "aciklama": "Gogo'ların başparmak piyanosu ilimba tek başına; yalnız hafif kayamba.",
+     "calgilar": [
+      "ilimba",
+      "kayamba"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Solo ilimba thumb piano leading Tanzanian Gogo music, with very soft kayamba shaker. Solo ilimba thumb piano in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright upper notes on the Gogo pentatonic scale, cyclic interlocking thumb patterns. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=ilimba+Tanzanian+Gogo"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=ilimba+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 38,
+   "simdiki": 129
+  },
+  {
+   "kod": "AF",
+   "ad": "Afganistan",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Kâbil klasik müziği: rubab",
+     "aciklama": "Rubab tok ve net sesiyle önde; tanbur ve hafif tabla.",
+     "calgilar": [
+      "rubab",
+      "tanbur",
+      "tabla"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Rubab leading Afghan classical music of the Kabul Kharabat tradition, with tanbur and soft tabla. Rubab in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Instrumental naghma-ye klasik in a bright raga close to Bilawal, sparkling plucked patterns and rhythmic strokes. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Rubab+Afghan+classical"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Rubab+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Halk ezgisi: Molla Muhammed Can",
+     "aciklama": "Herat dutarı bahar şarkısını parlak tellerle çalar; hafif zirbağali.",
+     "calgilar": [
+      "Herat dutarı",
+      "rubab",
+      "zirbağali"
+     ],
+     "ezgi": {
+      "ad": "Mullah Mohammad Jan (ملا ممد جان)",
+      "koken": "Afganistan (Herat), geleneksel halk şarkısı",
+      "kamu_mali_gerekce": "Anonim halk şarkısı olarak aktarılır; bestecisi bilinmiyor.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 104,
+     "stil": "Herati dutar leading Afghan Herati folk style, with soft rubab and quiet zerbaghali goblet drum. Herati dutar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Cheerful springtime outing tune in a bright mode with short repeating phrases, melody inspired by the traditional folk tune Mullah Mohammad Jan. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Mullah+Mohammad+Jan"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Herati+dutar+Afghan+Herati+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Afgan tanburu",
+     "aciklama": "Metal telli Afgan tanburu tek başına; ışıltılı ve net.",
+     "calgilar": [
+      "tanbur",
+      "zirbağali"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Solo Afghan tanbur leading northern Afghan music, with very soft zerbaghali drum. Solo Afghan tanbur in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright Bilawal-like melody with ringing metal strings, rhythmic strumming strokes and quick ornaments. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Afghan+tanbur+northern+Afghan"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Afghan+tanbur+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 39,
+   "simdiki": 128
+  },
+  {
+   "kod": "CI",
+   "ad": "Fildişi Sahili",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Mande jeli sanatı: kora",
+     "aciklama": "Koranın arp gibi berrak sesi önde; ngoni ve hafif balafon eşlik eder.",
+     "calgilar": [
+      "kora",
+      "ngoni",
+      "balafon"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Kora harp-lute leading Ivorian Mande jeli art music of the northern savanna, with ngoni lute and soft balafon. Kora harp-lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Cascading heptatonic patterns in a bright tuning, gentle kumbengo ostinato with short birimintingo runs. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Kora+Ivorian+Mande+jeli"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Kora+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Baule ezgi deyişi",
+     "aciklama": "Baule ksilofonu djomolo ezgiyi tok ve net çalar; sanza eşlik eder.",
+     "calgilar": [
+      "djomolo ksilofon",
+      "sanza",
+      "ahoko"
+     ],
+     "ezgi": null,
+     "bpm": 104,
+     "stil": "Djomolo log xylophone leading the Ivorian Baoule traditional idiom, with sanza thumb piano and soft ahoko scraper. Djomolo log xylophone in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Original lilting heptatonic melody moving in sweet parallel thirds, call-and-answer phrases. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Djomolo+log+Ivorian+Baoule+traditional+idiom"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Djomolo+log+solo"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Senufo balafonu",
+     "aciklama": "Senufo balafonu tek başına; ahşap tuşların net, sıcak sesi.",
+     "calgilar": [
+      "Senufo balafonu (djegele)",
+      "bolon"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Solo Senufo balafon leading traditional music of northern Ivory Coast, with light bolon bass harp plucks. Solo Senufo balafon in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Pentatonic rippling patterns, gentle interlocking left and right hand lines. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Senufo+balafon+traditional"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Senufo+balafon+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 40,
+   "simdiki": 128
+  },
+  {
+   "kod": "GH",
+   "ad": "Gana",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Akan saray müziği: seperewa",
+     "aciklama": "Seperewa arp-lavtasının net tınısı önde; parmak zili ve çok hafif flüt.",
+     "calgilar": [
+      "seperewa",
+      "firikyiwa",
+      "atenteben"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Seperewa harp-lute leading Ghanaian Akan court art music, with soft firikyiwa finger bell and a very quiet atenteben flute. Seperewa harp-lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Lilting pentatonic and hexatonic melody over a quiet 6/8 timeline, gentle plucked ostinato. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Seperewa+Ghanaian+Akan+court"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Seperewa+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Çocuk ezgisi: Kye Kye Kule",
+     "aciklama": "Gyil ksilofonu söyle-yanıtla ezgiyi şakır şakır çalar; hafif çıngırak ve zil.",
+     "calgilar": [
+      "gyil",
+      "axatse",
+      "gankogui"
+     ],
+     "ezgi": {
+      "ad": "Kye Kye Kule (Che Che Kule)",
+      "koken": "Gana (Fante/Akan), geleneksel çocuk oyunu şarkısı",
+      "kamu_mali_gerekce": "Anonim çocuk oyunu şarkısı; bestecisi bilinmiyor.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 104,
+     "stil": "Gyil xylophone leading a Ghanaian children's game-song, with soft axatse shaker and quiet gankogui bell. Gyil xylophone in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Playful call-and-response tune in short pentatonic phrases, melody inspired by the traditional folk tune Kye Kye Kule. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Kye+Kye+Kule"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Gyil+a+Ghanaian+children%27s+game-song"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: palm-wine gitarı",
+     "aciklama": "Gana'nın parmak stili akustik gitarı tek başına; net ve neşeli.",
+     "calgilar": [
+      "akustik gitar",
+      "premprensiwa"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Solo fingerstyle acoustic guitar leading Ghanaian palm-wine guitar music, with soft premprensiwa bass thumb piano. Solo fingerstyle acoustic guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Sunny major-key two-finger picking patterns with gentle syncopation and sweet parallel sixths. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=fingerstyle+acoustic+guitar+Ghanaian+palm-wine+guitar"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=fingerstyle+acoustic+guitar+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 41,
+   "simdiki": 128
+  },
+  {
+   "kod": "UG",
+   "ad": "Uganda",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Buganda saray arpı",
+     "aciklama": "Ennanga arpının net sesi önde; endongo liri ve çok hafif amadinda.",
+     "calgilar": [
+      "ennanga",
+      "endongo",
+      "amadinda"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Ennanga arched harp leading Ugandan Buganda royal court music, with endongo lyre and a very quiet amadinda xylophone. Ennanga arched harp in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Interlocking patterns in the equal pentatonic Kiganda tuning, played softly. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Ennanga+arched+harp+Ugandan+Buganda+royal+court"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Ennanga+arched+harp+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Geleneksel: Ssematimba ne Kikwabanga",
+     "aciklama": "Amadinda ksilofonu iç içe geçen desenleri tok ve net çalar; hafif çıngırak.",
+     "calgilar": [
+      "amadinda",
+      "ennanga",
+      "ensaasi"
+     ],
+     "ezgi": {
+      "ad": "Ssematimba ne Kikwabanga",
+      "koken": "Uganda (Buganda), saray arp ve ksilofon dağarı",
+      "kamu_mali_gerekce": "Yüzyıllardır sözlü aktarılan anonim saray parçası.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 104,
+     "stil": "Amadinda xylophone leading Ugandan Kiganda court repertoire, with soft ennanga harp and quiet ensaasi shakers. Amadinda xylophone in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Two interlocking parts in equal pentatonic tuning forming a hidden third melody, melody inspired by the traditional tune Ssematimba ne Kikwabanga. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Ssematimba+ne+Kikwabanga"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Amadinda+Ugandan+Kiganda+court+repertoire"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: adungu",
+     "aciklama": "Kuzey Uganda'nın adungu arpı tek başına; sıcak ama net.",
+     "calgilar": [
+      "adungu",
+      "ensaasi"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Solo adungu arched harp leading Ugandan Alur music, with very soft ensaasi shaker. Solo adungu arched harp in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Plucked major-scale patterns, gentle cyclic ostinato with a small singing melody. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=adungu+arched+harp+Ugandan+Alur"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=adungu+arched+harp+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 42,
+   "simdiki": 128
+  },
+  {
+   "kod": "YE",
+   "ad": "Yemen",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "San'a şarkı sanatı: kanbus",
+     "aciklama": "Yemen'in eski lavtası kanbus kuru ve net sesiyle önde; bakır tepsi tıkırtısı.",
+     "calgilar": [
+      "kanbus (turbi)",
+      "ud",
+      "sahn nuhasi"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Qanbus lute leading the Yemeni Sana'ani art-song tradition played instrumentally, with soft oud and light sahn nuhasi copper tray taps. Qanbus lute in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Intimate ornamented melody in a bright Yemeni maqam close to Rast, delicate plucked figures. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Qanbus+Yemeni+Sana%27ani+-song+tradition"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Qanbus+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Hadramut ezgi deyişi",
+     "aciklama": "Ud salınan 6/8 dans havasını net çalar; hafif mirvas davulları.",
+     "calgilar": [
+      "ud",
+      "mirvas",
+      "hacir"
+     ],
+     "ezgi": null,
+     "bpm": 102,
+     "stil": "Oud leading the Yemeni Hadhrami traditional idiom, with soft mirwas and hajir hand drums. Oud in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Original swaying 6/8 sharh-dance style melody in a narrow-range maqam Bayati with bright turns. 102 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Oud+Yemeni+Hadhrami+traditional+idiom"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Oud+solo"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: simsimiyye",
+     "aciklama": "Kızıldeniz kıyısı Tihame'nin liri tek başına; parlak ve tıngırtılı.",
+     "calgilar": [
+      "simsimiyye",
+      "mirvas"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Solo simsimiyya lyre leading Yemeni Red Sea coast Tihama music, with very soft mirwas drum. Solo simsimiyya lyre in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright strummed-and-plucked pentatonic-leaning melody with short repeating phrases. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=simsimiyya+Yemeni+Red+Sea+coast"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=simsimiyya+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 43,
+   "simdiki": 128
+  },
+  {
+   "kod": "ZA",
+   "ad": "Güney Afrika",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Venda mbila sanatı",
+     "aciklama": "Venda ksilofonu mbila net ve sıcak sesiyle önde; başparmak piyanosu eşlik eder.",
+     "calgilar": [
+      "mbila mutondo (ksilofon)",
+      "mbila dzamadeza",
+      "ayak çıngırağı"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Mbila mutondo xylophone leading South African Venda traditional art music, with mbila dzamadeza thumb piano and soft leg-rattle shaker. Mbila mutondo xylophone in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Rippling interlocking heptatonic patterns, gentle cyclic call-and-answer. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Mbila+mutondo+South+African+Venda+traditional"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Mbila+mutondo+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Geleneksel: Shosholoza",
+     "aciklama": "Marimba ezgiyi neşeyle çalar; akustik gitar eşlik eder, düdük çok hafif.",
+     "calgilar": [
+      "marimba",
+      "akustik gitar",
+      "pennywhistle"
+     ],
+     "ezgi": {
+      "ad": "Shosholoza",
+      "koken": "Güney Afrika/Zimbabve (Ndebele-Zulu), madenci iş şarkısı",
+      "kamu_mali_gerekce": "Anonim iş şarkısı; 20. yüzyıl başından beri sözlü aktarılıyor.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 104,
+     "stil": "Marimba leading South African township folk style, with acoustic guitar and a very quiet pennywhistle. Marimba in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Warm call-and-response major-key tune with a gentle train-like chugging pulse, melody inspired by the traditional folk tune Shosholoza. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Shosholoza"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Marimba+South+African+township+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: maskandi gitarı",
+     "aciklama": "Zulu maskandi gitarı tek başına; net, parlak parmak vuruşları.",
+     "calgilar": [
+      "akustik gitar"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Solo maskandi acoustic guitar leading South African Zulu maskandi guitar music, with no other instruments except a soft shaker. Solo maskandi acoustic guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Opening izihlabo flourish then a sunny picked melody over a walking thumb bass, hexatonic with major feel. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=maskandi+acoustic+guitar+South+African+Zulu+maskandi"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=maskandi+acoustic+guitar+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 44,
+   "simdiki": 128
+  },
+  {
+   "kod": "ET",
+   "ad": "Etiyopya",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Azmari oda müziği: krar",
+     "aciklama": "Krar liri net tezene sesiyle önde; bas krar ve çok hafif washint.",
+     "calgilar": [
+      "krar",
+      "bas krar",
+      "washint",
+      "kebero"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Krar lyre leading Ethiopian azmari chamber art music, with bass krar, a very quiet washint flute and soft kebero touches. Krar lyre in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Sweet melody in the bati major qenet pentatonic scale, ornamented and unhurried. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Krar+Ethiopian+azmari"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Krar+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Geleneksel: Tizita",
+     "aciklama": "Krar özlem ezgisini tane tane, berrak çalar; washint uzaktan yanıtlar.",
+     "calgilar": [
+      "krar",
+      "washint",
+      "kebero"
+     ],
+     "ezgi": {
+      "ad": "Tizita (ትዝታ)",
+      "koken": "Etiyopya (Amhara), geleneksel ezgi türü ve makamı",
+      "kamu_mali_gerekce": "Anonim geleneksel ezgi kalıbı; her icracı kendi çeşitlemesini söyler.",
+      "kesinlik": "muhtemel"
+     },
+     "bpm": 92,
+     "stil": "Krar lyre leading the Ethiopian traditional song style, with a quiet washint flute answer and soft kebero. Krar lyre in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Nostalgic yet warm melody in the tizita major qenet pentatonic scale with quick turns, melody inspired by the traditional folk tune Tizita. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Tizita"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Krar+Ethiopian+traditional+song"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: toom",
+     "aciklama": "Gambella'nın başparmak piyanosu toom tek başına; çın çın ve sade.",
+     "calgilar": [
+      "toom (başparmak piyanosu)",
+      "çıngırak"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Solo toom thumb piano leading western Ethiopian Gambella music of the Anuak, with very soft shaker. Solo toom thumb piano in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright cyclic pentatonic patterns in the ambassel qenet colour, small singing melody. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=toom+western+Ethiopian+Gambella"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=toom+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 45,
+   "simdiki": 127
+  },
+  {
+   "kod": "MZ",
+   "ad": "Mozambik",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Chopi timbila sanatı",
+     "aciklama": "Chopi ksilofonu timbila dalga dalga, net ve ışıltılı; çok hafif çıngırak.",
+     "calgilar": [
+      "timbila",
+      "njele"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Timbila xylophone leading Mozambican Chopi timbila art music, with a second soft timbila and quiet njele shakers. Timbila xylophone in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Rippling interlocking melodies in the equal-step heptatonic Chopi tuning, kept quiet and light. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Timbila+Mozambican+Chopi+timbila"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Timbila+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Güney Mozambik ezgi deyişi",
+     "aciklama": "Maputo yöresinin eski gitar tarzı; akustik gitar net ve oynak, hafif timbila.",
+     "calgilar": [
+      "akustik gitar",
+      "timbila",
+      "çıngırak"
+     ],
+     "ezgi": null,
+     "bpm": 104,
+     "stil": "Fingerstyle acoustic guitar leading the southern Mozambican early acoustic marrabenta idiom, with one soft timbila xylophone and shaker. Fingerstyle acoustic guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Original bright major-key melody with gentle syncopated lilt. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Fingerstyle+acoustic+guitar+southern+Mozambican+early+acoustic"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Fingerstyle+acoustic+guitar+solo"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Ndau mbirası",
+     "aciklama": "Orta Mozambik'in mbirası tek başına çın çın; çok hafif çıngırak.",
+     "calgilar": [
+      "mbira (Ndau)",
+      "çıngırak"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Solo mbira thumb piano leading central Mozambican Ndau music, with very soft gourd shaker. Solo mbira thumb piano in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright hexatonic cyclic patterns, a small singing melody. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=mbira+central+Mozambican+Ndau"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=mbira+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 46,
+   "simdiki": 127
+  },
+  {
+   "kod": "CD",
+   "ad": "Kongo DC",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Kongo saray arpı",
+     "aciklama": "Mangbetu saray arpı kundi net tınısıyla önde; madimba hafifçe örer.",
+     "calgilar": [
+      "kundi arp",
+      "madimba",
+      "tohum çıngırağı"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Kundi court harp leading Congolese traditional art music of the Mangbetu court, with soft madimba xylophone and quiet seed-pod shaker. Kundi court harp in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Shimmering interlocking patterns in a bright hexatonic tuning, small cyclic melody. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Kundi+court+harp+Congolese+traditional"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Kundi+court+harp+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Geleneksel: Banaha",
+     "aciklama": "Katanga tarzı parmak stili gitar ezgiyi net çalar; likembe eşlik eder.",
+     "calgilar": [
+      "akustik gitar",
+      "likembe",
+      "çıngırak"
+     ],
+     "ezgi": {
+      "ad": "Banaha",
+      "koken": "Kongo DC (Katanga/Luba bölgesi), geleneksel şarkı olarak aktarılır",
+      "kamu_mali_gerekce": "Geleneksel/anonim olarak bilinir; ancak ilk kaynağını doğrulayamadım.",
+      "kesinlik": "emin değilim"
+     },
+     "bpm": 104,
+     "stil": "Fingerstyle acoustic guitar leading Congolese Katanga folk style, with likembe thumb piano and soft shaker. Fingerstyle acoustic guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Short cheerful round-like major-key tune in parallel thirds, melody inspired by the traditional folk tune Banaha. 104 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Banaha"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Fingerstyle+acoustic+guitar+Congolese+Katanga+folk"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: likembe",
+     "aciklama": "Likembe tek başına ışıl ışıl tınlar; yalnız çok hafif çıngırak.",
+     "calgilar": [
+      "likembe",
+      "tohum çıngırağı"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Solo likembe thumb piano leading Congolese traditional music, with a very soft seed-pod shaker. Solo likembe thumb piano in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright hexatonic interlocking thumb patterns, a small singing melody over a cyclic ostinato. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=likembe+Congolese+traditional"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=likembe+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 47,
+   "simdiki": 126
+  },
+  {
+   "kod": "AO",
+   "ad": "Angola",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Luanda serenadı: marimba",
+     "aciklama": "Angola marimbasının tok ve net sesi önde; kissange ve hafif gitar.",
+     "calgilar": [
+      "marimba",
+      "kissange",
+      "akustik gitar"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Marimba xylophone leading Angolan traditional art music in a tender Luanda serenade style, with kissange thumb piano and soft acoustic guitar. Marimba xylophone in the foreground, bright clear articulate tone, crisp struck attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright pentatonic and major-key phrases, very soft dikanza scraper. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Marimba+Angolan+traditional"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Marimba+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Rebita ezgi deyişi",
+     "aciklama": "Eski Luanda salon dansı havası; akustik gitar net ve oynak, hafif dikanza.",
+     "calgilar": [
+      "akustik gitar",
+      "kissange",
+      "dikanza"
+     ],
+     "ezgi": null,
+     "bpm": 102,
+     "stil": "Fingerstyle acoustic guitar leading the Angolan rebita salon-dance idiom, with kissange thumb piano and soft dikanza scraper. Fingerstyle acoustic guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Original swaying major-key melody with gentle syncopation and parallel sixths, light and smiling. 102 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Fingerstyle+acoustic+guitar+Angolan+rebita+salon-dance+idiom"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Fingerstyle+acoustic+guitar+solo"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: kissange",
+     "aciklama": "Kissange tek başına çın çın; arkada çok hafif dikanza.",
+     "calgilar": [
+      "kissange",
+      "dikanza"
+     ],
+     "ezgi": null,
+     "bpm": 92,
+     "stil": "Solo kissange thumb piano leading Angolan traditional music, with very soft dikanza scraper. Solo kissange thumb piano in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright pentatonic cyclic patterns, small singing melody. 92 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=kissange+Angolan+traditional"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=kissange+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 48,
+   "simdiki": 99
+  },
+  {
+   "kod": "FR",
+   "ad": "Fransa",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "İzlenimci arp",
+     "aciklama": "Arp önde, ışıltılı ve hafif bir Fransız oda müziği; flüt ve çelesta çok hafif.",
+     "calgilar": [
+      "arp",
+      "çelesta",
+      "flüt"
+     ],
+     "ezgi": null,
+     "bpm": 96,
+     "stil": "Harp leading French impressionist chamber music, with soft celesta and a quiet flute. Harp in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Shimmering whole-tone and pentatonic colours, flowing arpeggios and a light Parisian waltz elegance, delicate glissandi. 96 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Harp+French+impressionist"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Harp+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Ezgi: Au clair de la lune",
+     "aciklama": "Vosges dağlarının tezeneli kanunu épinette ezgiyi tıngır tıngır çalar; gitar eşlik eder.",
+     "calgilar": [
+      "épinette des Vosges",
+      "gitar",
+      "tahta flüt"
+     ],
+     "ezgi": {
+      "ad": "Au clair de la lune",
+      "koken": "Fransa, 18. yüzyıl halk şarkısı",
+      "kamu_mali_gerekce": "Anonim halk ezgisi; bestecisi bilinmiyor, kuşaktan kuşağa aktarılmış.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 100,
+     "stil": "Epinette des Vosges plucked zither leading a French folk ensemble, with soft guitar and a quiet wooden flute. Epinette des Vosges plucked zither in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Simple tender major-key tune in stepwise motion with a light bouncing pulse, melody inspired by the traditional folk tune Au clair de la lune. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=Au+clair+de+la+lune"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Epinette+des+Vosges+a+French+folk+ensemble"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: Fransız klavseni",
+     "aciklama": "Versailles tarzı tek klavsen; parlak, süslü ve zarif.",
+     "calgilar": [
+      "klavsen",
+      "teorbo"
+     ],
+     "ezgi": null,
+     "bpm": 98,
+     "stil": "Solo French harpsichord leading French Baroque court music in the Versailles style, with soft theorbo. Solo French harpsichord in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Elegant menuet and gavotte character in a bright major key, French agrements ornaments with trills and mordents, style brise broken chords. 98 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=French+harpsichord+French+Baroque+court"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=French+harpsichord+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 49,
+   "simdiki": 98
+  },
+  {
+   "kod": "PE",
+   "ad": "Peru",
+   "secenekler": [
+    {
+     "id": "A",
+     "baslik": "Ayacucho gitarı: yaraví ve huayno",
+     "aciklama": "Ayacucho tarzı gitar net parmak vuruşlarıyla önde; charango ve hafif arp.",
+     "calgilar": [
+      "gitar",
+      "charango",
+      "And arpı"
+     ],
+     "ezgi": null,
+     "bpm": 94,
+     "stil": "Andean fingerstyle guitar leading Peruvian Andean art music in the Ayacucho style, with charango and soft Andean harp. Andean fingerstyle guitar in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Sweet yaravi turning into a gentle bright huayno on the Andean minor pentatonic scale, soft chajchas shaker. 94 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Andean+fingerstyle+guitar+Peruvian+Andean+in+Ayacucho"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Andean+fingerstyle+guitar+solo"
+      }
+     ]
+    },
+    {
+     "id": "B",
+     "baslik": "Eski ezgi: El Cóndor Pasa",
+     "aciklama": "Charango ezgiyi parlak ve çıtır çalar; gitar eşlik eder, kena çok uzakta.",
+     "calgilar": [
+      "charango",
+      "gitar",
+      "bombo",
+      "kena"
+     ],
+     "ezgi": {
+      "ad": "El Cóndor Pasa",
+      "koken": "Peru, Daniel Alomía Robles (1871-1942), 1913",
+      "kamu_mali_gerekce": "Besteci 1942'de öldü; eser Peru'da ulusal kültür mirası sayılır. Sonraki pop uyarlamaları kullanılmıyor.",
+      "kesinlik": "kesin"
+     },
+     "bpm": 100,
+     "stil": "Charango leading Peruvian Andean style, with guitar, very soft bombo and a very quiet quena. Charango in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Soaring calm melody on the Andean minor pentatonic scale that brightens into a light huayno, melody inspired by the traditional tune El Condor Pasa. 100 BPM, steady tempo never below 95 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Ezgiyi dinle",
+       "url": "https://www.youtube.com/results?search_query=El+C%C3%B3ndor+Pasa"
+      },
+      {
+       "yazi": "Çalgıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Charango+Peruvian+Andean"
+      }
+     ]
+    },
+    {
+     "id": "C",
+     "baslik": "Sade solo: And arpı",
+     "aciklama": "Peru And arpı tek başına ışıldar; altında çok hafif charango.",
+     "calgilar": [
+      "And arpı",
+      "charango"
+     ],
+     "ezgi": null,
+     "bpm": 100,
+     "stil": "Solo Andean harp leading Peruvian highland music, with soft charango. Solo Andean harp in the foreground, bright clear articulate tone, crisp plucked attack, dry clean transparent mix, sparse arrangement, gentle soft accompaniment, no drone, no reverb wash, no orchestral wash, no synth pads. Bright huayno melody on the minor pentatonic scale with a walking bass line, rippling arpeggios and grace notes. 100 BPM, calm cheerful adventure video game background music, steady loop-friendly flow, instrumental, no vocals.",
+     "dinle": [
+      {
+       "yazi": "Tınıyı dinle",
+       "url": "https://www.youtube.com/results?search_query=Andean+harp+Peruvian+highland"
+      },
+      {
+       "yazi": "Solo çalgı",
+       "url": "https://www.youtube.com/results?search_query=Andean+harp+solo"
+      }
+     ]
+    }
+   ],
+   "sira": 50,
+   "simdiki": 95
+  }
+ ]
+}

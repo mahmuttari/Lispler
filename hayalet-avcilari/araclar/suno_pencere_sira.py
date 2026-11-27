@@ -2,11 +2,12 @@
 """Hayalet Avcıları — Suno web arayüzü (Chrome penceresi) için ülke müzikleri iş sırası üretir.
 
 Kullanıcı 27 Kasım 2026'da Suno aboneliği aldı; şarkılar Mac'teki Claude tarafından Chrome'da suno.com/create sayfasında
-üretilecek. Bu betik araclar/muzik-istekleri-sanatsal.json'daki sanatsal istemleri Suno'nun alanlarına böler
+üretilecek. Kullanıcı her ülke için seçim sayfasında (araclar/muzik-secimleri.json, kaynak: claude.ai seçim sayfası) üç
+seçenekten birini seçti; seçeneklerin tarifleri araclar/muzik-secenekleri.json'dadır (yöresel, kanun gibi net tınılı çalgı
+önde; kullanıcı: "boğucu olmayan, daha net tınılı çalgı"). Bu betik seçilen tarifi Suno'nun alanlarına koyar
 (Style of Music / Exclude Styles / Title, Instrumental açık) ve araclar/SUNO-PENCERE-SIRA.md dosyasını yazar.
 
-Sıra: şu anki parçası en hareketli (temposu en yüksek) olan ülke önce. Temposu 105 BPM altındaki parçalar (şu an zaten sakin
-olanlar) en sonda ve isteğe bağlı. Türkiye listede yok (kullanıcı: "Türkiye olduğu gibi kalsın").
+Sıra: şu anki parçası en hareketli (temposu en yüksek) olan ülke önce; kullanıcının "kalsın"/"atla" dedikleri üretilmez. Türkiye listede yok (kullanıcı: "Türkiye olduğu gibi kalsın").
 
   python3 hayalet-avcilari/araclar/suno_pencere_sira.py
 """
@@ -16,38 +17,32 @@ import re
 
 KOK = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 ARAC = os.path.join(KOK, 'araclar')
-SAKIN_SINIR = 105  # BPM: bunun altındaki mevcut parçalar zaten sakin, isteğe bağlı
 
-ORTAK = re.compile(r'\s*Gentle, artistic.*$', re.S)
-TEMPO = re.compile(r'(\d+) BPM')
-EXCLUDE = 'vocals, singing, choir, heavy drums, driving dance beat, EDM, trap, dubstep, rock, distorted guitar, breakdown, fade-out'
-
-
-def ulke_adlari():
-    adlar = {}
-    with open(os.path.join(KOK, 'www', 'ulkeler.js'), encoding='utf-8') as f:
-        for kod, ad in re.findall(r'U\("([A-Z]{2})",\s*"[^"]*",\s*t\("([^"]+)"\)', f.read()):
-            adlar[kod] = ad
-    return adlar
+EXCLUDE = ('vocals, singing, choir, heavy drums, driving dance beat, EDM, trap, dubstep, rock, distorted guitar, accordion, '
+           'bagpipes, shawm, drone, synth pads, orchestral strings, reverb wash, breakdown, fade-out')
 
 
 def main():
-    with open(os.path.join(ARAC, 'muzik-istekleri-sanatsal.json'), encoding='utf-8') as f:
-        istekler = json.load(f)
+    with open(os.path.join(ARAC, 'muzik-secenekleri.json'), encoding='utf-8') as f:
+        secenekler = {u['kod']: u for u in json.load(f)['ulkeler']}
+    with open(os.path.join(ARAC, 'muzik-secimleri.json'), encoding='utf-8') as f:
+        secimler = json.load(f)['secimler']
     with open(os.path.join(ARAC, 'muzik-kayit.json'), encoding='utf-8') as f:
         kayit = json.load(f)
-    adlar = ulke_adlari()
     satirlar = []
-    for x in istekler:
-        kod, istem = x['kod'], x['prompt']
-        bpm = int(TEMPO.search(istem).group(1))
-        kultur = ORTAK.sub('', istem).strip()
-        stil = (f'{kultur} Gentle, artistic, mellow and melodic, soft light percussion, {bpm} BPM, '
-                'calm cheerful adventure video game background music, steady loop-friendly flow, instrumental.')
-        assert len(stil) <= 1000, (kod, len(stil))
+    for kod, u in secenekler.items():
+        sec = secimler.get(kod, {})
+        harf = sec.get('secim', '')
+        s = next((x for x in u['secenekler'] if x['id'] == harf), None)
         simdiki = round((kayit.get(kod) or {}).get('tempo') or 0)
-        satirlar.append({'kod': kod, 'ad': adlar.get(kod, kod), 'stil': stil, 'simdiki': simdiki,
-                         'sakin': 0 < simdiki < SAKIN_SINIR})
+        if s is None:  # "kalsın" / "atla" / seçilmemiş: üretilmez
+            satirlar.append({'kod': kod, 'ad': u['ad'], 'stil': '', 'simdiki': simdiki, 'sakin': True, 'secim': harf or '-',
+                             'baslik': '', 'not': sec.get('not', ''), 'calgilar': []})
+            continue
+        assert len(s['stil']) <= 1000, (kod, len(s['stil']))
+        satirlar.append({'kod': kod, 'ad': u['ad'], 'stil': s['stil'], 'simdiki': simdiki, 'sakin': False, 'secim': harf,
+                         'baslik': s['baslik'], 'not': sec.get('not', ''), 'calgilar': s.get('calgilar', []),
+                         'bpm': s.get('bpm')})
     satirlar.sort(key=lambda s: (s['sakin'], -s['simdiki'], s['kod']))
 
     out = []
@@ -95,15 +90,20 @@ def main():
     w('')
     w('## Sıra')
     w('')
-    w('| # | Kod | Ülke | Şu anki tempo | Durum |')
-    w('|---|---|---|---|---|')
+    w('| # | Kod | Ülke | Seçim | Ana çalgı | Durum |')
+    w('|---|---|---|---|---|---|')
     for i, s in enumerate(satirlar, 1):
-        not_ = 'isteğe bağlı (şu anki zaten sakin)' if s['sakin'] else 'bekliyor'
-        w(f"| {i} | {s['kod']} | {s['ad']} | {s['simdiki']} BPM | {not_} |")
+        not_ = 'üretilmez (kalsın/atla)' if s['sakin'] else 'bekliyor'
+        cal = s['calgilar'][0] if s['calgilar'] else '-'
+        w(f"| {i} | {s['kod']} | {s['ad']} | {s['secim']} {s['baslik']} | {cal} | {not_} |")
     w('')
     for i, s in enumerate(satirlar, 1):
-        w(f"### {i}. {s['kod']} — {s['ad']}" + (' (isteğe bağlı)' if s['sakin'] else ''))
+        if s['sakin']:
+            continue
+        w(f"### {i}. {s['kod']} — {s['ad']} ({s['secim']}: {s['baslik']})")
         w('')
+        if s['not']:
+            w(f"- Kullanıcının notu: {s['not']}")
         w(f"- Başlık: `Hayalet Avcilari - {s['kod']}`")
         w(f"- Stil ({len(s['stil'])} karakter):")
         w('')
@@ -113,7 +113,7 @@ def main():
         w('')
     with open(os.path.join(ARAC, 'SUNO-PENCERE-SIRA.md'), 'w', encoding='utf-8') as f:
         f.write('\n'.join(out))
-    print(f"{len(satirlar)} ülke; isteğe bağlı: {[s['kod'] for s in satirlar if s['sakin']]}")
+    print(f"{sum(not s['sakin'] for s in satirlar)} üretilecek; üretilmeyen: {[s['kod'] for s in satirlar if s['sakin']]}")
 
 
 if __name__ == '__main__':

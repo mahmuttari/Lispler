@@ -20,6 +20,7 @@ gpt kullan, yerel oturumu kullan"*.
    J02-J12'nin 3. hücresi de artık düz köprü + kilitli kapı (istem dosyası güncellendi).
 0c. **K14 (K13'ten hemen sonra, kullanıcı istedi 26 Kasım 2026):** `CHATGPT-ISTEMI-EK.md` › K14 yuvanın fareleri (koşu ve
    bekleme kareleri; "hayaletlerin çıktığı yere yaklaşınca fareler, yarasalar kaçışsın"). Kayıt `gorsel/hamek/K14.png`.
+> **YENİ (27 Kasım akşam):** **K18** dikey duvar parçaları (6 tema; `CHATGPT-ISTEMI-EK.md` K18) → `gorsel/hamek/K18.png`.
 > **YENİ (27 Kasım öğleden sonra):** **K17** karaya çıkan timsah (tam beden yürüme, sudan çıkış, bekleme; `CHATGPT-ISTEMI-EK.md`
 > K17) → `gorsel/hamek/K17.png`. Önceki sıra bitti (Y, J, N, K15/K16, H, B, A hepsi geldi ve kesildi/işlendi).
 >

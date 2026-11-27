@@ -264,3 +264,22 @@ background, grid 3 x 2, same size and position in every cell (about 300 px long 
 6. STANDING still, mouth slightly open in a playful grin
 Cute premium casual style matching the game's characters, soft lighting from the upper left, not scary, no text.
 ```
+
+
+## K18: dikey duvar parçaları (27 Kasım 2026)
+
+Dikey (boyu eninden uzun) duvarlarda yatay duvar resmi alt alta yığılıyor; kullanıcıya "üst üste binmiş" görünüyor. Her tema
+için uzun, dikey bir duvar parçası gerekiyor. Kesim: `tema<n>-duvar-dikey` (n = 1..6, hücre sırasıyla).
+
+```
+Sheet K18: SIX tall VERTICAL wall segments for a cute 3/4 top-down game, one per cell, grid 3 x 2, TRANSPARENT background, each
+segment about 1:2.6 (width:height), seen from slightly above like the game's other walls, top face visible, soft light from the
+upper left, no ground, no shadow, no text, same cute premium casual style:
+1. purple castle stone wall with small turret caps (Mor Şato)
+2. mossy green forest log-and-stone wall with leaves (Yeşil Orman)
+3. sandstone desert wall with carved bands (Çöl)
+4. icy blue ice-brick wall with icicles and frost (Buz Mağarası)
+5. dark basalt volcanic wall with glowing orange cracks (Volkan)
+6. purple-metal sci-fi wall panel with cyan lights (Uzay)
+Each segment must look complete and continuous from top to bottom (no repeated stacked copies inside it).
+```

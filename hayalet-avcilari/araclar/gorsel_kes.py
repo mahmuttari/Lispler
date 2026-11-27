@@ -659,6 +659,8 @@ EK_PAFTALAR = {
     'K6': [None, None, None, None, ('bot', 160), None],
     # K15-K16: hâlâ kodla çizilen küçük efektler ve parçalar (CHATGPT-ISTEMI-EK.md; kullanıcı: kalan iş olmasın)
     'K15': [('efekt-gokkusagi', 256), ('efekt-ejder-alev', 256), ('efekt-bot-isin', 256), ('efekt-kasirga', 256), ('efekt-cali-goz', 128), ('timsah-bakis', 192)],
+    # K18: dikey duvar parçaları (tema 1-6); dikey duvarda yığma yerine tek parça (bağlama ayrı görev)
+    'K18': [(f'tema{n}-duvar-dikey', 320) for n in range(1, 7)],
     'K16': [('efekt-pence', 160), ('efekt-toz', 128), ('efekt-olum-pop', 160), ('gol-kopru-tahta', 256), ('efekt-parilti-kucuk', 64), ('ui-can-cubugu', 256)],
     # 5. hücre (yol1-kopru-kapali) artık J01'in yenilenen 3. hücresinden (açık köprüyle aynı çerçeve; 27 Kasım 2026)
     'K13': [('kopru-kapali', 256), None, None, ('kopru-acik', 256), None, None],

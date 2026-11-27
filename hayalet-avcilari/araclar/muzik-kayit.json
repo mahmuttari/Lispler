@@ -929,65 +929,42 @@
     "kredi": {}
   },
   "ET": {
-    "gorev": "cee5dcf000267b5dd0bee33d9d880123",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-et-1.mp3",
-        "sure": 120.013,
-        "tempo": 126.72,
+        "dosya": "ET.mp3",
+        "sure": 162.16,
+        "tempo": 74.36,
         "dongu": {
-          "bas": 14.0852,
-          "uzunluk": 30.291,
-          "vurus": 64
+          "bas": 79.1197,
+          "uzunluk": 29.11079,
+          "vurus": 36
         },
-        "ekYeri": 0.9834,
-        "sabitlik": 0.8381,
-        "puan": 0.9367,
+        "ekYeri": 0.9521,
+        "sabitlik": 0.6483,
+        "puan": 0.6706,
         "teaser": {
-          "bas": 91.2599,
-          "son": 95.0679
-        },
-        "id": "0337bd4a-d723-449a-bcb5-efbc790304a5",
-        "etiketler": "Ethiopian eskista folk dance, steady 6/8 around 128 BPM; cheerful, constant-energy adventure-game pacing with a bright warm acoustic mix; instrumental; krar lyre, masenqo fiddle, washint flute, and kebero drum weave a rich polyphonic ensemble: lead melody, counter-melody, and rhythm section in an Ethiopian pentatonic scale, loop-friendly, seamless."
-      },
-      {
-        "dosya": "hayalet-avcilari-et-2.mp3",
-        "sure": 119.629,
-        "tempo": 128.0,
-        "dongu": {
-          "bas": 28.5581,
-          "uzunluk": 28.12625,
-          "vurus": 60
-        },
-        "ekYeri": 0.9525,
-        "sabitlik": 0.8416,
-        "puan": 0.9287,
-        "teaser": {
-          "bas": 78.2506,
-          "son": 82.4767
-        },
-        "id": "08c5b052-9da5-442f-89a2-266236c730d4",
-        "etiketler": "Ethiopian eskista folk dance, cheerful adventure video game background music, bright warm acoustic mix, loop-friendly and seamless; instrumental, steady danceable 6/8 groove around 128 BPM, Ethiopian pentatonic scale; krar lyre, masenqo fiddle, washint flute and kebero drum drive a rich polyphonic ensemble with a lead melody, counter-melody and rhythm section, constant energy."
+          "bas": 53.3237,
+          "son": 57.3407
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -5.0,
+    "tepe": -4.4,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.008,
-    "ekOrani": 0.852,
+    "girisSure": 5.217,
+    "ekOrani": 0.173,
     "dosyalar": {
       "dongu": "muzik/ET-dongu.ogg",
       "giris": "muzik/ET-giris.ogg"
     },
-    "bas": 0.115,
-    "son": 30.406,
-    "tempo": 126.72,
-    "kredi": {
-      "kalan": 476.5
-    }
+    "bas": 0.1,
+    "son": 29.21079,
+    "tempo": 74.36,
+    "kredi": {}
   },
   "YE": {
     "gorev": "124afabe2bf05c937b0c412c9af663c3",

@@ -390,65 +390,42 @@
     "kredi": {}
   },
   "ES": {
-    "gorev": "6bd0aa892f33de516f29d5565441a6fa",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-es-1.mp3",
-        "sure": 120.013,
-        "tempo": 129.79,
+        "dosya": "ES.mp3",
+        "sure": 159.6,
+        "tempo": 103.75,
         "dongu": {
-          "bas": 30.1842,
-          "uzunluk": 29.76142,
-          "vurus": 64
+          "bas": 102.3682,
+          "uzunluk": 27.91852,
+          "vurus": 48
         },
-        "ekYeri": 0.9701,
-        "sabitlik": 0.8317,
-        "puan": 0.9256,
+        "ekYeri": 0.9537,
+        "sabitlik": 0.6788,
+        "puan": 0.7592,
         "teaser": {
-          "bas": 79.3346,
-          "son": 83.491
-        },
-        "id": "b770f9c1-89f3-4ca3-add7-c88ab1ad7249",
-        "etiketler": "Flamenco rumba, bright warm acoustic mix with polished room detail; instrumental, steady danceable groove around 128 BPM, cheerful adventure video game background music; rich polyphonic ensemble led by flamenco guitar, with a clear counter-melody and rhythm section; cajon, palmas handclaps and castanets sustain constant energy in a loop-friendly arrangement."
-      },
-      {
-        "dosya": "hayalet-avcilari-es-2.mp3",
-        "sure": 118.813,
-        "tempo": 131.04,
-        "dongu": {
-          "bas": 47.8158,
-          "uzunluk": 27.46683,
-          "vurus": 60
-        },
-        "ekYeri": 0.9842,
-        "sabitlik": 0.8648,
-        "puan": 0.9363,
-        "teaser": {
-          "bas": 17.598,
-          "son": 21.7311
-        },
-        "id": "15c0bb58-54dc-4acf-b7b2-c319356ecfaf",
-        "etiketler": "Flamenco rumba, instrumental; bright warm acoustic mix; flamenco guitar carries the lead melody over a counter-melody, cajon anchors palmas handclaps and castanets, shaping a rich polyphonic ensemble with a steady danceable groove around 128 BPM; cheerful adventure video game background music, constant energy, loop-friendly refrain, uninterrupted flow."
+          "bas": 74.5713,
+          "son": 78.6115
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -5.3,
+    "tepe": -5.0,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3331,
-    "ekOrani": 0.081,
+    "girisSure": 5.2402,
+    "ekOrani": 0.124,
     "dosyalar": {
       "dongu": "muzik/ES-dongu.ogg",
       "giris": "muzik/ES-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 27.56683,
-    "tempo": 131.04,
-    "kredi": {
-      "kalan": 668.5
-    }
+    "bas": 0.11,
+    "son": 28.02852,
+    "tempo": 103.75,
+    "kredi": {}
   },
   "MA": {
     "gorev": "1d64870adc0aba821cc61c485efc545a",

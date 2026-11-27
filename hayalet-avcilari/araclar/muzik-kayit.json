@@ -1350,65 +1350,42 @@
     }
   },
   "SA": {
-    "gorev": "917271071a60c535cd820beb5d2ff7ad",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-sa-1.mp3",
-        "sure": 118.933,
-        "tempo": 130.37,
+        "dosya": "SA.mp3",
+        "sure": 123.6,
+        "tempo": 100.0,
         "dongu": {
-          "bas": 25.5536,
-          "uzunluk": 31.32377,
-          "vurus": 68
+          "bas": 26.6374,
+          "uzunluk": 28.79844,
+          "vurus": 48
         },
-        "ekYeri": 0.9778,
-        "sabitlik": 0.8259,
-        "puan": 0.9248,
+        "ekYeri": 0.9376,
+        "sabitlik": 0.7558,
+        "puan": 0.7556,
         "teaser": {
-          "bas": 84.0146,
-          "son": 88.171
-        },
-        "id": "62759143-db00-4f53-b748-7a09e4534a56",
-        "etiketler": "Hejazi samri, oud lead melody weaving through qanun counter-melody, mirwas drums, tabl drum and handclaps; steady danceable groove around 128 BPM, cheerful adventure video game background music; instrumental, bright warm acoustic mix with rich polyphonic ensemble, constant energy, loop-friendly arrangement and seamless return."
-      },
-      {
-        "dosya": "hayalet-avcilari-sa-2.mp3",
-        "sure": 118.741,
-        "tempo": 131.46,
-        "dongu": {
-          "bas": 18.4979,
-          "uzunluk": 29.25404,
-          "vurus": 64
-        },
-        "ekYeri": 0.9701,
-        "sabitlik": 0.7816,
-        "puan": 0.9022,
-        "teaser": {
-          "bas": 87.4391,
-          "son": 91.5491
-        },
-        "id": "d5b9203e-1f74-43db-a97a-ce1a43c9e41f",
-        "etiketler": "Hejazi samri, oud carries the lead melody over qanun counter-melody, with mirwas drums, tabl drum and handclaps driving a rich polyphonic ensemble; cheerful adventure video game background music, bright warm acoustic mix, instrumental, steady danceable groove around 128 BPM, constant energy, seamless loop-friendly refrain return with no fade-out."
+          "bas": 80.6369,
+          "son": 84.8397
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -4.6,
+    "tepe": -5.3,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3564,
-    "ekOrani": 0.177,
+    "girisSure": 5.4028,
+    "ekOrani": 0.396,
     "dosyalar": {
       "dongu": "muzik/SA-dongu.ogg",
       "giris": "muzik/SA-giris.ogg"
     },
-    "bas": 0.115,
-    "son": 31.43877,
-    "tempo": 130.37,
-    "kredi": {
-      "kalan": 452.5
-    }
+    "bas": 0.1075,
+    "son": 28.90594,
+    "tempo": 100.0,
+    "kredi": {}
   },
   "PS": {
     "gorev": "185e49971d946802d6a37babd39b0e28",

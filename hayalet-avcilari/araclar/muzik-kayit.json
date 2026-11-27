@@ -2189,65 +2189,42 @@
     "kredi": {}
   },
   "PH": {
-    "gorev": "b27e6e00a12b8f9c1e6ffe317b0ac23f",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ph-1.mp3",
-        "sure": 118.741,
-        "tempo": 132.31,
+        "dosya": "PH.mp3",
+        "sure": 147.56,
+        "tempo": 93.48,
         "dongu": {
-          "bas": 49.5685,
-          "uzunluk": 27.16725,
-          "vurus": 60
+          "bas": 55.9543,
+          "uzunluk": 33.37681,
+          "vurus": 52
         },
-        "ekYeri": 0.981,
-        "sabitlik": 0.8872,
-        "puan": 0.9351,
+        "ekYeri": 0.9736,
+        "sabitlik": 0.6816,
+        "puan": 0.7186,
         "teaser": {
-          "bas": 88.0475,
-          "son": 92.1807
-        },
-        "id": "1a71d065-ce23-41c3-83a2-7429d34034ae",
-        "etiketler": "Folk dance, Filipino tinikling; bright warm acoustic mix, loop-friendly arrangement ending on a resolved full-band phrase; instrumental; upbeat energetic 3/4 driving rhythm around 128 BPM, playful and heroic; adventure video game background music led by a clear melody, rich polyphonic rondalla of bandurria, laud and guitar, kulintang gongs, countermelody and steady rhythm section, constant energy."
-      },
-      {
-        "dosya": "hayalet-avcilari-ph-2.mp3",
-        "sure": 118.693,
-        "tempo": 134.64,
-        "dongu": {
-          "bas": 28.7191,
-          "uzunluk": 28.55054,
-          "vurus": 64
-        },
-        "ekYeri": 0.9731,
-        "sabitlik": 0.8472,
-        "puan": 0.9075,
-        "teaser": {
-          "bas": 49.6781,
-          "son": 53.6952
-        },
-        "id": "009c0be3-ab3d-414a-90fa-b51cdf138641",
-        "etiketler": "Filipino tinikling folk dance, instrumental adventure-video-game background music; bright warm acoustic mix, loop-friendly with a seamless ending; driving 3/4 groove around 128 BPM, upbeat, playful and heroic; rich polyphonic rondalla of bandurria, laud and guitar over kulintang gongs, lead melody and counter-melody weaving over a steady rhythm section."
+          "bas": 128.5218,
+          "son": 132.3995
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -4.4,
+    "tepe": -5.1,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3332,
-    "ekOrani": 0.634,
+    "girisSure": 5.0777,
+    "ekOrani": 0.061,
     "dosyalar": {
       "dongu": "muzik/PH-dongu.ogg",
       "giris": "muzik/PH-giris.ogg"
     },
-    "bas": 0.1025,
-    "son": 27.26975,
-    "tempo": 132.31,
-    "kredi": {
-      "kalan": 296.5
-    }
+    "bas": 0.1,
+    "son": 33.47681,
+    "tempo": 93.48,
+    "kredi": {}
   },
   "VN": {
     "gorev": "596350b709459cb50ea129563866e399",

@@ -945,65 +945,42 @@
     "kredi": {}
   },
   "UG": {
-    "gorev": "931f374887121c58fe82538e40f6472a",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ug-1.mp3",
-        "sure": 119.869,
-        "tempo": 128.29,
+        "dosya": "UG.mp3",
+        "sure": 132.36,
+        "tempo": 101.61,
         "dongu": {
-          "bas": 20.1914,
-          "uzunluk": 33.69698,
-          "vurus": 72
+          "bas": 35.8908,
+          "uzunluk": 28.30671,
+          "vurus": 48
         },
-        "ekYeri": 0.9731,
-        "sabitlik": 0.9083,
-        "puan": 0.9576,
+        "ekYeri": 0.9488,
+        "sabitlik": 0.7894,
+        "puan": 0.7792,
         "teaser": {
-          "bas": 99.6835,
-          "son": 103.8864
-        },
-        "id": "d7cd445b-93a3-48ce-b60f-611c86244699",
-        "etiketler": "Ugandan Busoga festival music, instrumental, steady danceable groove around 128 BPM, embaire xylophone leads a bright repeating theme as adungu harp and endingidi fiddle weave the counter-melody; interlocking engoma drums drive a rich polyphonic rhythm section, constant energy throughout for loop-friendly adventure video game scoring, cheerful, bright warm acoustic mix."
-      },
-      {
-        "dosya": "hayalet-avcilari-ug-2.mp3",
-        "sure": 119.509,
-        "tempo": 173.04,
-        "dongu": {
-          "bas": 56.1186,
-          "uzunluk": 27.7311,
-          "vurus": 80
-        },
-        "ekYeri": 0.9888,
-        "sabitlik": 0.8135,
-        "puan": 0.7384,
-        "teaser": {
-          "bas": 12.7201,
-          "son": 16.9229
-        },
-        "id": "b0c22059-d358-4dca-9d97-b6a4457df35c",
-        "etiketler": "Ugandan Busoga festival music, instrumental, steady danceable groove around 128 BPM; embaire xylophone leads a rich polyphonic ensemble with a lead melody and counter-melody, adungu harp, endingidi fiddle and engoma drums; bright, cheerful adventure video game background music, bright warm acoustic mix, constant energy, loop-friendly."
+          "bas": 103.8154,
+          "son": 107.9718
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -6.5,
+    "tepe": -5.5,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.4029,
-    "ekOrani": 0.491,
+    "girisSure": 5.3564,
+    "ekOrani": 0.434,
     "dosyalar": {
       "dongu": "muzik/UG-dongu.ogg",
       "giris": "muzik/UG-giris.ogg"
     },
     "bas": 0.1,
-    "son": 33.79698,
-    "tempo": 128.29,
-    "kredi": {
-      "kalan": 500.5
-    }
+    "son": 28.40671,
+    "tempo": 101.61,
+    "kredi": {}
   },
   "KE": {
     "gorev": "suno-pencere-2026-11",

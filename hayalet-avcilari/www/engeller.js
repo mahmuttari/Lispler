@@ -287,6 +287,32 @@
     return Object.assign(o, { tur, tema, tohum, yon: yon || null, aile, bicim: P, derinlik, carpisma, pay });
   }
 
+  // Obje (obje1/obje2) kutusunu resmin doğal en-boyuna uydurur (OBJ1): uzun/geniş kutuda resim küçük kalıyor, bütün kutunun
+  // gölgesi koyu sütun/şerit olarak görünüyor ve görünmez duvar oluyordu. Kutunun merkezi ve alanı (yaklaşık) korunur;
+  // yalnız KÜÇÜLÜR (kutu yerleştirildiği boşluktan çıkmaz, komşuya girmez). Sabit tablo: GORSEL_LISTESI statik betiktir
+  // (gorsel/liste.js), her cihazda aynı; kutu yalnız girdisinden (w, h, resim oranı) hesaplanır, tohum/yüklenme gerekmez.
+  // Zaten oranına yakın kutu değişmez (idempotent: çevrimiçi istemcide tekrar çalışsa aynı sonuç).
+  function objeKutusuUydur(o, tur, tema) {
+    if (tur !== "obje1" && tur !== "obje2") return o;
+    if (typeof GORSEL_LISTESI !== "object" || !GORSEL_LISTESI) return o;
+    const k = typeof tema === "string" ? `ulke-${tema}-${tur === "obje1" ? 1 : 2}` : `tema${tema + 1}-${tur}`;
+    const d = GORSEL_LISTESI[k];
+    if (!d || !(d[0] > 0 && d[1] > 0) || !(o.w > 0 && o.h > 0)) return o;
+    const ar = d[0] / d[1];
+    if (Math.abs(o.w / o.h - ar) / ar < 0.04) return o;
+    const cx = o.x + o.w / 2, cy = o.y + o.h / 2, A = o.w * o.h;
+    let nw = Math.sqrt(A * ar), nh = nw / ar;
+    const f = Math.min(1, o.w / nw, o.h / nh); // yalnız küçül
+    nw = Math.max(8, Math.floor(nw * f)); nh = Math.max(8, Math.floor(nw / ar));
+    if (nh > o.h) { nh = Math.floor(o.h); nw = Math.max(8, Math.floor(nh * ar)); }
+    if (nw > o.w) nw = Math.floor(o.w);
+    // Yuvarlama eski kutunun dışına çıkarmasın (köprü ağzı bandı gibi sınırlar tam kenarda): kutu içinde sıkıştırılır
+    const x1 = o.x + o.w, y1 = o.y + o.h;
+    o.x = Math.min(x1 - nw, Math.max(o.x, Math.round(cx - nw / 2))); o.y = Math.min(y1 - nh, Math.max(o.y, Math.round(cy - nh / 2)));
+    o.w = nw; o.h = nh;
+    return o;
+  }
+
   // build işlevlerinin sonunda: biçimi olmayan her engeli tamamlar (kılık: kesişen iç blok duvar, değilse (i + bölüm) % 3)
   function engelBicimleriniKur() {
     if (typeof game === "undefined" || !game.walls) return;
@@ -300,6 +326,7 @@
       if (i < 4) { engelOlustur(o, "sinir", tema, engelTohumu(L, "sinir", i, o), ["ust", "alt", "sol", "sag"][i]); return; }
       const k = i - 4;
       const tur = o.tur || (ic.some((b) => b !== o && kesisir(o, b)) ? "duvar" : ["duvar", "obje1", "obje2"][(k + L) % 3]);
+      objeKutusuUydur(o, tur, tema);
       engelOlustur(o, tur, tema, engelTohumu(L, tur, k, o));
     });
     for (const [liste, tur] of [[game.waters, "su"], [game.spikes, "diken"], [game.lavas, "lav"]]) {
@@ -760,7 +787,8 @@
   // Obje resmi: dönmez, kırpılmaz; tek resim en-boy oranı korunarak kutuya (×1.15, alt-orta hizalı) sığdırılır.
   // Çarpışma alanı koyu renkle doldurulmaz; yerde yumuşak bir gölge elipsi kalır. Resim kutunun üstünden/yanından taşabilir.
   function objeResmi(ctx, w, h, p, B, k) {
-    // Yumuşak zemin gölgesi: çarpışma ayak izini kaplayan, kenara doğru sönen elips
+    // Yumuşak zemin gölgesi: yalnız çarpışma kutusunun İÇİNDE (elips dolgusu kutu dikdörtgeniyle sınırlı, kenara doğru söner); kutu resmin
+    // en-boyuna uydurulduğundan (objeKutusuUydur) gölge resmin ayak izinden dışarı taşmaz (OBJ1).
     if (w > 0 && h > 0) {
       ctx.save();
       ctx.translate(w / 2, h / 2); ctx.scale(1, h / w);
@@ -768,7 +796,7 @@
       gr.addColorStop(0, "rgba(0,0,0,0.22)");
       gr.addColorStop(0.55, "rgba(0,0,0,0.2)");
       gr.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(0, 0, w * 0.78, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = gr; ctx.fillRect(-w / 2, -w / 2, w, w); // ölçekli uzayda kutunun kendisi: gölge kutudan taşmaz
       ctx.restore();
     }
     const im = engelGorsel(k);
@@ -1140,7 +1168,7 @@
     if (kip !== "on") onbellegiIsit(t0, s);
   }
 
-  Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, engelBicimleriniKur, engelCarpisir, engelMesafesi, ENGEL_AILELERI,
+  Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, objeKutusuUydur, engelBicimleriniKur, engelCarpisir, engelMesafesi, ENGEL_AILELERI,
     engelOlcegi, engelResmi, engelBoya, engelleriCiz, lavCanli, ENGEL_CANLI, objeAnimKare, objeAnimCiz,
     CANLI_SES, canliObjeSesi });
   window.ENGEL = { yol, doldur, cizgi, kirp, hatCiz, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, kutuYolu, tasOrgu, gozler, cimTutami, sinirla, parcaUzaklik,

@@ -10,8 +10,11 @@ boss halkası, robot, seviye rozeti, zemin süsleri), GOR3b (dükkân/menü/oyun
 kesildi, gölet ve diken tuzaklar sınır yöntemiyle (organik leke biçimi + kıyı/çerçeve, içi ChatGPT dokusu; kullanıcı kararı), bot görseli.
 
 ## Süren / kalan işler
+0. **YUV2, KPR1, SUS1 bitti** (fare/yarasa kaotik kaçış, köprü güvertesi + kemer, süs ayıklama). Botun köprü kulesine basmaması kalmadı (yan engel yalnız oyuncuda; bot takılma riski).
+   Müzik: 50 ülkeye sanatsal istemler hazır (scratchpad/muzik/istemler.json, yoksa Fable'a yeniden yazdır); ElevenLabs kotası 5 Aralık'ta yenilenir. Önce tek ülke üretip krediyi ölç (100 sn = 1375 kredi).
 1. **DT1 bitti** (Dünya Turu köprüleri, arena, ortak nehir, yolculuk çubuğu simgeleri; commit edildi).
-2. **TST1** zaman aşımına uğradı: yarım iş `araclar/evren-gorev/yarim-TST1.patch` (engel-bicim'in önceden düşen 5
+2. **zem3b (c)** "yolun üst/sol pervazı… yeterli örnek yok: 6" HEAD'de de düşüyor (yerleşim şablonları/KPR1 sonrası; örnek noktalar azalmış): TST1'e ekle.
+   **TST1** zaman aşımına uğradı: yarım iş `araclar/evren-gorev/yarim-TST1.patch` (engel-bicim'in önceden düşen 5
    denetimi, botun ip köprüsünde takılması, yolculuk-perf, cizim fps, dunya-turu 2 denetim, anim 1 denetim). Şartname
    `gorevTST1.md`. Yamayı temiz ağaçta uygula, testleri koş, eksikleri tamamla. (engel-bicim kapsama ve fix3 göl kuralı
    bu oturumda değişti; yamada çakışma olabilir.)

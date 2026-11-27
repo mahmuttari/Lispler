@@ -464,6 +464,84 @@
     }
   }
 
+  // SUS1: üst üste binen taban süslerini ayıkla (görünür iç kutu = boyun %70'i).
+  // Sıra önceliktir: önce gelen süs kalır, çakışan sonraki 6 tohumlu adaya kaydırılır.
+  function susAyikla(zemin, bolum, ulke) {
+    if (window.__susAyiklaKapali) return;
+    if (!zemin || !Array.isArray(zemin.suslar)) return;
+    const yarim = (boy) => Math.max(0, boy * 0.35);
+    const sabit = [];
+    let yolculuk = false;
+    try { yolculuk = typeof yolculukAcik === "function" && yolculukAcik(); } catch (e) { yolculuk = false; }
+    if (yolculuk && typeof game !== "undefined" && game) {
+      if (Array.isArray(game._yolculukDonatilar)) {
+        for (const p of game._yolculukDonatilar) {
+          if (!p || !(p.w > 0) || !(p.h > 0)) continue;
+          sabit.push({ x: p.x, y: p.y, hx: p.w * 0.4, hy: p.h * 0.4 });
+        }
+      }
+      const d = game._yolculukDuzen;
+      if (d && Array.isArray(d.zones)) {
+        for (const z of d.zones) {
+          if (!z || !Array.isArray(z._gecitSus)) continue;
+          for (const g of z._gecitSus) {
+            if (!g) continue;
+            const h = Math.max(0, (g.size || 0) * 0.35);
+            sabit.push({ x: g.x, y: g.y, hx: h, hy: h });
+          }
+        }
+      }
+      if (Array.isArray(game.yuvalar)) {
+        for (const yv of game.yuvalar) {
+          if (!yv) continue;
+          const h = yv.r || 32;
+          sabit.push({ x: yv.x, y: yv.y, hx: h, hy: h });
+        }
+      }
+    }
+    if (Array.isArray(zemin.tabelalar)) {
+      for (const tb of zemin.tabelalar) {
+        if (!tb) continue;
+        sabit.push({ x: tb.x, y: tb.y, hx: 24, hy: 24 });
+      }
+    }
+    const cakisan = (x, y, h, liste) => {
+      for (let j = 0; j < liste.length; j++) {
+        const o = liste[j];
+        if (Math.abs(x - o.x) < h + o.hx && Math.abs(y - o.y) < h + o.hy) return true;
+      }
+      return false;
+    };
+    const eski = zemin.suslar;
+    const yeni = [];
+    const icler = [];
+    for (let i = 0; i < eski.length; i++) {
+      const s = eski[i];
+      if (!s || !(s.boy > 0)) continue;
+      let x = s.x, y = s.y;
+      let h = yarim(s.boy);
+      let cx = x, cy = y - s.boy / 2;
+      if (!cakisan(cx, cy, h, sabit) && !cakisan(cx, cy, h, icler)) {
+        yeni.push(s); icler.push({ x: cx, y: cy, hx: h, hy: h }); continue;
+      }
+      let kondu = false;
+      for (let t = 0; t < 6; t++) {
+        const aci = susTohum(bolum, ulke, 90000 + i, t) * Math.PI * 2;
+        const dis = 12 + 6 * t;
+        const nx = s.x + Math.cos(aci) * dis, ny = s.y + Math.sin(aci) * dis;
+        if (!susUygun(nx, ny)) continue;
+        if (s.kenar === true && arenaIcinde(nx, ny)) continue;
+        const ncx = nx, ncy = ny - s.boy / 2;
+        if (cakisan(ncx, ncy, h, sabit) || cakisan(ncx, ncy, h, icler)) continue;
+        x = nx; y = ny; cx = ncx; cy = ncy; kondu = true; break;
+      }
+      if (!kondu) continue;
+      s.x = x; s.y = y;
+      yeni.push(s); icler.push({ x: cx, y: cy, hx: h, hy: h });
+    }
+    zemin.suslar = yeni;
+  }
+
   // Çatal noktaları: patikaların ana yola değdiği başlangıç ve yolculuk yolunun başı.
   // En çok 4 tabela, aralarında en az 500 px; yol/su/duvar üstüne konmaz.
   function tabelalariKur(zemin, bolum, ulke) {
@@ -974,6 +1052,8 @@
     // ZEM2B: yoğun yol kenarı kaosu ve çatal tabelaları
     kenarSuslariKur(game._zeminKatmani, bolum, ulke);
     tabelalariKur(game._zeminKatmani, bolum, ulke);
+    // SUS1: üst üste binen süsleri ayıkla
+    susAyikla(game._zeminKatmani, bolum, ulke);
   }
 
   function zeminKatmaniSil() {

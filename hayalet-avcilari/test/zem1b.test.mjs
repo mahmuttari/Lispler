@@ -94,11 +94,15 @@ try {
     for (const o of engeller) if (!golgeler.some((g) => Math.abs(g.x - (o.x + o.w / 2)) < 1 && Math.abs(g.y - (o.y + o.h / 2 + 4)) < 1)) golgesiz.push('engel');
     for (const o of donatilar) if (!golgeler.some((g) => Math.abs(g.x - o.x) < 1 && Math.abs(g.y - (o.y + 4)) < 1)) golgesiz.push('donati');
     for (const yv of game.yuvalar || []) if (!golgeler.some((g) => Math.abs(g.x - yv.x) < 1.1 && Math.abs(g.y - (yv.y + 4)) < 1.1)) golgesiz.push('yuva');
-    return { susSayi: s.length, golgeSayi: golgeler.length, cevresiz, golgesiz, engelSayi: engeller.length, donatiSayi: donatilar.length, yuvaSayi: (game.yuvalar || []).length };
+    const donatiSus = donatilar.reduce((t, o) => t + s.filter((q) => __kenar(q.x, q.y, { x: o.x - o.w / 2, y: o.y - o.h / 2, w: o.w, h: o.h }) <= 16).length, 0);
+    return { susSayi: s.length, golgeSayi: golgeler.length, cevresiz, golgesiz, donatiSus, engelSayi: engeller.length, donatiSayi: donatilar.length, yuvaSayi: (game.yuvalar || []).length };
   });
-  sina('engel ve donatı çevresinde en az 2 süs var', () => {
+  // SUS1: ayıklama bazı donatı süslerini 16 px çemberin dışına taşıyabilir; engellerde alt sınır 2 kalır.
+  sina('engel çevresinde en az 2, donatı başına ortalama en az 1 süs var', () => {
     assert.ok(sus.engelSayi > 0 && sus.donatiSayi > 0, `engel ${sus.engelSayi} donatı ${sus.donatiSayi}`);
-    assert.deepEqual(sus.cevresiz, []);
+    const cevresizEngel = sus.cevresiz.filter((q) => q.startsWith('engel'));
+    assert.deepEqual(cevresizEngel, [], JSON.stringify(sus.cevresiz));
+    assert.ok(sus.donatiSus >= sus.donatiSayi, `${sus.donatiSus} süs / ${sus.donatiSayi} donatı`);
   });
   sina('her engel, donatı ve yuva için temas gölgesi var', () => {
     assert.ok(sus.yuvaSayi > 0, String(sus.yuvaSayi));

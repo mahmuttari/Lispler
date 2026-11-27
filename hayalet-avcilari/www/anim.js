@@ -21,7 +21,17 @@ const ANIM = {
   dalgaSn: 0.55,          // boss iniş dalgası
 };
 
-const animAzHareket = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+// "Hareketi azalt" tercihi: her karede çağrıldığı için matchMedia her seferinde çağrılmaz; MediaQueryList bir kez kurulur,
+// .matches canlıdır (sınama emülasyonu sonradan değişse de doğru okunur). window.matchMedia değiştirilirse yeniden kurulur.
+let _azMmIsl = null, _azMql = null;
+const animAzHareket = () => {
+  const m = window.matchMedia;
+  if (m !== _azMmIsl) {
+    _azMmIsl = m;
+    try { _azMql = typeof m === "function" ? m.call(window, "(prefers-reduced-motion: reduce)") : null; } catch (e) { _azMql = null; }
+  }
+  return !!(_azMql && _azMql.matches);
+};
 
 // Görsel faz: her hayalet kendi ritminde süzülsün, hep birlikte değil (oyun durumuna girmez)
 function animFaz(o) {

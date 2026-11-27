@@ -123,13 +123,17 @@ try {
   const sifa = await p.evaluate(() => {
     __hazir(); game.player.hp = 1; game.player.maxHp = 3;
     useWeapon('ilkyrd');
+    // N16: şifa kareleri (ChatGPT) yüklüyse kod efekti yerine anim.js kare efekti (tur 'kare', ad 'sifa') eklenir;
+    // yoksa kod çizimi (AE.efektler 'sifa'). İkisi de beklenen davranıştır: hangisi varsa o çizilir.
     const e = AE.efektler.find((x) => x.tur === 'sifa');
-    const px = __piksel((c) => aeEfektleriCiz(c, e ? e.bas + 220 : performance.now()), game.player.x, game.player.y);
-    return { hp: game.player.hp, varMi: !!e, px };
+    const k = animEfektleri.find((x) => x.tur === 'kare' && x.ad === 'sifa');
+    const px = e ? __piksel((c) => aeEfektleriCiz(c, e.bas + 220), game.player.x, game.player.y)
+      : k ? __piksel((c) => animEfektleriCiz(c, k.bas + 220), game.player.x, game.player.y) : 0;
+    return { hp: game.player.hp, varMi: !!e, kareVar: !!k, px };
   });
-  sina('ilk yardım: +2 can (max 3), yeşil-pembe şifa efekti çizilir', () => {
+  sina('ilk yardım: +2 can (max 3), şifa efekti (kod ya da kare) eklenir ve çizilir', () => {
     assert.equal(sifa.hp, 3);
-    assert.equal(sifa.varMi, true);
+    assert.equal(sifa.varMi || sifa.kareVar, true);
     assert.ok(sifa.px > 100, String(sifa.px));
   });
   const sifaTavan = await p.evaluate(() => { __hazir(); game.player.hp = 3; const once = ensureAmmoStock(game.player.charKey).ilkyrd; useWeapon('ilkyrd'); return { hp: game.player.hp, stok: ensureAmmoStock(game.player.charKey).ilkyrd, once }; });

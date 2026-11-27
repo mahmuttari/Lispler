@@ -24,7 +24,7 @@ const HAVA = {
 };
 
 const havaRast = (a, b) => a + Math.random() * (b - a);
-const havaAzHareket = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+const havaAzHareket = () => (typeof animAzHareket === "function" ? animAzHareket() : !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches));
 
 // Sınama kancası: 25% oyuncuya nişan dalını zorlar (oyun akışını değiştirmez)
 let havaTestZorlaHedef = false;

@@ -231,6 +231,7 @@ function yolculukGecitSuslari(z, egri, dilimler, bolum, ulke) {
 
 // "Hareketi azalt" tercihi (hava.js ile aynı ölçüt)
 function yolculukAzHareket() {
+  if (typeof animAzHareket === "function") return animAzHareket(); // MediaQueryList önbellekli (her kare çağrılır)
   try { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
   catch (e) { return false; }
 }

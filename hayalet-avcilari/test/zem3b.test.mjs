@@ -110,12 +110,20 @@ try {
         let j = i;
         while (j + 1 < S.length && Math.floor(S[j + 1].x / 512) === cx && Math.floor(S[j + 1].y / 512) === cy) j++;
         const dx = S[j].x - S[i].x, dy = S[j].y - S[i].y;
+        // Haritalar değişince (YER1/SUS1) yatay yollar karo sınırına (y = 512) yakın düşüyor; en uzun koşu pervazın
+        // büyük kısmını karo dışında bırakıp örnek sayısını 6'ya indiriyordu. Pervazın (üst ve alt) karo içinde kalan
+        // örnek noktası en çok olan koşu seçilir; en az 10 nokta aranan koşul değişmez.
+        let sigan = 0;
+        for (let k = i; k <= j; k++) {
+          const pay = ((yol.gen || 64) / 2) * (S[k].w || 1) + 3;
+          if (S[k].y - pay >= cy * 512 && S[k].y + pay <= cy * 512 + 512) sigan++;
+        }
         if (j - i >= 6 && Math.abs(dx) >= 120 && Math.abs(dy) <= 0.4 * Math.abs(dx)) {
-          if (!best || Math.abs(dx) > best.skor) best = { i, j, cx, cy, skor: Math.abs(dx) };
+          const skor = sigan * 10000 + Math.abs(dx);
+          if (!best || skor > best.skor) best = { i, j, cx, cy, skor };
         }
         i = j;
       }
-      if (best) break;
     }
     if (!best) return { hata: 'yatay yol parçası bulunamadı' };
     const yolRun = z.yollar.find((y) => {

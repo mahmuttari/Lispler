@@ -87,7 +87,12 @@ try {
     save.playerName = 'Defne'; persistSave();
     startGame({ tur: true, ulke: 6 }); game.player.invuln = 1e9;
     const bas = { tur: game.dunyaTuru, level: game.level, tema: getTheme().name };
-    const kutular = () => [game.walls, game.waters, game.spikes, game.lavas].flat().map((o) => [o.x, o.y, o.w, o.h, o.tur]);
+    // OBJ1: obje1/obje2 kutusu ülkenin resim oranına uydurulur (merkez ve alan korunur); bu yüzden
+    // Dünya Turu'nda ülke resmi, normal oyunda tema resmi seçilir ve yalnız obje kutularının en-boyu değişir.
+    // Haritanın aynılığı için objelerde merkezi, diğer engellerde tam kutuyu karşılaştır.
+    const kutular = () => [game.walls, game.waters, game.spikes, game.lavas].flat()
+      .map((o) => (o.tur === 'obje1' || o.tur === 'obje2') ? ['obje', Math.round((o.x + o.w / 2) / 2) * 2, Math.round((o.y + o.h / 2) / 2) * 2]
+        : [o.x, o.y, o.w, o.h, o.tur]);
     online.mode = 'host';
     game.dunyaTuru = true; game.level = 6; buildWalls(); buildWaters(); buildHazards();
     const turKutular = kutular();
@@ -95,6 +100,9 @@ try {
     // Yedek ressam ve ızgara: Fransa'nın (K ailesi) ressamları ve zemini geçici olarak kaldırılır
     const K = ULKE_AILELERI.K, asil = { duvar: K.duvar, su: K.su, zemin: K.zemin, o1: ULKE_OBJELERI.eyfelKulesi, o2: ULKE_OBJELERI.lavantaTarlasi };
     delete K.duvar; delete K.su; delete K.zemin; delete ULKE_OBJELERI.eyfelKulesi; delete ULKE_OBJELERI.lavantaTarlasi;
+    // Aileler artık ChatGPT zemin dokusu (aile-K-zemin) de taşıyor; "ressam yok → ızgara" yedek yolunu sınamak için
+    // doku da geçici olarak kaldırılır (doku varken zeminin çizilmesi ayrıca aşağıda sınanır)
+    const zeminResmi = GORSEL['aile-K-zemin']; delete GORSEL['aile-K-zemin'];
     let resimHatasi = null;
     try { for (const o of [game.walls, game.waters, game.spikes, game.lavas].flat()) engelResmi(o); } catch (e) { resimHatasi = e.message; }
     game.dunyaTuru = false; buildWalls(); buildWaters(); buildHazards();
@@ -102,26 +110,30 @@ try {
     online.mode = null;
     game.dunyaTuru = true; game.level = 6;
     const zemin = turZeminCiz(game.ctx);
+    if (zeminResmi) GORSEL['aile-K-zemin'] = zeminResmi;
     Object.assign(K, { duvar: asil.duvar, su: asil.su, zemin: asil.zemin });
     Object.assign(ULKE_OBJELERI, { eyfelKulesi: asil.o1, lavantaTarlasi: asil.o2 });
     for (const a of ['duvar', 'su', 'zemin']) if (!K[a]) delete K[a];
     for (const o of ['eyfelKulesi', 'lavantaTarlasi']) if (!ULKE_OBJELERI[o]) delete ULKE_OBJELERI[o];
+    const zeminAile = turZeminCiz(game.ctx);   // ressam yokken bile aile zemin dokusuyla çizilir
     endGame(false);
     startGame();
     const normal = { tur: game.dunyaTuru, level: game.level, tema: getTheme().name, ulke: turUlkesi() };
     endGame(false);
-    return { bas, turKutular, normalKutular, temalar, resimHatasi, zemin, normal };
+    return { bas, turKutular, normalKutular, temalar, resimHatasi, zemin, zeminAile, zeminResimVar: !!zeminResmi, normal };
   });
   sina('startGame({tur, ulke}): Dünya Turu, bölüm = ülke sırası, tema ülkeden', () => {
     assert.deepEqual(k.bas, { tur: true, level: 6, tema: 'Fransa' });
   });
   sina('engellerde ülke kodu; harita normal oyunun aynı bölümüyle aynı', () => {
-    assert.deepEqual(k.temalar, ['FR']);
-    assert.ok(k.turKutular.length > 10);
-    assert.deepEqual(k.turKutular, k.normalKutular);
+    assert.deepEqual(k.temalar, ['FR'], JSON.stringify(k.temalar));
+    assert.ok(k.turKutular.length > 10, String(k.turKutular.length));
+    assert.deepEqual(k.turKutular, k.normalKutular, JSON.stringify({ a: k.turKutular.length, b: k.normalKutular.length, fark: k.turKutular.map((x, i) => JSON.stringify(x) === JSON.stringify(k.normalKutular[i]) ? null : [i, x, k.normalKutular[i]]).filter(Boolean).slice(0, 3) }));
   });
   sina('ressamı eksik ülkede engel resmi hata vermez (yedek ressam)', () => { assert.equal(k.resimHatasi, null); });
-  sina('zemin ressamı yokken turZeminCiz false (ızgara çizilir)', () => { assert.equal(k.zemin, false); });
+  sina('zemin ressamı ve zemin dokusu yokken turZeminCiz false (ızgara çizilir)', () => { assert.equal(k.zemin, false); });
+  // Ailelerin ChatGPT zemin dokusu (aile-<X>-zemin): ülke ressamı olmasa da zemin dokudan çizilir
+  sina('zemin ressamı yokken aile zemin dokusu çizilir (aile-K-zemin)', () => { assert.ok(k.zeminResimVar); assert.equal(k.zeminAile, true); });
   sina('startGame(): normal oyun, bölüm 1, Mor Şato', () => { assert.deepEqual(k.normal, { tur: false, level: 1, tema: 'Mor Şato', ulke: null }); });
 
   // --- 3) Ekran: ana menü düğmesi, rota kartları, seçim, pasaport ---
@@ -142,7 +154,7 @@ try {
       sayac: document.getElementById('tur-sayac').textContent.trim(), kitalar: document.querySelectorAll('#tur-liste .tur-kita').length,
       ilkSecili: secili(), enKisa: Math.min(...kartlar.map((k) => k.getBoundingClientRect().height)),
       trResim: (kart(1).querySelector('img') || {}).src || '', ad: (kart(6).querySelector('bdi') || {}).textContent,
-      durum: [kart(1), kart(3), kart(20)].map((k) => k.querySelector('.tur-durum').textContent),
+      durum: [kart(1), kart(3), kart(20)].map((k) => ['damgali', 'acik', 'kilitli'].find((c) => k.classList.contains(c))),
     };
     kart(20).click(); r.kilitliSonra = secili();
     kart(3).click(); r.acikSonra = secili();
@@ -157,9 +169,11 @@ try {
   sina('ana menüde 🌍 Dünya Turu düğmesi Online Oyna\'nın üstünde', () => { assert.ok(e.turDugme >= 0 && e.turDugme < e.online, `${e.turDugme} / ${e.online}`); });
   sina('Dünya Turu ekranı: 51 ülke + 1 Yakında kartı (2 damgalı, 5 açık, 44 kilitli), 4 kıta, sayaç 🛂 2/51', () => {
     assert.ok(e.aktif);
-    assert.deepEqual([e.sayi, e.yakinda, e.damgali, e.acik, e.kilitli, e.kitalar], [51, 1, 2, 5, 44, 4]);
-    assert.equal(e.sayac, '🛂 2/51');
-    assert.deepEqual(e.durum, ['🛂', '✈️', '🔒']);
+    for (const [ad, v, bek] of [['sayi', e.sayi, 51], ['yakinda', e.yakinda, 1], ['damgali', e.damgali, 2], ['acik', e.acik, 5], ['kilitli', e.kilitli, 44], ['kitalar', e.kitalar, 4]])
+      assert.equal(v, bek, `${ad}=${v} (beklenen ${bek}); sayaç ${e.sayac}, durum ${JSON.stringify(e.durum)}`);
+    assert.equal(e.sayac, '🛂 2/51', `sayaç ${e.sayac}`);
+    // Durum simgesi artık metin değil, kart sınıfıyla (damgalı/açık/kilitli) belirlenir
+    assert.deepEqual(e.durum, ['damgali', 'acik', 'kilitli'], JSON.stringify(e.durum));
   });
   sina('kartlarda ad <bdi> içinde, ressamı olan ülkede küçük resim, dokunma hedefi ≥ 44 px', () => {
     assert.equal(e.ad, 'Fransa'); assert.match(e.trResim, /^data:image\/png/); assert.ok(e.enKisa >= 44, String(e.enKisa));

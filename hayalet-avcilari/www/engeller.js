@@ -1012,6 +1012,18 @@
     return _cizDuvar.liste;
   };
   const listeler = () => [cizimDuvarlari(), game.waters || [], game.spikes || [], game.lavas || []];
+  // "Hepsinin biçimi var mı" yanıtı dört listenin kimliği ve boyu değişmedikçe yeniden hesaplanmaz
+  // (duvarSirasi'nın _sira'sı gibi); engelBicimleriniKur sonrası bir kez tazelenir.
+  let _bicimTam = { kaynak: null, n: null, tam: true };
+  function bicimlerTamMi(ls) {
+    const n = [ls[0].length, ls[1].length, ls[2].length, ls[3].length];
+    if (!_bicimTam.kaynak || _bicimTam.kaynak[0] !== ls[0] || _bicimTam.kaynak[1] !== ls[1] ||
+      _bicimTam.kaynak[2] !== ls[2] || _bicimTam.kaynak[3] !== ls[3] ||
+      _bicimTam.n[0] !== n[0] || _bicimTam.n[1] !== n[1] || _bicimTam.n[2] !== n[2] || _bicimTam.n[3] !== n[3]) {
+      _bicimTam = { kaynak: ls.slice(), n, tam: !ls.some((l) => l.some((o) => !o.bicim)) };
+    }
+    return _bicimTam.tam;
+  }
   // duvar ve objeler alt kenarlarına göre (önde duran sonra çizilir); liste her bölümde yenidir
   function duvarSirasi() {
     const W = game.walls || [];
@@ -1114,8 +1126,9 @@
     const t0 = performance.now();
     _boyanan = 0;
     const s = engelOlcegi();
-    if (s !== _sonOlcek) { for (const l of listeler()) for (const o of l) { o._resim = null; o._olcek = 0; o._isinma = 0; } _sonOlcek = s; _isinmaTamam = 0; } // ekran döndü: hepsi yeniden
-    if (listeler().some((l) => l.some((o) => !o.bicim))) engelBicimleriniKur();
+    const ls = listeler();
+    if (s !== _sonOlcek) { for (const l of ls) for (const o of l) { o._resim = null; o._olcek = 0; o._isinma = 0; } _sonOlcek = s; _isinmaTamam = 0; } // ekran döndü: hepsi yeniden
+    if (!bicimlerTamMi(ls)) { engelBicimleriniKur(); _bicimTam.tam = !ls.some((l) => l.some((o) => !o.bicim)); }
     const m = ctx.getTransform ? ctx.getTransform() : null;
     _matris = m && { a: m.a, e: m.e, f: m.f, bir: m.b === 0 && m.c === 0 && m.a === m.d && Math.abs(m.a - s) < 1e-9 };
     const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0;
@@ -1125,13 +1138,18 @@
     if (kip !== "on") {
       // Sular iki geçişte: önce hepsi kıyısıyla, sonra başka gölle kesişenlerin yalnız suyu yeniden (kesişen göller tek göl
       // gibi birleşir); dalgalar ve canlı süsler en üstte
-      const sular = (game.waters || []).filter((o) => !o.gecit && gor(o, 12)), canlilar = sular.map((o) => resimCiz(ctx, o));
-      sular.forEach((o, i) => {
-        const ic = komsuMu(o) ? icResmi(o) : null;
-        if (ic) bas(ctx, ic, o.x, o.y, o.w, o.h);
-        dalgalar(ctx, o, zaman);
-        canliCiz(ctx, o, canlilar[i], zaman);
-      });
+      // Görüşte su yoksa filtre/map dizileri hiç kurulmaz (yolculuk haritasında çoğu karede su görünmez)
+      let sular = null;
+      if (game.waters) for (const o of game.waters) if (!o.gecit && gor(o, 12)) (sular || (sular = [])).push(o);
+      if (sular) {
+        const canlilar = sular.map((o) => resimCiz(ctx, o));
+        sular.forEach((o, i) => {
+          const ic = komsuMu(o) ? icResmi(o) : null;
+          if (ic) bas(ctx, ic, o.x, o.y, o.w, o.h);
+          dalgalar(ctx, o, zaman);
+          canliCiz(ctx, o, canlilar[i], zaman);
+        });
+      }
       for (const o of game.spikes || []) if (gor(o, 6)) resimCiz(ctx, o);
       for (const o of game.lavas || []) {
         if (!gor(o, 40)) continue;

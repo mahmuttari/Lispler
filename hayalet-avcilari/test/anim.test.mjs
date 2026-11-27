@@ -79,10 +79,11 @@ try {
     o.para = { en: Math.min(...sxs), ec: Math.max(...sxs) };
     animEfektleri.length = 0;
     toplamaEfekti({ kind: 'elmas', x: 10, y: 10 });
-    o.topla = { sayi: animEfektleri.length, renk: animEfektleri[0] && animEfektleri[0].renk };
+    // N13: an-elmas/toplama-halka kareleri yüklüyse efekt ChatGPT kare efektidir (tur 'kare', renk alanı yok); yoksa renkli halka
+    o.topla = { sayi: animEfektleri.length, renk: animEfektleri[0] && animEfektleri[0].renk, tur: animEfektleri[0] && animEfektleri[0].tur, ad: animEfektleri[0] && animEfektleri[0].ad };
     const cv = document.createElement('canvas'); const c = cv.getContext('2d');
     animEfektleriCiz(c, animEfektleri[0].bas + 100); o.toplaSurer = animEfektleri.length;
-    animEfektleriCiz(c, animEfektleri[0].bas + ANIM.toplaSn * 1000 + 50); o.toplaBitti = animEfektleri.length;
+    animEfektleriCiz(c, animEfektleri[0].bas + Math.max(ANIM.toplaSn, animEfektleri[0].sure || 0) * 1000 + 50); o.toplaBitti = animEfektleri.length;
     for (let i = 0; i < 100; i++) animEfektEkle('topla', 0, 0); o.tavan = animEfektleri.length;
     animEfektleri.length = 0;
     o.nefes = { dur: avciNefes(T + 300, false) !== 0 || avciNefes(T + 900, false) !== 0, yuru: avciNefes(T + 300, true) };
@@ -107,7 +108,9 @@ try {
   });
   sina('para döner (kenardan görünüşte incelir)', () => { assert.ok(r.para.en < 0.3 && r.para.ec > 0.95, JSON.stringify(r.para)); });
   sina('toplanınca renkli halka açılır ve süresi bitince silinir; liste taşmaz', () => {
-    assert.equal(r.topla.sayi, 1); assert.equal(r.topla.renk, '96, 165, 250');
+    assert.equal(r.topla.sayi, 1);
+    if (r.topla.tur === 'kare') assert.equal(r.topla.ad, 'toplama-halka'); // kare efekti: ad var, süresi bitince silinir
+    else { assert.equal(r.topla.tur, 'topla'); assert.equal(r.topla.renk, '96, 165, 250'); }
     assert.equal(r.toplaSurer, 1); assert.equal(r.toplaBitti, 0); assert.ok(r.tavan <= 61, String(r.tavan));
   });
   sina('avcı dururken nefes alır, yürürken almaz', () => { assert.equal(r.nefes.dur, true); assert.equal(r.nefes.yuru, 0); });

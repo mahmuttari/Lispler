@@ -1061,7 +1061,12 @@
       if (game._zeminParcalari && typeof game._zeminParcalari.clear === "function") game._zeminParcalari.clear();
       else game._zeminParcalari = new Map();
     }
+    _zeminGorunum.liste = null; _zeminGorunum.halkaTam = false;
   }
+
+  // Son çizilen görünümün hazır parçaları: görünüm hücreleri ve önbellek değişmedikçe her karede
+  // anahtar kurmak/aramak ve çevre halkasını taramak yerine liste doğrudan çizilir (davranış aynı).
+  const _zeminGorunum = { onbellek: null, boyut: -1, x0: NaN, y0: NaN, x1: NaN, y1: NaN, s: 0, liste: null, halkaTam: false };
 
   // Görünür parçaları önbellekten çiz; eksikse bu çağrıda en çok birini kur
   function zeminKatmaniCiz(ctx) {
@@ -1079,25 +1084,35 @@
     let kurulan = false;
     const eskiDuz = ctx.imageSmoothingEnabled;
     ctx.imageSmoothingEnabled = false; // parçalar dünya ölçeğinde 1:1; yumuşatma taraması pahalı
-    for (let cy = y0; cy <= y1; cy++) {
-      for (let cx = x0; cx <= x1; cx++) {
-        const anahtar = cx + "|" + cy + "|" + s;
-        const varOlan = onbellek.get(anahtar);
-        if (varOlan !== undefined) {
-          if (varOlan) ctx.drawImage(varOlan, cx * PARCA, cy * PARCA, PARCA, PARCA);
-          continue;
-        }
-        if (!kurulan) {
-          // Kurulan parça aynı karede çizilir (eskiden bir sonraki kareye kalıyordu: kamera kayınca dikdörtgen boşluk)
-          const yeni = parcaKur(zemin, cx, cy, s) || 0;
-          onbellek.set(anahtar, yeni);
-          if (yeni) ctx.drawImage(yeni, cx * PARCA, cy * PARCA, PARCA, PARCA);
-          kurulan = true;
+    const G = _zeminGorunum;
+    const ayni = G.onbellek === onbellek && G.boyut === onbellek.size && G.s === s &&
+      G.x0 === x0 && G.y0 === y0 && G.x1 === x1 && G.y1 === y1 && G.liste;
+    if (ayni) {
+      // Görünüm değişmedi: hazır listedeki parçaları doğrudan çiz
+      for (const q of G.liste) ctx.drawImage(q.canvas, q.x, q.y, PARCA, PARCA);
+      if (G.halkaTam) { ctx.imageSmoothingEnabled = eskiDuz; return; }
+    } else {
+      for (let cy = y0; cy <= y1; cy++) {
+        for (let cx = x0; cx <= x1; cx++) {
+          const anahtar = cx + "|" + cy + "|" + s;
+          const varOlan = onbellek.get(anahtar);
+          if (varOlan !== undefined) {
+            if (varOlan) ctx.drawImage(varOlan, cx * PARCA, cy * PARCA, PARCA, PARCA);
+            continue;
+          }
+          if (!kurulan) {
+            // Kurulan parça aynı karede çizilir (eskiden bir sonraki kareye kalıyordu: kamera kayınca dikdörtgen boşluk)
+            const yeni = parcaKur(zemin, cx, cy, s) || 0;
+            onbellek.set(anahtar, yeni);
+            if (yeni) ctx.drawImage(yeni, cx * PARCA, cy * PARCA, PARCA, PARCA);
+            kurulan = true;
+          }
         }
       }
     }
     // Ekrandaki parçaların hepsi hazırsa bu karede görünüm çevresinden (bir parça pay) bir parça önceden kurulur:
     // kamera kayarken yeni açılan bölge hazır olur, parçalar gecikmeli belirmez
+    let halkaKurdu = false;
     if (!kurulan) {
       dis: for (let cy = y0 - 1; cy <= y1 + 1; cy++) {
         for (let cx = x0 - 1; cx <= x1 + 1; cx++) {
@@ -1105,10 +1120,27 @@
           const anahtar = cx + "|" + cy + "|" + s;
           if (onbellek.get(anahtar) !== undefined) continue;
           onbellek.set(anahtar, parcaKur(zemin, cx, cy, s) || 0);
+          halkaKurdu = true;
           break dis;
         }
       }
     }
+    // Görünüm listesini tazele (tüm görünür parçalar hazırsa) ve halka tamam bayrağını güncelle
+    if (!kurulan) {
+      const liste = [];
+      let eksik = false;
+      for (let cy = y0; cy <= y1 && !eksik; cy++) for (let cx = x0; cx <= x1; cx++) {
+        const cv = onbellek.get(cx + "|" + cy + "|" + s);
+        if (cv === undefined) { eksik = true; break; }
+        if (cv) liste.push({ canvas: cv, x: cx * PARCA, y: cy * PARCA });
+      }
+      G.liste = eksik ? null : liste;
+      G.halkaTam = !halkaKurdu;
+    } else {
+      G.liste = null; G.halkaTam = false;
+    }
+    G.onbellek = onbellek; G.boyut = onbellek.size; G.s = s;
+    G.x0 = x0; G.y0 = y0; G.x1 = x1; G.y1 = y1;
     ctx.imageSmoothingEnabled = eskiDuz;
   }
 

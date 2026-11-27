@@ -742,6 +742,7 @@ function yolculukHaritaKur() {
       if (cak(bx, by, bw, bh, pay)) return false;
       if (Math.hypot(x - bas.x, y - bas.y) < 300) return false;
       if (!zone && Math.abs(y - A.worldH / 2) < 150) return false; // arena: orta şerit boss ve oyuncu yolu, yuva konmaz
+      if (!zone && yolculukArenaKapida(d, bx, by, bw, bh)) return false; // arena kapısının zemini boş kalır
       if (game.yuvalar.some((o) => Math.hypot(o.x - x, o.y - y) < ara)) return false;
       const tur = havuz[Math.min(havuz.length - 1, Math.floor(rnd(bolge, 960 + sy) * havuz.length))];
       const yv = { x: x, y: y, tur, bolge, r };
@@ -798,6 +799,7 @@ function yolculukHaritaKur() {
         if (yolculukMeydanda(o.x, o.y, d.arena)) continue;
         // arena: orta şerit (boss ve oyuncu yolu) ile giriş ağzı boş kalır
         if (Math.abs(o.y - A.worldH / 2) < 150 + h / 2 || x < d.arena.x0 + A.agizBos + 40) continue;
+        if (yolculukArenaKapida(d, x, y, w, h)) continue; // arena kapısının zemini boş kalır
         if (cak(x, y, w, h, 20)) continue;
         game.walls.push({ x, y, w, h, tur: o.tip === "anit" ? "obje1" : o.tip === "obje" ? "obje2" : "duvar" });
       }
@@ -926,6 +928,7 @@ function yolculukDonatilariKur() {
         if (zone && yolculukYasakKutu(bx, by, w, h, d, zone, oncekiCy)) continue; // koridor + köprü ağzı
         if (!zone && Math.hypot(x - bas.x, y - bas.y) < 140 + w / 2) continue;    // başlangıç tabelası
         if (x > d.arena.x0 - 140) continue;                                        // arena kapısı
+        if (yolculukArenaKapida(d, bx, by, w, h)) continue;                        // arena kapısının zemini boş kalır
         if (d.zones.some((z) => x > z.gate.x0 - 140 && x < z.gate.x1 + 140 && y > z.gate.bridgeY0 - 140 && y < z.gate.bridgeY1 + 140)) continue;
         if ((game.yuvalar || []).some((y2) => Math.hypot(y2.x - x, y2.y - y) < 90 + w / 2)) continue; // yuva ağzı (bölgede 4 yuva)
         if (cak(bx, by, w, h, 4)) continue; // su, duvar, diken, lav
@@ -972,6 +975,44 @@ function yolculukDonatilariCiz(ctx, kip) {
   }
 }
 
+// KPI1: arena kapısı — son geçit nehrinin ARKASINDAKİ karada duran yer imi. Eşiği yürüme hattına (cy) oturur.
+// Saf aritmetik; sonuç d üzerinde önbelleklenir, aynı d için hep aynı kutuyu verir.
+function yolculukArenaKapiKutu(d) {
+  if (!d) d = (typeof game !== "undefined" && game && game._yolculukDuzen) ? game._yolculukDuzen : null;
+  if (!d) return null;
+  if (d._arenaKapi) return d._arenaKapi;
+  const A = YOLCULUK_AYAR;
+  try {
+    const z = d.zones[d.zones.length - 1], g = z.gate, cy = g.cy, w = 220, h = 220;
+    const y = cy + 44 - h;
+    const egri = yolculukGecitEgri(z);
+    let sagKiyi = -Infinity;
+    for (let yy = y; yy <= y + h; yy += 8) {
+      const s = egri.merkez + egri.yarim + egri.offset(yy);
+      if (s > sagKiyi) sagKiyi = s;
+    }
+    const K = yolculukKopruKutu(yolculukKopruTabloAnahtari(), (g.x0 + g.x1) / 2, cy);
+    let x = Math.ceil(Math.max(sagKiyi + 24, K.x + K.w + 8, d.arena.x0 + 24));
+    if (x + w > d.arena.x1 - 200) x = d.arena.x1 - 200 - w;
+    const k = { x, y, w, h, taban: cy + 10, cx: x + w / 2, cy };
+    d._arenaKapi = k;
+    return k;
+  } catch (e) {
+    const bx = d.arena ? d.arena.x0 + 120 : 0, by = A.worldH / 2 - 176;
+    const k = { x: bx, y: by, w: 220, h: 220, taban: A.worldH / 2 + 10, cx: bx + 110, cy: A.worldH / 2 };
+    d._arenaKapi = k;
+    return k;
+  }
+}
+// (x, y, w, h) kutusu arena kapısı kutusuna (24 px şişirilmiş) değiyor mu
+function yolculukArenaKapida(d, x, y, w, h) {
+  try {
+    const k = yolculukArenaKapiKutu(d);
+    if (!k) return false;
+    return x < k.x + k.w + 24 && x + w > k.x - 24 && y < k.y + k.h + 24 && y + h > k.y - 24;
+  } catch (e) { return false; }
+}
+
 // GOR1C: tema parçaları — arena girişi, başlangıç tabelası, temizlenen bölgenin bayrağı. Yalnız ekranda olan çizilir;
 // hiçbiri duvar/çarpışma eklemez, oyuncunun arkasında (hayaletlerden ve oyuncudan önce) çizilir.
 function yolculukTemaParcalariCiz(ctx, kip) {
@@ -991,10 +1032,10 @@ function yolculukTemaParcalariCiz(ctx, kip) {
     gorselKutuya(ctx, anahtar, x, y, w, h, anahtar !== yolculukTemaParca("arena"));
     ctx.globalAlpha = eski;
   };
-  const arenaK = yolculukTemaParca("arena");
+  const arenaK = window.__kapiYok ? null : yolculukTemaParca("arena"); // __kapiYok: sınama kancası (kapı maliyeti ölçümü)
   if (arenaK) {
-    const aw = 220, ax = d.arena.x0 - aw / 2, ay = A.worldH / 2 - aw / 2;
-    if (gorunur(ax, ay, aw, aw)) parca(arenaK, ax, ay, aw, aw, ay + aw);
+    const k = yolculukArenaKapiKutu(d);
+    if (gorunur(k.x, k.y, k.w, k.h)) parca(arenaK, k.x, k.y, k.w, k.h, k.taban);
   }
   const tabelaK = yolculukTemaParca("tabela");
   if (tabelaK) {

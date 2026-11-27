@@ -435,65 +435,42 @@
     "kredi": {}
   },
   "CI": {
-    "gorev": "2e2b32cd63e5de1b67b94a29b1e462ba",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ci-1.mp3",
-        "sure": 119.173,
-        "tempo": 128.15,
+        "dosya": "CI.mp3",
+        "sure": 126.0,
+        "tempo": 100.95,
         "dongu": {
-          "bas": 48.9054,
-          "uzunluk": 33.74585,
-          "vurus": 72
+          "bas": 38.8896,
+          "uzunluk": 28.4781,
+          "vurus": 48
         },
-        "ekYeri": 0.9681,
-        "sabitlik": 0.8971,
-        "puan": 0.9524,
+        "ekYeri": 0.9505,
+        "sabitlik": 0.8622,
+        "puan": 0.7987,
         "teaser": {
-          "bas": 17.9181,
-          "son": 22.0977
-        },
-        "id": "b453fccd-57e9-43f9-a01e-16319b05a13c",
-        "etiketler": "Ivorian balafon festival dance, balafon carries a nimble lead melody over djembe and talking drum, bright guitar accents the counter-melody; steady, danceable groove around 128 BPM, rich polyphonic ensemble with layered balafon figures and a buoyant rhythm section; cheerful adventure video game background music, constant energy, loop-friendly transitions, bright warm acoustic mix, instrumental."
-      },
-      {
-        "dosya": "hayalet-avcilari-ci-2.mp3",
-        "sure": 118.813,
-        "tempo": 129.02,
-        "dongu": {
-          "bas": 30.7024,
-          "uzunluk": 33.47265,
-          "vurus": 72
-        },
-        "ekYeri": 0.9774,
-        "sabitlik": 0.8919,
-        "puan": 0.9512,
-        "teaser": {
-          "bas": 32.5786,
-          "son": 36.7582
-        },
-        "id": "c0582a39-1555-47f9-9cbe-bac8754619f3",
-        "etiketler": "Ivorian balafon festival dance, cheerful adventure video game background music in a bright warm acoustic mix; steady, danceable groove at around 128 BPM, constant energy through a loop-friendly arrangement; instrumental; balafon leads the melody and counter-melody, with djembe, talking drum, and bright guitar supporting a rich polyphonic rhythm section."
+          "bas": 47.1819,
+          "son": 51.3383
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -5.8,
+    "tepe": -5.5,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3796,
-    "ekOrani": 0.049,
+    "girisSure": 5.3564,
+    "ekOrani": 0.752,
     "dosyalar": {
       "dongu": "muzik/CI-dongu.ogg",
       "giris": "muzik/CI-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 33.84585,
-    "tempo": 128.15,
-    "kredi": {
-      "kalan": 632.5
-    }
+    "bas": 0.1025,
+    "son": 28.5806,
+    "tempo": 100.95,
+    "kredi": {}
   },
   "GH": {
     "gorev": "5a67ecfd3186b73b58950f78f7686a71",

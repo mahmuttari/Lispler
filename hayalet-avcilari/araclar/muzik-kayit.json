@@ -961,65 +961,42 @@
     }
   },
   "MG": {
-    "gorev": "4d58cb2b07776c7e28a74b78a3e12cb0",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-mg-1.mp3",
-        "sure": 120.013,
-        "tempo": 129.29,
+        "dosya": "MG.mp3",
+        "sure": 157.2,
+        "tempo": 99.81,
         "dongu": {
-          "bas": 31.3637,
-          "uzunluk": 27.76094,
-          "vurus": 60
+          "bas": 89.6947,
+          "uzunluk": 31.47469,
+          "vurus": 52
         },
-        "ekYeri": 0.9709,
-        "sabitlik": 0.899,
-        "puan": 0.9487,
+        "ekYeri": 0.9624,
+        "sabitlik": 0.7707,
+        "puan": 0.7715,
         "teaser": {
-          "bas": 96.5977,
-          "son": 100.7773
-        },
-        "id": "c4d6e785-a006-4d29-b058-08fda047891a",
-        "etiketler": "Malagasy salegy, instrumental; rich polyphonic ensemble in a bright warm acoustic mix, loop-friendly; cheerful adventure video game background music with a lead melody, counter-melody and rhythm section, valiha tube zither, kabosy guitar, accordion and kaiamba shaker; steady danceable 6/8 around 128 BPM, constant energy."
-      },
-      {
-        "dosya": "hayalet-avcilari-mg-2.mp3",
-        "sure": 119.221,
-        "tempo": 128.01,
-        "dongu": {
-          "bas": 37.7821,
-          "uzunluk": 30.0009,
-          "vurus": 64
-        },
-        "ekYeri": 0.9877,
-        "sabitlik": 0.728,
-        "puan": 0.9122,
-        "teaser": {
-          "bas": 53.2464,
-          "son": 57.4725
-        },
-        "id": "5df8b779-7ec5-4cd7-a7d8-043001974147",
-        "etiketler": "Malagasy salegy, rich polyphonic ensemble in a bright warm acoustic mix, cheerful adventure video game background music; valiha tube zither carries a lead melody and counter-melody above kabosy guitar, accordion and kaiamba shaker rhythm section; instrumental; steady danceable 6/8 around 128 BPM, constant energy, loop-friendly."
+          "bas": 135.7464,
+          "son": 140.0188
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -5.9,
+    "tepe": -4.8,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3796,
-    "ekOrani": 0.291,
+    "girisSure": 5.4724,
+    "ekOrani": 0.314,
     "dosyalar": {
       "dongu": "muzik/MG-dongu.ogg",
       "giris": "muzik/MG-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 27.86094,
-    "tempo": 129.29,
-    "kredi": {
-      "kalan": 524.5
-    }
+    "bas": 0.1075,
+    "son": 31.58219,
+    "tempo": 99.81,
+    "kredi": {}
   },
   "TZ": {
     "gorev": "078d414ff86001de357a126c147e7024",

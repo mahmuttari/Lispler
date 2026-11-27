@@ -128,7 +128,8 @@ try {
     return { parca: yolculukTemaParca("nehir"), patSrcs: r.patSrcs, desen: r.desen };
   });
   sina("tema 2 geçit nehri tema2-su deseniyle döşenir", () => {
-    assert.equal(nehir.parca, null);
+    // Kıyıları resme işli yol<n>-nehir parçası (J paftası) geçit kanalına uymaz: varsa bile nehir onunla döşenmez
+    assert.ok(!nehir.patSrcs.some((s) => /yol\d-nehir/.test(s)), JSON.stringify(nehir.patSrcs));
     assert.ok(nehir.desen >= 1, `createPattern ${nehir.desen}`);
     assert.ok(nehir.patSrcs.some((s) => s.includes("tema2-su")), JSON.stringify(nehir.patSrcs));
   });

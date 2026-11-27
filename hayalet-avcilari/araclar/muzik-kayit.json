@@ -2607,64 +2607,41 @@
     "kredi": {}
   },
   "AR": {
-    "gorev": "18d1f1dede4a7fd35e6c82916189f8ae",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ar-1.mp3",
-        "sure": 121.549,
-        "tempo": 129.92,
+        "dosya": "AR.mp3",
+        "sure": 156.0,
+        "tempo": 100.03,
         "dongu": {
-          "bas": 46.2289,
-          "uzunluk": 27.68488,
-          "vurus": 60
+          "bas": 25.0513,
+          "uzunluk": 28.75854,
+          "vurus": 48
         },
-        "ekYeri": 0.9655,
-        "sabitlik": 0.7075,
-        "puan": 0.8854,
+        "ekYeri": 0.9558,
+        "sabitlik": 0.6337,
+        "puan": 0.7281,
         "teaser": {
-          "bas": 39.7721,
-          "son": 43.9053
-        },
-        "id": "699da65a-12fe-42fd-ab24-f666f5d8dd6e",
-        "etiketler": "Argentine milonga, the lively member of the tango family; around 128 BPM, driving 2/4 dance groove, playful and heroic; bright warm acoustic mix with constant energy; bandoneon, violin, piano and double bass weave a rich polyphonic ensemble, lead melody over counter-melody; instrumental, loop-friendly ending."
-      },
-      {
-        "dosya": "hayalet-avcilari-ar-2.mp3",
-        "sure": 119.221,
-        "tempo": 131.39,
-        "dongu": {
-          "bas": 40.31,
-          "uzunluk": 29.27529,
-          "vurus": 64
-        },
-        "ekYeri": 0.9722,
-        "sabitlik": 0.5664,
-        "puan": 0.8391,
-        "teaser": {
-          "bas": 85.9406,
-          "son": 90.0505
-        },
-        "id": "a2b724be-3aa8-4b46-adf6-4fbf33599fe6",
-        "etiketler": "Argentine milonga, the lively member of the tango family, bright warm acoustic mix; bandoneon, violin, piano and double bass carry a playful and heroic lead melody with a counter-melody and steady rhythm section; instrumental, driving 2/4 dance groove around 128 BPM, rich polyphonic ensemble, constant energy, loop-friendly."
+          "bas": 22.6578,
+          "son": 26.8606
+        }
       }
     ],
-    "lufs": -18.0,
-    "tepe": -3.0,
+    "lufs": -17.9,
+    "tepe": -5.6,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3332,
-    "ekOrani": 0.074,
+    "girisSure": 5.4028,
+    "ekOrani": 0.469,
     "dosyalar": {
       "dongu": "muzik/AR-dongu.ogg",
       "giris": "muzik/AR-giris.ogg"
     },
-    "bas": 0.11,
-    "son": 27.79488,
-    "tempo": 129.92,
-    "kredi": {
-      "kalan": 164.5
-    }
+    "bas": 0.1,
+    "son": 28.85854,
+    "tempo": 100.03,
+    "kredi": {}
   }
 }

@@ -1464,65 +1464,42 @@
     "kredi": {}
   },
   "IR": {
-    "gorev": "5b714bc3897052d26c7d20ebfe3df64d",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ir-1.mp3",
-        "sure": 120.013,
-        "tempo": 128.86,
+        "dosya": "IR.mp3",
+        "sure": 173.0,
+        "tempo": 96.92,
         "dongu": {
-          "bas": 65.97,
-          "uzunluk": 27.95444,
-          "vurus": 60
+          "bas": 118.3956,
+          "uzunluk": 32.60981,
+          "vurus": 52
         },
-        "ekYeri": 0.9652,
-        "sabitlik": 0.7984,
-        "puan": 0.9178,
+        "ekYeri": 0.9581,
+        "sabitlik": 0.5775,
+        "puan": 0.6969,
         "teaser": {
-          "bas": 95.2967,
-          "son": 99.5227
-        },
-        "id": "ae2195c4-25f9-4e87-8a47-30c28b6cd2d6",
-        "etiketler": "Persian folk, steady danceable 6/8 at around 128 BPM in the bright Mahur mode; santur, tar, kamancheh, tombak and daf shape a rich polyphonic ensemble with a lead melody and counter-melody over a buoyant rhythm section; instrumental, cheerful bright warm acoustic mix, continuous energy, loop-friendly adventure video game background music."
-      },
-      {
-        "dosya": "hayalet-avcilari-ir-2.mp3",
-        "sure": 118.813,
-        "tempo": 98.03,
-        "dongu": {
-          "bas": 53.601,
-          "uzunluk": 29.38406,
-          "vurus": 48
-        },
-        "ekYeri": 0.9504,
-        "sabitlik": 0.8505,
-        "puan": 0.7805,
-        "teaser": {
-          "bas": 70.1321,
-          "son": 74.4278
-        },
-        "id": "1a0d4b71-fb2d-4eef-8e5c-b23afeecb2f0",
-        "etiketler": "Persian folk, bright warm acoustic mix, rich polyphonic ensemble with a repeating loop-friendly lead, cheerful adventure game feel; steady, danceable 6/8 at around 128 BPM in bright Mahur mode; instrumental, santur carries the lead melody, tar and kamancheh weave counter-melody, tombak and daf drive the rhythm, constant energy throughout."
+          "bas": 16.1145,
+          "son": 19.6672
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -3.5,
+    "tepe": -4.6,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.426,
-    "ekOrani": 0.458,
+    "girisSure": 4.7527,
+    "ekOrani": 0.449,
     "dosyalar": {
       "dongu": "muzik/IR-dongu.ogg",
       "giris": "muzik/IR-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 28.05444,
-    "tempo": 128.86,
-    "kredi": {
-      "kalan": 416.5
-    }
+    "bas": 0.1075,
+    "son": 32.71731,
+    "tempo": 96.92,
+    "kredi": {}
   },
   "UZ": {
     "gorev": "suno-pencere-2026-11",

@@ -2638,65 +2638,42 @@
     }
   },
   "MX": {
-    "gorev": "638c26dc15904f93eea96111e5025b28",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-mx-1.mp3",
-        "sure": 118.693,
-        "tempo": 136.51,
+        "dosya": "MX.mp3",
+        "sure": 111.08,
+        "tempo": 130.73,
         "dongu": {
-          "bas": 46.4262,
-          "uzunluk": 31.65513,
-          "vurus": 72
+          "bas": 23.0558,
+          "uzunluk": 29.30262,
+          "vurus": 64
         },
-        "ekYeri": 0.9897,
-        "sabitlik": 0.7946,
-        "puan": 0.8907,
+        "ekYeri": 0.9714,
+        "sabitlik": 0.8428,
+        "puan": 0.9249,
         "teaser": {
-          "bas": 98.6647,
-          "son": 102.5889
-        },
-        "id": "35a34aea-6a09-440a-b2a8-dbab544b4d50",
-        "etiketler": "Mariachi son jalisciense, instrumental; steady 6/8 dance groove around 128 BPM, upbeat energetic, playful and heroic; trumpets, violins, vihuela, guitarron and guitar drive a rich polyphonic lead melody with counter-melody and rhythm section; bright warm acoustic mix, adventure video game score feel, constant-energy arrangement with a seamless loop point and no fade-out."
-      },
-      {
-        "dosya": "hayalet-avcilari-mx-2.mp3",
-        "sure": 119.629,
-        "tempo": 132.9,
-        "dongu": {
-          "bas": 29.2279,
-          "uzunluk": 30.76223,
-          "vurus": 68
-        },
-        "ekYeri": 0.9896,
-        "sabitlik": 0.8048,
-        "puan": 0.9117,
-        "teaser": {
-          "bas": 92.0689,
-          "son": 96.1324
-        },
-        "id": "2eb622bd-3ca1-49f9-90a1-dca26995603d",
-        "etiketler": "Mariachi son jalisciense, trumpets lead the melody over interlocking violins, vihuela, guitarron and guitar drive a steady 6/8 dance groove; rich polyphonic counter-melody, playful and heroic adventure-game motion at around 128 BPM, bright warm acoustic mix, loop-friendly, constant energy throughout, instrumental."
+          "bas": 61.0678,
+          "son": 65.2242
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -2.9,
+    "tepe": -5.6,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.2635,
-    "ekOrani": 0.027,
+    "girisSure": 5.3564,
+    "ekOrani": 0.366,
     "dosyalar": {
       "dongu": "muzik/MX-dongu.ogg",
       "giris": "muzik/MX-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 30.86223,
-    "tempo": 132.9,
-    "kredi": {
-      "kalan": 212.5
-    }
+    "bas": 0.105,
+    "son": 29.40762,
+    "tempo": 130.73,
+    "kredi": {}
   },
   "CO": {
     "gorev": "suno-pencere-2026-11",

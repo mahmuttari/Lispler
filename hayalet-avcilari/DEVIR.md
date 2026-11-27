@@ -15,7 +15,9 @@ yalnız ChatGPT penceresinden, Mac'teki yerel görsel oturumu üretir (YEREL-CLA
 Bulut oturumu Mac oturumuna send_message ile ulaşamıyor (güvenilir cihaz); kullanıcıya iletmesi söylenir. Bekleyen: K17.
 
 ## Süren / kalan işler
-0. **YUV2, KPR1, SUS1 bitti** (fare/yarasa kaotik kaçış, köprü güvertesi + kemer, süs ayıklama). Botun köprü kulesine basmaması kalmadı (yan engel yalnız oyuncuda; bot takılma riski).
+0. **GLG1 (temas gölgesi), BTN1 (güç düğmeleri solda), KPI1 (arena kapısı karada), TMS1 (timsah karaya çıkar, ses), lav kenarı bitti.**
+   Kullanıcıya sorulan: ana menüde OYNA ve arkadaşlar düğmesini işaretledi, ne istediği belli değil.
+   **YUV2, KPR1, SUS1 bitti** (fare/yarasa kaotik kaçış, köprü güvertesi + kemer, süs ayıklama). Botun köprü kulesine basmaması kalmadı (yan engel yalnız oyuncuda; bot takılma riski).
    Müzik: 50 ülkeye sanatsal istemler hazır (araclar/muzik-istekleri-sanatsal.json; üretim: python3 araclar/muzik_eleven.py KOD…); ElevenLabs kotası 5 Aralık'ta yenilenir. Önce tek ülke üretip krediyi ölç (100 sn = 1375 kredi).
 1. **DT1 bitti** (Dünya Turu köprüleri, arena, ortak nehir, yolculuk çubuğu simgeleri; commit edildi).
 2. **zem3b (c)** "yolun üst/sol pervazı… yeterli örnek yok: 6" HEAD'de de düşüyor (yerleşim şablonları/KPR1 sonrası; örnek noktalar azalmış): TST1'e ekle.

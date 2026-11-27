@@ -1144,65 +1144,42 @@
     }
   },
   "KE": {
-    "gorev": "e26fea65c36e7b6f0462fa17d1f490bb",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ke-1.mp3",
-        "sure": 119.221,
-        "tempo": 129.0,
+        "dosya": "KE.mp3",
+        "sure": 126.8,
+        "tempo": 106.87,
         "dongu": {
-          "bas": 42.4462,
-          "uzunluk": 27.98556,
-          "vurus": 60
+          "bas": 54.8048,
+          "uzunluk": 31.38023,
+          "vurus": 56
         },
-        "ekYeri": 0.9747,
-        "sabitlik": 0.8607,
-        "puan": 0.9405,
+        "ekYeri": 0.9639,
+        "sabitlik": 0.8423,
+        "puan": 0.829,
         "teaser": {
-          "bas": 83.6997,
-          "son": 87.9025
-        },
-        "id": "83dcf51f-0b97-4770-8998-eebe6c79b66a",
-        "etiketler": "Kenyan benga, instrumental rich polyphonic ensemble led by nimble benga guitars, with nyatiti lyre counter-melody over bass and drums; cheerful adventure video game background music, steady danceable groove around 128 BPM, constant energy with no breakdown and no fade-out; lead melody and rhythm section interlock in a bright warm acoustic mix, loop-friendly."
-      },
-      {
-        "dosya": "hayalet-avcilari-ke-2.mp3",
-        "sure": 118.789,
-        "tempo": 128.45,
-        "dongu": {
-          "bas": 24.9494,
-          "uzunluk": 29.94529,
-          "vurus": 64
-        },
-        "ekYeri": 0.9745,
-        "sabitlik": 0.8391,
-        "puan": 0.9367,
-        "teaser": {
-          "bas": 80.1523,
-          "son": 84.3551
-        },
-        "id": "fe75bab2-5d26-464e-b38b-b70c5e6846c6",
-        "etiketler": "Kenyan benga, steady danceable groove around 128 BPM, cheerful adventure video game background music, instrumental, bright warm acoustic mix, rich polyphonic ensemble with a lead melody and counter-melody over benga guitars, nyatiti lyre, bass and drums, upbeat rhythm section, loop-friendly phrasing with constant energy."
+          "bas": 84.488,
+          "son": 88.4121
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -6.1,
+    "tepe": -6.4,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.4028,
+    "girisSure": 5.1241,
     "ekOrani": 0.032,
     "dosyalar": {
       "dongu": "muzik/KE-dongu.ogg",
       "giris": "muzik/KE-giris.ogg"
     },
     "bas": 0.1,
-    "son": 28.08556,
-    "tempo": 129.0,
-    "kredi": {
-      "kalan": 488.5
-    }
+    "son": 31.48023,
+    "tempo": 106.87,
+    "kredi": {}
   },
   "ET": {
     "gorev": "cee5dcf000267b5dd0bee33d9d880123",

@@ -495,14 +495,30 @@ function yolculukSablonYerle(y, x0, x1, ayna) {
     }
     ogeler.push(e);
   }
-  const yol = Array.isArray(y.yol) ? y.yol.map((p) => ({ x: mx(p[0]), y: my(p[1]) })) : [];
+  // Patika noktaları bölge kenarlarından içeride kalır: geçit nehri kıvrımlıdır, geçide yakın nokta patikayı nehre sokar
+  const yx = (x) => Math.max(x0 + 40, Math.min(x1 - 120, x));
+  const yol = Array.isArray(y.yol) ? y.yol.map((p) => ({ x: yx(mx(p[0])), y: my(p[1]) })) : [];
+  if (ayna) yol.reverse(); // aynalı şablonda da patika soldaki girişten sağdaki geçide gider (yoksa bölgeyi zikzakla keser)
   return { id: y.id, ogeler, meydanlar, yol };
 }
 
-function yolculukMeydanda(x, y, z) {
-  const liste = z && z._sablonMeydan;
-  if (!liste || !liste.length) return false;
-  for (const m of liste) if (Math.hypot(x - m.x, y - m.y) < m.r) return true;
+// Şablonun meydanı (merkez noktası içinde mi) ya da şablon patikası (w×h kutusu patikanın 40 px yakınında mı): ikisine de
+// öğe, göl, yuva ve donatı konmaz; yoksa patika göle girer ya da objeyle kesilir.
+function yolculukMeydanda(x, y, z, w = 0, h = 0) {
+  if (!z) return false;
+  const liste = z._sablonMeydan;
+  if (liste && liste.length) for (const m of liste) if (Math.hypot(x - m.x, y - m.y) < m.r) return true;
+  const yol = z._sablonYol;
+  if (yol && yol.length > 1) {
+    const pay = 40, x0 = x - w / 2 - pay, x1 = x + w / 2 + pay, y0 = y - h / 2 - pay, y1 = y + h / 2 + pay;
+    for (let i = 0; i + 1 < yol.length; i++) {
+      const a = yol[i], b = yol[i + 1], n = Math.max(1, Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / 16));
+      for (let k = 0; k <= n; k++) {
+        const px = a.x + (b.x - a.x) * k / n, py = a.y + (b.y - a.y) * k / n;
+        if (px > x0 && px < x1 && py > y0 && py < y1) return true;
+      }
+    }
+  }
   return false;
 }
 
@@ -591,18 +607,18 @@ function yolculukHaritaKur() {
         const w = o.tip === "duvar" ? (o.w || 80) : Math.max(60, Math.min(200, o.w || 120));
         const h = o.tip === "duvar" ? (o.h || 120) : Math.max(60, Math.min(200, o.h || 120));
         const x = o.x - w / 2, y = o.y - h / 2;
-        if (yolculukMeydanda(o.x, o.y, z)) continue;
+        if (yolculukMeydanda(o.x, o.y, z, w, h)) continue;
         if (yolculukYasakKutu(x, y, w, h, d, z, oncekiCy) || cak(x, y, w, h, 20)) continue;
         game.walls.push({ x, y, w, h, tur: o.tip === "anit" ? "obje1" : o.tip === "obje" ? "obje2" : "duvar" });
         k++;
       }
     }
-    for (let deneme = 0; k < duvarSayi && deneme < 140; deneme++) {
+    for (let deneme = 0, sinir = harita ? 280 : 140; k < duvarSayi && deneme < sinir; deneme++) { // şablonda patika da yer tutar
       const w = 80 + rnd(i, k * 3 + deneme * 7) * 100;
       const h = 80 + rnd(i, k * 5 + deneme * 11 + 50) * 100;
       const x = icX0 + rnd(i, k * 13 + deneme * 17 + 1) * Math.max(0, icW - w);
       const y = 70 + rnd(i, k * 19 + deneme * 23 + 2) * Math.max(0, A.worldH - 140 - h);
-      if (yolculukMeydanda(x + w / 2, y + h / 2, z)) continue;
+      if (yolculukMeydanda(x + w / 2, y + h / 2, z, w, h)) continue;
       if (yolculukYasakKutu(x, y, w, h, d, z, oncekiCy) || cak(x, y, w, h, 20)) continue;
       game.walls.push({ x, y, w, h });
       k++;
@@ -614,7 +630,7 @@ function yolculukHaritaKur() {
         if (o.tip !== "gol") continue;
         const w = Math.max(80, Math.min(icW - 20, o.w || 130)), h = Math.max(70, Math.min(A.worldH - 160, o.h || 100));
         const x = o.x - w / 2, y = o.y - h / 2;
-        if (yolculukMeydanda(o.x, o.y, z)) continue;
+        if (yolculukMeydanda(o.x, o.y, z, w, h)) continue;
         if (yolculukYasakKutu(x, y, w, h, d, z, oncekiCy) || cak(x, y, w, h, 16)) continue;
         game.waters.push({ x, y, w, h });
         golKondu = true;
@@ -632,7 +648,7 @@ function yolculukHaritaKur() {
     }
     // Sular: bölge başına TEK büyük göl (kenarlar ×1,3, alan ~1,7 kat; eskiden iki küçük göl vardı; toplam su alanı biraz azalır,
     // yuvalara ve donatılara yer kalır). Büyük hâli sığmazsa o göl eski boyunda kalır.
-    for (let k = 0, deneme = 0; k < (golKondu ? 0 : 1) && deneme < 80; deneme++) {
+    for (let k = 0, deneme = 0; k < (golKondu ? 0 : 1) && deneme < (harita ? 160 : 80); deneme++) {
       const w0 = 110 + rnd(i, k * 29 + deneme * 31 + 3) * 80;
       const h0 = 80 + rnd(i, k * 37 + deneme * 41 + 4) * 70;
       let eklendi = false;
@@ -641,7 +657,7 @@ function yolculukHaritaKur() {
         for (let t = 0; t < aday; t++) {
           const x = icX0 + rnd(i, k * 43 + deneme * 47 + 5 + t * 71) * Math.max(0, icW - w);
           const y = 80 + rnd(i, k * 53 + deneme * 59 + 6 + t * 83) * Math.max(0, A.worldH - 160 - h);
-          if (yolculukMeydanda(x + w / 2, y + h / 2, z)) continue;
+          if (yolculukMeydanda(x + w / 2, y + h / 2, z, w, h)) continue;
           if (yolculukYasakKutu(x, y, w, h, d, z, oncekiCy) || cak(x, y, w, h, 16)) continue;
           game.waters.push({ x, y, w, h });
           k++;
@@ -655,10 +671,10 @@ function yolculukHaritaKur() {
     const spikeSayi = Math.min(3, Math.floor(i / 2));
     const lavaSayi = i >= 5 ? 2 : i >= 3 ? 1 : 0;
     const yerlestir = (liste, w, h, n) => {
-      for (let k = 0, deneme = 0; k < n && deneme < 60; deneme++) {
+      for (let k = 0, deneme = 0; k < n && deneme < (harita ? 120 : 60); deneme++) {
         const x = icX0 + rnd(i, 61 + n * 5 + deneme * 3) * Math.max(0, icW - w);
         const y = 100 + rnd(i, 67 + n * 7 + deneme * 9) * Math.max(0, A.worldH - 200 - h);
-        if (yolculukMeydanda(x + w / 2, y + h / 2, z)) continue;
+        if (yolculukMeydanda(x + w / 2, y + h / 2, z, w, h)) continue;
         if (yolculukYasakKutu(x, y, w, h, d, z, oncekiCy) || cak(x, y, w, h, 18)) continue;
         liste.push({ x, y, w, h });
         k++;
@@ -678,7 +694,7 @@ function yolculukHaritaKur() {
     const kaynakDene = (x, y, r, bolge, zone, oncekiCy, ara, pay) => {
       const bx = x - r * 0.8, by = y - r * 0.8, bw = r * 1.6, bh = r * 1.6;
       const meydan = zone || (bolge === 7 ? d.arena : null);
-      if (meydan && yolculukMeydanda(x, y, meydan)) return false;
+      if (meydan && yolculukMeydanda(x, y, meydan, bw, bh)) return false;
       if (zone && yolculukYasakKutu(bx, by, bw, bh, d, zone, oncekiCy)) return false;
       if (cak(bx, by, bw, bh, pay)) return false;
       if (Math.hypot(x - bas.x, y - bas.y) < 300) return false;
@@ -863,7 +879,7 @@ function yolculukDonatilariKur() {
           if (u2) { const olcek = w / taban; tur = u2; const tb2 = YOLCULUK_DONATI_BOY[tur] || 44; w = Math.max(36, Math.min(64, tb2 * olcek)); h = w; }
         }
         const bx = x - w / 2, by = y - h / 2;
-        if (zone && yolculukMeydanda(x, y, zone)) continue;
+        if (zone && yolculukMeydanda(x, y, zone, w, h)) continue;
         if (zone && yolculukYasakKutu(bx, by, w, h, d, zone, oncekiCy)) continue; // koridor + köprü ağzı
         if (!zone && Math.hypot(x - bas.x, y - bas.y) < 140 + w / 2) continue;    // başlangıç tabelası
         if (x > d.arena.x0 - 140) continue;                                        // arena kapısı

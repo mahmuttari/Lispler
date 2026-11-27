@@ -230,7 +230,8 @@ try {
     __sablonKur([lay]); __kur(1);
     zeminKatmaniKur();
     const h = __harita(lay, 1);
-    const yol = lay.yol.map((q) => ({ x: h.mx(q[0]), y: h.my(q[1]) }));
+    const yx = (x) => Math.max(h.icX0 + 40, Math.min(h.icX1 - 120, x)); // yolculuk.js: patika kenarlardan içeride
+    const yol = lay.yol.map((q) => ({ x: yx(h.mx(q[0])), y: h.my(q[1]) }));
     const noktalar = (game._zeminKatmani.yollar[0] || {}).noktalar || [];
     let enBuyuk = 0;
     for (const q of yol) {

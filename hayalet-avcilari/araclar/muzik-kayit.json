@@ -2844,65 +2844,42 @@
     "kredi": {}
   },
   "BR": {
-    "gorev": "9c3f18e5ed4bb5fb9570dc5faecb7852",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-br-1.mp3",
-        "sure": 119.101,
-        "tempo": 132.68,
+        "dosya": "BR.mp3",
+        "sure": 140.0,
+        "tempo": 92.15,
         "dongu": {
-          "bas": 14.76,
-          "uzunluk": 28.92852,
-          "vurus": 64
+          "bas": 34.4522,
+          "uzunluk": 31.21752,
+          "vurus": 48
         },
-        "ekYeri": 0.981,
-        "sabitlik": 0.8193,
-        "puan": 0.9129,
+        "ekYeri": 0.9395,
+        "sabitlik": 0.7801,
+        "puan": 0.7246,
         "teaser": {
-          "bas": 75.8248,
-          "son": 79.8883
-        },
-        "id": "5b5a1eb4-0396-4d57-a23c-525d8be42f77",
-        "etiketler": "Brazilian frevo, trumpets, trombones and saxophones weave a rich polyphonic ensemble of lead melody, counter-melody and rhythm section over surdo and caixa snare; bright warm acoustic mix, loop-friendly with a seamless return, steady danceable 2/4 drive around 128 BPM, upbeat energetic, playful and heroic, adventure video game background music, constant energy, instrumental."
-      },
-      {
-        "dosya": "hayalet-avcilari-br-2.mp3",
-        "sure": 118.549,
-        "tempo": 136.18,
-        "dongu": {
-          "bas": 46.6257,
-          "uzunluk": 33.6064,
-          "vurus": 76
-        },
-        "ekYeri": 0.9776,
-        "sabitlik": 0.8385,
-        "puan": 0.8994,
-        "teaser": {
-          "bas": 96.0086,
-          "son": 99.956
-        },
-        "id": "5fbd22f6-4362-4998-94e1-645aecc84cc2",
-        "etiketler": "Brazilian frevo, bright warm acoustic mix with a loop-friendly arrangement sustaining constant energy; driving 2/4 groove around 128 BPM; trumpets, trombones and saxophones carry a rich polyphonic ensemble’s lead melody and counter-melody over surdo and caixa snare, upbeat energetic, playful and heroic adventure video game background music, instrumental."
+          "bas": 98.3404,
+          "son": 102.2878
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -5.0,
+    "tepe": -4.8,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.2635,
-    "ekOrani": 0.179,
+    "girisSure": 5.1474,
+    "ekOrani": 0.234,
     "dosyalar": {
       "dongu": "muzik/BR-dongu.ogg",
       "giris": "muzik/BR-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 29.02852,
-    "tempo": 132.68,
-    "kredi": {
-      "kalan": 176.5
-    }
+    "bas": 0.1025,
+    "son": 31.32002,
+    "tempo": 92.15,
+    "kredi": {}
   },
   "AR": {
     "gorev": "18d1f1dede4a7fd35e6c82916189f8ae",

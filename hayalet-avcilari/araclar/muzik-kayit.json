@@ -230,65 +230,42 @@
     "kredi": {}
   },
   "GB": {
-    "gorev": "18f4bc83523adc06c1b660a8ea607ea1",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-gb-1.mp3",
-        "sure": 119.221,
-        "tempo": 130.11,
+        "dosya": "GB.mp3",
+        "sure": 146.36,
+        "tempo": 94.21,
         "dongu": {
-          "bas": 48.7045,
-          "uzunluk": 27.6145,
-          "vurus": 60
+          "bas": 16.9706,
+          "uzunluk": 32.89365,
+          "vurus": 52
         },
-        "ekYeri": 0.9727,
-        "sabitlik": 0.882,
-        "puan": 0.9404,
+        "ekYeri": 0.9338,
+        "sabitlik": 0.5593,
+        "puan": 0.6657,
         "teaser": {
-          "bas": 33.9019,
-          "son": 38.0815
-        },
-        "id": "4fbbb981-73db-4842-a5fa-ad9fd979412f",
-        "etiketler": "Scottish ceilidh reel, bright warm acoustic mix with rich polyphonic interplay and a steady danceable groove around 128 BPM; instrumental, cheerful adventure video game background music; fiddle leads, accordion and tin whistle trade counter-melodies over light bagpipes and bodhran frame drum, maintaining constant energy, fully loopable."
-      },
-      {
-        "dosya": "hayalet-avcilari-gb-2.mp3",
-        "sure": 121.213,
-        "tempo": 129.78,
-        "dongu": {
-          "bas": 33.8973,
-          "uzunluk": 27.79817,
-          "vurus": 60
-        },
-        "ekYeri": 0.9777,
-        "sabitlik": 0.8926,
-        "puan": 0.9478,
-        "teaser": {
-          "bas": 48.2963,
-          "son": 52.4759
-        },
-        "id": "2319f5ff-ad3a-4adc-8344-9a0d32c5f521",
-        "etiketler": "Scottish ceilidh reel, bright warm acoustic mix; fiddle carries the lead melody, accordion answers with a counter-melody, tin whistle ornaments the phrases, light bagpipes add sustained color, bodhran frame drum keeps a steady danceable groove; rich polyphonic ensemble at around 128 BPM, constant energy, cheerful adventure video game background music, instrumental, loop-friendly."
+          "bas": 50.4851,
+          "son": 54.2932
+        }
       }
     ],
-    "lufs": -17.9,
-    "tepe": -4.8,
+    "lufs": -18.0,
+    "tepe": -6.2,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3796,
-    "ekOrani": 0.066,
+    "girisSure": 5.0081,
+    "ekOrani": 0.413,
     "dosyalar": {
       "dongu": "muzik/GB-dongu.ogg",
       "giris": "muzik/GB-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 27.89817,
-    "tempo": 129.78,
-    "kredi": {
-      "kalan": 704.5
-    }
+    "bas": 0.1025,
+    "son": 32.99615,
+    "tempo": 94.21,
+    "kredi": {}
   },
   "FR": {
     "gorev": "suno-pencere-2026-11",

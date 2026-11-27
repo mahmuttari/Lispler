@@ -2,7 +2,7 @@
    bas/son: döngünün loopStart/loopEnd değeri (sn); girisSure: teaser süresi. Ek tasarım §7. */
 window.ULKE_MUZIKLERI = {
   AF: { dongu: "muzik/AF-dongu.ogg", bas: 0.1, son: 28.19804, giris: "muzik/AF-giris.ogg", girisSure: 5.426, tempo: 128.1 },
-  AO: { dongu: "muzik/AO-dongu.ogg", bas: 0.1, son: 29.85719, giris: "muzik/AO-giris.ogg", girisSure: 5.4957, tempo: 98.76 },
+  AO: { dongu: "muzik/AO-dongu.ogg", bas: 0.1, son: 30.57208, giris: "muzik/AO-giris.ogg", girisSure: 4.9616, tempo: 124.22 },
   AR: { dongu: "muzik/AR-dongu.ogg", bas: 0.1, son: 28.85854, giris: "muzik/AR-giris.ogg", girisSure: 5.4028, tempo: 100.03 },
   BD: { dongu: "muzik/BD-dongu.ogg", bas: 0.1, son: 30.93983, giris: "muzik/BD-giris.ogg", girisSure: 5.0777, tempo: 93.16 },
   BR: { dongu: "muzik/BR-dongu.ogg", bas: 0.1025, son: 31.32002, giris: "muzik/BR-giris.ogg", girisSure: 5.1474, tempo: 92.15 },

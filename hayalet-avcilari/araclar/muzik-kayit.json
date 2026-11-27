@@ -663,65 +663,42 @@
     "kredi": {}
   },
   "AO": {
-    "gorev": "21d517ab084ae1746389897effbc5e0e",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ao-1.mp3",
-        "sure": 120.421,
-        "tempo": 98.76,
+        "dosya": "AO.mp3",
+        "sure": 149.2,
+        "tempo": 124.22,
         "dongu": {
-          "bas": 18.8379,
-          "uzunluk": 29.75719,
-          "vurus": 48
+          "bas": 77.2135,
+          "uzunluk": 30.47208,
+          "vurus": 64
         },
-        "ekYeri": 0.9628,
-        "sabitlik": 0.8806,
-        "puan": 0.7994,
+        "ekYeri": 0.9462,
+        "sabitlik": 0.7836,
+        "puan": 0.8893,
         "teaser": {
-          "bas": 23.1523,
-          "son": 27.448
-        },
-        "id": "a82078c5-7546-42b5-9f6f-0bdbed248ddb",
-        "etiketler": "Angolan semba, interlocking guitars, dikanza scraper, ngoma drums and accordion shape a rich polyphonic ensemble; instrumental lead melody trades with a counter-melody over a steady, danceable 2/4 groove around 128 BPM, cheerful adventure video game background music, bright warm acoustic mix, constant energy, seamless loop-friendly phrasing."
-      },
-      {
-        "dosya": "hayalet-avcilari-ao-2.mp3",
-        "sure": 119.941,
-        "tempo": 170.92,
-        "dongu": {
-          "bas": 68.0893,
-          "uzunluk": 28.11229,
-          "vurus": 80
-        },
-        "ekYeri": 0.9679,
-        "sabitlik": 0.7557,
-        "puan": 0.7107,
-        "teaser": {
-          "bas": 79.146,
-          "son": 83.0237
-        },
-        "id": "f0a4c935-a9e8-4652-8c71-35374ca1d4e0",
-        "etiketler": "Angolan semba, instrumental, bright warm acoustic mix with cheerful adventure video game background music character; guitars, dikanza scraper, ngoma drums and accordion in rich polyphony, carrying a lead melody, counter-melody and steady rhythm section; danceable 2/4 groove at around 128 BPM, constant energy, loop-friendly arrangement."
+          "bas": 89.6785,
+          "son": 93.4401
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -5.4,
+    "tepe": -6.8,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.4957,
-    "ekOrani": 0.043,
+    "girisSure": 4.9616,
+    "ekOrani": 0.05,
     "dosyalar": {
       "dongu": "muzik/AO-dongu.ogg",
       "giris": "muzik/AO-giris.ogg"
     },
     "bas": 0.1,
-    "son": 29.85719,
-    "tempo": 98.76,
-    "kredi": {
-      "kalan": 560.5
-    }
+    "son": 30.57208,
+    "tempo": 124.22,
+    "kredi": {}
   },
   "ZA": {
     "gorev": "suno-pencere-2026-11",

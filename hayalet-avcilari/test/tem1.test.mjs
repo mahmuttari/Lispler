@@ -85,10 +85,11 @@ try {
       assert.ok(anahtarVar(d.sinir.keys, `tema${n}-sinir`), d.sinir.keys.join(','));
       assert.ok(anahtarVar(d.sinirDikey.keys, `tema${n}-sinir`));
     });
-    sina(`tema${n}: obje1, obje2 ve göl resmi`, () => {
+    // Gölet kıyılı göl resmiyle değil temanın göl ressamıyla (leke biçimi + kıyı) çizilir, içi tema su dokusu (27 Kasım)
+    sina(`tema${n}: obje1, obje2 resmi; gölet tema su dokusuyla`, () => {
       assert.ok(anahtarVar(d.obje1.keys, `tema${n}-obje1`), d.obje1.keys.join(','));
       assert.ok(anahtarVar(d.obje2.keys, `tema${n}-obje2`), d.obje2.keys.join(','));
-      assert.ok(anahtarVar(d.su.keys, `tema${n}-gol`), d.su.keys.join(','));
+      assert.ok(!anahtarVar(d.su.keys, `tema${n}-gol`) && anahtarVar(d.su.keys, `tema${n}-su`), d.su.keys.join(','));
       assert.ok(d.duvar.boyali && d.sinir.boyali && d.obje1.boyali && d.su.boyali);
     });
   }
@@ -103,7 +104,7 @@ try {
     assert.ok(anahtarVar(dt.duvar.keys, `aile-${dt.aile}-kule`), dt.duvar.keys.join(','));
     assert.ok(anahtarVar(dt.obje1.keys, 'ulke-TR-1'), dt.obje1.keys.join(','));
     assert.ok(anahtarVar(dt.obje2.keys, 'ulke-TR-2'), dt.obje2.keys.join(','));
-    assert.ok(anahtarVar(dt.su.keys, `aile-${dt.aile}-gol`), dt.su.keys.join(','));
+    assert.ok(!anahtarVar(dt.su.keys, `aile-${dt.aile}-gol`) && dt.su.boyali, dt.su.keys.join(','));
   });
 
   // Görseller yokken kod ressamları çalışır (resim anahtarı istenmez, resim yine boyalı)

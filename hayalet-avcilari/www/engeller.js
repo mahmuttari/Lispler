@@ -152,25 +152,6 @@
 
   // ---------- biçim aileleri (yerel koordinat, dikdörtgenin içinde) ----------
   // Göl (su, lav): ortada elips + kenarlara yaslanan farklı boylarda daireler; pay: kıyı payı
-  // Resimli göl kutusu: ChatGPT göl resimleri kıyısıyla birlikte çizilmiştir. Kare-yakın göllerde (oran 0,6-1,7) resim kendi
-  // en/boy oranıyla ortalanmış kutuya bütünüyle çizilir (kırpılmaz, esnetilmez); çarpışma resmin suyuna oturan elipstir.
-  // Oran ve su elipsi sabit tablodan (www/gol-su.js, araclar/gol_su_olc.py): resim yüklü olsun olmasın her cihazda aynı.
-  const GOL_VARSAYILAN = { ar: 1.16, cx: 0.5, cy: 0.55, rx: 0.3, ry: 0.26 };
-  function golAnahtari(tema) {
-    if (typeof tema === "string") {
-      const u = window.ulkeKodla && window.ulkeKodla(tema), A = u && u.aile;
-      return A ? `aile-${A}-gol` : null;
-    }
-    return `tema${(tema | 0) + 1}-gol`;
-  }
-  function golSuBilgisi(k) { return (k && window.GOL_SU && window.GOL_SU[k]) || GOL_VARSAYILAN; }
-  function golKutusu(w, h, k) {
-    const oran = w / h;
-    if (!(oran >= 0.6 && oran <= 1.7)) return null;
-    const ar = golSuBilgisi(k).ar;
-    const kw = oran > ar ? h * ar : w, kh = oran > ar ? h : w / ar;
-    return { x: (w - kw) / 2, y: (h - kh) / 2, w: kw, h: kh };
-  }
   function bicimGol(w, h, r, pay) {
     const cx = w / 2 + (r() - 0.5) * w * 0.08, cy = h / 2 + (r() - 0.5) * h * 0.08;
     const P = [{ t: "e", x: cx, y: cy, rx: Math.min(w * 0.36, cx - pay, w - cx - pay), ry: Math.min(h * 0.32, cy - pay, h - cy - pay) }];
@@ -254,19 +235,6 @@
     return P;
   }
   // Diken plakası: elips ve iki yanında taşan daireler
-  // Diken plakası resmi (diken-plaka, 192×178) tek parça yuvarlak tuzaktır: tuzak kutusu yan yana (ya da alt alta) eşit
-  // hücrelere bölünür, her hücreye bir plaka bütünüyle sığar (kırpılmaz, üst üste binmez). Kutular yalnız w/h'den: her cihazda aynı.
-  const DIKEN_ORAN = 192 / 178;
-  function dikenKutulari(w, h) {
-    const yatay = w >= h, n = Math.max(1, Math.round(yatay ? w / h / DIKEN_ORAN : h / w * DIKEN_ORAN));
-    const cw = yatay ? w / n : w, ch = yatay ? h : h / n, out = [];
-    for (let i = 0; i < n; i++) {
-      const bw = Math.min(cw, ch * DIKEN_ORAN), bh = bw / DIKEN_ORAN;
-      const x0 = (yatay ? i * cw : 0) + (cw - bw) / 2, y0 = (yatay ? 0 : i * ch) + (ch - bh) / 2;
-      out.push({ x: x0, y: y0, w: bw, h: bh });
-    }
-    return out;
-  }
   function bicimPlaka(w, h, r) {
     const P = [{ t: "e", x: w / 2, y: h / 2, rx: w / 2 - 6, ry: h / 2 - 8 }];
     for (let i = 0; i < 3; i++) {
@@ -306,22 +274,8 @@
     const r = engelRastgele(tohum), set = typeof tema === "string" ? window.ulkeBicimSeti(tema) : (ENGEL_AILELERI[tema] || ENGEL_AILELERI[0]);
     let aile, P, pay;
     if (tur === "sinir") { aile = "sinir"; P = bicimSinir(o.w, o.h, yon); }
-    else if (tur === "su" || tur === "lav") {
-      aile = "gol"; pay = tur === "su" ? 9 : 7;
-      const gk = tur === "su" ? golAnahtari(tema) : null, K = gk ? golKutusu(o.w, o.h, gk) : null;
-      if (K) { // resimli göl: çarpışma resmin suyuna oturan tek elips (kıyı ve süsler üstünden yürünür, görünmez su kalmaz)
-        bicimGol(K.w, K.h, r, pay); // rastgele dizi bugünkü gibi ilerlesin
-        const G = golSuBilgisi(gk);
-        const ex = K.x + G.cx * K.w, ey = K.y + G.cy * K.h; // elips kıyı payıyla dikdörtgenin içinde kalır
-        const rx = Math.max(8, Math.min(G.rx * K.w, ex - pay, o.w - ex - pay)), ry = Math.max(8, Math.min(G.ry * K.h, ey - pay, o.h - ey - pay));
-        // çok yassı elipste yaklaşık uzaklık görünmez duvar bırakır: uzun eksen kısa eksenin en çok 1,8 katı (suyun içinde kalır)
-        P = [{ t: "e", x: ex, y: ey, rx: Math.min(rx, ry * 1.8), ry: Math.min(ry, rx * 1.8) }];
-      } else P = bicimGol(o.w, o.h, r, pay);
-    }
-    else if (tur === "diken") { // her plakaya oturan elips: boyalı alan çarpışmayla örtüşür
-      aile = "plaka"; bicimPlaka(o.w, o.h, r); // rastgele dizi bugünkü gibi ilerlesin
-      P = dikenKutulari(o.w, o.h).map((K) => ({ t: "e", x: K.x + K.w / 2, y: K.y + K.h / 2, rx: Math.max(6, K.w * 0.47 - 2), ry: Math.max(6, K.h * 0.45 - 2) }));
-    }
+    else if (tur === "su" || tur === "lav") { aile = "gol"; pay = tur === "su" ? 9 : 7; P = bicimGol(o.w, o.h, r, pay); }
+    else if (tur === "diken") { aile = "plaka"; P = bicimPlaka(o.w, o.h, r); }
     else { aile = set[tur] || (tur === "duvar" ? "kale" : "yama"); P = AILELER[aile](o.w, o.h, r); }
     if (pay === undefined) pay = PAY[aile];
     P.ox = o.x; P.oy = o.y; // ressamlar için dünya konumu (suyun renk geçişi dünya y'sinde)
@@ -439,32 +393,43 @@
   }
   // Diken plakası (bütün temalarda): kırmızı kenar, taş zemin, metal sivri uçlar
   function dikenCiz(ctx, w, h, r, p, B) {
-    // ChatGPT diken plakası varsa: çarpışma biçimi bugünkü taban renkleriyle doldurulur, plakalar biçimin içine kırpılarak
-    // döşenir (boyalı alan çarpışma alanıyla birebir örtüşür; görünmeyen diken olmaz)
-    const plaka = typeof gorsel === "function" ? gorsel("diken-plaka") : null;
-    if (plaka) { // plakalar bütün ve yan yana; eski kod zemini çizilmez (resmin altından taşıyordu)
-      for (const K of dikenKutulari(w, h)) ctx.drawImage(plaka, K.x, K.y, K.w, K.h);
+    // Diken plakası: leke biçimi kırmızı kenarla çevrilir (sınırlardaki yöntem); içi ChatGPT'nin dikişsiz çatlak taş dokusu
+    // (yoksa kod taş örgüsü), üstte metal sivri uçlar. Biçim kenarı çerçeveyle örtülür: kesik görünmez.
+    const doku = typeof gorsel === "function" ? (gorsel("zemin-catlak-tas") || gorsel("zemin-yol-tas")) : null;
+    if (doku) {
+      doldur(ctx, B, "#7f1d1d", 0, 0, 2.5);
+      doldur(ctx, B, "#2a2430");
+      kirp(ctx, B, () => {
+        const desen = ctx.createPattern(doku, "repeat");
+        if (desen) {
+          if (desen.setTransform && typeof DOMMatrix === "function") desen.setTransform(new DOMMatrix().scaleSelf(0.25, 0.25));
+          ctx.fillStyle = desen; ctx.fillRect(0, 0, w, h);
+          ctx.fillStyle = "rgba(40,24,40,0.35)"; ctx.fillRect(0, 0, w, h); // tuzak koyu dursun
+        }
+        dikenUclari(ctx, w, h, B);
+      });
       return [];
     }
     doldur(ctx, B, "#7f1d1d", 0, 0, 2.5);
     doldur(ctx, B, "#2a2430");
     kirp(ctx, B, () => {
       tasOrgu(ctx, 0, 0, w, h, 11, "#3a3442", r);
-      const s = 12;
-      for (let y = 6, k = 0; y < h + 6; y += s, k++) for (let x = 4 + (k % 2) * (s / 2); x < w; x += s) {
-        if (engelUzaklik(B, x, y) > -5) continue;
-        elips(ctx, x, y + 3, 4, 1.6, "rgba(0,0,0,0.5)");
-        const g = ctx.createLinearGradient(x - 4, 0, x + 4, 0); g.addColorStop(0, "#f1f5f9"); g.addColorStop(1, "#64748b");
-        ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x - 4, y + 3); ctx.lineTo(x, y - 7); ctx.lineTo(x + 4, y + 3); ctx.closePath(); ctx.fill();
-      }
+      dikenUclari(ctx, w, h, B);
     });
     return [];
+  }
+  function dikenUclari(ctx, w, h, B) {
+    const s = 12;
+    for (let y = 6, k = 0; y < h + 6; y += s, k++) for (let x = 4 + (k % 2) * (s / 2); x < w; x += s) {
+      if (engelUzaklik(B, x, y) > -5) continue;
+      elips(ctx, x, y + 3, 4, 1.6, "rgba(0,0,0,0.5)");
+      const g = ctx.createLinearGradient(x - 4, 0, x + 4, 0); g.addColorStop(0, "#f1f5f9"); g.addColorStop(1, "#64748b");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x - 4, y + 3); ctx.lineTo(x, y - 7); ctx.lineTo(x + 4, y + 3); ctx.closePath(); ctx.fill();
+    }
   }
   // Lav tabanı (önbellek): kayalık kıyı ve eski drawLava'nın durağan kızgın renk geçişi; çatlak, kabarcık, 🔥 ve alevler
   // her karede üstüne çizilir
   function lavCiz(ctx, w, h, r, p, B) {
-    // ChatGPT lav kareleri hazırsa (lavCanli her karede çizer) eski kod zemini çizilmez: kayalık kenarı resmin altından taşıyordu
-    if (typeof animHazir === "function" && animHazir("lav") >= 3) return [];
     doldur(ctx, B, "#1a0b0b", 0, 0, 6);
     kayalikKenar(ctx, B, "#3f3f46", r, 8, 2, 6.5);
     const g = ctx.createRadialGradient(w / 2, h / 2, 4, w / 2, h / 2, Math.max(w, h) * 0.7);
@@ -816,11 +781,10 @@
     ctx.drawImage(im, rect[0], rect[1], rect[2], rect[3]);
     return [];
   }
-  // Göl resmi kıyısıyla birlikte kutuya bütünüyle çizilir: kırpılmaz, leke biçimiyle kesilmez (kıyılar kesik görünüyordu).
   function golResmi(ctx, w, h, p, B, k) {
-    const im = engelGorsel(k), K = golKutusu(w, h, k);
-    if (!im || !K) { doldur(ctx, B, engelKoyuRenk(p)); return []; }
-    ctx.drawImage(im, K.x, K.y, K.w, K.h);
+    doldur(ctx, B, engelKoyuRenk(p));
+    const im = engelGorsel(k);
+    if (im) kirp(ctx, B, () => resimKapak(ctx, im, 0, 0, w, h));
     return [];
   }
   // Bu engel için resim ressamı varsa döndürür (yoksa null: bugünkü kod ressamı çizsin)
@@ -845,16 +809,8 @@
       const k = dt ? `ulke-${o.tema}-${o.tur === "obje1" ? 1 : 2}` : `tema${o.tema + 1}-${o.tur}`;
       return engelGorsel(k) ? (ctx, w, h, r, p, B) => objeResmi(ctx, w, h, p, B, k, r) : null;
     }
-    if (o.tur === "su") {
-      const oran = o.w / o.h;
-      if (!(oran >= 0.6 && oran <= 1.7)) return null; // uzun/ince gölde bugünkü su ressamı kalsın
-      let k = null;
-      if (dt) {
-        const u = window.ulkeKodla && window.ulkeKodla(o.tema), A = u && u.aile;
-        if (A) k = `aile-${A}-gol`;
-      } else k = `tema${o.tema + 1}-gol`;
-      return k && engelGorsel(k) ? (ctx, w, h, r, p, B) => golResmi(ctx, w, h, p, B, k) : null;
-    }
+    // Gölet: temanın göl ressamı (leke biçimi + taş/kum/buz kıyı, içi ChatGPT su dokusu). Kıyılı göl resmi kullanılmaz:
+    // leke biçimine sığmayan resim kırpılınca kıyıları kesik görünüyordu (kullanıcı: "aynı sınır yöntemleriyle", 27 Kasım).
     return null;
   }
   function ressam(o) {
@@ -1184,7 +1140,7 @@
 
   Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, engelBicimleriniKur, engelCarpisir, engelMesafesi, ENGEL_AILELERI,
     engelOlcegi, engelResmi, engelBoya, engelleriCiz, lavCanli, ENGEL_CANLI, objeAnimKare, objeAnimCiz,
-    CANLI_SES, canliObjeSesi, golKutusu, golAnahtari, dikenKutulari });
+    CANLI_SES, canliObjeSesi });
   window.ENGEL = { yol, doldur, cizgi, kirp, hatCiz, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, kutuYolu, tasOrgu, gozler, cimTutami, sinirla, parcaUzaklik,
     kayalikKenar, suTabani, dikenCiz, lavCiz };
 })();

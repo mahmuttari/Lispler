@@ -789,6 +789,18 @@ def pusu_sil(hucre, guclu=False):
     return hucre
 
 
+def kenar_temizle(hucre, pay=6):
+    """Yolculuk paftalarında hücre sınırında ChatGPT'nin bıraktığı 1-2 px ızgara çizgisi: hücrenin dış pay'ı saydam yapılır
+    (parçaların payı istemde ≥ 27 px, nesneye dokunmaz)."""
+    hucre = hucre.copy()
+    w, h = hucre.size
+    bos = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    maske = Image.new('L', (w, h), 255)
+    maske.paste(0, (pay, pay, w - pay, h - pay))
+    hucre.paste(bos, (0, 0), maske)
+    return hucre
+
+
 def ek_hucreler(liste):
     for pafta, hucreler in EK_PAFTALAR.items():
         if not secili_mi(pafta):
@@ -815,6 +827,8 @@ def ek_hucreler(liste):
                 continue
             x0, y0 = (i % 3) * 512, (i // 3) * 512
             hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
+            if yol.startswith(HAMYOL):
+                hucre = pusu_sil(kenar_temizle(hucre))
             if anahtar in HUCRE_KIRP:
                 hucre = hucre.crop(HUCRE_KIRP[anahtar])
             if anahtar in TEK_PARCA:
@@ -1013,7 +1027,7 @@ def yol_hucreleri(liste):
             if parca == 'nehir':
                 hucre = dikissiz_dikey(hucre.convert('RGB')).resize((en, en), Image.LANCZOS)
             else:
-                hucre = pusu_sil(soluklari_sil(hucre))
+                hucre = pusu_sil(soluklari_sil(kenar_temizle(hucre)))
                 kutu = hucre.getbbox()
                 if not kutu:
                     sys.exit(f'J{n:02d} hücre {i + 1} ({parca}) boş')

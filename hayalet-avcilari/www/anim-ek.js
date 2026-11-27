@@ -248,6 +248,14 @@ function aeSimsekCiz(ctx, e, k, now) {
 }
 
 function aeSeviyeCiz(ctx, e, k) {
+  // Seviye rozeti: resim varsa yukarı süzülerek çizilir (az harekette sabit)
+  if (typeof gorselKutuya === "function" && typeof gorsel === "function" && gorsel("ui-seviye")) {
+    const cy = e.y - (aeAzHareket() ? 78 : 78 + 14 * k);
+    ctx.save();
+    ctx.globalAlpha = 1 - k;
+    gorselKutuya(ctx, "ui-seviye", e.x - 36, cy - 36, 72, 72);
+    ctx.restore();
+  }
   if (typeof animHazir === "function" && animHazir("seviye-atla")) return; // ChatGPT karesi çizilir
   ctx.globalAlpha = 1 - k;
   const r = 12 + k * 70;

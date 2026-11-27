@@ -73,12 +73,12 @@
   }
 
   // Leke dokusu: aile/temaya göre ikinci zemin resmi (yoksa null → düz açık renk)
-  function lekeDokusu() {
+  function lekeDokusu(indeks) {
     try {
       if (typeof game !== "undefined" && game && game.dunyaTuru) {
         const u = typeof turUlkesi === "function" ? turUlkesi() : null;
         const a = u && u.aile;
-        if (a === "K" || a === "KS" || a === "DA") return "zemin-yol-tas";
+        if (a === "K" || a === "KS" || a === "DA") return typeof indeks === "number" ? (indeks % 2 ? "zemin-catlak-tas" : "zemin-yol-tas") : "zemin-yol-tas";
         if (a === "KP" || a === "SH" || a === "SV" || a === "GA") return "zemin-kuru";
         if (a === "GDA" || a === "KA" || a === "LA") return "zemin-cimen";
         return null;
@@ -86,6 +86,8 @@
       const th = typeof getTheme === "function" ? getTheme() : null;
       if (!th || typeof LEVEL_THEMES === "undefined") return null;
       const i = LEVEL_THEMES.indexOf(th) + 1;
+      if (i === 4) return "zemin-kiragi"; // Buz Mağarası
+      if (i === 1 && typeof indeks === "number") return indeks % 2 ? "zemin-catlak-tas" : "zemin-yosunlu-tas";
       return i === 1 ? "zemin-yosunlu-tas" : i === 2 ? "zemin-cimen" : i === 3 ? "zemin-kum" : i === 5 ? "zemin-kuru" : null;
     } catch (e) { return null; }
   }
@@ -133,18 +135,18 @@
       if (typeof game !== "undefined" && game && game.dunyaTuru) {
         const u = typeof turUlkesi === "function" ? turUlkesi() : null;
         const a = u && u.aile;
-        if (a === "GDA" || a === "KA" || a === "LA" || a === "K") return ["sus-cimen", "sus-cicek", "sus-cali"];
-        if (a === "KP" || a === "SH" || a === "SV" || a === "GA") return ["sus-cakil", "sus-kaya", "sus-cimen-kuru"];
-        if (a === "KS" || a === "DA") return ["sus-kaya", "sus-yosun", "sus-cicek"];
+        if (a === "GDA" || a === "KA" || a === "LA" || a === "K") return ["sus-cimen", "sus-cicek", "sus-cali", "sus-yaprak"];
+        if (a === "KP" || a === "SH" || a === "SV" || a === "GA") return ["sus-cakil", "sus-kaya", "sus-cimen-kuru", "sus-toprak-leke"];
+        if (a === "KS" || a === "DA") return ["sus-kaya", "sus-yosun", "sus-cicek", "sus-su-birikintisi"];
       }
       const th = typeof getTheme === "function" ? getTheme() : null;
       if (!th || typeof LEVEL_THEMES === "undefined") return ["sus-cimen", "sus-kaya"];
       const i = LEVEL_THEMES.indexOf(th);
-      if (i === 0) return ["sus-kaya", "sus-yosun", "sus-mantar"];
-      if (i === 1) return ["sus-cimen", "sus-cicek", "sus-mantar", "sus-cali"];
-      if (i === 2) return ["sus-cakil", "sus-kaya"];
+      if (i === 0) return ["sus-kaya", "sus-yosun", "sus-mantar", "sus-su-birikintisi"];
+      if (i === 1) return ["sus-cimen", "sus-cicek", "sus-mantar", "sus-cali", "sus-yaprak"];
+      if (i === 2) return ["sus-cakil", "sus-kaya", "sus-toprak-leke"];
       if (i === 3) return ["sus-kaya-buz"];
-      if (i === 4) return ["sus-kaya", "sus-cakil"];
+      if (i === 4) return ["sus-kaya", "sus-cakil", "sus-toprak-leke"];
       if (i === 5) return ["sus-cakil"];
     } catch (e) { /* varsayılan */ }
     return ["sus-cimen", "sus-kaya"];
@@ -227,7 +229,7 @@
       try {
         if (typeof gorsel === "function") {
           // Z02-Z04 resimleri yokken mevcut ChatGPT resimleri kullanılır (döndürme yok)
-          if (s.tur === "cimen") im = gorsel("dere-sus-1");
+          if (s.tur === "cimen") im = (s.ad && gorsel(s.ad)) || gorsel("dere-sus-1");
           else if (s.tur === "cicek") im = gorsel("dere-sus-6");
           else im = gorsel("dere-sus-3");
         }
@@ -452,7 +454,7 @@
             let tur, ad, boy;
             if (turR < 0.10) { tur = "cicek"; ad = "sus-cicek"; boy = 16 + boyR * 10; }
             else if (turR < 0.55) { tur = "tas"; ad = adR < 0.5 ? "sus-yol-taslari" : "sus-cakil"; boy = 14 + boyR * 12; }
-            else { tur = "cimen"; ad = adR < 0.5 ? "sus-cimen" : "sus-uzun-cimen"; boy = 16 + boyR * 16; }
+            else { tur = "cimen"; ad = adR < 0.34 ? "sus-cimen-serit" : adR < 0.67 ? "sus-cimen" : "sus-uzun-cimen"; boy = 16 + boyR * 16; }
             zemin.suslar.push({ x: sx, y: sy, boy, ad, idx: Math.floor(susTohum(bolum, ulke, sd, 5) * 6), tur, kenar: true });
           }
           d += 35 + susTohum(bolum, ulke, 80000 + py * 13 + sira * 2, 6) * 35;
@@ -550,7 +552,6 @@
     if (!W || !H) return [];
     const n = Math.round((W / 2000) * (6 + yolculukRastgele(bolum, ulke, 7000, 0) * 6));
     const adet = Math.max(1, n);
-    const doku = lekeDokusu();
     let renk = "rgb(90,86,80)";
     try {
       const th = typeof getTheme === "function" ? getTheme() : null;
@@ -558,6 +559,7 @@
     } catch (e) { /* varsayılan renk */ }
     const out = [];
     for (let i = 0; i < adet; i++) {
+      const doku = lekeDokusu(i);
       let x = 0, y = 0, r = 0, oldu = false;
       for (let t = 0; t < 24; t++) {
         r = 140 + yolculukRastgele(bolum, ulke, 7100 + i * 5, t * 3 + 1) * 240;

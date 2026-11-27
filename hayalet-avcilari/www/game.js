@@ -1611,7 +1611,7 @@ function useWeapon(key) {
       }
       // Patlama halkası (büyüyen)
       game.effects.push({ type: "boom", x: px, y: py, r: 0, rMax: r, life: 0.55, maxLife: 0.55 });
-      if (typeof animEfektEkle === "function") animEfektEkle("kare", px, py, { ad: "patlama", sure: 0.6, boyut: 180 }); // N08
+      if (typeof animEfektEkle === "function") animEfektEkle("kare", px, py, { ad: "patlama", sure: 0.6, boyut: 2 * r }); // N08
       if (typeof aeBombaVurus === "function") aeBombaVurus(px, py); // beyaz parlama + kısa sarsıntı
       for (let i = 0; i < 24; i++) {
         const a = Math.random() * Math.PI * 2;
@@ -1831,7 +1831,7 @@ function updateEffects(dt) {
         }
         game.effects.push({ type: "boom", x: e.x, y: e.y, r: 0, rMax: splashR, life: 0.45, maxLife: 0.45 });
         spawnDeathParticles(e.x, e.y);
-        if (typeof animEfektEkle === "function") animEfektEkle("kare", e.x, e.y, { ad: "patlama", sure: 0.6, boyut: 150 });
+        if (typeof animEfektEkle === "function") animEfektEkle("kare", e.x, e.y, { ad: "patlama", sure: 0.6, boyut: 2 * splashR });
         if (typeof audio.bomba === "function") audio.bomba(); else audio.bossDie();
         navigator.vibrate?.(60);
         game.effects.splice(i, 1);
@@ -1959,6 +1959,7 @@ function drawEffects(ctx) {
       }
       ctx.restore();
     } else if (e.type === "boom") {
+      if (typeof animHazir === "function" && animHazir("patlama")) continue; // ChatGPT kareleri çizilir
       const alpha = Math.max(0, e.life / e.maxLife);
       ctx.save();
       // İç dolgu (radyal gradient)
@@ -3078,13 +3079,20 @@ function drawGhost(ctx, g) {
   if (g.isBoss) {
     const t = performance.now() / 300;
     const auraR = size * 0.95 + Math.sin(t) * 4;
-    const auraGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, auraR);
-    auraGrad.addColorStop(0, "rgba(255, 70, 70, 0.45)");
-    auraGrad.addColorStop(1, "rgba(255, 70, 70, 0)");
-    ctx.fillStyle = auraGrad;
-    ctx.beginPath();
-    ctx.arc(0, 0, auraR, 0, Math.PI * 2);
-    ctx.fill();
+    if (typeof gorselKutuya === "function" && typeof gorsel === "function" && gorsel("tehlike-halka")) {
+      ctx.save();
+      ctx.globalAlpha = 0.75 + 0.2 * Math.sin(t);
+      gorselKutuya(ctx, "tehlike-halka", -auraR, -auraR, 2 * auraR, 2 * auraR);
+      ctx.restore();
+    } else {
+      const auraGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, auraR);
+      auraGrad.addColorStop(0, "rgba(255, 70, 70, 0.45)");
+      auraGrad.addColorStop(1, "rgba(255, 70, 70, 0)");
+      ctx.fillStyle = auraGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, auraR, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   // Gölge (sol üst ışık: 3,5 px sağa, 2 px aşağı kayar; boyut değişmez)
@@ -8833,6 +8841,19 @@ function drawBot(ctx, b) {
       aimRaise: b.aimRaise || 0, nisan: (b.aimRaise || 0) > 0.4,
       shootRecoil: b.shootRecoil || 0, kimlik: "bot",
     })) { ctx.restore(); botEtiketi(ctx, b); return; }
+  }
+  // ChatGPT bot resmi: gövde resimden, etiket yine burada; vuruş parlaması resmin üstüne
+  if (typeof gorselKutuya === "function" && typeof gorsel === "function" && gorsel("bot")) {
+    gorselKutuya(ctx, "bot", -34 * s, -50 * s, 68 * s, 94 * s, true);
+    if (b.hitFlash > 0) {
+      ctx.globalAlpha = 0.55 * Math.min(1, b.hitFlash / 0.25);
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath(); ctx.ellipse(0, -4 * s, 34 * s, 46 * s, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+    ctx.restore();
+    botEtiketi(ctx, b);
+    return;
   }
   // Sırttaki uzun saç
   ctx.fillStyle = "#27272a";

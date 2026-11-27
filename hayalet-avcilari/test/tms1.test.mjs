@@ -126,9 +126,10 @@ try {
     return r;
   });
   sina('(a) klasik gölde kıyıda gez timsahı doğar', () => { assert.equal(a.varYer, true); assert.equal(a.dogdu, true); });
-  sina('(a) karada en çok 70 px, en uzak noktada en az 30 px', () => {
-    assert.ok(a.mesafe >= 30 && a.mesafe <= 70, `mesafe ${a.mesafe}`);
-    assert.ok(a.enBuyuk <= 70 && a.enBuyuk >= 30, `en büyük ${a.enBuyuk}`);
+  // TMS2: sabit 30-70 px'lik yürüyüş kalktı; timsah sudan tamamen çıkar (merkez kıyıdan en az 48 px) ve kovalar
+  sina('(a) karada merkez sudan en az 48 px uzaklaşır (çıkış noktası 48-170 px)', () => {
+    assert.ok(a.mesafe >= 48 && a.mesafe <= 170, `mesafe ${a.mesafe}`);
+    assert.ok(a.enBuyuk >= 48, `en büyük ${a.enBuyuk}`);
   });
   sina('(a) kaybolmadan önce suya döner ve timsah listesi boşalır', () => {
     assert.ok(a.son && a.son.d < 0, `son ${JSON.stringify(a.son)}`);
@@ -201,7 +202,7 @@ try {
     const r = {};
     const o = __kur(); const bul = __gezBul(o); const k = bul.k;
     __oyuncuyaKoy(k);
-    const bekle = () => { __ilerlet(TIMSAH.uyari + TIMSAH.gez.cikis + 0.1); };
+    const bekle = () => { __ilerlet(TIMSAH.uyari + TIMSAH.gez.cikis + 0.1); };   // TMS2: karaya çıkış bitti, kovalama başladı
     let tm = bul.tm; bekle();
     let kk = timsahKonum(tm); __oyuncuyaKoy(kk);
     __ilerlet(0.1); r.bir = game.player.hp;
@@ -221,11 +222,11 @@ try {
     __oyuncuyaKoy(k); tm = timsahGezdir(o, k.x, k.y); bekle();
     __oyuncuyaKoy(timsahKonum(tm)); __ilerlet(0.2); r.hayalet = game.player.hp;
     game.player.dead = false;
-    // 80 px uzak
+    // TMS2: kovalama bağlından (150 px) ve ısırık menzilinden çok uzak oyuncu (400 px): ısırılmaz
     game.timsahlar = []; game.player.hp = 3;
     __oyuncuyaKoy(k); tm = timsahGezdir(o, k.x, k.y); bekle();
     const q = timsahKonum(tm);
-    __oyuncuyaKoy({ x: q.x + Math.cos(tm.a) * 80, y: q.y + Math.sin(tm.a) * 80 });
+    __oyuncuyaKoy({ x: q.x + Math.cos(tm.a) * 400, y: q.y + Math.sin(tm.a) * 400 });
     __ilerlet(0.2); r.uzak = game.player.hp;
     // sabitler
     r.sabit = [TIMSAH.menzil, TIMSAH.ara, TIMSAH.olasilik, TIMSAH.bekleme, TIMSAH.uyari].join(',');
@@ -243,7 +244,7 @@ try {
   sina('(d) korumalı, görünmez ve hayalet oyuncuyu ısırmaz', () => {
     assert.equal(d.koruma, 3); assert.equal(d.gorunmez, 3); assert.equal(d.hayalet, 3);
   });
-  sina('(d) 80 px uzaktaki oyuncuyu ısırmaz', () => { assert.equal(d.uzak, 3); });
+  sina('(d) 400 px uzaktaki oyuncuyu ısırmaz', () => { assert.equal(d.uzak, 3); });
   sina('(d) saldırı sabitleri değişmedi ve saldırı eskisi gibi ısırır', () => {
     assert.equal(d.sabit, '96,5,0.5,1.2,0.9'); assert.equal(d.saldiriVar, true); assert.equal(d.saldiriCan, 2);
   });
@@ -320,18 +321,17 @@ try {
     const o = __kur(); const bul = __gezBul(o); const tm = bul.tm;
     __oyuncuyaKoy(bul.k);
     const ctx = game.ctx, oT = ctx.translate, oD = ctx.drawImage;
-    let sonY = null, cizim = false;
-    ctx.translate = function (x, y) { sonY = y; return oT.call(this, x, y); };
+    let sonY = null, cizim = false, ilkY = null, sonrakiler = [];
+    ctx.translate = function (x, y) { if (ilkY === null) ilkY = y; else sonrakiler.push(y); sonY = y; return oT.call(this, x, y); };
     ctx.drawImage = function (...args) { cizim = true; return oD.apply(this, args); };
     try {
-      tm.t = TIMSAH.uyari + TIMSAH.gez.cikis + TIMSAH.gez.bekle / 2;
+      tm.t = TIMSAH.uyari + TIMSAH.gez.cikis + 0.5; tm.faz = 'kov'; tm.kx = tm.ex; tm.ky = tm.ey;
       const kk = timsahKonum(tm);
-      sonY = null; cizim = false;
+      sonY = null; cizim = false; ilkY = null; sonrakiler = [];
       timsahKareCiz(ctx, tm);
-      r.cizildi = cizim; r.ty = sonY; r.ky = kk.y;
+      r.cizildi = cizim; r.ty = ilkY; r.ky = kk.y; r.sallanma = sonrakiler.filter((v) => v !== 0).length;   // TMS2: kırpılmış karede ek ötelemeler 0 (sallanma yok)
       // bütün evreler render() ile
-      const sure = timsahOmru('gez'), adimlar = [0.1, TIMSAH.uyari + 0.1, TIMSAH.uyari + TIMSAH.gez.cikis + 0.5,
-        TIMSAH.uyari + TIMSAH.gez.cikis + TIMSAH.gez.bekle + TIMSAH.gez.donus + 0.1];
+      const sure = timsahOmru('gez'), adimlar = [0.1, TIMSAH.uyari + 0.1, TIMSAH.uyari + TIMSAH.gez.cikis + 0.5, sure - 0.2];
       r.hatasiz = true;
       for (const t of adimlar) { tm.t = Math.min(t, sure - 0.01); try { render(); } catch (err) { r.hatasiz = false; } }
     } finally { ctx.translate = oT; ctx.drawImage = oD; }
@@ -339,7 +339,7 @@ try {
   });
   await p.emulateMedia({ reducedMotion: 'no-preference' });
   sina('(h) hareket azaltmada timsah sallanmadan çizilir', () => {
-    assert.equal(h.cizildi, true); assert.equal(h.ty, h.ky);
+    assert.equal(h.cizildi, true); assert.equal(h.ty, h.ky); assert.equal(h.sallanma, 0);
   });
   sina('(h) bütün evreler render() ile hatasız çizilir', () => { assert.equal(h.hatasiz, true); });
 
@@ -347,7 +347,7 @@ try {
   const i = await p.evaluate(() => {
     const o = __kur(); const bul = __gezBul(o); const tm = bul.tm;
     __oyuncuyaKoy(bul.k);
-    tm.t = TIMSAH.uyari + TIMSAH.gez.cikis + TIMSAH.gez.bekle / 2;
+    tm.t = TIMSAH.uyari + TIMSAH.gez.cikis + 0.5; tm.faz = 'kov'; tm.kx = tm.ex; tm.ky = tm.ey;
     const medyan = (dizi) => dizi.slice().sort((x, y) => x - y)[Math.floor(dizi.length / 2)];
     const olc = () => {
       const d = [];

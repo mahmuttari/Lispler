@@ -29,12 +29,16 @@ const TIMSAH = {
   icPay: 18,        // timsahın çıktığı nokta kıyıdan bu kadar içeride (px)
   adim: 32,          // FIX2: kıyıdan karaya atılış (24-40 px); ısırık sonunda bu kadar dışarıda
   bosOlasilik: 0.45, // süs timsahının boşa ısırık atma olasılığı
-  // TMS1: timsahın sudan karaya gezintisi (kullanıcının isteği)
-  gez: { ara: [8, 14], yakin: 350, cikis: 0.9, bekle: 1.0, donus: 0.9, dokunma: 40, enAz: 40, enCok: 70 },
+  // TMS1: timsahın sudan karaya gezintisi (kullanıcının isteği). TMS2 ("su halkası peşinden gelmesin, sudan tamamen
+  // çıksın, karakteri nerede yakalarsa orada ısırsın"): karada gövdenin merkezi sudan suPay px uzakta kalır (gövde ≈ 80 px),
+  // oyuncunun anlık konumuna hizOran × oyuncu hızıyla (oyuncudan yavaş: kaçılabilir) koşar, çıkış noktasından en çok
+  // tasma px uzaklaşır; yakalarsa orada ısırır, sonra izini geri izleyip suya döner. Su halkası yalnız sudan çıkmadan
+  // önce (uyari) ve en sonda batarken çizilir.
+  gez: { ara: [8, 14], yakin: 350, cikis: 0.4, kovala: 1.9, isir: 0.3, gir: 0.35, dokunma: 40, suPay: 48, tasma: 150, hizOran: 0.6, donusKat: 1.5 },
 };
 let _timsahNo = 0;   // her timsahın kimliği (çevrimiçi değişiklik imzası)
 const timsahOmru = (tur) => (tur === "sus" ? TIMSAH.susSure
-  : tur === "gez" ? TIMSAH.uyari + TIMSAH.gez.cikis + TIMSAH.gez.bekle + TIMSAH.gez.donus + TIMSAH.batis
+  : tur === "gez" ? TIMSAH.uyari + TIMSAH.gez.cikis + TIMSAH.gez.kovala + TIMSAH.gez.isir + TIMSAH.gez.kovala / TIMSAH.gez.donusKat + TIMSAH.gez.gir + TIMSAH.batis
   : TIMSAH.uyari + TIMSAH.atilma + TIMSAH.batis);
 
 // Bir göle göre işaretli uzaklık: içeride eksi
@@ -118,45 +122,114 @@ function timsahSaldirt(o, x, y) {
   return tm;
 }
 
-// TMS1: karaya yürünecek uzaklık (px). Yalnız yuvarlatılmış x,y,a'ya bağlıdır; çevrimiçinde de aynı çıkar.
-function timsahGezMesafe(tm) {
-  if (tm._gm !== undefined) return tm._gm;
-  const rx = Math.round(tm.x), ry = Math.round(tm.y), a = Math.round(tm.a * 100) / 100;
-  const D = TIMSAH.gez.enAz + ((Math.abs(rx) * 7 + Math.abs(ry) * 13) % 31);
+// TMS2: (px, py) bütün göllerden en az `pay` px uzakta mı
+function timsahSudanUzak(px, py, pay) {
+  for (const o of game.waters || []) if (suUzakligi(o, px, py) < pay) return false;
+  return true;
+}
+
+// TMS2: su noktasından (x, y) a yönünde, sudan suPay px uzakta ilk kara noktası (çıkış noktası). Yolda duvar ya da köprü
+// çıkarsa, dünyanın dışına taşarsa ya da 170 px içinde kara bulunamazsa null (timsah doğmaz).
+function timsahCikisNoktasi(x, y, a) {
   const c = Math.cos(a), s = Math.sin(a), W = game.worldW, H = game.worldH;
-  let son = 0;
-  for (let d = 6; d <= D; d += 6) {
-    const px = rx + c * (TIMSAH.icPay + d), py = ry + s * (TIMSAH.icPay + d);
-    if (W !== undefined && (px < 0 || py < 0 || px > W || py > H)) break;
-    if (collidesWalls(px, py, 20) || koprudeMi(px, py)) break;
-    if ((game.waters || []).some((o) => suUzakligi(o, px, py) < 0)) break;
-    son = d;
+  for (let d = TIMSAH.icPay; d <= 170; d += 3) {
+    const px = x + c * d, py = y + s * d;
+    if (W !== undefined && (px < 20 || py < 20 || px > W - 20 || py > H - 20)) return null;
+    if (collidesWalls(px, py, 20) || koprudeMi(px, py)) return null;
+    if (timsahSudanUzak(px, py, TIMSAH.gez.suPay)) return { x: px, y: py };
   }
-  return (tm._gm = son);
+  return null;
 }
 
-// TMS1: gezintinin 0..1 ilerlemesi (sudan çıkış / bekleme / dönüş)
-function timsahGezU(tm) {
-  const { uyari } = TIMSAH, g = TIMSAH.gez, z = tm.t;
-  if (z < uyari) return 0;
-  if (z < uyari + g.cikis) return (z - uyari) / g.cikis;
-  if (z < uyari + g.cikis + g.bekle) return 1;
-  if (z < uyari + g.cikis + g.bekle + g.donus) return 1 - (z - uyari - g.cikis - g.bekle) / g.donus;
-  return 0;
+// TMS2: kovalama sırasında gövde merkezinin durabileceği yer: sudan uzak, duvarsız, köprüsüz, çıkış noktasına tasma içinde
+function timsahGezGecerli(tm, px, py) {
+  const W = game.worldW, H = game.worldH;
+  if (W !== undefined && (px < 20 || py < 20 || px > W - 20 || py > H - 20)) return false;
+  if (Math.hypot(px - tm.ex, py - tm.ey) > TIMSAH.gez.tasma) return false;
+  return !collidesWalls(px, py, 20) && !koprudeMi(px, py) && timsahSudanUzak(px, py, TIMSAH.gez.suPay);
 }
 
-// TMS1: oyuncuya en yakın kıyıdan karaya gezinti timsahı
+// Eski ad: su noktasından çıkış noktasına uzaklık (px)
+function timsahGezMesafe(tm) { return Math.hypot(tm.ex - tm.x, tm.ey - tm.y); }
+
+// TMS2: oyuncuya en yakın kıyıdan karaya çıkan, oyuncuyu kovalayan timsah
 function timsahGezdir(o, x, y) {
   const n = kiyidaNokta(o, x, y);
   if (!n) return null;
+  const wx = Math.round(n.x), wy = Math.round(n.y);
+  const a = Math.round(Math.atan2(y - n.y, x - n.x) * 100) / 100;
+  const e = timsahCikisNoktasi(wx, wy, a);
+  if (!e) return null;
   const tm = {
-    id: ++_timsahNo, tur: "gez", x: Math.round(n.x), y: Math.round(n.y),
-    a: Math.round(Math.atan2(y - n.y, x - n.x) * 100) / 100, t: 0, isirdi: false, sesli: false,
+    id: ++_timsahNo, tur: "gez", x: wx, y: wy, a, t: 0, isirdi: false, sesli: false,
+    ex: e.x, ey: e.y, kx: wx, ky: wy, faz: "bekle", ft: 0, iz: [], yol: 0,
   };
-  if (timsahGezMesafe(tm) < 30) return null;
   game.timsahlar.push(tm);
   timsahSesi("cik");
   return tm;
+}
+
+// TMS2: gezinti timsahının evreleri (tm.faz): bekle (suda halka ve gözler) → cik (kıyıdan çıkış noktasına) → kov
+// (oyuncunun peşinde) → isir (ısırdığı yerde kısa duraklama) → don (izini geri izler) → gir (suya) → bat (halka ve batış)
+function timsahGezIlerlet(tm, dt, p) {
+  const g = TIMSAH.gez;
+  tm.ft += dt;
+  if (tm.faz === "bekle") {
+    if (tm.t >= TIMSAH.uyari) {
+      tm.faz = "cik"; tm.ft = 0;
+      if (!tm.sesli) { tm.sesli = true; if (audio.canliSes) audio.canliSes("timsah", tm.ex, tm.ey, 0.5); }
+    }
+  } else if (tm.faz === "cik") {
+    const u = Math.min(1, tm.ft / g.cikis);
+    tm.kx = tm.x + (tm.ex - tm.x) * u; tm.ky = tm.y + (tm.ey - tm.y) * u;
+    if (u >= 1) { tm.faz = "kov"; tm.ft = 0; tm.iz = [[tm.ex, tm.ey]]; }
+  } else if (tm.faz === "kov") {
+    const hiz = (p && p.speed > 0 ? p.speed : 200) * g.hizOran;
+    if (p && !p.dead) {
+      const dx = p.x - tm.kx, dy = p.y - tm.ky, d = Math.hypot(dx, dy);
+      if (d > 14) {
+        const adim = Math.min(hiz * dt, d - 14), vx = dx / d * adim, vy = dy / d * adim;
+        let nx = tm.kx + vx, ny = tm.ky + vy;
+        if (!timsahGezGecerli(tm, nx, ny)) {
+          if (timsahGezGecerli(tm, tm.kx + vx, tm.ky)) { nx = tm.kx + vx; ny = tm.ky; }
+          else if (timsahGezGecerli(tm, tm.kx, tm.ky + vy)) { nx = tm.kx; ny = tm.ky + vy; }
+          else { nx = tm.kx; ny = tm.ky; }
+        }
+        const yol = Math.hypot(nx - tm.kx, ny - tm.ky);
+        if (yol > 0.01) {
+          tm.a = Math.atan2(ny - tm.ky, nx - tm.kx);
+          tm.kx = nx; tm.ky = ny; tm.yol += yol;
+          const son = tm.iz[tm.iz.length - 1];
+          if (Math.hypot(nx - son[0], ny - son[1]) >= 6) tm.iz.push([nx, ny]);
+        } else tm.a = Math.atan2(dy, dx);
+      }
+    }
+    if (!tm.isirdi && timsahIsirir(tm, g.dokunma + (p ? p.r : 0))) {   // yakaladığı yerde ısırır (tek kez)
+      tm.isirdi = true; tm.isirikT = tm.t; tm.faz = "isir"; tm.ft = 0;
+      timsahSesi("isir");
+      showFloat(t("🐊 Timsah ısırdı!"), p.x, p.y - 30);
+      navigator.vibrate?.(80);
+      damagePlayer();
+      game._timsahAra = TIMSAH.ara;
+    } else if (tm.ft >= g.kovala) { tm.faz = "don"; tm.ft = 0; }
+  } else if (tm.faz === "isir") {
+    if (tm.ft >= g.isir) { tm.faz = "don"; tm.ft = 0; }
+  } else if (tm.faz === "don") {
+    let kal = ((p && p.speed > 0 ? p.speed : 200) * g.hizOran * g.donusKat) * dt;
+    while (kal > 0 && tm.iz.length) {
+      const [qx, qy] = tm.iz[tm.iz.length - 1], d = Math.hypot(qx - tm.kx, qy - tm.ky);
+      if (d <= kal) { tm.kx = qx; tm.ky = qy; kal -= d; tm.iz.pop(); tm.yol += d; }
+      else { tm.a = Math.atan2(qy - tm.ky, qx - tm.kx); tm.kx += (qx - tm.kx) / d * kal; tm.ky += (qy - tm.ky) / d * kal; tm.yol += kal; kal = 0; }
+    }
+    if (!tm.iz.length) { tm.kx = tm.ex; tm.ky = tm.ey; tm.faz = "gir"; tm.ft = 0; }
+  } else if (tm.faz === "gir") {
+    const u = Math.min(1, tm.ft / g.gir);
+    tm.a = Math.atan2(tm.y - tm.ey, tm.x - tm.ex);
+    tm.kx = tm.ex + (tm.x - tm.ex) * u; tm.ky = tm.ey + (tm.y - tm.ey) * u;
+    if (u >= 1) { tm.faz = "bat"; tm.ft = 0; tm.kx = tm.x; tm.ky = tm.y; }
+  } else if (tm.faz === "bat") {
+    if (tm.ft >= TIMSAH.batis) tm.bitti = true;
+  }
 }
 
 // Süs: görünen bir gölün içinde bakınan gözler (kimi zaman boşa ısırık). Çevrimiçi kurucu öbür oyuncuların yakınındaki
@@ -196,10 +269,7 @@ function timsahIsirir(tm, menzil = TIMSAH.menzil) {
 // FIX2: timsahın o anki konumu. tm.x/tm.y su içindeki çıkış noktasıdır; atılışta kıyıdan karaya
 // icPay + adim kadar ilerler (adim ≈ 32 px dışarı), ısırıktan sonra suya geri çekilir.
 function timsahKonum(tm) {
-  if (tm.tur === "gez") {
-    const d = (TIMSAH.icPay + timsahGezMesafe(tm)) * timsahGezU(tm);
-    return { x: tm.x + Math.cos(tm.a) * d, y: tm.y + Math.sin(tm.a) * d };
-  }
+  if (tm.tur === "gez") return { x: tm.kx !== undefined ? tm.kx : tm.x, y: tm.ky !== undefined ? tm.ky : tm.y }; // TMS2: tek kaynak
   const { uyari, atilma, batis } = TIMSAH;
   let u = 0;
   if (tm.t <= uyari) u = 0;
@@ -216,29 +286,7 @@ function timsahGuncelle(dt) {
   // Var olanlar
   for (const tm of game.timsahlar) {
     tm.t += dt;
-    if (tm.tur === "gez") {
-      const g = TIMSAH.gez, z = tm.t;
-      // (a) karaya çıkınca bir kez canlı ses
-      if (!tm.sesli && z >= TIMSAH.uyari) {
-        tm.sesli = true;
-        const k = timsahKonum(tm);
-        if (audio.canliSes) audio.canliSes("timsah", k.x, k.y, 0.5);
-      }
-      // (b) karadayken tek ısırık (aynı hasar ve koruma kuralı)
-      const bas = TIMSAH.uyari + g.cikis * 0.5;
-      const son = TIMSAH.uyari + g.cikis + g.bekle + g.donus * 0.5;
-      if (!tm.isirdi && z >= bas && z < son) {
-        if (timsahIsirir(tm, g.dokunma + (p ? p.r : 0))) {
-          tm.isirdi = true;
-          tm.isirikT = z;
-          timsahSesi("isir");
-          showFloat(t("🐊 Timsah ısırdı!"), p.x, p.y - 30);
-          navigator.vibrate?.(80);
-          damagePlayer();
-          game._timsahAra = TIMSAH.ara;
-        }
-      }
-    }
+    if (tm.tur === "gez") timsahGezIlerlet(tm, dt, p);
     if (tm.tur !== "sus" && tm.tur !== "gez" && !tm.isirdi && tm.t >= TIMSAH.uyari + TIMSAH.atilma) {
       tm.isirdi = true;
       timsahSesi("isir");
@@ -249,7 +297,7 @@ function timsahGuncelle(dt) {
       }
     }
   }
-  game.timsahlar = game.timsahlar.filter((tm) => tm.t < timsahOmru(tm.tur));
+  game.timsahlar = game.timsahlar.filter((tm) => (tm.tur === "gez" ? !tm.bitti && tm.t < timsahOmru("gez") + 2 : tm.t < timsahOmru(tm.tur)));
   // Süs gözleri ve boşa ısırık (çevrimiçinde yalnız kurucu doğurur, herkes onunkini görür)
   game._timsahSus -= dt;
   if (game._timsahSus <= 0) {
@@ -336,28 +384,42 @@ function timsahlariCiz(ctx) {
     for (const rp of Object.values(online.remotePlayers)) {
       for (const tm of (rp && rp.timsahlar) || []) {
         const t1 = tm.t0 + (simdi - tm.alindi) / 1000;
-        if (t1 < timsahOmru(tm.tur)) timsahCiz(ctx, { ...tm, t: t1 });
+        if (t1 < timsahOmru(tm.tur) + (tm.tur === "gez" ? 2 : 0)) timsahCiz(ctx, { ...tm, t: t1, ft: (tm.ft0 || 0) + (simdi - tm.alindi) / 1000 });
       }
     }
   }
 }
 
 // ---------- çevrimiçi ----------
-// Oda kaydına giden biçim: "<s|a|b>x,y,açı×100,yaş ms;…" (s süs, a saldırı, b boşa ısırık). İmza: kimlikler (yeni ya da
-// biten timsahta değişir; yaş karşıda yerel saatle ilerletilir)
+// Oda kaydına giden biçim: "<s|a|b|g>x,y,açı×100,yaş ms[,kx,ky,evre,evre ms];…" (s süs, a saldırı, b boşa ısırık, g gezinti).
+// TMS2: gezintide x,y su noktası, kx,ky timsahın o anki gerçek karadaki konumu, evre 0-6 (FAZ_SIRA), evre ms evredeki
+// süre; eski biçim (ilk beş alan) okunmaya devam eder. İmza: kimlikler; gezintide ayrıca evre ve 12 px'e yuvarlanmış konum
+// (kovalamada konum değişince kayıt yenilenir). Yaş karşıda yerel saatle ilerletilir.
+const TIMSAH_FAZ = ["bekle", "cik", "kov", "isir", "don", "gir", "bat"];
 function timsahDizisi() {
   const liste = (game.timsahlar || []).slice(-4);
   return {
-    imza: liste.map((tm) => tm.id).join(","),
-    metin: liste.map((tm) => `${tm.tur === "saldiri" ? "a" : tm.tur === "bos" ? "b" : tm.tur === "gez" ? "g" : "s"}${Math.round(tm.x)},${Math.round(tm.y)},${Math.round(tm.a * 100)},${Math.round(tm.t * 1000)}`).join(";"),
+    imza: liste.map((tm) => (tm.tur === "gez" ? `${tm.id}.${tm.faz}.${Math.round(timsahKonum(tm).x / 12)}.${Math.round(timsahKonum(tm).y / 12)}` : tm.id)).join(","),
+    metin: liste.map((tm) => {
+      const bas = `${tm.tur === "saldiri" ? "a" : tm.tur === "bos" ? "b" : tm.tur === "gez" ? "g" : "s"}${Math.round(tm.x)},${Math.round(tm.y)},${Math.round(tm.a * 100)},${Math.round(tm.t * 1000)}`;
+      if (tm.tur !== "gez") return bas;
+      const k = timsahKonum(tm);
+      return `${bas},${Math.round(k.x)},${Math.round(k.y)},${Math.max(0, TIMSAH_FAZ.indexOf(tm.faz))},${Math.round((tm.ft || 0) * 1000)}`;
+    }).join(";"),
   };
 }
 function uzakTimsahlariAl(metin) {
   const simdi = performance.now(), turu = { a: "saldiri", b: "bos", g: "gez", s: "sus" };
   const out = [];
   for (const parca of String(metin || "").split(";")) {
-    const m = /^([abgs])(-?\d+),(-?\d+),(-?\d+),(\d+)$/.exec(parca);
-    if (m) out.push({ tur: turu[m[1]], x: +m[2], y: +m[3], a: +m[4] / 100, t0: +m[5] / 1000, alindi: simdi });
+    const m = /^([abgs])(-?\d+),(-?\d+),(-?\d+),(\d+)(?:,(-?\d+),(-?\d+),([0-6]),(\d+))?$/.exec(parca);
+    if (!m) continue;
+    const tm = { tur: turu[m[1]], x: +m[2], y: +m[3], a: +m[4] / 100, t0: +m[5] / 1000, alindi: simdi };
+    if (tm.tur === "gez") {
+      if (m[6] !== undefined) { tm.kx = +m[6]; tm.ky = +m[7]; tm.faz = TIMSAH_FAZ[+m[8]]; tm.ft0 = +m[9] / 1000; }
+      else { tm.kx = tm.x; tm.ky = tm.y; tm.faz = "bekle"; tm.ft0 = 0; }   // eski biçim: konum yok, suda gösterilir
+    }
+    out.push(tm);
   }
   return out;
 }
@@ -374,6 +436,7 @@ function timsahSuYolu(ctx, o) {
   }
 }
 function timsahSplashCiz(ctx, tm) {
+  if (tm.tur === "gez" && tm.faz !== "bekle" && tm.faz !== "bat") return;   // TMS2: karada su halkası çizilmez
   const { su } = enYakinSu(tm.x, tm.y);
   if (!su) return;
   ctx.save();
@@ -381,14 +444,13 @@ function timsahSplashCiz(ctx, tm) {
   ctx.clip();
   const z = tm.t, { uyari, atilma, batis } = TIMSAH;
   if (tm.tur === "gez") {
-    const g = TIMSAH.gez;
-    if (z < uyari) {
-      const u = z / uyari;
+    // TMS2: halka yalnız suya çıkmadan önce (bekle) ve en sonda batarken (bat); karada hiç yok
+    if (tm.faz === "bekle") {
+      const u = Math.min(1, z / uyari);
       for (let i = 0; i < 3; i++) halka(ctx, tm.x + Math.sin(i * 2.1 + z * 6) * 10, tm.y + Math.cos(i * 1.7 + z * 5) * 6, 6 + ((u * 3 + i / 3) % 1) * 22, 0.55 * (1 - ((u * 3 + i / 3) % 1)));
-    } else if (z < uyari + g.cikis) {
-      halka(ctx, tm.x, tm.y, 26, 0.5);
-    } else if (z >= uyari + g.cikis + g.bekle && z < uyari + g.cikis + g.bekle + g.donus) {
-      halka(ctx, tm.x, tm.y, 36, 0.4);
+    } else if (tm.faz === "bat") {
+      const u = Math.min(1, (tm.ft || 0) / batis);
+      halka(ctx, tm.x, tm.y, 36 + u * 14, 0.4 * (1 - u));
     }
     ctx.restore();
     return;
@@ -414,37 +476,72 @@ function timsahAzHareket() {
   return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+// TMS2: an-timsah-3 ve -4 karelerinin suyla boyalı alt bandı. Kareler 192×127; ölçüm (PIL ile yalnız okundu): kare 3'te
+// gövdenin yeşili 93. satıra kadar iner, mavi dalga 71. satırda başlar, saf su 96'dan sonradır; kare 4'te yeşil 103'e kadar,
+// mavi 56'dan itibaren (yanlardaki damlalar dahil), saf su 104'ten sonra. Karada çizerken dalganın en yoğun yerinin üstünden,
+// yani kare 3'te 82. (0,646), kare 4'te 90. satırdan (0,709) kırpılır: göl lekesi karada timsahla gezmez.
+const TIMSAH_SU_CIZGISI = { 3: 82 / 127, 4: 90 / 127 };
+const TIMSAH_KUTU = { x: -40, y: -30, w: 80, h: 56 };   // animCiz kutusu; resim 80×52,9 olarak ortalanır
+
+// Karada bir kare: su bandı kırpılır, kırpma çizgisi merkezin 6 px altına gelir (ayak hizası)
+function timsahKirpikKare(ctx, kare) {
+  const k = TIMSAH_KUTU, kutuOrani = 127 / 192, dh = Math.min(k.h, k.w * kutuOrani);
+  const kes = (k.h - dh) / 2 + TIMSAH_SU_CIZGISI[kare] * dh;   // kutunun üstünden kırpma çizgisine
+  const y0 = 6 - kes;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(k.x - 10, y0 - 10, k.w + 20, 10 + kes); ctx.clip();
+  const ok = animCiz(ctx, "timsah", kare, k.x, y0, k.w, k.h);
+  ctx.restore();
+  return ok;
+}
+
+// TMS2: gezinti timsahı çizimi. Karada: tam gövde kareleri (timsah-yuru / -dur / -isir) varsa onlar, yoksa kare 3 (yürüme)
+// ve kare 4 (ısırık) su bandından kırpılarak. Suda (bekle, bat): kareler olduğu gibi.
+function timsahGezKareCiz(ctx, tm) {
+  const { uyari, batis } = TIMSAH, faz = tm.faz || "bekle", k = timsahKonum(tm);
+  const karada = faz === "kov" || faz === "isir" || faz === "don" || faz === "cik" || faz === "gir";
+  const yurur = faz === "kov" || faz === "don" || faz === "cik" || faz === "gir";
+  const yolcu = tm.yol || 0;
+  let alfa = 1;
+  if (faz === "bekle") { const q = Math.min(1, tm.t / uyari); alfa = Math.min(1, q * 3 + 0.3); }
+  else if (faz === "bat") alfa = 1 - Math.min(1, (tm.ft || 0) / batis);
+  const yoff = yurur && !timsahAzHareket() ? -Math.abs(Math.sin(yolcu / 9)) * 3 : 0;
+  ctx.save();
+  ctx.translate(k.x, k.y);
+  if (Math.cos(tm.a) < 0) ctx.scale(-1, 1);
+  ctx.globalAlpha *= Math.max(0, alfa);
+  let ok = false;
+  if (!karada) {
+    const kare = faz === "bat" ? 6 : (tm.t / uyari < 0.5 ? 1 : 2);
+    ok = animCiz(ctx, "timsah", kare, TIMSAH_KUTU.x, TIMSAH_KUTU.y, TIMSAH_KUTU.w, TIMSAH_KUTU.h);
+  } else {
+    if (faz !== "cik" && faz !== "gir") {       // ayak gölgesi (suyun kenarındaki geçişte çizilmez)
+      ctx.fillStyle = "rgba(0,0,0,0.25)";
+      ctx.beginPath(); ctx.ellipse(0, 6, 22, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.translate(0, yoff);
+    const yuru = animHazir("timsah-yuru"), dur = animHazir("timsah-dur"), isir = animHazir("timsah-isir"), cik = animHazir("timsah-cik");
+    if (faz === "isir") {
+      ok = isir ? animCiz(ctx, "timsah-isir", 1, -48, -42, 96, 48, true) : timsahKirpikKare(ctx, 4);
+    } else if ((faz === "cik" || faz === "gir") && cik) {
+      ok = animCiz(ctx, "timsah-cik", 1 + (Math.floor((tm.ft || 0) * 8) % cik), -48, -42, 96, 48, true);
+    } else if (yuru) {
+      ok = animCiz(ctx, "timsah-yuru", 1 + (Math.floor(yolcu / 12) % yuru), -48, -42, 96, 48, true);
+    } else if (dur && !yurur) {
+      ok = animCiz(ctx, "timsah-dur", 1, -48, -42, 96, 48, true);
+    } else ok = timsahKirpikKare(ctx, 3);
+  }
+  ctx.restore();
+  return ok;
+}
+
 // ChatGPT timsah kareleri (N12: dalga, gözler, baş, açık ağız, kapma, batış). Kareler yandan çizildiği için döndürülmez;
 // sola atılan timsah aynalanır, baş atılış yönünde ilerler. Hazır değilse false (kod çizimi).
 function timsahKareCiz(ctx, tm) {
   if (typeof animHazir !== "function" || !animHazir("timsah")) return false;
   const { uyari, atilma, batis } = TIMSAH;
   let kare, alfa = 1;
-  if (tm.tur === "gez") {
-    const g = TIMSAH.gez, z = tm.t, u = timsahGezU(tm), bitis = uyari + g.cikis + g.bekle + g.donus;
-    if (z < uyari) { const q = z / uyari; kare = q < 0.5 ? 1 : 2; alfa = Math.min(1, q * 3 + 0.3); }
-    else if (z < bitis) {
-      if (tm.isirdi && z - (tm.isirikT || 0) < 0.25) kare = 4;
-      else {
-        const n = animHazir("timsah-yuru");
-        kare = n ? 1 + Math.floor(timsahGezMesafe(tm) * u / 12) % n : 3;
-      }
-    } else { const q = Math.min(1, (z - bitis) / g.batis); kare = 6; alfa = 1 - q; }
-    const konum = timsahKonum(tm);
-    const yol = timsahGezMesafe(tm) * u;
-    const yoff = u > 0.2 && !timsahAzHareket() ? -Math.abs(Math.sin(yol / 9)) * 3 : 0;
-    ctx.save();
-    ctx.translate(konum.x, konum.y);
-    if (Math.cos(tm.a) < 0) ctx.scale(-1, 1);
-    ctx.globalAlpha *= Math.max(0, alfa);
-    if (u > 0.2) {
-      ctx.fillStyle = "rgba(0,0,0,0.25)";
-      ctx.beginPath(); ctx.ellipse(0, 0, 13, 3.5, 0, 0, Math.PI * 2); ctx.fill();
-    }
-    animCiz(ctx, "timsah", kare, -40, -30 + yoff, 80, 56);
-    ctx.restore();
-    return true;
-  }
+  if (tm.tur === "gez") return timsahGezKareCiz(ctx, tm);
   if (tm.tur === "sus") {
     const u = tm.t / TIMSAH.susSure;
     kare = 2; alfa = Math.min(1, u * 5, (1 - u) * 5);
@@ -494,8 +591,13 @@ function timsahCiz(ctx, tm) {
       ctx.fillStyle = "#1a2e05";
       ctx.beginPath(); ctx.arc(22, -2.5, 1.4, 0, Math.PI * 2); ctx.arc(22, 2.5, 1.4, 0, Math.PI * 2); ctx.fill();
     } else if (tm.tur === "gez") {
-      ctx.rotate(tm.a);
-      timsahKafa(ctx, 0, tm.isirdi ? 1 : 0);
+      const faz = tm.faz || "bekle";
+      if (faz === "bekle") { ctx.globalAlpha = Math.min(1, (tm.t / TIMSAH.uyari) * 2); ctx.rotate(tm.a); timsahGozleri(ctx, 9, 0.6 + 0.4 * Math.min(1, tm.t / TIMSAH.uyari)); }
+      else {
+        if (faz === "bat") ctx.globalAlpha = 1 - Math.min(1, (tm.ft || 0) / TIMSAH.batis);
+        ctx.rotate(tm.a);
+        timsahKafa(ctx, 0, faz === "isir" ? 1 : 0);
+      }
     } else {
       const { uyari, atilma, batis } = TIMSAH, z = tm.t;
       if (z < uyari) {                                                             // yükselen gözler

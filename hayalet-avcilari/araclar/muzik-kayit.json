@@ -2616,65 +2616,42 @@
     }
   },
   "RU": {
-    "gorev": "d3fd2bda475650d9fb02fa66f24063c5",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ru-1.mp3",
-        "sure": 119.221,
-        "tempo": 136.46,
+        "dosya": "RU.mp3",
+        "sure": 97.56,
+        "tempo": 100.01,
         "dongu": {
-          "bas": 29.6233,
-          "uzunluk": 30.1566,
-          "vurus": 68
+          "bas": 41.4813,
+          "uzunluk": 33.59635,
+          "vurus": 56
         },
-        "ekYeri": 0.9837,
-        "sabitlik": 0.8822,
-        "puan": 0.9142,
+        "ekYeri": 0.9526,
+        "sabitlik": 0.8642,
+        "puan": 0.7956,
         "teaser": {
-          "bas": 68.5497,
-          "son": 72.4971
-        },
-        "id": "507ed0f1-fd61-4efb-9356-4508dd93c9ba",
-        "etiketler": "Russian barynya folk dance, instrumental, steady driving 2/4 groove around 128 BPM; bright warm acoustic mix; balalaika leads a playful and heroic melody, domra and bayan accordion weave a counter-melody, wooden spoons mark the rhythm; rich polyphonic ensemble maintains upbeat, energetic constant energy, adventure-game background, loop-friendly, seamless finish."
-      },
-      {
-        "dosya": "hayalet-avcilari-ru-2.mp3",
-        "sure": 119.989,
-        "tempo": 137.06,
-        "dongu": {
-          "bas": 29.9916,
-          "uzunluk": 28.14827,
-          "vurus": 64
-        },
-        "ekYeri": 0.9791,
-        "sabitlik": 0.8838,
-        "puan": 0.9094,
-        "teaser": {
-          "bas": 16.3208,
-          "son": 20.2914
-        },
-        "id": "fd3fb037-db52-4a8f-bc3f-03affeefcda5",
-        "etiketler": "Russian folk dance, barynya, instrumental; driving wooden spoons and balalaika carry a nimble lead through a rich polyphonic ensemble, with domra counter-melody and bayan accordion pulse; bright warm acoustic mix, playful and heroic, steady danceable 2/4 groove around 128 BPM, constant energy, seamless loop-friendly endings for adventure video game background music."
+          "bas": 27.0843,
+          "son": 31.2871
+        }
       }
     ],
-    "lufs": -18.0,
-    "tepe": -5.9,
+    "lufs": -17.9,
+    "tepe": -5.1,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.1706,
-    "ekOrani": 0.275,
+    "girisSure": 5.4028,
+    "ekOrani": 0.042,
     "dosyalar": {
       "dongu": "muzik/RU-dongu.ogg",
       "giris": "muzik/RU-giris.ogg"
     },
     "bas": 0.1,
-    "son": 28.24827,
-    "tempo": 137.06,
-    "kredi": {
-      "kalan": 248.5
-    }
+    "son": 33.69635,
+    "tempo": 100.01,
+    "kredi": {}
   },
   "CA": {
     "gorev": "7a901babcf0b88d60f11913cc758c43b",

@@ -1043,65 +1043,42 @@
     "kredi": {}
   },
   "PS": {
-    "gorev": "185e49971d946802d6a37babd39b0e28",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ps-1.mp3",
-        "sure": 119.341,
-        "tempo": 131.21,
+        "dosya": "PS.mp3",
+        "sure": 79.2,
+        "tempo": 104.19,
         "dongu": {
-          "bas": 33.2033,
-          "uzunluk": 27.44169,
-          "vurus": 60
+          "bas": 33.2429,
+          "uzunluk": 27.64477,
+          "vurus": 48
         },
-        "ekYeri": 0.9731,
-        "sabitlik": 0.7193,
-        "puan": 0.8863,
+        "ekYeri": 0.959,
+        "sabitlik": 0.637,
+        "puan": 0.7515,
         "teaser": {
-          "bas": 84.4189,
-          "son": 88.5289
-        },
-        "id": "7d87132b-795c-4970-ac06-fa12e689ac84",
-        "etiketler": "Palestinian dabke line-dance music, mijwiz double-reed pipe leads a bright adventure-game melody, with oud answering and a counter-melody above darbuka, daf frame drum and handclaps; rich polyphonic ensemble, instrumental; bright warm acoustic mix, loop-friendly; steady danceable groove around 128 BPM, constant energy, no breakdown or fade-out."
-      },
-      {
-        "dosya": "hayalet-avcilari-ps-2.mp3",
-        "sure": 119.533,
-        "tempo": 135.89,
-        "dongu": {
-          "bas": 32.9113,
-          "uzunluk": 28.29454,
-          "vurus": 64
-        },
-        "ekYeri": 0.9747,
-        "sabitlik": 0.8334,
-        "puan": 0.8979,
-        "teaser": {
-          "bas": 84.1369,
-          "son": 88.1075
-        },
-        "id": "f7511007-6bec-4046-b503-0cdec4019493",
-        "etiketler": "Palestinian dabke line-dance music, bright warm acoustic mix with a steady adventure-game backdrop; mijwiz double-reed pipe leads a lively melody over a rich polyphonic ensemble, oud counter-melody, darbuka, daf frame drum and handclaps shaping the rhythm section; around 128 BPM, constant energy, seamless loop-friendly instrumental."
+          "bas": 48.7882,
+          "son": 52.8285
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -4.4,
+    "tepe": -5.7,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.1706,
-    "ekOrani": 0.253,
+    "girisSure": 5.2403,
+    "ekOrani": 0.297,
     "dosyalar": {
       "dongu": "muzik/PS-dongu.ogg",
       "giris": "muzik/PS-giris.ogg"
     },
-    "bas": 0.11,
-    "son": 28.40454,
-    "tempo": 135.89,
-    "kredi": {
-      "kalan": 440.5
-    }
+    "bas": 0.1,
+    "son": 27.74477,
+    "tempo": 104.19,
+    "kredi": {}
   },
   "IQ": {
     "gorev": "suno-pencere-2026-11",

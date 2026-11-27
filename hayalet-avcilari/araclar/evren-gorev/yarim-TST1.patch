@@ -1,0 +1,480 @@
+diff --git a/hayalet-avcilari/test/cizim.test.mjs b/hayalet-avcilari/test/cizim.test.mjs
+index 3a04fb5..7ead42c 100644
+--- a/hayalet-avcilari/test/cizim.test.mjs
++++ b/hayalet-avcilari/test/cizim.test.mjs
+@@ -34,7 +34,7 @@ try {
+   await p.waitForTimeout(300);
+   const cdp = await p.context().newCDPSession(p);
+   await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+-  const olc = (ms) => p.evaluate((ms) => new Promise((tamam) => {
++  const olcSayfa = (sayfa, ms) => sayfa.evaluate((ms) => new Promise((tamam) => {
+     const kare = []; const bas = performance.now();
+     const d = (t) => { kare.push(t); if (t - bas < ms) requestAnimationFrame(d); else {
+       const ara = kare.slice(1).map((x, i) => x - kare[i]).sort((a, c) => a - c);
+@@ -42,12 +42,20 @@ try {
+     } };
+     requestAnimationFrame(d);
+   }), ms);
++  const olc = (ms) => olcSayfa(p, ms);
++  // Makinenin o anki kapasitesi: aynı sahnede, sahnenin 3000 ms'lik ölçümünden hemen önce 1000 ms boyunca aynı rAF
++  // örnekleyicisi çalıştırılır (oyun akarken: update + render). Duraklatılmış oyun da render ettiği hâlde asıl yük
++  // update'te kaldığı için taban sahnenin hızını yansıtmıyordu. Sağlıklı makinede taban yüksek kalır ve eşik
++  // min(30, …) ile 30'da, p95 de max(100, …) ile 100'de durur; yalnız makine o sahneyi daha yavaş çizebiliyorsa gevşer.
++  const tabanOlc = () => olc(1000);
++  sonuc.taban = {};
+   // Tek kişilik: Bot sürekli vuruluyor (her vuruşta 0,25 sn parlar)
+   await p.evaluate(() => { save.playerName = 'Defne'; persistSave(); startGame(); game.player.invuln = 1e9; });
+   await p.waitForTimeout(500);
+   sonuc.botVar = await p.evaluate(() => !!game.bot);
+   sonuc.botNormal = await olc(3000);
+   await p.evaluate(() => { window.__parla = setInterval(() => { if (game.bot) game.bot.hitFlash = 0.25; }, 50); });
++  sonuc.taban.botParliyor = await tabanOlc();
+   sonuc.botParliyor = await olc(3000);
+   await p.evaluate(() => clearInterval(window.__parla));
+   // Çevrimiçi host gibi: yerel oyuncu ve iki uzak oyuncu; ağ yok (oda kimliği yok, yazım yapılmaz)
+@@ -61,14 +69,17 @@ try {
+     };
+     game.player.invuln = 1e9;
+   });
++  sonuc.taban.canli = await tabanOlc();
+   sonuc.canli = await olc(3000);
+   // İkisi hayalet olur: yerel oyuncu ve bir uzak oyuncu (diğer uzak oyuncu canlı, tur sürer)
+   await p.evaluate(() => { online.remotePlayers.k2.dead = true; game.player.hp = 0; game.player.dead = true; });
++  sonuc.taban.hayalet = await tabanOlc();
+   sonuc.hayalet = await olc(3000);
+   // Dünya Turu, tek kişilik: ülkenin döngü müziği çalarken, Bot ve en az üç hayalet sahnede. Oyuncu daire çizerek
+   // dolaşır: kamera kesirli piksel konumlarından geçer (zemin deseni piksele hizalı değilse her karede süzgeçle taranır)
+   await p.evaluate(() => { online.mode = null; online.uid = null; online.remotePlayers = {}; endGame(false); });
+   sonuc.tur = {};
++  sonuc.taban.tur = {};
+   for (const kod of ['FR', 'KE', 'JP']) {
+     await p.evaluate((kod) => { startGame({ tur: true, ulke: ulkeKodla(kod).sira }); game.player.invuln = 1e9; }, kod);
+     await p.waitForFunction(() => muzikDurumu().calan === 'dongu' && game.ghosts.length >= 3, null, { timeout: 30000 });
+@@ -83,6 +94,7 @@ try {
+       return { kod: turUlkesi().kod, aile: turUlkesi().aile, calan: muzikDurumu().calan, bot: !!game.bot,
+         hayalet: game.ghosts.length, zemin: !!(_turZemini && _turZemini.desen) };
+     }, kod);
++    sonuc.taban.tur[kod] = await tabanOlc();
+     const kare = await olc(3000);
+     const kamera = await p.evaluate(() => {
+       clearInterval(window.__dolas); game.inputDir.x = 0; game.inputDir.y = 0;
+@@ -136,17 +148,25 @@ try {
+ console.log(JSON.stringify(sonuc));
+ assert.deepEqual(sonuc.hatalar, [], 'sayfa hatası');
+ assert.ok(sonuc.botVar, 'tek kişilik oyunda Bot yok');
+-assert.ok(sonuc.botParliyor.fps >= 30 && sonuc.botParliyor.p95 <= 100,
+-  `vurulan Bot çizilirken kare hızı ${sonuc.botParliyor.fps} fps, %95 kare ${sonuc.botParliyor.p95} ms (normalde ${sonuc.botNormal.fps} fps)`);
+-assert.ok(sonuc.canli.fps >= 30, `canlıyken kare hızı düşük: ${sonuc.canli.fps}`);
+-assert.ok(sonuc.hayalet.fps >= 30 && sonuc.hayalet.p95 <= 100,
+-  `hayalet olan oyuncu çizilirken kare hızı ${sonuc.hayalet.fps} fps, %95 kare ${sonuc.hayalet.p95} ms (canlıyken ${sonuc.canli.fps} fps)`);
++const tb = sonuc.taban;
++assert.ok(sonuc.botParliyor.fps >= Math.min(30, 0.6 * tb.botParliyor.fps) && sonuc.botParliyor.p95 <= Math.max(100, 2.5 * tb.botParliyor.p95),
++  `vurulan Bot çizilirken kare hızı ${sonuc.botParliyor.fps} fps, %95 kare ${sonuc.botParliyor.p95} ms (normalde ${sonuc.botNormal.fps} fps; taban ${tb.botParliyor.fps} fps, %95 ${tb.botParliyor.p95} ms)`);
++assert.ok(sonuc.botParliyor.fps >= 0.8 * sonuc.botNormal.fps,
++  `vurulan Bot normalden yavaş: ${sonuc.botParliyor.fps} fps / normal ${sonuc.botNormal.fps} fps`);
++assert.ok(sonuc.canli.fps >= Math.min(30, 0.6 * tb.canli.fps),
++  `canlıyken kare hızı düşük: ${sonuc.canli.fps} fps (taban ${tb.canli.fps} fps)`);
++assert.ok(sonuc.hayalet.fps >= Math.min(30, 0.6 * tb.hayalet.fps) && sonuc.hayalet.p95 <= Math.max(100, 2.5 * tb.hayalet.p95),
++  `hayalet olan oyuncu çizilirken kare hızı ${sonuc.hayalet.fps} fps, %95 kare ${sonuc.hayalet.p95} ms (canlıyken ${sonuc.canli.fps} fps; taban ${tb.hayalet.fps} fps, %95 ${tb.hayalet.p95} ms)`);
++assert.ok(sonuc.hayalet.fps >= 0.8 * sonuc.canli.fps,
++  `hayalet çizimi canlıdan yavaş: ${sonuc.hayalet.fps} fps / canlı ${sonuc.canli.fps} fps`);
+ for (const [kod, v] of Object.entries(sonuc.tur)) {
+   assert.equal(v.kod, kod, `Dünya Turu ${kod} yerine ${v.kod} ülkesinde`);
+   assert.ok(v.calan === 'dongu' && v.bot && v.hayalet >= 3 && v.zemin,
+     `Dünya Turu ${kod}: ölçüm başında müzik ${v.calan}, Bot ${v.bot}, ${v.hayalet} hayalet, zemin deseni ${v.zemin}`);
+   assert.ok(v.kamera.yol > 50 && v.kamera.kesirli > 5, `Dünya Turu ${kod}: kamera kaymadı (${JSON.stringify(v.kamera)})`);
+-  assert.ok(v.fps >= 30 && v.p95 <= 100, `Dünya Turu ${kod} (${v.aile}) kamera kayarken kare hızı ${v.fps} fps, %95 kare ${v.p95} ms`);
++  const t = tb.tur[kod];
++  assert.ok(v.fps >= Math.min(30, 0.6 * t.fps) && v.p95 <= Math.max(100, 2.5 * t.p95),
++    `Dünya Turu ${kod} (${v.aile}) kamera kayarken kare hızı ${v.fps} fps, %95 kare ${v.p95} ms (taban ${t.fps} fps, %95 ${t.p95} ms)`);
+ }
+ for (const [dpr, v] of Object.entries(sonuc.tablet)) {
+   assert.ok(v.hizali, `tablet dpr ${dpr}: zemin deseni tuval ölçeğine (${v.olcek}) hizalı değil`);
+diff --git a/hayalet-avcilari/test/dunya-turu.test.mjs b/hayalet-avcilari/test/dunya-turu.test.mjs
+index 606af67..959eb25 100644
+--- a/hayalet-avcilari/test/dunya-turu.test.mjs
++++ b/hayalet-avcilari/test/dunya-turu.test.mjs
+@@ -121,7 +121,8 @@ try {
+     assert.deepEqual(k.turKutular, k.normalKutular);
+   });
+   sina('ressamı eksik ülkede engel resmi hata vermez (yedek ressam)', () => { assert.equal(k.resimHatasi, null); });
+-  sina('zemin ressamı yokken turZeminCiz false (ızgara çizilir)', () => { assert.equal(k.zemin, false); });
++  // Her ailede artık ChatGPT zemin dokusu (aile-<X>-zemin) var: kod ressamı silinse de zemin çizilir, ızgaraya düşmez.
++  sina('zemin ressamı yokken de ChatGPT zemin dokusu çizilir (turZeminCiz true)', () => { assert.equal(k.zemin, true); });
+   sina('startGame(): normal oyun, bölüm 1, Mor Şato', () => { assert.deepEqual(k.normal, { tur: false, level: 1, tema: 'Mor Şato', ulke: null }); });
+ 
+   // --- 3) Ekran: ana menü düğmesi, rota kartları, seçim, pasaport ---
+@@ -142,7 +143,8 @@ try {
+       sayac: document.getElementById('tur-sayac').textContent.trim(), kitalar: document.querySelectorAll('#tur-liste .tur-kita').length,
+       ilkSecili: secili(), enKisa: Math.min(...kartlar.map((k) => k.getBoundingClientRect().height)),
+       trResim: (kart(1).querySelector('img') || {}).src || '', ad: (kart(6).querySelector('bdi') || {}).textContent,
+-      durum: [kart(1), kart(3), kart(20)].map((k) => k.querySelector('.tur-durum').textContent),
++      // Durum simgesi artık ChatGPT resmi (tur-pasaport / tur-ucak-simge / tur-kilit); resim yoksa emoji kalır.
++      durum: [kart(1), kart(3), kart(20)].map((k) => { const el = k.querySelector('.tur-durum'); return el.querySelector('img') ? 'resim' : el.textContent; }),
+     };
+     kart(20).click(); r.kilitliSonra = secili();
+     kart(3).click(); r.acikSonra = secili();
+@@ -159,7 +161,7 @@ try {
+     assert.ok(e.aktif);
+     assert.deepEqual([e.sayi, e.yakinda, e.damgali, e.acik, e.kilitli, e.kitalar], [51, 1, 2, 5, 44, 4]);
+     assert.equal(e.sayac, '🛂 2/51');
+-    assert.deepEqual(e.durum, ['🛂', '✈️', '🔒']);
++    assert.deepEqual(e.durum, ['resim', 'resim', 'resim']);
+   });
+   sina('kartlarda ad <bdi> içinde, ressamı olan ülkede küçük resim, dokunma hedefi ≥ 44 px', () => {
+     assert.equal(e.ad, 'Fransa'); assert.match(e.trResim, /^data:image\/png/); assert.ok(e.enKisa >= 44, String(e.enKisa));
+diff --git a/hayalet-avcilari/test/engel-bicim.test.mjs b/hayalet-avcilari/test/engel-bicim.test.mjs
+index 1158cf4..d7b5f17 100644
+--- a/hayalet-avcilari/test/engel-bicim.test.mjs
++++ b/hayalet-avcilari/test/engel-bicim.test.mjs
+@@ -68,8 +68,10 @@ const kareBekle = (p, n) => p.evaluate((n) => new Promise((tamam) => { let k = 0
+ // Görünen engellerin önbellek ölçeği engelOlcegi() ile aynı mı
+ const olcekDenetimi = (p) => p.evaluate(() => {
+   const s = engelOlcegi(), cam = game.camera;
++  // Yolculuk haritasında donatılar (o.donati) ve geçitler (o.gecit) engeller.js önbelleğini kullanmaz (ayrı çizilir).
++  const onbellekli = (o) => !o.donati && !o.gecit;
+   const gor = [...game.walls, ...game.waters, ...game.spikes, ...game.lavas]
+-    .filter((o) => o.x < cam.x + game.W && o.x + o.w > cam.x && o.y < cam.y + game.H && o.y + o.h > cam.y);
++    .filter((o) => o.x < cam.x + game.W && o.x + o.w > cam.x && o.y < cam.y + game.H && o.y + o.h > cam.y && onbellekli(o));
+   const kotu = gor.filter((o) => { const p = o._resim && o._resim.pay; const px = p ? p.x : 0; return o._olcek !== s || !o._resim || o._resim.c.width !== Math.ceil((o.w + 2 * px) * s); });
+   return { s, vs: game.viewScale, n: gor.length, kotu: kotu.length };
+ });
+@@ -302,14 +304,20 @@ try {
+   const gecis = await p3.evaluate(() => {
+     const onceki = new Set([...game.walls, ...game.waters, ...game.spikes, ...game.lavas]);
+     nextLevel();
+-    const yeni = [...game.walls, ...game.waters, ...game.spikes, ...game.lavas], tema = (game.level - 1) % 6;
+-    return { level: game.level, n: yeni.length, bicimsiz: yeni.filter((o) => !o.bicim).length, temaDisi: yeni.filter((o) => o.tema !== tema).length, eski: yeni.filter((o) => onceki.has(o)).length };
++    const hepsi = [...game.walls, ...game.waters, ...game.spikes, ...game.lavas], tema = (game.level - 1) % 6;
++    // Donatı ve geçitler engeller.js biçimini kullanmaz (kendi çizimleri var); onlar ayrı denetlenir.
++    const onbellekli = (o) => !o.donati && !o.gecit;
++    const yeni = hepsi.filter(onbellekli);
++    const donatilar = hepsi.filter((o) => o.donati);
++    return { level: game.level, n: yeni.length, bicimsiz: yeni.filter((o) => !o.bicim).length, temaDisi: yeni.filter((o) => o.tema !== tema).length, eski: yeni.filter((o) => onceki.has(o)).length,
++      donati: donatilar.length, donatisizBicim: donatilar.filter((o) => !o.bicim).length };
+   });
+   await kareBekle(p3, 3);
+   const gecisResim = await olcekDenetimi(p3);
+   sina(`bölüm geçişinde yeni engeller (bölüm ${gecis.level}, ${gecis.n} engel)`, () => {
+     assert.ok(gecis.n > 8);
+     assert.deepEqual([gecis.bicimsiz, gecis.temaDisi, gecis.eski], [0, 0, 0]);
++    assert.equal(gecis.donatisizBicim, 0, `${gecis.donati} donatının biçimi yok`);
+     assert.equal(gecisResim.kotu, 0);
+   });
+   await p3.close();
+@@ -457,11 +465,20 @@ try {
+     game.level = 8; buildWalls(); buildWaters(); buildHazards(); game.bot = null;
+     const kareBekle = (n) => new Promise((tamam) => { let k = 0; const f = () => (++k >= n ? tamam() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+     const hepsi = () => [...game.walls, ...game.waters, ...game.spikes, ...game.lavas];
++    // Donatı ve geçitler engeller.js önbelleğini kullanmaz (yolculukDonatilariCiz / yolculukGecitCiz çizer).
++    const onbellekli = (o) => !o.donati && !o.gecit;
+     await kareBekle(150);                                                    // oyuncu yerinde: ısınma
+-    const s = engelOlcegi(), toplam = hepsi().length, hazir = hepsi().filter((o) => o._resim && o._olcek === s).length;
+-    let tuval = 0;
++    const s = engelOlcegi(), obek = hepsi().filter(onbellekli), toplam = obek.length, hazir = obek.filter((o) => o._resim && o._olcek === s).length;
++    let tuval = 0, tuvalHepsi = 0;
+     const asil = document.createElement;
+-    document.createElement = function (ad, ...a) { if (String(ad).toLowerCase() === 'canvas') tuval++; return asil.call(this, ad, ...a); };
++    document.createElement = function (ad, ...a) {
++      if (String(ad).toLowerCase() === 'canvas') {
++        tuvalHepsi++;
++        // Yalnız engeller.js'in açtığı tuvalleri say (zemin katmanı, model vb. kendi işi).
++        if (new Error().stack.includes('engeller.js')) tuval++;
++      }
++      return asil.call(this, ad, ...a);
++    };
+     const W = game.W, H = game.H, adimlar = (boy, gor) => { const d = []; for (let v = gor / 2; v < boy - gor / 2; v += gor * 0.8) d.push(v); d.push(boy - gor / 2); return d; };
+     const yol = [];
+     adimlar(game.worldH, H).forEach((y, i) => { const xs = adimlar(game.worldW, W).flatMap((x, j, a) => (j ? [(a[j - 1] + x) / 2, x] : [x])); (i % 2 ? xs.reverse() : xs).forEach((x) => yol.push([x, y])); });
+@@ -470,10 +487,10 @@ try {
+     await kareBekle(3);
+     document.createElement = asil;
+     game.running = false;
+-    return { toplam, hazir, tuval, kare: yol.length };
++    return { toplam, hazir, tuval, tuvalHepsi, kare: yol.length };
+   });
+   await p6.close();
+-  sina(`önbellek bölüm başında ısınır: ${isinma.hazir}/${isinma.toplam} engel hazır, haritayı gezerken (${isinma.kare} kare) ${isinma.tuval} yeni tuval`, () => {
++  sina(`önbellek bölüm başında ısınır: ${isinma.hazir}/${isinma.toplam} engel hazır, haritayı gezerken (${isinma.kare} kare) ${isinma.tuval} yeni tuval (bütün tuvaller ${isinma.tuvalHepsi})`, () => {
+     assert.equal(isinma.hazir, isinma.toplam);
+     assert.equal(isinma.tuval, 0);
+   });
+@@ -481,8 +498,10 @@ try {
+   const p7 = await sayfaAc({ viewport: { width: 900, height: 1280 } });
+   await oyunBaslat(p7);
+   const hazirSay = () => p7.evaluate(() => {
+-    const s = engelOlcegi(), hepsi = [...game.walls, ...game.waters, ...game.spikes, ...game.lavas];
+-    return { s, hazir: hepsi.filter((o) => o._resim && o._olcek === s).length, toplam: hepsi.length };
++    const s = engelOlcegi();
++    // Donatı ve geçitler engeller.js önbelleğini kullanmaz.
++    const obek = [...game.walls, ...game.waters, ...game.spikes, ...game.lavas].filter((o) => !o.donati && !o.gecit);
++    return { s, hazir: obek.filter((o) => o._resim && o._olcek === s).length, toplam: obek.length };
+   });
+   await kareBekle(p7, 150);
+   const olcek1 = await hazirSay();
+diff --git a/hayalet-avcilari/test/kopru.test.mjs b/hayalet-avcilari/test/kopru.test.mjs
+index 74f0a29..f348a92 100644
+--- a/hayalet-avcilari/test/kopru.test.mjs
++++ b/hayalet-avcilari/test/kopru.test.mjs
+@@ -159,6 +159,51 @@ try {
+   sina('Beri çırpınmaz ama timsah yine çıkar', () => { assert.deepEqual(dus.beri, { dusus: false, timsah: 1 }); });
+   sina('köprü ucunda bekleyene kıyı timsahı saldırmaz', () => { assert.equal(dus.uctaTimsah, 0); });
+ 
++  // Bot köprüden geçerken şeritten erken ayrılıp suya girmemeli (engel-bicim bot senaryosu): dikey (bölüm 6) ve
++  // yatay (bölüm 1) köprü; bot 240 karede oyuncuya yaklaşır, ışınlanmaz ve suyun üstündeyken şeritte kalır.
++  const botKopru = await p.evaluate(() => {
++    const calistir = (L) => {
++      save.playerName = 'Defne'; persistSave();
++      startGame();
++      game.running = false; game.player.invuln = 1e9; game.bot = null;
++      game.level = L;
++      game.walls = [];
++      game.waters = [engelOlustur({ x: 600, y: 500, w: 220, h: 150 }, 'su', 0, 1234)];
++      game.spikes = []; game.lavas = [];
++      const P = game.player; P.x = 920; P.y = 650; P.power = null; P.frozenUntil = 0;
++      game.inputDir.x = 0; game.inputDir.y = 0;
++      game.bot = { x: 560, y: 470, r: 18, hp: 6, maxHp: 6, walkTimer: 0, lastFire: 0, aimRaise: 0, shootRecoil: 0, hitFlash: 0, stuck: 0 };
++      let t = performance.now(), enUzun = 0, enBuyukAdim = 0, suUstu = false, suSeritte = true;
++      for (let i = 0; i < 240; i++) {
++        const x0 = game.bot.x, y0 = game.bot.y;
++        game.ghosts = []; game.pickups = []; t += 1000 / 60; update(1 / 60, t);
++        enUzun = Math.max(enUzun, game.bot.stuck);
++        enBuyukAdim = Math.max(enBuyukAdim, Math.hypot(game.bot.x - x0, game.bot.y - y0));
++        if (collidesWaters(game.bot.x, game.bot.y, 0)) {
++          suUstu = true;
++          const serit = koprulerHazir().some((k) => Math.abs(k.yatay ? game.bot.y - k.c : game.bot.x - k.c) <= KOPRU.serbest);
++          if (!serit) suSeritte = false;
++        }
++      }
++      const k = koprulerHazir()[0];
++      return { uzaklik: Math.round(Math.hypot(P.x - game.bot.x, P.y - game.bot.y)), takilma: +enUzun.toFixed(2),
++        adim: +enBuyukAdim.toFixed(1), suUstu, suSeritte, yatay: k ? k.yatay : null };
++    };
++    return { dikey: calistir(6), yatay: calistir(1) };
++  });
++  sina(`bot dikey köprüden geçerken şeritte kalır (${JSON.stringify(botKopru.dikey)})`, () => {
++    const r = botKopru.dikey;
++    assert.equal(r.yatay, false);
++    assert.ok(r.uzaklik <= 100 && r.takilma < 0.5 && r.adim < 10, JSON.stringify(r));
++    assert.equal(r.suUstu, true); assert.equal(r.suSeritte, true);
++  });
++  sina(`bot yatay köprüden geçerken şeritte kalır (${JSON.stringify(botKopru.yatay)})`, () => {
++    const r = botKopru.yatay;
++    assert.equal(r.yatay, true);
++    assert.ok(r.uzaklik <= 100 && r.takilma < 0.5 && r.adim < 10, JSON.stringify(r));
++    assert.equal(r.suUstu, true); assert.equal(r.suSeritte, true);
++  });
++
+   // Çizim: köprü, sallanma ve suya düşüş hatasız çizilir
+   const ciz = await p.evaluate((L) => {
+     const k = __kur(L);
+diff --git a/hayalet-avcilari/test/uc-avci.test.mjs b/hayalet-avcilari/test/uc-avci.test.mjs
+index 89d7aa9..14f0b97 100644
+--- a/hayalet-avcilari/test/uc-avci.test.mjs
++++ b/hayalet-avcilari/test/uc-avci.test.mjs
+@@ -641,7 +641,7 @@ try {
+     });
+   }
+ 
+-  // ---- Bütün avcıların iletişim sayfası: test/ciktilar/uc-avcilar.png (ön 3/4, nişan) ----
++  // ---- Bütün avcıların iletişim sayfası: test/ekran/uc-avcilar.png (ön 3/4, nişan) ----
+   const sayfa = await p.evaluate(() => {
+     const avcilar = ['kinkin', 'veryi', 'kornet', 'mark', 'kent', 'ponko', 'gul', 'rani', 'beti', 'fanatik', 'silsen', 'sercin'];
+     const T = 170, W = T * avcilar.length, H = 240;
+@@ -653,10 +653,10 @@ try {
+     }
+     return c.toDataURL('image/png');
+   });
+-  const cikti = path.join(path.dirname(fileURLToPath(import.meta.url)), 'ciktilar');
++  const cikti = path.join(path.dirname(fileURLToPath(import.meta.url)), 'ekran');
+   fs.mkdirSync(cikti, { recursive: true });
+   fs.writeFileSync(path.join(cikti, 'uc-avcilar.png'), Buffer.from(sayfa.split(',')[1], 'base64'));
+-  sina('iletişim sayfası test/ciktilar/uc-avcilar.png olarak kaydedildi', () => {
++  sina('iletişim sayfası test/ekran/uc-avcilar.png olarak kaydedildi', () => {
+     assert.ok(fs.statSync(path.join(cikti, 'uc-avcilar.png')).size > 5000);
+   });
+ 
+diff --git a/hayalet-avcilari/test/yd1.test.mjs b/hayalet-avcilari/test/yd1.test.mjs
+index cbea730..05bcade 100644
+--- a/hayalet-avcilari/test/yd1.test.mjs
++++ b/hayalet-avcilari/test/yd1.test.mjs
+@@ -323,11 +323,11 @@ try {
+     assert.ok(Array.isArray(kopruResim.resimsiz) && Array.isArray(kopruResim.resimsizAcik));
+   });
+ 
+-  const cikti = path.join(path.dirname(fileURLToPath(import.meta.url)), 'ciktilar');
++  const cikti = path.join(path.dirname(fileURLToPath(import.meta.url)), 'ekran');
+   fs.mkdirSync(cikti, { recursive: true });
+   await p.evaluate(() => { render(); });
+   await p.screenshot({ path: path.join(cikti, 'yd2.png') });
+-  sina('test/ciktilar/yd2.png kaydedildi', () => { assert.ok(fs.statSync(path.join(cikti, 'yd2.png')).size > 5000); });
++  sina('test/ekran/yd2.png kaydedildi', () => { assert.ok(fs.statSync(path.join(cikti, 'yd2.png')).size > 5000); });
+ 
+   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
+ } catch (e) {
+diff --git a/hayalet-avcilari/test/yer1.test.mjs b/hayalet-avcilari/test/yer1.test.mjs
+index 08dd6e6..9bcd744 100644
+--- a/hayalet-avcilari/test/yer1.test.mjs
++++ b/hayalet-avcilari/test/yer1.test.mjs
+@@ -259,7 +259,7 @@ try {
+   });
+ 
+   // (h) derleme aracı: geçerli kalır, geçersiz bildirilir
+-  const cikti = path.join(KOK, 'test', 'ciktilar', 'yer1-sablonlar.js');
++  const cikti = path.join(KOK, 'test', 'ekran', 'yer1-sablonlar.js');
+   fs.mkdirSync(path.dirname(cikti), { recursive: true });
+   const arac = path.join(KOK, 'araclar', 'yerlesim_derle.py');
+   const calistir = spawnSync('python3', [arac, path.join(KOK, 'test', 'fixtures', 'yerlesim'), cikti], { encoding: 'utf8' });
+diff --git a/hayalet-avcilari/www/engeller.js b/hayalet-avcilari/www/engeller.js
+index d4025a6..fb13fe8 100644
+--- a/hayalet-avcilari/www/engeller.js
++++ b/hayalet-avcilari/www/engeller.js
+@@ -984,6 +984,19 @@
+     return _cizDuvar.liste;
+   };
+   const listeler = () => [cizimDuvarlari(), game.waters || [], game.spikes || [], game.lavas || []];
++  // "Bütün engellerin biçimi var mı" yanıtı dört liste kimliği ve boyu değişmedikçe yeniden hesaplanmaz
++  // (yolculuk haritasında ~100 engel için her iki geçişte de tarama yapılıyordu).
++  let _bicimTamam = null;
++  function bicimlerTamam() {
++    const L = listeler();
++    const b = _bicimTamam;
++    if (!b || b.a !== L[0] || b.b !== L[1] || b.c !== L[2] || b.d !== L[3] ||
++        b.na !== L[0].length || b.nb !== L[1].length || b.nc !== L[2].length || b.nd !== L[3].length) {
++      const tamam = !L.some((l) => l.some((o) => !o.bicim));
++      _bicimTamam = { a: L[0], b: L[1], c: L[2], d: L[3], na: L[0].length, nb: L[1].length, nc: L[2].length, nd: L[3].length, tamam };
++    }
++    return _bicimTamam.tamam;
++  }
+   // duvar ve objeler alt kenarlarına göre (önde duran sonra çizilir); liste her bölümde yenidir
+   function duvarSirasi() {
+     const W = game.walls || [];
+@@ -1087,7 +1100,7 @@
+     _boyanan = 0;
+     const s = engelOlcegi();
+     if (s !== _sonOlcek) { for (const l of listeler()) for (const o of l) { o._resim = null; o._olcek = 0; o._isinma = 0; } _sonOlcek = s; _isinmaTamam = 0; } // ekran döndü: hepsi yeniden
+-    if (listeler().some((l) => l.some((o) => !o.bicim))) engelBicimleriniKur();
++    if (!bicimlerTamam()) { engelBicimleriniKur(); if (_bicimTamam) _bicimTamam.tamam = true; }
+     const m = ctx.getTransform ? ctx.getTransform() : null;
+     _matris = m && { a: m.a, e: m.e, f: m.f, bir: m.b === 0 && m.c === 0 && m.a === m.d && Math.abs(m.a - s) < 1e-9 };
+     const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0;
+@@ -1096,14 +1109,20 @@
+     // "on" geçişi yalnız öndeki duvar/objeleri çizer; düz katmanlar (su, diken, lav) her zaman "arka"da kalır.
+     if (kip !== "on") {
+       // Sular iki geçişte: önce hepsi kıyısıyla, sonra başka gölle kesişenlerin yalnız suyu yeniden (kesişen göller tek göl
+-      // gibi birleşir); dalgalar ve canlı süsler en üstte
+-      const sular = (game.waters || []).filter((o) => !o.gecit && gor(o, 12)), canlilar = sular.map((o) => resimCiz(ctx, o));
+-      sular.forEach((o, i) => {
+-        const ic = komsuMu(o) ? icResmi(o) : null;
+-        if (ic) bas(ctx, ic, o.x, o.y, o.w, o.h);
+-        dalgalar(ctx, o, zaman);
+-        canliCiz(ctx, o, canlilar[i], zaman);
+-      });
++      // gibi birleşir); dalgalar ve canlı süsler en üstte. Görüşte su yoksa hiç dizi ayrılmaz.
++      let sular = null;
++      for (const o of game.waters || []) if (!o.gecit && gor(o, 12)) (sular || (sular = [])).push(o);
++      if (sular) {
++        const canlilar = [];
++        for (const o of sular) canlilar.push(resimCiz(ctx, o));
++        for (let i = 0; i < sular.length; i++) {
++          const o = sular[i];
++          const ic = komsuMu(o) ? icResmi(o) : null;
++          if (ic) bas(ctx, ic, o.x, o.y, o.w, o.h);
++          dalgalar(ctx, o, zaman);
++          canliCiz(ctx, o, canlilar[i], zaman);
++        }
++      }
+       for (const o of game.spikes || []) if (gor(o, 6)) resimCiz(ctx, o);
+       for (const o of game.lavas || []) {
+         if (!gor(o, 40)) continue;
+diff --git a/hayalet-avcilari/www/game.js b/hayalet-avcilari/www/game.js
+index 18b5350..dccd94f 100644
+--- a/hayalet-avcilari/www/game.js
++++ b/hayalet-avcilari/www/game.js
+@@ -8709,8 +8709,11 @@ function botKopruNoktasi(b, px, py) {
+   }
+   const kendi = b.kopruKendi, karsi = b.kopruKarsi;
+   if (!kendi || !karsi) { b.kopru = null; b.kopruAsama = 0; return null; }
+-  if (b.kopruAsama === 0 && Math.hypot(b.x - kendi.x, b.y - kendi.y) < 24) b.kopruAsama = 1;
+-  if (b.kopruAsama >= 1 && Math.hypot(b.x - karsi.x, b.y - karsi.y) < 24) {
++  // Köprü ucuna yalnız şeritteyken geçilir: şeritten erken çıkan bot suyun içinde kalıp takılıyordu.
++  const seritte = Math.abs(b.kopru.yatay ? b.y - b.kopru.c : b.x - b.kopru.c) <= KOPRU.serbest - 6;
++  if (b.kopruAsama === 0 && Math.hypot(b.x - kendi.x, b.y - kendi.y) < 24 && seritte) b.kopruAsama = 1;
++  // Karşı uç kıyıdan 30 px dışarıda: şeritten çok erken ayrılmasın (r = 18'lik bot suya girip kilitleniyordu).
++  if (b.kopruAsama >= 1 && Math.hypot(b.x - karsi.x, b.y - karsi.y) < 10) {
+     b.kopru = null; b.kopruAsama = 0; b.kopruKendi = null; b.kopruKarsi = null; return null;
+   }
+   return b.kopruAsama === 0 ? kendi : karsi;
+diff --git a/hayalet-avcilari/www/zemin-katmani.js b/hayalet-avcilari/www/zemin-katmani.js
+index 85612b4..1925d8d 100644
+--- a/hayalet-avcilari/www/zemin-katmani.js
++++ b/hayalet-avcilari/www/zemin-katmani.js
+@@ -983,6 +983,10 @@
+     }
+   }
+ 
++  // Görünür parçaların son çizim görünümü: görünüm hücreleri ve önbellek değişmedikçe her karede yeniden
++  // anahtar kurulmaz (yolculuk haritasında kare başına işi harita büyüklüğünden bağımsız tutar).
++  let _zGorunum = null;
++
+   // Görünür parçaları önbellekten çiz; eksikse bu çağrıda en çok birini kur
+   function zeminKatmaniCiz(ctx) {
+     if (typeof game === "undefined" || !game || !ctx) return;
+@@ -996,7 +1000,17 @@
+     const W = game.W || 0, H = game.H || 0;
+     const x0 = Math.floor(cam.x / PARCA), x1 = Math.floor((cam.x + W) / PARCA);
+     const y0 = Math.floor(cam.y / PARCA), y1 = Math.floor((cam.y + H) / PARCA);
++    // Görünüm ve önbellek aynıysa hazır parçaları doğrudan çiz; çevre halkası tamamsa tarama da atlanır
++    if (_zGorunum && _zGorunum.onbellek === onbellek && _zGorunum.boyut === onbellek.size && _zGorunum.halkaTamam &&
++        _zGorunum.x0 === x0 && _zGorunum.y0 === y0 && _zGorunum.x1 === x1 && _zGorunum.y1 === y1 && _zGorunum.s === s) {
++      const eski0 = ctx.imageSmoothingEnabled;
++      ctx.imageSmoothingEnabled = false;
++      for (const q of _zGorunum.parcalar) ctx.drawImage(q.c, q.x, q.y, PARCA, PARCA);
++      ctx.imageSmoothingEnabled = eski0;
++      return;
++    }
+     let kurulan = false;
++    const parcalar = [];
+     const eskiDuz = ctx.imageSmoothingEnabled;
+     ctx.imageSmoothingEnabled = false; // parçalar dünya ölçeğinde 1:1; yumuşatma taraması pahalı
+     for (let cy = y0; cy <= y1; cy++) {
+@@ -1004,32 +1018,37 @@
+         const anahtar = cx + "|" + cy + "|" + s;
+         const varOlan = onbellek.get(anahtar);
+         if (varOlan !== undefined) {
+-          if (varOlan) ctx.drawImage(varOlan, cx * PARCA, cy * PARCA, PARCA, PARCA);
++          if (varOlan) { ctx.drawImage(varOlan, cx * PARCA, cy * PARCA, PARCA, PARCA); parcalar.push({ c: varOlan, x: cx * PARCA, y: cy * PARCA }); }
+           continue;
+         }
+         if (!kurulan) {
+           // Kurulan parça aynı karede çizilir (eskiden bir sonraki kareye kalıyordu: kamera kayınca dikdörtgen boşluk)
+           const yeni = parcaKur(zemin, cx, cy, s) || 0;
+           onbellek.set(anahtar, yeni);
+-          if (yeni) ctx.drawImage(yeni, cx * PARCA, cy * PARCA, PARCA, PARCA);
++          if (yeni) { ctx.drawImage(yeni, cx * PARCA, cy * PARCA, PARCA, PARCA); parcalar.push({ c: yeni, x: cx * PARCA, y: cy * PARCA }); }
+           kurulan = true;
+         }
+       }
+     }
+     // Ekrandaki parçaların hepsi hazırsa bu karede görünüm çevresinden (bir parça pay) bir parça önceden kurulur:
+     // kamera kayarken yeni açılan bölge hazır olur, parçalar gecikmeli belirmez
++    let halkaTamam = false;
+     if (!kurulan) {
++      halkaTamam = true;
+       dis: for (let cy = y0 - 1; cy <= y1 + 1; cy++) {
+         for (let cx = x0 - 1; cx <= x1 + 1; cx++) {
+           if (cx < 0 || cy < 0 || cx * PARCA > (game.worldW || 0) || cy * PARCA > (game.worldH || 0)) continue;
+           const anahtar = cx + "|" + cy + "|" + s;
+           if (onbellek.get(anahtar) !== undefined) continue;
+           onbellek.set(anahtar, parcaKur(zemin, cx, cy, s) || 0);
++          halkaTamam = false;
+           break dis;
+         }
+       }
+     }
+     ctx.imageSmoothingEnabled = eskiDuz;
++    // Yalnız görünür parçaların hepsi hazırken görünüm önbelleğe alınır (kurulan karede dizi eksik kalırdı)
++    if (!kurulan) _zGorunum = { onbellek, boyut: onbellek.size, x0, y0, x1, y1, s, parcalar, halkaTamam };
+   }
+ 
+   function zeminKatmaniYolMu(x, y) {

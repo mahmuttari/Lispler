@@ -1952,65 +1952,42 @@
     }
   },
   "BD": {
-    "gorev": "561b2fb6c2a38ef2f5fa1e049db44625",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-bd-1.mp3",
-        "sure": 118.789,
-        "tempo": 131.73,
+        "dosya": "BD.mp3",
+        "sure": 127.2,
+        "tempo": 93.16,
         "dongu": {
-          "bas": 25.1461,
-          "uzunluk": 30.9946,
-          "vurus": 68
+          "bas": 31.6378,
+          "uzunluk": 30.83983,
+          "vurus": 48
         },
-        "ekYeri": 0.9789,
-        "sabitlik": 0.8113,
-        "puan": 0.9142,
+        "ekYeri": 0.9413,
+        "sabitlik": 0.7431,
+        "puan": 0.7194,
         "teaser": {
-          "bas": 63.4136,
-          "son": 67.5236
-        },
-        "id": "07c23ad1-706a-4f7a-b56d-a9f47e1480e6",
-        "etiketler": "Folk music, Bengali new year fair in an upbeat adventure video game feel, playful and heroic; dotara lead melody, bansuri flute counter-melody, dhol and ektara rhythm section in a rich polyphonic ensemble; bright warm acoustic mix; instrumental; driving, steady danceable groove around 128 BPM, constant energy, seamless loop-friendly continuation."
-      },
-      {
-        "dosya": "hayalet-avcilari-bd-2.mp3",
-        "sure": 119.989,
-        "tempo": 132.35,
-        "dongu": {
-          "bas": 14.5359,
-          "uzunluk": 27.20669,
-          "vurus": 60
-        },
-        "ekYeri": 0.9718,
-        "sabitlik": 0.8466,
-        "puan": 0.9182,
-        "teaser": {
-          "bas": 46.2644,
-          "son": 50.3511
-        },
-        "id": "1688b48b-6051-45c5-8205-3e84dcaf7473",
-        "etiketler": "Bengali folk music, instrumental, around 128 BPM with a steady danceable driving groove; bright warm acoustic mix, rich polyphonic ensemble, playful and heroic, upbeat energetic feel for a Bengali new year fair; dotara and ektara drive beneath dhol, bansuri flute carries the lead melody over a nimble counter-melody, continuous energy and loop-friendly transitions."
+          "bas": 28.4185,
+          "son": 32.2962
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -4.9,
+    "tepe": -6.4,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.2867,
-    "ekOrani": 0.495,
+    "girisSure": 5.0777,
+    "ekOrani": 0.218,
     "dosyalar": {
       "dongu": "muzik/BD-dongu.ogg",
       "giris": "muzik/BD-giris.ogg"
     },
-    "bas": 0.1025,
-    "son": 27.30919,
-    "tempo": 132.35,
-    "kredi": {
-      "kalan": 356.5
-    }
+    "bas": 0.1,
+    "son": 30.93983,
+    "tempo": 93.16,
+    "kredi": {}
   },
   "MM": {
     "gorev": "b839d62ff831f8c2e4b7bd0e944268cd",

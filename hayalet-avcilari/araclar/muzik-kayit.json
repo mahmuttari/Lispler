@@ -359,65 +359,42 @@
     }
   },
   "FR": {
-    "gorev": "a2425f575a750c0f56df4dc733220416",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-fr-1.mp3",
-        "sure": 118.789,
-        "tempo": 96.36,
+        "dosya": "FR.mp3",
+        "sure": 180.04,
+        "tempo": 99.84,
         "dongu": {
-          "bas": 62.0866,
-          "uzunluk": 29.89773,
+          "bas": 63.093,
+          "uzunluk": 28.80021,
           "vurus": 48
         },
-        "ekYeri": 0.955,
-        "sabitlik": 0.7694,
-        "puan": 0.7502,
+        "ekYeri": 0.9093,
+        "sabitlik": 0.387,
+        "puan": 0.63,
         "teaser": {
-          "bas": 37.8046,
-          "son": 41.543
-        },
-        "id": "c81fbcd3-c826-4d25-be3d-a23846877709",
-        "etiketler": "French bal-musette, instrumental; bright warm acoustic mix; cheerful adventure video game background music, steady danceable waltz around 128 BPM; musette accordion leads with a nimble melody, jazz guitar and double bass sustain rich polyphony, counter-melody and rhythm, full energy carried through a seamless loop-friendly refrain."
-      },
-      {
-        "dosya": "hayalet-avcilari-fr-2.mp3",
-        "sure": 118.669,
-        "tempo": 98.22,
-        "dongu": {
-          "bas": 73.3879,
-          "uzunluk": 29.37567,
-          "vurus": 48
-        },
-        "ekYeri": 0.966,
-        "sabitlik": 0.7531,
-        "puan": 0.76,
-        "teaser": {
-          "bas": 69.0888,
-          "son": 73.3845
-        },
-        "id": "32e9ee9b-2134-4e8d-b4d7-29581a45c6ae",
-        "etiketler": "French bal-musette, instrumental, cheerful adventure video game background music, steady danceable 3/4 waltz around 128 BPM, bright warm acoustic mix, musette accordion carries the lead melody, jazz guitar and double bass support a counter-melody and rhythm section in a rich polyphonic ensemble, constant energy, loop-friendly phrasing, seamless ending."
+          "bas": 142.2921,
+          "son": 146.4949
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -2.5,
+    "tepe": -3.3,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.4957,
-    "ekOrani": 0.009,
+    "girisSure": 5.4028,
+    "ekOrani": 1.661,
     "dosyalar": {
       "dongu": "muzik/FR-dongu.ogg",
       "giris": "muzik/FR-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 29.47567,
-    "tempo": 98.22,
-    "kredi": {
-      "kalan": 692.5
-    }
+    "bas": 0.1125,
+    "son": 28.91271,
+    "tempo": 99.84,
+    "kredi": {}
   },
   "IT": {
     "gorev": "ecd1460804caa1e6ad0c83ba9c22c1f3",

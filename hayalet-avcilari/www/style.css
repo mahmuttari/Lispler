@@ -2769,3 +2769,86 @@ body.is-tablet .power-bar .power-ring { width: 32px; height: 32px; font-size: 21
 @media (prefers-reduced-motion: reduce) {
   #screen-menu .dekor-hayalet, #screen-menu .dekor-yarasa, #screen-menu .dekor-kayan { animation: none !important; }
 }
+/* ====== KNT1: MOBA düzeni (tür geleneği; kendi simgelerimiz) ======
+   Sol altta joystick (yarı saydam halka + parlak topuz), sağ altta büyük ana eylem düğmesi (#inv-btn)
+   ve çevresinde yay biçiminde güç/eşya düğmeleri. Arapçada aynalanır (mantıksal özellikler).
+   Düğme konumlarını game.js layoutWeaponBar() verir (ana düğmenin merkezinden, yay üstünde). */
+.joystick {
+  --kn-halka: 128px;
+  width: var(--kn-halka);
+  height: var(--kn-halka);
+  inset-inline-end: auto;
+  inset-inline-start: calc(14px + var(--sol));
+  bottom: calc(24px + var(--alt));
+  background-color: rgba(120, 170, 255, 0.28);
+  border: 2px solid rgba(255, 255, 255, 0.34);
+  opacity: 0.7;
+  transition: opacity 0.15s, border-color 0.15s;
+}
+.joystick.aktif { opacity: 1; background-color: rgba(120, 170, 255, 0.28); border-color: rgba(255, 255, 255, 0.7); }
+.joystick-knob { width: 52px; height: 52px; }
+
+.inv-btn {
+  width: 88px;
+  height: 88px;
+  inset-inline-start: auto;
+  inset-inline-end: calc(24px + var(--sag));
+  bottom: calc(22px + var(--alt));
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.08s;
+}
+.inv-btn:active { transform: scale(0.93); }
+.inv-btn .inv-badge { top: 2px; inset-inline-end: 2px; right: auto; }
+.inv-panel { inset-inline-start: auto; inset-inline-end: calc(24px + var(--sag)); bottom: calc(120px + var(--alt)); }
+
+.weapon-bar {
+  --kn-slot: 56px;
+  position: absolute;
+  display: block;
+  width: 0; height: 0;
+  max-height: none;
+  inset: auto;
+  z-index: 11;
+}
+.weapon-bar .weapon-slot, .weapon-bar .weapon-more {
+  position: absolute;
+  width: var(--kn-slot);
+  height: var(--kn-slot);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-size: 26px;
+  transition: transform 0.08s, background-color 0.08s;
+}
+.weapon-bar .weapon-more { border-style: solid; font-size: 22px; }
+.weapon-bar .weapon-slot:active, .weapon-bar .weapon-more:active {
+  transform: scale(0.92);
+  background: rgba(255, 201, 77, 0.35);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+.weapon-bar .weapon-slot .badge, .weapon-bar .weapon-more .badge { bottom: -3px; right: -3px; }
+[dir="rtl"] .weapon-bar .weapon-slot .badge, [dir="rtl"] .weapon-bar .weapon-more .badge { right: auto; left: -3px; }
+.weapon-bar.dar .weapon-slot, .weapon-bar.dar .weapon-more { width: var(--kn-slot); height: var(--kn-slot); border-radius: 50%; }
+.silah-sec-panel .weapon-slot { position: relative; }
+
+@media (max-width: 360px) { /* dar telefon: halka biraz küçülür, ilk yay düğmesine yer kalır */
+  .joystick { --kn-halka: 116px; inset-inline-start: calc(10px + var(--sol)); }
+  .joystick-knob { width: 48px; height: 48px; }
+}
+@media (orientation: landscape) and (min-width: 700px) {
+  .joystick { --kn-halka: 136px; inset-inline-start: calc(28px + var(--sol)); bottom: calc(28px + var(--alt)); }
+  .inv-btn { width: 92px; height: 92px; inset-inline-end: calc(32px + var(--sag)); bottom: calc(26px + var(--alt)); inset-inline-start: auto; }
+  .weapon-bar { --kn-slot: 60px; bottom: auto; inset-inline-start: auto; }
+  .weapon-slot { font-size: 28px; }
+  .inv-panel { inset-inline-start: auto; inset-inline-end: calc(32px + var(--sag)); bottom: calc(128px + var(--alt)); }
+}
+body.is-tablet .joystick { --kn-halka: 180px; width: 180px; height: 180px; inset-inline-end: auto; inset-inline-start: calc(40px + var(--sol)); bottom: calc(48px + var(--alt)); border-width: 3px; }
+body.is-tablet .joystick-knob { width: 76px; height: 76px; }
+body.is-tablet .inv-btn { width: 120px; height: 120px; inset-inline-start: auto; inset-inline-end: calc(44px + var(--sag)); bottom: calc(44px + var(--alt)); }
+body.is-tablet .weapon-bar { --kn-slot: 80px; bottom: auto; inset-inline-start: auto; gap: 0; }
+body.is-tablet .weapon-slot { width: var(--kn-slot); height: var(--kn-slot); font-size: 38px; border-radius: 50%; }
+body.is-tablet .inv-panel { inset-inline-end: calc(44px + var(--sag)); inset-inline-start: auto; bottom: calc(176px + var(--alt)); }

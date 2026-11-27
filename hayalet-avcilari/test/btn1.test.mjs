@@ -1,5 +1,6 @@
-// Hayalet Avcıları: BTN1 — ekstra güç/silah düğmeleri sol tarafta dikey sütun.
-// Sütun envanter düğmesinin üstünde, oyun içi güç izlerinden (HUD, joystick) uzak durur; Arapçada aynalanır.
+// Hayalet Avcıları: BTN1 (KNT1 ile güncellendi) — güç/silah düğmeleri ana eylem düğmesinin (#inv-btn) çevresinde yay.
+// KNT1: eski dikey sütun beklentisi (sol sütun, joystick sağda) MOBA düzenine çevrildi: ana düğme sağ altta, düğmeler
+// onun merkezinden ~100 px yarıçaplı yayda, joystick sol altta; HUD'a ve birbirine binmez; Arapçada aynalanır.
 // Çalıştırma: node hayalet-avcilari/test/btn1.test.mjs   (Playwright + Chromium; ağ ve Firebase gerekmez)
 import http from 'node:http';
 import fs from 'node:fs';
@@ -92,65 +93,32 @@ async function olc(p) {
 const kesisir = (a, c, tol = 0) =>
   a.right > c.left - tol && a.left < c.right + tol && a.bottom > c.top - tol && a.top < c.bottom + tol;
 
-function sutunlaraAyir(btns) {
-  const sutunlar = [];
-  for (const d of btns) {
-    const s = sutunlar.find((x) => Math.abs(x.sol - d.left) <= 4);
-    if (s) s.dugmeler.push(d); else sutunlar.push({ sol: d.left, dugmeler: [d] });
-  }
-  return sutunlar;
-}
-
 function temelDogrula(o, etiket) {
   const { w, h, btns, inv, joy, rtl } = o;
   assert.ok(btns.length > 0, `${etiket}: düğme yok`);
-  // (a) boyut, ekran içi, çakışma yok
   for (const d of btns) {
     assert.ok(d.width >= 44 && d.height >= 44, `${etiket}: boyut ${d.width}x${d.height}`);
     assert.ok(d.left >= 4 && d.right <= w - 4 && d.top >= 4 && d.bottom <= h - 4, `${etiket}: ekran kenarında`);
   }
   for (let i = 0; i < btns.length; i++) for (let j = i + 1; j < btns.length; j++) {
-    assert.ok(!kesisir(btns[i], btns[j]), `${etiket}: düğmeler çakışıyor`);
+    // düğmeler daire: kutular köşede örtüşse de merkez uzaklığı çaplar toplamının yarısından küçük olmamalı
+    assert.ok(Math.hypot(btns[i].cx - btns[j].cx, btns[i].cy - btns[j].cy) >= (btns[i].width + btns[j].width) / 2 - 1, `${etiket}: düğmeler çakışıyor`);
   }
-  // (b) HUD/joystick/envanter ile çakışma yok (4 px pay)
-  for (const oge of [inv, joy, o.hudLeft, o.hudRight, o.yol, o.pause, o.boss]) {
+  for (const d of btns) assert.ok(!kesisir(d, inv), `${etiket}: düğme ana düğmeye biniyor`);
+  for (const oge of [joy, o.hudLeft, o.hudRight, o.yol, o.pause, o.boss]) {
     if (!oge) continue;
-    for (const d of btns) assert.ok(!kesisir(d, oge, 4), `${etiket}: düğme HUD/joystick ile çakışıyor`);
+    for (const d of btns) assert.ok(!kesisir(d, oge, 2), `${etiket}: düğme HUD/joystick ile çakışıyor`);
   }
-  // (c) taraf
-  const sutunlar = sutunlaraAyir(btns);
-  const ilkSutun = sutunlar[0].dugmeler;
-  if (!rtl) {
-    for (const d of btns) assert.ok(d.cx < w / 2, `${etiket}: düğme sol yarıda değil`);
-    const sol = Math.min(...ilkSutun.map((d) => d.left));
-    assert.ok(Math.abs(sol - inv.left) <= 2, `${etiket}: ilk sütun envanter soluna hizalı değil`);
-    assert.ok(joy.cx > w / 2, `${etiket}: joystick sağ yarıda değil`);
-  } else {
-    for (const d of btns) assert.ok(d.cx > w / 2, `${etiket}: düğme sağ yarıda değil`);
-    const sag = Math.max(...ilkSutun.map((d) => d.right));
-    assert.ok(Math.abs(sag - inv.right) <= 2, `${etiket}: ilk sütun envanter sağına hizalı değil`);
-    assert.ok(joy.cx < w / 2, `${etiket}: joystick sol yarıda değil`);
+  if (!rtl) assert.ok(inv.cx > w / 2 && joy.cx < w / 2, `${etiket}: ana düğme sağda, joystick solda olmalı`);
+  else assert.ok(inv.cx < w / 2 && joy.cx > w / 2, `${etiket}: RTL aynalı olmalı`);
+  assert.ok(inv.cy > h / 2 && joy.cy > h / 2, `${etiket}: alt yarıda değil`);
+  for (const d of btns) {
+    const r = Math.hypot(d.cx - inv.cx, d.cy - inv.cy);
+    assert.ok(r >= 85 && r <= 115, `${etiket}: yay yarıçapı ${r.toFixed(0)}`);
+    assert.ok(d.cy <= inv.cy + 1, `${etiket}: düğme ana düğmenin altında`);
   }
-  // (d) envanterin üstünde
-  for (const d of btns) assert.ok(d.bottom <= inv.top - 6, `${etiket}: düğme envanterin üstünde değil`);
-  // sütun sayısı ve sıra
-  if (h >= w) assert.equal(sutunlar.length, 1, `${etiket}: dikeyde tek sütun olmalı (${sutunlar.length})`);
-  else assert.ok(sutunlar.length <= 2, `${etiket}: yatayda en çok 2 sütun (${sutunlar.length})`);
-  for (const s of sutunlar) {
-    for (let i = 1; i < s.dugmeler.length; i++) {
-      assert.ok(s.dugmeler[i].bottom <= s.dugmeler[i - 1].top + 0.5, `${etiket}: sütun sırası aşağıdan yukarı değil`);
-    }
-  }
-  if (sutunlar.length === 2) {
-    const a = sutunlar[0].sol, c = sutunlar[1].sol;
-    if (rtl) assert.ok(c < a, `${etiket}: ikinci sütun merkeze doğru değil`);
-    else assert.ok(c > a, `${etiket}: ikinci sütun merkeze doğru değil`);
-  }
-  const more = btns.find((d) => d.more);
-  if (more) {
-    assert.equal(btns[btns.length - 1].more, true, `${etiket}: "⋯" DOM sonunda değil`);
-    if (h >= w) assert.ok(btns.every((d) => more.top <= d.top + 0.5), `${etiket}: "⋯" en üstte değil`);
-  }
+  for (let i = 1; i < btns.length; i++) assert.ok(btns[i].cy <= btns[i - 1].cy + 0.5, `${etiket}: yay sırası yukarı doğru değil`);
+  if (btns.some((d) => d.more)) assert.equal(btns[btns.length - 1].more, true, `${etiket}: "⋯" yayın sonunda değil`);
 }
 
 try {

@@ -1350,60 +1350,31 @@ function toggleInventory() {
   if (bar) bar.classList.add("inv-acik");
 }
 
-// Silah çubuğu yerleşimi: çubuk envanter düğmesinin üstünde dikey sütun olarak yukarı büyür.
-// Yüksekliği HUD'un alt kenarıyla sınırlanır; sığmazsa "dar" sınıfıyla düğmeler küçülür ve gerekirse
-// ikinci sütun ekranın ortasına doğru açar. Arapçada bütün alt kontroller aynalandığı için sağa yaslanır.
+// Silah çubuğu yerleşimi (KNT1): ana eylem düğmesi (#inv-btn) sağ altta; güç/eşya düğmeleri onun
+// çevresinde yay (arc) biçiminde dizilir (sol-yukarı doğru, "⋯" yayın sonunda). Çubuk, ana düğmenin
+// merkezinde sıfır boyutlu bir çapadır; düğmeler ona göre mutlak konumlanır. Arapçada x ekseni aynalanır.
+const KNT_YAY_ACILAR = [180, 216, 252, 288]; // derece; saat yönünde, 0° sağ, 270° yukarı (ekran koordinatı)
 function layoutWeaponBar() {
   const bar = document.getElementById("weapon-bar");
   const inv = document.getElementById("inv-btn");
-  const joy = document.getElementById("joystick");
-  if (!bar || !inv || !joy) return;
-  const w = window.innerWidth, h = window.innerHeight;
+  if (!bar || !inv) return;
   const invR = inv.getBoundingClientRect();
-  const joyR = joy.getBoundingClientRect();
-  const bosluk = 10;
+  if (invR.width === 0) return;
   const rtl = getComputedStyle(document.documentElement).direction === "rtl";
-  bar.classList.remove("dar");
-  bar.style.width = "auto";
-  bar.style.top = "auto";
-  bar.style.bottom = Math.round(h - invR.top + bosluk) + "px";
-  if (rtl) {
-    bar.style.right = Math.round(w - invR.right) + "px";
-    bar.style.left = "auto";
-  } else {
-    bar.style.left = Math.round(invR.left) + "px";
-    bar.style.right = "auto";
-  }
-  // Sütunun yatay aralığı: LTR'de envanterin solundan 64 px içeri, RTL'de aynalanır.
-  const sutunA = rtl ? invR.right - 64 : invR.left;
-  const sutunB = rtl ? invR.right : invR.left + 64;
-  // Sütunla yatay kesişen HUD parçalarının en alt kenarı üst sınırı verir.
-  let ustSinir = 0, kesisen = false;
-  document.querySelectorAll(".hud-left, .hud-right, #boss-status, #yolculuk-hud, .pause-btn, #power-bar").forEach((e) => {
-    if (e.offsetParent === null) return;
-    const r = e.getBoundingClientRect();
-    if (r.width === 0 && r.height === 0) return;
-    if (r.right > sutunA && r.left < sutunB) { ustSinir = Math.max(ustSinir, r.bottom); kesisen = true; }
+  const cx = invR.left + invR.width / 2, cy = invR.top + invR.height / 2;
+  bar.style.left = Math.round(cx) + "px";
+  bar.style.top = Math.round(cy) + "px";
+  bar.style.right = "auto";
+  bar.style.bottom = "auto";
+  const cocuklar = [...bar.children];
+  const boy = parseFloat(getComputedStyle(bar).getPropertyValue("--kn-slot")) || 56;
+  const yaricap = Math.max(boy * 1.8, invR.width / 2 + boy / 2 + 10);
+  cocuklar.forEach((c, i) => {
+    const aci = (KNT_YAY_ACILAR[Math.min(i, KNT_YAY_ACILAR.length - 1)] * Math.PI) / 180;
+    const dx = Math.cos(aci) * yaricap * (rtl ? -1 : 1), dy = Math.sin(aci) * yaricap;
+    c.style.left = Math.round(dx - boy / 2) + "px";
+    c.style.top = Math.round(dy - boy / 2) + "px";
   });
-  if (!kesisen) {
-    const yan = document.querySelector(rtl ? ".hud-right" : ".hud-left");
-    if (yan) ustSinir = yan.getBoundingClientRect().bottom;
-  }
-  ustSinir = Math.max(0, ustSinir) + 8;
-  bar.style.maxHeight = Math.max(44, Math.floor(invR.top - bosluk - ustSinir)) + "px";
-  const tekSutun = () => {
-    const cocuklar = [...bar.children];
-    if (cocuklar.length < 2) return true;
-    const ilk = cocuklar[0].getBoundingClientRect().left;
-    return cocuklar.every((c) => Math.abs(c.getBoundingClientRect().left - ilk) <= 4);
-  };
-  if (bar.scrollHeight > bar.clientHeight + 0.5 || !tekSutun()) bar.classList.add("dar");
-  // Güvenlik: düğme joystick'e 10 px'den fazla yaklaşırsa çubuğu joystick'in üstüne taşı.
-  const joyaYakin = () => [...bar.children].some((c) => {
-    const r = c.getBoundingClientRect();
-    return r.right + bosluk > joyR.left && r.left - bosluk < joyR.right && r.bottom + bosluk > joyR.top && r.top - bosluk < joyR.bottom;
-  });
-  if (joyaYakin()) bar.style.bottom = Math.round(h - joyR.top + bosluk) + "px";
 }
 
 const SILAH_SECIM_MAX = 3;
@@ -1432,20 +1403,22 @@ function silahSecPanelAcikMi() {
 
 function silahSecPanelKonumla() {
   const p = document.getElementById("silah-sec-panel");
-  const bar = document.getElementById("weapon-bar");
   const inv = document.getElementById("inv-btn");
-  if (!p || !bar) return;
-  const r = bar.getBoundingClientRect();
+  if (!p || !inv) return;
   const h = window.innerHeight, w = window.innerWidth;
   const rtl = getComputedStyle(document.documentElement).direction === "rtl";
-  const altKenar = inv ? inv.getBoundingClientRect().bottom : r.bottom;
+  const ir = inv.getBoundingClientRect();
+  const bar = document.getElementById("weapon-bar");
+  const boy = (bar && parseFloat(getComputedStyle(bar).getPropertyValue("--kn-slot"))) || 56;
+  const yaricap = Math.max(boy * 1.8, ir.width / 2 + boy / 2 + 10);
+  // Panel yayın üstünde açılır; ana düğmeyle aynı kenara yaslanır.
+  const yayUst = ir.top + ir.height / 2 - yaricap - boy / 2;
   p.style.maxWidth = Math.max(0, w - 16) + "px";
-  p.style.maxHeight = Math.max(44, h - 16) + "px";
+  p.style.maxHeight = Math.max(44, yayUst - 16) + "px";
   p.style.top = "auto";
-  p.style.bottom = Math.max(8, Math.round(h - altKenar)) + "px";
+  p.style.bottom = Math.max(8, Math.round(h - yayUst + 8)) + "px";
   const pw = p.getBoundingClientRect().width;
-  // Panel sütunun yanında açılır: LTR'de çubuğun sağında, RTL'de çubuğun solunda.
-  let left = rtl ? r.left - 8 - pw : r.right + 8;
+  let left = rtl ? ir.left : ir.right - pw;
   left = Math.max(8, Math.min(left, w - pw - 8));
   p.style.left = Math.round(left) + "px";
   p.style.right = "auto";

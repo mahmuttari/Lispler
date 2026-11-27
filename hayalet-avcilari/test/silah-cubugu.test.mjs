@@ -178,25 +178,19 @@ try {
         joy: kutu(document.getElementById('joystick')),
       };
     });
-    sina(`${dil} ${en}×${boy}: 3 + 1 düğme dikey sütunda ve ekran içinde`, () => {
+    sina(`${dil} ${en}×${boy}: 3 + 1 düğme ana düğme çevresinde yayda ve ekran içinde`, () => {
       assert.equal(sonuc.dugmeler.length, 4);
       for (const d of sonuc.dugmeler) {
         assert.ok(d.width >= 44 && d.height >= 44, `boyut ${d.width}×${d.height}`);
         assert.ok(d.left >= -0.5 && d.right <= sonuc.w + 0.5 && d.bottom <= sonuc.h + 0.5, 'ekran dışında');
       }
-      // Düğmeler sütunlara ayrılır; her sütunda DOM sırası aşağıdan yukarıya doğru.
-      const sutunlar = [];
+      // KNT1: düğmeler ana düğmenin çevresinde yayda; yarıçap 85-115 px, hiçbiri ekran dışında değil.
+      const mx = (sonuc.env.left + sonuc.env.right) / 2, my = (sonuc.env.top + sonuc.env.bottom) / 2;
       for (const d of sonuc.dugmeler) {
-        const s = sutunlar.find((x) => Math.abs(x.sol - d.left) <= 4);
-        if (s) s.dugmeler.push(d); else sutunlar.push({ sol: d.left, dugmeler: [d] });
+        const r = Math.hypot((d.left + d.right) / 2 - mx, (d.top + d.bottom) / 2 - my);
+        assert.ok(r >= 85 && r <= 115, `yay yarıçapı ${r}`);
+        assert.ok(d.left >= -0.5 && d.right <= sonuc.w + 0.5 && d.top >= -0.5, 'ekran dışında');
       }
-      assert.ok(sutunlar.length <= 2, `çok sütun: ${sutunlar.length}`);
-      for (const s of sutunlar) {
-        for (let i = 1; i < s.dugmeler.length; i++) {
-          assert.ok(s.dugmeler[i].bottom <= s.dugmeler[i - 1].top, 'sütun sırası yanlış');
-        }
-      }
-      assert.ok(sonuc.bar.right <= sonuc.w + 0.5 && sonuc.bar.left >= -0.5, 'çubuk yatay taşıyor');
       for (const d of sonuc.dugmeler) assert.equal(kesisim(d, sonuc.env), false);
     });
     sina(`${dil} ${en}×${boy}: seçim paneli ekran içinde`, () => {

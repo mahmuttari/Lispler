@@ -2173,65 +2173,42 @@
     }
   },
   "ID": {
-    "gorev": "37daaca23c1cf0ef5a168f98a53973c6",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-id-1.mp3",
-        "sure": 119.629,
-        "tempo": 131.74,
+        "dosya": "ID.mp3",
+        "sure": 209.8,
+        "tempo": 90.99,
         "dongu": {
-          "bas": 68.9832,
-          "uzunluk": 27.21198,
-          "vurus": 60
+          "bas": 149.8866,
+          "uzunluk": 31.64335,
+          "vurus": 48
         },
-        "ekYeri": 0.9684,
-        "sabitlik": 0.8117,
-        "puan": 0.909,
+        "ekYeri": 0.963,
+        "sabitlik": 0.8396,
+        "puan": 0.7484,
         "teaser": {
-          "bas": 96.6438,
-          "son": 100.7073
-        },
-        "id": "b9a40689-68fd-4630-b80b-b417f43780e6",
-        "etiketler": "Balinese gong kebyar gamelan, steady danceable driving rhythm around 128 BPM, instrumental; interlocking Sundanese angklung and kendang drums drive a rich polyphonic ensemble, with a bright lead melody over nimble counter-melody and locked rhythm section; playful and heroic adventure-game pacing, unbroken loop-friendly flow, bright warm acoustic mix."
-      },
-      {
-        "dosya": "hayalet-avcilari-id-2.mp3",
-        "sure": 119.893,
-        "tempo": 132.03,
-        "dongu": {
-          "bas": 76.6946,
-          "uzunluk": 27.22479,
-          "vurus": 60
-        },
-        "ekYeri": 0.9643,
-        "sabitlik": 0.8382,
-        "puan": 0.9135,
-        "teaser": {
-          "bas": 69.4227,
-          "son": 73.5094
-        },
-        "id": "8142fdad-5fb9-4337-bcc4-bdeec11d6ca6",
-        "etiketler": "Balinese gong kebyar gamelan, around 128 BPM in a steady danceable drive; Sundanese angklung and kendang drums propel a rich polyphonic ensemble, with a playful, heroic lead melody answered by a nimble counter-melody over a driving rhythm section; instrumental, bright warm acoustic mix, constant energy and loop-friendly phrasing."
+          "bas": 130.7612,
+          "son": 134.7086
+        }
       }
     ],
-    "lufs": -18.0,
-    "tepe": -5.5,
+    "lufs": -17.9,
+    "tepe": -7.8,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.2867,
-    "ekOrani": 0.219,
+    "girisSure": 5.1474,
+    "ekOrani": 0.301,
     "dosyalar": {
       "dongu": "muzik/ID-dongu.ogg",
       "giris": "muzik/ID-giris.ogg"
     },
-    "bas": 0.1025,
-    "son": 27.32729,
-    "tempo": 132.03,
-    "kredi": {
-      "kalan": 308.5
-    }
+    "bas": 0.1,
+    "son": 31.74335,
+    "tempo": 90.99,
+    "kredi": {}
   },
   "PH": {
     "gorev": "b27e6e00a12b8f9c1e6ffe317b0ac23f",

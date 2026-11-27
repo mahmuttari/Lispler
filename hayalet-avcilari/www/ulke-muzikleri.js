@@ -19,7 +19,7 @@ window.ULKE_MUZIKLERI = {
   FR: { dongu: "muzik/FR-dongu.ogg", bas: 0.1125, son: 28.91271, giris: "muzik/FR-giris.ogg", girisSure: 5.4028, tempo: 99.84 },
   GB: { dongu: "muzik/GB-dongu.ogg", bas: 0.1, son: 27.89817, giris: "muzik/GB-giris.ogg", girisSure: 5.3796, tempo: 129.78 },
   GH: { dongu: "muzik/GH-dongu.ogg", bas: 0.1, son: 30.13054, giris: "muzik/GH-giris.ogg", girisSure: 5.4261, tempo: 127.91 },
-  ID: { dongu: "muzik/ID-dongu.ogg", bas: 0.1025, son: 27.32729, giris: "muzik/ID-giris.ogg", girisSure: 5.2867, tempo: 132.03 },
+  ID: { dongu: "muzik/ID-dongu.ogg", bas: 0.1, son: 31.74335, giris: "muzik/ID-giris.ogg", girisSure: 5.1474, tempo: 90.99 },
   IN: { dongu: "muzik/IN-dongu.ogg", bas: 0.1175, son: 29.5969, giris: "muzik/IN-giris.ogg", girisSure: 5.3564, tempo: 130.15 },
   IQ: { dongu: "muzik/IQ-dongu.ogg", bas: 0.1, son: 30.20033, giris: "muzik/IQ-giris.ogg", girisSure: 4.7062, tempo: 95.92 },
   IR: { dongu: "muzik/IR-dongu.ogg", bas: 0.1, son: 28.05444, giris: "muzik/IR-giris.ogg", girisSure: 5.426, tempo: 128.86 },

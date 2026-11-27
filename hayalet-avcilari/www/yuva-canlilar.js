@@ -100,6 +100,12 @@ function yuvaCanliKacir(st) {
       c.sure = 1.2; c.yon = dx < 0 ? -1 : 1;
     }
   }
+  // SES1: kaçış sesi (fare/yarasa varsa), kaçış başına bir kez
+  if (typeof audio !== "undefined" && audio.canliSes) {
+    const yv = st.yv || { x: 0, y: 0 };
+    if (st.critterlar.some((c) => c.tur === "fare")) audio.canliSes("fare-kac", yv.x, yv.y);
+    if (st.critterlar.some((c) => c.tur === "yarasa")) audio.canliSes("yarasa-kac", yv.x, yv.y, 0.45);
+  }
 }
 
 function yuvaCanlilariUrkut(yv) {
@@ -184,6 +190,17 @@ function yuvaCanlilariGuncelle(dt) {
       st = yuvaCanliDurumKur(yv, idx);
     }
     if (!st.kacti && canli && uzaklik <= 230) yuvaCanliKacir(st);
+    // SES1: oturan farelerin cik sesi; oyuncu 400 px içindeyken, yuvaya tohumlu 6-12 sn'de bir
+    if (canli && !st.kacti && uzaklik <= 400 && st.critterlar.some((c) => c.tur === "fare" && c.durum === "bekle")) {
+      if (typeof audio !== "undefined" && audio.canliSes) {
+        const simdi = performance.now();
+        if (st.fareCikSonra == null) st.fareCikSonra = simdi + (6 + yuvaCanliRnd(idx, 4100) * 6) * 1000;
+        else if (simdi >= st.fareCikSonra) {
+          audio.canliSes("fare-cik", yv.x, yv.y, 0.25);
+          st.fareCikSonra = simdi + (6 + yuvaCanliRnd(idx, 4101) * 6) * 1000;
+        }
+      }
+    } else if (uzaklik > 400) st.fareCikSonra = null;
     yuvaCanliGuncelle(st, dt, uzaklik, az, sayac);
   });
 }

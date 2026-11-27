@@ -5,6 +5,10 @@
 
 // ====== SES SİSTEMİ ======
 const HIKAYE_SESLERI = ["hatira", "sahne", "dogru", "yanlis", "kopru-ac", "kopru-kilit", "harita", "arkadas", "rozet", "fener", "eve-donus"];
+// SES1: canlı ülke objeleri, yuva canlıları ve ortam sesleri
+const CANLI_SESLERI = ["panda", "komodo", "ejder-alev", "leylek", "fil", "penguen", "lemur", "zurafa",
+  "flamingo", "gelada", "deve", "tavus", "kaplan", "kunduz", "aksolotl", "lama", "papagan", "yavru-ejder", "fare-kac", "yarasa-kac",
+  "fare-cik", "selale", "lav"];
 const audio = {
   ctx: null,
   enabled: true,
@@ -13,6 +17,11 @@ const audio = {
   volumes: { ghost: 1, fire: 1, sfx: 1, muzik: 0.6 },
   _preloaded: false,
   _lastSmallGhost: 0,
+  _canliSon: {},        // SES1: canlı ses başına son çalma zamanı (ms)
+  _canliAktif: 0,       // SES1: çalan canlı ses sayısı
+  _ortam: { selale: null, lav: null }, // SES1: döngüsel ortam kaynakları
+  _ortamBolum: 0,
+  _canliRnd: 123456789, // SES1: tohumlu sayaç (Math.random yok)
   _v(cat) { const v = this.volumes && this.volumes[cat]; return v == null ? 1 : v; },
   init() {
     if (this.ctx) {
@@ -34,6 +43,8 @@ const audio = {
     this.loadSample("smallGhost", "sfx/kucuk-hayalet.m4a");
     this.loadSample("bigGhost", "sfx/buyuk-hayalet.m4a");
     for (const ad of HIKAYE_SESLERI) this.loadSample("h:" + ad, "sfx/hikaye/" + ad + ".m4a");
+    // SES1: canlı sesler 4 sn sonra yüklenir; açılışta müzik girişinin çözülmesini geciktirmesin
+    setTimeout(() => { for (const ad of CANLI_SESLERI) this.loadSample("c:" + ad, "sfx/canli/" + ad + ".m4a"); }, 4000);
   },
   async loadSample(key, url) {
     if (this.samples[key] || !this.ctx) return;
@@ -69,6 +80,103 @@ const audio = {
   },
   hikayeSes(ad, vol) {
     return this.playSample("h:" + ad, (vol == null ? 0.6 : vol) * this._v("sfx"));
+  },
+  // SES1: dünya noktasından canlı ses. En çok 450 ms'de bir aynı ses, aynı anda en çok 3 kaynak.
+  canliSes(ad, x, y, temel = 0.55) {
+    if (!this.enabled || !this.ctx) return false;
+    if (typeof game === "undefined" || !game || !game.running || game.paused || game.menude) return false;
+    const buf = this.samples["c:" + ad];
+    if (!buf) return false;
+    const W = game.W || 0, H = game.H || 0, cam = game.camera || { x: 0, y: 0 };
+    const p = game.player && !game.player.dead ? game.player : null;
+    const px = p ? p.x : cam.x + W / 2, py = p ? p.y : cam.y + H / 2;
+    const d = Math.hypot(x - px, y - py);
+    const vol = (temel == null ? 0.55 : temel) * this._v("sfx") * Math.max(0, Math.min(1, 1 - d / 700));
+    if (vol < 0.04) return false;
+    const now = performance.now();
+    if (now - (this._canliSon[ad] || -1e9) < 450) return false;
+    if (this._canliAktif >= 3) return false;
+    this._canliSon[ad] = now;
+    const src = this.ctx.createBufferSource();
+    const gain = this.ctx.createGain();
+    src.buffer = buf;
+    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+    src.connect(gain);
+    let node = gain;
+    if (this.ctx.createStereoPanner) {
+      const pan = this.ctx.createStereoPanner();
+      const panDeger = W ? Math.max(-1, Math.min(1, (x - (cam.x + W / 2)) / (W / 2))) * 0.6 : 0;
+      pan.pan.setValueAtTime(panDeger, this.ctx.currentTime);
+      gain.connect(pan);
+      node = pan;
+    }
+    node.connect(this.ctx.destination);
+    this._canliAktif++;
+    let bitti = false;
+    src.onended = () => { if (bitti) return; bitti = true; this._canliAktif = Math.max(0, this._canliAktif - 1); };
+    try { src.start(); } catch (e) { src.onended(); return false; }
+    return true;
+  },
+  // SES1: şelale/lav döngü kaynakları. En yakın kaynağa göre ses; 500 px içinde başlar, 560 px dışında durur.
+  _ortamlariDurdur() {
+    for (const tur of ["selale", "lav"]) {
+      const O = this._ortam[tur];
+      if (!O) continue;
+      try { O.src.stop(); } catch (e) {}
+      try { O.src.disconnect(); } catch (e) {}
+      this._ortam[tur] = null;
+    }
+  },
+  ortamDurdur() { this._ortamlariDurdur(); },
+  _ortamKaynak(tur, d, x, y) {
+    let O = this._ortam[tur];
+    if (d > 560) { if (O) { try { O.src.stop(); } catch (e) {} try { O.src.disconnect(); } catch (e) {} this._ortam[tur] = null; } return; }
+    if (d > 500 && !O) return;
+    if (!O) {
+      if (!this.ctx || !this.samples["c:" + tur]) return;
+      const src = this.ctx.createBufferSource();
+      const gain = this.ctx.createGain();
+      src.buffer = this.samples["c:" + tur];
+      src.loop = true;
+      gain.gain.setValueAtTime(0, this.ctx.currentTime);
+      src.connect(gain).connect(this.ctx.destination);
+      try { src.start(); } catch (e) { return; }
+      O = this._ortam[tur] = { src, gain, x, y };
+    }
+    const hedef = 0.35 * this._v("sfx") * Math.max(0, Math.min(1, 1 - d / 500));
+    O.x = x; O.y = y;
+    if (O.gain.gain.setTargetAtTime) O.gain.gain.setTargetAtTime(hedef, this.ctx.currentTime, 0.25);
+    else O.gain.gain.setValueAtTime(hedef, this.ctx.currentTime);
+  },
+  ortamGuncelle() {
+    if (!this.enabled || !this.ctx) { this._ortamlariDurdur(); return; }
+    if (typeof game === "undefined" || !game || !game.running || game.paused || game.menude) { this._ortamlariDurdur(); return; }
+    if (this._ortamBolum !== game.level) { this._ortamlariDurdur(); this._ortamBolum = game.level; }
+    const W = game.W || 0, H = game.H || 0, cam = game.camera || { x: 0, y: 0 };
+    const p = game.player && !game.player.dead ? game.player : null;
+    const px = p ? p.x : cam.x + W / 2, py = p ? p.y : cam.y + H / 2;
+    const gor = (x, y) => x > cam.x - 600 && x < cam.x + W + 600 && y > cam.y - 600 && y < cam.y + H + 600;
+    let enSelale = null, enSelaleD = Infinity, enLav = null, enLavD = Infinity;
+    if (typeof yolculukAcik === "function" && yolculukAcik() && game._yolculukDuzen) {
+      for (const z of game._yolculukDuzen.zones || []) {
+        for (const dm of z._gecitDusmeler || []) {
+          const x = dm.x, y = dm.y;
+          if (!gor(x, y)) continue;
+          const d = Math.hypot(x - px, y - py);
+          if (d < enSelaleD) { enSelaleD = d; enSelale = { x, y }; }
+        }
+      }
+    }
+    for (const o of game.lavas || []) {
+      const x = o.x + o.w / 2, y = o.y + o.h / 2;
+      if (!gor(x, y)) continue;
+      const d = Math.hypot(x - px, y - py);
+      if (d < enLavD) { enLavD = d; enLav = { x, y }; }
+    }
+    if (enSelale) this._ortamKaynak("selale", enSelaleD, enSelale.x, enSelale.y);
+    else this._ortamKaynak("selale", Infinity, 0, 0);
+    if (enLav) this._ortamKaynak("lav", enLavD, enLav.x, enLav.y);
+    else this._ortamKaynak("lav", Infinity, 0, 0);
   },
   beep(freq, dur, type, vol) {
     if (!this.enabled || !this.ctx) return;
@@ -6995,6 +7103,7 @@ function oyuncuCiz(...a) {
 }
 
 function update(dt, now) {
+  if (typeof audio !== "undefined" && audio.ortamGuncelle) audio.ortamGuncelle(); // SES1: şelale/lav döngüleri
   if (typeof yuvaCanlilariGuncelle === "function") yuvaCanlilariGuncelle(dt); // YUV1: yuva fareleri/yarasaları
   // Oyuncu hareketi
   let dirX = game.inputDir.x;
@@ -9164,7 +9273,7 @@ function pauseGame() {
   davet.disabled = odaDolu();
   document.getElementById("screen-pause").classList.add("active");
   eskiToastuKapat();
-  if (!cevrimici) muzikDuraklat(true); // çevrimiçi menü oyunu durdurmaz, müzik de sürer
+  if (!cevrimici) { muzikDuraklat(true); if (typeof audio !== "undefined" && audio.ortamDurdur) audio.ortamDurdur(); }
 }
 
 function resumeGame() {
@@ -9259,6 +9368,7 @@ function odulSayaclariniBitir() {
 function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   game.running = false;
   game.menude = false;
+  if (typeof audio !== "undefined" && audio.ortamDurdur) audio.ortamDurdur(); // SES1
   turPerdeleriniKapat(); // damga ya da uçak geçişi sırasında biten oyunda perde ekranda kalmasın
   turMuzigiSondur();
   // Dünya Turu skorları Şampiyonlar'a, buluta ve Play Games'e yazılmaz, bölüm rekorunu değiştirmez (spec §3)

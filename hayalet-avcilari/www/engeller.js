@@ -1018,6 +1018,43 @@
   // Her obje tohumundan 4–8 sn'lik dönem; dönemin ilk 5/8 sn'si 1-2-3-2-1 (8 kare/sn). Kare 1 durağan resimle
   // aynıdır. Yalnız görüşteki, kareleri hazır objelerde; kare başına en çok birkaç obje (çağıran sayaç verir).
   const OBJE_ANIM_SIRA = [1, 2, 3, 2, 1];
+  // SES1: canlı obje resim anahtarı → ses adı
+  const CANLI_SES = {
+    "ulke-CN-1": "panda", "ulke-ID-1": "komodo", "ulke-PL-1": "ejder-alev", "ulke-PL-2": "leylek",
+    "ulke-CI-2": "fil", "ulke-ZA-2": "penguen", "ulke-MG-2": "lemur", "ulke-KE-1": "zurafa",
+    "ulke-KE-2": "flamingo", "ulke-ET-2": "gelada", "ulke-SD-2": "deve", "ulke-IN-2": "tavus",
+    "ulke-BD-2": "kaplan", "ulke-CA-2": "kunduz", "ulke-MX-2": "aksolotl", "ulke-PE-2": "lama",
+    "ulke-BR-1": "papagan", "tema5-obje1": "yavru-ejder",
+  };
+  let _azSesSon = -1e9;
+  function objeAnimAnahtar(o) {
+    const dt = typeof o.tema === "string";
+    return dt ? `ulke-${o.tema}-${o.tur === "obje1" ? 1 : 2}` : `tema${o.tema + 1}-${o.tur}`;
+  }
+  // Animasyon penceresi başlarken (k null → kare) bir kez ses çal; pencere bitince (k null) bayrağı sıfırla.
+  // Hareketi azaltmada pencere hiç açılmaz: görünen obje başına tohumlu 6-10 sn, aynı anda en çok bir obje.
+  function canliObjeSesi(o, k, gorunur, zaman) {
+    if (!gorunur) return;
+    const az = typeof aeAzHareket === "function" && aeAzHareket();
+    if (az) {
+      if (!k) o._sesVerildi = false;
+      const ad = CANLI_SES[k || objeAnimAnahtar(o)];
+      if (!ad) return;
+      const h = (o.tohum >>> 0) || 0x9e3779b9;
+      const periyot = 6 + ((h % 997) / 997) * 4;
+      if (o._azSesSonra == null) o._azSesSonra = zaman + periyot * (((h >>> 7) % 1000) / 1000);
+      if (zaman < o._azSesSonra || zaman - _azSesSon < 2) return;
+      o._azSesSonra = zaman + periyot;
+      _azSesSon = zaman;
+      if (typeof audio !== "undefined" && audio.canliSes) audio.canliSes(ad, o.x + o.w / 2, o.y + o.h / 2);
+      return;
+    }
+    if (!k) { o._sesVerildi = false; return; }
+    if (o._sesVerildi) return;
+    o._sesVerildi = true;
+    const ad = CANLI_SES[k];
+    if (ad && typeof audio !== "undefined" && audio.canliSes) audio.canliSes(ad, o.x + o.w / 2, o.y + o.h / 2);
+  }
   function objeAnimKare(o, zaman) {
     if (o.tur !== "obje1" && o.tur !== "obje2") return null;
     if (typeof animHazir !== "function" || typeof animCiz !== "function") return null;
@@ -1095,17 +1132,17 @@
       const eskiAlfa = ctx.globalAlpha;
       if (on) { const a = zem3aAlfa(o, kx, ky, kw, kh); if (a !== 1) ctx.globalAlpha = eskiAlfa * a; }
       canliCiz(ctx, o, resimCiz(ctx, o), zaman);
-      if (animSayaci < 3) {
-        const a = objeAnimKare(o, zaman);
-        if (a && objeAnimCiz(ctx, o, a[0], a[1])) animSayaci++;
-      }
+      const a = objeAnimKare(o, zaman);
+      if (a && animSayaci < 3 && objeAnimCiz(ctx, o, a[0], a[1])) animSayaci++;
+      canliObjeSesi(o, a ? a[0] : null, true, zaman); // SES1: canlı obje sesi (görüşteki obje)
       ctx.globalAlpha = eskiAlfa;
     }
     if (kip !== "on") onbellegiIsit(t0, s);
   }
 
   Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, engelBicimleriniKur, engelCarpisir, engelMesafesi, ENGEL_AILELERI,
-    engelOlcegi, engelResmi, engelBoya, engelleriCiz, lavCanli, ENGEL_CANLI, objeAnimKare, objeAnimCiz });
+    engelOlcegi, engelResmi, engelBoya, engelleriCiz, lavCanli, ENGEL_CANLI, objeAnimKare, objeAnimCiz,
+    CANLI_SES, canliObjeSesi });
   window.ENGEL = { yol, doldur, cizgi, kirp, hatCiz, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, kutuYolu, tasOrgu, gozler, cimTutami, sinirla, parcaUzaklik,
     kayalikKenar, suTabani, dikenCiz, lavCiz };
 })();

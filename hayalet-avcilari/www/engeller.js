@@ -152,6 +152,25 @@
 
   // ---------- biçim aileleri (yerel koordinat, dikdörtgenin içinde) ----------
   // Göl (su, lav): ortada elips + kenarlara yaslanan farklı boylarda daireler; pay: kıyı payı
+  // Resimli göl kutusu: ChatGPT göl resimleri kıyısıyla birlikte çizilmiştir. Kare-yakın göllerde (oran 0,6-1,7) resim kendi
+  // en/boy oranıyla ortalanmış kutuya bütünüyle çizilir (kırpılmaz, esnetilmez); çarpışma resmin suyuna oturan elipstir.
+  // Oran ve su elipsi sabit tablodan (www/gol-su.js, araclar/gol_su_olc.py): resim yüklü olsun olmasın her cihazda aynı.
+  const GOL_VARSAYILAN = { ar: 1.16, cx: 0.5, cy: 0.55, rx: 0.3, ry: 0.26 };
+  function golAnahtari(tema) {
+    if (typeof tema === "string") {
+      const u = window.ulkeKodla && window.ulkeKodla(tema), A = u && u.aile;
+      return A ? `aile-${A}-gol` : null;
+    }
+    return `tema${(tema | 0) + 1}-gol`;
+  }
+  function golSuBilgisi(k) { return (k && window.GOL_SU && window.GOL_SU[k]) || GOL_VARSAYILAN; }
+  function golKutusu(w, h, k) {
+    const oran = w / h;
+    if (!(oran >= 0.6 && oran <= 1.7)) return null;
+    const ar = golSuBilgisi(k).ar;
+    const kw = oran > ar ? h * ar : w, kh = oran > ar ? h : w / ar;
+    return { x: (w - kw) / 2, y: (h - kh) / 2, w: kw, h: kh };
+  }
   function bicimGol(w, h, r, pay) {
     const cx = w / 2 + (r() - 0.5) * w * 0.08, cy = h / 2 + (r() - 0.5) * h * 0.08;
     const P = [{ t: "e", x: cx, y: cy, rx: Math.min(w * 0.36, cx - pay, w - cx - pay), ry: Math.min(h * 0.32, cy - pay, h - cy - pay) }];
@@ -274,7 +293,18 @@
     const r = engelRastgele(tohum), set = typeof tema === "string" ? window.ulkeBicimSeti(tema) : (ENGEL_AILELERI[tema] || ENGEL_AILELERI[0]);
     let aile, P, pay;
     if (tur === "sinir") { aile = "sinir"; P = bicimSinir(o.w, o.h, yon); }
-    else if (tur === "su" || tur === "lav") { aile = "gol"; pay = tur === "su" ? 9 : 7; P = bicimGol(o.w, o.h, r, pay); }
+    else if (tur === "su" || tur === "lav") {
+      aile = "gol"; pay = tur === "su" ? 9 : 7;
+      const gk = tur === "su" ? golAnahtari(tema) : null, K = gk ? golKutusu(o.w, o.h, gk) : null;
+      if (K) { // resimli göl: çarpışma resmin suyuna oturan tek elips (kıyı ve süsler üstünden yürünür, görünmez su kalmaz)
+        bicimGol(K.w, K.h, r, pay); // rastgele dizi bugünkü gibi ilerlesin
+        const G = golSuBilgisi(gk);
+        const ex = K.x + G.cx * K.w, ey = K.y + G.cy * K.h; // elips kıyı payıyla dikdörtgenin içinde kalır
+        const rx = Math.max(8, Math.min(G.rx * K.w, ex - pay, o.w - ex - pay)), ry = Math.max(8, Math.min(G.ry * K.h, ey - pay, o.h - ey - pay));
+        // çok yassı elipste yaklaşık uzaklık görünmez duvar bırakır: uzun eksen kısa eksenin en çok 1,8 katı (suyun içinde kalır)
+        P = [{ t: "e", x: ex, y: ey, rx: Math.min(rx, ry * 1.8), ry: Math.min(ry, rx * 1.8) }];
+      } else P = bicimGol(o.w, o.h, r, pay);
+    }
     else if (tur === "diken") { aile = "plaka"; P = bicimPlaka(o.w, o.h, r); }
     else { aile = set[tur] || (tur === "duvar" ? "kale" : "yama"); P = AILELER[aile](o.w, o.h, r); }
     if (pay === undefined) pay = PAY[aile];
@@ -775,10 +805,11 @@
     ctx.drawImage(im, rect[0], rect[1], rect[2], rect[3]);
     return [];
   }
+  // Göl resmi kıyısıyla birlikte kutuya bütünüyle çizilir: kırpılmaz, leke biçimiyle kesilmez (kıyılar kesik görünüyordu).
   function golResmi(ctx, w, h, p, B, k) {
-    doldur(ctx, B, engelKoyuRenk(p));
-    const im = engelGorsel(k);
-    if (im) kirp(ctx, B, () => resimKapak(ctx, im, 0, 0, w, h));
+    const im = engelGorsel(k), K = golKutusu(w, h, k);
+    if (!im || !K) { doldur(ctx, B, engelKoyuRenk(p)); return []; }
+    ctx.drawImage(im, K.x, K.y, K.w, K.h);
     return [];
   }
   // Bu engel için resim ressamı varsa döndürür (yoksa null: bugünkü kod ressamı çizsin)
@@ -1142,7 +1173,7 @@
 
   Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, engelBicimleriniKur, engelCarpisir, engelMesafesi, ENGEL_AILELERI,
     engelOlcegi, engelResmi, engelBoya, engelleriCiz, lavCanli, ENGEL_CANLI, objeAnimKare, objeAnimCiz,
-    CANLI_SES, canliObjeSesi });
+    CANLI_SES, canliObjeSesi, golKutusu, golAnahtari });
   window.ENGEL = { yol, doldur, cizgi, kirp, hatCiz, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, kutuYolu, tasOrgu, gozler, cimTutami, sinirla, parcaUzaklik,
     kayalikKenar, suTabani, dikenCiz, lavCiz };
 })();

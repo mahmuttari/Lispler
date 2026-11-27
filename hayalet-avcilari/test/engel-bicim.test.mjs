@@ -252,7 +252,10 @@ try {
         // FIXG1: obje resmi bilerek biçimin dışına taşar (tam resim görünsün): taşma denetimi objede yapılmaz.
         const dis = o.derinlik ? engelUzaklik(o.carpisma, x, y) : engelUzaklik(o.bicim, x, y);
         // FIXG2: duvarın uç kuleleri ve dik yığılan parçaları da bilerek biçimin dışına taşar
-        if (!obje && o.tur !== 'duvar' && !tasan && dis > o.pay + 3 && alfa(x, y) > 0) tasan = `${x},${y} (${dis.toFixed(1)} px)`;
+        // Resimli göl: kıyısı ve süsleri bilerek su elipsinin dışında; resim yalnız göl kutusunun dışına taşamaz
+        const K = o.tur === 'su' && typeof golKutusu === 'function' ? golKutusu(o.w, o.h, golAnahtari(o.tema)) : null;
+        if (K && !tasan && (x < K.x - 2 || x > K.x + K.w + 2 || y < K.y - 2 || y > K.y + K.h + 2) && alfa(x, y) > 0) tasan = `${x},${y} (göl kutusu dışı)`;
+        if (!obje && !K && o.tur !== 'duvar' && !tasan && dis > o.pay + 3 && alfa(x, y) > 0) tasan = `${x},${y} (${dis.toFixed(1)} px)`;
       }
       if (bos) sorun.push(`${ad} çarpışma içi boş: ${bos}`);
       if (tasan) sorun.push(`${ad} biçim dışı boyalı: ${tasan}`);

@@ -658,7 +658,8 @@ EK_PAFTALAR = {
     # K15-K16: hâlâ kodla çizilen küçük efektler ve parçalar (CHATGPT-ISTEMI-EK.md; kullanıcı: kalan iş olmasın)
     'K15': [('efekt-gokkusagi', 256), ('efekt-ejder-alev', 256), ('efekt-bot-isin', 256), ('efekt-kasirga', 256), ('efekt-cali-goz', 128), ('timsah-bakis', 192)],
     'K16': [('efekt-pence', 160), ('efekt-toz', 128), ('efekt-olum-pop', 160), ('gol-kopru-tahta', 256), ('efekt-parilti-kucuk', 64), ('ui-can-cubugu', 256)],
-    'K13': [('kopru-kapali', 256), None, None, ('kopru-acik', 256), ('yol1-kopru-kapali', 256), None],
+    # 5. hücre (yol1-kopru-kapali) artık J01'in yenilenen 3. hücresinden (açık köprüyle aynı çerçeve; 27 Kasım 2026)
+    'K13': [('kopru-kapali', 256), None, None, ('kopru-acik', 256), None, None],
     # R01–R02: karakter mermileri (anahtar CHARACTERS: mermi-<karakter>; yön sağa)
     'R01': [('mermi-kinkin', 128), ('mermi-veryi', 128), ('mermi-kornet', 128), ('mermi-mark', 128), ('mermi-kent', 128), ('mermi-ponko', 128)],
     'R02': [('mermi-gul', 128), ('mermi-rani', 128), ('mermi-beti', 128), ('mermi-fanatik', 128), ('mermi-silsen', 128), ('mermi-sercin', 128)],
@@ -758,7 +759,7 @@ def bulutu_grile(hucre, damla_sil):
 PUS_PAFTALAR = {'R49', 'K07', 'R28'}
 # Hücrede aynı nesneden birkaç tane var, oyun her birini ayrı çizer: yalnız en büyük parça kesilir
 # Yeniden üretilen paftalar: diskte varsa aynı adlı resimleri ve animasyonları eski paftalar yazmaz
-YERINE_GECEN = {'K13': {'kopru-kapali', 'kopru-acik', 'yol1-kopru-kapali', 'kopru-in'}}
+YERINE_GECEN = {'K13': {'kopru-kapali', 'kopru-acik', 'kopru-in'}}
 
 
 def yerine_gecildi(anahtar, pafta):

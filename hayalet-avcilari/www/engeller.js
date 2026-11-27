@@ -254,6 +254,19 @@
     return P;
   }
   // Diken plakası: elips ve iki yanında taşan daireler
+  // Diken plakası resmi (diken-plaka, 192×178) tek parça yuvarlak tuzaktır: tuzak kutusu yan yana (ya da alt alta) eşit
+  // hücrelere bölünür, her hücreye bir plaka bütünüyle sığar (kırpılmaz, üst üste binmez). Kutular yalnız w/h'den: her cihazda aynı.
+  const DIKEN_ORAN = 192 / 178;
+  function dikenKutulari(w, h) {
+    const yatay = w >= h, n = Math.max(1, Math.round(yatay ? w / h / DIKEN_ORAN : h / w * DIKEN_ORAN));
+    const cw = yatay ? w / n : w, ch = yatay ? h : h / n, out = [];
+    for (let i = 0; i < n; i++) {
+      const bw = Math.min(cw, ch * DIKEN_ORAN), bh = bw / DIKEN_ORAN;
+      const x0 = (yatay ? i * cw : 0) + (cw - bw) / 2, y0 = (yatay ? 0 : i * ch) + (ch - bh) / 2;
+      out.push({ x: x0, y: y0, w: bw, h: bh });
+    }
+    return out;
+  }
   function bicimPlaka(w, h, r) {
     const P = [{ t: "e", x: w / 2, y: h / 2, rx: w / 2 - 6, ry: h / 2 - 8 }];
     for (let i = 0; i < 3; i++) {
@@ -305,7 +318,10 @@
         P = [{ t: "e", x: ex, y: ey, rx: Math.min(rx, ry * 1.8), ry: Math.min(ry, rx * 1.8) }];
       } else P = bicimGol(o.w, o.h, r, pay);
     }
-    else if (tur === "diken") { aile = "plaka"; P = bicimPlaka(o.w, o.h, r); }
+    else if (tur === "diken") { // her plakaya oturan elips: boyalı alan çarpışmayla örtüşür
+      aile = "plaka"; bicimPlaka(o.w, o.h, r); // rastgele dizi bugünkü gibi ilerlesin
+      P = dikenKutulari(o.w, o.h).map((K) => ({ t: "e", x: K.x + K.w / 2, y: K.y + K.h / 2, rx: Math.max(6, K.w * 0.47 - 2), ry: Math.max(6, K.h * 0.45 - 2) }));
+    }
     else { aile = set[tur] || (tur === "duvar" ? "kale" : "yama"); P = AILELER[aile](o.w, o.h, r); }
     if (pay === undefined) pay = PAY[aile];
     P.ox = o.x; P.oy = o.y; // ressamlar için dünya konumu (suyun renk geçişi dünya y'sinde)
@@ -426,15 +442,8 @@
     // ChatGPT diken plakası varsa: çarpışma biçimi bugünkü taban renkleriyle doldurulur, plakalar biçimin içine kırpılarak
     // döşenir (boyalı alan çarpışma alanıyla birebir örtüşür; görünmeyen diken olmaz)
     const plaka = typeof gorsel === "function" ? gorsel("diken-plaka") : null;
-    if (plaka && typeof resmiKutuyaCiz === "function") {
-      doldur(ctx, B, "#7f1d1d", 0, 0, 2.5);
-      doldur(ctx, B, "#2a2430");
-      const hucre = Math.max(48, Math.min(110, Math.min(w, h)));
-      kirp(ctx, B, () => {
-        for (let y = 0, k = 0; y < h; y += hucre * 0.8, k++) for (let x = (k % 2) * -hucre / 2; x < w; x += hucre * 0.9) {
-          resmiKutuyaCiz(ctx, plaka, x, y, hucre, hucre);
-        }
-      });
+    if (plaka) { // plakalar bütün ve yan yana; eski kod zemini çizilmez (resmin altından taşıyordu)
+      for (const K of dikenKutulari(w, h)) ctx.drawImage(plaka, K.x, K.y, K.w, K.h);
       return [];
     }
     doldur(ctx, B, "#7f1d1d", 0, 0, 2.5);
@@ -454,6 +463,8 @@
   // Lav tabanı (önbellek): kayalık kıyı ve eski drawLava'nın durağan kızgın renk geçişi; çatlak, kabarcık, 🔥 ve alevler
   // her karede üstüne çizilir
   function lavCiz(ctx, w, h, r, p, B) {
+    // ChatGPT lav kareleri hazırsa (lavCanli her karede çizer) eski kod zemini çizilmez: kayalık kenarı resmin altından taşıyordu
+    if (typeof animHazir === "function" && animHazir("lav") >= 3) return [];
     doldur(ctx, B, "#1a0b0b", 0, 0, 6);
     kayalikKenar(ctx, B, "#3f3f46", r, 8, 2, 6.5);
     const g = ctx.createRadialGradient(w / 2, h / 2, 4, w / 2, h / 2, Math.max(w, h) * 0.7);
@@ -1173,7 +1184,7 @@
 
   Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, engelBicimleriniKur, engelCarpisir, engelMesafesi, ENGEL_AILELERI,
     engelOlcegi, engelResmi, engelBoya, engelleriCiz, lavCanli, ENGEL_CANLI, objeAnimKare, objeAnimCiz,
-    CANLI_SES, canliObjeSesi, golKutusu, golAnahtari });
+    CANLI_SES, canliObjeSesi, golKutusu, golAnahtari, dikenKutulari });
   window.ENGEL = { yol, doldur, cizgi, kirp, hatCiz, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, kutuYolu, tasOrgu, gozler, cimTutami, sinirla, parcaUzaklik,
     kayalikKenar, suTabani, dikenCiz, lavCiz };
 })();

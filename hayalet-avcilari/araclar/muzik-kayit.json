@@ -747,65 +747,42 @@
     }
   },
   "ZA": {
-    "gorev": "7640812b2eec20c23bae9ac8577f16db",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-za-1.mp3",
-        "sure": 119.629,
-        "tempo": 128.25,
+        "dosya": "ZA.mp3",
+        "sure": 149.96,
+        "tempo": 103.68,
         "dongu": {
-          "bas": 38.3208,
-          "uzunluk": 29.9684,
-          "vurus": 64
+          "bas": 31.318,
+          "uzunluk": 27.7214,
+          "vurus": 48
         },
-        "ekYeri": 0.9791,
-        "sabitlik": 0.8762,
-        "puan": 0.9512,
+        "ekYeri": 0.96,
+        "sabitlik": 0.7409,
+        "puan": 0.7807,
         "teaser": {
-          "bas": 99.0974,
-          "son": 103.3002
-        },
-        "id": "76021423-30ef-495f-85b2-47d140463f80",
-        "etiketler": "South African kwela, bright warm acoustic mix, loop-friendly and steady from first bar to last; pennywhistle leads, banjo and acoustic guitar weave a rich polyphonic counter-melody over bass and drums, cheerful adventure video game background music with a steady danceable groove around 128 BPM, constant energy, instrumental."
-      },
-      {
-        "dosya": "hayalet-avcilari-za-2.mp3",
-        "sure": 119.173,
-        "tempo": 128.26,
-        "dongu": {
-          "bas": 32.0522,
-          "uzunluk": 28.09981,
-          "vurus": 60
-        },
-        "ekYeri": 0.9725,
-        "sabitlik": 0.9169,
-        "puan": 0.96,
-        "teaser": {
-          "bas": 83.5139,
-          "son": 87.7167
-        },
-        "id": "e6594184-2aea-4084-917d-cd30cf368ea6",
-        "etiketler": "South African kwela, bright warm acoustic mix with loop-friendly continuity, pennywhistle carries the lead melody over interweaving banjo counter-melody and acoustic guitar, bass and drums drive a steady, danceable groove around 128 BPM, cheerful adventure video game background music, constant energy throughout, instrumental."
+          "bas": 130.8436,
+          "son": 134.8839
+        }
       }
     ],
-    "lufs": -17.9,
-    "tepe": -6.4,
+    "lufs": -18.0,
+    "tepe": -5.0,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.4028,
-    "ekOrani": 0.498,
+    "girisSure": 5.2403,
+    "ekOrani": 0.214,
     "dosyalar": {
       "dongu": "muzik/ZA-dongu.ogg",
       "giris": "muzik/ZA-giris.ogg"
     },
     "bas": 0.1,
-    "son": 28.19981,
-    "tempo": 128.26,
-    "kredi": {
-      "kalan": 548.5
-    }
+    "son": 27.8214,
+    "tempo": 103.68,
+    "kredi": {}
   },
   "MZ": {
     "gorev": "41be8f7de30d549efcbf04981cf702b9",

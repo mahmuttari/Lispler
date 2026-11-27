@@ -31,7 +31,7 @@ verdiği PNG olarak, işlenmeden kaydedilir (1536 × 1024, RGBA). Arka planda al
 | N17 | Güç açılışı, güç halesi | **üretildi** (27 Kas, aynı sohbet, 1. deneme, beyaz-açık sarı); 2. karede halkanın ışınları ve parıltısı kenarlara 6–13 px yaklaşıyor (kenara değmiyor); arka planda alfa 1–39 pus %35, kesici siler |
 | N18 | Enerji mermisi, baloncuk mermisi | **üretildi** (27 Kas, aynı sohbet, 1. deneme); enerji topu sağa uçuyor, baloncuk yuvarlak/yassı/uzun salınıyor; bütün hücrelerde 74 px'ten geniş boşluk |
 | N19 | Bölüm atlama, hasar alma | **üretildi** (27 Kas, aynı sohbet, 1. deneme); altın ok ve yıldız patlaması, kırmızı-beyaz çarpma yıldızı (kan yok); en dar boşluk 30 px |
-| N20 | Donma, çözülme | bekliyor |
+| N20 | Donma, çözülme | **üretildi** (27 Kas, aynı sohbet, 1. deneme); buz kalıbı 3. karede içi boş (hayalet arkasında çizilebilir), çatlama ve erime; çerçeve beş karede aynı yerde, en dar boşluk 36 px |
 
 ## Yön paftaları (öncelikli; kayıt yeri `gorsel/ham3d/`)
 

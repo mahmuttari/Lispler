@@ -817,65 +817,42 @@
     }
   },
   "EG": {
-    "gorev": "445f774b064702602f5e2e8bb2031c76",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-eg-1.mp3",
-        "sure": 118.789,
-        "tempo": 130.57,
+        "dosya": "EG.mp3",
+        "sure": 97.96,
+        "tempo": 100.0,
         "dongu": {
-          "bas": 47.2039,
-          "uzunluk": 29.40142,
-          "vurus": 64
+          "bas": 30.053,
+          "uzunluk": 31.2274,
+          "vurus": 52
         },
-        "ekYeri": 0.9743,
-        "sabitlik": 0.7927,
-        "puan": 0.9121,
+        "ekYeri": 0.9297,
+        "sabitlik": 0.7269,
+        "puan": 0.7429,
         "teaser": {
-          "bas": 96.7703,
-          "son": 100.9034
-        },
-        "id": "b5bccd92-3e09-48ed-b788-44309a25c12c",
-        "etiketler": "Upper Egyptian Saidi festival music, a jaunty, buoyant dance groove around 128 BPM; bright warm acoustic mix, cheerful adventure video game background music with a bright repeating figure and nimble call-and-response turns; mizmar, rababa, tabla and riq tambourine build a rich polyphonic ensemble with lead melody, counter-melody and rhythm section; constant energy, seamless loop-ready transitions, instrumental."
-      },
-      {
-        "dosya": "hayalet-avcilari-eg-2.mp3",
-        "sure": 120.829,
-        "tempo": 131.21,
-        "dongu": {
-          "bas": 45.5494,
-          "uzunluk": 29.27579,
-          "vurus": 64
-        },
-        "ekYeri": 0.9798,
-        "sabitlik": 0.8112,
-        "puan": 0.9172,
-        "teaser": {
-          "bas": 37.7785,
-          "son": 41.9117
-        },
-        "id": "c0add6a1-6c59-4382-a4ce-d1c3f957e9c6",
-        "etiketler": "Upper Egyptian Saidi festival music, steady danceable groove at around 128 BPM; bright warm acoustic mix, rich polyphonic ensemble with a lead melody and counter-melody over tabla and riq tambourine, mizmar and rababa; cheerful adventure video game background music, constant energy, seamless loop-ready arrangement."
+          "bas": 16.3135,
+          "son": 20.5163
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -4.3,
+    "tepe": -4.9,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3332,
-    "ekOrani": 0.75,
+    "girisSure": 5.4028,
+    "ekOrani": 0.3,
     "dosyalar": {
       "dongu": "muzik/EG-dongu.ogg",
       "giris": "muzik/EG-giris.ogg"
     },
-    "bas": 0.1175,
-    "son": 29.39329,
-    "tempo": 131.21,
-    "kredi": {
-      "kalan": 584.5
-    }
+    "bas": 0.1025,
+    "son": 31.3299,
+    "tempo": 100.0,
+    "kredi": {}
   },
   "CD": {
     "gorev": "eb8f6360957a0cb7f0a2bb0b77bb0849",

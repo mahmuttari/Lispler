@@ -1314,6 +1314,8 @@ function refreshInventoryButton() {
 function closeInventory() {
   const panel = document.getElementById("inv-panel");
   if (panel) panel.classList.remove("open");
+  const bar = document.getElementById("weapon-bar");
+  if (bar) bar.classList.remove("inv-acik");
 }
 
 function toggleInventory() {
@@ -1344,11 +1346,13 @@ function toggleInventory() {
     panel.appendChild(ipucu);
   }
   panel.classList.add("open");
+  const bar = document.getElementById("weapon-bar");
+  if (bar) bar.classList.add("inv-acik");
 }
 
-// Silah çubuğu yerleşimi: çubuk envanter düğmesinin yanından içeri doğru yatay sarar ve yukarı
-// doğru büyür. Genişlik joystick'e kadar sınırlanır; HUD'a değerse düğmeler küçülür. Arapçada
-// bütün alt kontroller aynalandığı için ölçüler ekran yönünden bağımsız okunur.
+// Silah çubuğu yerleşimi: çubuk envanter düğmesinin üstünde dikey sütun olarak yukarı büyür.
+// Yüksekliği HUD'un alt kenarıyla sınırlanır; sığmazsa "dar" sınıfıyla düğmeler küçülür ve gerekirse
+// ikinci sütun ekranın ortasına doğru açar. Arapçada bütün alt kontroller aynalandığı için sağa yaslanır.
 function layoutWeaponBar() {
   const bar = document.getElementById("weapon-bar");
   const inv = document.getElementById("inv-btn");
@@ -1360,39 +1364,46 @@ function layoutWeaponBar() {
   const bosluk = 10;
   const rtl = getComputedStyle(document.documentElement).direction === "rtl";
   bar.classList.remove("dar");
+  bar.style.width = "auto";
   bar.style.top = "auto";
-  bar.style.bottom = Math.max(0, Math.round(h - invR.bottom)) + "px";
-  bar.style.left = "auto";
-  bar.style.right = "auto";
-  const adet = Math.max(1, bar.children.length);
-  const gerekli = adet * 46 + Math.max(0, adet - 1) * 6; // tek satır için en az genişlik (dar düğmeler)
-  const yerles = () => {
-    const ara = rtl ? (invR.left - bosluk) - (joyR.right + bosluk) : (joyR.left - bosluk) - (invR.right + bosluk);
-    if (ara < gerekli) {
-      // Joystick ile envanter arasına sığmıyor: tek satır kalsın diye joystick'in üstüne çık.
-      bar.style.bottom = Math.floor(h - joyR.top + bosluk) + "px";
-      if (rtl) { // envanter sağda: soldan envantere kadar
-        bar.style.right = Math.round(w - invR.left + bosluk) + "px";
-        bar.style.width = Math.max(44, Math.round(invR.left - bosluk - 16)) + "px";
-      } else { // envanter solda: envanterden sağ kenara kadar
-        bar.style.left = Math.round(invR.right + bosluk) + "px";
-        bar.style.width = Math.max(44, Math.round(w - 16 - (invR.right + bosluk))) + "px";
-      }
-      return;
-    }
-    if (rtl) { // envanter sağda, joystick solda: çubuk sağdan içeri doğru
-      bar.style.right = Math.round(w - invR.left + bosluk) + "px";
-      bar.style.width = Math.round(ara) + "px";
-    } else { // envanter solda, joystick sağda: çubuk soldan içeri doğru
-      bar.style.left = Math.round(invR.right + bosluk) + "px";
-      bar.style.width = Math.round(ara) + "px";
-    }
+  bar.style.bottom = Math.round(h - invR.top + bosluk) + "px";
+  if (rtl) {
+    bar.style.right = Math.round(w - invR.right) + "px";
+    bar.style.left = "auto";
+  } else {
+    bar.style.left = Math.round(invR.left) + "px";
+    bar.style.right = "auto";
+  }
+  // Sütunun yatay aralığı: LTR'de envanterin solundan 64 px içeri, RTL'de aynalanır.
+  const sutunA = rtl ? invR.right - 64 : invR.left;
+  const sutunB = rtl ? invR.right : invR.left + 64;
+  // Sütunla yatay kesişen HUD parçalarının en alt kenarı üst sınırı verir.
+  let ustSinir = 0, kesisen = false;
+  document.querySelectorAll(".hud-left, .hud-right, #boss-status, #yolculuk-hud, .pause-btn, #power-bar").forEach((e) => {
+    if (e.offsetParent === null) return;
+    const r = e.getBoundingClientRect();
+    if (r.width === 0 && r.height === 0) return;
+    if (r.right > sutunA && r.left < sutunB) { ustSinir = Math.max(ustSinir, r.bottom); kesisen = true; }
+  });
+  if (!kesisen) {
+    const yan = document.querySelector(rtl ? ".hud-right" : ".hud-left");
+    if (yan) ustSinir = yan.getBoundingClientRect().bottom;
+  }
+  ustSinir = Math.max(0, ustSinir) + 8;
+  bar.style.maxHeight = Math.max(44, Math.floor(invR.top - bosluk - ustSinir)) + "px";
+  const tekSutun = () => {
+    const cocuklar = [...bar.children];
+    if (cocuklar.length < 2) return true;
+    const ilk = cocuklar[0].getBoundingClientRect().left;
+    return cocuklar.every((c) => Math.abs(c.getBoundingClientRect().left - ilk) <= 4);
   };
-  yerles();
-  if (bar.scrollWidth > bar.clientWidth + 0.5) bar.classList.add("dar"); // genişlik darsa düğmeler küçülür
-  const hud = document.querySelector(".hud");
-  const hudAlt = hud ? hud.getBoundingClientRect().bottom : 0;
-  if (bar.getBoundingClientRect().top < hudAlt + 6) bar.classList.add("dar");
+  if (bar.scrollHeight > bar.clientHeight + 0.5 || !tekSutun()) bar.classList.add("dar");
+  // Güvenlik: düğme joystick'e 10 px'den fazla yaklaşırsa çubuğu joystick'in üstüne taşı.
+  const joyaYakin = () => [...bar.children].some((c) => {
+    const r = c.getBoundingClientRect();
+    return r.right + bosluk > joyR.left && r.left - bosluk < joyR.right && r.bottom + bosluk > joyR.top && r.top - bosluk < joyR.bottom;
+  });
+  if (joyaYakin()) bar.style.bottom = Math.round(h - joyR.top + bosluk) + "px";
 }
 
 const SILAH_SECIM_MAX = 3;
@@ -1422,15 +1433,19 @@ function silahSecPanelAcikMi() {
 function silahSecPanelKonumla() {
   const p = document.getElementById("silah-sec-panel");
   const bar = document.getElementById("weapon-bar");
+  const inv = document.getElementById("inv-btn");
   if (!p || !bar) return;
   const r = bar.getBoundingClientRect();
   const h = window.innerHeight, w = window.innerWidth;
-  p.style.maxWidth = Math.max(0, w - 16) + "px";
-  p.style.top = "auto";
-  p.style.bottom = Math.max(8, Math.round(h - r.top + 8)) + "px";
-  const pw = p.getBoundingClientRect().width;
   const rtl = getComputedStyle(document.documentElement).direction === "rtl";
-  let left = rtl ? r.right - pw : r.left;
+  const altKenar = inv ? inv.getBoundingClientRect().bottom : r.bottom;
+  p.style.maxWidth = Math.max(0, w - 16) + "px";
+  p.style.maxHeight = Math.max(44, h - 16) + "px";
+  p.style.top = "auto";
+  p.style.bottom = Math.max(8, Math.round(h - altKenar)) + "px";
+  const pw = p.getBoundingClientRect().width;
+  // Panel sütunun yanında açılır: LTR'de çubuğun sağında, RTL'de çubuğun solunda.
+  let left = rtl ? r.left - 8 - pw : r.right + 8;
   left = Math.max(8, Math.min(left, w - pw - 8));
   p.style.left = Math.round(left) + "px";
   p.style.right = "auto";

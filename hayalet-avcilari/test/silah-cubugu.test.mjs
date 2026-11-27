@@ -156,13 +156,15 @@ try {
   });
   await pd.close();
 
-  // e) yerleşim: 3 + 1 düğme tek satırda, yatay taşma yok, panel ekran içinde
+  // e) yerleşim: 3 + 1 düğme dikey sütunda, en fazla iki sütun, ekran içinde, panel ekran içinde
   for (const [dil, en, boy] of [
     ['tr', 390, 844], ['ar', 340, 640], ['ar', 740, 360], ['tr', 960, 420],
   ]) {
     const p = await sayfa(dil, en, boy);
     await hazir(p, hepsi);
+    await p.waitForTimeout(250); // ekran giriş animasyonu bitsin: gerçek ölçüler otursun
     const sonuc = await p.evaluate(() => {
+      layoutWeaponBar();
       const kutu = (e) => { const r = e.getBoundingClientRect(); return { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height }; };
       const dugmeler = [...document.querySelectorAll('#weapon-bar .weapon-slot, #weapon-bar .weapon-more')].map(kutu);
       document.querySelector('#weapon-bar .weapon-more').click();
@@ -176,13 +178,23 @@ try {
         joy: kutu(document.getElementById('joystick')),
       };
     });
-    sina(`${dil} ${en}×${boy}: 3 + 1 düğme tek satırda ve ekran içinde`, () => {
+    sina(`${dil} ${en}×${boy}: 3 + 1 düğme dikey sütunda ve ekran içinde`, () => {
       assert.equal(sonuc.dugmeler.length, 4);
-      const ust = sonuc.dugmeler[0].top;
       for (const d of sonuc.dugmeler) {
         assert.ok(d.width >= 44 && d.height >= 44, `boyut ${d.width}×${d.height}`);
-        assert.ok(Math.abs(d.top - ust) < 2, 'düğmeler tek satırda değil');
         assert.ok(d.left >= -0.5 && d.right <= sonuc.w + 0.5 && d.bottom <= sonuc.h + 0.5, 'ekran dışında');
+      }
+      // Düğmeler sütunlara ayrılır; her sütunda DOM sırası aşağıdan yukarıya doğru.
+      const sutunlar = [];
+      for (const d of sonuc.dugmeler) {
+        const s = sutunlar.find((x) => Math.abs(x.sol - d.left) <= 4);
+        if (s) s.dugmeler.push(d); else sutunlar.push({ sol: d.left, dugmeler: [d] });
+      }
+      assert.ok(sutunlar.length <= 2, `çok sütun: ${sutunlar.length}`);
+      for (const s of sutunlar) {
+        for (let i = 1; i < s.dugmeler.length; i++) {
+          assert.ok(s.dugmeler[i].bottom <= s.dugmeler[i - 1].top, 'sütun sırası yanlış');
+        }
       }
       assert.ok(sonuc.bar.right <= sonuc.w + 0.5 && sonuc.bar.left >= -0.5, 'çubuk yatay taşıyor');
       for (const d of sonuc.dugmeler) assert.equal(kesisim(d, sonuc.env), false);
@@ -196,7 +208,7 @@ try {
   }
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, [], hatalar.join(' / ')); });
 } catch (e) {
-  sonuclar.push(`✗ akış yarıda kaldı: ${e.message.split('\n')[0]}`);
+  sonuclar.push(`✗ akış yarıda kaldı: ${e.message}`);
 } finally {
   await b.close();
   sunucu.close();

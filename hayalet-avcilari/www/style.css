@@ -890,19 +890,23 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
 .pause-btn:active { transform: translateX(-50%) scale(0.92); background: rgba(10, 5, 24, 0.9); }
 
 /* ====== CEPHANE SLOTLARI ====== */
-/* Silah çubuğu: envanter düğmesinin yanından içeri doğru yatay sarar; yerleşimi game.js
-   (layoutWeaponBar) ölçerek verir, böylece HUD'un ve joystick'in üstüne binmez. Arapçada aynalanır. */
+/* Silah çubuğu: envanter düğmesinin üstünde dikey bir sütun olarak yukarı doğru büyür (ilk düğme
+   envanter düğmesine en yakın, "⋯" en üstte). Sığmazsa ikinci sütun ekranın ortasına doğru açar.
+   Yerleşimi game.js (layoutWeaponBar) ölçerek verir; HUD'a ve joystick'e binmez. Arapçada aynalanır. */
 .weapon-bar {
   position: absolute;
   bottom: calc(32px + var(--alt));
   inset-inline-start: calc(16px + var(--sol));
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
+  flex-direction: column-reverse;
+  flex-wrap: wrap;
+  align-content: flex-start;
   gap: 10px;
   z-index: 11;
   touch-action: manipulation;
 }
+/* Envanter paneli açıkken panelin altında kalan sütun gizlenir. */
+.weapon-bar.inv-acik { visibility: hidden; pointer-events: none; }
 /* Yer darsa düğmeler küçülür; yine de 44 px dokunma alanının altına inmez. */
 .weapon-bar.dar { gap: 6px; }
 .weapon-bar.dar .weapon-slot { width: 46px; height: 46px; font-size: 22px; border-radius: 14px; }
@@ -984,6 +988,7 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
   z-index: 13;
   box-shadow: var(--golge);
   touch-action: manipulation;
+  overflow-y: auto;
 }
 .silah-sec-panel.open { display: flex; }
 .silah-sec-bas {

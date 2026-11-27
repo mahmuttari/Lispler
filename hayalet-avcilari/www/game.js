@@ -8694,7 +8694,8 @@ function steerHoming(p, dt) {
 // oyuncu ona dokunursa (klavyede B) ona ateş eder, yenilince içinden 1 kalp çıkar. Her bölüm başında yeniden gelir.
 // Çevrimiçi oyunda yok: konumu ve canı odaya senkronlanmaz.
 const BOT_MAX_HP = 6;
-const botEngel = (x, y, r) => collidesWalls(x, y, r) || kopruluSuCarpar(x, y, r);
+// Bot için de köprünün yan kuleleri (yürünebilir şeridin dışı) kapalı; şeritte kalınca geçiş engellenmez
+const botEngel = (x, y, r) => collidesWalls(x, y, r) || kopruluSuCarpar(x, y, r) || (typeof kopruYanEngel === "function" && kopruYanEngel(x, y, r));
 const botMesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), kopruluSuMesafesi(x, y, r));
 
 // İki nokta arasındaki düz yol köprü dışında sudan geçiyor mu?
@@ -8744,8 +8745,11 @@ function botKopruNoktasi(b, px, py) {
   }
   const kendi = b.kopruKendi, karsi = b.kopruKarsi;
   if (!kendi || !karsi) { b.kopru = null; b.kopruAsama = 0; return null; }
-  if (b.kopruAsama === 0 && Math.hypot(b.x - kendi.x, b.y - kendi.y) < 24) b.kopruAsama = 1;
-  if (b.kopruAsama >= 1 && Math.hypot(b.x - karsi.x, b.y - karsi.y) < 24) {
+  // Köprü ucuna varınca değil, şeride girince öteki uca yönel: uzaktan dönünce bot suya girmesin
+  const seritte = Math.abs(b.kopru.yatay ? b.y - b.kopru.c : b.x - b.kopru.c) <= KOPRU.serbest - 6;
+  if (b.kopruAsama === 0 && Math.hypot(b.x - kendi.x, b.y - kendi.y) < 24 && seritte) b.kopruAsama = 1;
+  // Karşı uçtan ancak 10 px kalınca çık: 24 px erken bırakınca bot gölün çarpışmasına girip kilitleniyordu
+  if (b.kopruAsama >= 1 && Math.hypot(b.x - karsi.x, b.y - karsi.y) < 10) {
     b.kopru = null; b.kopruAsama = 0; b.kopruKendi = null; b.kopruKarsi = null; return null;
   }
   return b.kopruAsama === 0 ? kendi : karsi;

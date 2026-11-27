@@ -641,7 +641,7 @@ try {
     });
   }
 
-  // ---- Bütün avcıların iletişim sayfası: test/ciktilar/uc-avcilar.png (ön 3/4, nişan) ----
+  // ---- Bütün avcıların iletişim sayfası: test/ekran/uc-avcilar.png (ön 3/4, nişan) ----
   const sayfa = await p.evaluate(() => {
     const avcilar = ['kinkin', 'veryi', 'kornet', 'mark', 'kent', 'ponko', 'gul', 'rani', 'beti', 'fanatik', 'silsen', 'sercin'];
     const T = 170, W = T * avcilar.length, H = 240;
@@ -653,10 +653,10 @@ try {
     }
     return c.toDataURL('image/png');
   });
-  const cikti = path.join(path.dirname(fileURLToPath(import.meta.url)), 'ciktilar');
+  const cikti = path.join(path.dirname(fileURLToPath(import.meta.url)), 'ekran');
   fs.mkdirSync(cikti, { recursive: true });
   fs.writeFileSync(path.join(cikti, 'uc-avcilar.png'), Buffer.from(sayfa.split(',')[1], 'base64'));
-  sina('iletişim sayfası test/ciktilar/uc-avcilar.png olarak kaydedildi', () => {
+  sina('iletişim sayfası test/ekran/uc-avcilar.png olarak kaydedildi', () => {
     assert.ok(fs.statSync(path.join(cikti, 'uc-avcilar.png')).size > 5000);
   });
 

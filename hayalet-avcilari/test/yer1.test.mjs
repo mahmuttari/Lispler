@@ -259,7 +259,7 @@ try {
   });
 
   // (h) derleme aracı: geçerli kalır, geçersiz bildirilir
-  const cikti = path.join(KOK, 'test', 'ciktilar', 'yer1-sablonlar.js');
+  const cikti = path.join(KOK, 'test', 'ekran', 'yer1-sablonlar.js');
   fs.mkdirSync(path.dirname(cikti), { recursive: true });
   const arac = path.join(KOK, 'araclar', 'yerlesim_derle.py');
   const calistir = spawnSync('python3', [arac, path.join(KOK, 'test', 'fixtures', 'yerlesim'), cikti], { encoding: 'utf8' });

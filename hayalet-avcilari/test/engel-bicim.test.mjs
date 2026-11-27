@@ -67,8 +67,12 @@ const resimler = (p, bolumler) => p.evaluate((bolumler) => {
 const kareBekle = (p, n) => p.evaluate((n) => new Promise((tamam) => { let k = 0; const f = () => (++k >= n ? tamam() : requestAnimationFrame(f)); requestAnimationFrame(f); }), n);
 // Görünen engellerin önbellek ölçeği engelOlcegi() ile aynı mı
 const olcekDenetimi = (p) => p.evaluate(() => {
+  // Yolculuk haritasının donatıları (o.donati) ve nehir geçitleri (o.gecit) engelResmi önbelleğine girmez:
+  // ayrı çiziciler boyar (yolculukDonatilariCiz / yolculukGecitCiz), bu yüzden ölçek denetimine katılmazlar.
+  const onbellekli = (o) => !o.donati && !o.gecit;
   const s = engelOlcegi(), cam = game.camera;
   const gor = [...game.walls, ...game.waters, ...game.spikes, ...game.lavas]
+    .filter(onbellekli)
     .filter((o) => o.x < cam.x + game.W && o.x + o.w > cam.x && o.y < cam.y + game.H && o.y + o.h > cam.y);
   const kotu = gor.filter((o) => { const p = o._resim && o._resim.pay; const px = p ? p.x : 0; return o._olcek !== s || !o._resim || o._resim.c.width !== Math.ceil((o.w + 2 * px) * s); });
   return { s, vs: game.viewScale, n: gor.length, kotu: kotu.length };
@@ -304,14 +308,20 @@ try {
   const gecis = await p3.evaluate(() => {
     const onceki = new Set([...game.walls, ...game.waters, ...game.spikes, ...game.lavas]);
     nextLevel();
-    const yeni = [...game.walls, ...game.waters, ...game.spikes, ...game.lavas], tema = (game.level - 1) % 6;
-    return { level: game.level, n: yeni.length, bicimsiz: yeni.filter((o) => !o.bicim).length, temaDisi: yeni.filter((o) => o.tema !== tema).length, eski: yeni.filter((o) => onceki.has(o)).length };
+    const hepsi = [...game.walls, ...game.waters, ...game.spikes, ...game.lavas], tema = (game.level - 1) % 6;
+    // Donatılar temaya/engel biçimine girmez (o.donati), geçitler de ayrı çizilir (o.gecit); yine de donatıda biçim aranır.
+    const onbellekli = (o) => !o.donati && !o.gecit;
+    const yeni = hepsi.filter(onbellekli);
+    return { level: game.level, n: yeni.length, bicimsiz: yeni.filter((o) => !o.bicim).length,
+      temaDisi: yeni.filter((o) => o.tema !== tema).length, eski: yeni.filter((o) => onceki.has(o)).length,
+      donatiBicimsiz: hepsi.filter((o) => o.donati && !o.bicim).length };
   });
   await kareBekle(p3, 3);
   const gecisResim = await olcekDenetimi(p3);
   sina(`bölüm geçişinde yeni engeller (bölüm ${gecis.level}, ${gecis.n} engel)`, () => {
     assert.ok(gecis.n > 8);
     assert.deepEqual([gecis.bicimsiz, gecis.temaDisi, gecis.eski], [0, 0, 0]);
+    assert.equal(gecis.donatiBicimsiz, 0);
     assert.equal(gecisResim.kotu, 0);
   });
   await p3.close();
@@ -458,12 +468,21 @@ try {
   const isinma = await p6.evaluate(async () => {
     game.level = 8; buildWalls(); buildWaters(); buildHazards(); game.bot = null;
     const kareBekle = (n) => new Promise((tamam) => { let k = 0; const f = () => (++k >= n ? tamam() : requestAnimationFrame(f)); requestAnimationFrame(f); });
-    const hepsi = () => [...game.walls, ...game.waters, ...game.spikes, ...game.lavas];
+    // Donatılar ve geçitler engelResmi önbelleğine girmez; ısınma sayımı yalnız önbelleklenen engelleri sayar.
+    const onbellekli = (o) => !o.donati && !o.gecit;
+    const hepsi = () => [...game.walls, ...game.waters, ...game.spikes, ...game.lavas].filter(onbellekli);
     await kareBekle(150);                                                    // oyuncu yerinde: ısınma
     const s = engelOlcegi(), toplam = hepsi().length, hazir = hepsi().filter((o) => o._resim && o._olcek === s).length;
-    let tuval = 0;
+    let tuval = 0, tuvalToplam = 0;
     const asil = document.createElement;
-    document.createElement = function (ad, ...a) { if (String(ad).toLowerCase() === 'canvas') tuval++; return asil.call(this, ad, ...a); };
+    // Yalnız engeller.js'in açtığı tuvalleri say: zemin parçaları (zemin-katmani.js) tasarım gereği gezildikçe kurulur.
+    document.createElement = function (ad, ...a) {
+      if (String(ad).toLowerCase() === 'canvas') {
+        tuvalToplam++;
+        if (String(new Error().stack).includes('engeller.js')) tuval++;
+      }
+      return asil.call(this, ad, ...a);
+    };
     const W = game.W, H = game.H, adimlar = (boy, gor) => { const d = []; for (let v = gor / 2; v < boy - gor / 2; v += gor * 0.8) d.push(v); d.push(boy - gor / 2); return d; };
     const yol = [];
     adimlar(game.worldH, H).forEach((y, i) => { const xs = adimlar(game.worldW, W).flatMap((x, j, a) => (j ? [(a[j - 1] + x) / 2, x] : [x])); (i % 2 ? xs.reverse() : xs).forEach((x) => yol.push([x, y])); });
@@ -472,10 +491,10 @@ try {
     await kareBekle(3);
     document.createElement = asil;
     game.running = false;
-    return { toplam, hazir, tuval, kare: yol.length };
+    return { toplam, hazir, tuval, tuvalToplam, kare: yol.length };
   });
   await p6.close();
-  sina(`önbellek bölüm başında ısınır: ${isinma.hazir}/${isinma.toplam} engel hazır, haritayı gezerken (${isinma.kare} kare) ${isinma.tuval} yeni tuval`, () => {
+  sina(`önbellek bölüm başında ısınır: ${isinma.hazir}/${isinma.toplam} engel hazır, haritayı gezerken (${isinma.kare} kare) ${isinma.tuval} yeni tuval (toplam açılan ${isinma.tuvalToplam} tuval)`, () => {
     assert.equal(isinma.hazir, isinma.toplam);
     assert.equal(isinma.tuval, 0);
   });
@@ -483,7 +502,8 @@ try {
   const p7 = await sayfaAc({ viewport: { width: 900, height: 1280 } });
   await oyunBaslat(p7);
   const hazirSay = () => p7.evaluate(() => {
-    const s = engelOlcegi(), hepsi = [...game.walls, ...game.waters, ...game.spikes, ...game.lavas];
+    const onbellekli = (o) => !o.donati && !o.gecit; // donatı/geçit engelResmi önbelleğine girmez
+    const s = engelOlcegi(), hepsi = [...game.walls, ...game.waters, ...game.spikes, ...game.lavas].filter(onbellekli);
     return { s, hazir: hepsi.filter((o) => o._resim && o._olcek === s).length, toplam: hepsi.length };
   });
   await kareBekle(p7, 150);

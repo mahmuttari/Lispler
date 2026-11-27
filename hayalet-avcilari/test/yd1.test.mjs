@@ -327,11 +327,11 @@ try {
     assert.ok(Array.isArray(kopruResim.resimsiz) && Array.isArray(kopruResim.resimsizAcik));
   });
 
-  const cikti = path.join(path.dirname(fileURLToPath(import.meta.url)), 'ciktilar');
+  const cikti = path.join(path.dirname(fileURLToPath(import.meta.url)), 'ekran');
   fs.mkdirSync(cikti, { recursive: true });
   await p.evaluate(() => { render(); });
   await p.screenshot({ path: path.join(cikti, 'yd2.png') });
-  sina('test/ciktilar/yd2.png kaydedildi', () => { assert.ok(fs.statSync(path.join(cikti, 'yd2.png')).size > 5000); });
+  sina('test/ekran/yd2.png kaydedildi', () => { assert.ok(fs.statSync(path.join(cikti, 'yd2.png')).size > 5000); });
 
   sina('sayfa hatası yok', () => { assert.deepEqual(hatalar, []); });
 } catch (e) {

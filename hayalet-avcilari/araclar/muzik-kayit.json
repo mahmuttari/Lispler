@@ -2898,65 +2898,42 @@
     }
   },
   "PE": {
-    "gorev": "a3605258dbfa8eba82d3733951bfc299",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-pe-1.mp3",
-        "sure": 119.221,
-        "tempo": 95.33,
+        "dosya": "PE.mp3",
+        "sure": 182.64,
+        "tempo": 100.04,
         "dongu": {
-          "bas": 23.5766,
-          "uzunluk": 30.27017,
-          "vurus": 48
+          "bas": 46.734,
+          "uzunluk": 31.19787,
+          "vurus": 52
         },
-        "ekYeri": 0.9778,
-        "sabitlik": 0.811,
-        "puan": 0.7689,
+        "ekYeri": 0.9775,
+        "sabitlik": 0.7795,
+        "puan": 0.7828,
         "teaser": {
-          "bas": 14.1196,
-          "son": 17.9276
-        },
-        "id": "3470af7d-11e5-483e-90a0-f7aa60e6ec75",
-        "etiketler": "Peruvian Andean huayno, bright warm acoustic mix with loop-friendly continuity and a steady pulse throughout; playful, heroic adventure-game feel, upbeat driving 2/4 around 128 BPM; instrumental; quena flute carrying the lead melody over charango and zampona panpipes, with a counter-melody and bombo drum rhythm section, never breaking."
-      },
-      {
-        "dosya": "hayalet-avcilari-pe-2.mp3",
-        "sure": 119.581,
-        "tempo": 91.23,
-        "dongu": {
-          "bas": 32.8234,
-          "uzunluk": 31.63092,
-          "vurus": 48
-        },
-        "ekYeri": 0.9846,
-        "sabitlik": 0.8627,
-        "puan": 0.7672,
-        "teaser": {
-          "bas": 80.8214,
-          "son": 84.7456
-        },
-        "id": "9463fe32-c823-4454-b298-9324040da25e",
-        "etiketler": "Peruvian Andean huayno, instrumental adventure-game score; bright warm acoustic mix, loop-friendly and constant-energy; around 128 BPM, driving 2/4 dance groove; quena flute leads, charango strums, zampona panpipes counter the melody, bombo drum anchors rich polyphony, playful and heroic."
+          "bas": 117.5138,
+          "son": 121.7166
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -6.1,
+    "tepe": -6.5,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.008,
-    "ekOrani": 0.316,
+    "girisSure": 5.4028,
+    "ekOrani": 0.852,
     "dosyalar": {
       "dongu": "muzik/PE-dongu.ogg",
       "giris": "muzik/PE-giris.ogg"
     },
-    "bas": 0.115,
-    "son": 30.38517,
-    "tempo": 95.33,
-    "kredi": {
-      "kalan": 188.5
-    }
+    "bas": 0.1125,
+    "son": 31.31038,
+    "tempo": 100.04,
+    "kredi": {}
   },
   "BR": {
     "gorev": "9c3f18e5ed4bb5fb9570dc5faecb7852",

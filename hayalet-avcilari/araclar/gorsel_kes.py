@@ -423,7 +423,7 @@ def karakterler_yon(liste):
 
 
 # Oyunda bağlı olanlar (timsah, köprü ve oyuncu ruhu kendi animasyonlarını kodla çizer; kare kare paftaları gelince)
-KULLANILAN = set(BOYUT) - {'oyuncu-ruh', 'bot'}
+KULLANILAN = set(BOYUT) - {'oyuncu-ruh'}  # bot: yardımcı botun resmi (27 Kasım 2026, kalan kod çizimleri)
 # Atıcı hayaletin yanındaki mor küre silinir (oyun mermiyi ve atış öncesi parıltıyı kendisi çizer): sol yarı aynalanır.
 SAG_KES = {'hayalet-atici'}
 ALFA_ESIK = 40
@@ -653,6 +653,8 @@ EK_PAFTALAR = {
     # J12: ortak parçalar; 1. hücre nehir karosu DOKU_PAFTALARI'nda, 2-6 yolculuk çubuğu simgeleri
     'J12': [None, ('yol-cubuk-baslangic', 128), ('yol-cubuk-kopru', 128), ('yol-cubuk-kilit', 128), ('yol-cubuk-boss', 128), ('yol-cubuk-hayalet', 128)],
     # K13: kilitli köprü yeniden (kullanıcı: görseller yatık duruyor): dik, düz köprü + kilitli kapı; K05 ve J01 3. hücrenin yerine geçer
+    # K6 (ham/ klasöründeki eski pafta): yalnız yardımcı bot hücresi --ek ile de kesilebilsin
+    'K6': [None, None, None, None, ('bot', 160), None],
     # K15-K16: hâlâ kodla çizilen küçük efektler ve parçalar (CHATGPT-ISTEMI-EK.md; kullanıcı: kalan iş olmasın)
     'K15': [('efekt-gokkusagi', 256), ('efekt-ejder-alev', 256), ('efekt-bot-isin', 256), ('efekt-kasirga', 256), ('efekt-cali-goz', 128), ('timsah-bakis', 192)],
     'K16': [('efekt-pence', 160), ('efekt-toz', 128), ('efekt-olum-pop', 160), ('gol-kopru-tahta', 256), ('efekt-parilti-kucuk', 64), ('ui-can-cubugu', 256)],
@@ -798,6 +800,8 @@ def ek_hucreler(liste):
             yol = os.path.join(HAMZEMIN, f'{pafta}.png')  # Z paftaları (CHATGPT-ISTEMI-ZEMIN.md)
         if not os.path.exists(yol):
             yol = os.path.join(HAMYOL, f'{pafta}.png')  # J07-J12 (CHATGPT-ISTEMI-YOLCULUK.md)
+        if not os.path.exists(yol):
+            yol = os.path.join(HAM, f'{pafta}.png')  # eski ana paftalar (K6 bot)
         if not os.path.exists(yol):
             continue
         resim = Image.open(yol).convert('RGBA')

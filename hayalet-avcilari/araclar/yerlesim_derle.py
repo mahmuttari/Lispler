@@ -74,8 +74,9 @@ def dogrula(y, sira, dosya):
             if not isinstance(o.get("adet"), int) or not (2 <= o["adet"] <= 5):
                 return False, "donati: adet 2-5 olmalı"
         if tip == "meydan":
-            if not aralikta(o.get("r"), 0.08, 0.16):
-                return False, "meydan: r 0.08-0.16 olmalı"
+            rmax = 0.24 if "arena" in uygun else 0.16  # arenada boss için geniş orta meydan
+            if not aralikta(o.get("r"), 0.08, rmax):
+                return False, "meydan: r 0.08-%.2f olmalı" % rmax
         if tip in DORTGEN:
             w, h = o.get("w"), o.get("h")
             if not aralikta(w) or not aralikta(h):

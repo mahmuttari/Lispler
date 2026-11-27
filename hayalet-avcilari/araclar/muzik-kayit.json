@@ -1800,65 +1800,42 @@
     }
   },
   "UZ": {
-    "gorev": "db160c7f7968beb28ad7eb4fc25b2195",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-uz-1.mp3",
-        "sure": 119.989,
-        "tempo": 137.55,
+        "dosya": "UZ.mp3",
+        "sure": 122.8,
+        "tempo": 129.28,
         "dongu": {
-          "bas": 23.6778,
-          "uzunluk": 33.21456,
-          "vurus": 76
+          "bas": 32.513,
+          "uzunluk": 27.83813,
+          "vurus": 60
         },
-        "ekYeri": 0.987,
-        "sabitlik": 0.9011,
-        "puan": 0.9161,
+        "ekYeri": 0.9841,
+        "sabitlik": 0.8454,
+        "puan": 0.9392,
         "teaser": {
-          "bas": 18.4169,
-          "son": 22.3643
-        },
-        "id": "f76cb9d8-46ac-4be3-8ede-639dedb9f8d5",
-        "etiketler": "Uzbek lazgi folk dance, instrumental, bright warm acoustic mix with a cheerful adventure video game background music feel, dutar-led rich polyphonic ensemble carrying a lead melody, ghijak fiddle counter-melody, nay flute and doira frame drum rhythm section, steady danceable groove around 128 BPM, constant energy, loop-friendly seamless return."
-      },
-      {
-        "dosya": "hayalet-avcilari-uz-2.mp3",
-        "sure": 119.533,
-        "tempo": 135.14,
-        "dongu": {
-          "bas": 39.0726,
-          "uzunluk": 30.22042,
-          "vurus": 68
-        },
-        "ekYeri": 0.9742,
-        "sabitlik": 0.8768,
-        "puan": 0.9145,
-        "teaser": {
-          "bas": 26.6015,
-          "son": 30.5953
-        },
-        "id": "8e7b558d-31fe-4ef0-bdbc-3e5c1eb265b9",
-        "etiketler": "Uzbek lazgi folk dance, bright warm acoustic mix with a lively, cheerful adventure video game background music feel; instrumental; rich polyphonic ensemble led by dutar, answered by ghijak fiddle and nay flute, with doira frame drum anchoring a steady danceable groove around 128 BPM, constant energy, loop-friendly arrangement."
+          "bas": 81.2228,
+          "son": 85.4256
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -5.5,
+    "tepe": -6.5,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.1938,
-    "ekOrani": 0.346,
+    "girisSure": 5.4028,
+    "ekOrani": 0.428,
     "dosyalar": {
       "dongu": "muzik/UZ-dongu.ogg",
       "giris": "muzik/UZ-giris.ogg"
     },
     "bas": 0.1,
-    "son": 30.32042,
-    "tempo": 135.14,
-    "kredi": {
-      "kalan": 404.5
-    }
+    "son": 27.93812,
+    "tempo": 129.28,
+    "kredi": {}
   },
   "AF": {
     "gorev": "fdfee01e4c42d0a63ddb8e9c50de6691",

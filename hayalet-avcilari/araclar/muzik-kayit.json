@@ -466,65 +466,42 @@
     }
   },
   "DZ": {
-    "gorev": "2df5cb325327cc2f3430cd43ed825d2d",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-dz-1.mp3",
-        "sure": 119.629,
-        "tempo": 130.0,
+        "dosya": "DZ.mp3",
+        "sure": 141.16,
+        "tempo": 95.84,
         "dongu": {
-          "bas": 21.2175,
-          "uzunluk": 29.52208,
-          "vurus": 64
+          "bas": 57.2291,
+          "uzunluk": 30.05206,
+          "vurus": 48
         },
-        "ekYeri": 0.9847,
-        "sabitlik": 0.798,
-        "puan": 0.9217,
+        "ekYeri": 0.9719,
+        "sabitlik": 0.7898,
+        "puan": 0.7621,
         "teaser": {
-          "bas": 94.5943,
-          "son": 98.7506
-        },
-        "id": "79f9ad53-7d7e-42f7-96d5-f75444c221b4",
-        "etiketler": "Algerian Kabyle folk dance, instrumental; bright warm acoustic mix, cheerful adventure video game background music; mandole carries a lead melody over ajouag flute counter-melody, with derbouka and bendir frame drum in a rich polyphonic rhythm section; steady, danceable groove around 128 BPM, constant energy, loop-friendly arrangement with no breakdown."
-      },
-      {
-        "dosya": "hayalet-avcilari-dz-2.mp3",
-        "sure": 120.013,
-        "tempo": 130.01,
-        "dongu": {
-          "bas": 19.3163,
-          "uzunluk": 33.23827,
-          "vurus": 72
-        },
-        "ekYeri": 0.9774,
-        "sabitlik": 0.8117,
-        "puan": 0.9221,
-        "teaser": {
-          "bas": 77.9217,
-          "son": 82.0781
-        },
-        "id": "13489710-5257-4e67-8dfd-57c2c93abbf9",
-        "etiketler": "Algerian Kabyle folk dance, cheerful adventure video game background music; bright warm acoustic mix, rich polyphonic ensemble led by mandole melody, ajouag flute counter-melody, and derbouka and bendir frame drum rhythm; steady danceable groove around 128 BPM, constant energy, continuous loop-friendly arrangement."
+          "bas": 120.5832,
+          "son": 124.3681
+        }
       }
     ],
-    "lufs": -17.9,
-    "tepe": -5.2,
+    "lufs": -18.0,
+    "tepe": -3.9,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3564,
-    "ekOrani": 0.545,
+    "girisSure": 4.9849,
+    "ekOrani": 0.448,
     "dosyalar": {
       "dongu": "muzik/DZ-dongu.ogg",
       "giris": "muzik/DZ-giris.ogg"
     },
-    "bas": 0.1175,
-    "son": 33.35577,
-    "tempo": 130.01,
-    "kredi": {
-      "kalan": 644.5
-    }
+    "bas": 0.1025,
+    "son": 30.15456,
+    "tempo": 95.84,
+    "kredi": {}
   },
   "CI": {
     "gorev": "2e2b32cd63e5de1b67b94a29b1e462ba",

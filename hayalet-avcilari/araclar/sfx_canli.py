@@ -29,6 +29,7 @@ S = {
  'papagan':     (1.4, 'macaw parrot squawk and quick wing flutter, tropical'),
  'yavru-ejder': (1.3, 'baby dragon tiny sneeze with a puff of smoke'),
  # yuva canlıları
+ 'timsah':      (1.5, 'a cartoon crocodile climbing out of a pond: small water splash and a short low playful grumble'),
  'fare-kac':    (1.2, 'several tiny mice squeaking and scurrying away quickly'),
  'yarasa-kac':  (1.5, 'small bats fluttering their wings and flying away with tiny squeaks'),
  'fare-cik':    (0.8, 'one tiny mouse squeak'),

@@ -2141,65 +2141,42 @@
     "kredi": {}
   },
   "US": {
-    "gorev": "64310ce68a371ba60532bb6149af3254",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-us-1.mp3",
-        "sure": 119.701,
-        "tempo": 131.42,
+        "dosya": "US.mp3",
+        "sure": 109.96,
+        "tempo": 99.13,
         "dongu": {
-          "bas": 34.0198,
-          "uzunluk": 27.38867,
-          "vurus": 60
+          "bas": 56.8691,
+          "uzunluk": 29.15894,
+          "vurus": 48
         },
-        "ekYeri": 0.9799,
-        "sabitlik": 0.8261,
-        "puan": 0.9207,
+        "ekYeri": 0.9524,
+        "sabitlik": 0.8028,
+        "puan": 0.7727,
         "teaser": {
-          "bas": 19.4113,
-          "son": 23.5444
-        },
-        "id": "88dbb7d7-fe1d-4be3-b56c-b6ad3c60308d",
-        "etiketler": "American bluegrass, instrumental; playful and heroic adventure game score, steady danceable groove around 128 BPM with constant upbeat energy; banjo, fiddle, mandolin, guitar and double bass form a rich polyphonic ensemble, banjo lead melody answered by fiddle counter-melody; bright warm acoustic mix, loop-friendly and seamless."
-      },
-      {
-        "dosya": "hayalet-avcilari-us-2.mp3",
-        "sure": 118.813,
-        "tempo": 130.48,
-        "dongu": {
-          "bas": 57.6775,
-          "uzunluk": 31.40919,
-          "vurus": 68
-        },
-        "ekYeri": 0.9838,
-        "sabitlik": 0.8873,
-        "puan": 0.9456,
-        "teaser": {
-          "bas": 83.5802,
-          "son": 87.6901
-        },
-        "id": "05e80111-167a-47fa-a0c8-1b7ccb5cce39",
-        "etiketler": "American bluegrass, bright warm acoustic mix for adventure video game background music, instrumental, steady danceable groove around 128 BPM, upbeat and energetic, playful and heroic; banjo leads a rich polyphonic ensemble with a lead melody and counter-melody, fiddle and mandolin weaving against guitar and double bass, unbroken rhythm, loop-friendly arrangement."
+          "bas": 28.633,
+          "son": 32.8359
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -5.9,
+    "tepe": -5.3,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3099,
-    "ekOrani": 0.401,
+    "girisSure": 5.4029,
+    "ekOrani": 0.143,
     "dosyalar": {
       "dongu": "muzik/US-dongu.ogg",
       "giris": "muzik/US-giris.ogg"
     },
     "bas": 0.1,
-    "son": 31.50919,
-    "tempo": 130.48,
-    "kredi": {
-      "kalan": 224.5
-    }
+    "son": 29.25894,
+    "tempo": 99.13,
+    "kredi": {}
   },
   "MX": {
     "gorev": "suno-pencere-2026-11",

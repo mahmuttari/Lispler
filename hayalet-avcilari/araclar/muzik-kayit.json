@@ -1906,65 +1906,42 @@
     }
   },
   "MY": {
-    "gorev": "9ad81c79b82c59bda4303b0597151d9c",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-my-1.mp3",
-        "sure": 119.389,
-        "tempo": 130.43,
+        "dosya": "MY.mp3",
+        "sure": 132.8,
+        "tempo": 103.48,
         "dongu": {
-          "bas": 40.5197,
-          "uzunluk": 27.61254,
-          "vurus": 60
+          "bas": 69.9732,
+          "uzunluk": 27.80933,
+          "vurus": 48
         },
-        "ekYeri": 0.9726,
-        "sabitlik": 0.8114,
-        "puan": 0.9175,
+        "ekYeri": 0.9675,
+        "sabitlik": 0.7034,
+        "puan": 0.7722,
         "teaser": {
-          "bas": 94.7571,
-          "son": 98.8902
-        },
-        "id": "afcfe309-bde1-4fb6-a709-0e5534429bd2",
-        "etiketler": "Malay joget folk dance, instrumental; playful, heroic adventure-game background music; violin and accordion lead a bright melody over gendang drums and gong, with interlocking counter-melody and driving rhythm section; bright warm acoustic mix; upbeat, energetic driving groove around 128 BPM, constant forward motion, seamless loop-ready arrangement."
-      },
-      {
-        "dosya": "hayalet-avcilari-my-2.mp3",
-        "sure": 119.941,
-        "tempo": 131.61,
-        "dongu": {
-          "bas": 48.1792,
-          "uzunluk": 27.35179,
-          "vurus": 60
-        },
-        "ekYeri": 0.9781,
-        "sabitlik": 0.821,
-        "puan": 0.9173,
-        "teaser": {
-          "bas": 95.5464,
-          "son": 99.6331
-        },
-        "id": "4ec752d9-a1ee-4599-8037-60812c8d13cb",
-        "etiketler": "Malay joget folk dance, driving, danceable pulse around 128 BPM, playful and heroic adventure game music, instrumental; bright warm acoustic mix with a rich polyphonic ensemble and constant energy, loop-friendly, violin lead melody trading with accordion counter-melody over gendang drums and gong, steady rhythm section carries into the final phrase."
+          "bas": 69.9732,
+          "son": 74.0367
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -4.1,
+    "tepe": -5.1,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3331,
-    "ekOrani": 0.079,
+    "girisSure": 5.2635,
+    "ekOrani": 0.152,
     "dosyalar": {
       "dongu": "muzik/MY-dongu.ogg",
       "giris": "muzik/MY-giris.ogg"
     },
-    "bas": 0.1075,
-    "son": 27.72004,
-    "tempo": 130.43,
-    "kredi": {
-      "kalan": 320.5
-    }
+    "bas": 0.1,
+    "son": 27.90933,
+    "tempo": 103.48,
+    "kredi": {}
   },
   "ID": {
     "gorev": "suno-pencere-2026-11",

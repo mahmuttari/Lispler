@@ -595,65 +595,42 @@
     "kredi": {}
   },
   "SD": {
-    "gorev": "d47fae3c425d92d897afc7e2bd539136",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-sd-1.mp3",
-        "sure": 119.029,
-        "tempo": 129.35,
+        "dosya": "SD.mp3",
+        "sure": 152.12,
+        "tempo": 94.28,
         "dongu": {
-          "bas": 49.8537,
-          "uzunluk": 29.69987,
-          "vurus": 64
+          "bas": 67.519,
+          "uzunluk": 28.10219,
+          "vurus": 44
         },
-        "ekYeri": 0.9729,
-        "sabitlik": 0.7732,
-        "puan": 0.9116,
+        "ekYeri": 0.9421,
+        "sabitlik": 0.6151,
+        "puan": 0.687,
         "teaser": {
-          "bas": 59.1165,
-          "son": 63.2961
-        },
-        "id": "26598f2e-d4b5-4e7f-9fd8-0736b4c38a06",
-        "etiketler": "Sudanese dance music, steady danceable groove around 128 BPM, instrumental; bright warm acoustic mix; a pentatonic oud lead melody moves above a tanbur lyre counter-melody, while daluka drum and handclaps anchor a rich polyphonic rhythm section, cheerful adventure video game background music, constant energy, seamless loop-friendly phrasing."
-      },
-      {
-        "dosya": "hayalet-avcilari-sd-2.mp3",
-        "sure": 119.629,
-        "tempo": 128.56,
-        "dongu": {
-          "bas": 40.2888,
-          "uzunluk": 29.81887,
-          "vurus": 64
-        },
-        "ekYeri": 0.987,
-        "sabitlik": 0.6751,
-        "puan": 0.8933,
-        "teaser": {
-          "bas": 97.6142,
-          "son": 101.817
-        },
-        "id": "91a8f88c-59ea-448c-b904-0ed75d138c34",
-        "etiketler": "Sudanese dance music, instrumental; bright warm acoustic mix with a rich polyphonic ensemble; oud carries a lead melody while tanbur lyre answers with a counter-melody, daluka drum and handclaps drive the rhythm section on a pentatonic scale; cheerful adventure video game background music, steady danceable groove around 128 BPM, constant energy, loop-friendly."
+          "bas": 125.0956,
+          "son": 128.9733
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -3.6,
+    "tepe": -4.3,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3796,
-    "ekOrani": 0.045,
+    "girisSure": 5.0777,
+    "ekOrani": 0.164,
     "dosyalar": {
       "dongu": "muzik/SD-dongu.ogg",
       "giris": "muzik/SD-giris.ogg"
     },
-    "bas": 0.1025,
-    "son": 29.80238,
-    "tempo": 129.35,
-    "kredi": {
-      "kalan": 596.5
-    }
+    "bas": 0.1,
+    "son": 28.20219,
+    "tempo": 94.28,
+    "kredi": {}
   },
   "EG": {
     "gorev": "suno-pencere-2026-11",

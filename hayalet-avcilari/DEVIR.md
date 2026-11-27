@@ -22,7 +22,12 @@ kesildi, göller kesilmeden (gol-su.js çarpışma tablosu), bot görseli.
    K15/K16, H10-H12, B01-B10, A01-A03. K15/K16 gelince GOR4 (efekt bağlama), hikâye sahneleri gelince HIK3 yazılacak.
 4. FIX4 (klasik haritada takılan hayaletler, %6,1) ve REK2 (oynanabilir reklam kamerası, tehlike-halka davranışı):
    önce Fable şartnamesi.
-5. Bağlanmayan görseller (gerekçeli): gel-miknatis, giris-kahraman, tur-ucak-ust, sus-tahta-yol.
+5. Görsel üst üste binme denetimi (kullanıcı, 27 Kasım): göller ve diken/lav düzeltildi. Kalan iki bulgu:
+   (a) dikey duvarda (h ≥ 1,3w) aynı duvar resmi alt alta yığılıyor, "üst üste binmiş" görünüyor: dikey duvara tek
+   kule resmi (tema<n>-buyuk / aile-<A>-kule) boyunca bir kez, gerekirse ChatGPT'den dikey duvar paftası istenmeli;
+   (b) uzun/yayvan kutudaki obje küçük kalıyor, çarpışma kutusu gölge sütunu olarak görünüyor (görünmez duvar): objeyi
+   kutunun büyük kenarına göre büyüt (objePayi büyütülmeli) ya da obje kutusunu resmin oranına yakın kur.
+6. Bağlanmayan görseller (gerekçeli): gel-miknatis, giris-kahraman, tur-ucak-ust, sus-tahta-yol.
 
 ## Çalışma düzeni
 - Evren tek istek kabul eder; görevler sırayla (`araclar/evren-gorev/`, başlık `bas.txt`).

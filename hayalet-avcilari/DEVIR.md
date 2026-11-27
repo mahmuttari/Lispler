@@ -11,7 +11,7 @@ kesildi, gölet ve diken tuzaklar sınır yöntemiyle (organik leke biçimi + k�
 
 ## Süren / kalan işler
 0. **YUV2, KPR1, SUS1 bitti** (fare/yarasa kaotik kaçış, köprü güvertesi + kemer, süs ayıklama). Botun köprü kulesine basmaması kalmadı (yan engel yalnız oyuncuda; bot takılma riski).
-   Müzik: 50 ülkeye sanatsal istemler hazır (scratchpad/muzik/istemler.json, yoksa Fable'a yeniden yazdır); ElevenLabs kotası 5 Aralık'ta yenilenir. Önce tek ülke üretip krediyi ölç (100 sn = 1375 kredi).
+   Müzik: 50 ülkeye sanatsal istemler hazır (araclar/muzik-istekleri-sanatsal.json; üretim: python3 araclar/muzik_eleven.py KOD…); ElevenLabs kotası 5 Aralık'ta yenilenir. Önce tek ülke üretip krediyi ölç (100 sn = 1375 kredi).
 1. **DT1 bitti** (Dünya Turu köprüleri, arena, ortak nehir, yolculuk çubuğu simgeleri; commit edildi).
 2. **zem3b (c)** "yolun üst/sol pervazı… yeterli örnek yok: 6" HEAD'de de düşüyor (yerleşim şablonları/KPR1 sonrası; örnek noktalar azalmış): TST1'e ekle.
    **TST1** zaman aşımına uğradı: yarım iş `araclar/evren-gorev/yarim-TST1.patch` (engel-bicim'in önceden düşen 5

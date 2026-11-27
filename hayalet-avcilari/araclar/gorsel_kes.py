@@ -1071,7 +1071,8 @@ def ek_kes():
     al = lambda ad: json.loads(re.search(r'const ' + ad + r' = (\{.*?\});', metin, re.S).group(1))
     liste, govde, namlu = al('GORSEL_LISTESI'), al('ANIM_GOVDE'), al('NAMLU_UCU')
     eski_anim = dict(ANIMASYON)
-    ANIMASYON.clear(); ANIMASYON.update({k: v for k, v in eski_anim.items() if k[0] in 'KR'})
+    # K/R animasyonları her zaman; öbürleri (N…) yalnız adıyla seçilince (--ek N14): bütün N kesimi uzun sürer
+    ANIMASYON.clear(); ANIMASYON.update({k: v for k, v in eski_anim.items() if k[0] in 'KR' or (SECILI and k in SECILI)})
     animasyonlar(liste)
     ANIMASYON.clear(); ANIMASYON.update(eski_anim)
     ek_hucreler(liste)

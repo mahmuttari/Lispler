@@ -1655,65 +1655,42 @@
     }
   },
   "IQ": {
-    "gorev": "7b6a425a3f78db33db68a1db678941d1",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-iq-1.mp3",
-        "sure": 118.573,
-        "tempo": 132.74,
+        "dosya": "IQ.mp3",
+        "sure": 123.96,
+        "tempo": 95.92,
         "dongu": {
-          "bas": 19.3317,
-          "uzunluk": 29.06175,
-          "vurus": 64
+          "bas": 27.3712,
+          "uzunluk": 30.10033,
+          "vurus": 48
         },
-        "ekYeri": 0.9671,
-        "sabitlik": 0.8548,
-        "puan": 0.9163,
+        "ekYeri": 0.958,
+        "sabitlik": 0.7849,
+        "puan": 0.754,
         "teaser": {
-          "bas": 53.8281,
-          "son": 57.9149
-        },
-        "id": "c06e7605-a3c1-4be7-9c25-d3bb18397875",
-        "etiketler": "Iraqi chobi folk dance, buoyant adventure-game pulse at around 128 BPM, instrumental; bright warm acoustic mix, constant energy, loop-friendly phrasing; santur and joza spike fiddle carry the lead melody, qanun answers with a counter-melody, darbuka anchors the rhythm section in a rich polyphonic ensemble."
-      },
-      {
-        "dosya": "hayalet-avcilari-iq-2.mp3",
-        "sure": 119.221,
-        "tempo": 131.06,
-        "dongu": {
-          "bas": 21.1046,
-          "uzunluk": 31.13804,
-          "vurus": 68
-        },
-        "ekYeri": 0.9802,
-        "sabitlik": 0.8487,
-        "puan": 0.9294,
-        "teaser": {
-          "bas": 71.0078,
-          "son": 75.1409
-        },
-        "id": "53d6efbe-2bfc-4765-8543-0c39c91970ac",
-        "etiketler": "Iraqi chobi folk dance, bright warm acoustic mix, loop-friendly and seamless for cheerful adventure video game background music; santur and qanun drive the lead melody while joza spike fiddle answers with a counter-melody over darbuka; steady, danceable groove around 128 BPM, rich polyphonic ensemble with a rhythm section, constant energy, instrumental."
+          "bas": 81.287,
+          "son": 84.7932
+        }
       }
     ],
     "lufs": -17.9,
-    "tepe": -4.3,
+    "tepe": -5.9,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.2868,
-    "ekOrani": 0.235,
+    "girisSure": 4.7062,
+    "ekOrani": 0.376,
     "dosyalar": {
       "dongu": "muzik/IQ-dongu.ogg",
       "giris": "muzik/IQ-giris.ogg"
     },
     "bas": 0.1,
-    "son": 29.16175,
-    "tempo": 132.74,
-    "kredi": {
-      "kalan": 428.5
-    }
+    "son": 30.20033,
+    "tempo": 95.92,
+    "kredi": {}
   },
   "IR": {
     "gorev": "5b714bc3897052d26c7d20ebfe3df64d",

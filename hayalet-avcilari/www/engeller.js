@@ -299,7 +299,7 @@
       if (o.bicim) return;
       if (i < 4) { engelOlustur(o, "sinir", tema, engelTohumu(L, "sinir", i, o), ["ust", "alt", "sol", "sag"][i]); return; }
       const k = i - 4;
-      const tur = ic.some((b) => b !== o && kesisir(o, b)) ? "duvar" : ["duvar", "obje1", "obje2"][(k + L) % 3];
+      const tur = o.tur || (ic.some((b) => b !== o && kesisir(o, b)) ? "duvar" : ["duvar", "obje1", "obje2"][(k + L) % 3]);
       engelOlustur(o, tur, tema, engelTohumu(L, tur, k, o));
     });
     for (const [liste, tur] of [[game.waters, "su"], [game.spikes, "diken"], [game.lavas, "lav"]]) {

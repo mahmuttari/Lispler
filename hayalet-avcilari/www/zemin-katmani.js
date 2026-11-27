@@ -942,8 +942,18 @@
         const A = typeof YOLCULUK_AYAR !== "undefined" ? YOLCULUK_AYAR : { worldH: game.worldH || 1000 };
         let onceki = yolculukBaslangic();
         for (let i = 0; i < d.zones.length; i++) {
-          const g = d.zones[i].gate;
-          yollar.push({ noktalar: araliNoktalar(onceki, { x: g.x0 - 40, y: g.cy }, bolum, ulke, i * 2 + 1), gen: 64 });
+          const z = d.zones[i];
+          const g = z.gate;
+          let noktalar;
+          if (Array.isArray(z._sablonYol) && z._sablonYol.length) {
+            // YER1: şablonun "yol" noktaları ana patikaya yön verir
+            noktalar = [onceki];
+            for (const p of z._sablonYol) noktalar.push({ x: p.x, y: p.y });
+            noktalar.push({ x: g.x0 - 40, y: g.cy });
+          } else {
+            noktalar = araliNoktalar(onceki, { x: g.x0 - 40, y: g.cy }, bolum, ulke, i * 2 + 1);
+          }
+          yollar.push({ noktalar, gen: 64 });
           // Nehir şeridi atlanır; sonraki parça sağ kıyıdan başlar
           onceki = { x: g.x1 + 40, y: g.cy };
         }

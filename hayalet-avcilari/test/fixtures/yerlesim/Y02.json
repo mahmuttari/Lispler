@@ -1,0 +1,16 @@
+[
+  {
+    "id": "bozuk-test",
+    "fikir": "Bilinmeyen öğe tipi taşıyan, sınamada atılması gereken yerleşim.",
+    "uygun": ["her"],
+    "ogeler": [
+      { "tip": "bilinmeyen", "u": 0.5, "v": 0.5 },
+      { "tip": "yuva", "u": 0.1, "v": 0.1 },
+      { "tip": "yuva", "u": 0.9, "v": 0.1 },
+      { "tip": "yuva", "u": 0.1, "v": 0.9 },
+      { "tip": "yuva", "u": 0.9, "v": 0.9 },
+      { "tip": "anit", "u": 0.5, "v": 0.2, "w": 0.12, "h": 0.12 }
+    ],
+    "yol": [[0, 0.5], [0.5, 0.5], [1, 0.5]]
+  }
+]

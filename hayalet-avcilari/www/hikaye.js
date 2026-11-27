@@ -175,7 +175,9 @@ function hikayeHatiraTopla() {
       else if (typeof audio.gem === "function") audio.gem();
     }
   }
-  if (typeof animEfektEkle === "function") animEfektEkle("topla", h.x, h.y - 10, { renk: "255, 210, 102" });
+  // HIK3: ChatGPT hatıra pırıltısı (A03) hazırsa onun kareleri, yoksa halka
+  if (typeof animEfektEkle === "function" && typeof animHazir === "function" && animHazir("hikaye-parilti")) animEfektEkle("kare", h.x, h.y - 10, { ad: "hikaye-parilti", sure: 0.7, boyut: 96 });
+  else if (typeof animEfektEkle === "function") animEfektEkle("topla", h.x, h.y - 10, { renk: "255, 210, 102" });
   else if (typeof spawnHitParticles === "function") spawnHitParticles(h.x, h.y);
   game.hatira = null;
 }
@@ -317,11 +319,74 @@ function hikayeAvciDoldur(kap) {
 }
 window.addEventListener("uc-avci-hazir", () => hikayeAvciDoldur(document));
 
+// ---------- HIK3: hikâye resimleri (açılış, bölüm, final, Dostluk Haritası) ve animasyonları ----------
+// Resim yüklenmediyse hiçbir şey çizilmez: sahne bugünkü gibi (avcılar + balon) çalışır.
+function hikayeResimSrc(k) {
+  const im = k && typeof gorsel === "function" ? gorsel(k) : null;
+  return im && im.src ? im.src : "";
+}
+
+// Kare kare oynayan <img> (ChatGPT animasyonu an-<ad>-1..n). Azaltılmış harekette ilk (ya da verilen) kare sabit kalır.
+// Zamanlayıcı, resim DOM'dan çıkınca (sahne kapanınca, defter yenilenince) kendiliğinden durur.
+function hikayeAnimImg(ad, sinif, secenek) {
+  secenek = secenek || {};
+  const n = typeof animHazir === "function" ? animHazir(ad) : 0;
+  if (!n) return null;
+  const im = document.createElement("img");
+  im.className = sinif;
+  im.alt = "";
+  im.draggable = false;
+  im.setAttribute("aria-hidden", "true");
+  im.setAttribute("data-anim", ad);
+  const dizi = secenek.kareler || Array.from({ length: n }, (_, i) => i + 1);
+  const goster = (i) => { const kare = typeof gorsel === "function" ? gorsel(`an-${ad}-${dizi[i % dizi.length]}`) : null; if (kare) im.src = kare.src; };
+  goster(0);
+  const az = typeof animAzHareket === "function" && animAzHareket();
+  if (!az && dizi.length > 1) {
+    let i = 0;
+    const z = setInterval(() => { if (!im.isConnected) { clearInterval(z); return; } i++; goster(i); }, 1000 / (secenek.fps || 8));
+  }
+  return im;
+}
+
+// Sahne resmi (kutunun üstünde şerit) ve varsa köşede el sallayan hayalet (final). Resim sonradan yüklenirse tamamlanır.
+function hikayeSahneResmiKur(kutu, s) {
+  let sar = kutu.querySelector(".hikaye-resim");
+  const src = hikayeResimSrc(s && s.arka);
+  if (!src) { if (sar) sar.remove(); return; }
+  if (sar && sar.getAttribute("data-k") === s.arka) return;
+  if (sar) sar.remove();
+  sar = document.createElement("div");
+  sar.className = "hikaye-resim";
+  sar.setAttribute("data-k", s.arka);
+  const im = document.createElement("img");
+  im.src = src; im.alt = ""; im.draggable = false; im.setAttribute("aria-hidden", "true");
+  sar.appendChild(im);
+  if (s.sus) {
+    const sus = hikayeAnimImg(s.sus, "hikaye-resim-sus", { fps: 7 });
+    if (sus) sar.appendChild(sus);
+  }
+  kutu.insertBefore(sar, kutu.firstChild);
+}
+window.addEventListener("gorsel-yuklendi", () => {
+  const el = document.getElementById("hikaye-sahne");
+  if (_sahne && _sahne.arka && el && el.classList.contains("active")) {
+    const kutu = el.querySelector(".hikaye-kutu");
+    if (kutu) hikayeSahneResmiKur(kutu, _sahne);
+  }
+});
+
+// Ülke sahnesinin resmi: turun ilk ülkesinin sahnesi hikâyenin açılışıdır (İstanbul'daki sandık).
+function hikayeUlkeSahneSecenegi(kod, ek) {
+  const u = typeof ulkeKodla === "function" ? ulkeKodla(kod) : null;
+  return Object.assign(u && u.sira === 1 ? { arka: "hikaye-acilis" } : {}, ek || {});
+}
+
 function hikayeSahneGoster(satirlar, secenek) {
   secenek = secenek || {};
   if (!satirlar || !satirlar.length) { if (secenek.bitince) secenek.bitince(); return; }
   hikayeYaziDurdur();
-  _sahne = { satirlar, i: 0, katilan: secenek.katilan, bitince: secenek.bitince, durakladi: hikayeDuraklat() };
+  _sahne = { satirlar, i: 0, katilan: secenek.katilan, bitince: secenek.bitince, durakladi: hikayeDuraklat(), arka: secenek.arka || "", sus: secenek.sus || "" };
   const el = document.getElementById("hikaye-sahne");
   if (!el) { hikayeDevam(_sahne.durakladi); _sahne = null; return; }
   if (!(typeof online !== "undefined" && online.mode) && typeof audio !== "undefined" && audio.hikayeSes) {
@@ -355,6 +420,7 @@ function hikayeSahneCiz() {
   const ust = kutu.querySelector(".hikaye-ust");
   const alan = kutu.querySelector(".hikaye-sahne-alan");
   if (!ust || !alan) return;
+  hikayeSahneResmiKur(kutu, s);
 
   // Konuşma balonu (konuşan avcıya uzanan kuyruk) ya da anlatıcı parşömen kutusu.
   if (anlatim) {
@@ -514,7 +580,7 @@ function hikayeBilmeceSec(i, btn) {
     const bolum = (b.bolum || []).map((m) => ({ k: "anlatici", m }));
     const devam = _bilmece.bitince;
     hikayeBilmeceKapat(false);
-    if (bolum.length) hikayeSahneGoster(bolum, { bitince: devam });
+    if (bolum.length) hikayeSahneGoster(bolum, { bitince: devam, arka: `hikaye-bolum-${n}` });
     else if (devam) devam();
     return true;
   }
@@ -588,7 +654,7 @@ function hikayeBolumBasladi() {
   }
   if (veri && veri.sahne) {
     const satirlar = veri.sahne;
-    adimlar.push((devam) => hikayeSahneGoster(satirlar, { bitince: devam }));
+    adimlar.push((devam) => hikayeSahneGoster(satirlar, hikayeUlkeSahneSecenegi(u.kod, { bitince: devam })));
   }
   hikayeAdimlariCalistir(adimlar, () => { hikayeKayit().sahneler[u.kod] = 1; persistSave(); });
 }
@@ -606,6 +672,7 @@ function hikayeFinalGoster(bitince) {
   if (!(typeof online !== "undefined" && online.mode) && typeof audio !== "undefined" && audio.hikayeSes) audio.hikayeSes("fener");
   const sar = bitince;
   hikayeSahneGoster(v.final, {
+    arka: "hikaye-final", sus: "hikaye-hayalet",
     bitince: () => {
       if (!(typeof online !== "undefined" && online.mode) && typeof audio !== "undefined" && audio.hikayeSes) audio.hikayeSes("eve-donus");
       if (sar) sar();
@@ -625,13 +692,44 @@ function hikayeKartHtml(key, sinif) {
     `<small dir="auto"><bdi>${escapeHtml(ad)}</bdi></small></div>`;
 }
 
+// Dostluk Haritası (H10): 5 × 2 parça, çözülen her bilmeceyle bir parça açılır (kilitli parça koyu örtülür); resmin kendisinde
+// parça çizgisi yoktur. Fener (A02): çözülen bilmeceye göre kıvılcım → parlak küre; hepsi çözülünce ışık saçar.
+function hikayeHaritaHtml(v, k) {
+  const src = hikayeResimSrc("hikaye-harita");
+  if (!src) return "";
+  const toplam = (v.bilmece || []).length || 10;
+  let parca = "";
+  let cozulen = 0;
+  for (let n = 1; n <= toplam; n++) {
+    const acik = !!k.bilmeceler[String(n)];
+    if (acik) cozulen++;
+    parca += `<span class="harita-parca${acik ? " acik" : ""}"></span>`;
+  }
+  return `<div class="defter-bolum defter-harita-bolum"><div class="defter-harita" data-cozulen="${cozulen}" data-toplam="${toplam}">` +
+    `<img src="${src}" alt="" draggable="false" aria-hidden="true"><div class="harita-izgara" aria-hidden="true">${parca}</div>` +
+    `<span class="defter-fener" aria-hidden="true"></span></div></div>`;
+}
+function hikayeFenerKur(el) {
+  const kap = el.querySelector(".defter-harita");
+  const yuva = kap && kap.querySelector(".defter-fener");
+  if (!yuva) return;
+  const c = Number(kap.getAttribute("data-cozulen")) || 0, top = Number(kap.getAttribute("data-toplam")) || 10;
+  const tam = c >= top;
+  // 0 bilmece: sönük (1), yarısı: kıvılcım (2-3), hepsi: yanık (4-6 döner)
+  const az = typeof animAzHareket === "function" && animAzHareket();
+  const kare = tam ? (az ? [6] : [4, 5, 6]) : [c === 0 ? 1 : c < top / 2 ? 2 : 3];
+  const im = hikayeAnimImg("hikaye-fener", "defter-fener-resim", { kareler: kare, fps: 6 });
+  if (im) yuva.appendChild(im);
+}
+
 function hikayeDefterCiz() {
   const el = document.getElementById("tur-defter");
   if (!el) return;
   const v = hikayeVerisi(), k = hikayeKayit();
   const arkadaslar = hikayeArkadaslar(v, k);
   const gezgin = k.gezgin || (save.selectedChar || "");
-  let html = `<div class="defter-bolum"><h3>🧑‍🤝‍🧑 ${escapeHtml(t("Yol arkadaşları"))}</h3><div class="defter-arkadaslar">`;
+  let html = hikayeHaritaHtml(v, k);
+  html += `<div class="defter-bolum"><h3>🧑‍🤝‍🧑 ${escapeHtml(t("Yol arkadaşları"))}</h3><div class="defter-arkadaslar">`;
   if (gezgin) html += hikayeKartHtml(gezgin, "gezgin");
   for (const a of arkadaslar) {
     if (k.katilanlar[a]) html += hikayeKartHtml(a);
@@ -666,6 +764,7 @@ function hikayeDefterCiz() {
   if (hikayeFinalHazir()) html += `<button class="btn btn-play defter-final" type="button" onclick="hikayeFinalOku()">▶ ${escapeHtml(t("Final"))}</button>`;
   if (k.rozet) html += `<div class="defter-rozet" dir="auto">🧭 ${escapeHtml(t("Gezgin rozeti"))}</div>`;
   el.innerHTML = html;
+  hikayeFenerKur(el);
   hikayeAvciDoldur(el);
 }
 
@@ -691,14 +790,14 @@ function hikayeUlkeSahnesi(kod) {
   const v = hikayeVerisi();
   const veri = (v.ulke || {})[kod];
   if (!veri || !veri.sahne) return;
-  hikayeSahneGoster(veri.sahne, {});
+  hikayeSahneGoster(veri.sahne, hikayeUlkeSahneSecenegi(kod));
 }
 
 function hikayeBolumOku(n) {
   const v = hikayeVerisi();
   const b = (v.bilmece || [])[n - 1];
   if (!b || !(b.bolum || []).length) return;
-  hikayeSahneGoster(b.bolum.map((m) => ({ k: "anlatici", m })), {});
+  hikayeSahneGoster(b.bolum.map((m) => ({ k: "anlatici", m })), { arka: `hikaye-bolum-${n}` });
 }
 
 // Pencere olayları: sahne her yere dokununca ilerler

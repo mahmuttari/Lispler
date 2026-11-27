@@ -136,6 +136,10 @@ ANIMASYON = {
     'R57': [('ulke-BD-2', [1, 2, 3], 256), ('ulke-CA-2', [4, 5, 6], 256)],
     'R58': [('ulke-MX-2', [1, 2, 3], 256), ('ulke-PE-2', [4, 5, 6], 256)],
     'R59': [('ulke-BR-1', [1, 2, 3], 256), ('tema5-obje1', [4, 5, 6], 256)],
+    # HIK3: hikâye animasyonları (gorsel/hamhikaye/A01–A03): eve dönen hayalet (final), yanan fener (defter), hatıra pırıltısı
+    'A01': [('hikaye-hayalet', [1, 2, 3, 4, 5, 6], 192)],
+    'A02': [('hikaye-fener', [1, 2, 3, 4, 5, 6], 256)],
+    'A03': [('hikaye-parilti', [1, 2, 3, 4, 5, 6], 192)],
     'R50': [('havai-fisek', [2, 3, 4], 256)],  # kilitli köprünün inişi (1. kare K05 hücre 1: kopru-kapali)
 }
 
@@ -190,6 +194,8 @@ def animasyonlar(liste):
         yol = ham_yolu(pafta)
         if not os.path.exists(yol):
             yol = os.path.join(HAMYENI, f'{pafta}.png')
+        if not os.path.exists(yol) and pafta in ('A01', 'A02', 'A03'):
+            yol = os.path.join(HAMHIKAYE, f'{pafta}.png')  # HIK3: hikâye animasyonları
         if not os.path.exists(yol):
             continue
         resim = Image.open(yol).convert('RGBA')
@@ -562,6 +568,27 @@ def hatiralar(liste):
             hucre.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=88, method=6)
             liste[anahtar] = list(hucre.size)
 
+# HIK3: hikâye resimleri (opak 1536 × 1024 → 1024 px genişlikte WebP): H10 Dostluk Haritası (defter), H11 açılış sahnesi,
+# H12 final sahnesi, B01–B10 bölüm resimleri (bilmece çözülünce okunan bölüm sahnesi).
+HIKAYE_RESIMLER = {'H10': 'hikaye-harita', 'H11': 'hikaye-acilis', 'H12': 'hikaye-final',
+                   **{f'B{n:02d}': f'hikaye-bolum-{n}' for n in range(1, 11)}}
+HIKAYE_RESIM_EN = 1024
+
+
+def hikaye_resimleri(liste):
+    for pafta, anahtar in HIKAYE_RESIMLER.items():
+        yol = os.path.join(HAMHIKAYE, f'{pafta}.png')
+        if not secili_mi(pafta) or not os.path.exists(yol):
+            continue
+        resim = Image.open(yol).convert('RGB')
+        if resim.size != (1536, 1024):
+            sys.exit(f'{pafta}: boyut {resim.size}, 1536 × 1024 olmalı')
+        resim = resim.resize((HIKAYE_RESIM_EN, round(resim.height * HIKAYE_RESIM_EN / resim.width)), Image.LANCZOS)
+        resim.save(os.path.join(CIKTI, f'{anahtar}.webp'), 'WEBP', quality=78, method=6)
+        liste[anahtar] = list(resim.size)
+        print(f'✓ {pafta} ({anahtar})')
+
+
 def kes():
     os.makedirs(CIKTI, exist_ok=True)
     liste = {}
@@ -599,6 +626,7 @@ def kes():
     karakterler(liste)
     animasyonlar(liste)
     hatiralar(liste)
+    hikaye_resimleri(liste)
     # Menü arka planı (A1, 1024 × 1536 dikey, opak): ana menü ve açılış ekranında (style.css), 768 px genişlikte
     yol = os.path.join(HAM, 'A1.png')
     if os.path.exists(yol):
@@ -1084,6 +1112,7 @@ def ek_kes():
     doku_hucreleri(liste)
     tek_dokular(liste)
     hatiralar(liste)
+    hikaye_resimleri(liste)
     # K09: opak tek resim (Yakında önizlemesi), 768 px genişlik
     yol = os.path.join(HAMEK, 'K09.png')
     if secili_mi('K09') and os.path.exists(yol):

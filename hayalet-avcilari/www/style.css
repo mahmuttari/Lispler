@@ -2289,6 +2289,18 @@ body.is-tablet .power-bar .power-ring { width: 32px; height: 32px; font-size: 21
 }
 #hikaye-sahne .hikaye-kutu { max-width: 460px; }
 .hikaye-ust { min-height: 0; }
+/* HIK3: sahne resmi (açılış, bölüm, final); resim gelmezse öğe hiç eklenmez */
+.hikaye-resim { position: relative; margin: -4px -4px 12px; border-radius: 12px; overflow: hidden; aspect-ratio: 3 / 2; max-height: 34vh; background: #1b1330; }
+.hikaye-resim > img:first-child { display: block; width: 100%; height: 100%; object-fit: cover; }
+.hikaye-resim-sus { position: absolute; inset-inline-end: 4px; bottom: 2px; width: 26%; height: auto; pointer-events: none; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)); }
+/* Defterde Dostluk Haritası: 5 × 2 parça, çözülen bilmeceyle açılır; köşede yanan fener */
+.defter-harita { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 3 / 2; background: #1b1330; border: 1px solid var(--cizgi-2); }
+.defter-harita > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.harita-izgara { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(2, 1fr); }
+.harita-parca { background: rgba(14, 8, 30, 0.82); transition: opacity 0.4s ease; }
+.harita-parca.acik { opacity: 0; }
+.defter-fener { position: absolute; inset-inline-end: 6px; bottom: 6px; width: 22%; display: block; pointer-events: none; filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5)); }
+.defter-fener-resim { display: block; width: 100%; height: auto; }
 .hikaye-sahne-alan {
   display: flex;
   align-items: flex-end;

@@ -10,8 +10,7 @@ boss halkası, robot, seviye rozeti, zemin süsleri), GOR3b (dükkân/menü/oyun
 kesildi, gölet ve diken tuzaklar sınır yöntemiyle (organik leke biçimi + kıyı/çerçeve, içi ChatGPT dokusu; kullanıcı kararı), bot görseli.
 
 ## Süren / kalan işler
-1. **DT1** (Evren'de çalışıyordu): J07-J12'yi Dünya Turu'na bağlama. Şartname `araclar/evren-gorev/gorevDT1.md`.
-   Bitmediyse yarım yama oturumun geçici klasöründeydi; şartnameden yeniden çalıştır.
+1. **DT1 bitti** (Dünya Turu köprüleri, arena, ortak nehir, yolculuk çubuğu simgeleri; commit edildi).
 2. **TST1** zaman aşımına uğradı: yarım iş `araclar/evren-gorev/yarim-TST1.patch` (engel-bicim'in önceden düşen 5
    denetimi, botun ip köprüsünde takılması, yolculuk-perf, cizim fps, dunya-turu 2 denetim, anim 1 denetim). Şartname
    `gorevTST1.md`. Yamayı temiz ağaçta uygula, testleri koş, eksikleri tamamla. (engel-bicim kapsama ve fix3 göl kuralı

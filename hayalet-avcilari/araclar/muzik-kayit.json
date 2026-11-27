@@ -785,65 +785,42 @@
     "kredi": {}
   },
   "MZ": {
-    "gorev": "41be8f7de30d549efcbf04981cf702b9",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-mz-1.mp3",
-        "sure": 118.669,
-        "tempo": 126.88,
+        "dosya": "MZ.mp3",
+        "sure": 127.2,
+        "tempo": 122.26,
         "dongu": {
-          "bas": 27.1064,
-          "uzunluk": 30.33679,
+          "bas": 48.333,
+          "uzunluk": 31.40052,
           "vurus": 64
         },
-        "ekYeri": 0.9701,
-        "sabitlik": 0.9031,
-        "puan": 0.9504,
+        "ekYeri": 0.9601,
+        "sabitlik": 0.7291,
+        "puan": 0.8701,
         "teaser": {
-          "bas": 91.3502,
-          "son": 95.1583
-        },
-        "id": "491e3152-5e4c-4ef1-b00a-f203de2dd2c2",
-        "etiketler": "Mozambican marrabenta, Chopi timbila xylophone leads a nimble repeating melody, with guitar counterlines, bass and drums holding a steady danceable groove around 128 BPM; cheerful adventure video game background music, rich polyphonic ensemble with interlocking lead and counter-melody, bright warm acoustic mix, constant energy, fully loop-friendly arrangement with an even final refrain."
-      },
-      {
-        "dosya": "hayalet-avcilari-mz-2.mp3",
-        "sure": 119.821,
-        "tempo": 133.48,
-        "dongu": {
-          "bas": 18.9898,
-          "uzunluk": 32.47821,
-          "vurus": 72
-        },
-        "ekYeri": 0.9765,
-        "sabitlik": 0.8427,
-        "puan": 0.9137,
-        "teaser": {
-          "bas": 99.51,
-          "son": 103.5735
-        },
-        "id": "2c980199-2379-4e11-807f-dfd670d54733",
-        "etiketler": "Mozambican marrabenta, bright warm acoustic mix with a looping game-score feel and steady momentum; instrumental; Chopi timbila xylophone carries the lead melody, answered by guitar counter-melody over bass and drums, rich polyphonic ensemble; cheerful adventure video game background music, danceable groove around 128 BPM, constant energy throughout."
+          "bas": 44.8499,
+          "son": 48.7741
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -5.0,
+    "tepe": -6.4,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.0081,
-    "ekOrani": 0.375,
+    "girisSure": 5.1242,
+    "ekOrani": 0.321,
     "dosyalar": {
       "dongu": "muzik/MZ-dongu.ogg",
       "giris": "muzik/MZ-giris.ogg"
     },
     "bas": 0.1,
-    "son": 30.43679,
-    "tempo": 126.88,
-    "kredi": {
-      "kalan": 536.5
-    }
+    "son": 31.50052,
+    "tempo": 122.26,
+    "kredi": {}
   },
   "MG": {
     "gorev": "suno-pencere-2026-11",

@@ -1,5 +1,5 @@
 {
-  "_": "App Store metinleri (ios-ortak/app-store.mjs). Açıklama Play'deki uzun açıklamadan (aciklamalar.md, diller/en-US.md). App Store Connect emoji kabul etmediği için emoji tepkileri cümlesi düz metne çevrilir. Abonelik yok (reklam var: AdMob): Apple'ın abonelik açıklaması eklenmez. Destek adresi gizlilik sayfası (letspicky.com ana sayfasında iletişim bilgisi yok; Apple 1.5 destek sayfasında iletişim yolu ister). Pazarlama adresi (App Store'daki Developer Website) letspicky.com: AdMob iOS'ta app-ads.txt'yi bu alan adında arar.",
+  "_": "App Store metinleri (ios-ortak/app-store.mjs). Açıklama Play'deki uzun açıklamadan (aciklamalar.md, diller/en-US.md). App Store Connect emoji kabul etmediği için emoji tepkileri cümlesi düz metne çevrilir. Abonelik yok (reklam var: AdMob): Apple'ın abonelik açıklaması eklenmez. Destek adresi gizlilik sayfası (letspicky.com ana sayfasında iletişim bilgisi yok; Apple 1.5 destek sayfasında iletişim yolu ister). Pazarlama adresi (App Store'daki Developer Website) letspicky.com: AdMob iOS'ta app-ads.txt'yi bu alan adında arar. Sürüm notu (What's New) \"yerel\" › \"yenilikler\"de; 1.0.1 metnini sahip 26.11.2026'da gördü, 27.11'de değişiklik istemedi.",
   "abonelik": false,
   "destek": "https://letspicky.com/gizlilik.html",
   "gizlilik": "https://letspicky.com/gizlilik.html",
@@ -26,12 +26,14 @@
     "tr": {
       "altBaslik": "Ne yesek, ne izlesek? Kaydır!",
       "anahtar": "ne yesek,ne izlesek,film,yemek,restoran,aile,arkadaş,grup,oylama,anket,kaydır,eşleş,hafta sonu,kura",
-      "tanitim": "Akşam ne yesek, hangi filmi izlesek? Oda kur, kodu paylaş, herkes kartları kaydırsın; herkesin beğendiği seçenek ortak karar olur. Üyelik yok, kurulum yok."
+      "tanitim": "Akşam ne yesek, hangi filmi izlesek? Oda kur, kodu paylaş, herkes kartları kaydırsın; herkesin beğendiği seçenek ortak karar olur. Üyelik yok, kurulum yok.",
+      "yenilikler": "Let's Picky 1.0.1 ile gelenler:\n• Yeni: Nerede Ne Yenir? Bir yer yaz (ör. Antalya, Bursa, Roma); o yerin meşhur yemeklerini ve en yüksek puanlı restoranlarını gösterir.\n• Yeni uygulama simgesi ve yenilenen ana sayfa.\n• Davet, oylama, lobi, sonuç ve paylaşım ekranları yenilendi.\n• Yeni animasyonlar ve sesler.\n• Kart görselleri yenilendi.\n• Küçük düzeltmeler ve iyileştirmeler."
     },
     "en-US": {
       "altBaslik": "What to eat or watch? Swipe!",
       "anahtar": "what to eat,what to watch,movie,food,restaurant,family,friends,group,vote,poll,swipe,match,weekend",
-      "tanitim": "What should we eat tonight? Which movie? Create a room, share the code and swipe together; the option everyone likes becomes your decision. No sign-up needed."
+      "tanitim": "What should we eat tonight? Which movie? Create a room, share the code and swipe together; the option everyone likes becomes your decision. No sign-up needed.",
+      "yenilikler": "What's new in Let's Picky 1.0.1:\n• New: What to Eat Where? Type a place (e.g. Antalya, Bursa, Rome) to see its famous dishes and highest-rated restaurants.\n• New app icon and a refreshed home screen.\n• Redesigned invite, voting, lobby, result and sharing screens.\n• New animations and sounds.\n• Refreshed card images.\n• Minor fixes and improvements."
     }
   }
 }

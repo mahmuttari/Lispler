@@ -42,6 +42,16 @@ GÜVENLİ VE AİLE DOSTU
 
 Bir dahaki "ne yapsak?" sorusunda tartışmayın, Let's Picky'yi açın!
 
+### Yenilikler (377/4000)
+
+Let's Picky 1.0.1 ile gelenler:
+• Yeni: Nerede Ne Yenir? Bir yer yaz (ör. Antalya, Bursa, Roma); o yerin meşhur yemeklerini ve en yüksek puanlı restoranlarını gösterir.
+• Yeni uygulama simgesi ve yenilenen ana sayfa.
+• Davet, oylama, lobi, sonuç ve paylaşım ekranları yenilendi.
+• Yeni animasyonlar ve sesler.
+• Kart görselleri yenilendi.
+• Küçük düzeltmeler ve iyileştirmeler.
+
 ## en-US
 
 - **Ad (28/30):** Let's Picky: Decide Together
@@ -81,3 +91,13 @@ SAFE AND FAMILY FRIENDLY
 Play as a pair or with a big group: choose whether a decision needs two people or everyone to agree. Light and dark themes, Turkish and English. If a friend does not have the app, the invite link also opens in a web browser.
 
 Next time someone asks "what should we do?", do not argue. Open Let's Picky!
+
+### Yenilikler (349/4000)
+
+What's new in Let's Picky 1.0.1:
+• New: What to Eat Where? Type a place (e.g. Antalya, Bursa, Rome) to see its famous dishes and highest-rated restaurants.
+• New app icon and a refreshed home screen.
+• Redesigned invite, voting, lobby, result and sharing screens.
+• New animations and sounds.
+• Refreshed card images.
+• Minor fixes and improvements.

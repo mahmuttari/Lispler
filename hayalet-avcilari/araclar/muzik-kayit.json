@@ -473,65 +473,42 @@
     "kredi": {}
   },
   "GH": {
-    "gorev": "5a67ecfd3186b73b58950f78f7686a71",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-gh-1.mp3",
-        "sure": 118.573,
-        "tempo": 127.08,
+        "dosya": "GH.mp3",
+        "sure": 94.4,
+        "tempo": 104.01,
         "dongu": {
-          "bas": 59.4844,
-          "uzunluk": 30.19769,
-          "vurus": 64
+          "bas": 10.7345,
+          "uzunluk": 32.31262,
+          "vurus": 56
         },
-        "ekYeri": 0.9739,
-        "sabitlik": 0.8194,
-        "puan": 0.9282,
+        "ekYeri": 0.9411,
+        "sabitlik": 0.5928,
+        "puan": 0.7285,
         "teaser": {
-          "bas": 22.6454,
-          "son": 26.4302
-        },
-        "id": "b7f17c9b-b39e-43b9-b7bb-a70d4298b2a6",
-        "etiketler": "Ghanaian highlife, palm-wine guitars, gyil xylophone, kpanlogo drums and shaker carry a bright lead melody over interweaving counter-melody and polyphonic rhythm; cheerful adventure-video-game background feel, steady danceable groove around 128 BPM, constant energy with a seamless loop-ready closing figure, bright warm acoustic mix, instrumental."
-      },
-      {
-        "dosya": "hayalet-avcilari-gh-2.mp3",
-        "sure": 119.629,
-        "tempo": 127.91,
-        "dongu": {
-          "bas": 45.747,
-          "uzunluk": 30.03054,
-          "vurus": 64
-        },
-        "ekYeri": 0.9777,
-        "sabitlik": 0.8912,
-        "puan": 0.9558,
-        "teaser": {
-          "bas": 40.5823,
-          "son": 44.8084
-        },
-        "id": "66bf6009-e647-4d36-b0e4-efc6cda9c04d",
-        "etiketler": "Ghanaian highlife, instrumental; bright warm acoustic mix with a playful, buoyant lead melody trading short phrases with interlocking counter-melodies; steady danceable groove at around 128 BPM; palm-wine guitars weave around gyil xylophone, kpanlogo drums and shaker, rich polyphonic ensemble keeping constant energy for seamless loopable adventure video game background music."
+          "bas": 59.8197,
+          "son": 63.86
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -5.8,
+    "tepe": -4.5,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.4261,
-    "ekOrani": 0.069,
+    "girisSure": 5.2403,
+    "ekOrani": 0.138,
     "dosyalar": {
       "dongu": "muzik/GH-dongu.ogg",
       "giris": "muzik/GH-giris.ogg"
     },
     "bas": 0.1,
-    "son": 30.13054,
-    "tempo": 127.91,
-    "kredi": {
-      "kalan": 620.5
-    }
+    "son": 32.41262,
+    "tempo": 104.01,
+    "kredi": {}
   },
   "NG": {
     "gorev": "suno-pencere-2026-11",

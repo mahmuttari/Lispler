@@ -30,7 +30,7 @@ verdiği PNG olarak, işlenmeden kaydedilir (1536 × 1024, RGBA). Arka planda al
 | N16 | Şifa, görünmezlik | **üretildi** (27 Kas, aynı sohbet, 1. deneme); 3. ve 6. kare istendiği gibi soluk (en yüksek alfa 225 ve 195), pus temizleyicinin koruduğu alfa ≥150 pikselleri var |
 | N17 | Güç açılışı, güç halesi | **üretildi** (27 Kas, aynı sohbet, 1. deneme, beyaz-açık sarı); 2. karede halkanın ışınları ve parıltısı kenarlara 6–13 px yaklaşıyor (kenara değmiyor); arka planda alfa 1–39 pus %35, kesici siler |
 | N18 | Enerji mermisi, baloncuk mermisi | **üretildi** (27 Kas, aynı sohbet, 1. deneme); enerji topu sağa uçuyor, baloncuk yuvarlak/yassı/uzun salınıyor; bütün hücrelerde 74 px'ten geniş boşluk |
-| N19 | Bölüm atlama, hasar alma | bekliyor |
+| N19 | Bölüm atlama, hasar alma | **üretildi** (27 Kas, aynı sohbet, 1. deneme); altın ok ve yıldız patlaması, kırmızı-beyaz çarpma yıldızı (kan yok); en dar boşluk 30 px |
 | N20 | Donma, çözülme | bekliyor |
 
 ## Yön paftaları (öncelikli; kayıt yeri `gorsel/ham3d/`)

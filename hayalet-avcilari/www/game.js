@@ -5659,9 +5659,11 @@ function _menuDekorDugmeleriKur() {
       el.style.backgroundImage = `url("${gorsel(k).src}")`;
       el.style.backgroundSize = "100% 100%";
       el.style.backgroundRepeat = "no-repeat";
+      el.style.setProperty("--dugme-resim", `url("${gorsel(k).src}")`); // uzun düğmeler 3 parçalı (uç + orta) çizilir, basık görünmez
       el.classList.add("menu-dugme-resim");
     } else {
       el.style.backgroundImage = "";
+      el.style.removeProperty("--dugme-resim");
       el.classList.remove("menu-dugme-resim");
     }
   }

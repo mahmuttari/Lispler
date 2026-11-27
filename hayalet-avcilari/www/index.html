@@ -49,13 +49,6 @@
 <!-- ========== ANA MENÜ ========== -->
 <div id="screen-menu" class="screen">
   <div class="menu-bg"></div>
-  <div class="menu-dekor" id="menu-dekor" aria-hidden="true">
-    <div class="dekor-hayaletler" id="dekor-hayaletler"></div>
-    <div class="dekor-kayan" id="dekor-kayan"></div>
-    <div class="dekor-yarasa" id="dekor-yarasa"></div>
-    <div class="dekor-fener" id="dekor-fener"></div>
-    <button type="button" class="dekor-bakan" id="dekor-bakan" tabindex="-1" aria-label="👻">👻</button>
-  </div>
   <div class="menu-content ana-menu">
     <div class="menu-sol">
     <div class="menu-amblem" id="menu-amblem" hidden></div>
@@ -71,6 +64,13 @@
       <div class="resource" data-ui-simge="ui-kupa">🏆 <span id="menu-kupa">0</span></div>
     </div>
     <div class="hunter-sahne">
+      <div class="menu-dekor" id="menu-dekor" aria-hidden="true">
+        <div class="dekor-hayaletler" id="dekor-hayaletler"></div>
+        <div class="dekor-kayan" id="dekor-kayan"></div>
+        <div class="dekor-yarasa" id="dekor-yarasa"></div>
+        <div class="dekor-fener" id="dekor-fener"></div>
+        <button type="button" class="dekor-bakan" id="dekor-bakan" tabindex="-1" aria-label="👻">👻</button>
+      </div>
       <div class="hunter-spot" id="hunter-spot"></div>
       <div class="character-preview" id="character-preview"></div>
       <div class="hunter-kaide" id="hunter-kaide"></div>
@@ -87,7 +87,7 @@
       <button class="btn btn-tur" data-menu-dugme="turuncu" data-ui-simge="ui-dunya" onclick="openDunyaTuru()">🌍 Dünya Turu</button>
       <div class="menu-satir">
         <button class="btn btn-online" data-menu-dugme="camgobegi" data-ui-simge="ui-online" onclick="openOnline()">🌐 Online Oyna</button>
-        <button id="menu-arkadas" class="btn btn-kare" data-ui-simge="ui-arkadas" aria-label="Arkadaşlar" onclick="openFriends()">👫<span id="menu-arkadas-rozet" class="rozet" style="display:none"></span></button>
+        <button id="menu-arkadas" class="btn btn-kare" data-menu-dugme="camgobegi" data-ui-simge="ui-arkadas" aria-label="Arkadaşlar" onclick="openFriends()">👫<span id="menu-arkadas-rozet" class="rozet" style="display:none"></span></button>
       </div>
     </div>
     <div class="menu-footer-row">

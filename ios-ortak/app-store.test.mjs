@@ -53,11 +53,14 @@ for (const u of Object.keys(KLASOR)) {
   });
 }
 
-test("Let's Picky: aboneliksiz ve reklamsız; emoji tepkileri cümlesi düz metin; kategori Yaşam Tarzı + Eğlence", () => {
+test("Let's Picky: aboneliksiz; emoji tepkileri cümlesi düz metin; kategori Yaşam Tarzı + Eğlence; pazarlama adresi letspicky.com", () => {
   const a = ayar('letspicky');
   assert.equal(a.abonelik, false);
   assert.deepEqual(a.kategori, ['LIFESTYLE', 'ENTERTAINMENT']);
+  // AdMob iOS'ta app-ads.txt'yi App Store'daki "Developer Website" (pazarlama adresi) alan adında arar
+  assert.equal(a.pazarlama, 'https://letspicky.com');
   const m = metinler('letspicky');
+  for (const x of Object.values(m)) assert.equal(x.pazarlama, a.pazarlama);
   assert.ok(m.tr.aciklama.includes('• Serbest sohbet yok: yalnız birkaç sabit emoji tepkisi.'));
   assert.ok(m['en-US'].aciklama.includes('• No free-text chat: only a few fixed emoji reactions.'));
   for (const [y, x] of Object.entries(m)) assert.doesNotMatch(x.aciklama, /\(\s*\)|abonelik|subscription/i, y);

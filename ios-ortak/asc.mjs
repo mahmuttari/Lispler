@@ -12,7 +12,8 @@
  *   node ios-ortak/asc.mjs bekle <uygulama> <yapı>  yüklenen yapının Apple'da işlenmesini bekler (en çok 25 dk)
  *   node ios-ortak/asc.mjs metin <uygulama> [uygula]     App Store metinleri (ios-ortak/app-store.mjs): ad, alt başlık,
  *                                                   gizlilik adresi, kategori, içerik hakları; sürüm (numara, telif, elle
- *                                                   yayın), açıklama, anahtar sözcükler, tanıtım metni, destek adresi
+ *                                                   yayın), açıklama, anahtar sözcükler, tanıtım metni, destek adresi;
+ *                                                   varsa pazarlama adresi (Developer Website) ve sürüm notu (What's New)
  *   node ios-ortak/asc.mjs yas <uygulama> [uygula]       yaş derecesi anketi: reklam var (reklam: false ise yok), öbür bütün
  *                                                   sorular Yok / Hayır (4+)
  *   node ios-ortak/asc.mjs abonelik <uygulama> [uygula]  reklamsız abonelik: grup, aylık ve yıllık ürün, adlar, inceleme notu ve
@@ -328,7 +329,8 @@ export async function metin(u, uygula = false) {
   if (fS.length) await yaz(uygula, 'PATCH', `/v1/appStoreVersions/${v.id}`, { data: { type: 'appStoreVersions', id: v.id, attributes: hedefS } }, `sürüm (${fS.join(', ')})`);
   const vl = Object.fromEntries((await hepsi(`/v1/appStoreVersions/${v.id}/appStoreVersionLocalizations`)).map((x) => [x.attributes.locale, x]));
   for (const [y, m] of Object.entries(M)) {
-    const hedef = { description: m.aciklama, keywords: m.anahtar, promotionalText: m.tanitim, supportUrl: m.destek }, x = vl[y];
+    const hedef = { description: m.aciklama, keywords: m.anahtar, promotionalText: m.tanitim, supportUrl: m.destek,
+      ...(m.pazarlama ? { marketingUrl: m.pazarlama } : {}), ...(m.yenilikler ? { whatsNew: m.yenilikler } : {}) }, x = vl[y];
     if (!x) {
       await yaz(uygula, 'POST', '/v1/appStoreVersionLocalizations', { data: { type: 'appStoreVersionLocalizations', attributes: { locale: y, ...hedef },
         relationships: { appStoreVersion: { data: { type: 'appStoreVersions', id: v.id } } } } }, `sürüm metni ${y}: açıklama ${[...m.aciklama].length} karakter`);

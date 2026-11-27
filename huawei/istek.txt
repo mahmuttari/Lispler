@@ -1,0 +1,12 @@
+# Huawei AppGallery komutları (.github/workflows/huawei.yml). Her satır: <uygulama> <komut> [uygula]
+# uygulama: kiblebul | calqora | unitica | iz | letspicky     komut: durum | yukle | gonder
+# "uygula" yoksa yalnız plan yazılır. "gonder uygula" uygulamayı incelemeye gönderir: yalnız sahibin onayıyla yazılır.
+
+# 2026-11-19 (Let's Picky): sahip "Huawei'ye de kendin yükle" dedi. Önce durum (salt okuma: kimlik var mı, uygulama
+# AppGallery Connect'te görünüyor mu). Geçerse APK 1.0.0 (2) ("Android (Let's Picky)" main koşusu 44492029531, Play'e
+# yüklenen paketle aynı içerik) taslak sürüme bağlanır. "gonder" YOK: incelemeye gönderme yalnız sahibin açık onayıyla.
+# (yapıldı, koşu 44532735400) letspicky durum → HATA: HUAWEI_CONNECT_CLIENT_ID / HUAWEI_CONNECT_CLIENT_SECRET boş (Lispler'de
+#   bu iki sır yok). Huawei'ye istek gitmedi; "letspicky yukle uygula" çalışmadı.
+# 2026-11-20: sahip "Onlar var netcad develop da" dedi: Huawei sırları NetcadDevelop'ta. Let's Picky'nin Huawei işleri
+# oradan çalışır (NetcadDevelop › .github/workflows/letspicky-huawei.yml, istek dosyası .github/letspicky-huawei-istek.txt;
+# araç bu klasördeki appgallery.mjs ve apk-al.sh). Let's Picky için bu dosyaya satır yazılmaz.

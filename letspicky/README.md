@@ -13,7 +13,8 @@ Bu klasör uygulamanın **mobil kabuğudur**. Kaynak kod, web yayını ve Fireba
 | `magaza/` | `store/` ve `scripts/store-listings.py` |
 
 Yeni sürüm: kaynakta `npm run build`, sonra `dist/` → `www/` kopyalanır; `android/app/build.gradle` içinde
-`versionCode` bir artırılır ve `versionName` değiştirilir.
+`versionCode` bir artırılır ve `versionName` değiştirilir; iOS'ta `ios/App/App.xcodeproj/project.pbxproj` ›
+`MARKETING_VERSION` de aynı sürüme çekilir (App Store sürümü `versionName`'den okunur).
 
 ## İş akışları
 

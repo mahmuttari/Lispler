@@ -18,7 +18,11 @@ kesildi, gölet ve diken tuzaklar sınır yöntemiyle (organik leke biçimi + k�
 3. **Mac/ChatGPT paftaları:** Y01-Y03 (22 plan oyunda), K15/K16 ve N14-N20 kesildi. Kalan: K15/K16'yı oyuna bağlayacak
    GOR4 görevi (efekt-gokkusagi, -ejder-alev, -bot-isin, -kasirga, -cali-goz, timsah-bakis, efekt-pence, -toz, -olum-pop,
    gol-kopru-tahta, efekt-parilti-kucuk, ui-can-cubugu: kod çizimlerinin yerine, kod yedek), hikâye sahneleri H10-H12 ve
-   B01-B10 (gorsel/hamhikaye; kesim tarifi ve HIK3 bağlama görevi yazılmadı), A01-A03 bekleniyor.
+   B01-B10 (gorsel/hamhikaye; kesim tarifi ve HIK3 bağlama görevi yazılmadı). A01-A03 animasyon paftaları geldi
+   (gorsel/ham? DURUM.md'ye bak; A01 el sallayan hayalet, A02 fener, A03 hatıra pırıltısı; kesim tarifi yok).
+   Mac notları (GOR4 için): K15 lazer ışınının iki ucunda süs kapağı var, döşenirse tekrar eder (germe ya da uç kırpma);
+   gökkuşağının uçları düz kesik; K16 tahta köprü tek parça kullanılmalı (iki ucunda direk). N17 beyaz-sarı (oyun boyar).
+   ChatGPT görsel sırası bitti (Mac, 27 Kasım); YEREL-CLAUDE-SIRA.md'de tamamlananları işaretle.
 4. FIX4 (klasik haritada takılan hayaletler, %6,1) ve REK2 (oynanabilir reklam kamerası, tehlike-halka davranışı):
    önce Fable şartnamesi.
 5. Görsel üst üste binme denetimi (kullanıcı, 27 Kasım): gölet/diken/lav sınır yöntemiyle çiziliyor (kıyılı göl resmi ve diken plakası resmi kullanılmıyor). Kalan iki bulgu:

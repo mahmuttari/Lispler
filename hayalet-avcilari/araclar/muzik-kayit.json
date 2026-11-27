@@ -1807,65 +1807,42 @@
     "kredi": {}
   },
   "MM": {
-    "gorev": "b839d62ff831f8c2e4b7bd0e944268cd",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-mm-1.mp3",
-        "sure": 118.693,
-        "tempo": 129.51,
+        "dosya": "MM.mp3",
+        "sure": 132.8,
+        "tempo": 97.7,
         "dongu": {
-          "bas": 49.2109,
-          "uzunluk": 27.79281,
-          "vurus": 60
+          "bas": 33.8369,
+          "uzunluk": 29.30169,
+          "vurus": 48
         },
-        "ekYeri": 0.977,
-        "sabitlik": 0.7811,
-        "puan": 0.9153,
+        "ekYeri": 0.9718,
+        "sabitlik": 0.513,
+        "puan": 0.6883,
         "teaser": {
-          "bas": 82.5404,
-          "son": 86.6968
-        },
-        "id": "07e38834-2f62-4cef-a609-07ace1890a30",
-        "etiketler": "Burmese saing waing, bright warm acoustic mix with crisp gong transients and rounded drum attacks, upbeat energetic adventure video game background music, steady danceable groove around 128 BPM, instrumental; pat waing drum circle, kyi waing gong circle, hne oboe lead melody, saung harp counter-melody, rich polyphonic ensemble with a driving rhythm section, playful and heroic, constant loop-friendly energy throughout."
-      },
-      {
-        "dosya": "hayalet-avcilari-mm-2.mp3",
-        "sure": 118.693,
-        "tempo": 130.26,
-        "dongu": {
-          "bas": 12.5827,
-          "uzunluk": 27.6934,
-          "vurus": 60
-        },
-        "ekYeri": 0.965,
-        "sabitlik": 0.7404,
-        "puan": 0.8933,
-        "teaser": {
-          "bas": 74.8286,
-          "son": 78.9618
-        },
-        "id": "bf432efa-2265-41b3-ace4-836fe5cd0f79",
-        "etiketler": "Burmese saing waing, pat waing drum circle drives the kyi waing gong circle beneath hne oboe and saung harp; lead melody trades with a counter-melody over a rhythm section, keeping constant upbeat energetic drive; instrumental, bright warm acoustic mix, playful and heroic, steady danceable groove around 128 BPM, loop-friendly adventure video game background music."
+          "bas": 73.559,
+          "son": 77.8779
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -3.6,
+    "tepe": -5.8,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3564,
-    "ekOrani": 0.257,
+    "girisSure": 5.5189,
+    "ekOrani": 0.256,
     "dosyalar": {
       "dongu": "muzik/MM-dongu.ogg",
       "giris": "muzik/MM-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 27.89281,
-    "tempo": 129.51,
-    "kredi": {
-      "kalan": 344.5
-    }
+    "bas": 0.11,
+    "son": 29.41169,
+    "tempo": 97.7,
+    "kredi": {}
   },
   "TH": {
     "gorev": "c9a16c001a856bf31f5bb230802ee4c3",

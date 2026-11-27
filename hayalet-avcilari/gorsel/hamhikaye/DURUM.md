@@ -4,7 +4,7 @@
 
 | Pafta | İçerik | Durum |
 |---|---|---|
-| H10 | Dostluk Haritası | bekliyor |
+| H10 | Dostluk Haritası | **üretildi** (27 Kas, sohbet 'Game Art Brief', ekler U06 + D01, 1. deneme, opak 1536 × 1024): parşömen dünya haritası, Türkiye'den Avrupa, Afrika çevresi, Orta Doğu, Asya, Pasifik, Kuzey ve Güney Amerika'dan güney ucundaki küçük parlayan fenere uzanan noktalı altın rota; köşede pusula gülü, üç sevimli hayalet karalaması; yazı, sınır çizgisi ve bayrak yok; parşömenin kendi kenar çerçevesi var (parça çizgisi yok) |
 | H11 | Açılış: İstanbul'da eski harita | bekliyor |
 | H12 | Final: dünyanın ucundaki fener, 12 avcı | bekliyor |
 | B01–B10 | Bölüm resimleri (bilmece sonrası 📖 Bölüm sahnesi) | bekliyor |

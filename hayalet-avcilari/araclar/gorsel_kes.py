@@ -801,6 +801,25 @@ def kenar_temizle(hucre, pay=6):
     return hucre
 
 
+def kirinti_sil(hucre, oran=0.003):
+    """Yolculuk hücrelerinde komşu hücreden taşan küçük kopuk parçalar (birkaç düzine piksel) silinir: 8-komşulu bileşenlerden
+    alanı toplam opak alanın oran'ından küçük olanlar saydam yapılır (kristal, çiçek gibi gerçek süsler bundan büyüktür)."""
+    import numpy as np
+    from scipy import ndimage
+    a = np.asarray(hucre.getchannel('A'))
+    etiket, n = ndimage.label(a > 40, structure=np.ones((3, 3)))
+    if n < 2:
+        return hucre
+    alan = ndimage.sum(np.ones_like(a), etiket, range(1, n + 1))
+    kucuk = [i + 1 for i, v in enumerate(alan) if v < alan.sum() * oran]
+    if not kucuk:
+        return hucre
+    sil = ndimage.binary_dilation(np.isin(etiket, kucuk), iterations=2)
+    yeni = a.copy(); yeni[sil] = 0
+    hucre = hucre.copy(); hucre.putalpha(Image.fromarray(yeni))
+    return hucre
+
+
 def ek_hucreler(liste):
     for pafta, hucreler in EK_PAFTALAR.items():
         if not secili_mi(pafta):
@@ -828,7 +847,7 @@ def ek_hucreler(liste):
             x0, y0 = (i % 3) * 512, (i // 3) * 512
             hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
             if yol.startswith(HAMYOL):
-                hucre = pusu_sil(kenar_temizle(hucre), True)  # J07-J11: kulelerin üstünde soluk hale kalıyordu (alfa ~50)
+                hucre = kirinti_sil(pusu_sil(kenar_temizle(hucre), True))  # J07-J11: kulelerin üstünde soluk hale kalıyordu (alfa ~50)
             if anahtar in HUCRE_KIRP:
                 hucre = hucre.crop(HUCRE_KIRP[anahtar])
             if anahtar in TEK_PARCA:
@@ -1027,7 +1046,7 @@ def yol_hucreleri(liste):
             if parca == 'nehir':
                 hucre = dikissiz_dikey(hucre.convert('RGB')).resize((en, en), Image.LANCZOS)
             else:
-                hucre = pusu_sil(soluklari_sil(kenar_temizle(hucre)))
+                hucre = kirinti_sil(pusu_sil(soluklari_sil(kenar_temizle(hucre))))
                 kutu = hucre.getbbox()
                 if not kutu:
                     sys.exit(f'J{n:02d} hücre {i + 1} ({parca}) boş')

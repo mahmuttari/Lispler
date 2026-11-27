@@ -98,8 +98,13 @@ function yolculukRastgele(bolum, ulke, bolge, n) {
   return ((h >>> 0) % 1000000) / 1000000;
 }
 
-// Geçit nehri eğrisi: 2-3 sinüsün toplamı, köprü çevresinde (|y-cy| <= köprü yarısı) sıfır,
-// ±130 px içinde smoothstep ile sıfıra süzülür. Tohum bölüm/ülke/bölge; her cihazda aynı.
+// KPR2: kemerin ayakları arasındaki güvenli merkez açıklığı (resim genişliğine oran).
+// Alt cephedeki alfa boşluğu ölçülerek, asimetrik kemerlerde dar taraf esas alındı.
+const KOPRU_KEMER_ORANI = {
+  "yolA-K-kopru-acik": .25, "yolA-KS-kopru-acik": .24,
+  "yolA-GDA-kopru-acik": .40, "yolA-KP-kopru-acik": .38,
+};
+// Geçit nehri eğrisi: resmin tamamı ve 24 px pay boyunca düz; sonra smoothstep ile kıvrılır.
 function yolculukGecitEgri(z, bolum, ulke) {
   const A = YOLCULUK_AYAR, g = z.gate;
   if (bolum == null) bolum = (typeof game !== "undefined" && game.level) || 1;
@@ -117,17 +122,23 @@ function yolculukGecitEgri(z, bolum, ulke) {
     });
   }
   const yumusak = (t) => t * t * (3 - 2 * t);
-  const kopruYari = (g.bridgeY1 - g.bridgeY0) / 2;
+  const anahtar = yolculukKopruTabloAnahtari();
+  const K = yolculukKopruKutu(anahtar, merkez, g.cy);
+  const duzUst = Math.min(K.y, g.bridgeY0) - 24;
+  const duzAlt = Math.max(K.y + K.h, g.bridgeY1) + 24;
+  const archHalf = K.w * (KOPRU_KEMER_ORANI[anahtar] || .45) / 2;
+  // Bank çizgisinin dışa taşan 7,5 px'lik kısmı da açıklığın içinde kalır.
+  const kopruYarim = Math.min(A.gateW / 2, archHalf - 8);
+  const gecis = (y) => yumusak(Math.max(0, Math.min(1, Math.max(duzUst - y, y - duzAlt) / 100)));
+  const yari = (y) => kopruYarim + (A.gateW / 2 - kopruYarim) * gecis(y);
   const offset = (y) => {
-    const dy = Math.abs(y - g.cy);
-    const t = Math.max(0, Math.min(1, (dy - kopruYari) / (130 - kopruYari)));
-    const k = yumusak(t);
+    const k = gecis(y);
     if (k === 0) return 0;
     let s = 0;
     for (const p of parcalar) s += p.amp * Math.sin((2 * Math.PI * (y - g.cy)) / p.dalga + p.faz);
     return s * k;
   };
-  return { merkez, yarim: A.gateW / 2, offset };
+  return { merkez, yarim: A.gateW / 2, yari, offset, archHalf, duzUst, duzAlt };
 }
 
 // 16 px yüksekliğinde yatay dilimler: nehir merkez çizgisini izler (dünya koordinatı)
@@ -135,8 +146,8 @@ function yolculukGecitDilimleri(egri) {
   const A = YOLCULUK_AYAR, y0 = 30, y1 = A.worldH - 30, out = [];
   for (let y = y0; y < y1; y += 16) {
     const h = Math.min(16, y1 - y);
-    const c = egri.merkez + egri.offset(y + h / 2);
-    out.push({ x: c - egri.yarim, y, w: egri.yarim * 2, h });
+    const c = egri.merkez + egri.offset(y + h / 2), yarim = egri.yari(y + h / 2);
+    out.push({ x: c - yarim, y, w: yarim * 2, h });
   }
   return out;
 }
@@ -159,7 +170,7 @@ function yolculukGecitDusmeleri(egri, z, bolum, ulke) {
     const j = (yolculukRastgele(bolum, ulke, z.i, 340 + k) - 0.5) * 2;
     const y = Math.max(alt, Math.min(ust, sira[k].y + j));
     const c = egri.merkez + egri.offset(y);
-    out.push({ y, x: c, yarim: egri.yarim, tohum: yolculukRastgele(bolum, ulke, z.i, 360 + k) });
+    out.push({ y, x: c, yarim: egri.yari(y), tohum: yolculukRastgele(bolum, ulke, z.i, 360 + k) });
   }
   out.sort((a, b) => a.y - b.y);
   return out;
@@ -187,7 +198,7 @@ function yolculukGecitSuslari(z, egri, dilimler, bolum, ulke) {
     for (let t = 0; t < 90; t++) {
       const n = 400 + out.length * 3 + t;
       const y = 50 + rnd(n) * 900;
-      const q = dilim(y), c = egri.merkez + egri.offset(y), yarim = egri.yarim;
+      const q = dilim(y), c = egri.merkez + egri.offset(y), yarim = egri.yari(y);
       const sol = rnd(n + 1) < 0.5, ic = 8 + rnd(n + 2) * 12;
       // Komşu dilimler 16 px'lik sınırlarda taşabildiği için yakın dilimlerin birleşimi kullanılır.
       let enSol = Infinity, enSag = -Infinity;
@@ -988,7 +999,7 @@ function yolculukArenaKapiKutu(d) {
     const egri = yolculukGecitEgri(z);
     let sagKiyi = -Infinity;
     for (let yy = y; yy <= y + h; yy += 8) {
-      const s = egri.merkez + egri.yarim + egri.offset(yy);
+      const s = egri.merkez + egri.yari(yy) + egri.offset(yy);
       if (s > sagKiyi) sagKiyi = s;
     }
     const K = yolculukKopruKutu(yolculukKopruTabloAnahtari(), (g.x0 + g.x1) / 2, cy);
@@ -1308,7 +1319,7 @@ function yolculukGecitCiz(ctx) {
     if (!egri || z.gecitSag < cam.x || z.gecitSol > cam.x + W) continue;
     // Kıyı hattı: her 4 px'de merkez çizgiden (yolculukGecitEgri) sol/sağ bank
     if (!z._gecitYol) {
-      const bank = (y) => { const c = egri.merkez + egri.offset(y); return [c - egri.yarim, c + egri.yarim]; };
+      const bank = (y) => { const c = egri.merkez + egri.offset(y); const yarim = egri.yari(y); return [c - yarim, c + yarim]; };
       const p = new Path2D();
       let b = bank(gy0);
       p.moveTo(b[0], gy0);

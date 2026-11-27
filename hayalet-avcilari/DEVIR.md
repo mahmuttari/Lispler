@@ -17,7 +17,8 @@ kesildi, göller kesilmeden (gol-su.js çarpışma tablosu), bot görseli.
    `gorevTST1.md`. Yamayı temiz ağaçta uygula, testleri koş, eksikleri tamamla. (engel-bicim kapsama ve fix3 göl kuralı
    bu oturumda değişti; yamada çakışma olabilir.)
 3. **Mac/ChatGPT'den beklenen paftalar** (`gorsel/YEREL-CLAUDE-SIRA.md`): Y02, Y03 (yerleşim JSON; gelince
-   `python3 araclar/yerlesim_derle.py`), N14 geldi (kesilmedi: `python3 araclar/gorsel_kes.py --ek N14`), N15-N20,
+   `python3 araclar/yerlesim_derle.py`), N14 geldi (`gorsel/ham/N14.png`) ama kesilmedi: `--ek` kipi animasyonlardan yalnız K/R ile başlayanları keser (ek_kes'te
+   `k[0] in 'KR'` süzgeci); N paftaları için süzgeç genişletilip `ek_hucreler`in `HAM` yolu denenmeli, N15-N20,
    K15/K16, H10-H12, B01-B10, A01-A03. K15/K16 gelince GOR4 (efekt bağlama), hikâye sahneleri gelince HIK3 yazılacak.
 4. FIX4 (klasik haritada takılan hayaletler, %6,1) ve REK2 (oynanabilir reklam kamerası, tehlike-halka davranışı):
    önce Fable şartnamesi.

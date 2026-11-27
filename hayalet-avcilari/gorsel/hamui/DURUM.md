@@ -27,7 +27,7 @@ verdiği PNG olarak, işlenmeden kaydedilir (1536 × 1024, RGBA). Arka planda al
 |---|---|---|
 | N14 | Şimşek çarpması | **üretildi** (27 Kas, yeni sohbet, referans N08+N09, 1. deneme; ChatGPT'nin üç görselinden 2.'si "şeffaf arka planlı" olanı); 3. karede çarpma parıltısı alt kenara 6 px, kenara değmiyor |
 | N15 | Roket uçuşu, duman izi | **üretildi** (27 Kas, aynı sohbet, 1. deneme); roket üç karede aynı yerde (burun x 441), 2. karede uzun alev sol kenara 21 px, kenara değmiyor |
-| N16 | Şifa, görünmezlik | bekliyor |
+| N16 | Şifa, görünmezlik | **üretildi** (27 Kas, aynı sohbet, 1. deneme); 3. ve 6. kare istendiği gibi soluk (en yüksek alfa 225 ve 195), pus temizleyicinin koruduğu alfa ≥150 pikselleri var |
 | N17 | Güç açılışı, güç halesi | bekliyor |
 | N18 | Enerji mermisi, baloncuk mermisi | bekliyor |
 | N19 | Bölüm atlama, hasar alma | bekliyor |

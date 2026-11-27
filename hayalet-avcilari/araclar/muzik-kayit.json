@@ -1583,65 +1583,42 @@
     "kredi": {}
   },
   "VN": {
-    "gorev": "596350b709459cb50ea129563866e399",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-vn-1.mp3",
-        "sure": 118.741,
-        "tempo": 131.53,
+        "dosya": "VN.mp3",
+        "sure": 115.6,
+        "tempo": 102.11,
         "dongu": {
-          "bas": 46.3275,
-          "uzunluk": 29.18254,
-          "vurus": 64
+          "bas": 20.5125,
+          "uzunluk": 28.22073,
+          "vurus": 48
         },
-        "ekYeri": 0.9799,
-        "sabitlik": 0.7436,
-        "puan": 0.8954,
+        "ekYeri": 0.9547,
+        "sabitlik": 0.6088,
+        "puan": 0.7305,
         "teaser": {
-          "bas": 77.7769,
-          "son": 81.8636
-        },
-        "id": "a9dddee0-cd37-4a9f-b46a-706177c40c39",
-        "etiketler": "Vietnamese folk festival music, instrumental, bright warm acoustic mix; dan tranh zither and dan bau monochord weave lead and counter-melody, sao bamboo flute curls through rich polyphonic ensemble over trong drums and a driving rhythm section; playful and heroic, upbeat energetic adventure video game background music, steady danceable groove around 128 BPM, constant loop-friendly drive to the end."
-      },
-      {
-        "dosya": "hayalet-avcilari-vn-2.mp3",
-        "sure": 119.893,
-        "tempo": 129.92,
-        "dongu": {
-          "bas": 33.9104,
-          "uzunluk": 31.4306,
-          "vurus": 68
-        },
-        "ekYeri": 0.9878,
-        "sabitlik": 0.7729,
-        "puan": 0.9162,
-        "teaser": {
-          "bas": 81.9439,
-          "son": 86.1002
-        },
-        "id": "b9d604bb-f111-479d-93bf-203fe63713a6",
-        "etiketler": "Vietnamese folk festival music, instrumental adventure video game score, bright warm acoustic mix, upbeat energetic and playful and heroic, steady danceable groove around 128 BPM; dan tranh zither, dan bau monochord, sao bamboo flute and trong drums interlock in rich polyphonic ensemble, with a lead melody, nimble counter-melody and driving rhythm section, keeping energy even through a seamless loop-ready finish."
+          "bas": 96.3089,
+          "son": 100.4188
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -6.3,
+    "tepe": -7.0,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.2867,
-    "ekOrani": 0.389,
+    "girisSure": 5.3099,
+    "ekOrani": 2.575,
     "dosyalar": {
       "dongu": "muzik/VN-dongu.ogg",
       "giris": "muzik/VN-giris.ogg"
     },
-    "bas": 0.1125,
-    "son": 29.29504,
-    "tempo": 131.53,
-    "kredi": {
-      "kalan": 284.5
-    }
+    "bas": 0.105,
+    "son": 28.32573,
+    "tempo": 102.11,
+    "kredi": {}
   },
   "CN": {
     "gorev": "suno-pencere-2026-11",

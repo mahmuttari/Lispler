@@ -19,6 +19,7 @@
 <div id="screen-welcome" class="screen active">
   <div class="welcome-bg"></div>
   <div class="welcome-content">
+    <div class="menu-amblem" id="welcome-amblem" data-welcome-amblem hidden></div>
     <h1 class="title" data-i18n-html>👻 HAYALET<br>AVCILARI 👻</h1>
     <div id="kinkin-greeter" class="greeter"></div>
     <div class="speech-bubble">
@@ -33,6 +34,7 @@
 <div id="screen-name" class="screen">
   <div class="welcome-bg"></div>
   <div class="welcome-content">
+    <div class="menu-amblem" data-welcome-amblem hidden></div>
     <h1 class="title-small">👤 HESAP</h1>
     <div class="speech-bubble">
       <p id="name-prompt">Avcımızın adı ne olsun?</p>
@@ -51,6 +53,7 @@
     <div class="dekor-hayaletler" id="dekor-hayaletler"></div>
     <div class="dekor-kayan" id="dekor-kayan"></div>
     <div class="dekor-yarasa" id="dekor-yarasa"></div>
+    <div class="dekor-fener" id="dekor-fener"></div>
     <button type="button" class="dekor-bakan" id="dekor-bakan" tabindex="-1" aria-label="👻">👻</button>
   </div>
   <div class="menu-content ana-menu">
@@ -112,7 +115,7 @@
     <div id="leaderboard-list" class="leaderboard-list"></div>
     <div class="pgs-yalniz" style="display:none">
       <button class="btn btn-small" onclick="pgsSkorTablosu()">🎮 Play Games skor tablosu</button>
-      <button class="btn btn-small" onclick="pgsBasarimlar()">🎖 Başarımlar</button>
+      <button class="btn btn-small" data-ui-simge="ui-basarim" onclick="pgsBasarimlar()">🎖 Başarımlar</button>
     </div>
     <button class="btn btn-small" onclick="clearLeaderboard()">🗑 Yerel Listeyi Temizle</button>
     <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
@@ -143,7 +146,7 @@
       <div class="resource">💎 <span id="shop-elmas">0</span></div>
     </div>
     <div class="shop-tabs">
-      <button class="tab-btn active" onclick="showShopTab('upgrades')">⚡ Güçler</button>
+      <button class="tab-btn active" data-ui-simge="ikon-guc-yildiz" onclick="showShopTab('upgrades')">⚡ Güçler</button>
       <button class="tab-btn" onclick="showShopTab('costumes')">👗 Kostümler</button>
       <button class="tab-btn" onclick="showShopTab('ammo')">🎯 Cephane</button>
       <button class="tab-btn" onclick="showShopTab('guns')">🔫 Silahlar</button>
@@ -341,14 +344,16 @@
 <!-- ========== OYUN BİTTİ ========== -->
 <div id="screen-gameover" class="screen modal">
   <div class="modal-content">
+    <div id="gameover-resim" class="gameover-resim" aria-hidden="true" hidden></div>
     <h2 id="gameover-title">👻 Oyun Bitti</h2>
     <p id="gameover-rank" class="gameover-rank"></p>
     <div id="tur-siralama" class="tur-siralama" style="display:none">
-      <p class="ts-baslik">🏆 Tur sıralaması</p>
+      <p class="ts-baslik" data-ui-simge="ui-madalya">🏆 Tur sıralaması</p>
       <ol id="tur-siralama-liste" class="ts-liste"></ol>
       <p id="kupa-sayisi" class="kupa-sayisi"></p>
     </div>
     <div class="rewards">
+      <div class="odul-sandik" data-ui-sandik aria-hidden="true"></div>
       <p>👻 Yakaladığın hayalet: <b id="final-ghosts">0</b></p>
       <p>💰 Kazanılan para: <b id="final-para">0</b></p>
       <p>💎 Kazanılan elmas: <b id="final-elmas">0</b></p>
@@ -356,8 +361,8 @@
     </div>
     <button id="btn-tekrar" class="btn btn-big" onclick="tekrarOyna()">🔁 Tekrar Oyna</button>
     <button id="btn-lobiye-don" class="btn btn-big btn-play" style="display:none" onclick="lobiyeDon()">🎮 Lobiye Dön</button>
-    <button class="btn btn-play" id="btn-reklam-ikikat" style="display:none" onclick="odulluIzle('para')">🎬 Reklam izle: 2× 💰</button>
-    <button class="btn btn-play" id="btn-reklam-odul" style="display:none" onclick="odulluIzle()">🎬 Reklam izle: +10 💚</button>
+    <button class="btn btn-play" id="btn-reklam-ikikat" data-ui-simge="ui-hediye" style="display:none" onclick="odulluIzle('para')">🎬 Reklam izle: 2× 💰</button>
+    <button class="btn btn-play" id="btn-reklam-odul" data-ui-simge="ui-hediye" style="display:none" onclick="odulluIzle()">🎬 Reklam izle: +10 💚</button>
     <button class="btn btn-geri" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
     <button class="btn btn-geri" onclick="quitToMenu()">🏠 Menü</button>
   </div>

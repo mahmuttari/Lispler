@@ -2034,10 +2034,10 @@ function drawEffects(ctx) {
 
 // Yükseltmeler: 10 seviye (geç seviyeler çok pahalı — para deposu)
 const UPGRADES = {
-  speed:    { name: t("Hız"),      icon: "👟", desc: t("Daha hızlı koş."),   max: 10, costs: [50,  100, 200, 400,  800,  1600, 3200, 6400,  12000, 24000] },
-  damage:   { name: t("Hasar"),    icon: "💥", desc: t("Daha güçlü vur."),   max: 10, costs: [75,  150, 300, 600,  1200, 2400, 4800, 9600,  18000, 36000] },
-  fireRate: { name: t("Atış Hızı"),icon: "⚡", desc: t("Hızlı ateş et."),    max: 10, costs: [60,  120, 240, 480,  960,  1920, 3840, 7680,  15000, 30000] },
-  range:    { name: t("Menzil"),   icon: "🎯", desc: t("Uzaktan vur."),       max: 10, costs: [50,  100, 200, 400,  800,  1600, 3200, 6400,  12000, 24000] },
+  speed:    { name: t("Hız"),      icon: "👟", gorsel: "gel-hiz",    desc: t("Daha hızlı koş."),   max: 10, costs: [50,  100, 200, 400,  800,  1600, 3200, 6400,  12000, 24000] },
+  damage:   { name: t("Hasar"),    icon: "💥", gorsel: "gel-hasar",  desc: t("Daha güçlü vur."),   max: 10, costs: [75,  150, 300, 600,  1200, 2400, 4800, 9600,  18000, 36000] },
+  fireRate: { name: t("Atış Hızı"),icon: "⚡", gorsel: "gel-atis",   desc: t("Hızlı ateş et."),    max: 10, costs: [60,  120, 240, 480,  960,  1920, 3840, 7680,  15000, 30000] },
+  range:    { name: t("Menzil"),   icon: "🎯", gorsel: "gel-menzil", desc: t("Uzaktan vur."),       max: 10, costs: [50,  100, 200, 400,  800,  1600, 3200, 6400,  12000, 24000] },
 };
 
 // ====== ÇİZİM YARDIMCILARI ======
@@ -5457,6 +5457,7 @@ function clearLeaderboard() {
 // büyük, dört arkadaşı iki yanında; her biri canlı önizleme (gorsel.js canliOnizleme; 3D hazır değilse 2D yedek).
 // Atış kıpırtıları sırayla kaydırılır, hep birlikte ateş etmezler.
 function drawGreeter() {
+  welcomeAmblemiKur();
   const el = document.getElementById("kinkin-greeter");
   if (!el) return;
   canliOnizlemeTemizle(el);
@@ -5520,6 +5521,22 @@ function menuSimgeleriniUygula() {
     el.insertBefore(resim, dugum);
     dugum.textContent = kalan;
     el.dataset.uiSimgeUygulandi = "1";
+  }
+}
+
+// Oyun sonu ödül sandığı: data-ui-sandik kabı bir kez doldurulur (resim listede yoksa boş kalır)
+function odulSandigiKur() {
+  const el = document.querySelector("[data-ui-sandik]");
+  if (!el) return;
+  el.innerHTML = uiSimgeHTML("ui-sandik", "", "");
+}
+
+// Açılış ve isim ekranı amblemi (menu-amblem gibi): resim yoksa kap gizli kalır
+function welcomeAmblemiKur() {
+  const g = gorsel("amblem-hayalet");
+  for (const am of document.querySelectorAll("[data-welcome-amblem]")) {
+    am.hidden = !g;
+    am.innerHTML = g ? `<img class="menu-resim" src="${g.src}" alt="" draggable="false">` : "";
   }
 }
 
@@ -5608,6 +5625,8 @@ function menuDekoruKur() {
   if (yarasa) yarasa.innerHTML = _menuResimVeyaEmoji("menu-yarasa", "🦇");
   const bakan = document.getElementById("dekor-bakan");
   if (bakan) bakan.innerHTML = _menuResimVeyaEmoji("menu-bakan", "👻");
+  const fener = document.getElementById("dekor-fener");
+  if (fener) fener.innerHTML = _menuResimVeyaEmoji("menu-fener", "");
   _menuHayaletleriKur();
   _menuDekorDugmeleriKur();
   if (!_menuDekor.kuruldu) {
@@ -5968,6 +5987,8 @@ window.addEventListener("gorsel-yuklendi", () => {
   ekranGorselleriKur();
   menuSimgeleriniUygula();
   menuSayacCercevesi();
+  welcomeAmblemiKur();
+  odulSandigiKur();
   if (typeof menuDekoruKur === "function") menuDekoruKur();
   const ekran = document.getElementById("screen-characters");
   if (ekran && ekran.classList.contains("active")) refreshCharacters();
@@ -6022,7 +6043,7 @@ function refreshShop() {
 
       const icon = document.createElement("div");
       icon.className = "item-icon";
-      icon.textContent = u.icon;
+      icon.innerHTML = uiSimgeHTML(u.gorsel, u.icon, u.name);
       item.appendChild(icon);
 
       const info = document.createElement("div");
@@ -6059,7 +6080,7 @@ function refreshShop() {
     // Efsane özellikler: pahalı, kalıcı (para ile)
     const efHeader = document.createElement("div");
     efHeader.className = "upgrade-header";
-    efHeader.innerHTML = t("✨ <b>Efsane Özellikler</b>");
+    efHeader.innerHTML = uiSimgeHTML("efsane-sandik", "", "") + t("✨ <b>Efsane Özellikler</b>");
     content.appendChild(efHeader);
     const ozellikler = [
       { key: "extraBot", ad: t("🤖 İkinci Bot"), desc: t("Yanında ikinci bir yardımcı bot savaşır."), cost: 100000 },
@@ -6072,7 +6093,7 @@ function refreshShop() {
       item.style.boxShadow = "0 0 10px rgba(251,191,36,0.35)";
       const icon = document.createElement("div");
       icon.className = "item-icon";
-      icon.textContent = oz.key === "extraBot" ? "🤖" : "❤️";
+      icon.innerHTML = oz.key === "extraBot" ? uiSimgeHTML("bot", "🤖", t("İkinci Bot")) : uiSimgeHTML("gel-can", "❤️", t("Fazladan Kalp"));
       item.appendChild(icon);
       const info = document.createElement("div");
       info.className = "item-info";
@@ -9211,20 +9232,37 @@ function updateHUD() {
     }
   }
 
-  // Boss durumu
+  // Boss durumu: innerHTML yalnız durum/yazı değişince kurulur (resim düğümü kareler arasında korunur)
   const bossEl = document.getElementById("boss-status");
   if (bossEl) {
     bossEl.style.display = yolculuk ? "none" : "";
+    let metin, sinif;
     if (game.bossDefeated) {
       const remain = game.ghosts.length;
-      bossEl.textContent = remain > 0 ? t("🧹 Kalan: {n}", { n: remain }) : t("✓ Bölüm temiz!");
-      bossEl.className = "boss-status boss-cleared";
+      metin = remain > 0 ? t("🧹 Kalan: {n}", { n: remain }) : t("✓ Bölüm temiz!");
+      sinif = "boss-status boss-cleared";
     } else if (game.bossSpawnTimer > 0) {
-      bossEl.textContent = t("⏳ Boss: {n}s", { n: Math.ceil(game.bossSpawnTimer) });
-      bossEl.className = "boss-status";
+      metin = t("⏳ Boss: {n}s", { n: Math.ceil(game.bossSpawnTimer) });
+      sinif = "boss-status";
     } else {
-      bossEl.textContent = t("👑 BOSS!");
-      bossEl.className = "boss-status boss-active";
+      metin = t("👑 BOSS!");
+      sinif = "boss-status boss-active";
+    }
+    bossEl.className = sinif;
+    const imgeVar = !game.bossDefeated && !(game.bossSpawnTimer > 0)
+      && typeof GORSEL_LISTESI === "object" && GORSEL_LISTESI && GORSEL_LISTESI["ui-boss"];
+    if (imgeVar) {
+      const imza = "boss|" + metin;
+      if (bossEl.dataset.hudDurum !== imza) {
+        bossEl.innerHTML = uiSimgeHTML("ui-boss", "👑", "BOSS") + " " + metin.replace(/^👑\s*/, "");
+        bossEl.dataset.hudDurum = imza;
+      }
+    } else {
+      const imza = "metin|" + metin;
+      if (bossEl.dataset.hudDurum !== imza) {
+        bossEl.textContent = metin;
+        bossEl.dataset.hudDurum = imza;
+      }
     }
   }
 
@@ -9446,6 +9484,18 @@ function oyunSonu(won, cevrimici, reklamsiz = false, siralama = null) {
   turSiralamasiniGoster(cevrimici ? siralama : null);
   document.getElementById("gameover-title").textContent = cevrimici ? t("🏁 Tur bitti!") : turBitti ? t("🌍 Dünya turu tamamlandı!")
     : won ? t("🌟 Harika!") : t("👻 Yakalandın!");
+  // Oyun sonu resmi: rekor > zafer > yenilgi. Resim listede yoksa başlık emojisi olduğu gibi kalır.
+  const benSira = cevrimici && siralama ? siralama.find((s) => s.ben) : null;
+  const birinci = !!(benSira && benSira.sira === 1);
+  const goKey = yeniRekor ? "ui-rekor" : (won || turBitti || birinci) ? "ui-zafer" : "ui-yenilgi";
+  const goResim = document.getElementById("gameover-resim");
+  if (goResim) {
+    const goImg = typeof GORSEL_LISTESI === "object" && GORSEL_LISTESI && GORSEL_LISTESI[goKey] && typeof gorsel === "function" ? gorsel(goKey) : null; // yüklü resmin adresi (paketli denemede de çalışır)
+    if (goImg) {
+      goResim.innerHTML = `<img src="${goImg.src}" alt="" draggable="false">`;
+      goResim.hidden = false;
+    } else { goResim.innerHTML = ""; goResim.hidden = true; }
+  }
   odulSayaclariGoster({ hayalet: game.totalCaught, para: finalPara, elmas: game.runElmas, zumrut: game.runZumrut });
   // Kazançlar kaydedildi: odadan çıkarken (flushOnlineRewards) ikinci kez eklenmesin
   game.runPara = 0; game.runElmas = 0; game.runZumrut = 0;
@@ -9485,6 +9535,7 @@ function init() {
   reklamBaslat();
   drawGreeter();
   menuSimgeleriniUygula(); // dilUygula sonrası: resmi olan menü simgeleri emojinin yerine geçer
+  odulSandigiKur(); // oyun sonu ödül sandığı (bir kez)
   menuDekoruKur(); // ana menü süsü (emblem, kaide, dekoratif katmanlar)
   ekranGorselleriKur(); // dükkân/karakter/hesap ve çevrimiçi ekranlarının arka planı, joystick resimleri
   // Hoşgeldin ekranında ismi varsa göster

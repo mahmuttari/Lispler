@@ -3235,10 +3235,22 @@ function drawGhost(ctx, g) {
   if (hp < maxHp) {
     const w = (g.isBoss ? 60 : 32) * s;
     const hpY = g.isBoss ? -44 * s : -28 * s;
-    ctx.fillStyle = "rgba(0,0,0,0.7)";
-    ctx.fillRect(-w / 2, hpY, w, 5 * s);
-    ctx.fillStyle = g.isBoss ? "#ef4444" : "#06d6a0";
-    ctx.fillRect(-w / 2, hpY, w * (hp / maxHp), 5 * s);
+    const cerceve = typeof gorsel === "function" ? gorsel("ui-can-cubugu") : null;
+    if (cerceve) {
+      // GOR4: ChatGPT altın can çerçevesi (ui-can-cubugu, 256x64): iç boşluğu genişliğin %88'i, yüksekliğin %58'i;
+      // dolgu bu boşluğa çizilir, çerçeve üstüne gelir (oranı korunur, esnetilmez)
+      const wf = w / 0.88, hf = wf / 4, ic = hf * 0.58, cy = hpY + 2.5 * s;
+      ctx.fillStyle = "rgba(0,0,0,0.7)";
+      ctx.fillRect(-w / 2, cy - ic / 2, w, ic);
+      ctx.fillStyle = g.isBoss ? "#ef4444" : "#06d6a0";
+      ctx.fillRect(-w / 2, cy - ic / 2, w * (hp / maxHp), ic);
+      ctx.drawImage(cerceve, -wf / 2, cy - hf * 0.48, wf, hf);
+    } else {
+      ctx.fillStyle = "rgba(0,0,0,0.7)";
+      ctx.fillRect(-w / 2, hpY, w, 5 * s);
+      ctx.fillStyle = g.isBoss ? "#ef4444" : "#06d6a0";
+      ctx.fillRect(-w / 2, hpY, w * (hp / maxHp), 5 * s);
+    }
   }
 
   ctx.restore();
@@ -3310,6 +3322,12 @@ function drawProjectile(ctx, p) {
     ctx.restore(); return;
   }
   if (p.gun === "gokkusagi") {
+    // GOR4: ChatGPT gökkuşağı ışını (yatay ışın; mermi yönüne döndürülür). Yoksa kod çizimi.
+    if (typeof gorsel === "function" && gorsel("efekt-gokkusagi")) {
+      ctx.save(); ctx.rotate(ang);
+      resmiKutuyaCiz(ctx, gorsel("efekt-gokkusagi"), -22, -8, 44, 16);
+      ctx.restore(); ctx.restore(); return;
+    }
     const g = ctx.createLinearGradient(-12, 0, 12, 0);
     g.addColorStop(0, "#ef4444"); g.addColorStop(0.25, "#f59e0b"); g.addColorStop(0.5, "#22c55e");
     g.addColorStop(0.75, "#3b82f6"); g.addColorStop(1, "#a855f7");
@@ -3321,6 +3339,12 @@ function drawProjectile(ctx, p) {
     ctx.restore(); return;
   }
   if (p.gun === "ejder") {
+    // GOR4: ChatGPT alev nefesi (dar ucu arkada, geniş ucu gidilen yönde); mermi yönüne döndürülür
+    if (typeof gorsel === "function" && gorsel("efekt-ejder-alev")) {
+      ctx.save(); ctx.rotate(ang);
+      resmiKutuyaCiz(ctx, gorsel("efekt-ejder-alev"), -18, -10, 36, 20);
+      ctx.restore(); ctx.restore(); return;
+    }
     ctx.save(); ctx.rotate(ang);
     const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 11);
     g.addColorStop(0, "#fef3c7"); g.addColorStop(0.45, "#fb923c"); g.addColorStop(1, "rgba(220,38,38,0)");
@@ -3494,6 +3518,11 @@ function drawProjectile(ctx, p) {
     case "bot": {
       // Bot'un camgöbeği kısa ışını
       ctx.rotate(ang);
+      // GOR4: ChatGPT lazer ışını; uç başlıkları var, esnetilmez, bir kez çizilir (döşenmez)
+      if (typeof gorsel === "function" && gorsel("efekt-bot-isin")) {
+        resmiKutuyaCiz(ctx, gorsel("efekt-bot-isin"), -15, -4, 30, 8);
+        break;
+      }
       ctx.shadowColor = "#67e8f9"; ctx.shadowBlur = 10;
       ctx.fillStyle = "#a5f3fc";
       ctx.fillRect(-6, -2, 12, 4);

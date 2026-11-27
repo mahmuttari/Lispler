@@ -209,6 +209,20 @@ function koprulerCiz(ctx) {
     const genlik = 1.5 + (ustunde ? 1.5 + (game._kopruDurma || 0) * 3 : 0);
     const kay = (s) => genlik * Math.sin(zaman * 3.2 + s * 0.03) * Math.sin(Math.PI * Math.min(1, Math.max(0, (s - k.a) / boy)));
     const P = (s, q) => (k.yatay ? [s, k.c + q + kay(s)] : [k.c + q + kay(s), s]);
+    // GOR4: göl köprüsü için ChatGPT tahta köprü (gol-kopru-tahta): tek parça, döşenmez; iki ucunda direkleri var.
+    // Yalnız uzunluğu boyunca uzar (ışın gibi), eni sabit; dikey köprüde bir kez 90° döner. Yoksa kod tahtaları.
+    const imK = (typeof gorsel === "function" && !(k.su && k.su.gecit)) ? gorsel("gol-kopru-tahta") : null;
+    if (imK) {
+      const uz = boy + 13, en = KOPRU.kalin + 13, mid = (k.a + k.b) / 2;
+      ctx.save();
+      ctx.translate(k.yatay ? mid : k.c + kay(mid), k.yatay ? k.c + kay(mid) : mid);
+      if (!k.yatay) ctx.rotate(Math.PI / 2);
+      ctx.fillStyle = "rgba(0,0,0,0.18)"; // suya düşen gölge
+      ctx.fillRect(-uz / 2 + 4, -en / 2 + 9, uz - 4, en - 6);
+      ctx.drawImage(imK, -uz / 2, -en / 2, uz, en);
+      ctx.restore();
+      continue;
+    }
     ctx.save();
     // Suya düşen gölge
     ctx.strokeStyle = "rgba(0,0,0,0.22)"; ctx.lineWidth = KOPRU.kalin - 6; ctx.lineCap = "butt";

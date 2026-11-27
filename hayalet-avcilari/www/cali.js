@@ -107,6 +107,11 @@ function caliCiz(ctx, c, zaman, sallanma) {
 function caliGozleri(ctx, x, y, zaman) {
   if (Math.sin(zaman * 1.3) > 0.93) return; // göz kırpma
   const bak = Math.sin(zaman * 0.8) * 2;
+  // GOR4: ChatGPT "çalıdan bakan gözler" (efekt-cali-goz): gözler resmin ortasında; resim yoksa kod gözleri
+  if (typeof gorsel === "function" && gorsel("efekt-cali-goz")) {
+    gorselKutuya(ctx, "efekt-cali-goz", x - 32, y - 28, 64, 40);
+    return;
+  }
   ctx.save();
   for (const k of [-1, 1]) {
     ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.ellipse(x + k * 7, y - 6, 5, 6, 0, 0, Math.PI * 2); ctx.fill();

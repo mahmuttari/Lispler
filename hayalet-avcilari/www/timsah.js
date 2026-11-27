@@ -464,8 +464,22 @@ function timsahKareCiz(ctx, tm) {
   return true;
 }
 
+// GOR4: süs timsahı (tur "sus": yalnız suda bakar, ısırmaz) için ChatGPT "sudan bakan baş" resmi (timsah-bakis).
+// Resim önden çizilmiş ve simetrik: döndürülmez, aynalanmaz. Yoksa kare/kod çizimi. Yürüyüş ve saldırı mantığına dokunmaz.
+function timsahBakisCiz(ctx, tm) {
+  if (tm.tur !== "sus" || typeof gorsel !== "function" || !gorsel("timsah-bakis")) return false;
+  const u = tm.t / TIMSAH.susSure, alfa = Math.min(1, u * 5, (1 - u) * 5);
+  const konum = timsahKonum(tm);
+  ctx.save();
+  ctx.globalAlpha *= Math.max(0, alfa);
+  gorselKutuya(ctx, "timsah-bakis", konum.x - 34, konum.y - 26, 68, 44);
+  ctx.restore();
+  return true;
+}
+
 function timsahCiz(ctx, tm) {
   timsahSplashCiz(ctx, tm);
+  if (timsahBakisCiz(ctx, tm)) return;
   if (timsahKareCiz(ctx, tm)) return;
   {
     const konum = timsahKonum(tm);

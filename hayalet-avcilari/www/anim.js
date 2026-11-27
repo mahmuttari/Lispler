@@ -197,9 +197,21 @@ function olumPufuCiz(ctx, e, k) {
     for (let i = 0; i < 4; i++) {
       const aci = i * 1.7 + 0.6;
       const yol = (12 + yk * 22) * s * (boss ? 1.5 : 1);
-      animYildiz(ctx, Math.cos(aci) * yol, -6 * s + Math.sin(aci) * yol * 0.7, (3 + 2 * Math.sin(yk * Math.PI)) * s);
+      animParilti(ctx, Math.cos(aci) * yol, -6 * s + Math.sin(aci) * yol * 0.7, (3 + 2 * Math.sin(yk * Math.PI)) * s, 1 - yk);
     }
   }
+  ctx.restore();
+}
+
+// GOR4: küçük parıltı parçacığı: ChatGPT resmi (efekt-parilti-kucuk) varsa onu (x, y) merkezli, 2.6 r kareye çizer;
+// yoksa kod yıldızı (animYildiz, ctx.fillStyle'ın rengiyle). alfa: resim için saydamlık (kodda fillStyle'dadır).
+function animParilti(ctx, x, y, r, alfa = 1) {
+  const im = typeof gorsel === "function" ? gorsel("efekt-parilti-kucuk") : null;
+  if (!im) { animYildiz(ctx, x, y, r); return; }
+  const d = Math.max(1, r * 2.6);
+  ctx.save();
+  ctx.globalAlpha *= Math.max(0, Math.min(1, alfa));
+  resmiKutuyaCiz(ctx, im, x - d / 2, y - d / 2, d, d);
   ctx.restore();
 }
 
@@ -230,7 +242,7 @@ function mucevherParilti(ctx, now, x) {
   ctx.save();
   ctx.shadowBlur = 0;
   ctx.fillStyle = `rgba(255, 255, 255, ${Math.sin(k * Math.PI)})`;
-  animYildiz(ctx, -5 + k * 10, -6 + k * 7, 3.5 * Math.sin(k * Math.PI) + 0.5);
+  animParilti(ctx, -5 + k * 10, -6 + k * 7, 3.5 * Math.sin(k * Math.PI) + 0.5, Math.sin(k * Math.PI));
   ctx.restore();
 }
 
@@ -366,7 +378,14 @@ function kasirgaCiz(ctx, px, py, now, bitis) {
   ctx.save();
   // Yerde rüzgâr halkası: dönen kesik yaylar
   const R = (typeof KASIRGA_R === "number" ? KASIRGA_R : 130);
-  for (let h = 0; h < 3; h++) {
+  // GOR4: ChatGPT kasırga halkası (efekt-kasirga) yerdeki kesik yayların yerine; esnetilmez, döndürülmez.
+  // Resim yoksa aşağıdaki kod yayları çizilir.
+  const halka = typeof gorsel === "function" ? gorsel("efekt-kasirga") : null;
+  if (halka) {
+    ctx.globalAlpha = alfa * 0.8;
+    resmiKutuyaCiz(ctx, halka, px - R * 0.8, py + 10 - R * 0.8, R * 1.6, R * 1.6);
+  }
+  for (let h = 0; !halka && h < 3; h++) {
     const r = R * (0.62 + h * 0.17);
     const don = az ? h : t * (3.2 - h * 0.6) + h * 2;
     ctx.globalAlpha = alfa * (0.38 - h * 0.08);

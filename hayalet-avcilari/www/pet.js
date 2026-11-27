@@ -270,7 +270,11 @@ function petSaldiriIzi(ctx, tur, s, saldiri) {
   if (!(saldiri > 0)) return;
   ctx.save();
   ctx.lineWidth = 2.5 * s;
-  if (tur === "kedi") {
+  if (tur === "kedi" && typeof gorsel === "function" && gorsel("efekt-pence")) {
+    // GOR4: ChatGPT pençe izi (efekt-pence); kod çizgilerinin kapladığı alana, saldırı gücüyle solar
+    ctx.globalAlpha *= Math.min(1, saldiri);
+    gorselKutuya(ctx, "efekt-pence", 22 * s, -24 * s, 30 * s, 26 * s);
+  } else if (tur === "kedi") {
     ctx.strokeStyle = `rgba(255,255,255,${saldiri})`;
     for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(26 * s, (-16 + i * 6) * s); ctx.lineTo(36 * s, (-10 + i * 6) * s); ctx.stroke(); }
   } else if (tur === "kopek") {

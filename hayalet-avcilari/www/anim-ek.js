@@ -922,6 +922,14 @@ function aeOlumPoplariCiz(ctx, now = performance.now()) {
     const sc = 1 + 0.35 * (1 - Math.pow(1 - k, 2));
     ctx.save();
     ctx.globalAlpha = Math.max(0, 1 - k) * 0.9;
+    // GOR4: ChatGPT ölüm pop'u (efekt-olum-pop) hayaletin son görüntüsünün yerine; hayalet boyunda, büyüyerek solar
+    const popIm = typeof gorsel === "function" ? gorsel("efekt-olum-pop") : null;
+    if (popIm) {
+      const b = (g.size || 40) * 1.5 * sc;
+      resmiKutuyaCiz(ctx, popIm, g.x - b / 2, g.y - b / 2, b, b);
+      ctx.restore();
+      continue;
+    }
     ctx.translate(g.x, g.y);
     ctx.scale(sc, sc);
     ctx.translate(-g.x, -g.y);
@@ -1031,6 +1039,15 @@ function aeTozlariCiz(ctx, now = performance.now()) {
     if (k < 0) continue;
     if (!aeEkranda(e.x, e.y, 40)) continue;
     ctx.save();
+    // GOR4: ChatGPT toz bulutu (efekt-toz); kod dairesinin yerine, aynı yolda ve büyüyerek solar
+    const tozIm = typeof gorsel === "function" ? gorsel("efekt-toz") : null;
+    if (tozIm) {
+      ctx.globalAlpha = (1 - k) * 0.7;
+      const d = 12 + k * 10;
+      resmiKutuyaCiz(ctx, tozIm, e.x + e.vx * k - d / 2, e.y + e.vy * k - d / 2, d, d);
+      ctx.restore();
+      continue;
+    }
     ctx.globalAlpha = (1 - k) * 0.35;
     ctx.fillStyle = "#e7e5e4";
     ctx.beginPath();

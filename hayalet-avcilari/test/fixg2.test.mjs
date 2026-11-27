@@ -174,7 +174,12 @@ try {
     const yari = (typeof KOPRU !== 'undefined' ? KOPRU.kalin : 56) / 2;
     const pay = typeof KOPRU !== 'undefined' ? KOPRU.karaPay : 30;
     const boyResim = typeof yolculukKopruResimBoyu === 'function' ? yolculukKopruResimBoyu() : g.bridgeY1 - g.bridgeY0;
-    const acikX = g.x0 - pay - yari, acikW = (g.x1 - g.x0) + pay * 2 + yari * 2, acikAlt = (g.bridgeY0 + g.bridgeY1) / 2 + boyResim / 2;
+    let acikX = g.x0 - pay - yari, acikW = (g.x1 - g.x0) + pay * 2 + yari * 2, acikAlt = (g.bridgeY0 + g.bridgeY1) / 2 + boyResim / 2;
+    // KPR1: açık köprü resmi ayak çizgisine göre konur (yolculukKopruKutu); kapalı köprü aynı kutuda olmalı
+    if (typeof yolculukKopruKutu === 'function') {
+      const K = yolculukKopruKutu(yolculukTemaParca('kopru-acik') || 'kopru-acik', (g.x0 + g.x1) / 2, (g.bridgeY0 + g.bridgeY1) / 2);
+      acikX = K.x; acikW = K.w; acikAlt = K.y + K.h;
+    }
     const buyuk = cizimler.filter((q) => q[2] > 100);
     game._yolculukDuzen = yedekDuzen; game.kopruAcik = yedekAcik; game._kopruAnim = yedekAnim;
     game.camera = yedekCam; game.W = yedekW; game.H = yedekH; game.dunyaTuru = dunya;

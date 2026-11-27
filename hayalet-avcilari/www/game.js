@@ -7168,8 +7168,10 @@ function update(dt, now) {
       const nx = game.player.x + mx * game.player.speed * speedMul * dt;
       const ny = game.player.y + my * game.player.speed * speedMul * dt;
       const waterBlock = !game.player.waterImmune;
+      // KPR1: köprü yan kuleleri yürünemez; içeride kalan oyuncu hapsolmaz
+      const yanAcik = typeof kopruYanEngel === "function" && !kopruYanEngel(game.player.x, game.player.y, game.player.r);
       // Köprünün şeridinde su engel değil (kopru.js)
-      const engel = (x, y, r) => collidesWalls(x, y, r) || (waterBlock && kopruluSuCarpar(x, y, r));
+      const engel = (x, y, r) => collidesWalls(x, y, r) || (waterBlock && kopruluSuCarpar(x, y, r)) || (yanAcik && kopruYanEngel(x, y, r));
       const mesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), waterBlock ? kopruluSuMesafesi(x, y, r) : Infinity);
       if (kayarakYuru(game.player, nx - game.player.x, ny - game.player.y, engel, mesafe)) movedThisFrame = true;
       else if (typeof yolculukKopruKapaliNokta === "function" && yolculukKopruKapaliNokta(nx, ny, game.player.r)) {
@@ -9064,12 +9066,14 @@ function render() {
     Object.keys(rps).forEach((uid, sira) => {
       const rp = rps[uid];
       if (!rp || !Number.isFinite(rp.x) || !Number.isFinite(rp.y)) return;
+      const yuk = typeof kopruYukselti === "function" ? kopruYukselti(rp.x, rp.y) : 0; // KPR1: köprü kemeri (çizim)
       if (rp.gizli && !rp.dead) { caliGozleri(ctx, rp.x, rp.y, performance.now() / 1000); return; } // çalıda saklanıyor
       if (rp.dead) {
         hayaletOyuncuCiz(ctx, rp.charKey || "kinkin", rp.costumeIdx || 0, rp.x, rp.y, 0.45); // mavi hayalet
       } else {
         ctx.save();
         if (rp.invisible) ctx.globalAlpha = 0.4;
+        if (yuk) ctx.translate(0, -yuk);
         drawCharacter(ctx, rp.charKey || "kinkin", rp.costumeIdx || 0, rp.x, rp.y, 70, rp.facing || 0, rp.yurume || 0,
           rp.aimRaise || 0, rp.recoil || 0, "", !!rp.bakisSol,
           typeof rp.aci3d === "number" ? rp.aci3d : null, uid, null, sira >= 3);
@@ -9078,6 +9082,7 @@ function render() {
       // İsim etiketi (host'un adında taç)
       const etiket = (uid === hostUid ? "👑 " : "") + (rp.name || "?");
       ctx.save();
+      if (yuk) ctx.translate(0, -yuk);
       ctx.fillStyle = "#fde047";
       ctx.strokeStyle = "#000";
       ctx.lineWidth = 3;
@@ -9098,8 +9103,15 @@ function render() {
     });
   }
 
-  if (game.bot) drawBot(ctx, game.bot);
-  if (game.bot2) drawBot(ctx, game.bot2);
+  // KPR1: botlar da köprü kemerinde yükselir (etiketleriyle birlikte)
+  for (const _b of [game.bot, game.bot2]) {
+    if (!_b) continue;
+    const _yuk = typeof kopruYukselti === "function" ? kopruYukselti(_b.x, _b.y) : 0;
+    ctx.save();
+    if (_yuk) ctx.translate(0, -_yuk);
+    drawBot(ctx, _b);
+    ctx.restore();
+  }
   petCiz(ctx, false); // kedi, köpek (pet.js)
   uzakPetleriCiz(ctx, false); // çevrimiçi: öbür oyuncuların petleri
 
@@ -9115,6 +9127,9 @@ function render() {
     ctx.beginPath(); ctx.rect(game.player.x - 90, game.player.y - 160, 180, 168); ctx.clip();
     ctx.translate(0, batma);
   }
+  // KPR1: oyuncu köprü kemerinde yükselir (düşerken/ölüyken değil)
+  const yuk = (typeof kopruYukselti === "function" && !game.player.dusus && !game.player.dead) ? kopruYukselti(game.player.x, game.player.y) : 0;
+  if (yuk) { ctx.save(); ctx.translate(0, -yuk); }
   const _cosEfs = !game.player.dead && (COSTUMES[game.player.charKey] || [])[game.player.costumeIdx];
   if (_cosEfs && _cosEfs.efsane) efsaneAuraCiz(ctx, game.player.x, game.player.y, performance.now());
   if (game.player.gizli && !game.player.dead) gizliCiz(ctx); // çalıda yalnız gözler (cali.js)
@@ -9139,6 +9154,7 @@ function render() {
       oyuncuCiz(ctx, game.player.charKey, game.player.costumeIdx, game.player.x, game.player.y, 70, game.player.facing, wp, ar, rc, game.player.gun, !!game.player.bakisSol, game.player.aci3d, "ben", ozel3d);
     }
   }
+  if (yuk) ctx.restore();
   if (batma) ctx.restore();
   dususCiz(ctx);
   petCiz(ctx, true); // kuş oyuncunun üstünde uçar (pet.js)

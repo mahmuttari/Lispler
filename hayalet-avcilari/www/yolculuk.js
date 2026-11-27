@@ -29,6 +29,40 @@ function yolculukKopruDeckYari() { return (YOLCULUK_AYAR.bridgeW * KOPRU_GUVERTE
 function yolculukKopruYurumeYari(r) { return Math.max(2, yolculukKopruDeckYari() - (r || 0)); }
 // Köprü resminin çizileceği yükseklik (güverte bandı / destek oranı = bridgeW)
 function yolculukKopruResimBoyu() { return (yolculukKopruDeckYari() * 2) / KOPRU_GUVERTE_ORANI; }
+// KPR1: açık köprü resimlerinin ölçüleri (256 px genişlikte doğal yükseklik; güverte üst/alt oranı; kemer px).
+// Resim yüklenmeden de aynı sonucu veren saf tablo; oyuncunun ayakları güverteye basar.
+const KOPRU_RESIM = {
+  "kopru-acik": [149, .27, .75, 4], "yol1-kopru-acik": [146, .27, .59, 4], "yol2-kopru-acik": [129, .30, .80, 4],
+  "yol3-kopru-acik": [142, .27, .68, 4], "yol4-kopru-acik": [151, .31, .62, 4], "yol5-kopru-acik": [138, .27, .63, 4],
+  "yol6-kopru-acik": [113, .22, .80, 4], "yolA-DA-kopru-acik": [167, .38, .60, 12], "yolA-GA-kopru-acik": [155, .33, .58, 12],
+  "yolA-GDA-kopru-acik": [164, .31, .52, 12], "yolA-K-kopru-acik": [137, .26, .47, 12], "yolA-KA-kopru-acik": [214, .41, .60, 12],
+  "yolA-KP-kopru-acik": [131, .26, .56, 12], "yolA-KS-kopru-acik": [145, .27, .53, 12], "yolA-LA-kopru-acik": [197, .42, .60, 12],
+  "yolA-SH-kopru-acik": [143, .28, .56, 12], "yolA-SV-kopru-acik": [144, .33, .58, 12],
+};
+// Köprü resminin tablo anahtarı: resim yüklemeden, bölüm/tema ya da Dünya Turu ailesinden belirlenir
+function yolculukKopruTabloAnahtari() {
+  try {
+    if (typeof game !== "undefined" && game && game.dunyaTuru) {
+      const u = typeof turUlkesi === "function" ? turUlkesi() : null;
+      const k = `yolA-${u.aile}-kopru-acik`;
+      return KOPRU_RESIM[k] ? k : "kopru-acik";
+    }
+    let n = 1;
+    const th = typeof getTheme === "function" ? getTheme() : null;
+    if (th && typeof LEVEL_THEMES !== "undefined") { const i = LEVEL_THEMES.indexOf(th); if (i >= 0) n = i + 1; }
+    const k = `yol${n}-kopru-acik`;
+    return KOPRU_RESIM[k] ? k : "kopru-acik";
+  } catch (e) { return "kopru-acik"; }
+}
+// Köprü resminin çizim kutusu: ayak çizgisi (cy + 30) güverte merkezine oturur; saf aritmetik
+function yolculukKopruKutu(anahtar, cx, cy) {
+  const v = KOPRU_RESIM[anahtar] || KOPRU_RESIM["kopru-acik"];
+  const h = v[0], ust = v[1], alt = v[2], kemer = v[3];
+  const s = Math.min(1.2, Math.max(1, 46 / ((alt - ust) * h)));
+  const w = 256 * s, hh = h * s;
+  const x = cx - w / 2, y = cy + 30 - kemer / 2 - ((ust + alt) / 2) * hh;
+  return { x, y, w, h: hh, gUst: y + ust * hh, gAlt: y + alt * hh, kemer };
+}
 // Bölge kotası: bölgede doğacak hayalet sayısı (Y2 ölçümüne göre)
 // eski: Math.max(1, Math.round((10 + 3 * bolum) * (0.8 + 0.08 * bolge))); Y2C: (10 + 1.6 * bolum) * (0.75 + 0.06 * bolge)
 // Y2D: erken bölümler daha az hayalet (8 + 0,35·bölüm + 0,08·bölüm²), bölge çarpanı yumuşatıldı (0,83 + 0,03·bölge);
@@ -1368,17 +1402,19 @@ function yolculukCiz(ctx) {
   const zaman = performance.now() / 1000;
   for (let i = 0; i < game._yolculukDuzen.zones.length; i++) {
     const z = game._yolculukDuzen.zones[i], g = z.gate;
-    if (g.x1 + 40 < cam.x || g.x0 - 40 > cam.x + W || g.bridgeY1 + 40 < cam.y || g.bridgeY0 - 40 > cam.y + H) continue;
+    if (g.x1 + 170 < cam.x || g.x0 - 170 > cam.x + W || g.bridgeY1 + 170 < cam.y || g.bridgeY0 - 170 > cam.y + H) continue;
     const anim = (game._kopruAnim && game._kopruAnim[i]) || 0;
     const acik = game.kopruAcik[i];
     if (acik && anim <= 0) continue;
     const kapali = acik ? Math.min(1, anim / 0.6) : 1; // 1 → kapalı, 0 → açık
     const x0 = g.x0 - 4, x1 = g.x1 + 4, y0 = g.bridgeY0, y1 = g.bridgeY1;
-    const pay = (typeof KOPRU !== "undefined" ? KOPRU.karaPay : 30); // açık köprünün bank taşması
-    // Kapalı köprü resmi açık köprünün kutusuna, taban hizalı çizilir (direkler açılışta zıplamasın)
-    const yari = (typeof KOPRU !== "undefined" ? KOPRU.kalin : 56) / 2;
-    const boyResim = typeof yolculukKopruResimBoyu === "function" ? yolculukKopruResimBoyu() : y1 - y0;
-    const acikX = g.x0 - pay - yari, acikW = (g.x1 - g.x0) + pay * 2 + yari * 2, acikY = (y0 + y1) / 2 - boyResim / 2;
+    // KPR1: kapalı/açılış resimleri açık köprü resminin kutusuna, taban hizalı çizilir (direkler zıplamasın)
+    const anahtarAcik = yolculukTemaParca("kopru-acik") || "kopru-acik";
+    const K = (typeof yolculukKopruKutu === "function") ? yolculukKopruKutu(anahtarAcik, (g.x0 + g.x1) / 2, (y0 + y1) / 2) : null;
+    const boyResim = K ? K.h : (typeof yolculukKopruResimBoyu === "function" ? yolculukKopruResimBoyu() : y1 - y0);
+    const acikX = K ? K.x : g.x0 - 4 - (typeof KOPRU !== "undefined" ? KOPRU.karaPay : 30) - ((typeof KOPRU !== "undefined" ? KOPRU.kalin : 56) / 2);
+    const acikW = K ? K.w : (g.x1 - g.x0) + (typeof KOPRU !== "undefined" ? KOPRU.karaPay : 30) * 2 + (typeof KOPRU !== "undefined" ? KOPRU.kalin : 56);
+    const acikY = K ? K.y : (y0 + y1) / 2 - boyResim / 2;
     const kilitX = g.x0 + 14, kilitY = (y0 + y1) / 2;
     const kilitPop = () => { // açılışın ilk 0,4 sn: büyüyüp sönen açık kilit
       const gecen = 0.6 - anim;

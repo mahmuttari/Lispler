@@ -89,6 +89,30 @@ function koprudeki(x, y, r) {
 }
 function koprudeMi(x, y, r) { return !!koprudeki(x, y, r); }
 
+// KPR1: köprü kemerinin çizim yüksekliği (yalnız görüntü); göl ip köprülerinde 0
+function kopruYukselti(x, y) {
+  const k = koprudeki(x, y);
+  if (!k || !k.su || !k.su.gecit) return 0;
+  const gecitAcik = !(game.kopruAcik && k.sira != null && !game.kopruAcik[k.sira]);
+  if (!gecitAcik) return 0;
+  const t = Math.min(1, Math.max(0, (x - k.a) / (k.b - k.a)));
+  const v = (typeof KOPRU_RESIM !== "undefined" && typeof yolculukKopruTabloAnahtari === "function")
+    ? (KOPRU_RESIM[yolculukKopruTabloAnahtari()] || KOPRU_RESIM["kopru-acik"]) : null;
+  return (v ? v[3] : 0) * Math.sin(Math.PI * t);
+}
+
+// KPR1: köprü resminin yan kuleleri (yürünebilir şeridin dışı) oyuncuya kapalı
+function kopruYanEngel(x, y, r) {
+  if (typeof yolculukKopruKutu !== "function" || typeof yolculukKopruTabloAnahtari !== "function") return false;
+  for (const k of koprulerHazir()) {
+    if (!k.su || !k.su.gecit) continue;
+    const K = yolculukKopruKutu(yolculukKopruTabloAnahtari(), (k.a + k.b) / 2, k.c);
+    if (x >= K.x + 6 && x <= K.x + K.w - 6 && y >= K.y + 0.10 * K.h - 30 && y <= K.y + K.h - 30 &&
+      Math.abs(y - k.c) > yolculukKopruYurumeYari(r)) return true;
+  }
+  return false;
+}
+
 // Oyuncunun yürüyüşü için su: köprünün şeridinde engel değil
 function kopruluSuCarpar(x, y, r) { return collidesWaters(x, y, r) && !koprudeMi(x, y, r); }
 function kopruluSuMesafesi(x, y, r) { return koprudeMi(x, y) ? Infinity : engelMesafesi(game.waters, x, y, r); }
@@ -156,7 +180,7 @@ function koprulerCiz(ctx) {
   const zaman = performance.now() / 1000, p = game.player;
   const cam = game.camera || { x: 0, y: 0 }, W = game.W || 1e9, H = game.H || 1e9;
   for (const k of koprulerHazir()) {
-    const [x0, y0] = k.yatay ? [k.a, k.c] : [k.c, k.a], [x1, y1] = k.yatay ? [k.b, k.c] : [k.c, k.b], pay = KOPRU.kalin;
+    const [x0, y0] = k.yatay ? [k.a, k.c] : [k.c, k.a], [x1, y1] = k.yatay ? [k.b, k.c] : [k.c, k.b], pay = (k.su && k.su.gecit) ? 170 : KOPRU.kalin;
     if (x1 + pay < cam.x || x0 - pay > cam.x + W || y1 + pay < cam.y || y0 - pay > cam.y + H) continue; // ekran dışı
     const boy = k.b - k.a, yari = KOPRU.kalin / 2;
     // Yolculuk geçidi köprüleri: açık köprü resmi varsa kod tahtaları yerine resim çizilir.
@@ -167,10 +191,16 @@ function koprulerCiz(ctx) {
       if (gorsel(anahtar)) {
         const gecitAcik = !(game.kopruAcik && k.sira != null && !game.kopruAcik[k.sira]);
         if (gecitAcik) {
-          // FIX2: resim yüksekliği güverte bandına göre (bridgeW); güverte yürünebilir şeritle hizalanır
-          const boyResim = (typeof YOLCULUK_AYAR !== "undefined" && YOLCULUK_AYAR.bridgeW) ? YOLCULUK_AYAR.bridgeW : yari * 2;
-          const orta = (y0 + y1) / 2;
-          gorselKutuya(ctx, anahtar, Math.min(x0, x1) - yari, orta - boyResim / 2, Math.abs(x1 - x0) + yari * 2, boyResim);
+          // KPR1: resim, karakterin ayak çizgisi güverteye basacak şekilde konur (tablo ölçüleri)
+          if (typeof yolculukKopruKutu === "function") {
+            const K = yolculukKopruKutu(anahtar, (x0 + x1) / 2, k.c);
+            gorselKutuya(ctx, anahtar, K.x, K.y, K.w, K.h);
+          } else {
+            // FIX2: resim yüksekliği güverte bandına göre (bridgeW); güverte yürünebilir şeritle hizalanır
+            const boyResim = (typeof YOLCULUK_AYAR !== "undefined" && YOLCULUK_AYAR.bridgeW) ? YOLCULUK_AYAR.bridgeW : yari * 2;
+            const orta = (y0 + y1) / 2;
+            gorselKutuya(ctx, anahtar, Math.min(x0, x1) - yari, orta - boyResim / 2, Math.abs(x1 - x0) + yari * 2, boyResim);
+          }
         }
         continue;
       }

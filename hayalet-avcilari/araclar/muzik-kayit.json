@@ -192,65 +192,42 @@
     "kredi": {}
   },
   "DE": {
-    "gorev": "34e79d196d6cdcd8fe4de0d8df543196",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-de-1.mp3",
-        "sure": 119.989,
-        "tempo": 129.83,
+        "dosya": "DE.mp3",
+        "sure": 118.16,
+        "tempo": 95.64,
         "dongu": {
-          "bas": 32.6024,
-          "uzunluk": 33.22904,
-          "vurus": 72
+          "bas": 34.2045,
+          "uzunluk": 29.9971,
+          "vurus": 48
         },
-        "ekYeri": 0.9887,
-        "sabitlik": 0.7758,
-        "puan": 0.918,
+        "ekYeri": 0.9323,
+        "sabitlik": 0.6958,
+        "puan": 0.7131,
         "teaser": {
-          "bas": 92.124,
-          "son": 96.2804
-        },
-        "id": "d99400a4-9373-4656-9cfd-4f9d8508f875",
-        "etiketler": "Bavarian polka instrumental, cheerful and steady in 2/4 around 128 BPM, accordion leads a playful adventure-game motif with clarinet counter-melody, trumpet and tuba, cheerful oompah bass under a lively rhythm section, rich polyphonic ensemble keeps energy unbroken for a seamless loop, bright warm acoustic mix."
-      },
-      {
-        "dosya": "hayalet-avcilari-de-2.mp3",
-        "sure": 118.789,
-        "tempo": 139.89,
-        "dongu": {
-          "bas": 29.2781,
-          "uzunluk": 29.15687,
-          "vurus": 68
-        },
-        "ekYeri": 0.9758,
-        "sabitlik": 0.7813,
-        "puan": 0.8628,
-        "teaser": {
-          "bas": 95.1103,
-          "son": 98.9648
-        },
-        "id": "613928e4-fef6-484f-af07-72977a45e59f",
-        "etiketler": "Bavarian polka, steady 2/4 dance groove around 128 BPM, instrumental; accordion leads with clarinet counter-melody, trumpet fills over tuba and cheerful oompah bass in a rich polyphonic ensemble; bright warm acoustic mix, cheerful adventure-game character, loop-friendly continuity at constant energy throughout."
+          "bas": 37.3108,
+          "son": 41.0725
+        }
       }
     ],
-    "lufs": -17.9,
-    "tepe": -3.5,
+    "lufs": -18.0,
+    "tepe": -5.6,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3564,
-    "ekOrani": 0.258,
+    "girisSure": 4.9617,
+    "ekOrani": 0.382,
     "dosyalar": {
       "dongu": "muzik/DE-dongu.ogg",
       "giris": "muzik/DE-giris.ogg"
     },
     "bas": 0.1,
-    "son": 33.32904,
-    "tempo": 129.83,
-    "kredi": {
-      "kalan": 716.5
-    }
+    "son": 30.0971,
+    "tempo": 95.64,
+    "kredi": {}
   },
   "GB": {
     "gorev": "18f4bc83523adc06c1b660a8ea607ea1",

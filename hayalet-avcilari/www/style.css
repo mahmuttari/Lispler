@@ -826,6 +826,13 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
+.yc-resim { background: center / contain no-repeat; background-color: transparent; border-radius: 0; font-size: 0; }
+.yc-kapi.yc-resim { width: 14px; height: 12px; }
+.yc-tac.yc-resim { width: 16px; height: 14px; }
+.yc-bas { position: absolute; left: 0; top: 50%; transform: translate(-35%, -50%); }
+.yc-bas.yc-resim { width: 14px; height: 13px; }
+.yc-hayalet { font-style: normal; display: inline-block; width: 14px; height: 13px; line-height: 13px; vertical-align: -2px; text-align: center; overflow: hidden; }
+.yc-hayalet.yc-resim { display: inline-block; width: 14px; height: 13px; vertical-align: -2px; }
 
 .power-bar {
   position: absolute;

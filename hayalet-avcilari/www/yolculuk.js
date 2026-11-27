@@ -226,14 +226,23 @@ function yolculukBaslangic() {
 
 // GOR1C: normal oyun temasının (1-6) yol parçası resmi; Dünya Turu'nda ya da resim yoksa null (bugünkü çizim kalır)
 function yolculukTemaParca(parca) {
-  if (typeof game === "undefined" || !game || game.dunyaTuru) return null;
-  let n = 1;
+  if (typeof game === "undefined" || !game) return null;
   try {
+    if (game.dunyaTuru) {
+      const u = typeof turUlkesi === "function" ? turUlkesi() : null;
+      if (!u) return null;
+      if (parca === "kopru-acik" || parca === "kopru-kapali" || parca === "arena") {
+        const k = `yolA-${u.aile}-${parca}`;
+        return (typeof gorsel === "function" && gorsel(k)) ? k : null;
+      }
+      return null;
+    }
+    let n = 1;
     const th = typeof getTheme === "function" ? getTheme() : null;
     if (th && typeof LEVEL_THEMES !== "undefined") { const i = LEVEL_THEMES.indexOf(th); if (i >= 0) n = i + 1; }
+    const k = `yol${n}-${parca}`;
+    return (typeof gorsel === "function" && gorsel(k)) ? k : null;
   } catch (e) { return null; }
-  const k = `yol${n}-${parca}`;
-  return (typeof gorsel === "function" && gorsel(k)) ? k : null;
 }
 
 // Hayalet yuvası türleri: tema/ülke ailesine göre tohumlu seçilir (KAY1)
@@ -1160,8 +1169,33 @@ let _gecitNehirDesen = null;
 // Geçit nehrinin suyu: kod kıvrımlı kıyıyı kendisi çizer ve içini kırpar; içine yalnız KIYISIZ su dokusu döşenir.
 // (yol<n>-nehir ve nehir-doku resimlerinin kendi kıyısı ve çimeni var; kıvrımlı kanala uymuyor, ortada düz şerit kalıyordu.)
 // Normal temada tema<n>-su (Volkan'da kaplıca suyu), Dünya Turu'nda dere suyu dokusu (dere-su; yoksa berrak mavi tema4-su).
+// Dünya Turu ortak nehir dokusunun kıyısız orta şeridi: 160×256 tuval, iki yönde de kusursuz döşenir.
+let _ortakNehirKaro = null;
+function yolculukOrtakNehirKaro() {
+  if (typeof gorsel !== "function") return null;
+  const im = gorsel("yol-nehir-ortak");
+  if (!im) return null;
+  if (_ortakNehirKaro && _ortakNehirKaro.im === im) return _ortakNehirKaro.tuval;
+  let tuval = null;
+  try {
+    const c = document.createElement("canvas");
+    c.width = 160; c.height = 256;
+    const cx = c.getContext("2d");
+    cx.drawImage(im, 88, 0, 80, 256, 0, 0, 80, 256);
+    cx.save(); cx.translate(160, 0); cx.scale(-1, 1);
+    cx.drawImage(im, 88, 0, 80, 256, 0, 0, 80, 256); cx.restore();
+    c._karo = 160;
+    tuval = c;
+  } catch (e) { tuval = null; }
+  _ortakNehirKaro = { im, tuval };
+  return tuval;
+}
 function yolculukNehirSuyu() {
   if (typeof gorsel !== "function") return null;
+  if (typeof game !== "undefined" && game && game.dunyaTuru) {
+    const ortak = yolculukOrtakNehirKaro();
+    if (ortak) return ortak;
+  }
   let k = gorsel("dere-su") ? "dere-su" : "tema4-su";
   if (typeof game !== "undefined" && game && !game.dunyaTuru) {
     let n = 1;
@@ -1179,7 +1213,7 @@ function yolculukNehirDesen(ctx, im) {
   let desen = null;
   try {
     desen = ctx.createPattern(im, "repeat");
-    const o = NEHIR_SU_KARO / (im.naturalWidth || im.width || 1);
+    const o = (im._karo || NEHIR_SU_KARO) / (im.naturalWidth || im.width || 1);
     if (desen && desen.setTransform && typeof DOMMatrix === "function") desen.setTransform(new DOMMatrix([o, 0, 0, o, 0, 0]));
   } catch (e) { desen = null; }
   _gecitNehirDesen = { im, desen };
@@ -1366,7 +1400,7 @@ function yolculukCiz(ctx) {
     if (acik && anim > 0 && temaKapali && temaAcik) {
       const ilerleme = Math.min(1, Math.max(0, 1 - anim / 0.6));
       const kare = ilerleme < 0.5 ? temaKapali : temaAcik;
-      gorselKutuya(ctx, kare, acikX, acikY, acikW, boyResim, true);
+      gorselKutuya(ctx, kare, acikX, acikY, acikW, boyResim, kare === temaKapali);
       kilitPop();
       ctx.restore(); continue;
     }

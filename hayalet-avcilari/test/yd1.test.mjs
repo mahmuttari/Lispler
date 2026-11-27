@@ -270,6 +270,9 @@ try {
   // KOP1) Köprü resimleri: kapalı/açık köprü ve açılış kareleri; resim yokken kod çizimi
   const kopruResim = await p.evaluate(async () => {
     __kur(1);
+    // Tema köprüleri varken genel köprü sınansın: "yol" ile başlayan bütün görselleri geçici sil
+    const yolYedek = Object.keys(GORSEL).filter((k) => k.startsWith('yol')).map((k) => [k, GORSEL[k]]);
+    for (const [k] of yolYedek) delete GORSEL[k];
     const yap = async (renk) => {
       const c = document.createElement('canvas'); c.width = 64; c.height = 32;
       const x = c.getContext('2d'); x.fillStyle = renk; x.fillRect(0, 0, 64, 32);
@@ -307,6 +310,7 @@ try {
     game.kopruAcik.fill(false); game._kopruAnim = {};
     const resimsiz = ciz((x) => yolculukCiz(x));
     const resimsizAcik = ciz((x) => koprulerCiz(x));
+    for (const [k, im] of yolYedek) GORSEL[k] = im;
     return { kapali, acikKopru, kareler, resimsiz, resimsizAcik, src };
   });
   sina('kapalı köprü kopru-kapali resmiyle çizilir', () => {

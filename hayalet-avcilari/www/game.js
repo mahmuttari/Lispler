@@ -9182,6 +9182,22 @@ function render() {
   havaParlamaCiz(ctx); // şimşeğin ekran parlaması
 }
 
+// Yolculuk çubuğu simgesi: resim yüklüyse arka plan resmi, değilse bugünkü kod simgesi kalır
+function ycSimge(el, key) {
+  if (!el) return;
+  if (typeof gorsel === "function" && gorsel(key)) {
+    if (el.dataset.k !== key) {
+      el.style.backgroundImage = `url("${gorsel(key).src}")`;
+      el.classList.add("yc-resim");
+      el.dataset.k = key;
+    }
+  } else if (el.dataset.k) {
+    el.classList.remove("yc-resim");
+    el.style.backgroundImage = "";
+    delete el.dataset.k;
+  }
+}
+
 function updateHUD() {
   let lives = "";
   for (let i = 0; i < game.player.maxHp; i++) {
@@ -9203,7 +9219,19 @@ function updateHUD() {
       const pct = (x) => Math.max(0, Math.min(100, (x / W) * 100));
       const d = game._yolculukDuzen;
       const kapilar = yHud.querySelectorAll(".yc-kapi");
-      for (let i = 0; i < kapilar.length && i < d.zones.length; i++) kapilar[i].style.left = pct(d.zones[i].gate.x1) + "%";
+      for (let i = 0; i < kapilar.length && i < d.zones.length; i++) {
+        kapilar[i].style.left = pct(d.zones[i].gate.x1) + "%";
+        ycSimge(kapilar[i], game.kopruAcik && game.kopruAcik[i] ? "yol-cubuk-kopru" : "yol-cubuk-kilit");
+      }
+      // Başlangıç simgesi bir kez çubuğa eklenir (mutlak konumlu, çubuğun kutusunu değiştirmez)
+      const cubuk = document.getElementById("yc-cubuk");
+      let basEl = cubuk && cubuk.querySelector(".yc-bas");
+      if (cubuk && !basEl) {
+        basEl = document.createElement("i"); basEl.className = "yc-bas";
+        cubuk.insertBefore(basEl, document.getElementById("yc-nokta"));
+      }
+      ycSimge(basEl, "yol-cubuk-baslangic");
+      ycSimge(yHud.querySelector(".yc-tac"), "yol-cubuk-boss");
       const nokta = document.getElementById("yc-nokta");
       if (nokta) nokta.style.left = pct(game.player ? game.player.x : 0) + "%";
       const aktif = game.bolge || 1;
@@ -9227,7 +9255,19 @@ function updateHUD() {
         } else {
           for (const g of game.ghosts) if (!g.isBoss) kalan++;
         }
-        kalanEl.textContent = "👻 " + kalan;
+        // Sayaç yapısı bir kez kurulur: <i class="yc-hayalet">👻</i> <span id="yc-kalan-sayi">N</span>
+        let hayEl = kalanEl.querySelector(".yc-hayalet");
+        let sayiEl = kalanEl.querySelector("#yc-kalan-sayi");
+        if (!hayEl || !sayiEl) {
+          kalanEl.textContent = "";
+          hayEl = document.createElement("i"); hayEl.className = "yc-hayalet"; hayEl.textContent = "👻";
+          sayiEl = document.createElement("span"); sayiEl.id = "yc-kalan-sayi";
+          kalanEl.appendChild(hayEl);
+          kalanEl.appendChild(document.createTextNode(" "));
+          kalanEl.appendChild(sayiEl);
+        }
+        ycSimge(hayEl, "yol-cubuk-hayalet");
+        if (sayiEl.dataset.v !== String(kalan)) { sayiEl.textContent = kalan; sayiEl.dataset.v = String(kalan); }
       }
     }
   }

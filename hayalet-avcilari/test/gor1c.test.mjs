@@ -76,16 +76,17 @@ try {
   const parca = await p.evaluate(() => {
     __kur(1);
     // Tema 2-6 için beklenen: o temanın J paftası kesildiyse yol<n>-arena, kesilmediyse null (paftalar sırayla geliyor)
-    const o = { tema1: yolculukTemaParca('arena'), temalar: [], tur: null, yok: null };
+    const o = { tema1: yolculukTemaParca('arena'), temalar: [], tur: null, turAile: null, turTabela: null, yok: null };
     for (let n = 2; n <= 6; n++) { __kur(n); o.temalar.push([n, yolculukTemaParca('arena'), (`yol${n}-arena` in GORSEL_LISTESI) ? `yol${n}-arena` : null]); }
-    __kur(1); game.dunyaTuru = true; o.tur = yolculukTemaParca('arena'); game.dunyaTuru = false;
+    __kur(1); game.dunyaTuru = true; o.tur = yolculukTemaParca('arena'); o.turTabela = yolculukTemaParca('tabela'); o.turAile = turUlkesi().aile; game.dunyaTuru = false;
     o.yok = yolculukTemaParca('olmayan-parca');
     return o;
   });
-  sina('yolculukTemaParca: tema 1 var; kesilen temada parça, kesilmeyende, Dünya Turu\'nda ve olmayan parçada null', () => {
+  sina('yolculukTemaParca: tema parçaları; Dünya Turu\'nda aile arenası, tabela yok; olmayan parçada null', () => {
     assert.equal(parca.tema1, 'yol1-arena');
     for (const [n, gelen, beklenen] of parca.temalar) assert.equal(gelen, beklenen, `tema ${n}`);
-    assert.equal(parca.tur, null);
+    assert.equal(parca.tur, `yolA-${parca.turAile}-arena`);
+    assert.equal(parca.turTabela, null);
     assert.equal(parca.yok, null);
   });
 

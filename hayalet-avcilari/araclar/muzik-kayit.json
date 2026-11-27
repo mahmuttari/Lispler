@@ -1241,65 +1241,42 @@
     "kredi": {}
   },
   "AF": {
-    "gorev": "fdfee01e4c42d0a63ddb8e9c50de6691",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-af-1.mp3",
-        "sure": 118.813,
-        "tempo": 128.1,
+        "dosya": "AF.mp3",
+        "sure": 111.96,
+        "tempo": 103.44,
         "dongu": {
-          "bas": 23.7646,
-          "uzunluk": 28.09804,
-          "vurus": 60
+          "bas": 10.2531,
+          "uzunluk": 30.14077,
+          "vurus": 52
         },
-        "ekYeri": 0.9737,
-        "sabitlik": 0.8183,
-        "puan": 0.9318,
+        "ekYeri": 0.9785,
+        "sabitlik": 0.8098,
+        "puan": 0.8094,
         "teaser": {
-          "bas": 84.1894,
-          "son": 88.4154
-        },
-        "id": "9a180a4c-5743-4f32-9673-39b7812ba80d",
-        "etiketler": "Afghan attan folk, steady 6/8 dance groove around 128 BPM, cheerful adventure video game feel; bright warm acoustic mix, loop-friendly, constant energy; rubab carries the lead melody over dutar counter-melody, tabla and dhol shape the rhythm section in a rich polyphonic ensemble; instrumental."
-      },
-      {
-        "dosya": "hayalet-avcilari-af-2.mp3",
-        "sure": 119.869,
-        "tempo": 126.05,
-        "dongu": {
-          "bas": 21.8019,
-          "uzunluk": 28.61869,
-          "vurus": 60
-        },
-        "ekYeri": 0.9662,
-        "sabitlik": 0.8482,
-        "puan": 0.9278,
-        "teaser": {
-          "bas": 86.5805,
-          "son": 90.3886
-        },
-        "id": "98e56c10-f37e-48b0-8b96-04cc715211bf",
-        "etiketler": "Afghan attan folk, steady 6/8 dance groove at around 128 BPM, instrumental; rubab leads with a bright melodic motif over dutar counter-melody, tabla and dhol driving the rhythm section; rich polyphonic ensemble, cheerful adventure video game background music, constant energy, bright warm acoustic mix, loop-friendly."
+          "bas": 58.958,
+          "son": 63.0215
+        }
       }
     ],
-    "lufs": -17.9,
-    "tepe": -5.1,
+    "lufs": -18.0,
+    "tepe": -5.0,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.426,
-    "ekOrani": 0.897,
+    "girisSure": 5.2635,
+    "ekOrani": 0.034,
     "dosyalar": {
       "dongu": "muzik/AF-dongu.ogg",
       "giris": "muzik/AF-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 28.19804,
-    "tempo": 128.1,
-    "kredi": {
-      "kalan": 392.5
-    }
+    "bas": 0.105,
+    "son": 30.24577,
+    "tempo": 103.44,
+    "kredi": {}
   },
   "PK": {
     "gorev": "suno-pencere-2026-11",

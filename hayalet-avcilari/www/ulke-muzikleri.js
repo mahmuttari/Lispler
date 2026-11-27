@@ -1,7 +1,7 @@
 /* HAYALET AVCILARI — DÜNYA TURU MÜZİKLERİ (3.14.0). araclar/muzik_kes.py üretir; elle düzenlenmez.
    bas/son: döngünün loopStart/loopEnd değeri (sn); girisSure: teaser süresi. Ek tasarım §7. */
 window.ULKE_MUZIKLERI = {
-  AF: { dongu: "muzik/AF-dongu.ogg", bas: 0.1, son: 28.19804, giris: "muzik/AF-giris.ogg", girisSure: 5.426, tempo: 128.1 },
+  AF: { dongu: "muzik/AF-dongu.ogg", bas: 0.105, son: 30.24577, giris: "muzik/AF-giris.ogg", girisSure: 5.2635, tempo: 103.44 },
   AO: { dongu: "muzik/AO-dongu.ogg", bas: 0.1, son: 30.57208, giris: "muzik/AO-giris.ogg", girisSure: 4.9616, tempo: 124.22 },
   AR: { dongu: "muzik/AR-dongu.ogg", bas: 0.1, son: 28.85854, giris: "muzik/AR-giris.ogg", girisSure: 5.4028, tempo: 100.03 },
   BD: { dongu: "muzik/BD-dongu.ogg", bas: 0.1, son: 30.93983, giris: "muzik/BD-giris.ogg", girisSure: 5.0777, tempo: 93.16 },

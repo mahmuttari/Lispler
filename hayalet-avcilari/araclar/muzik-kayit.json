@@ -2280,65 +2280,42 @@
     "kredi": {}
   },
   "KR": {
-    "gorev": "5248765790e7f6e911ba7911eedc592b",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-kr-1.mp3",
-        "sure": 118.549,
-        "tempo": 130.51,
+        "dosya": "KR.mp3",
+        "sure": 148.0,
+        "tempo": 175.05,
         "dongu": {
-          "bas": 32.3866,
-          "uzunluk": 29.40665,
-          "vurus": 64
+          "bas": 77.9954,
+          "uzunluk": 27.48829,
+          "vurus": 80
         },
-        "ekYeri": 0.9832,
-        "sabitlik": 0.8793,
-        "puan": 0.9429,
+        "ekYeri": 0.9481,
+        "sabitlik": 0.6364,
+        "puan": 0.665,
         "teaser": {
-          "bas": 35.1575,
-          "son": 39.2907
-        },
-        "id": "db1772a6-feab-4e23-801d-ee03312f4d09",
-        "etiketler": "Korean samul nori, gayageum and haegeum carry a lead melody and counter-melody over janggu, buk and kkwaenggwari in a rich polyphonic rhythm section; driving 12/8 groove around 128 BPM; playful, heroic adventure-video-game energy in a bright warm acoustic mix, steady danceable pulse, unbroken loop-friendly arrangement, instrumental."
-      },
-      {
-        "dosya": "hayalet-avcilari-kr-2.mp3",
-        "sure": 118.741,
-        "tempo": 134.15,
-        "dongu": {
-          "bas": 49.4231,
-          "uzunluk": 32.12492,
-          "vurus": 72
-        },
-        "ekYeri": 0.9796,
-        "sabitlik": 0.7121,
-        "puan": 0.8726,
-        "teaser": {
-          "bas": 67.7573,
-          "son": 71.7976
-        },
-        "id": "295865c4-e011-42ee-902e-6038de7fd6d8",
-        "etiketler": "Korean samul nori, gayageum lead melody and haegeum counter-melody weave over a janggu, buk and kkwaenggwari rhythm section; bright warm acoustic mix, playful and heroic adventure video game background music, driving 12/8 danceable groove around 128 BPM, rich polyphonic ensemble, upbeat energetic with constant energy, seamless loop-friendly return, instrumental."
+          "bas": 43.8385,
+          "son": 47.9252
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -6.7,
+    "tepe": -6.6,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3332,
-    "ekOrani": 0.048,
+    "girisSure": 5.2867,
+    "ekOrani": 0.084,
     "dosyalar": {
       "dongu": "muzik/KR-dongu.ogg",
       "giris": "muzik/KR-giris.ogg"
     },
-    "bas": 0.1025,
-    "son": 29.50915,
-    "tempo": 130.51,
-    "kredi": {
-      "kalan": 260.5
-    }
+    "bas": 0.1,
+    "son": 27.58829,
+    "tempo": 175.05,
+    "kredi": {}
   },
   "RU": {
     "gorev": "suno-pencere-2026-11",

@@ -1754,65 +1754,42 @@
     }
   },
   "IN": {
-    "gorev": "f748989988ccdc5de1a9ac3c8aa9c678",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-in-1.mp3",
-        "sure": 119.173,
-        "tempo": 127.71,
+        "dosya": "IN.mp3",
+        "sure": 158.2,
+        "tempo": 99.63,
         "dongu": {
-          "bas": 27.3912,
-          "uzunluk": 33.87508,
-          "vurus": 72
+          "bas": 41.909,
+          "uzunluk": 28.83017,
+          "vurus": 48
         },
-        "ekYeri": 0.9826,
-        "sabitlik": 0.8204,
-        "puan": 0.936,
+        "ekYeri": 0.9477,
+        "sabitlik": 0.6753,
+        "puan": 0.7346,
         "teaser": {
-          "bas": 28.3364,
-          "son": 32.5857
-        },
-        "id": "9faed97a-9ebb-4ec1-b2d8-f7c6caaf3c3c",
-        "etiketler": "Rajasthani folk, upbeat dance pulse around 128 BPM; sitar carries the lead melody, bansuri flute threads a playful counter-melody, tabla and dholak lock a driving, steady rhythm section; instrumental adventure-game background music, playful and heroic, rich polyphony, bright warm acoustic mix, loop-friendly, constant energy through the full arrangement."
-      },
-      {
-        "dosya": "hayalet-avcilari-in-2.mp3",
-        "sure": 118.669,
-        "tempo": 130.15,
-        "dongu": {
-          "bas": 69.2368,
-          "uzunluk": 29.4794,
-          "vurus": 64
-        },
-        "ekYeri": 0.9751,
-        "sabitlik": 0.8223,
-        "puan": 0.9235,
-        "teaser": {
-          "bas": 23.5996,
-          "son": 27.756
-        },
-        "id": "5c67b48e-3b3b-4a78-9cac-9f65c318656b",
-        "etiketler": "Rajasthani folk, upbeat energetic driving dance groove around 128 BPM, sitar lead melody, bansuri flute counter-melody, tabla and dholak rhythm section, playful and heroic adventure video game scoring, bright warm acoustic mix, loop-friendly arrangement with constant energy and a seamless loop return."
+          "bas": 103.2481,
+          "son": 107.4741
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -6.3,
+    "tepe": -2.5,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3564,
-    "ekOrani": 0.494,
+    "girisSure": 5.426,
+    "ekOrani": 0.16,
     "dosyalar": {
       "dongu": "muzik/IN-dongu.ogg",
       "giris": "muzik/IN-giris.ogg"
     },
-    "bas": 0.1175,
-    "son": 29.5969,
-    "tempo": 130.15,
-    "kredi": {
-      "kalan": 368.5
-    }
+    "bas": 0.1,
+    "son": 28.93017,
+    "tempo": 99.63,
+    "kredi": {}
   },
   "BD": {
     "gorev": "suno-pencere-2026-11",

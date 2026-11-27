@@ -290,9 +290,15 @@ function petCiz(ctx, ucanlar) {
   const zaman = performance.now() / 1000, ucar = PETLER[p.tur].ucar;
   if (p.koruma > 0 && Math.floor(p.koruma * 10) % 2 === 0) return; // vurulunca yanıp söner
   const yuk = ucar ? 24 + Math.sin(zaman * 3) * 3 - p.saldiri * 14 : Math.abs(Math.sin(p.yurume * 16)) * 2 + p.saldiri * 6;
+  const kopruYuk = (!ucar && typeof kopruYukselti === "function") ? kopruYukselti(p.x, p.y) : 0; // GLG1: yer peti köprü kemerinde yükselir
   ctx.save();
+  if (kopruYuk) ctx.translate(0, -kopruYuk);
   ctx.fillStyle = "rgba(0,0,0,0.25)";                                                                                // gölge
   ctx.beginPath(); ctx.ellipse(p.x, p.y + 10, ucar ? 9 : 15, ucar ? 4 : 5, 0, 0, Math.PI * 2); ctx.fill();
+  if (!ucar) { // GLG1: yer petinin ayaklarına temas gölgesi
+    ctx.fillStyle = "rgba(0,0,0,0.3)";
+    ctx.beginPath(); ctx.ellipse(p.x, p.y + 10, 9, 3, 0, 0, Math.PI * 2); ctx.fill();
+  }
   ctx.translate(p.x, p.y - yuk);
   ctx.scale(p.yon, 1);
   petResmi(ctx, p.tur, 1, { yurume: p.yurume, saldiri: p.saldiri, kanat: p.kanat, zaman });
@@ -350,9 +356,15 @@ function uzakPetleriCiz(ctx, ucanlar) {
   for (const rp of Object.values(online.remotePlayers)) {
     if (!rp || !rp.pet || !Number.isFinite(rp.petX) || !!PETLER[rp.pet].ucar !== !!ucanlar) continue;
     const yuk = ucanlar ? 24 + Math.sin(zaman * 3) * 3 : Math.abs(Math.sin((rp.petYurume || 0) * 16)) * 2;
+    const kopruYuk = (!ucanlar && typeof kopruYukselti === "function") ? kopruYukselti(rp.petX, rp.petY) : 0;
     ctx.save();
+    if (kopruYuk) ctx.translate(0, -kopruYuk);
     ctx.fillStyle = "rgba(0,0,0,0.25)";
     ctx.beginPath(); ctx.ellipse(rp.petX, rp.petY + 10, ucanlar ? 9 : 15, ucanlar ? 4 : 5, 0, 0, Math.PI * 2); ctx.fill();
+    if (!ucanlar) {
+      ctx.fillStyle = "rgba(0,0,0,0.3)";
+      ctx.beginPath(); ctx.ellipse(rp.petX, rp.petY + 10, 9, 3, 0, 0, Math.PI * 2); ctx.fill();
+    }
     ctx.translate(rp.petX, rp.petY - yuk);
     ctx.scale(rp.petYon || 1, 1);
     petResmi(ctx, rp.pet, 1, { yurume: rp.petYurume || 0, kanat: rp.petKanat || 0, zaman });

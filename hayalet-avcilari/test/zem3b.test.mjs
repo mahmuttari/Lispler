@@ -87,12 +87,12 @@ try {
     } catch (e) { hata = e.message; } finally { proto.ellipse = eski; }
     const s = 0.7;
     const g = kayit.find((a) => Math.abs(a[2] - 22 * s) < 0.01 && Math.abs(a[3] - 7 * s) < 0.01);
-    return { bulundu: !!g, x: g ? g[0] : null, y: g ? g[1] : null, hata };
+    return { bulundu: !!g, x: g ? g[0] : null, y: g ? g[1] : null, ayak: ayakY('kinkin', 0, s), hata };
   });
-  sina('(b) karakter gölgesi 3-4 px sağa, 2 px aşağı kaymış', () => {
+  sina('(b) karakter gölgesi 2 px sağa, 1 px aşağı kaymış', () => {
     assert.ok(karakter.bulundu, 'gölge elipsi bulunamadı');
-    assert.ok(karakter.x >= 3 && karakter.x <= 4.5, String(karakter.x));
-    assert.ok(Math.abs(karakter.y - (45 * 0.7 + 2)) < 0.01, String(karakter.y));
+    assert.ok(Math.abs(karakter.x - 2) < 0.01, String(karakter.x));
+    assert.ok(Math.abs(karakter.y - (karakter.ayak + 1)) < 0.01, String(karakter.y));
   });
 
   // (c) Çukur yol: üst/sol iç pervaz alt/sağdan daha koyu (20 nokta, benek tabanlı, stroke yok)

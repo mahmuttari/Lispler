@@ -2058,6 +2058,24 @@ function ucCizOlc(ctx, o) {
   if (window.UcAvci.sureEkle) window.UcAvci.sureEkle(performance.now() - bas);
   return sonuc;
 }
+// GLG1: karakterin ayak çizgisi (yerel birim). 3D model ayakları y + kk.alt*s'te durur; 2D kod gövdesinin tabanı 45*s.
+const AYAK_DUZELT_3D = 0; // ölçüldü: 3D ayak tabanı ile kk.alt farkı <= 2 px (gölge yine tabana oturur)
+function ayakY(charKey, costumeIdx, s) {
+  // _karKodla sırasında karakterKodKutusu kendini yeniden ölçmesin (sonsuz döngü)
+  const kk = (typeof karakterKodKutusu === "function" && !(typeof _karKodla !== "undefined" && _karKodla))
+    ? karakterKodKutusu(charKey, costumeIdx) : null;
+  const duzelt = (window.UcAvci && UcAvci.hazir && typeof UcAvci.destek === "function" && UcAvci.destek()) ? AYAK_DUZELT_3D : 0;
+  return (kk && Number.isFinite(kk.alt) ? kk.alt : 45) * s + duzelt;
+}
+// GLG1: yere oturan gölge. Önce yumuşak düşen gölge (hafif sağa/aşağı), sonra temas gölgesi (kaymasız, ayak tabanına yapışır).
+function zeminGolgesi(ctx, x, y, s, yumusak = true) {
+  if (yumusak) {
+    ctx.fillStyle = "rgba(0,0,0,0.22)";
+    ctx.beginPath(); ctx.ellipse(x + 2, y + 1, 22 * s, 7 * s, 0, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.fillStyle = "rgba(0,0,0,0.35)";
+  ctx.beginPath(); ctx.ellipse(x, y, 17 * s, 5.5 * s, 0, 0, Math.PI * 2); ctx.fill();
+}
 function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPhase = 0, aimRaise = 0, shootRecoil = 0, gunKey = "", bakisSol = null, aci3d = null, kimlik3d = null, ozel3d = null, sadeceOnbellek = false) {
   if (!CHARACTERS[charKey] || !COSTUMES[charKey]) charKey = "kinkin"; // yeni sürümden gelen oyuncunun karakteri bende yoksa
   const c = CHARACTERS[charKey];
@@ -2075,17 +2093,13 @@ function drawCharacter(ctx, charKey, costumeIdx, x, y, size, faceDir = 0, walkPh
   const torsoLean = swing * 0.04;
 
   ctx.save();
-  ctx.translate(x, y - bob);
+  ctx.translate(x, y);
+  zeminGolgesi(ctx, 0, ayakY(charKey, costumeIdx, s), s); // GLG1: gölge yerde, sallanmadan
+  ctx.translate(0, -bob);
   ctx.rotate(torsoLean);
   // Dururken hafif nefes (anim.js): ayak hizası sabit, gövde çok az uzayıp kısalır
   const nefes = typeof avciNefes === "function" ? avciNefes(performance.now(), isWalking) : 0;
   if (nefes) { ctx.translate(0, 45 * s); ctx.scale(1 - nefes * 0.5, 1 + nefes); ctx.translate(0, -45 * s); }
-
-  // Gölge (sol üst ışık: 3,5 px sağa, 2 px aşağı kayar; boyut değişmez)
-  ctx.fillStyle = "rgba(0,0,0,0.3)";
-  ctx.beginPath();
-  ctx.ellipse(3.5, 45 * s + 2, 22 * s, 7 * s, 0, 0, Math.PI * 2);
-  ctx.fill();
 
   // Gerçek 3D avcı (uc-avci.js): gölgeden sonra model; çizdiyse 2D gövdeye hiç girilmez. Ölçüm sırasında (_karKodla) kapalı.
   if (window.UcAvci && window.UcAvci.hazir && (typeof _karKodla === "undefined" || !_karKodla)) {
@@ -3095,10 +3109,10 @@ function drawGhost(ctx, g) {
     }
   }
 
-  // Gölge (sol üst ışık: 3,5 px sağa, 2 px aşağı kayar; boyut değişmez)
+  // Gölge (hayaletler havada durur: temas gölgesi yok; sol üst ışık 2 px sağa, 1 px aşağı)
   ctx.fillStyle = "rgba(0,0,0,0.3)";
   ctx.beginPath();
-  ctx.ellipse(3.5, 22 * s + 2, 18 * s, 5 * s, 0, 0, Math.PI * 2);
+  ctx.ellipse(2, 22 * s + 1, 18 * s, 5 * s, 0, 0, Math.PI * 2);
   ctx.fill();
 
   if (an) {
@@ -8849,10 +8863,11 @@ function botEtiketi(ctx, b) {
 function drawBot(ctx, b) {
   const size = 62, s = size / 100;
   const walk = b.walkTimer > 0 ? Math.sin(b.walkTimer * 12) : 0;
+  const bob = Math.abs(walk) * 1.5 * s;
   ctx.save();
-  ctx.translate(b.x, b.y - Math.abs(walk) * 1.5 * s);
-  ctx.fillStyle = "rgba(0,0,0,0.3)";
-  ctx.beginPath(); ctx.ellipse(0, 45 * s, 20 * s, 6 * s, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.translate(b.x, b.y);
+  zeminGolgesi(ctx, 0, 45 * s, s); // GLG1: gölge yerde, sallanmadan
+  ctx.translate(0, -bob);
   // 3D bot (uc-avci.js): hazırsa gövdeyi UcAvci çizer, etiket yine burada kalır.
   if (window.UcAvci && window.UcAvci.hazir) {
     const px = (game.player && Number.isFinite(game.player.x)) ? game.player.x : b.x;

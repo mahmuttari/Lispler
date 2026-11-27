@@ -2425,65 +2425,42 @@
     }
   },
   "CN": {
-    "gorev": "800fa6b81c0b848edbdc203411033e94",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-cn-1.mp3",
-        "sure": 119.581,
-        "tempo": 130.93,
+        "dosya": "CN.mp3",
+        "sure": 169.16,
+        "tempo": 89.61,
         "dongu": {
-          "bas": 16.3338,
-          "uzunluk": 29.49917,
-          "vurus": 64
+          "bas": 97.4567,
+          "uzunluk": 32.28063,
+          "vurus": 48
         },
-        "ekYeri": 0.9887,
-        "sabitlik": 0.7828,
-        "puan": 0.9145,
+        "ekYeri": 0.9551,
+        "sabitlik": 0.4664,
+        "puan": 0.6255,
         "teaser": {
-          "bas": 61.4333,
-          "son": 65.5432
-        },
-        "id": "8bd1d86d-0f4b-40f6-82c1-63bdec3648dd",
-        "etiketler": "Adventure game background music, driving danceable groove around 128 BPM, instrumental lead melody with counter-melody, bright warm acoustic mix, Chinese Spring Festival celebration with playful and heroic guzheng, erhu, dizi, pipa, drums and gongs; rich polyphonic ensemble, steady rhythm section, upbeat energetic, constant energy, loop-friendly."
-      },
-      {
-        "dosya": "hayalet-avcilari-cn-2.mp3",
-        "sure": 118.813,
-        "tempo": 132.96,
-        "dongu": {
-          "bas": 46.7636,
-          "uzunluk": 32.47367,
-          "vurus": 72
-        },
-        "ekYeri": 0.9908,
-        "sabitlik": 0.748,
-        "puan": 0.895,
-        "teaser": {
-          "bas": 92.7038,
-          "son": 96.7673
-        },
-        "id": "295ad186-7e62-42b4-b841-cf2764558a0f",
-        "etiketler": "Chinese Spring Festival celebration music, guzheng, erhu, dizi, and pipa trade a nimble lead melody and interwoven counter-melody over drums and gongs; rich polyphonic ensemble in a bright warm acoustic mix, playful and heroic, upbeat energetic driving rhythm with a steady danceable groove around 128 BPM, constant energy, loop-friendly instrumental."
+          "bas": 84.0462,
+          "son": 88.0632
+        }
       }
     ],
-    "lufs": -18.0,
-    "tepe": -5.1,
+    "lufs": -17.9,
+    "tepe": -4.2,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.2635,
-    "ekOrani": 0.0,
+    "girisSure": 5.217,
+    "ekOrani": 0.395,
     "dosyalar": {
       "dongu": "muzik/CN-dongu.ogg",
       "giris": "muzik/CN-giris.ogg"
     },
     "bas": 0.1025,
-    "son": 32.57617,
-    "tempo": 132.96,
-    "kredi": {
-      "kalan": 272.5
-    }
+    "son": 32.38312,
+    "tempo": 89.61,
+    "kredi": {}
   },
   "KR": {
     "gorev": "5248765790e7f6e911ba7911eedc592b",

@@ -382,65 +382,42 @@
     "kredi": {}
   },
   "MA": {
-    "gorev": "1d64870adc0aba821cc61c485efc545a",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ma-1.mp3",
-        "sure": 119.173,
-        "tempo": 132.81,
+        "dosya": "MA.mp3",
+        "sure": 92.52,
+        "tempo": 123.38,
         "dongu": {
-          "bas": 11.7237,
-          "uzunluk": 28.89077,
-          "vurus": 64
+          "bas": 37.8254,
+          "uzunluk": 27.222,
+          "vurus": 56
         },
-        "ekYeri": 0.9853,
-        "sabitlik": 0.791,
-        "puan": 0.9059,
+        "ekYeri": 0.9872,
+        "sabitlik": 0.7373,
+        "puan": 0.8917,
         "teaser": {
-          "bas": 93.4866,
-          "son": 97.5733
-        },
-        "id": "6f08eb24-cd85-43bb-9c52-8d34e56c6a41",
-        "etiketler": "Moroccan Amazigh (Berber) folk dance, loutar (Amazigh lute) driving a lead melody, ribab fiddle answering with a counter-melody over bendir frame drum and handclaps; steady danceable groove at around 128 BPM, instrumental, cheerful adventure video game background music; rich polyphonic ensemble, bright warm acoustic mix, constant energy, loop-friendly."
-      },
-      {
-        "dosya": "hayalet-avcilari-ma-2.mp3",
-        "sure": 119.629,
-        "tempo": 130.0,
-        "dongu": {
-          "bas": 54.8895,
-          "uzunluk": 31.39446,
-          "vurus": 68
-        },
-        "ekYeri": 0.9858,
-        "sabitlik": 0.8127,
-        "puan": 0.9267,
-        "teaser": {
-          "bas": 90.4222,
-          "son": 94.5786
-        },
-        "id": "360260be-6bf3-41fe-bbb5-5ddad9de407f",
-        "etiketler": "Moroccan Amazigh (Berber) folk dance, bright warm acoustic mix, rich polyphonic ensemble with lead melody, counter-melody and rhythm section, loop-friendly with a seamless return; cheerful steady danceable groove around 128 BPM, instrumental, loutar (Amazigh lute) and ribab fiddle weave a nimble folk figure over bendir frame drum and handclaps, constant energy throughout."
+          "bas": 59.7112,
+          "son": 63.5889
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -3.9,
+    "tepe": -4.6,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3564,
-    "ekOrani": 0.062,
+    "girisSure": 5.0777,
+    "ekOrani": 0.272,
     "dosyalar": {
       "dongu": "muzik/MA-dongu.ogg",
       "giris": "muzik/MA-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 31.49446,
-    "tempo": 130.0,
-    "kredi": {
-      "kalan": 656.5
-    }
+    "bas": 0.1025,
+    "son": 27.3245,
+    "tempo": 123.38,
+    "kredi": {}
   },
   "DZ": {
     "gorev": "suno-pencere-2026-11",

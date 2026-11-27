@@ -625,65 +625,42 @@
     "kredi": {}
   },
   "CD": {
-    "gorev": "eb8f6360957a0cb7f0a2bb0b77bb0849",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-cd-1.mp3",
-        "sure": 119.893,
-        "tempo": 125.29,
+        "dosya": "CD.mp3",
+        "sure": 157.2,
+        "tempo": 93.06,
         "dongu": {
-          "bas": 34.445,
-          "uzunluk": 30.64804,
-          "vurus": 64
+          "bas": 94.7991,
+          "uzunluk": 31.05208,
+          "vurus": 48
         },
-        "ekYeri": 0.9806,
-        "sabitlik": 0.8348,
-        "puan": 0.9272,
+        "ekYeri": 0.9628,
+        "sabitlik": 0.7393,
+        "puan": 0.7285,
         "teaser": {
-          "bas": 50.7185,
-          "son": 54.5498
-        },
-        "id": "43d80e1a-9107-4af8-845b-f6e412ab5c96",
-        "etiketler": "Congolese soukous, sebene lead guitars carry a bright lead melody and nimble counter-melody over likembe thumb piano, bass guitar, and congas; instrumental, rich polyphonic ensemble, bright warm acoustic mix, steady danceable groove around 128 BPM, cheerful adventure video game background music, constant energy, seamless loop-friendly phrasing."
-      },
-      {
-        "dosya": "hayalet-avcilari-cd-2.mp3",
-        "sure": 118.933,
-        "tempo": 126.44,
-        "dongu": {
-          "bas": 58.9417,
-          "uzunluk": 30.35273,
-          "vurus": 64
-        },
-        "ekYeri": 0.9789,
-        "sabitlik": 0.8388,
-        "puan": 0.9333,
-        "teaser": {
-          "bas": 98.3318,
-          "son": 102.1399
-        },
-        "id": "21f57d67-e835-49d9-a5f1-e53bbc58fcd4",
-        "etiketler": "Congolese soukous, steady danceable groove at around 128 BPM, constant energy with a seamless loop-ready return; bright warm acoustic mix for cheerful adventure video game background music; instrumental; sebene lead guitars carry the lead melody over likembe thumb piano counter-melody, bass guitar and congas in a rich polyphonic ensemble."
+          "bas": 116.787,
+          "son": 120.6647
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -7.0,
+    "tepe": -6.6,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.0081,
-    "ekOrani": 0.385,
+    "girisSure": 5.0777,
+    "ekOrani": 0.142,
     "dosyalar": {
       "dongu": "muzik/CD-dongu.ogg",
       "giris": "muzik/CD-giris.ogg"
     },
     "bas": 0.1,
-    "son": 30.45273,
-    "tempo": 126.44,
-    "kredi": {
-      "kalan": 572.5
-    }
+    "son": 31.15208,
+    "tempo": 93.06,
+    "kredi": {}
   },
   "AO": {
     "gorev": "21d517ab084ae1746389897effbc5e0e",

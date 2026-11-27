@@ -93,65 +93,42 @@
     "kredi": {}
   },
   "UA": {
-    "gorev": "436883d2f2d62a32491c4fc93efb8bee",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ua-1.mp3",
-        "sure": 119.989,
-        "tempo": 130.19,
+        "dosya": "UA.mp3",
+        "sure": 147.6,
+        "tempo": 94.53,
         "dongu": {
-          "bas": 38.8456,
-          "uzunluk": 27.64573,
-          "vurus": 60
+          "bas": 28.0367,
+          "uzunluk": 28.08948,
+          "vurus": 44
         },
-        "ekYeri": 0.9826,
-        "sabitlik": 0.8916,
-        "puan": 0.9478,
+        "ekYeri": 0.9791,
+        "sabitlik": 0.7745,
+        "puan": 0.7546,
         "teaser": {
-          "bas": 47.6057,
-          "son": 51.7621
-        },
-        "id": "b5feae72-a85c-4fd6-84c5-6f2002c1f5cf",
-        "etiketler": "Ukrainian hopak folk dance, 2/4 at around 128 BPM, cheerful and bright with a warm acoustic mix; bandura strums the rhythm, tsymbaly hammered dulcimer drives a sparkling counter-melody, sopilka wooden flute and fiddle weave the lead melody; rich polyphonic ensemble, constant energy, seamless loop-friendly arrangement for adventure video game background music, instrumental."
-      },
-      {
-        "dosya": "hayalet-avcilari-ua-2.mp3",
-        "sure": 118.813,
-        "tempo": 132.92,
-        "dongu": {
-          "bas": 23.81,
-          "uzunluk": 29.11083,
-          "vurus": 64
-        },
-        "ekYeri": 0.9836,
-        "sabitlik": 0.8524,
-        "puan": 0.9229,
-        "teaser": {
-          "bas": 87.1246,
-          "son": 91.1416
-        },
-        "id": "758da956-f848-4e7b-bb29-d384470de816",
-        "etiketler": "Folk dance, Ukrainian hopak; instrumental adventure video game background music; bright warm acoustic mix, cheerful energy throughout a steady 2/4 dance groove at around 128 BPM; rich polyphonic ensemble with a clear lead melody and interwoven counter-melody over bandura, tsymbaly hammered dulcimer, sopilka wooden flute and fiddle, buoyant rhythm section, constant drive, seamless loop-friendly ending."
+          "bas": 128.1879,
+          "son": 131.996
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -5.6,
+    "tepe": -5.9,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3564,
-    "ekOrani": 0.438,
+    "girisSure": 5.0081,
+    "ekOrani": 0.495,
     "dosyalar": {
       "dongu": "muzik/UA-dongu.ogg",
       "giris": "muzik/UA-giris.ogg"
     },
-    "bas": 0.115,
-    "son": 27.76073,
-    "tempo": 130.19,
-    "kredi": {
-      "kalan": 740.5
-    }
+    "bas": 0.1175,
+    "son": 28.20698,
+    "tempo": 94.53,
+    "kredi": {}
   },
   "PL": {
     "gorev": "suno-pencere-2026-11",

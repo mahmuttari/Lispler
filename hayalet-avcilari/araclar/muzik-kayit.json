@@ -967,65 +967,42 @@
     "kredi": {}
   },
   "YE": {
-    "gorev": "124afabe2bf05c937b0c412c9af663c3",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-ye-1.mp3",
-        "sure": 119.173,
-        "tempo": 128.0,
+        "dosya": "YE.mp3",
+        "sure": 147.2,
+        "tempo": 101.52,
         "dongu": {
-          "bas": 24.2932,
-          "uzunluk": 33.74246,
-          "vurus": 72
+          "bas": 91.3134,
+          "uzunluk": 28.36575,
+          "vurus": 48
         },
-        "ekYeri": 0.9742,
-        "sabitlik": 0.8757,
-        "puan": 0.9498,
+        "ekYeri": 0.9542,
+        "sabitlik": 0.77,
+        "puan": 0.7757,
         "teaser": {
-          "bas": 66.0145,
-          "son": 70.2406
-        },
-        "id": "328b8a4a-27d4-4c1d-a6cd-be9c63856223",
-        "etiketler": "Yemeni folk dance, instrumental and cheerful, steady danceable groove around 128 BPM; qanbus (Yemeni lute) carries a nimble lead melody while oud answers with counter-melody, mirwas drums and handclaps anchor the rhythm section; rich polyphonic ensemble, constant energy, bright warm acoustic mix, loop-friendly for cheerful adventure video game background music."
-      },
-      {
-        "dosya": "hayalet-avcilari-ye-2.mp3",
-        "sure": 119.341,
-        "tempo": 131.99,
-        "dongu": {
-          "bas": 39.0439,
-          "uzunluk": 29.10592,
-          "vurus": 64
-        },
-        "ekYeri": 0.9725,
-        "sabitlik": 0.7762,
-        "puan": 0.8992,
-        "teaser": {
-          "bas": 85.4073,
-          "son": 89.5172
-        },
-        "id": "b2e1fafc-306c-4ec2-bee2-1883877c5ee4",
-        "etiketler": "Yemeni folk dance, bright warm acoustic mix shaped for cheerful adventure video game background music, instrumental, steady danceable groove around 128 BPM; rich polyphonic ensemble led by qanbus (Yemeni lute), with oud counter-melody, mirwas drums and handclaps in rhythm, constant energy and loop-friendly phrasing."
+          "bas": 123.8112,
+          "son": 127.9675
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -4.3,
+    "tepe": -6.0,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.4261,
-    "ekOrani": 0.079,
+    "girisSure": 5.3563,
+    "ekOrani": 1.161,
     "dosyalar": {
       "dongu": "muzik/YE-dongu.ogg",
       "giris": "muzik/YE-giris.ogg"
     },
     "bas": 0.1,
-    "son": 33.84246,
-    "tempo": 128.0,
-    "kredi": {
-      "kalan": 464.5
-    }
+    "son": 28.46575,
+    "tempo": 101.52,
+    "kredi": {}
   },
   "SA": {
     "gorev": "suno-pencere-2026-11",

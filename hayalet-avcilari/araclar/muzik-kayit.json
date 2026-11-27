@@ -1799,65 +1799,42 @@
     "kredi": {}
   },
   "TH": {
-    "gorev": "c9a16c001a856bf31f5bb230802ee4c3",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-th-1.mp3",
-        "sure": 119.629,
-        "tempo": 130.04,
+        "dosya": "TH.mp3",
+        "sure": 176.2,
+        "tempo": 94.42,
         "dongu": {
-          "bas": 61.1226,
-          "uzunluk": 29.52485,
-          "vurus": 64
+          "bas": 10.8199,
+          "uzunluk": 30.341,
+          "vurus": 48
         },
-        "ekYeri": 0.9766,
-        "sabitlik": 0.8324,
-        "puan": 0.9278,
+        "ekYeri": 0.9388,
+        "sabitlik": 0.6875,
+        "puan": 0.7077,
         "teaser": {
-          "bas": 95.2581,
-          "son": 99.4145
-        },
-        "id": "541ddbef-696e-491d-9354-78207f12092c",
-        "etiketler": "Thai Isan folk music, instrumental adventure video game background music led by a nimble khaen bamboo mouth organ; phin lute answers with crisp runs as ranat xylophone and ching cymbals shape the rich polyphonic ensemble, with a lead melody, counter-melody and driving rhythm section; bright warm acoustic mix, playful and heroic, upbeat and energetic, loop-friendly at around 128 BPM with a steady danceable groove and constant energy."
-      },
-      {
-        "dosya": "hayalet-avcilari-th-2.mp3",
-        "sure": 120.421,
-        "tempo": 129.77,
-        "dongu": {
-          "bas": 26.4444,
-          "uzunluk": 29.63927,
-          "vurus": 64
-        },
-        "ekYeri": 0.9746,
-        "sabitlik": 0.8311,
-        "puan": 0.9278,
-        "teaser": {
-          "bas": 18.0946,
-          "son": 22.2509
-        },
-        "id": "6dbe9fed-6bda-4f4e-9074-b0be7dd9cd17",
-        "etiketler": "Thai Isan folk music, upbeat energetic adventure video game background music, playful and heroic at around 128 BPM with a steady danceable groove; khaen bamboo mouth organ leads, phin lute answers with a counter-melody, ranat xylophone and ching cymbals drive a rich polyphonic ensemble; instrumental, bright warm acoustic mix, constant energy, loop-friendly."
+          "bas": 141.5763,
+          "son": 145.3844
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -3.9,
+    "tepe": -4.1,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3564,
-    "ekOrani": 0.035,
+    "girisSure": 5.0081,
+    "ekOrani": 0.487,
     "dosyalar": {
       "dongu": "muzik/TH-dongu.ogg",
       "giris": "muzik/TH-giris.ogg"
     },
-    "bas": 0.1,
-    "son": 29.62485,
-    "tempo": 130.04,
-    "kredi": {
-      "kalan": 332.5
-    }
+    "bas": 0.1025,
+    "son": 30.4435,
+    "tempo": 94.42,
+    "kredi": {}
   },
   "MY": {
     "gorev": "suno-pencere-2026-11",

@@ -221,3 +221,30 @@ the tail), no shadow, no ground:
      turned slightly), ears up, tail curled
 Cute premium casual style matching the game's characters, soft lighting from the upper left, no text.
 ```
+
+## K15–K16: hâlâ kodla çizilen küçük efektler ve parçalar (27 Kasım 2026)
+
+Kullanıcı: *"Sana söylediğim yapılmayan ne varsa hepsini yap, kalan hiçbir iş olmasın."* Kalıcı kural: oyundaki bütün
+görseller ChatGPT'den gelir. Envanterde hâlâ kodla çizildiği bulunan öğeler. Kesim: `gorsel_kes.py --ek K15 K16`.
+
+```
+Sheet K15: TRANSPARENT background, grid 3 x 2, game effects seen from above (slight 3/4 depth), cute premium casual style, soft
+light from the upper left, no text:
+1. a horizontal RAINBOW BEAM segment (a glowing magical ray with rainbow bands and sparkles), seamless left-right, about 460 x 90 px
+2. a cone of cute DRAGON BREATH fire pointing RIGHT (orange-yellow flames, rounded and friendly), about 420 x 200 px
+3. a horizontal small ROBOT LASER BEAM segment (soft cyan glowing ray with a bright core), seamless left-right, about 460 x 60 px
+4. a swirling TORNADO RING seen from above (a circular whirl of wind streaks, leaves and dust), about 360 x 360 px
+5. two glowing curious EYES peeking out of a dark leafy bush (only the bush top and the eyes), about 220 x 150 px
+6. a cute CROCODILE HEAD peeking out of water seen from above (eyes and snout above a small ring of ripples), about 300 x 200 px
+```
+
+```
+Sheet K16: TRANSPARENT background, grid 3 x 2, small game effects and UI parts, cute premium casual style, no text:
+1. three curved PAW SLASH marks (a friendly pet's swipe, soft white-golden streaks), about 220 x 200 px
+2. a small soft DUST PUFF (light brown-grey cloud puff from feet), about 160 x 110 px
+3. a cartoon POOF BURST for a defeated ghost (a white star-shaped puff with tiny sparkles), about 240 x 240 px
+4. a horizontal WOODEN PLANK BRIDGE piece for a small lake (planks with rope rails on top and bottom), seamless left-right,
+   about 460 x 150 px, seen from directly above
+5. a tiny SPARKLE particle (four-point golden glint), about 64 x 64 px
+6. an empty horizontal HEALTH BAR FRAME (a rounded capsule with a cute golden rim and a dark inner track, no fill), about 440 x 70 px
+```

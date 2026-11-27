@@ -644,7 +644,18 @@ EK_PAFTALAR = {
     'K02': [('dere-sus-1', 160), ('dere-sus-2', 160), ('dere-sus-3', 160), ('dere-sus-4', 160), ('dere-sus-5', 160), ('dere-sus-6', 160)],
     'K03': [('bulut-2', 256), ('bulut-3', 256), ('bulut-4', 256), ('simsek-1', 256), ('simsek-2', 256), ('simsek-3', 256)],
     'K05': [('kopru-kapali', 256), None, None, ('kopru-acik', 256), ('kilit', 128), ('kilit-acik', 128)],
+    # J07-J11: Dünya Turu aile yolculuk parçaları (CHATGPT-ISTEMI-YOLCULUK.md): yolA-<aile>-kopru-acik / -kopru-kapali / -arena
+    'J07': [('yolA-K-kopru-acik', 256), ('yolA-K-kopru-kapali', 256), ('yolA-K-arena', 256), ('yolA-KS-kopru-acik', 256), ('yolA-KS-kopru-kapali', 256), ('yolA-KS-arena', 256)],
+    'J08': [('yolA-KP-kopru-acik', 256), ('yolA-KP-kopru-kapali', 256), ('yolA-KP-arena', 256), ('yolA-SH-kopru-acik', 256), ('yolA-SH-kopru-kapali', 256), ('yolA-SH-arena', 256)],
+    'J09': [('yolA-SV-kopru-acik', 256), ('yolA-SV-kopru-kapali', 256), ('yolA-SV-arena', 256), ('yolA-GA-kopru-acik', 256), ('yolA-GA-kopru-kapali', 256), ('yolA-GA-arena', 256)],
+    'J10': [('yolA-GDA-kopru-acik', 256), ('yolA-GDA-kopru-kapali', 256), ('yolA-GDA-arena', 256), ('yolA-DA-kopru-acik', 256), ('yolA-DA-kopru-kapali', 256), ('yolA-DA-arena', 256)],
+    'J11': [('yolA-KA-kopru-acik', 256), ('yolA-KA-kopru-kapali', 256), ('yolA-KA-arena', 256), ('yolA-LA-kopru-acik', 256), ('yolA-LA-kopru-kapali', 256), ('yolA-LA-arena', 256)],
+    # J12: ortak parçalar; 1. hücre nehir karosu DOKU_PAFTALARI'nda, 2-6 yolculuk çubuğu simgeleri
+    'J12': [None, ('yol-cubuk-baslangic', 128), ('yol-cubuk-kopru', 128), ('yol-cubuk-kilit', 128), ('yol-cubuk-boss', 128), ('yol-cubuk-hayalet', 128)],
     # K13: kilitli köprü yeniden (kullanıcı: görseller yatık duruyor): dik, düz köprü + kilitli kapı; K05 ve J01 3. hücrenin yerine geçer
+    # K15-K16: hâlâ kodla çizilen küçük efektler ve parçalar (CHATGPT-ISTEMI-EK.md; kullanıcı: kalan iş olmasın)
+    'K15': [('efekt-gokkusagi', 256), ('efekt-ejder-alev', 256), ('efekt-bot-isin', 256), ('efekt-kasirga', 256), ('efekt-cali-goz', 128), ('timsah-bakis', 192)],
+    'K16': [('efekt-pence', 160), ('efekt-toz', 128), ('efekt-olum-pop', 160), ('gol-kopru-tahta', 256), ('efekt-parilti-kucuk', 64), ('ui-can-cubugu', 256)],
     'K13': [('kopru-kapali', 256), None, None, ('kopru-acik', 256), ('yol1-kopru-kapali', 256), None],
     # R01–R02: karakter mermileri (anahtar CHARACTERS: mermi-<karakter>; yön sağa)
     'R01': [('mermi-kinkin', 128), ('mermi-veryi', 128), ('mermi-kornet', 128), ('mermi-mark', 128), ('mermi-kent', 128), ('mermi-ponko', 128)],
@@ -786,6 +797,8 @@ def ek_hucreler(liste):
         if not os.path.exists(yol):
             yol = os.path.join(HAMZEMIN, f'{pafta}.png')  # Z paftaları (CHATGPT-ISTEMI-ZEMIN.md)
         if not os.path.exists(yol):
+            yol = os.path.join(HAMYOL, f'{pafta}.png')  # J07-J12 (CHATGPT-ISTEMI-YOLCULUK.md)
+        if not os.path.exists(yol):
             continue
         resim = Image.open(yol).convert('RGBA')
         if resim.size != (1536, 1024):
@@ -864,6 +877,7 @@ DOKU_PAFTALARI = {
     'R24': [('aile-GA-zemin', 'iki'), ('aile-GDA-zemin', 'iki'), ('aile-DA-zemin', 'iki'), ('aile-KA-zemin', 'iki'),
             ('aile-LA-zemin', 'iki'), ('nehir-doku', 'dikey')],
     'R42': [None, None, None, None, None, ('dere-su', 'iki')],
+    'J12': [('yol-nehir-ortak', 'dikey'), None, None, None, None, None],
     # Z01: zemin katmanı dokuları (yollar ve alan lekeleri; CHATGPT-ISTEMI-ZEMIN.md)
     'Z01': [('zemin-yol-toprak', 'iki'), ('zemin-yol-tas', 'iki'), ('zemin-cimen', 'iki'), ('zemin-kuru', 'iki'),
             ('zemin-kum', 'iki'), ('zemin-yosunlu-tas', 'iki')],
@@ -930,6 +944,8 @@ def doku_hucreleri(liste):
         yol = os.path.join(HAMYENI, f'{pafta}.png')
         if not os.path.exists(yol):
             yol = os.path.join(HAMZEMIN, f'{pafta}.png')
+        if not os.path.exists(yol):
+            yol = os.path.join(HAMYOL, f'{pafta}.png')
         if not os.path.exists(yol):
             continue
         resim = Image.open(yol).convert('RGB')

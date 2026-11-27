@@ -20,6 +20,17 @@ gpt kullan, yerel oturumu kullan"*.
    J02-J12'nin 3. hücresi de artık düz köprü + kilitli kapı (istem dosyası güncellendi).
 0c. **K14 (K13'ten hemen sonra, kullanıcı istedi 26 Kasım 2026):** `CHATGPT-ISTEMI-EK.md` › K14 yuvanın fareleri (koşu ve
    bekleme kareleri; "hayaletlerin çıktığı yere yaklaşınca fareler, yarasalar kaçışsın"). Kayıt `gorsel/hamek/K14.png`.
+> **GÜNCEL SIRA (27 Kasım 2026, kullanıcı: "sana söylediğim yapılmayan ne varsa hepsini yap, kalan hiçbir iş olmasın,
+> işi güzelce yönet"):** aşağıdaki sırayla, onay beklemeden, her paftadan sonra commit ve push. Z01–Z23, K13, K14, R51–R59,
+> H01–H09, J01–J03 yapıldı.
+> 1. **Y01–Y03** harita yerleşim planları (JSON metni, `CHATGPT-ISTEMI-YERLESIM.md`) → `gorsel/hamyerlesim/`
+> 2. **J04, J05, J06** Buz, Volkan, Uzay yolculuk parçaları (`CHATGPT-ISTEMI-YOLCULUK.md`) → `gorsel/hamyol/`
+> 3. **N14–N20** efekt animasyonları: şimşek, roket ve duman, şifa ve görünmezlik, güç açılışı ve hale, enerji ve baloncuk
+>    mermisi, bölüm atlama ve hasar, donma ve çözülme (`CHATGPT-ISTEMI-ARAYUZ.md`) → `gorsel/hamui/`
+> 4. **J12**, ardından **J07–J11** Dünya Turu yolculuk parçaları (kapalı köprü artık düz + kilitli kapı; istem güncel)
+> 5. **K15, K16** kalan küçük efektler ve parçalar (`CHATGPT-ISTEMI-EK.md`) → `gorsel/hamek/`
+> 6. **H10 → H11 → H12** (`CHATGPT-ISTEMI-HIKAYE.md`), **B01–B10**, **A01–A03**
+
 0d. **Y01–Y03 (EN ÖNCE, kullanıcı istedi 27 Kasım 2026: "harita yerleşimlerini de ChatGPT yapsın, mantıklı ve güzel bir
    şekilde"):** `CHATGPT-ISTEMI-YERLESIM.md` — bölge yerleşim planları, ChatGPT'den JSON metni (resim değil). Kayıt
    `gorsel/hamyerlesim/Y01.json` … `Y03.json`; geçerli JSON olduğunu denetle.

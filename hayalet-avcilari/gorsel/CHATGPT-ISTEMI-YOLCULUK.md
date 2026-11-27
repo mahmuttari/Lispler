@@ -129,7 +129,7 @@ Dünya Turu'nda su her ülkede aynı mavidir; nehir J12'deki ortak karodan çizi
 Sheet J07: journey pieces for two World Tour region families. Grid 3 x 2. Water is the same friendly blue everywhere.
 Row 1 = family K (European stone and brick castle towns):
 Cell 1: OPEN BRIDGE spanning left to right, seen from above, about 440 px long and 150 px wide, in this region's typical materials
-Cell 2: CLOSED BRIDGE: the same bridge raised on the left bank like a drawbridge (planks tilted up, two chains), glowing barrier, small padlock
+Cell 2: CLOSED BRIDGE: the same bridge lying FLAT and level in the same position (NOT raised, NOT tilted), with a closed double gate across its middle, an iron chain and a small golden padlock
 Cell 3: BOSS ARENA ENTRANCE gate arch seen from above in this region's architecture, small crown ornament, no religious symbols
 Row 2 = family KS (caravanserai, Anatolian/Persian stone arches):
 Cell 4: OPEN BRIDGE (same rules)
@@ -141,7 +141,7 @@ Cell 6: BOSS ARENA ENTRANCE (same rules)
 Sheet J08: journey pieces for two World Tour region families. Grid 3 x 2. Water is the same friendly blue everywhere.
 Row 1 = family KP (mud-brick (adobe) towns of North Africa and the Middle East):
 Cell 1: OPEN BRIDGE spanning left to right, seen from above, about 440 px long and 150 px wide, in this region's typical materials
-Cell 2: CLOSED BRIDGE: the same bridge raised on the left bank like a drawbridge (planks tilted up, two chains), glowing barrier, small padlock
+Cell 2: CLOSED BRIDGE: the same bridge lying FLAT and level in the same position (NOT raised, NOT tilted), with a closed double gate across its middle, an iron chain and a small golden padlock
 Cell 3: BOSS ARENA ENTRANCE gate arch seen from above in this region's architecture, small crown ornament, no religious symbols
 Row 2 = family SH (Sahel: earthen architecture, baobab, dry grass):
 Cell 4: OPEN BRIDGE (same rules)
@@ -153,7 +153,7 @@ Cell 6: BOSS ARENA ENTRANCE (same rules)
 Sheet J09: journey pieces for two World Tour region families. Grid 3 x 2. Water is the same friendly blue everywhere.
 Row 1 = family SV (African savanna: acacia, thatched huts, red earth):
 Cell 1: OPEN BRIDGE spanning left to right, seen from above, about 440 px long and 150 px wide, in this region's typical materials
-Cell 2: CLOSED BRIDGE: the same bridge raised on the left bank like a drawbridge (planks tilted up, two chains), glowing barrier, small padlock
+Cell 2: CLOSED BRIDGE: the same bridge lying FLAT and level in the same position (NOT raised, NOT tilted), with a closed double gate across its middle, an iron chain and a small golden padlock
 Cell 3: BOSS ARENA ENTRANCE gate arch seen from above in this region's architecture, small crown ornament, no religious symbols
 Row 2 = family GA (South Asia: carved sandstone, marigold colours):
 Cell 4: OPEN BRIDGE (same rules)
@@ -165,7 +165,7 @@ Cell 6: BOSS ARENA ENTRANCE (same rules)
 Sheet J10: journey pieces for two World Tour region families. Grid 3 x 2. Water is the same friendly blue everywhere.
 Row 1 = family GDA (Southeast Asia: bamboo, rice terraces, carved teak):
 Cell 1: OPEN BRIDGE spanning left to right, seen from above, about 440 px long and 150 px wide, in this region's typical materials
-Cell 2: CLOSED BRIDGE: the same bridge raised on the left bank like a drawbridge (planks tilted up, two chains), glowing barrier, small padlock
+Cell 2: CLOSED BRIDGE: the same bridge lying FLAT and level in the same position (NOT raised, NOT tilted), with a closed double gate across its middle, an iron chain and a small golden padlock
 Cell 3: BOSS ARENA ENTRANCE gate arch seen from above in this region's architecture, small crown ornament, no religious symbols
 Row 2 = family DA (East Asia: curved tiled roofs, red lacquered wood):
 Cell 4: OPEN BRIDGE (same rules)
@@ -177,7 +177,7 @@ Cell 6: BOSS ARENA ENTRANCE (same rules)
 Sheet J11: journey pieces for two World Tour region families. Grid 3 x 2. Water is the same friendly blue everywhere.
 Row 1 = family KA (North America: log cabins, pine forest, canyon rock):
 Cell 1: OPEN BRIDGE spanning left to right, seen from above, about 440 px long and 150 px wide, in this region's typical materials
-Cell 2: CLOSED BRIDGE: the same bridge raised on the left bank like a drawbridge (planks tilted up, two chains), glowing barrier, small padlock
+Cell 2: CLOSED BRIDGE: the same bridge lying FLAT and level in the same position (NOT raised, NOT tilted), with a closed double gate across its middle, an iron chain and a small golden padlock
 Cell 3: BOSS ARENA ENTRANCE gate arch seen from above in this region's architecture, small crown ornament, no religious symbols
 Row 2 = family LA (Latin America: colourful plaster, Inca stone, tropical plants):
 Cell 4: OPEN BRIDGE (same rules)

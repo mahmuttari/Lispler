@@ -260,22 +260,56 @@
     tutamCiz(c, s.x, s.y, s.boy, renk);
   }
 
+  // BAS1: basamak taşlarının yerleri. Kullanıcı (27 Kasım 2026): "evlere doğru dizili taş yollar daha kaotik olmalı".
+  // Taşlar düz çizgi yerine kıvrılan bir patika boyunca dizilir (uçlarda sıfıra inen yan kayma, 1-2,5 dalga);
+  // aralık 15-31 px, yana sapma ±8 px, boy 18-30 px, açı ±0,6 rad; arada bir küçük yan taş, arada bir boşluk.
+  // Tohum patikanın uç noktalarından gelir (Math.random yok): aynı harita her açılışta aynı taşları çizer.
+  function basamakNoktalari(yol) {
+    const q = yol && yol.noktalar;
+    if (!Array.isArray(q) || q.length < 2) return [];
+    const a = q[0], b = q[q.length - 1];
+    const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy);
+    if (L < 8) return [];
+    const ux = dx / L, uy = dy / L, nx = -uy, ny = ux;
+    const tohum = Math.round(a.x) * 31 + Math.round(a.y) * 17 + Math.round(b.x) * 7 + Math.round(b.y);
+    const h = (i, k) => tohumHash(tohum, i, k);
+    const A = Math.max(10, Math.min(28, L * 0.2)) * (h(0, 1) < 0.5 ? -1 : 1);
+    const dalga = 1 + h(0, 2) * 1.5, faz = h(0, 3) * Math.PI;
+    const ikinci = 0.35 * (h(0, 4) - 0.5);
+    const out = [];
+    let d = 8 + h(0, 5) * 10;
+    for (let i = 1; d < L - 6 && i < 200; i++) {
+      const t = d / L, zarf = Math.sin(Math.PI * t);
+      const kay = A * zarf * (Math.sin(Math.PI * dalga * t + faz) + ikinci * Math.sin(Math.PI * 3.3 * t));
+      const yan = (h(i, 1) - 0.5) * 16 * zarf;
+      const x = a.x + ux * d + nx * (kay + yan), y = a.y + uy * d + ny * (kay + yan);
+      let engel = false;
+      try { engel = (typeof collidesWaters === "function" && collidesWaters(x, y, 2)) || (typeof collidesWalls === "function" && collidesWalls(x, y, 2)); } catch (e) { /* yok */ }
+      if (!engel && h(i, 2) > 0.1) { // ~%10 boşluk; suya ve engele taş konmaz
+        out.push({ x, y, boy: 18 + h(i, 3) * 12, aci: (h(i, 4) - 0.5) * 1.2 });
+        if (h(i, 5) < 0.2) { // ~%20 küçük yan taş
+          const s = h(i, 6) < 0.5 ? -1 : 1;
+          out.push({ x: x + nx * s * 13 + ux * 4, y: y + ny * s * 13 + uy * 4, boy: 12 + h(i, 7) * 6, aci: (h(i, 8) - 0.5) * 1.6 });
+        }
+      }
+      d += 15 + h(i, 9) * 16;
+    }
+    return out;
+  }
+
   // Kısa patikada dokulu yol yerine sus-basamak taşları (yalnız resim varsa)
   function basamakCiz(c, yol) {
     const im = typeof gorsel === "function" ? gorsel("sus-basamak") : null;
     if (!im) return false;
-    const q = yol.noktalar;
-    let birikim = 0, hedef = 22;
-    for (let i = 0; i < q.length - 1; i++) {
-      const L = Math.hypot(q[i + 1].x - q[i].x, q[i + 1].y - q[i].y);
-      let d = hedef - birikim;
-      while (d <= L) {
-        const t = d / L, x = q[i].x + (q[i + 1].x - q[i].x) * t, y = q[i].y + (q[i + 1].y - q[i].y) * t;
-        try { typeof resmiKutuyaCiz === "function" ? resmiKutuyaCiz(c, im, x - 13, y - 13, 26, 26, true) : c.drawImage(im, x - 13, y - 13, 26, 26); }
-        catch (e) { return true; }
-        d += hedef;
-      }
-      birikim += L;
+    for (const p of basamakNoktalari(yol)) {
+      try {
+        c.save();
+        c.translate(p.x, p.y);
+        c.rotate(p.aci);
+        const r = p.boy / 2;
+        typeof resmiKutuyaCiz === "function" ? resmiKutuyaCiz(c, im, -r, -r, p.boy, p.boy, true) : c.drawImage(im, -r, -r, p.boy, p.boy);
+        c.restore();
+      } catch (e) { try { c.restore(); } catch (e2) { /* yok */ } return true; }
     }
     return true;
   }
@@ -1224,7 +1258,7 @@
 
   Object.assign(window, {
     zeminKatmaniKur, zeminKatmaniCiz, zeminKatmaniSil, zeminKatmaniYolMu,
-    isikHalkasiCiz, zeminGolgeCiz: golgeCiz,
+    isikHalkasiCiz, zeminGolgeCiz: golgeCiz, basamakNoktalari,
     isikHalkasiDurum: () => ({ alfa: _isikAlfa, acik: ISIK_HALKASI }),
   });
 })();

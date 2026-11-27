@@ -9,6 +9,11 @@ SES1 (23 ElevenLabs sesi oyunda), YER1 (bölgeler ChatGPT yerleşim planlarıyla
 boss halkası, robot, seviye rozeti, zemin süsleri), GOR3b (dükkân/menü/oyun sonu görselleri), J01-J12 yolculuk paftaları
 kesildi, gölet ve diken tuzaklar sınır yöntemiyle (organik leke biçimi + kıyı/çerçeve, içi ChatGPT dokusu; kullanıcı kararı), bot görseli.
 
+## Görsel üretim yolu (kullanıcı, 27 Kasım)
+OpenAI API kredisi bitti (credit_balance_exhausted); kullanıcı: "ChatGPT ile pencereden kullanmaya devam et". Görseller
+yalnız ChatGPT penceresinden, Mac'teki yerel görsel oturumu üretir (YEREL-CLAUDE-SIRA.md); araclar/chatgpt_uret.py kullanılmaz.
+Bulut oturumu Mac oturumuna send_message ile ulaşamıyor (güvenilir cihaz); kullanıcıya iletmesi söylenir. Bekleyen: K17.
+
 ## Süren / kalan işler
 0. **YUV2, KPR1, SUS1 bitti** (fare/yarasa kaotik kaçış, köprü güvertesi + kemer, süs ayıklama). Botun köprü kulesine basmaması kalmadı (yan engel yalnız oyuncuda; bot takılma riski).
    Müzik: 50 ülkeye sanatsal istemler hazır (araclar/muzik-istekleri-sanatsal.json; üretim: python3 araclar/muzik_eleven.py KOD…); ElevenLabs kotası 5 Aralık'ta yenilenir. Önce tek ülke üretip krediyi ölç (100 sn = 1375 kredi).

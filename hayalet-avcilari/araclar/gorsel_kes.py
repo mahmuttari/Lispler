@@ -828,7 +828,7 @@ def ek_hucreler(liste):
             x0, y0 = (i % 3) * 512, (i // 3) * 512
             hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
             if yol.startswith(HAMYOL):
-                hucre = pusu_sil(kenar_temizle(hucre))
+                hucre = pusu_sil(kenar_temizle(hucre), True)  # J07-J11: kulelerin üstünde soluk hale kalıyordu (alfa ~50)
             if anahtar in HUCRE_KIRP:
                 hucre = hucre.crop(HUCRE_KIRP[anahtar])
             if anahtar in TEK_PARCA:

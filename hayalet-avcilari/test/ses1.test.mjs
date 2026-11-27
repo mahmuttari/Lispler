@@ -235,7 +235,8 @@ try {
   });
   const cik = await p.evaluate(() => {
     __hazir();
-    const yv = { x: game.player.x + 300, y: game.player.y, r: 32 };
+    // YUV2: kaçış 300 px'te tetiklenir; cik sesi kaçmamış yuvada, 300-400 px arasında sınanır
+    const yv = { x: game.player.x + 350, y: game.player.y, r: 32 };
     game.yuvalar = [yv];
     yuvaCanlilariGuncelle(0.016);
     const st = yuvaCanliDurum(yv, 0);

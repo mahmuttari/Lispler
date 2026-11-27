@@ -59,9 +59,9 @@ try {
     const st = yuvaCanliDurum(yv, __yi(yv));
     return { fare: st.critterlar.filter((c) => c.tur === 'fare').length, yarasa: st.critterlar.filter((c) => c.tur === 'yarasa').length };
   });
-  sina('(a) yuvada 3-5 fare ve 2-3 yarasa var', () => {
-    assert.ok(a.fare >= 3 && a.fare <= 5, JSON.stringify(a));
-    assert.ok(a.yarasa >= 2 && a.yarasa <= 3, JSON.stringify(a));
+  sina('(a) yuvada 3-6 fare ve 2-4 yarasa var', () => {
+    assert.ok(a.fare >= 3 && a.fare <= 6, JSON.stringify(a));
+    assert.ok(a.yarasa >= 2 && a.yarasa <= 4, JSON.stringify(a));
   });
 
   // (b) 200 px yaklaşınca herkes kaçar; 2 sn sonra hepsi söner
@@ -73,7 +73,7 @@ try {
     const ilk = st.critterlar.map((c) => ({ tur: c.tur, x: c.x, y: c.y, d: Math.hypot(c.x - game.player.x, c.y - game.player.y) }));
     for (let i = 0; i < 30; i++) yuvaCanlilariGuncelle(0.016);
     const orta = st.critterlar.map((c) => ({ tur: c.tur, x: c.x, y: c.y, d: Math.hypot(c.x - game.player.x, c.y - game.player.y), alfa: c.alfa }));
-    for (let i = 0; i < 100; i++) yuvaCanlilariGuncelle(0.016);
+    for (let i = 0; i < 220; i++) yuvaCanlilariGuncelle(0.016);
     const son = st.critterlar.map((c) => ({ durum: c.durum, alfa: c.alfa }));
     return { ilk, orta, son, kacti: st.kacti };
   });
@@ -88,20 +88,21 @@ try {
     for (const c of b2.son) assert.ok(c.durum === 'yok' && c.alfa <= 0.01, JSON.stringify(c));
   });
 
-  // (c) yakında dururken geri gelmez; 520 px'den uzakta 20 sn sonra geri gelir
+  // (c) yakındayken geri gelmez; yuva 8 sn ekrandan uzakta kalınca geri gelir
   const c = await p.evaluate(() => {
     __kur(1); __ac(); const yv = game.yuvalar[0];
     const st = yuvaCanliDurum(yv, __yi(yv));
     game.player.x = yv.x + 200; game.player.y = yv.y;
+    game.camera.x = yv.x - game.W / 2; game.camera.y = yv.y - game.H / 2;
     for (let i = 0; i < 200; i++) yuvaCanlilariGuncelle(0.05); // 10 sn yakında
     const yakin = { kacti: st.kacti, yok: st.critterlar.every((x) => x.durum === 'yok') };
-    game.player.x = yv.x + 800; // 520'den uzak
-    for (let i = 0; i < 300; i++) yuvaCanlilariGuncelle(0.05); // 15 sn
+    game.player.x = yv.x + 800; game.camera.x = yv.x + 3000; // yuva ekrandan uzak
+    for (let i = 0; i < 120; i++) yuvaCanlilariGuncelle(0.05); // 6 sn: henüz dirilmez
     const oncesi = st.kacti;
-    for (let i = 0; i < 120; i++) yuvaCanlilariGuncelle(0.05); // +6 sn → 20 sn geçti
+    for (let i = 0; i < 60; i++) yuvaCanlilariGuncelle(0.05); // +3 sn → 8 sn geçti
     return { yakin, oncesi, sonra: st.kacti, bekle: st.critterlar.filter((x) => x.durum === 'bekle').length };
   });
-  sina('(c) yakındayken geri gelmez, uzakta 20 sn sonra geri gelir', () => {
+  sina('(c) yakındayken geri gelmez, ekrandan 8 sn uzakta geri gelir', () => {
     assert.ok(c.yakin.kacti && c.yakin.yok, JSON.stringify(c.yakin));
     assert.equal(c.oncesi, true);
     assert.equal(c.sonra, false);
@@ -113,6 +114,7 @@ try {
     __kur(1); const yv = game.yuvalar[0];
     game.yuvalar = [yv]; game._sonYuva = null;
     game.player.x = yv.x - 1000; game.player.y = yv.y; game.player.dead = false;
+    game.camera.x = yv.x - game.W / 2; game.camera.y = yv.y - game.H / 2; // yuva ekranda: kaçış görünür
     spawnGhost({ x0: yv.bolge * 1000, x1: yv.bolge * 1000 + 500, bolge: yv.bolge });
     const st = yuvaCanliDurum(yv, 0);
     return { kacti: st.kacti, kacan: st.critterlar.filter((x) => x.durum === 'kac' || x.durum === 'soluk').length };
@@ -174,24 +176,26 @@ try {
     assert.equal(e.yarasaRot, 0);
   });
 
-  // (f) hareketi azalt: konum değişmez, alfa 0'a iner
+  // (f) hareketi azalt: düz çizgide yavaşça kaçar, 0,8 sn içinde söner
   const f = await p.evaluate(() => {
     __kur(1); __ac(); const yv = game.yuvalar[0];
     const st = yuvaCanliDurum(yv, __yi(yv));
     game.player.x = yv.x + 200; game.player.y = yv.y;
+    game.camera.x = yv.x - game.W / 2; game.camera.y = yv.y - game.H / 2;
     const eskiMM = window.matchMedia;
     window.matchMedia = () => ({ matches: true });
     const ilk = st.critterlar.map((x) => ({ x: x.x, y: x.y }));
     for (let i = 0; i < 40; i++) yuvaCanlilariGuncelle(0.016);
     const son = st.critterlar.map((x) => ({ x: x.x, y: x.y, alfa: x.alfa, durum: x.durum }));
+    for (let i = 0; i < 40; i++) yuvaCanlilariGuncelle(0.016);
+    const sonra = st.critterlar.map((x) => x.durum);
     window.matchMedia = eskiMM;
-    return { ilk, son };
+    return { ilk, son, sonra };
   });
-  sina('(f) hareketi azalt: konumlar sabit, alfa 0', () => {
+  sina('(f) hareketi azalt: düz kaçış, 0,8 sn sonra yok', () => {
     for (let i = 0; i < f.ilk.length; i++) {
-      assert.equal(f.son[i].x, f.ilk[i].x);
-      assert.equal(f.son[i].y, f.ilk[i].y);
-      assert.ok(f.son[i].alfa <= 0.01, JSON.stringify(f.son[i]));
+      assert.ok(Math.hypot(f.son[i].x - f.ilk[i].x, f.son[i].y - f.ilk[i].y) >= 50, JSON.stringify(f.son[i]));
+      assert.equal(f.sonra[i], 'yok');
     }
   });
 

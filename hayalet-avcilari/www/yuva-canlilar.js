@@ -1,5 +1,5 @@
-// Hayalet Avcıları — YUV1: hayalet yuvasının çevresindeki fareler ve yarasalar.
-// Oyuncu yuvaya yaklaşınca (230 px) canlılar bir kez kaçar; oyuncu 520 px'den uzakta 20 sn kalınca geri gelir.
+// Hayalet Avcıları — YUV2: hayalet yuvasının çevresindeki fareler ve yarasalar.
+// Oyuncu ekrandaki yuvaya yaklaşınca (300 px) canlılar kaçar; yuva ekrandan 8 sn uzakta kalınca geri gelir.
 // Yalnız görsel ve yerel: çarpışma, hasar, ağ alanı ve denge değişmez; rastgelelik tohumludur (Math.random yok).
 // Görseller: fare-kos / fare-bekle / yarasa animasyonları hazır olduğunda kullanılır; yoksa küçük kod çizimi.
 
@@ -17,6 +17,13 @@ function yuvaCanliRnd(idx, n) {
   return typeof yolculukRastgele === "function" ? yolculukRastgele(bolum, ulke, idx, n) : 0.5;
 }
 
+// Yuvanın merkezi kameranın gördüğü dikdörtgenin içinde mi? (pay: dışına taşan tolerans)
+function yuvaCanliEkranda(yv, pay) {
+  if (typeof game === "undefined" || !game || !game.camera || !yv) return false;
+  const cam = game.camera, W = game.W || 0, H = game.H || 0;
+  return yv.x >= cam.x - pay && yv.x <= cam.x + W + pay && yv.y >= cam.y - pay && yv.y <= cam.y + H + pay;
+}
+
 // Su ya da duvar içinde mi? (fare yerleşimi ve kaçış yolu için)
 function yuvaCanliUygun(x, y) {
   if (typeof game === "undefined" || !game) return true;
@@ -25,12 +32,12 @@ function yuvaCanliUygun(x, y) {
   return true;
 }
 
-// Bir yuvanın canlı durumunu kur (tembel): 3-5 fare çevrede, 2-3 yarasa ağız üstünde.
+// Bir yuvanın canlı durumunu kur (tembel): 3-6 fare çevrede, 2-4 yarasa ağız üstünde.
 function yuvaCanliDurumKur(yv, idx) {
   const r = yv.r || 32;
   const ag = typeof yolculukYuvaAgzi === "function" ? yolculukYuvaAgzi(yv) : { x: yv.x, y: yv.y + r + 16 };
   const st = { yv, idx, critterlar: [], kacti: false, uzakSure: 0, puf: [] };
-  const fareSayi = 3 + Math.floor(yuvaCanliRnd(idx, 1) * 3);
+  const fareSayi = 3 + Math.floor(yuvaCanliRnd(idx, 1) * 4);
   for (let i = 0; i < fareSayi; i++) {
     let x = yv.x, y = yv.y;
     for (let t = 0; t < 14; t++) {
@@ -45,7 +52,7 @@ function yuvaCanliDurumKur(yv, idx) {
       tt: 0, sure: 0, hiz: 0, bx: x, by: y, dirX: 0, dirY: 0, perpX: 0, perpY: 0,
     });
   }
-  const yarasaSayi = 2 + Math.floor(yuvaCanliRnd(idx, 2) * 2);
+  const yarasaSayi = 2 + Math.floor(yuvaCanliRnd(idx, 2) * 3);
   for (let i = 0; i < yarasaSayi; i++) {
     const x = ag.x + (yuvaCanliRnd(idx, 90 + i) - 0.5) * r * 0.7;
     const y = ag.y - 22 - yuvaCanliRnd(idx, 100 + i) * 16;
@@ -71,33 +78,50 @@ function yuvaCanliKacir(st) {
   st.kacti = true;
   const p = (typeof game !== "undefined" && game && game.player) || null;
   const az = yuvaCanliAzHareket();
+  const D = Math.PI / 180;
   for (let i = 0; i < st.critterlar.length; i++) {
     const c = st.critterlar[i];
     c.tt = 0; c.alfa = 1; c.bx = c.x; c.by = c.y;
-    if (az) { c.durum = "soluk"; c.sure = 0.4; continue; }
+    c.donus = 0; c.olcek = 1;
+    const px = p ? p.x : c.x - 1, py = p ? p.y : c.y;
+    if (az) {
+      // Hareketi azalt: düz çizgi, oyuncudan uzağa, ±20°; gecikme/zigzag/kanat yok.
+      const a = Math.atan2(c.y - py, c.x - px) + (yuvaCanliRnd(st.idx, 2000 + i) * 2 - 1) * (20 * D);
+      c.red = true; c.gec = 0; c.durum = "kac";
+      c.a0 = a; c.dirX = Math.cos(a); c.dirY = Math.sin(a);
+      c.hiz = 140; c.sure = 0.8; c.yon = c.dirX < 0 ? -1 : 1;
+      continue;
+    }
+    c.red = false;
+    c.faz2 = yuvaCanliRnd(st.idx, 2500 + i) * Math.PI * 2;
+    c.gec = yuvaCanliRnd(st.idx, 2000 + i) * 0.3;
+    const a0 = Math.atan2(c.y - py, c.x - px) + (yuvaCanliRnd(st.idx, 500 + i) * 2 - 1) * (70 * D);
+    c.a0 = a0;
     if (c.tur === "fare") {
-      const px = p ? p.x : c.x - 1, py = p ? p.y : c.y;
-      let a = Math.atan2(c.y - py, c.x - px);
-      a += (yuvaCanliRnd(st.idx, 500 + i) * 2 - 1) * (40 * Math.PI / 180);
       c.durum = "kac";
-      c.dirX = Math.cos(a); c.dirY = Math.sin(a);
+      c.dirX = Math.cos(a0); c.dirY = Math.sin(a0);
       c.perpX = -c.dirY; c.perpY = c.dirX;
-      c.hiz = 260 + yuvaCanliRnd(st.idx, 600 + i) * 80;
-      c.sure = 0.9 + yuvaCanliRnd(st.idx, 700 + i) * 0.5;
+      c.hiz = 170 + yuvaCanliRnd(st.idx, 600 + i) * 160;
+      c.sure = 1.6 + yuvaCanliRnd(st.idx, 700 + i) * 0.8;
+      c.f1 = 7 + yuvaCanliRnd(st.idx, 1100 + i) * 4;
+      c.f2 = 13 + yuvaCanliRnd(st.idx, 1200 + i) * 6;
+      c.donusYon = yuvaCanliRnd(st.idx, 1300 + i) < 0.5 ? -1 : 1;
       c.yon = c.dirX < 0 ? -1 : 1;
       const np = 2 + Math.floor(yuvaCanliRnd(st.idx, 800 + i) * 2);
       for (let k = 0; k < np; k++) {
         st.puf.push({ x: c.x + (yuvaCanliRnd(st.idx, 900 + i * 7 + k) - 0.5) * 8, y: c.y + (yuvaCanliRnd(st.idx, 950 + i * 7 + k) - 0.5) * 6, bas: YC.zaman });
       }
     } else {
-      const px = p ? p.x : c.x - 1, py = p ? p.y : c.y;
-      let dx = c.x - px, dy = c.y - py;
-      const m = Math.hypot(dx, dy) || 1; dx /= m; dy /= m;
-      dy = Math.min(dy, -0.5); // yukarı ve oyuncudan uzağa
+      let dx = Math.cos(a0), dy = Math.sin(a0);
+      dy = Math.min(dy, -0.35); // yukarı ve oyuncudan uzağa
       const mm = Math.hypot(dx, dy) || 1; dx /= mm; dy /= mm;
       c.durum = "kac"; c.dirX = dx; c.dirY = dy;
-      c.hiz = 200 + yuvaCanliRnd(st.idx, 1000 + i) * 60;
-      c.sure = 1.2; c.yon = dx < 0 ? -1 : 1;
+      c.perpX = -dy; c.perpY = dx;
+      c.hiz = 150 + yuvaCanliRnd(st.idx, 1000 + i) * 110;
+      c.sure = 1.8 + yuvaCanliRnd(st.idx, 1400 + i) * 0.8;
+      c.yanaAmp = 14 + yuvaCanliRnd(st.idx, 1500 + i) * 8;
+      c.yanaF = 9 + yuvaCanliRnd(st.idx, 1600 + i) * 5;
+      c.yon = dx < 0 ? -1 : 1;
     }
   }
   // SES1: kaçış sesi (fare/yarasa varsa), kaçış başına bir kez
@@ -112,6 +136,7 @@ function yuvaCanlilariUrkut(yv) {
   if (typeof game === "undefined" || !game || !Array.isArray(game.yuvalar)) return;
   const idx = game.yuvalar.indexOf(yv);
   if (idx < 0) return;
+  if (!yuvaCanliEkranda(yv, 0)) return; // ekran dışındaki yuva boşuna kaçmasın; oyuncu gelince görülsün
   const st = YC.durumlar.get(yv);
   if (st) yuvaCanliKacir(st);
   else yuvaCanliKacir(yuvaCanliDurumKur(yv, idx)); // henüz kurulmamış: kur ve kaçır
@@ -122,23 +147,27 @@ function yuvaCanliDirilt(st) {
   for (const c of st.critterlar) {
     c.x = c.basX; c.y = c.basY; c.alfa = 0; c.durum = "bekle";
     c.tt = 0; c.giriyor = true; c.girisKalan = 0.5; c.olcek = 1;
+    c.red = false; c.gec = 0; c.donus = 0;
   }
 }
 
 function yuvaCanliGuncelle(st, dt, uzaklik, az, sayac) {
   if (st.puf.length) st.puf = st.puf.filter((f) => YC.zaman - f.bas < 0.3);
-  if (st.kacti) {
-    let hepsiYok = true;
-    for (const c of st.critterlar) if (c.durum !== "yok") { hepsiYok = false; break; }
-    if (hepsiYok) {
-      if (uzaklik > 520) {
-        st.uzakSure += dt;
-        if (st.uzakSure >= 20) yuvaCanliDirilt(st);
-      } else st.uzakSure = 0;
-    }
-  }
+  // Dirilme: bütün canlılar "yok" olduktan sonra yuva ekrandan 8 sn uzakta kalınca geri gelir.
+  const hepsiYok = !st.critterlar.some((c) => c.durum !== "yok");
+  if (st.kacti && hepsiYok) {
+    if (!yuvaCanliEkranda(st.yv, 100)) {
+      st.uzakSure += dt;
+      if (st.uzakSure >= 8) yuvaCanliDirilt(st);
+    } else st.uzakSure = 0;
+  } else st.uzakSure = 0;
+  // Ekrandan uzakta ve hareket eden canlı yoksa canlı canlı güncellenmez (dirilme sayacı yukarıda işledi).
+  const ekranda = yuvaCanliEkranda(st.yv, 300);
+  const hareketVar = st.critterlar.some((c) => c.durum === "kac" || c.durum === "soluk");
+  if (!ekranda && !hareketVar) return;
   for (const c of st.critterlar) {
-    if (sayac.n >= 40) break;
+    if (c.durum === "yok") continue;
+    if (sayac.n >= 80) break;
     sayac.n++;
     if (c.giriyor) {
       c.girisKalan -= dt;
@@ -149,21 +178,42 @@ function yuvaCanliGuncelle(st, dt, uzaklik, az, sayac) {
       if (c.tur === "yarasa" && !az) c.y = c.basY + Math.sin(YC.zaman * 3 + c.faz) * 2;
     } else if (c.durum === "kac") {
       c.tt += dt;
+      if (c.red) {
+        // Hareketi azalt: düz çizgi, yavaş, sönerek.
+        c.x += c.dirX * c.hiz * dt; c.y += c.dirY * c.hiz * dt;
+        c.alfa = Math.max(0, 1 - c.tt / c.sure);
+        if (c.tt >= c.sure) { c.durum = "yok"; c.alfa = 0; }
+        continue;
+      }
+      if (c.tt < c.gec) continue; // gecikmeli başlangıç: kıpırdamadan bekle
       if (c.tur === "fare") {
-        const nx = c.bx + c.dirX * c.hiz * c.tt + c.perpX * Math.sin(c.tt * 10 + c.faz) * 6;
-        const ny = c.by + c.dirY * c.hiz * c.tt + c.perpY * Math.sin(c.tt * 10 + c.faz) * 6;
+        const patlama = 0.75 + 0.25 * Math.sin(c.tt * 9 + c.faz);
+        let a = c.a0 + 0.9 * Math.sin(c.tt * c.f1 + c.faz) + 0.5 * Math.sin(c.tt * c.f2 + c.faz2);
+        let hiz = c.hiz * patlama;
+        let nx = c.x + Math.cos(a) * hiz * dt, ny = c.y + Math.sin(a) * hiz * dt;
+        // Duvar/su: yönü ±90° çevirip yeniden dene (en çok 3 kez), olmazsa sön.
+        while (!yuvaCanliUygun(nx, ny) && c.donus < 3) {
+          c.a0 += c.donusYon * Math.PI / 2; c.donus++;
+          a = c.a0 + 0.9 * Math.sin(c.tt * c.f1 + c.faz) + 0.5 * Math.sin(c.tt * c.f2 + c.faz2);
+          hiz = c.hiz * patlama;
+          nx = c.x + Math.cos(a) * hiz * dt; ny = c.y + Math.sin(a) * hiz * dt;
+        }
         if (!yuvaCanliUygun(nx, ny)) {
-          c.durum = "soluk"; c.sure = 0.25; c.tt = 0; // duvar/su: dur ve erken sol
+          c.durum = "soluk"; c.sure = 0.35; c.tt = 0;
         } else {
-          c.x = nx; c.y = ny;
-          if (c.tt > c.sure) { c.durum = "soluk"; c.sure = 0.25; c.tt = 0; }
+          c.x = nx; c.y = ny; c.yon = Math.cos(a) < 0 ? -1 : 1;
+          if (c.tt >= c.sure) { c.durum = "soluk"; c.sure = 0.35; c.tt = 0; }
         }
       } else {
-        c.x = c.bx + c.dirX * c.hiz * c.tt;
-        c.y = c.by + c.dirY * c.hiz * c.tt;
-        c.olcek = 1 + 0.2 * Math.min(1, c.tt / 1.2);
-        c.alfa = Math.max(0, 1 - c.tt / 1.2);
-        if (c.alfa <= 0) c.durum = "yok";
+        const t = c.tt;
+        const yana = c.yanaAmp * Math.sin(t * c.yanaF + c.faz);
+        c.x = c.bx + c.dirX * c.hiz * t + c.perpX * yana;
+        c.y = c.by + c.dirY * c.hiz * t + c.perpY * yana + 6 * Math.sin(t * 17 + c.faz);
+        c.olcek = 1 + 0.35 * Math.min(1, t / c.sure);
+        c.yon = c.dirX < 0 ? -1 : 1;
+        if (t >= c.sure) { c.durum = "yok"; c.alfa = 0; }
+        else if (t > c.sure - 0.5) c.alfa = Math.max(0, (c.sure - t) / 0.5);
+        else c.alfa = 1;
       }
     } else if (c.durum === "soluk") {
       c.tt += dt;
@@ -189,7 +239,7 @@ function yuvaCanlilariGuncelle(dt) {
       if (!ekranda && !(canli && uzaklik < 600)) return;
       st = yuvaCanliDurumKur(yv, idx);
     }
-    if (!st.kacti && canli && uzaklik <= 230) yuvaCanliKacir(st);
+    if (!st.kacti && canli && yuvaCanliEkranda(yv, -24) && uzaklik <= 300) yuvaCanliKacir(st);
     // SES1: oturan farelerin cik sesi; oyuncu 400 px içindeyken, yuvaya tohumlu 6-12 sn'de bir
     if (canli && !st.kacti && uzaklik <= 400 && st.critterlar.some((c) => c.tur === "fare" && c.durum === "bekle")) {
       if (typeof audio !== "undefined" && audio.canliSes) {
@@ -212,6 +262,7 @@ function yuvaCanliFareCiz(ctx, c, az) {
   ctx.globalAlpha *= c.alfa;
   ctx.translate(c.x, c.y);
   if (c.yon < 0) ctx.scale(-1, 1);
+  if (c.durum === "kac" && !c.red && !(c.tt < (c.gec || 0))) ctx.scale(1.3, 1.3);
   let resimli = false;
   if (kos && typeof animHazir === "function" && typeof animCiz === "function" && animHazir("fare-kos") >= 3 && typeof animDongu === "function") {
     const k = animDongu("fare-kos", YC.zaman + c.faz, 12);
@@ -238,6 +289,7 @@ function yuvaCanliYarasaCiz(ctx, c) {
   ctx.globalAlpha *= c.alfa;
   ctx.translate(c.x, c.y);
   if (c.yon < 0) ctx.scale(-1, 1);
+  if (c.durum === "kac" && !c.red) ctx.scale(1.3, 1.3);
   if (c.olcek && c.olcek !== 1) ctx.scale(c.olcek, c.olcek);
   let resimli = false;
   if (typeof animHazir === "function" && typeof animCiz === "function" && typeof animDongu === "function" && animHazir("yarasa") >= 3) {

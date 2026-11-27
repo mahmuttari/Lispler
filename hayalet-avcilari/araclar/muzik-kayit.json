@@ -176,65 +176,42 @@
     }
   },
   "PL": {
-    "gorev": "8b440e625d13141618913d3680af9c7f",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-pl-1.mp3",
-        "sure": 118.741,
-        "tempo": 134.07,
+        "dosya": "PL.mp3",
+        "sure": 92.28,
+        "tempo": 105.51,
         "dongu": {
-          "bas": 28.8821,
-          "uzunluk": 28.80333,
-          "vurus": 64
+          "bas": 18.9499,
+          "uzunluk": 27.26954,
+          "vurus": 48
         },
-        "ekYeri": 0.9668,
-        "sabitlik": 0.9126,
-        "puan": 0.9268,
+        "ekYeri": 0.9765,
+        "sabitlik": 0.7894,
+        "puan": 0.8126,
         "teaser": {
-          "bas": 74.518,
-          "son": 78.5583
-        },
-        "id": "cde2e540-9972-44c2-9200-a18e6c3ac120",
-        "etiketler": "Folk dance, Polish krakowiak, instrumental; bright warm acoustic mix, loop-friendly arrangement with continuous energy; rich polyphonic ensemble led by fiddle, with clarinet counter-melody, accordion and double bass rhythm section, syncopated 2/4 drive, cheerful adventure video game background music, steady danceable pulse around 128 BPM."
-      },
-      {
-        "dosya": "hayalet-avcilari-pl-2.mp3",
-        "sure": 118.813,
-        "tempo": 133.05,
-        "dongu": {
-          "bas": 43.6017,
-          "uzunluk": 29.00454,
-          "vurus": 64
-        },
-        "ekYeri": 0.9757,
-        "sabitlik": 0.8714,
-        "puan": 0.924,
-        "teaser": {
-          "bas": 81.1571,
-          "son": 85.2206
-        },
-        "id": "8cd87531-2fe4-45e1-abcf-0b95a749c228",
-        "etiketler": "Polish krakowiak folk dance, cheerful adventure video game background music, syncopated 2/4 at around 128 BPM; bright warm acoustic mix, loop-friendly; fiddle carries the lead melody, clarinet and accordion weave a counter-melody over double bass in a rich polyphonic ensemble; steady, constant dance groove, seamless loop, instrumental."
+          "bas": 68.966,
+          "son": 72.9599
+        }
       }
     ],
-    "lufs": -18.0,
-    "tepe": -5.8,
+    "lufs": -17.9,
+    "tepe": -5.4,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.2403,
-    "ekOrani": 0.434,
+    "girisSure": 5.1939,
+    "ekOrani": 0.414,
     "dosyalar": {
       "dongu": "muzik/PL-dongu.ogg",
       "giris": "muzik/PL-giris.ogg"
     },
-    "bas": 0.1075,
-    "son": 28.91083,
-    "tempo": 134.07,
-    "kredi": {
-      "kalan": 728.5
-    }
+    "bas": 0.1,
+    "son": 27.36954,
+    "tempo": 105.51,
+    "kredi": {}
   },
   "DE": {
     "gorev": "34e79d196d6cdcd8fe4de0d8df543196",

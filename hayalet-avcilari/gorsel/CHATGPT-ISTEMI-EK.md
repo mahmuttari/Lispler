@@ -248,3 +248,19 @@ Sheet K16: TRANSPARENT background, grid 3 x 2, small game effects and UI parts, 
 5. a tiny SPARKLE particle (four-point golden glint), about 64 x 64 px
 6. an empty horizontal HEALTH BAR FRAME (a rounded capsule with a cute golden rim and a dark inner track, no fill), about 440 x 70 px
 ```
+
+
+## K17: karaya çıkan timsah (27 Kasım 2026)
+
+Kullanıcı: *"Timsah gölden çıkıp 2-3 adım dışarıya çıkacaktı."* Oyunda yalnız timsah başı kareleri var (`an-timsah-1..6`);
+karada yürüyen tam beden gerekiyor. Kesim: `timsah-yuru` (1-4 yürüme), `timsah-cik` (5 sudan çıkış), `timsah-dur` (6 bekleme).
+
+```
+Sheet K17: the SAME cute green cartoon CROCODILE as the game's crocodile head frames (big friendly eyes, rounded snout, light
+belly), full body, seen from above at a slight 3/4 angle (same view as the game's characters), facing RIGHT, TRANSPARENT
+background, grid 3 x 2, same size and position in every cell (about 300 px long including the tail), no ground, no shadow:
+1-4. WALKING on land, waddle cycle of 4 frames (short legs alternating, tail swaying, body slightly bobbing)
+5. CLIMBING OUT of water: front half on land, a few water drops falling from its body
+6. STANDING still, mouth slightly open in a playful grin
+Cute premium casual style matching the game's characters, soft lighting from the upper left, not scary, no text.
+```

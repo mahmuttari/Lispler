@@ -116,6 +116,8 @@ ANIMASYON = {
     'K12': [('yuva-sis', [1, 2, 3], 256), ('yuva-duman', [4, 5, 6], 256)],  # yuvaların hareketli sisi (yolculuk.js)
     'K13': [('kopru-in', [2, 3], 256)],
     'K14': [('fare-kos', [1, 2, 3], 128), ('fare-bekle', [4, 5, 6], 128)],  # yuvanın kaçışan fareleri (yuva-canlilar.js)  # dik duran kilitli köprü, kapı açılışı (K05'in yerine geçer)
+    # K17: karaya çıkan timsah (tam beden; TMS1 'timsah-yuru' kullanır)
+    'K17': [('timsah-yuru', [1, 2, 3, 4], 256), ('timsah-cik', [5], 256), ('timsah-dur', [6], 256)],
     'R48': [('menu-hayalet', [1, 2, 3], 160)],
     'R04': [('hayalet-dogus', [1, 2, 3], 192), ('hayalet-sarj', [4, 5, 6], 128)],  # yuvadan doğuş girdabı, atıcının şarjı
     'R05': [('toplama-halka', [1, 2, 3], 192), ('mucevher-parilti', [4, 5, 6], 128)],  # toplama halkası, mücevher pırıltısı

@@ -953,65 +953,42 @@
     "kredi": {}
   },
   "TZ": {
-    "gorev": "078d414ff86001de357a126c147e7024",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-tz-1.mp3",
-        "sure": 119.581,
-        "tempo": 129.02,
+        "dosya": "TZ.mp3",
+        "sure": 127.96,
+        "tempo": 91.3,
         "dongu": {
-          "bas": 20.1586,
-          "uzunluk": 29.77202,
-          "vurus": 64
+          "bas": 30.4349,
+          "uzunluk": 31.48277,
+          "vurus": 48
         },
-        "ekYeri": 0.9675,
-        "sabitlik": 0.8664,
-        "puan": 0.9385,
+        "ekYeri": 0.9458,
+        "sabitlik": 0.7005,
+        "puan": 0.6996,
         "teaser": {
-          "bas": 16.4294,
-          "son": 20.609
-        },
-        "id": "014b2c18-4962-49d5-b128-96978c323e08",
-        "etiketler": "Tanzanian ngoma, instrumental; bright warm acoustic mix keeps the lead melody forward while the counter-melody weaves through; marimba and zeze fiddle carry a rich polyphonic ensemble above ngoma drums and handclaps in a steady danceable groove at around 128 BPM, cheerful adventure video game background music, constant energy with no breakdown and no fade-out, loop-friendly."
-      },
-      {
-        "dosya": "hayalet-avcilari-tz-2.mp3",
-        "sure": 118.669,
-        "tempo": 125.39,
-        "dongu": {
-          "bas": 50.3089,
-          "uzunluk": 30.64769,
-          "vurus": 64
-        },
-        "ekYeri": 0.9675,
-        "sabitlik": 0.8292,
-        "puan": 0.9195,
-        "teaser": {
-          "bas": 23.058,
-          "son": 26.8893
-        },
-        "id": "434707c9-6558-4d53-a563-d73fed710009",
-        "etiketler": "Tanzanian ngoma, marimba, zeze fiddle, ngoma drums and handclaps weave a rich polyphonic ensemble around a nimble lead melody and counter-melody; steady danceable groove around 128 BPM, constant energy in a seamless loop-ready arrangement; bright warm acoustic mix with lively layered interplay; instrumental, built as cheerful adventure video game background music."
+          "bas": 94.2362,
+          "son": 98.2068
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -5.7,
+    "tepe": -6.6,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.3796,
-    "ekOrani": 0.184,
+    "girisSure": 5.1706,
+    "ekOrani": 0.429,
     "dosyalar": {
       "dongu": "muzik/TZ-dongu.ogg",
       "giris": "muzik/TZ-giris.ogg"
     },
-    "bas": 0.1025,
-    "son": 29.87452,
-    "tempo": 129.02,
-    "kredi": {
-      "kalan": 512.5
-    }
+    "bas": 0.1075,
+    "son": 31.59027,
+    "tempo": 91.3,
+    "kredi": {}
   },
   "UG": {
     "gorev": "931f374887121c58fe82538e40f6472a",

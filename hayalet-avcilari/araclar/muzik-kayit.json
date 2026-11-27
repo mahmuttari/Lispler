@@ -1670,65 +1670,42 @@
     }
   },
   "PK": {
-    "gorev": "1af7bac3642c61f8161a2b0a4d1a59b7",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-pk-1.mp3",
-        "sure": 119.341,
-        "tempo": 97.52,
+        "dosya": "PK.mp3",
+        "sure": 123.16,
+        "tempo": 102.99,
         "dongu": {
-          "bas": 68.9936,
-          "uzunluk": 29.3905,
+          "bas": 47.3101,
+          "uzunluk": 27.96756,
           "vurus": 48
         },
-        "ekYeri": 0.9711,
-        "sabitlik": 0.8084,
-        "puan": 0.7757,
+        "ekYeri": 0.9699,
+        "sabitlik": 0.7778,
+        "puan": 0.7932,
         "teaser": {
-          "bas": 60.4334,
-          "son": 64.7059
-        },
-        "id": "86459e17-9c2c-4384-8c91-2b9634ce8266",
-        "etiketler": "Punjabi bhangra, instrumental; dhol drives a steady danceable groove around 128 BPM, with tumbi answering a lead melody and chimta marking the pulse; algoza double flute carries a counter-melody over rich polyphonic ensemble; upbeat energetic, playful and heroic adventure video game background music, bright warm acoustic mix, constant energy, loop-friendly."
-      },
-      {
-        "dosya": "hayalet-avcilari-pk-2.mp3",
-        "sure": 119.941,
-        "tempo": 129.8,
-        "dongu": {
-          "bas": 53.4046,
-          "uzunluk": 29.5214,
-          "vurus": 64
-        },
-        "ekYeri": 0.9844,
-        "sabitlik": 0.7847,
-        "puan": 0.9186,
-        "teaser": {
-          "bas": 12.5844,
-          "son": 16.7872
-        },
-        "id": "79ff048c-2c17-4a01-9643-f015d517349f",
-        "etiketler": "Punjabi bhangra adventure video game background music, instrumental; bright warm acoustic mix, loop-friendly, constant energy; dhol leads with tumbi, algoza double flute and chimta weaving a playful and heroic lead melody, counter-melody and rich polyphonic rhythm section; driving danceable groove around 128 BPM."
+          "bas": 86.3473,
+          "son": 90.4108
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -6.0,
+    "tepe": -5.4,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.4028,
-    "ekOrani": 0.327,
+    "girisSure": 5.2635,
+    "ekOrani": 0.345,
     "dosyalar": {
       "dongu": "muzik/PK-dongu.ogg",
       "giris": "muzik/PK-giris.ogg"
     },
     "bas": 0.1,
-    "son": 29.6214,
-    "tempo": 129.8,
-    "kredi": {
-      "kalan": 380.5
-    }
+    "son": 28.06756,
+    "tempo": 102.99,
+    "kredi": {}
   },
   "IN": {
     "gorev": "suno-pencere-2026-11",

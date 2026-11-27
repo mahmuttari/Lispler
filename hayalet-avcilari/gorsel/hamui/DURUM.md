@@ -25,7 +25,7 @@ verdiği PNG olarak, işlenmeden kaydedilir (1536 × 1024, RGBA). Arka planda al
 
 | Pafta | İçerik | Durum |
 |---|---|---|
-| N14 | Şimşek çarpması | bekliyor |
+| N14 | Şimşek çarpması | **üretildi** (27 Kas, yeni sohbet, referans N08+N09, 1. deneme; ChatGPT'nin üç görselinden 2.'si "şeffaf arka planlı" olanı); 3. karede çarpma parıltısı alt kenara 6 px, kenara değmiyor |
 | N15 | Roket uçuşu, duman izi | bekliyor |
 | N16 | Şifa, görünmezlik | bekliyor |
 | N17 | Güç açılışı, güç halesi | bekliyor |

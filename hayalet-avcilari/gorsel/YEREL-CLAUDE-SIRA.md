@@ -20,6 +20,9 @@ gpt kullan, yerel oturumu kullan"*.
    J02-J12'nin 3. hücresi de artık düz köprü + kilitli kapı (istem dosyası güncellendi).
 0c. **K14 (K13'ten hemen sonra, kullanıcı istedi 26 Kasım 2026):** `CHATGPT-ISTEMI-EK.md` › K14 yuvanın fareleri (koşu ve
    bekleme kareleri; "hayaletlerin çıktığı yere yaklaşınca fareler, yarasalar kaçışsın"). Kayıt `gorsel/hamek/K14.png`.
+0d. **Y01–Y03 (EN ÖNCE, kullanıcı istedi 27 Kasım 2026: "harita yerleşimlerini de ChatGPT yapsın, mantıklı ve güzel bir
+   şekilde"):** `CHATGPT-ISTEMI-YERLESIM.md` — bölge yerleşim planları, ChatGPT'den JSON metni (resim değil). Kayıt
+   `gorsel/hamyerlesim/Y01.json` … `Y03.json`; geçerli JSON olduğunu denetle.
 1. **H01 (hemen):** `CHATGPT-ISTEMI-HIKAYE.md` › "Hatıra paftaları" › H01 (ülke 1–6; 1. hücre Türkiye'nin **bakır kahve cezvesi**:
    uzun saplı, el dövmesi bakır, köpüklü kahveli küçük cezve; fincan DEĞİL). Kayıt: `gorsel/hamhikaye/H01.png`.
    Kullanıcıya göster, onay gelince devam et.

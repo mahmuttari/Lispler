@@ -20,6 +20,8 @@ gpt kullan, yerel oturumu kullan"*.
    J02-J12'nin 3. hücresi de artık düz köprü + kilitli kapı (istem dosyası güncellendi).
 0c. **K14 (K13'ten hemen sonra, kullanıcı istedi 26 Kasım 2026):** `CHATGPT-ISTEMI-EK.md` › K14 yuvanın fareleri (koşu ve
    bekleme kareleri; "hayaletlerin çıktığı yere yaklaşınca fareler, yarasalar kaçışsın"). Kayıt `gorsel/hamek/K14.png`.
+> **EN ÖNCE — SUNO MÜZİK (27 Kasım 2026 akşam, kullanıcı Suno aboneliği aldı):** *"Onu Chrome'da pencereden kullanacağız. Şarkıları peş peşe ekleyip hazırlat, tek seferde indirebilirsin. O sanatsal güzel müzikleri hazırla."* Ayrıntılı sıra, Suno alanları (Style / Exclude / Instrumental), indirme sınırı (Pro 20, Premier 60 indirme/ay; ülke başına yalnız 1 sürüm indir) ve indirme sonrası işleme: **`araclar/SUNO-PENCERE-SIRA.md`**. Önce 1 numarayı üret, indir, işle; sorun yoksa kalanı peş peşe sıraya koy. Türkiye listede yok (olduğu gibi kalır). K17 ve K18 ChatGPT işleri bundan sonra.
+>
 > **YENİ (27 Kasım akşam):** **K18** dikey duvar parçaları (6 tema; `CHATGPT-ISTEMI-EK.md` K18) → `gorsel/hamek/K18.png`.
 > **YENİ (27 Kasım öğleden sonra):** **K17** karaya çıkan timsah (tam beden yürüme, sudan çıkış, bekleme; `CHATGPT-ISTEMI-EK.md`
 > K17) → `gorsel/hamek/K17.png`. Önceki sıra bitti (Y, J, N, K15/K16, H, B, A hepsi geldi ve kesildi/işlendi).

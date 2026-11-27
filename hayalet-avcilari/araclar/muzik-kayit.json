@@ -374,65 +374,42 @@
     "kredi": {}
   },
   "IT": {
-    "gorev": "ecd1460804caa1e6ad0c83ba9c22c1f3",
-    "secilen": 2,
+    "gorev": "suno-pencere-2026-11",
+    "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-it-1.mp3",
-        "sure": 118.669,
-        "tempo": 136.62,
+        "dosya": "IT.mp3",
+        "sure": 149.88,
+        "tempo": 93.25,
         "dongu": {
-          "bas": 10.3605,
-          "uzunluk": 31.60954,
-          "vurus": 72
+          "bas": 49.4059,
+          "uzunluk": 28.23963,
+          "vurus": 44
         },
-        "ekYeri": 0.9807,
-        "sabitlik": 0.8581,
-        "puan": 0.9047,
+        "ekYeri": 0.9144,
+        "sabitlik": 0.7012,
+        "puan": 0.6938,
         "teaser": {
-          "bas": 70.5123,
-          "son": 74.4829
-        },
-        "id": "55d263f3-4726-4295-9789-36ecc453a8c2",
-        "etiketler": "Italian tarantella, around 128 BPM with a steady, danceable 6/8 groove; instrumental, constant energy, cheerful adventure video game background music; bright warm acoustic mix; mandolin and guitar drive the rhythm, accordion threads counter-melody beneath a clear lead melody, with tamburello tambourine marking the pulse; layered polyphony loops seamlessly."
-      },
-      {
-        "dosya": "hayalet-avcilari-it-2.mp3",
-        "sure": 118.813,
-        "tempo": 133.04,
-        "dongu": {
-          "bas": 18.1119,
-          "uzunluk": 28.85642,
-          "vurus": 64
-        },
-        "ekYeri": 0.9727,
-        "sabitlik": 0.8395,
-        "puan": 0.913,
-        "teaser": {
-          "bas": 92.9671,
-          "son": 97.0306
-        },
-        "id": "963d7c79-2b37-4ad0-aab4-93cc835c5ed9",
-        "etiketler": "Italian tarantella, instrumental; steady danceable 6/8 at around 128 BPM, cheerful adventure video game background music; bright warm acoustic mix; mandolin carries the lead melody over a counter-melody, accordion, tamburello tambourine and guitar form a rich polyphonic rhythm section, maintaining constant energy and a loop-friendly arrangement."
+          "bas": 115.9053,
+          "son": 119.783
+        }
       }
     ],
     "lufs": -18.0,
-    "tepe": -4.0,
+    "tepe": -5.7,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.2635,
-    "ekOrani": 0.007,
+    "girisSure": 5.0777,
+    "ekOrani": 0.115,
     "dosyalar": {
       "dongu": "muzik/IT-dongu.ogg",
       "giris": "muzik/IT-giris.ogg"
     },
-    "bas": 0.105,
-    "son": 28.96142,
-    "tempo": 133.04,
-    "kredi": {
-      "kalan": 680.5
-    }
+    "bas": 0.1,
+    "son": 28.33963,
+    "tempo": 93.25,
+    "kredi": {}
   },
   "ES": {
     "gorev": "6bd0aa892f33de516f29d5565441a6fa",

@@ -8,7 +8,7 @@ const HIKAYE_SESLERI = ["hatira", "sahne", "dogru", "yanlis", "kopru-ac", "kopru
 // SES1: canlı ülke objeleri, yuva canlıları ve ortam sesleri
 const CANLI_SESLERI = ["panda", "komodo", "ejder-alev", "leylek", "fil", "penguen", "lemur", "zurafa",
   "flamingo", "gelada", "deve", "tavus", "kaplan", "kunduz", "aksolotl", "lama", "papagan", "yavru-ejder", "fare-kac", "yarasa-kac",
-  "fare-cik", "selale", "lav"];
+  "fare-cik", "selale", "lav", "timsah"];
 const audio = {
   ctx: null,
   enabled: true,

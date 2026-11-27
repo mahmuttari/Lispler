@@ -2791,65 +2791,42 @@
     }
   },
   "CO": {
-    "gorev": "f1ca5b7ef87f8bb9e9c6f5e6246bb775",
+    "gorev": "suno-pencere-2026-11",
     "secilen": 1,
     "parcalar": [
       {
-        "dosya": "hayalet-avcilari-co-1.mp3",
-        "sure": 118.549,
-        "tempo": 134.03,
+        "dosya": "CO.mp3",
+        "sure": 138.36,
+        "tempo": 96.22,
         "dongu": {
-          "bas": 45.6878,
-          "uzunluk": 32.21919,
-          "vurus": 72
+          "bas": 89.5116,
+          "uzunluk": 27.83073,
+          "vurus": 44
         },
-        "ekYeri": 0.9818,
-        "sabitlik": 0.8269,
-        "puan": 0.9088,
+        "ekYeri": 0.8367,
+        "sabitlik": 0.577,
+        "puan": 0.6326,
         "teaser": {
-          "bas": 41.6614,
-          "son": 45.7016
-        },
-        "id": "7553cfa4-8ad0-49e5-a588-e9c5bb7fc3f5",
-        "etiketler": "Colombian cumbia, steady danceable groove at around 128 BPM, upbeat energetic adventure video game background music, playful and heroic; gaita flutes lead over tambora, llamador drum, maracas and accordion, with a clear lead melody and interwoven counter-melody; rich polyphonic ensemble, bright warm acoustic mix, loop-friendly with constant energy, instrumental."
-      },
-      {
-        "dosya": "hayalet-avcilari-co-2.mp3",
-        "sure": 120.013,
-        "tempo": 132.8,
-        "dongu": {
-          "bas": 35.6444,
-          "uzunluk": 27.11254,
-          "vurus": 60
-        },
-        "ekYeri": 0.955,
-        "sabitlik": 0.7994,
-        "puan": 0.8933,
-        "teaser": {
-          "bas": 83.0762,
-          "son": 87.1629
-        },
-        "id": "cb9e1993-4d22-449f-b923-d46bfe2c239f",
-        "etiketler": "Colombian cumbia, led by a bright, nimble gaita flute melody; tambora, llamador drum, maracas, and accordion drive the rhythm, with a playful, heroic counter-melody weaving through a rich polyphonic ensemble. Upbeat energetic adventure video game background music, steady danceable groove around 128 BPM; instrumental, bright warm acoustic mix, loop-friendly, constant energy."
+          "bas": 63.24,
+          "son": 66.9552
+        }
       }
     ],
-    "lufs": -17.9,
-    "tepe": -5.1,
+    "lufs": -18.0,
+    "tepe": -5.5,
     "sinirlayici": false,
     "deneme": 1,
     "tuttu": true,
-    "girisSure": 5.2402,
-    "ekOrani": 0.365,
+    "girisSure": 4.9152,
+    "ekOrani": 0.02,
     "dosyalar": {
       "dongu": "muzik/CO-dongu.ogg",
       "giris": "muzik/CO-giris.ogg"
     },
     "bas": 0.1,
-    "son": 32.31919,
-    "tempo": 134.03,
-    "kredi": {
-      "kalan": 200.5
-    }
+    "son": 27.93073,
+    "tempo": 96.22,
+    "kredi": {}
   },
   "PE": {
     "gorev": "suno-pencere-2026-11",

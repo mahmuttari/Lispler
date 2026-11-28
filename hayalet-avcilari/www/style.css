@@ -1261,6 +1261,8 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
   white-space: nowrap;
 }
 .takim-oyuncu span { font-size: 10px; letter-spacing: -1px; }
+.takim-oyuncu .can-kalp { height: 1.2em; width: auto; vertical-align: -0.2em; margin-inline-end: 1px; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5)); }
+.takim-oyuncu .can-kalp.bos { filter: grayscale(1) brightness(0.4) contrast(1.1); opacity: 0.75; }
 .takim-oyuncu.olu { opacity: 0.6; }
 
 .bekleme {

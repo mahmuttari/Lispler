@@ -5284,9 +5284,16 @@ function takimCiz(simdi) {
   if (simdi - _takimZamani < 300) return;
   _takimZamani = simdi;
   const hostUid = online.cachedRoom && online.cachedRoom.hostUid;
+  // Canlar #lives gibi ChatGPT kalp resmiyle (boş can aynı resmin sönük hâli); resim yoksa emoji yedek (KLP1)
+  const kalp = typeof gorsel === "function" ? gorsel("kalp") : null;
   const satir = (ad, hp, maxHp, olu, host) => {
-    const can = olu ? "👻" : "❤️".repeat(Math.max(0, Math.min(hp, maxHp))) + "🖤".repeat(Math.max(0, maxHp - Math.max(0, hp)));
-    return `<div class="takim-oyuncu${olu ? " olu" : ""}"><bdi>${host ? "👑 " : ""}${escapeHtml(String(ad || "?").slice(0, 10))}</bdi> <span>${can}</span></div>`;
+    const dolu = Math.max(0, Math.min(hp, maxHp)), bos = Math.max(0, maxHp - dolu);
+    const can = olu ? "👻"
+      : kalp ? `<img class="can-kalp" src="${kalp.src}" alt="" draggable="false">`.repeat(dolu)
+        + `<img class="can-kalp bos" src="${kalp.src}" alt="" draggable="false">`.repeat(bos)
+      : "❤️".repeat(dolu) + "🖤".repeat(bos);
+    const etiket = !olu && kalp ? ` role="img" aria-label="${dolu}/${maxHp}"` : "";
+    return `<div class="takim-oyuncu${olu ? " olu" : ""}"><bdi>${host ? "👑 " : ""}${escapeHtml(String(ad || "?").slice(0, 10))}</bdi> <span${etiket}>${can}</span></div>`;
   };
   let html = satir(save.playerName || t("Avcı"), game.player.hp, game.player.maxHp, game.player.dead, hostUid === online.uid);
   for (const [uid, rp] of Object.entries(online.remotePlayers)) html += satir(rp.name, rp.hp, rp.maxHp, rp.dead, uid === hostUid);

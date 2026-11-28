@@ -313,6 +313,8 @@ function petCiz(ctx, ucanlar) {
 
 // Başın üstünde can kalpleri (dolu ve boş)
 function petCanCiz(ctx, x, y, can, maxCan) {
+  // ChatGPT can çerçevesi (ui-can-cubugu) varsa: kalpler yerine çubuk (dolgu can/maxCan); yoksa kod kalpleri
+  if (typeof canCubuguCiz === "function" && canCubuguCiz(ctx, x, y - 1, 28, maxCan > 0 ? can / maxCan : 0, "#ef4444", "rgba(0,0,0,0.7)")) return;
   const ara = 9, bas = x - ((maxCan - 1) * ara) / 2;
   ctx.save();
   for (let i = 0; i < maxCan; i++) {

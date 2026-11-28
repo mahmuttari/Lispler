@@ -144,6 +144,22 @@ function temaDeseni(n, tur) {
   return (_temaDesen[k] = desen);
 }
 window.temaDeseni = temaDeseni;
+// Dünya Turu gölleri: tema sayı olmadığı için tema<n>-su yok; ChatGPT'nin dikişsiz su dokusu (dere-su) aynı döşemeyle
+// kullanılır (engeller.js suTabani). Yoksa null: eski renk geçişi.
+let _dereSuDesen = null, _dereSuResim = null;
+function dereSuDeseni() {
+  const im = gorsel("dere-su");
+  if (!im) return null;
+  if (_dereSuDesen && _dereSuResim === im) return _dereSuDesen;
+  const desen = document.createElement("canvas").getContext("2d").createPattern(im, "repeat");
+  if (desen && desen.setTransform && typeof DOMMatrix === "function") {
+    const o = TEMA_DOKU_BIRIM / im.naturalWidth;
+    desen.setTransform(new DOMMatrix([o, 0, 0, o, 0, 0]));
+  }
+  _dereSuResim = im;
+  return (_dereSuDesen = desen);
+}
+window.dereSuDeseni = dereSuDeseni;
 window.zeminBirimi = zeminBirimi;
 
 // Zemin: her karede bütün ekrana döşenir. Dünya Turu zemini gibi (dunya-turu.js turZeminCiz) desen ekranın piksel

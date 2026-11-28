@@ -3717,12 +3717,16 @@ function drawPickupGovde(ctx, p) {
     ctx.restore();
     // İçinde aktif karakterin ikonu
     ctx.shadowBlur = 0;
-    ctx.fillStyle = "#7c2d12";
-    ctx.font = "800 14px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    const ikon = (CHAR_POWERS[game.player && game.player.charKey] || CHAR_POWERS.kinkin).icon;
-    ctx.fillText(ikon, 0, 1);
+    // ChatGPT güç simgesi (guc-<karakter>) varsa yıldızın içine o çizilir; yoksa emoji yedek
+    const gucKarakter = CHAR_POWERS[game.player && game.player.charKey] ? game.player.charKey : "kinkin";
+    if (!(typeof gorselKutuya === "function" && typeof gorsel === "function" && gorsel("guc-" + gucKarakter)
+      && gorselKutuya(ctx, "guc-" + gucKarakter, -10, -10, 20, 20))) {
+      ctx.fillStyle = "#7c2d12";
+      ctx.font = "800 14px Nunito, \"Baloo Bhaijaan 2\", sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(CHAR_POWERS[gucKarakter].icon, 0, 1);
+    }
   } else if (p.kind === "para") {
     // Dönen para (anim.js): kenardan görünürken incelir, arka yüzde simge yok
     const don = typeof paraDonusu === "function" ? paraDonusu(performance.now(), p.x) : { sx: 1, on: true };
@@ -9024,6 +9028,22 @@ function botaDokun(clientX, clientY) {
   game.player.botTargetUntil = performance.now() + 2500;
 }
 
+// Can çubuğu (bot, öteki oyuncular, pet): ChatGPT altın çerçevesi (ui-can-cubugu, 256x64) ve iç boşluğa dolgu (drawGhost'taki
+// oranlar: iç boşluk genişliğin %88'i, yüksekliğin %58'i). cx: orta, cy: orta çizgi, w: iç genişlik, oran 0..1.
+// Çerçeve resmi yoksa false döner: çağıran eski düz dikdörtgenleri çizer. window'a açılır (pet.js kullanır).
+function canCubuguCiz(ctx, cx, cy, w, oran, dolgu, arka) {
+  const cerceve = typeof gorsel === "function" ? gorsel("ui-can-cubugu") : null;
+  if (!cerceve) return false;
+  const wf = w / 0.88, hf = wf / 4, ic = hf * 0.58, o = Math.max(0, Math.min(1, oran));
+  ctx.fillStyle = arka || "rgba(0,0,0,0.7)";
+  ctx.fillRect(cx - w / 2, cy - ic / 2, w, ic);
+  ctx.fillStyle = dolgu;
+  ctx.fillRect(cx - w / 2, cy - ic / 2, w * o, ic);
+  ctx.drawImage(cerceve, cx - wf / 2, cy - hf * 0.48, wf, hf);
+  return true;
+}
+window.canCubuguCiz = canCubuguCiz;
+
 // Bot etiketi: isim, can çubuğu, hedef işareti (3D ve 2D çizimde ortak)
 function botEtiketi(ctx, b) {
   ctx.save();
@@ -9036,9 +9056,11 @@ function botEtiketi(ctx, b) {
   ctx.fillText("🤖 Bot", b.x, b.y - 46);
   if (b.hp < b.maxHp) {
     const w = 34, oran = Math.max(0, b.hp / b.maxHp);
-    ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(b.x - w / 2 - 1, b.y - 41, w + 2, 6);
-    ctx.fillStyle = "#dc2626"; ctx.fillRect(b.x - w / 2, b.y - 40, w, 4);
-    ctx.fillStyle = "#10b981"; ctx.fillRect(b.x - w / 2, b.y - 40, w * oran, 4);
+    if (!canCubuguCiz(ctx, b.x, b.y - 38, w, oran, "#10b981", "#dc2626")) {
+      ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(b.x - w / 2 - 1, b.y - 41, w + 2, 6);
+      ctx.fillStyle = "#dc2626"; ctx.fillRect(b.x - w / 2, b.y - 40, w, 4);
+      ctx.fillStyle = "#10b981"; ctx.fillRect(b.x - w / 2, b.y - 40, w * oran, 4);
+    }
   }
   if (game.player && game.player.botTargetUntil > performance.now()) {
     ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2;
@@ -9299,12 +9321,14 @@ function render() {
       // Mini can çubuğu
       const w = 36, h = 4;
       const ratio = Math.max(0, Math.min(1, (rp.hp || 0) / (rp.maxHp || 3)));
-      ctx.fillStyle = "rgba(0,0,0,0.6)";
-      ctx.fillRect(rp.x - w / 2 - 1, rp.y - 44, w + 2, h + 2);
-      ctx.fillStyle = "#dc2626";
-      ctx.fillRect(rp.x - w / 2, rp.y - 43, w, h);
-      ctx.fillStyle = "#10b981";
-      ctx.fillRect(rp.x - w / 2, rp.y - 43, w * ratio, h);
+      if (!canCubuguCiz(ctx, rp.x, rp.y - 41, w, ratio, "#10b981", "#dc2626")) {
+        ctx.fillStyle = "rgba(0,0,0,0.6)";
+        ctx.fillRect(rp.x - w / 2 - 1, rp.y - 44, w + 2, h + 2);
+        ctx.fillStyle = "#dc2626";
+        ctx.fillRect(rp.x - w / 2, rp.y - 43, w, h);
+        ctx.fillStyle = "#10b981";
+        ctx.fillRect(rp.x - w / 2, rp.y - 43, w * ratio, h);
+      }
       ctx.restore();
     });
   }
@@ -9421,11 +9445,30 @@ function ycSimge(el, key) {
 }
 
 function updateHUD() {
-  let lives = "";
-  for (let i = 0; i < game.player.maxHp; i++) {
-    lives += i < game.player.hp ? "❤️" : "🖤";
+  // Canlar: ChatGPT kalp resmi (dolu) ve aynı resmin sönük hâli (boş; CSS süzgeci, yeni resim yok); resim yoksa emoji yedek
+  const canEl = document.getElementById("lives"), canResim = typeof gorsel === "function" && gorsel("kalp");
+  const canMax = game.player.maxHp, canDolu = Math.max(0, Math.min(game.player.hp, canMax));
+  const canAnahtar = `${canResim ? "r" : "e"}|${canDolu}|${canMax}`;
+  if (canEl.dataset.can !== canAnahtar) {
+    canEl.dataset.can = canAnahtar;
+    canEl.classList.toggle("can-resim", !!canResim);
+    if (canResim) {
+      canEl.textContent = "";
+      for (let i = 0; i < canMax; i++) {
+        const k = document.createElement("img");
+        k.className = i < canDolu ? "can-kalp" : "can-kalp bos";
+        k.src = canResim.src; k.alt = ""; k.draggable = false;
+        canEl.appendChild(k);
+      }
+      canEl.setAttribute("role", "img");
+      canEl.setAttribute("aria-label", `${canDolu}/${canMax}`);
+    } else {
+      let lives = "";
+      for (let i = 0; i < canMax; i++) lives += i < canDolu ? "❤️" : "🖤";
+      canEl.textContent = lives;
+      canEl.removeAttribute("role"); canEl.removeAttribute("aria-label");
+    }
   }
-  document.getElementById("lives").textContent = lives;
   document.getElementById("level-num").textContent = game.level;
   document.getElementById("ghost-count").textContent = game.totalCaught;
   document.getElementById("run-para").textContent = game.runPara;

@@ -412,7 +412,9 @@
   function suTabani(ctx, w, h, r, B, kiyiCiz, kenarRengi = "#0b2a55") {
     if (kiyiCiz) kiyiCiz();
     doldur(ctx, B, kenarRengi, 0, 0, 2);
-    const desen = typeof _boyaTema === "number" && typeof window.temaDeseni === "function" ? window.temaDeseni(_boyaTema + 1, "su") : null;
+    // Klasik tema (sayı): tema<n>-su; Dünya Turu (ülke kodu): ChatGPT dere-su dokusu
+    const desen = typeof _boyaTema === "number" && typeof window.temaDeseni === "function" ? window.temaDeseni(_boyaTema + 1, "su")
+      : typeof _boyaTema === "string" && typeof window.dereSuDeseni === "function" ? window.dereSuDeseni() : null;
     const oy = B.oy || 0, g = ctx.createLinearGradient(0, -oy, 0, SU_BOY - oy);
     g.addColorStop(0, "#2b8fe6"); g.addColorStop(1, "#0f4fae");
     doldur(ctx, B, desen || g);
@@ -847,7 +849,10 @@
   function engelResimRessami(o) {
     const dt = typeof o.tema === "string";
     if (o.tur === "sinir") {
-      if (dt) return null; // Dünya Turu'nda sınır şeridi resmi yok
+      if (dt) { // Dünya Turu: aile-<A>-sinir resmi yok; ailenin duvar resmi (aile-<A>-duvar) sınır şeridi gibi döşenir
+        const u = window.ulkeKodla && window.ulkeKodla(o.tema), A = u && u.aile, kd = A && `aile-${A}-duvar`;
+        return kd && engelGorsel(kd) ? (ctx, w, h, r, p, B) => sinirResmi(ctx, w, h, p, B, kd) : null;
+      }
       const k = `tema${o.tema + 1}-sinir`;
       return engelGorsel(k) ? (ctx, w, h, r, p, B) => sinirResmi(ctx, w, h, p, B, k) : null;
     }

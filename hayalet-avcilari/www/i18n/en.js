@@ -286,6 +286,7 @@ I18N.en = {
   "🧭 Gezgin rozeti!": "🧭 Traveler badge!",
   "🧹 Kalan: {n}": "🧹 Left: {n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 Fewer ads: none for new players or after short games.",
+  "🚀 Avcılar artık akıcı: 3D çizimdeki takılmalar giderildi.": "🚀 Smoother hunters: the 3D drawing stutter is fixed.",
   "🚀 ODA KUR": "🚀 CREATE ROOM",
   "🚪 Çıkış": "🚪 Sign Out",
   "🚪 Odadan Ayrıl": "🚪 Leave Room",

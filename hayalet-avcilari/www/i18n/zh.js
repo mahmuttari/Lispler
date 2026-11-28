@@ -286,6 +286,7 @@ I18N.zh = {
   "🧭 Gezgin rozeti!": "🧭 旅行者徽章！",
   "🧹 Kalan: {n}": "🧹 剩余：{n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 广告更少：新玩家和短局之后不再显示广告。",
+  "🚀 Avcılar artık akıcı: 3D çizimdeki takılmalar giderildi.": "🚀 猎人更流畅：修复了3D绘制造成的卡顿。",
   "🚀 ODA KUR": "🚀 创建房间",
   "🚪 Çıkış": "🚪 退出",
   "🚪 Odadan Ayrıl": "🚪 离开房间",

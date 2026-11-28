@@ -286,6 +286,7 @@ I18N.hi = {
   "🧭 Gezgin rozeti!": "🧭 यात्री बैज!",
   "🧹 Kalan: {n}": "🧹 बचे: {n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 विज्ञापन कम हुए: नए खिलाड़ियों को और छोटे खेलों के बाद कोई विज्ञापन नहीं।",
+  "🚀 Avcılar artık akıcı: 3D çizimdeki takılmalar giderildi.": "🚀 शिकारी अब और सहज: 3D ड्रॉइंग की अटकन ठीक कर दी गई।",
   "🚀 ODA KUR": "🚀 रूम बनाओ",
   "🚪 Çıkış": "🚪 लॉग आउट",
   "🚪 Odadan Ayrıl": "🚪 रूम छोड़ो",

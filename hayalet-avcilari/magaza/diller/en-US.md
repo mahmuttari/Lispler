@@ -44,9 +44,9 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 
 ## Sürüm notu
 
+🚀 Smoother hunters: 3D stutter fixed.
 🧊 Hunters are now real 3D: they turn, walk and run in every direction; weapon always in hand!
 👥 New Characters screen: each hunter's story, power, abilities and costumes in one panel.
 ⚡ Extra weapons and powers are animated: lightning, rocket smoke, ice block, power aura!
 🔊 All sound effects have been renewed; every shop weapon has its own firing sound.
 ⚙️ New "3D characters" button in sound settings; on slow phones 3D turns off automatically.
-🛠️ Fairer weapons and many online fixes.

@@ -286,6 +286,7 @@ I18N.es = {
   "🧭 Gezgin rozeti!": "🧭 ¡Insignia de viajero!",
   "🧹 Kalan: {n}": "🧹 Quedan: {n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 Menos anuncios: ninguno para jugadores nuevos ni tras partidas cortas.",
+  "🚀 Avcılar artık akıcı: 3D çizimdeki takılmalar giderildi.": "🚀 Cazadores más fluidos: se corrigieron los tirones del dibujo 3D.",
   "🚀 ODA KUR": "🚀 CREAR SALA",
   "🚪 Çıkış": "🚪 Salir",
   "🚪 Odadan Ayrıl": "🚪 Salir de la sala",

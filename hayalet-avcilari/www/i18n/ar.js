@@ -286,6 +286,7 @@ I18N.ar = {
   "🧭 Gezgin rozeti!": "🧭 شارة الرحّالة!",
   "🧹 Kalan: {n}": "🧹 المتبقي: {n}",
   "😌 Reklamlar seyrekleşti; yeni oyuncuya ve kısa oyunlardan sonra reklam yok.": "😌 إعلانات أقل: لا إعلانات للاعبين الجدد ولا بعد الجولات القصيرة.",
+  "🚀 Avcılar artık akıcı: 3D çizimdeki takılmalar giderildi.": "🚀 صيادون أكثر سلاسة: تم إصلاح التقطع في الرسم ثلاثي الأبعاد.",
   "🚀 ODA KUR": "🚀 إنشاء غرفة",
   "🚪 Çıkış": "🚪 خروج",
   "🚪 Odadan Ayrıl": "🚪 مغادرة الغرفة",

@@ -1,6 +1,6 @@
+🚀 Avcılar artık akıcı: 3D çizimdeki takılmalar giderildi.
 🧊 Avcılar artık gerçek 3D: her yöne dönüyor, yürüyor, koşuyor; silah hep elinde!
 👥 Yeni Karakterler ekranı: her avcının hikâyesi, gücü, yetenekleri ve kostümleri tek panelde.
 ⚡ Ek silahlar ve güçler animasyonlu: yıldırım, roket dumanı, buz bloğu, güç halesi!
 🔊 Bütün ses efektleri yenilendi; her mağaza silahının kendi atış sesi var.
 ⚙️ Ses ayarlarında yeni "3D karakterler" düğmesi; yavaş telefonda 3D kendiliğinden kapanır.
-🛠️ Daha dengeli silahlar ve birçok çevrimiçi düzeltme.

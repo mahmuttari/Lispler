@@ -4,6 +4,10 @@ Kalıcı kurallar `CLAUDE.md`'de (görseller yalnız ChatGPT, bulutta Codex CLI 
 Fable; "yayınla" denmeden Play'e hiçbir şey yok). Çalışma dalı `ccr-e316a7ca-5sw0ow` (taslak PR #14). Deneme sayfası
 kullanıcının artifact'ı: https://claude.ai/artifact/3gwhkL7g2QzNyaZWig83pt (sürüm 86).
 
+**Play:** 3.21.0 (60) 28 Kasım'da kullanıcının "Yayınla" komutuyla üretime %100 yüklendi ve incelemeye gönderildi (koşu
+46129307100). 3.20.1 dalı (hayalet-3-20-1) bu dala birleştirildi. Sonraki sürüm: versionCode 61. Mağaza görselleri bu sürümde
+değişmedi (istenirse araclar/magaza-gorsel.mjs + `gorsel uygula`).
+
 ## Deneme sürümünü güncelleme
 1. `python3 araclar/deneme_hazirla.py <geçici>/deneme-yeni www` (görselleri ~7 MB'lık paket parçalarına koyar, game.js
    m4a→mp3 dönüşümünü yapar; ham game.js asla doğrudan kopyalanmaz).

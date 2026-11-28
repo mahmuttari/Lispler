@@ -1,0 +1,170 @@
+{
+ "bilmeceler": [
+  {
+   "soru": "Bir teknenin içinde renkler yüzer;\nİnce çubukla şekil alır;\nKuruyunca hatıra olur.",
+   "secenek": [
+    "ebru kâğıdı",
+    "Petrykivka boyalı ahşap kaşık",
+    "Wawel ejderi ahşap oyuncak"
+   ],
+   "dogru": 0,
+   "bolum": [
+    "Haritanın ilk parçası canlanınca küçük bir resim belirdi.",
+    "Resimde ellerinde sönmüş fenerler tutan hayaletler vardı.",
+    "Anladık ki onlar kötü değil, sadece yolunu kaybetmiş."
+   ]
+  },
+  {
+   "soru": "Kızgın bir ocakta yumuşar, biçim alırım;\nİpe dizilince boyna takılırım;\nIşıkta göz kırparım.",
+   "secenek": [
+    "lavanta sabunu",
+    "Murano cam boncuğu",
+    "flamenko yelpazesi"
+   ],
+   "dogru": 1,
+   "bolum": [
+    "Harita eski bir hikâye fısıldadı.",
+    "Dünyanın ucundaki bir deniz feneri, gece kaybolan ruhlara evlerinin yolunu gösterirmiş.",
+    "Bu hikâye, yolculuğumuzun neden bu kadar önemli olduğunu anlattı."
+   ]
+  },
+  {
+   "soru": "Avucumda gövde taşırım;\nParmaklar dokununca dillenirim;\nHer dokunuşta başka tonda şakırım.",
+   "secenek": [
+    "kakao çekirdeği kolye ucu",
+    "kente kumaş parçası",
+    "konuşan davul minyatürü"
+   ],
+   "dogru": 2,
+   "bolum": [
+    "Bir gece büyük bir fırtına o feneri söndürmüş.",
+    "O günden beri hayaletler yollarını şaşırıyormuş.",
+    "Demek ki ışığı yeniden yakmak için bir sebebimiz daha vardı."
+   ]
+  },
+  {
+   "soru": "Yuvarlak bir gövdem, bez bir kanadım var;\nKüvette, gölde salınırım;\nÜfleyince rüzgârım olursun, yola çıkarım.",
+   "secenek": [
+    "penguen boncuk anahtarlık",
+    "dau yelkenli oyuncak",
+    "rafya mini çanta"
+   ],
+   "dogru": 1,
+   "bolum": [
+    "Her ülkenin hatırasında küçük bir dostluk kıvılcımı saklıymış.",
+    "Hatıraları topladıkça haritanın renkleri canlanmaya başladı.",
+    "Her yeni hatıra, haritaya sıcak bir nefes gibi yayıldı."
+   ]
+  },
+  {
+   "soru": "Karnım tombul, üstüm dar;\nOcağın üstünde sabırla beklerim;\nSüzülünce fincana dostluk taşırım.",
+   "secenek": [
+    "kisii sabun taşı heykelcik",
+    "jebena kahve demliği",
+    "hurma yaprağı sepet"
+   ],
+   "dogru": 1,
+   "bolum": [
+    "Harita, feneri tek bir kahramanın yakamayacağını söyledi.",
+    "Farklı yerlerden gelen dostların birlikte olması gerekiyormuş.",
+    "Birbirimize bakıp gülümsedik; bu iş ancak birlikte olurdu."
+   ]
+  },
+  {
+   "soru": "Yuvarlak gövdemin kenarında ziller;\nAvucum ritim tutunca şıngırdarım;\nElde döner, şarkıya eşlik ederim.",
+   "secenek": [
+    "hurma çekirdeği bileklik",
+    "zeytin ağacı oyma süs",
+    "doira"
+   ],
+   "dogru": 2,
+   "bolum": [
+    "Bir hayalet çekinerek yanımıza yaklaştı.",
+    "Yol sorar gibi haritayı gösterdi.",
+    "Ona eşlik etmeye söz verdik; artık yalnız değildi."
+   ]
+  },
+  {
+   "soru": "Gökte süzülen bir kuş gibi görünürüm;\nİnce bir bağ beni elde tutar;\nKuyruğum dans eder, rüzgârla oynarım.",
+   "secenek": [
+    "uçurtma ahşap süs",
+    "süslü kamyon ahşap kutu",
+    "Bagan lak kutusu"
+   ],
+   "dogru": 0,
+   "bolum": [
+    "Haritada denizlerin ötesine uzanan altın bir rota belirdi.",
+    "Fenerin dünyanın en güney ucunda olduğunu anladık.",
+    "Rota parladıkça içimizde tatlı bir heyecan dalgalandı."
+   ]
+  },
+  {
+   "soru": "Yan yana duran oyuk çubuklarım;\nBir el hareketiyle birbirine değer;\nTatlı bir ezgiyle salınırım.",
+   "secenek": [
+    "tuk-tuk ahşap oyuncak",
+    "batik kitap ayracı",
+    "küçük angklung"
+   ],
+   "dogru": 2,
+   "bolum": [
+    "Kıvılcımlar haritanın ortasında bir halka oluşturdu.",
+    "Halkanın içinde bir satır belirdi: feneri yakmak için herkes aynı anda elini koymalı.",
+    "Bu söz, dostluğun ne kadar ortak bir iş olduğunu bir kez daha gösterdi."
+   ]
+  },
+  {
+   "soru": "Sıcak bir günde kanat gibi açılırım;\nYüzüme serinlik yollarım;\nElimde toplanıp sessizce beklerim.",
+   "secenek": [
+    "kâğıt kesme süsü",
+    "hanji kâğıt yelpaze",
+    "origami turna"
+   ],
+   "dogru": 1,
+   "bolum": [
+    "Yolun sonunda biraz yorulduk, ama şakalaşmayı da bırakmadık.",
+    "Birbirimize yolculukta en çok neyi sevdiğimizi anlattık.",
+    "Gülüşlerimiz, yorgunluğumuzu dostça bir esintiye çevirdi."
+   ]
+  },
+  {
+   "soru": "Bir sapım var, ipimin ucunda bir top;\nSallarsın, top havada döner;\nSapıma oturtursan alkışı hak edersin.",
+   "secenek": [
+    "vueltiao hasır şapka",
+    "And dokuma bileklik",
+    "bilboquê oyuncağı"
+   ],
+   "dogru": 2,
+   "bolum": [
+    "Harita tamamlandı ve son satır parladı: 'Arjantin'de, dünyanın ucunda buluşalım.'",
+    "Hayaletler de uzaktan peşimize takıldı.",
+    "Son parça yerine oturunca hepimiz aynı anda 'hazırız' dedik."
+   ]
+  }
+ ],
+ "final": [
+  {
+   "k": "anlatici",
+   "m": "Fenere vardık; rüzgâr pelerinlerimizi şakacı bir selam gibi savurdu."
+  },
+  {
+   "k": "gezgin",
+   "m": "Hadi, hep birlikte kapıya elimizi koyalım."
+  },
+  {
+   "k": "arkadas",
+   "m": "Söz verdiğimiz gibi; ne bir eksik ne bir fazla."
+  },
+  {
+   "k": "anlatici",
+   "m": "Kıvılcımlar birleşti, fener yandı; ışık denizde altın bir yol açtı."
+  },
+  {
+   "k": "gezgin",
+   "m": "Hayaletler teşekkür edip evlerine süzüldü; iyi ki yanımdaydın arkadaşım."
+  },
+  {
+   "k": "anlatici",
+   "m": "Dostluk Feneri yandı; dünyayı güzelleştiren, birlikte yürüyen dostluktu."
+  }
+ ]
+}

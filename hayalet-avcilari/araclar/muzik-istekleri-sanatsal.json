@@ -1,0 +1,202 @@
+[
+ {
+  "kod": "UA",
+  "prompt": "Ukrainian bandura art music in the kobzar tradition: bandura, tsymbaly hammered dulcimer, sopilka wooden flute and soft violin, a lyrical dumka-style melody in the Ukrainian Dorian mode with raised fourth, delicate plucked arpeggios, faint tambourine touches. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "PL",
+  "prompt": "Polish Romantic salon music: an elegant lyrical mazurka in 3/4 for piano, string quartet, clarinet and flute, Lydian raised-fourth colour and graceful rubato-free phrasing, light pizzicato cello keeping the pulse. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 96 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "DE",
+  "prompt": "German Baroque chamber music: harpsichord, baroque violin, traverso flute, oboe and cello continuo in a bright major-key dance-suite style (gavotte and bourree character), clear counterpoint and graceful ornaments, no percussion beyond soft pizzicato. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "GB",
+  "prompt": "English Renaissance consort music blended with a pastoral air: lute, viola da gamba, recorder, virginal and Celtic harp, a sweet melody in Dorian and Mixolydian modes with a courtly galliard lilt, faint tabor taps. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "FR",
+  "prompt": "French impressionist chamber music: harp, flute, clarinet, string quartet and celesta, shimmering whole-tone and pentatonic colours, flowing arpeggios and a light Parisian waltz elegance, soft triangle sparkles. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 96 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "IT",
+  "prompt": "Italian Baroque chamber concerto in the Venetian and Neapolitan style: mandolin, harpsichord, two violins, cello and theorbo, sunny major-key sequences, singing bel canto style melody, light pizzicato pulse. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 102 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "ES",
+  "prompt": "Spanish classical guitar art music in the romantic nationalist style: classical guitar, bandurria, laud, cello and very soft castanets, Andalusian cadence in the Phrygian mode with bright major turns, elegant rasgueado-free fingerstyle. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "MA",
+  "prompt": "Moroccan Andalusi art music (al-Ala nuba tradition): oud, rabab, kamanja violin held upright, qanun, soft tar tambourine and darbuka, a graceful melody in the bright tab' of the Andalusi modal system, flowing ornamented unison lines. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "DZ",
+  "prompt": "Algerian Andalusi classical music of the Algiers san'a and Tlemcen gharnati schools: kwitra lute, mandole, qanun, rebab, ney flute, soft tar and derbouka, elegant nuba-style melody in a bright Andalusi mode (tab' Mezmoum). Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "CI",
+  "prompt": "Ivorian Mande jeli art music of the northern savanna: kora harp-lute, Senufo balafon, ngoni lute and bolon bass harp, cascading heptatonic patterns in a bright tuning, intricate gentle interlocking lines, soft calabash taps and shaker. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "GH",
+  "prompt": "Ghanaian Akan court art music: seperewa harp-lute, atenteben bamboo flute, gyil xylophone and soft palm-wine style acoustic guitar, lilting pentatonic melody over a quiet 6/8 timeline on firikyiwa finger bell and shaker. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "NG",
+  "prompt": "Nigerian Hausa emirate court chamber music: molo lute, goje one-string fiddle, kukuma fiddle, sarewa flute and soft calabash percussion, graceful courtly pentatonic melody, ornamented and flowing. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "CD",
+  "prompt": "Congolese traditional art music: likembe thumb piano, Mangbetu kundi court harp, madimba xylophone and bamboo flute, shimmering interlocking patterns in a bright hexatonic tuning, soft seed-pod shaker and quiet slit-drum taps. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "AO",
+  "prompt": "Angolan traditional art music: kissange thumb piano, marimba xylophone, hungu musical bow and acoustic guitar in a tender Luanda serenade style, bright pentatonic and major-key phrases, very soft dikanza scraper. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "ZA",
+  "prompt": "South African musical-bow art tradition: Xhosa uhadi bow, umrhubhe mouth bow, Zulu makhweyana bow, Venda mbila and soft marimba, shimmering overtone melodies on a hexatonic scale built from two root notes, soft leg-rattle shaker. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 96 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "MZ",
+  "prompt": "Mozambican Chopi timbila art music, a refined xylophone orchestra tradition: timbila xylophones of several sizes, xitende musical bow, bamboo flute and soft shakers, rippling interlocking melodies in the equal-step heptatonic Chopi tuning. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "MG",
+  "prompt": "Malagasy highland Merina court art music: valiha tube zither, marovany box zither, sodina flute, kabosy lute and soft kaiamba shaker, sparkling arpeggios in a bright major mode with a lilting 6/8 sway. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "TZ",
+  "prompt": "Zanzibar taarab art music of the Swahili coast: qanun, oud, violin, nai flute and accordion, soft dumbak and rika tambourine, an elegant instrumental bashraf-style melody in the bright maqam Rast with Swahili lilt. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "UG",
+  "prompt": "Ugandan Buganda royal court music: amadinda and akadinda xylophones, ennanga arched harp, endongo lyre, endere flute and endingidi tube fiddle, fast-shimmering yet quiet interlocking patterns in the equal pentatonic Kiganda tuning, soft shaker. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "KE",
+  "prompt": "Kenyan lyre and string art tradition: Luo nyatiti lyre, orutu one-string fiddle, Luhya litungu lyre, chivoti bamboo flute and soft kayamba shaker, flowing storyteller-style pentatonic melody with gentle ostinato. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "ET",
+  "prompt": "Ethiopian azmari chamber art music: krar lyre, masenqo one-string fiddle, washint bamboo flute and soft kebero touches, a sweet nostalgic melody in the tizita major qenet pentatonic scale, ornamented and unhurried. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 96 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "SD",
+  "prompt": "Sudanese haqiba-style urban art music: oud, violin, tambour lyre, accordion and soft bongos with riq, graceful swaying melody on the Sudanese anhemitonic pentatonic scale, call-and-answer between oud and violin. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "EG",
+  "prompt": "Egyptian classical Arabic takht ensemble: oud, qanun, nay, violin and soft riq, an elegant instrumental sama'i and tahmila style piece in the bright maqam Rast, refined ornaments and short solo answers. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "YE",
+  "prompt": "Yemeni Sana'a art-song tradition played instrumentally: qanbus (turbi) lute, oud, soft sahn nuhasi copper tray and mirwas, intimate ornamented melody in a bright Yemeni maqam close to Rast, delicate plucked figures. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "SA",
+  "prompt": "Hejazi urban art music of the Jeddah salons: oud, qanun, nay, violin and soft mirwas with riq, a refined instrumental danah-style melody in maqam Hijaz moving to bright maqam Ajam. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "PS",
+  "prompt": "Palestinian and Levantine classical takht music: oud, qanun, nay, buzuq and soft riq with daf, a lyrical instrumental muwashshah-style melody in maqam Bayati turning to bright maqam Ajam, graceful ornaments. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "IQ",
+  "prompt": "Iraqi maqam art music by a chalghi baghdadi ensemble: santur, joza spike fiddle, oud, qanun and soft riq with dumbak, a poised instrumental melody in the bright maqam Rast with delicate hammered-dulcimer shimmer. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "IR",
+  "prompt": "Persian classical music in the bright dastgah Mahur: santur, tar, ney, kamancheh and soft tombak, a graceful pishdaramad and reng style melody with delicate tahrir-like ornaments played instrumentally. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "UZ",
+  "prompt": "Uzbek Shashmaqam classical music of Bukhara and Samarkand: tanbur, dutar, ghijak spike fiddle, nay flute, chang dulcimer and soft doira frame drum, a stately but bright melody in maqam Rast. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "AF",
+  "prompt": "Afghan classical music of the Kabul Kharabat tradition: rubab, dilruba, tanbur, santur and soft tabla, an instrumental naghma-ye klasik in a bright raga close to Bilawal, sparkling plucked rubab patterns. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "PK",
+  "prompt": "Pakistani Hindustani classical chamber music of the Lahore tradition: sarangi, sitar, bansuri flute, tanpura drone and soft tabla, a gentle gat in raga Pahadi in a light medium tempo, lyrical and smiling. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 96 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "IN",
+  "prompt": "Indian Hindustani classical music: sitar, bansuri flute, santoor, tanpura drone and soft tabla, a tender gat in raga Bhupali (major pentatonic) in a light medium teental, graceful meend slides. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 96 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "BD",
+  "prompt": "Bengali classical art music: esraj bowed lute, sarod, bansuri flute, dotara, tanpura and soft tabla, a lyrical melody in raga Khamaj inspired by the refined Bengali art-song tradition, flowing and tender. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 96 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "MM",
+  "prompt": "Burmese classical chamber music of the Mahagita tradition: saung gauk arched harp, pattala bamboo xylophone, palwei bamboo flute and soft si and wa bell-and-clapper timekeeping, graceful melody in the than yoe heptatonic tuning. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 96 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "TH",
+  "prompt": "Thai classical court music by a mahori and khrueang sai ensemble: ranat ek xylophone with soft mallets, khim dulcimer, saw duang fiddle, khlui flute and soft ching cymbals, graceful melody in the seven-tone equidistant Thai tuning with pentatonic core. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "MY",
+  "prompt": "Malay court and asli art music: gambus lute, rebab, violin, serunai played softly, soft rebana frame drum and small gong, a flowing ornamented asli melody with graceful patah lagu turns in a bright Malay mode. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "ID",
+  "prompt": "Javanese court gamelan in the soft-style (gamelan gadhon) of the Yogyakarta and Surakarta palaces: gender, gambang xylophone, siter zither, suling bamboo flute and rebab, quiet kendhang and gong, serene bright melody in slendro tuning. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 96 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "PH",
+  "prompt": "Filipino rondalla art music in the kundiman and danza serenade tradition: bandurria, laud, octavina, guitar and bajo de unas bass, tender tremolo melody moving from minor to bright major, graceful habanera lilt. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "VN",
+  "prompt": "Vietnamese chamber art music of the Hue court and ca Hue tradition: dan tranh zither, dan nguyet moon lute, dan nhi fiddle, dan bau monochord and sao bamboo flute, soft song lang clapper, bright pentatonic Bac mode. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 96 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "CN",
+  "prompt": "Chinese Jiangnan sizhu silk-and-bamboo chamber music: guzheng, erhu, dizi, pipa and yangqin, a flowing elegant melody in the pentatonic gong mode with delicate ornaments, soft wooden clapper and small bell. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "KR",
+  "prompt": "Korean jeongak court chamber music in a brighter pungnyu style: gayageum, geomungo, daegeum bamboo flute, haegeum and soft janggu, graceful melody in the pyeongjo pentatonic mode with gentle vibrato. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 94 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "JP",
+  "prompt": "Japanese Edo-period sankyoku chamber music: koto, shakuhachi, shamisen and kokyu, a gentle elegant melody blending the in and yo pentatonic scales with a bright spring mood, very soft small tsuzumi taps. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 96 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "RU",
+  "prompt": "Russian Romantic chamber and fairytale ballet style: gusli psaltery, domra, balalaika, flute, celesta and soft strings, a lyrical melody in natural minor turning to bright major, graceful and storybook-like, light pizzicato. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "CA",
+  "prompt": "Canadian Quebecois and Acadian parlour chamber music: fiddle played as a slow lyrical air, wooden flute, piano, Celtic harp and acoustic guitar, a sweet melody in Dorian and major modes, very soft foot-tap pulse. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "US",
+  "prompt": "American pastoral chamber Americana with a light ragtime touch: fiddle, acoustic guitar, piano, clarinet and upright bass, open fifths and major pentatonic melody evoking wide prairies, soft brushed snare only. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "MX",
+  "prompt": "Mexican salon and Veracruz harp art music: arpa jarocha, Chiapas marimba, requinto jarocho, violin and soft guitarron, an elegant vals mexicano style melody in a sunny major key with sweet parallel thirds. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "CO",
+  "prompt": "Colombian Andean chamber music by a trio andino: bandola, tiple, guitar and wooden flute, a refined pasillo and bambuco style melody with delicate tremolo in a bright major key with tender minor shades, very soft shaker. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "PE",
+  "prompt": "Peruvian Andean art music: Andean harp, charango, quena flute, zampona panpipes and guitar, a sweet yaravi turning to a gentle bright melody on the Andean minor pentatonic scale, soft bombo touches and chajchas shaker. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 98 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "BR",
+  "prompt": "Brazilian choro chamber music in a calm lyrical style: flute, bandolim, cavaquinho, seven-string guitar and very soft pandeiro, elegant chromatic melody in a bright major key with playful modulations. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 100 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ },
+ {
+  "kod": "AR",
+  "prompt": "Argentine chamber tango and milonga campera in a tender salon style: bandoneon, violin, piano, guitar and double bass, lyrical melody in a minor key brightening to major, soft habanera pulse, no percussion. Gentle, artistic, mellow and melodic, playful but soft; light soft percussion only, no heavy drums, no driving dance beat; 96 BPM, cheerful-calm adventure video game background music, steady loop-friendly flow, no breakdown, no fade-out, instrumental, no vocals."
+ }
+]

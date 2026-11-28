@@ -59,7 +59,7 @@ async function sayfaAc(b, ad) {
     await r.fulfill({ status: 200, contentType: 'text/javascript', body: govde });
   });
   await p.route(/firestore\.googleapis\.com|googlesyndication|doubleclick/, (r) => r.abort());
-  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); });
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForTimeout(300);
   await p.evaluate((ad) => {
@@ -237,8 +237,10 @@ try {
     konukOlu: await K.p.evaluate(() => !!game.player.dead),
     hostGoruyor: await H.p.evaluate((uid) => !!(online.remotePlayers[uid] && online.remotePlayers[uid].dead), await K.p.evaluate(() => online.uid)),
     suruyor: await Promise.all([H, K, U].map((s) => s.p.evaluate(() => game.running && !!online.mode))),
+    // Bilgi: bu ortamda (tek işlemcide üç sayfa, yazılım GL) başarım koruması 3D'yi kapatıp 2D'ye dönebilir; tasarlanan davranış
+    uc: await H.p.evaluate(() => ({ acik: !!(window.UcAvci && window.UcAvci.destek && window.UcAvci.destek()), yavas: save.ayar3d === false })),
   };
-  sina(`biri hayalet olunca oyun akar (kurucu ${ah.fps} fps, hayalet konuk ${ak.fps} fps, üçüncü ${au.fps} fps)`, () => {
+  sina(`biri hayalet olunca oyun akar (3D ${oluDurum.uc.acik ? 'açık' : oluDurum.uc.yavas ? 'koruma kapattı' : 'yok'}; kurucu ${ah.fps} fps, hayalet konuk ${ak.fps} fps, üçüncü ${au.fps} fps)`, () => {
     assert.ok(oluDurum.konukOlu && oluDurum.hostGoruyor, 'konuk hayalet olmadı ya da host görmedi');
     assert.deepEqual(oluDurum.suruyor, [true, true, true], 'tur erken bitti');
     for (const [ad, v] of [['kurucu', ah], ['konuk', ak], ['üçüncü', au]]) {

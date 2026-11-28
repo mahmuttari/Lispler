@@ -8,7 +8,7 @@
    engeller.js'ten sonra, game.js'ten önce yüklenir.
    ============================================================ */
 (function () {
-  const { doldur, cizgi, kirp, hatCiz, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, tasOrgu, gozler, cimTutami, kayalikKenar, suTabani } = window.ENGEL;
+  const { doldur, cizgi, kirp, hatCiz, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, tasOrgu, gozler, cimTutami, kayalikKenar, suTabani, susBas, gorselVar } = window.ENGEL;
 
   // ---------- MOR ŞATO ----------
   // Kale duvarı: gölge, tuğla örgülü ön yüz ve ışıklı kemerli pencereler, taş örgülü üst yüz, mazgallar, külahlı kuleler
@@ -313,8 +313,13 @@
     }, koyu(p.cim, 0.5));
     for (const l of icNoktalar(B, w, h, Math.max(1, Math.round(w * h / 4500)), 10, 16, r)) {
       const s = 6 + r() * 3;
+      if (susBas(ctx, "dere-sus-2", l.x, l.y, 15 + r() * 5, "orta")) continue; // ChatGPT nilüfer
       ctx.fillStyle = "#3f9b3a"; ctx.beginPath(); ctx.moveTo(l.x, l.y); ctx.arc(l.x, l.y, s, 0.3, Math.PI * 2 - 0.1); ctx.closePath(); ctx.fill();
       if (r() < 0.5) { elips(ctx, l.x + 1, l.y - 1, 2.6, 2.2, "#f9a8d4"); elips(ctx, l.x + 1, l.y - 1, 1.1, 1, "#fde047"); }
+    }
+    if (gorselVar("dere-sus-1")) {                                          // ChatGPT kamış: yan ve alt kıyıda seyrek
+      for (const k of kenarNoktalari(B, 30, 3)) if (r() < 0.6 && k.ny > -0.15) susBas(ctx, "dere-sus-1", k.x, k.y + 2, 20 + r() * 5, "alt");
+      return [];
     }
     for (const k of kenarNoktalari(B, 10, 6)) if (r() < 0.35 && k.ny > -0.15) { // yan ve alt kıyıda kamışlar
       ctx.strokeStyle = "#4d7c0f"; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(k.x, k.y); ctx.lineTo(k.x + 1, k.y - 12); ctx.stroke();
@@ -468,7 +473,9 @@
       doldur(ctx, B, koyu(p.kum, 0.08), 0, 0, 8);
       kirp(ctx, B, () => { for (let i = 0; i < w + h; i++) elips(ctx, r() * w, r() * h, 1.2, 1, koyu(p.kum, 0.3)); }, 0, 0, 8);
     }, koyu(p.kum, 0.45));
-    for (const k of kenarNoktalari(B, 24, 5)) if (r() < 0.45) palmiye(ctx, k.x, k.y, k.nx, k.ny, 9 + r() * 4);
+    for (const k of kenarNoktalari(B, 24, 5)) if (r() < 0.45) { // ChatGPT palmiye (sağa eğik, aynalanmaz)
+      if (!susBas(ctx, "gol-sus-palmiye", k.x, k.y + 2, 32 + r() * 6, "alt")) palmiye(ctx, k.x, k.y, k.nx, k.ny, 9 + r() * 4);
+    }
     return [];
   }
   function palmiye(ctx, x, y, nx, ny, s) {
@@ -615,8 +622,10 @@
       doldur(ctx, B, acik(p.buz2, 0.3), 0, 0, 8);
       kirp(ctx, B, () => tasOrgu(ctx, 0, 0, w, h, 9, acik(p.buz, 0.2), r), 0, 0, 7);
     }, p.koyu);
-    for (const k of icNoktalar(B, w, h, Math.max(1, Math.round(w * h / 4000)), 10, 18, r)) {
+    const buzResmi = gorselVar("gol-sus-buz");
+    for (const k of icNoktalar(B, w, h, Math.max(1, Math.round(w * h / (buzResmi ? 7000 : 4000))), buzResmi ? 16 : 10, buzResmi ? 30 : 18, r)) {
       const s = 5 + r() * 4, a = r() * Math.PI;
+      if (buzResmi) { susBas(ctx, "gol-sus-buz", k.x, k.y, 26 + r() * 8, "orta"); continue; } // ChatGPT buz parçaları
       ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.beginPath();
       for (let i = 0; i < 5; i++) { const b = a + i * 1.26, rr = s * (0.7 + r() * 0.3); ctx.lineTo(k.x + Math.cos(b) * rr, k.y + Math.sin(b) * rr * 0.7); }
       ctx.closePath(); ctx.fill();

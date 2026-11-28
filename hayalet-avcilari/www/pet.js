@@ -3,24 +3,31 @@
    Kullanıcının isteği: "Saldırabilen pet ekleyelim karakterlerin yanına kedi köpek kuş gibi."
    - Mağaza › 🐾 Petler: kedi, köpek, kuş paraya alınır; biri "yanına alınır" (save.pet), save.ownedPets sahip olunanlar.
    - Pet oyuncuyu izler. Oyuncuya PET_TASMA px'ten yakın bir hayalet varsa ona koşar ve saldırır; tasmadan uzaklaşınca
-     oyuncuya döner, çok geride kalırsa yanına ışınlanır. Hayaletler petlere zarar vermez, petler ölmez.
+     oyuncuya döner, çok geride kalırsa yanına ışınlanır.
    - Kedi: çevik, sık pençe. Köpek: güçlü ısırık, hayaleti bir an sersemletir. Kuş: uçar (duvar ve su engel değil),
      tepeden gagalar. Hasar bölümle biraz artar (her 6 bölümde +1).
+   - 3.15.1, kullanıcının istekleri: "Hayaletler petlere de vursun, köpeklerin 5 canı olsun.", "Bütün petlerin 5 canı
+     olsun." Her petin 5 canı var. Hayalete değince ve düşman mermisi çarpınca 1 can (boss 2) gider; sonra PET_KORUMA
+     sn dokunulmaz.
+     Sersemlemiş hayalet ısırmaz. Can bitince pet bayılır, PET_DIRILME sn sonra oyuncunun yanında tam canla döner.
+     Her bölümde tam canla başlar. Canı eksikken başının üstünde kalpler görünür.
    - Çevrimiçinde de her oyuncunun peti kendi cihazında koşar; vuruşu mermi gibi kurucuya gider (uzaktanVur). Türü ve
      konumu oda kaydına yazılır (players/$uid/pet, px, py): ötekiler onu görür (uzakPetleriCiz).
    Sınama: test/pet.test.mjs.
    ============================================================ */
 
 const PETLER = {
-  kedi:  { ad: t("Kedi"),  simge: "🐱", cost: 300, desc: t("Çevik: hayalete atlayıp pençeler."), hiz: 1.15, hasar: 1, ara: 0.55, uzanma: 16 },
-  kopek: { ad: t("Köpek"), simge: "🐶", cost: 600, desc: t("Güçlü ısırık: hayaleti bir an sersemletir."), hiz: 1.0, hasar: 2, ara: 1.0, uzanma: 18, sersem: 0.6 },
-  kus:   { ad: t("Kuş"),   simge: "🐦", cost: 900, desc: t("Uçar: duvar ve suyun üstünden geçip tepeden gagalar."), hiz: 1.25, hasar: 1, ara: 0.7, uzanma: 12, ucar: true },
+  kedi:  { ad: t("Kedi"),  simge: "🐱", cost: 300, desc: t("Çevik: hayalete atlayıp pençeler."), hiz: 1.15, hasar: 1, ara: 0.55, uzanma: 16, can: 5 },
+  kopek: { ad: t("Köpek"), simge: "🐶", cost: 600, desc: t("Güçlü ısırık: hayaleti bir an sersemletir."), hiz: 1.0, hasar: 2, ara: 1.0, uzanma: 18, sersem: 0.6, can: 5 },
+  kus:   { ad: t("Kuş"),   simge: "🐦", cost: 900, desc: t("Uçar: duvar ve suyun üstünden geçip tepeden gagalar."), hiz: 1.25, hasar: 1, ara: 0.7, uzanma: 12, ucar: true, can: 5 },
 };
 const PET_TASMA = 260;   // oyuncudan bu kadar uzaktaki hayaletle uğraşmaz (px)
 const PET_IZ = 56;       // takipte oyuncunun bu kadar gerisinde durur (px)
+const PET_KORUMA = 1.2;  // vurulduktan sonra dokunulmaz (sn)
+const PET_DIRILME = 15;  // bayılan pet bu kadar sonra döner (sn)
 
-const petEngel = (x, y, r) => collidesWalls(x, y, r) || collidesWaters(x, y, r);
-const petMesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), engelMesafesi(game.waters, x, y, r));
+const petEngel = (x, y, r) => collidesWalls(x, y, r) || kopruluSuCarpar(x, y, r);
+const petMesafe = (x, y, r) => Math.min(engelMesafesi(game.walls, x, y, r), kopruluSuMesafesi(x, y, r));
 
 function petSecili() {
   const k = save.pet;
@@ -32,8 +39,42 @@ function petKur() {
   game.pet = null;
   const tur = petSecili();
   if (!tur || !game.player) return;
-  const yer = PETLER[tur].ucar ? { x: game.player.x - 40, y: game.player.y + 20 } : freeSpot(game.player.x - 45, game.player.y + 25, 14, petEngel);
-  game.pet = { tur, x: yer.x, y: yer.y, r: 14, yon: 1, yurume: 0, sonVurus: -1e9, saldiri: 0, takili: 0, kanat: 0 };
+  const yer = PETLER[tur].ucar ? { x: game.player.x + 45, y: game.player.y - 5 } : suGecidiTemizYer(game.player.x, game.player.y, 14, petEngel, [45, 25]);
+  const can = PETLER[tur].can;
+  game.pet = { tur, x: yer.x, y: yer.y, r: 14, yon: 1, yurume: 0, sonVurus: -1e9, saldiri: 0, saldiriyor: false, takili: 0, sonMesafe: 1e9, ilerlemeSure: 0, kanat: 0, can, maxCan: can, koruma: 0, baygin: 0 };
+}
+
+// Pete vurulur (hayalet teması, düşman mermisi); can biterse bayılır
+function petHasar(miktar) {
+  const p = game.pet;
+  if (!p || p.baygin > 0 || p.koruma > 0) return false;
+  p.can = Math.max(0, p.can - miktar);
+  p.koruma = PET_KORUMA;
+  spawnHitParticles(p.x, p.y);
+  if (p.can <= 0) {
+    p.baygin = PET_DIRILME;
+    showFloat(t("{simge} {ad} bayıldı!", { simge: PETLER[p.tur].simge, ad: PETLER[p.tur].ad }), p.x, p.y - 30);
+  }
+  return true;
+}
+
+// Hayalet teması ve düşman mermileri (her karede, petGuncelle'den)
+function petDarbeleri(now) {
+  const p = game.pet;
+  if (!p || p.baygin > 0 || p.koruma > 0) return;
+  for (const g of game.ghosts) {
+    if ((g.frozenUntil || 0) > now) continue; // sersemlemiş hayalet ısırmaz
+    if (Math.hypot(g.x - p.x, g.y - p.y) < g.r + p.r) { petHasar(g.isBoss ? 2 : 1); return; }
+  }
+  const dizi = game.enemyProjectiles || [];
+  for (let i = dizi.length - 1; i >= 0; i--) {
+    const m = dizi[i];
+    if (Math.hypot(m.x - p.x, m.y - p.y) >= p.r + 7) continue;
+    petHasar(m.isBoss ? 2 : 1);
+    if (online.mode === "client") mermiBitti(m);
+    dizi.splice(i, 1);
+    return;
+  }
 }
 
 // Bir hayalete vur: tek kişilikte ve kurucuda doğrudan, istemcide kurucuya olay (mermi vuruşuyla aynı yol)
@@ -70,6 +111,16 @@ function petGuncelle(dt, now) {
   const p = game.pet;
   if (!p || !game.player) return;
   const tanim = PETLER[p.tur], oy = game.player;
+  if (p.baygin > 0) {
+    p.baygin -= dt;
+    if (p.baygin > 0) return;
+    const yer = tanim.ucar ? { x: oy.x + 45, y: oy.y - 5 } : suGecidiTemizYer(oy.x, oy.y, p.r, petEngel, [45, 25]);
+    Object.assign(p, { x: yer.x, y: yer.y, can: p.maxCan, baygin: 0, koruma: PET_KORUMA, takili: 0 });
+    showFloat(t("{simge} {ad} geri döndü!", { simge: tanim.simge, ad: tanim.ad }), p.x, p.y - 30);
+  }
+  p.koruma = Math.max(0, p.koruma - dt);
+  if (!oy.dead) petDarbeleri(now);
+  if (p.baygin > 0) return;
   const hiz = oy.speed * tanim.hiz;
   p.saldiri = Math.max(0, p.saldiri - dt * 4);
   p.kanat += dt;
@@ -85,21 +136,39 @@ function petGuncelle(dt, now) {
       if (now - p.sonVurus >= tanim.ara * 1000) {
         p.sonVurus = now;
         p.saldiri = 1;
-        if (tanim.sersem && online.mode !== "client") hedef.frozenUntil = Math.max(hedef.frozenUntil || 0, performance.now() + tanim.sersem * 1000);
+        if (tanim.sersem) {
+          if (online.mode === "client") {
+            // İstemcinin köpeği sersemletti: host kendi peti gibi dondursun
+            if (typeof hedef._idx === "number") online.pendingEvents.push({ type: "stun", gi: hedef._idx, duration: tanim.sersem * 1000 });
+          } else {
+            hedef.frozenUntil = Math.max(hedef.frozenUntil || 0, performance.now() + tanim.sersem * 1000);
+          }
+        }
         petVur(hedef, tanim.hasar + Math.floor((game.level - 1) / 6));
       }
     }
   } else {
-    // Oyuncunun baktığı yönün gerisinde dur
-    const a = (oy.facing || 0) + Math.PI;
-    const hx = oy.x + Math.cos(a) * PET_IZ, hy = oy.y + Math.sin(a) * PET_IZ + (tanim.ucar ? -30 : 0);
+    // Oyuncunun sağında dur (bot sol/arkada kalır)
+    const hx = oy.x + 45, hy = oy.y + 25 + (tanim.ucar ? -30 : 0);
     if (Math.hypot(hx - p.x, hy - p.y) > 18) yurudu = petYuru(p, hx, hy, hiz, dt);
   }
+  p.saldiriyor = vuruyor;
   p.yurume = yurudu ? p.yurume + dt : 0;
+  // Yürüyen pet oyuncuya dönerken 2,5 sn'de 20 px yaklaşamadıysa (suda kayarak takılma) yanına ışınlan
+  if (!tanim.ucar && !hedef) {
+    if (p.sonMesafe === undefined) { p.sonMesafe = 1e9; p.ilerlemeSure = 0; }
+    const dp = Math.hypot(oy.x - p.x, oy.y - p.y) || 1;
+    if (dp <= 110 || dp <= p.sonMesafe - 20) { p.sonMesafe = dp; p.ilerlemeSure = 0; } // yanında duruyorsa takılma sayılmaz
+    else p.ilerlemeSure += dt;
+    if (p.ilerlemeSure > 2.5) {
+      const yer = suGecidiTemizYer(oy.x, oy.y, p.r, petEngel, [45, 25]);
+      p.x = yer.x; p.y = yer.y; p.ilerlemeSure = 0; p.sonMesafe = 1e9; p.takili = 0;
+    }
+  }
   // Gitmek isteyip gidemiyorsa (duvar, su) takılmıştır: 2 sn sonra oyuncunun yanına
   p.takili = !yurudu && !vuruyor && Math.hypot(oy.x - p.x, oy.y - p.y) > PET_IZ + 30 ? p.takili + dt : (hedef && !yurudu && !vuruyor ? p.takili + dt : 0);
   if (Math.hypot(oy.x - p.x, oy.y - p.y) > 650 || p.takili > 2) {
-    const yer = tanim.ucar ? { x: oy.x - 40, y: oy.y - 20 } : freeSpot(oy.x - 45, oy.y + 25, p.r, petEngel);
+    const yer = tanim.ucar ? { x: oy.x + 45, y: oy.y - 5 } : suGecidiTemizYer(oy.x, oy.y, p.r, petEngel, [45, 25]);
     p.x = yer.x; p.y = yer.y; p.takili = 0;
   }
 }
@@ -163,25 +232,101 @@ function kusCiz(ctx, s, kanat, saldiri) {
 }
 
 // Petin kendisi (merkez 0,0; sağa bakar); mağaza simgesi de bunu kullanır
+// Resim kutuları (s birimi; x, y, w, h): kod çiziminin kapladığı alan, alt kenar ayak hizası
+const PET_KUTU = { kedi: [-24, -31, 48, 42], kopek: [-21, -21, 52, 33], kus: [-21, -15, 45, 24] };
+
 function petResmi(ctx, tur, s, durum = {}) {
   const { yurume = 0, saldiri = 0, kanat = 0, zaman = 0 } = durum;
+  const kutu = PET_KUTU[tur];
+  // ChatGPT yürüyüş / kanat kareleri (N10, N11): adım ve kanat evresi kod animasyonuyla aynı ritimde
+  const evre = tur === "kus" ? kanat * 22 / (Math.PI * 2) : yurume * 16 / (Math.PI * 2);
+  const kare = kutu && typeof animDongu === "function" ? animDongu(tur, evre, 3) : 0;
+  if (kare) {
+    ctx.save();
+    ctx.translate(saldiri * 5 * s, 0);
+    animGovdeCiz(ctx, tur, kare, kutu[0] * s, kutu[1] * s, kutu[2] * s, kutu[3] * s, true);
+    ctx.restore();
+    petSaldiriIzi(ctx, tur, s, saldiri);
+    return;
+  }
+  if (kutu && typeof gorsel === "function" && gorsel(`pet-${tur}`)) {
+    // ChatGPT görseli (gorsel.js): yürürken sallanır, kuş kanat çırparken hafifçe kabarır, saldırırken öne atılır
+    ctx.save();
+    if (tur === "kus") ctx.scale(1, 1 + Math.sin(kanat * 22) * 0.06);
+    else ctx.rotate(Math.sin(yurume * 16) * 0.07);
+    ctx.translate(saldiri * 5 * s, 0);
+    gorselKutuya(ctx, `pet-${tur}`, kutu[0] * s, kutu[1] * s, kutu[2] * s, kutu[3] * s, true);
+    ctx.restore();
+    petSaldiriIzi(ctx, tur, s, saldiri);
+    return;
+  }
   if (tur === "kedi") kediCiz(ctx, s, yurume, saldiri);
   else if (tur === "kopek") kopekCiz(ctx, s, yurume, saldiri, zaman);
   else kusCiz(ctx, s, kanat, saldiri);
 }
 
+// Saldırı izi resimli petlerde de görünsün: kedide pençe, köpekte havlama, kuşta gaga darbesi
+function petSaldiriIzi(ctx, tur, s, saldiri) {
+  if (!(saldiri > 0)) return;
+  ctx.save();
+  ctx.lineWidth = 2.5 * s;
+  if (tur === "kedi" && typeof gorsel === "function" && gorsel("efekt-pence")) {
+    // GOR4: ChatGPT pençe izi (efekt-pence); kod çizgilerinin kapladığı alana, saldırı gücüyle solar
+    ctx.globalAlpha *= Math.min(1, saldiri);
+    gorselKutuya(ctx, "efekt-pence", 22 * s, -24 * s, 30 * s, 26 * s);
+  } else if (tur === "kedi") {
+    ctx.strokeStyle = `rgba(255,255,255,${saldiri})`;
+    for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(26 * s, (-16 + i * 6) * s); ctx.lineTo(36 * s, (-10 + i * 6) * s); ctx.stroke(); }
+  } else if (tur === "kopek") {
+    ctx.strokeStyle = `rgba(253,224,71,${saldiri})`;
+    ctx.beginPath(); ctx.arc(32 * s, -8 * s, 9 * s, -0.9, 0.9); ctx.stroke();
+  } else {
+    ctx.strokeStyle = `rgba(255,255,255,${saldiri})`;
+    ctx.beginPath(); ctx.arc(28 * s, -6 * s, 6 * s, -0.8, 0.8); ctx.stroke();
+  }
+  ctx.restore();
+}
+
 // render() oyuncudan önce (kara petleri) ve sonra (kuş) çağırır
 function petCiz(ctx, ucanlar) {
   const p = game.pet;
-  if (!p || !!PETLER[p.tur].ucar !== !!ucanlar) return;
+  if (!p || p.baygin > 0 || !!PETLER[p.tur].ucar !== !!ucanlar) return;
   const zaman = performance.now() / 1000, ucar = PETLER[p.tur].ucar;
+  if (p.koruma > 0 && Math.floor(p.koruma * 10) % 2 === 0) return; // vurulunca yanıp söner
   const yuk = ucar ? 24 + Math.sin(zaman * 3) * 3 - p.saldiri * 14 : Math.abs(Math.sin(p.yurume * 16)) * 2 + p.saldiri * 6;
+  const kopruYuk = (!ucar && typeof kopruYukselti === "function") ? kopruYukselti(p.x, p.y) : 0; // GLG1: yer peti köprü kemerinde yükselir
   ctx.save();
+  if (kopruYuk) ctx.translate(0, -kopruYuk);
   ctx.fillStyle = "rgba(0,0,0,0.25)";                                                                                // gölge
   ctx.beginPath(); ctx.ellipse(p.x, p.y + 10, ucar ? 9 : 15, ucar ? 4 : 5, 0, 0, Math.PI * 2); ctx.fill();
+  if (!ucar) { // GLG1: yer petinin ayaklarına temas gölgesi
+    ctx.fillStyle = "rgba(0,0,0,0.3)";
+    ctx.beginPath(); ctx.ellipse(p.x, p.y + 10, 9, 3, 0, 0, Math.PI * 2); ctx.fill();
+  }
   ctx.translate(p.x, p.y - yuk);
+  if (typeof anmYalpa === "function") ctx.rotate(ucar ? anmYalpa(zaman * 3, 0.05) : (p.yurume > 0 ? anmYalpa(p.yurume * 16, 0.06) : 0)); // ANM1: yalpa
   ctx.scale(p.yon, 1);
   petResmi(ctx, p.tur, 1, { yurume: p.yurume, saldiri: p.saldiri, kanat: p.kanat, zaman });
+  ctx.restore();
+  if (p.can < p.maxCan) petCanCiz(ctx, p.x, p.y - yuk - 34, p.can, p.maxCan);
+}
+
+// Başın üstünde can kalpleri (dolu ve boş)
+function petCanCiz(ctx, x, y, can, maxCan) {
+  // ChatGPT can çerçevesi (ui-can-cubugu) varsa: kalpler yerine çubuk (dolgu can/maxCan); yoksa kod kalpleri
+  if (typeof canCubuguCiz === "function" && canCubuguCiz(ctx, x, y - 1, 28, maxCan > 0 ? can / maxCan : 0, "#ef4444", "rgba(0,0,0,0.7)")) return;
+  const ara = 9, bas = x - ((maxCan - 1) * ara) / 2;
+  ctx.save();
+  for (let i = 0; i < maxCan; i++) {
+    const cx = bas + i * ara;
+    ctx.fillStyle = i < can ? "#ef4444" : "rgba(0,0,0,0.45)";
+    ctx.strokeStyle = "rgba(255,255,255,0.85)"; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx, y + 3);
+    ctx.bezierCurveTo(cx - 6, y - 1, cx - 3, y - 6, cx, y - 3);
+    ctx.bezierCurveTo(cx + 3, y - 6, cx + 6, y - 1, cx, y + 3);
+    ctx.fill(); ctx.stroke();
+  }
   ctx.restore();
 }
 
@@ -218,10 +363,17 @@ function uzakPetleriCiz(ctx, ucanlar) {
   for (const rp of Object.values(online.remotePlayers)) {
     if (!rp || !rp.pet || !Number.isFinite(rp.petX) || !!PETLER[rp.pet].ucar !== !!ucanlar) continue;
     const yuk = ucanlar ? 24 + Math.sin(zaman * 3) * 3 : Math.abs(Math.sin((rp.petYurume || 0) * 16)) * 2;
+    const kopruYuk = (!ucanlar && typeof kopruYukselti === "function") ? kopruYukselti(rp.petX, rp.petY) : 0;
     ctx.save();
+    if (kopruYuk) ctx.translate(0, -kopruYuk);
     ctx.fillStyle = "rgba(0,0,0,0.25)";
     ctx.beginPath(); ctx.ellipse(rp.petX, rp.petY + 10, ucanlar ? 9 : 15, ucanlar ? 4 : 5, 0, 0, Math.PI * 2); ctx.fill();
+    if (!ucanlar) {
+      ctx.fillStyle = "rgba(0,0,0,0.3)";
+      ctx.beginPath(); ctx.ellipse(rp.petX, rp.petY + 10, 9, 3, 0, 0, Math.PI * 2); ctx.fill();
+    }
     ctx.translate(rp.petX, rp.petY - yuk);
+    if (typeof anmYalpa === "function") ctx.rotate(ucanlar ? anmYalpa(zaman * 3, 0.05) : ((rp.petYurume || 0) > 0 ? anmYalpa(rp.petYurume * 16, 0.06) : 0));
     ctx.scale(rp.petYon || 1, 1);
     petResmi(ctx, rp.pet, 1, { yurume: rp.petYurume || 0, kanat: rp.petKanat || 0, zaman });
     ctx.restore();

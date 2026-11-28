@@ -1,0 +1,62 @@
+{
+ "kinkin": {
+  "unvan": "Şimşek Çocuk",
+  "hikaye": "Mahallenin en hızlı koşucusu Kinkin, ilk hayaleti bisikletiyle kovalarken buldu. O günden beri enerji tabancasıyla gece devriyesinde; korkmaz, yorulmaz, hep önde koşar.",
+  "silah": "Enerji tabancası"
+ },
+ "veryi": {
+  "unvan": "Çekiç Ustası",
+  "hikaye": "Dedesinin demirci dükkânında büyüyen Veryi, dev savaş çekicini tek eliyle sallar. Biraz yavaştır ama vurduğu hayalet bir daha geri gelmez.",
+  "silah": "Dev savaş çekici"
+ },
+ "kornet": {
+  "unvan": "Gece Büyücüsü",
+  "hikaye": "Kabarık mor tüylerinin ardındaki yüzü kimse görmedi. Kristal asasıyla hayaletleri en uzaktan gören Kornet, sihrini yalnız iyilik için kullanır.",
+  "silah": "Kristal asa"
+ },
+ "mark": {
+  "unvan": "Hazine Avcısı",
+  "hikaye": "Sırt çantası haritalar, pusulalar ve atıştırmalıklarla dolu Marli, her macerada bir hazine arar. Hayaletlerin bıraktığı paraları ondan hızlı toplayan yoktur.",
+  "silah": "Kompakt arbalet"
+ },
+ "kent": {
+  "unvan": "Gölge Lordu",
+  "hikaye": "Kenit bir zamanlar hayaletlerin dünyasında kaybolmuş, geri dönmeyi başaran tek çocuktur. Kapüşonunun altındaki kırmızı gözler, hayaletleri ondan korkutan tek şeydir.",
+  "silah": "Gölge hançeri"
+ },
+ "ponko": {
+  "unvan": "Kovboy Ponko",
+  "hikaye": "Çöl kasabalarının küçük şerifi Ponko, kocaman şapkasıyla uzaktan tanınır. Altın tetikli tabancasını kasabanın en hızlısı gibi çeker.",
+  "silah": "Kovboy tabancası"
+ },
+ "gul": {
+  "unvan": "Taçlı Okçu",
+  "hikaye": "Küçük bir krallığın prensesi Güllu, taht yerine ok ve yayı seçti. Attığı her ok hedefini bulur, patlayan hayaletler etrafındakileri de devirir.",
+  "silah": "Kraliyet yayı"
+ },
+ "rani": {
+  "unvan": "Minik Şifacı",
+  "hikaye": "Rani küçük ama yüreği kocamandır. Sapanıyla hayalet avlarken yaralanan arkadaşlarını da unutmaz; şifalı kalbi en zor bölümde bile umut verir.",
+  "silah": "Taş sapan"
+ },
+ "beti": {
+  "unvan": "Şeker Perisi",
+  "hikaye": "Lolipop bereli Beri, şeker fabrikasının en neşeli avcısıdır. Suya bile aldırmaz; göllerin içinden yürüyüp şekerden toplarıyla hayaletleri tatlı tatlı uğurlar.",
+  "silah": "Şeker topları"
+ },
+ "fanatik": {
+  "unvan": "Efsane Kunfucu",
+  "hikaye": "Siyah kuşağını dağlardaki ustasından alan Fanatik, avcıların en güçlüsüdür. Nunçakusu öyle hızlı döner ki hayaletler neye uğradığını şaşırır.",
+  "silah": "Nunçaku"
+ },
+ "silsen": {
+  "unvan": "Bahar Bekçisi",
+  "hikaye": "Silsen'in bayrağının tepesindeki papatya hiç solmaz. Gittiği her yere bahar götürür; çiçek topları değdiği hayaleti ışığa çevirir.",
+  "silah": "Çiçekli bayrak asa"
+ },
+ "sercin": {
+  "unvan": "Rüzgâr Kanadı",
+  "hikaye": "Serçin kuşlarla konuşur, rüzgârla yarışır. Fırlattığı tüyler hedefini kendi bulur; en kaçamak hayalet bile ondan saklanamaz.",
+  "silah": "Kanat tüyleri"
+ }
+}

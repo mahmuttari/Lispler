@@ -53,7 +53,7 @@ const hatalar = [];
 async function sayfaAc(dil = 'tr', secenek = {}) {
   const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, ...secenek });
   p.on('pageerror', (e) => hatalar.push(e.message));
-  await p.addInitScript((dil) => { localStorage.setItem('hayaletAvcilariDil', dil); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); }, dil);
+  await p.addInitScript((dil) => { localStorage.setItem('hayaletAvcilariDil', dil); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); }, dil);
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForTimeout(300);
@@ -68,7 +68,11 @@ function bossOlc(secenek) {
   const yakin = (d, i, r, g, b, tol) => Math.abs(d[i] - r) <= tol && Math.abs(d[i + 1] - g) <= tol && Math.abs(d[i + 2] - b) <= tol && d[i + 3] > 200;
   function ciz(s) {
     ctx.clearRect(0, 0, 200, 200);
-    drawGhost(ctx, { x: 100, y: 110, size: 40 * s, hp: 10, maxHp: 10, isBoss: true });
+    // Kod çiziminin renkleri ölçülür: ChatGPT boss resmi (gorsel.js) bu sınamada kapalı; Dünya Turu bossu zaten kodla çizilir
+    const resimler = typeof GORSEL === 'object' ? { ...GORSEL } : {};
+    if (typeof GORSEL === 'object') for (const k of Object.keys(GORSEL)) delete GORSEL[k];
+    drawGhost(ctx, { x: 100, y: 110, size: 40 * s, hp: 10, maxHp: 10, isBoss: true, __dogus: -1e9 }); // iniş animasyonu bitmiş boss (anim.js)
+    if (typeof GORSEL === 'object') Object.assign(GORSEL, resimler);
     const d = ctx.getImageData(0, 0, 200, 200).data;
     let tac = 0;
     for (let y = Math.floor(110 - 34 * s); y <= Math.ceil(110 - 22 * s); y++) {
@@ -267,13 +271,14 @@ try {
       if (!R || !R.c) { sorun.push(`${ad} resim yok`); return; }
       for (const n of R.canli || []) canliTurler.add(n.tur);
       canliDenetle(o, R, ad);
-      const c = R.c, s = c.width / o.w, d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
-      const alfa = (x, y) => d[(Math.min(c.height - 1, Math.floor(y * s)) * c.width + Math.min(c.width - 1, Math.floor(x * s))) * 4 + 3];
+      const c = R.c, pay = R.pay || { x: 0, y: 0 }, s = c.width / (o.w + 2 * pay.x), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+      // ZUY1: su ve diken önbelleği paylı (kıyı süsü, kenar şeridi); örnekleme pay kadar kaydırılır (duvar ve obje payı da)
+      const alfa = (x, y) => d[(Math.min(c.height - 1, Math.floor((y + pay.y) * s)) * c.width + Math.min(c.width - 1, Math.floor((x + pay.x) * s))) * 4 + 3];
       let bos = null, tasan = null;
       for (let y = 1; y < o.h; y += 2) for (let x = 1; x < o.w; x += 2) {
         if (!bos && engelUzaklik(o.carpisma, x, y) < -2 && alfa(x, y) === 0) bos = `${x},${y}`;
         const dis = o.derinlik ? engelUzaklik(o.carpisma, x, y) : engelUzaklik(o.bicim, x, y);
-        if (!tasan && dis > o.pay + 3 && alfa(x, y) > 0) tasan = `${x},${y} (${dis.toFixed(1)} px)`;
+        if (!tasan && dis > o.pay + 3 + (o.tur === 'su' ? 30 : 0) && alfa(x, y) > 0) tasan = `${x},${y} (${dis.toFixed(1)} px)`;
       }
       if (bos) sorun.push(`${ad} çarpışma içi boş: ${bos}`);
       if (tasan) sorun.push(`${ad} biçim dışı boyalı: ${tasan}`);
@@ -305,7 +310,10 @@ try {
   sina(`iki sayfada ülke resimleri aynı (${u1.length} resim)`, () => {
     assert.ok(u1.length > 20 && !u1.some((x) => x.endsWith(':yok')));
     assert.ok(u1.every((x) => { const [kod, , tema] = x.split(/[/:]/); return tema === kod || ['diken', 'lav'].includes(x.split('/')[1]); }), 'tema ülke kodu değil');
-    assert.deepEqual(u1, u2);
+    // KOD1: sınır şeridi artık büyük aile-<A>-duvar resminin küçültülerek döşenmesi; iki sayfada görüntü aynı ama piksel
+    // örnekleme (resim küçültme) bire bir aynı çıkmayabiliyor. Sınırda yalnız "çizildi" karşılaştırılır, öbürlerinde özet.
+    const sade = (u) => u.map((x) => (x.split(/[/:]/)[1] === 'sinir' ? x.split(':')[0] + ':var' : x));
+    assert.deepEqual(sade(u1), sade(u2));
   });
   const zemin = await p.evaluate((ulkeler) => ulkeler.map((kod) => {
     game.dunyaTuru = true; game.level = ulkeKodla(kod).sira;

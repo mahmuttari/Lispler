@@ -1,0 +1,359 @@
+[
+ {
+  "sira": 1,
+  "kod": "TR",
+  "ad": "Türkiye",
+  "obje1": "peri bacaları",
+  "obje2": "lale bahçesi"
+ },
+ {
+  "sira": 2,
+  "kod": "UA",
+  "ad": "Ukrayna",
+  "obje1": "ayçiçeği tarlası",
+  "obje2": "saman çatılı beyaz ev"
+ },
+ {
+  "sira": 3,
+  "kod": "PL",
+  "ad": "Polonya",
+  "obje1": "Wawel ejderi",
+  "obje2": "leylek yuvaları"
+ },
+ {
+  "sira": 4,
+  "kod": "DE",
+  "ad": "Almanya",
+  "obje1": "guguklu saat evi",
+  "obje2": "yarım ahşap evler"
+ },
+ {
+  "sira": 5,
+  "kod": "GB",
+  "ad": "Birleşik Krallık",
+  "obje1": "kırmızı telefon kulübeleri",
+  "obje2": "saat kulesi"
+ },
+ {
+  "sira": 6,
+  "kod": "FR",
+  "ad": "Fransa",
+  "obje1": "Eyfel Kulesi",
+  "obje2": "lavanta tarlası"
+ },
+ {
+  "sira": 7,
+  "kod": "IT",
+  "ad": "İtalya",
+  "obje1": "Kolezyum",
+  "obje2": "gondollu kanal iskelesi"
+ },
+ {
+  "sira": 8,
+  "kod": "ES",
+  "ad": "İspanya",
+  "obje1": "La Mancha yel değirmenleri",
+  "obje2": "Elhamra'nın Aslanlı Çeşmesi"
+ },
+ {
+  "sira": 9,
+  "kod": "MA",
+  "ad": "Fas",
+  "obje1": "Şefşavan'ın mavi sokakları",
+  "obje2": "fenerli çarşı tezgâhı"
+ },
+ {
+  "sira": 10,
+  "kod": "DZ",
+  "ad": "Cezayir",
+  "obje1": "Sahra kumulları",
+  "obje2": "Tassili n'Ajjer kaya kemerleri"
+ },
+ {
+  "sira": 11,
+  "kod": "CI",
+  "ad": "Fildişi Sahili",
+  "obje1": "kakao bahçesi",
+  "obje2": "fil ailesi"
+ },
+ {
+  "sira": 12,
+  "kod": "GH",
+  "ad": "Gana",
+  "obje1": "kente dokuma tezgâhı",
+  "obje2": "Kakum kanopi köprüsü"
+ },
+ {
+  "sira": 13,
+  "kod": "NG",
+  "ad": "Nijerya",
+  "obje1": "Zuma Kayası",
+  "obje2": "konuşan davullar"
+ },
+ {
+  "sira": 14,
+  "kod": "CD",
+  "ad": "Kongo DC",
+  "obje1": "okapi ormanı",
+  "obje2": "Kongo Nehri pirogları"
+ },
+ {
+  "sira": 15,
+  "kod": "AO",
+  "ad": "Angola",
+  "obje1": "Kalandula Şelalesi",
+  "obje2": "welwitschia bitkisi"
+ },
+ {
+  "sira": 16,
+  "kod": "ZA",
+  "ad": "Güney Afrika",
+  "obje1": "Masa Dağı",
+  "obje2": "Afrika penguenleri"
+ },
+ {
+  "sira": 17,
+  "kod": "MZ",
+  "ad": "Mozambik",
+  "obje1": "dau yelkenlileri",
+  "obje2": "kaju ağaçları"
+ },
+ {
+  "sira": 18,
+  "kod": "MG",
+  "ad": "Madagaskar",
+  "obje1": "Baobab Caddesi",
+  "obje2": "lemurlar"
+ },
+ {
+  "sira": 19,
+  "kod": "TZ",
+  "ad": "Tanzanya",
+  "obje1": "Kilimanjaro",
+  "obje2": "Zanzibar oyma kapıları"
+ },
+ {
+  "sira": 20,
+  "kod": "UG",
+  "ad": "Uganda",
+  "obje1": "dağ gorilleri",
+  "obje2": "Murchison Şelalesi"
+ },
+ {
+  "sira": 21,
+  "kod": "KE",
+  "ad": "Kenya",
+  "obje1": "zürafalar ve akasya",
+  "obje2": "flamingolu göl"
+ },
+ {
+  "sira": 22,
+  "kod": "ET",
+  "ad": "Etiyopya",
+  "obje1": "Aksum dikili taşları",
+  "obje2": "gelada maymunları"
+ },
+ {
+  "sira": 23,
+  "kod": "SD",
+  "ad": "Sudan",
+  "obje1": "Meroe piramitleri",
+  "obje2": "deve pazarı"
+ },
+ {
+  "sira": 24,
+  "kod": "EG",
+  "ad": "Mısır",
+  "obje1": "Gize piramitleri ve Sfenks",
+  "obje2": "Nil'de feluka yelkenlileri"
+ },
+ {
+  "sira": 25,
+  "kod": "YE",
+  "ad": "Yemen",
+  "obje1": "Sokotra ejder kanı ağaçları",
+  "obje2": "Sana'a kule evleri"
+ },
+ {
+  "sira": 26,
+  "kod": "SA",
+  "ad": "Suudi Arabistan",
+  "obje1": "hurma bahçesi",
+  "obje2": "AlUla Fil Kayası"
+ },
+ {
+  "sira": 27,
+  "kod": "PS",
+  "ad": "Filistin",
+  "obje1": "zeytin bahçesi",
+  "obje2": "Hayat Ağacı mozaiği"
+ },
+ {
+  "sira": 28,
+  "kod": "IQ",
+  "ad": "Irak",
+  "obje1": "kamış mudhif evleri",
+  "obje2": "şenaşil ahşap balkonlar"
+ },
+ {
+  "sira": 29,
+  "kod": "IR",
+  "ad": "İran",
+  "obje1": "Siose Pol köprüsü",
+  "obje2": "Yezd rüzgâr kuleleri"
+ },
+ {
+  "sira": 30,
+  "kod": "UZ",
+  "ad": "Özbekistan",
+  "obje1": "İpek Yolu kervanı",
+  "obje2": "kavun pazarı"
+ },
+ {
+  "sira": 31,
+  "kod": "AF",
+  "ad": "Afganistan",
+  "obje1": "uçurtmalı tepe",
+  "obje2": "nar bahçesi"
+ },
+ {
+  "sira": 32,
+  "kod": "PK",
+  "ad": "Pakistan",
+  "obje1": "süslü kamyonlar",
+  "obje2": "Hunza kayısı bahçesi"
+ },
+ {
+  "sira": 33,
+  "kod": "IN",
+  "ad": "Hindistan",
+  "obje1": "Hawa Mahal",
+  "obje2": "lotus göleti ve tavus kuşları"
+ },
+ {
+  "sira": 34,
+  "kod": "BD",
+  "ad": "Bangladeş",
+  "obje1": "süslü rikşalar",
+  "obje2": "Sundarbans ve Bengal kaplanı"
+ },
+ {
+  "sira": 35,
+  "kod": "MM",
+  "ad": "Myanmar",
+  "obje1": "Inle Gölü balıkçıları",
+  "obje2": "Pathein şemsiyeleri"
+ },
+ {
+  "sira": 36,
+  "kod": "TH",
+  "ad": "Tayland",
+  "obje1": "yüzen pazar",
+  "obje2": "tuk-tuk"
+ },
+ {
+  "sira": 37,
+  "kod": "MY",
+  "ad": "Malezya",
+  "obje1": "Petronas İkiz Kuleleri",
+  "obje2": "Rafflesia çiçeği"
+ },
+ {
+  "sira": 38,
+  "kod": "ID",
+  "ad": "Endonezya",
+  "obje1": "Komodo ejderleri",
+  "obje2": "pirinç terasları"
+ },
+ {
+  "sira": 39,
+  "kod": "PH",
+  "ad": "Filipinler",
+  "obje1": "Çikolata Tepeleri",
+  "obje2": "jeepney"
+ },
+ {
+  "sira": 40,
+  "kod": "VN",
+  "ad": "Vietnam",
+  "obje1": "Ha Long Körfezi",
+  "obje2": "Hoi An fenerleri"
+ },
+ {
+  "sira": 41,
+  "kod": "CN",
+  "ad": "Çin",
+  "obje1": "pandalar ve bambu",
+  "obje2": "ejder dansı"
+ },
+ {
+  "sira": 42,
+  "kod": "KR",
+  "ad": "Güney Kore",
+  "obje1": "hanok evleri",
+  "obje2": "kimçi küpleri"
+ },
+ {
+  "sira": 43,
+  "kod": "JP",
+  "ad": "Japonya",
+  "obje1": "kiraz ağaçları",
+  "obje2": "Fuji Dağı"
+ },
+ {
+  "sira": 44,
+  "kod": "RU",
+  "ad": "Rusya",
+  "obje1": "matruşka bebekleri",
+  "obje2": "oymalı ahşap izba"
+ },
+ {
+  "sira": 45,
+  "kod": "CA",
+  "ad": "Kanada",
+  "obje1": "akçaağaç ormanı ve şurup",
+  "obje2": "kunduz barajı"
+ },
+ {
+  "sira": 46,
+  "kod": "US",
+  "ad": "ABD",
+  "obje1": "Özgürlük Heykeli",
+  "obje2": "Büyük Kanyon"
+ },
+ {
+  "sira": 47,
+  "kod": "MX",
+  "ad": "Meksika",
+  "obje1": "papel picado süslü pazar",
+  "obje2": "ajolote göleti"
+ },
+ {
+  "sira": 48,
+  "kod": "CO",
+  "ad": "Kolombiya",
+  "obje1": "Kokora mum palmiyeleri",
+  "obje2": "Cartagena'nın balkonlu evleri"
+ },
+ {
+  "sira": 49,
+  "kod": "PE",
+  "ad": "Peru",
+  "obje1": "Machu Picchu terasları",
+  "obje2": "lamalar"
+ },
+ {
+  "sira": 50,
+  "kod": "BR",
+  "ad": "Brezilya",
+  "obje1": "Amazon tukanları ve araları",
+  "obje2": "Şeker Somunu Dağı"
+ },
+ {
+  "sira": 51,
+  "kod": "AR",
+  "ad": "Arjantin",
+  "obje1": "Perito Moreno Buzulu",
+  "obje2": "Caminito'nun renkli evleri"
+ }
+]

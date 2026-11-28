@@ -22,3 +22,9 @@
 # istek 2026-10-28T18:05:10Z: 3.15.0 kuralları (players/$uid: pet, px, py, gz, tm — yalnız ekleme; commit 6fa3d23) — önce yayındakiyle karşılaştır, sonra yayınla (kullanıcının açık onayıyla: "Olur onaylıyorum gönder"); kurallar.test 32/32
 # (yapıldı 2026-10-28, koşu 40742252252: 5 fark, hepsi ekleme: players/$uid/pet, px, py, gz, tm) durum
 # (yapıldı 2026-10-28, koşu 40742252252: {"status":"ok"}; geri okunan kurallar depodakiyle AYNI) yayinla
+
+# istek 2026-11-26T04:38:59Z: 3.22 kuralları — yalnız ekleme: state/ald (F4B, değerli toplama onayı; commit 03b7a7f), rooms/$id/yj, players/$uid/sv + yj odasında yeni kayıt sv ≥ 2, state/kp|bz|ab|aw (Y3A/Y3B çevrimiçi yolculuk; commit 89f7cea) — önce yalnız karşılaştır (kullanıcının açık onayı: "kuralları yayınla, onaylıyorum"); kurallar.test 36/36 (emülatör)
+# (yapıldı 2026-11-26, koşu 45756600980: 8 fark, 7 ekleme + players/$uid/.validate'e yj odası sv ≥ 2 koşulu eklendi; silinen yok) durum
+
+# istek 2026-11-26: aynı kuralları yayınla (kullanıcının açık onayı: "kuralları yayınla, onaylıyorum"; fark yukarıda, beklenenle aynı)
+# (yapıldı 2026-11-26, koşu 45756831763: {"status":"ok"}; geri okunan kurallar depodakiyle AYNI) yayinla

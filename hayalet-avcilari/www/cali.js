@@ -81,6 +81,15 @@ function caliCiz(ctx, c, zaman, sallanma) {
   ctx.translate(c.x, c.y);
   ctx.fillStyle = "rgba(0,0,0,0.25)";
   ctx.beginPath(); ctx.ellipse(0, 22, CALI.r, CALI.r * 0.35, 0, 0, Math.PI * 2); ctx.fill();
+  if (typeof gorsel === "function" && gorsel("cali")) {
+    // ChatGPT görseli: rüzgârda ve biri içinden geçerken (sallanma) tabanından sallanır
+    ctx.translate(0, 26);
+    ctx.rotate(Math.sin(zaman * 2 + c.tohum) * 0.025 * (1 + sallanma * 3));
+    const w = CALI.r * 2.3, h = w * 0.87;
+    gorselKutuya(ctx, "cali", -w / 2, -h, w, h, true);
+    ctx.restore();
+    return;
+  }
   yapraklar.forEach(([x, y, k], i) => {
     const s = Math.sin(zaman * 2 + i + c.tohum) * (1 + sallanma * 3);
     ctx.fillStyle = i % 3 === 0 ? "#166534" : i % 3 === 1 ? "#15803d" : "#14532d";
@@ -98,6 +107,11 @@ function caliCiz(ctx, c, zaman, sallanma) {
 function caliGozleri(ctx, x, y, zaman) {
   if (Math.sin(zaman * 1.3) > 0.93) return; // göz kırpma
   const bak = Math.sin(zaman * 0.8) * 2;
+  // GOR4: ChatGPT "çalıdan bakan gözler" (efekt-cali-goz): gözler resmin ortasında; resim yoksa kod gözleri
+  if (typeof gorsel === "function" && gorsel("efekt-cali-goz")) {
+    gorselKutuya(ctx, "efekt-cali-goz", x - 32, y - 28, 64, 40);
+    return;
+  }
   ctx.save();
   for (const k of [-1, 1]) {
     ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.ellipse(x + k * 7, y - 6, 5, 6, 0, 0, Math.PI * 2); ctx.fill();

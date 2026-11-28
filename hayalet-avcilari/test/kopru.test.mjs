@@ -32,7 +32,7 @@ try {
   p.on('pageerror', (e) => hatalar.push(e.message));
   await p.addInitScript(() => {
     localStorage.setItem('hayaletAvcilariDil', 'tr');
-    localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9');
+    localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1');
   });
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
   await p.goto(adres, { waitUntil: 'load' });
@@ -114,6 +114,67 @@ try {
   sina('köprüden yürüyerek karşıya geçilir (suyun üstünden)', () => { assert.equal(yuru.vardi, true); assert.equal(yuru.suUstu, true); });
   sina('yürüyen düşmez', () => { assert.equal(yuru.dusmedi, true); });
   sina('köprünün yanından suya girilmez', () => { assert.equal(yuru.yandanDenendi, true); assert.equal(yuru.yandanGirmedi, true); });
+
+  // Yardımcı bot köprüden geçer (engel-bicim'deki göl kurulumu): dikey ve yatay köprüde suya sapmadan, ışınlanmadan
+  const botGecis = await p.evaluate(() => {
+    const dene = (L) => {
+      __kur(L);
+      game.walls = []; game.waters = [engelOlustur({ x: 600, y: 500, w: 220, h: 150 }, 'su', 0, 1234)]; kopruleriKur();
+      const P = game.player;
+      P.x = 920; P.y = 650; P.power = null; game.inputDir.x = 0; game.inputDir.y = 0;
+      game.bot = { x: 560, y: 470, r: 18, hp: 6, maxHp: 6, walkTimer: 0, lastFire: 0, aimRaise: 0, shootRecoil: 0, hitFlash: 0, stuck: 0 };
+      let enBuyuk = 0, seritte = true;
+      for (let i = 0; i < 240; i++) {
+        const x0 = game.bot.x, y0 = game.bot.y; game.ghosts = []; update(1 / 60, performance.now());
+        enBuyuk = Math.max(enBuyuk, Math.hypot(game.bot.x - x0, game.bot.y - y0));
+        if (enYakinSu(game.bot.x, game.bot.y).d < -10 && !koprudeMi(game.bot.x, game.bot.y)) seritte = false;
+      }
+      const r = { yatay: game.kopruler.some((k) => k.yatay), dikey: game.kopruler.some((k) => !k.yatay),
+        uzaklik: Math.round(Math.hypot(P.x - game.bot.x, P.y - game.bot.y)), adim: +enBuyuk.toFixed(1), seritte };
+      game.bot = null;
+      return r;
+    };
+    return { dikey: dene(6), yatay: dene(1) };
+  });
+  sina(`yardımcı bot köprüden geçer (dikey ${JSON.stringify(botGecis.dikey)}, yatay ${JSON.stringify(botGecis.yatay)})`, () => {
+    for (const r of [botGecis.dikey, botGecis.yatay]) {
+      assert.ok(r.uzaklik <= 100, JSON.stringify(r));
+      assert.ok(r.adim < 10, JSON.stringify(r));
+      assert.equal(r.seritte, true, JSON.stringify(r));
+    }
+    assert.equal(botGecis.dikey.dikey, true); assert.equal(botGecis.yatay.yatay, true);
+  });
+
+  // KPR1: yolculuk haritasının nehir köprüsünde yan kuleler bota da kapalı (botEngel + kopruYanEngel); bot şeritten geçmeli
+  const botGecit = await p.evaluate(() => {
+    startGame(); game.paused = true;
+    const k = (game.kopruler || []).find((x) => x.su && x.su.gecit);
+    if (!k) return { yok: true };
+    game.kopruAcik = new Array(game._yolculukDuzen.zones.length).fill(true);
+    game.ghosts = []; game.spawnTimer = -1e9; game.enemyProjectiles = [];
+    const P = game.player; P.invuln = 1e9; P.dead = false; P.power = null;
+    game.inputDir.x = 0; game.inputDir.y = 0;
+    // Köprü ekseninde: bot bir kıyıda, oyuncu öbür kıyıda (köprü uzunluğu boyunca, şeritten 0 px yanda)
+    const bir = k.yatay ? { x: k.a - 80, y: k.c } : { x: k.c, y: k.a - 80 };
+    const iki = k.yatay ? { x: k.b + 80, y: k.c } : { x: k.c, y: k.b + 80 };
+    P.x = iki.x; P.y = iki.y;
+    game.bot = { x: bir.x, y: bir.y, r: 18, hp: 6, maxHp: 6, walkTimer: 0, lastFire: 0, aimRaise: 0, shootRecoil: 0, hitFlash: 0, stuck: 0 };
+    let enBuyuk = 0, yanda = false;
+    for (let i = 0; i < 420; i++) {
+      const x0 = game.bot.x, y0 = game.bot.y; game.ghosts = []; update(1 / 60, performance.now());
+      enBuyuk = Math.max(enBuyuk, Math.hypot(game.bot.x - x0, game.bot.y - y0));
+      if (kopruYanEngel(game.bot.x, game.bot.y, 1)) yanda = true;
+    }
+    const r = { yatay: k.yatay, uzaklik: Math.round(Math.hypot(P.x - game.bot.x, P.y - game.bot.y)), adim: +enBuyuk.toFixed(1), yanda };
+    game.bot = null;
+    return r;
+  });
+  sina(`yardımcı bot nehir köprüsünden (yan kuleler kapalıyken) geçer: ${JSON.stringify(botGecit)}`, () => {
+    if (botGecit.yok) return; // bu haritada nehir geçidi yoksa denenecek köprü de yok
+    assert.ok(botGecit.uzaklik <= 100, JSON.stringify(botGecit));
+    assert.ok(botGecit.adim < 10, JSON.stringify(botGecit));
+    assert.equal(botGecit.yanda, false, JSON.stringify(botGecit));
+  });
 
   const dus = await p.evaluate((L) => {
     const r = {};

@@ -159,6 +159,8 @@ describe("rooms — girişli oda (3.10.2, anonim giriş)", () => {
     await assertSucceeds(u.ref(`rooms/${ODA}/players/${UCUNCU}`).set(giris(true)));
     await assertSucceeds(h.ref(`rooms/${ODA}/state`).update(kimlikliDurum(true)));  // durumuGonder
     await assertSucceeds(h.ref(`rooms/${ODA}/state`).update(kimlikliDurum(false))); // paralar değişmedi
+    await assertSucceeds(h.ref(`rooms/${ODA}/state`).update({ ald: [[51, KONUK]] })); // değerli toplama onayı
+    await assertFails(h.ref(`rooms/${ODA}/state`).update({ ald: [[51, KONUK, 1]] })); // üçüncü alan yok
     await assertSucceeds(k.ref(`rooms/${ODA}/players/${KONUK}`).update({ x: 640, y: 388, walk: 0.3 })); // yalnız değişen alanlar
     await assertSucceeds(k.ref(`rooms/${ODA}/players/${KONUK}`).update({ dead: 1, hp: 0, lastSeen: SUNUCU }));
     await assertSucceeds(k.ref(`rooms/${ODA}/events`).push().set({ type: "mermi", gi: 43, by: KONUK }));
@@ -387,6 +389,43 @@ describe("rooms — Dünya Turu odası (3.14.0)", () => {
     const h = anonim(HOST);
     await assertSucceeds(h.ref(`rooms/${ODA}`).update({ status: "playing", lastSeen: 0 }));
     await assertSucceeds(h.ref(`rooms/${ODA}`).update({ status: "lobby", lastSeen: Date.now() }));
+  });
+});
+
+describe("rooms — çevrimiçi yolculuk (Y3)", () => {
+  const yjOda = (now, host = HOST) => ({
+    ...yeniOda(now, host), yj: 1,
+    players: { [host]: { ...oyuncuGirisi(true, now), sv: 2 } },
+  });
+  test("oda yj ve oyuncu sv ile kurulur; metin/sayı olmayan ret", async () => {
+    const h = anonim(HOST), now = Date.now();
+    await assertSucceeds(h.ref("rooms/ZZZZZZ").set(yjOda(now)));                    // submitCreateRoom
+    await assertSucceeds(h.ref("rooms/ZZZZZZ").remove());
+    for (const yj of ["1", true]) await assertFails(h.ref("rooms/ZZZZZZ").set({ ...yjOda(now), yj }));
+  });
+  test("yj odada yeni oyuncu sv >= 2 ister; sv'siz/sv=1 ret, mevcut oyuncu etkilenmez", async () => {
+    const now = Date.now();
+    await assertSucceeds(anonim(HOST).ref(`rooms/${ODA}`).set(yjOda(now)));          // submitCreateRoom
+    const k = anonim(KONUK);
+    const giris = oyuncuGirisi(false, now);
+    await assertFails(k.ref(`rooms/${ODA}/players/${KONUK}`).set(giris));            // sv yok
+    await assertFails(k.ref(`rooms/${ODA}/players/${KONUK}`).set({ ...giris, sv: 1 }));
+    await assertFails(k.ref(`rooms/${ODA}/players/${KONUK}`).set({ ...giris, sv: "2" }));
+    await assertSucceeds(k.ref(`rooms/${ODA}/players/${KONUK}`).set({ ...giris, sv: 2 })); // joinRoom
+    await assertSucceeds(k.ref(`rooms/${ODA}/players/${KONUK}`).update({ x: 500, y: 300 })); // mevcut kayıt
+  });
+  test("eski oda (yj yok) sv'siz yeni oyuncu kabul eder", async () => {
+    await odaKur(HOST, [KONUK]);
+    await assertSucceeds(anonim(YABANCI).ref(`rooms/${ODA}/players/${YABANCI}`).set(oyuncuGirisi(false, Date.now())));
+  });
+  test("durum kp/bz/ab/aw sayı kabul eder; metin ret", async () => {
+    const now = Date.now();
+    await assertSucceeds(anonim(HOST).ref(`rooms/${ODA}`).set(yjOda(now)));
+    const h = anonim(HOST);
+    await assertSucceeds(h.ref(`rooms/${ODA}/state`).update({ ...hostDurumu(), kp: 5, bz: 3, ab: 1, aw: 4200 }));
+    for (const alan of ["kp", "bz", "ab", "aw"]) {
+      await assertFails(h.ref(`rooms/${ODA}/state`).update({ [alan]: "x" }));
+    }
   });
 });
 

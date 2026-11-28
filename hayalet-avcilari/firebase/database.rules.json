@@ -19,6 +19,7 @@
         "level":      { ".write": "auth != null && data.parent().child('hostUid').val() === auth.uid",
                         ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 1000" },
         "tur":        { ".validate": "newData.isBoolean()" },
+        "yj":         { ".validate": "newData.isNumber()" },
         "status":     { ".write": "auth != null && data.parent().child('hostUid').val() === auth.uid",
                         ".validate": "newData.val() === 'lobby' || newData.val() === 'playing'" },
         "maxPlayers": { ".validate": "newData.isNumber() && newData.val() >= 2 && newData.val() <= 6" },
@@ -29,13 +30,14 @@
         "players": {
           "$uid": {
             ".write": "auth != null && auth.uid === $uid",
-            ".validate": "$uid.length >= 3 && $uid.length <= 40 && $uid.matches(/^[A-Za-z0-9_]+$/)",
+            ".validate": "$uid.length >= 3 && $uid.length <= 40 && $uid.matches(/^[A-Za-z0-9_]+$/) && (data.exists() || !data.parent().parent().child('yj').exists() || (newData.child('sv').isNumber() && newData.child('sv').val() >= 2))",
             "name":       { ".validate": "newData.isString() && newData.val().length <= 50" },
             "charKey":    { ".validate": "newData.isString() && newData.val().length <= 30" },
             "costumeIdx": { ".validate": "newData.isNumber()" },
             "ready":      { ".validate": "newData.isBoolean()" },
             "joinedAt":   { ".validate": "newData.isNumber()" },
             "lastSeen":   { ".validate": "newData.isNumber()" },
+            "sv":         { ".validate": "newData.isNumber()" },
             "x":          { ".validate": "newData.isNumber()" },
             "y":          { ".validate": "newData.isNumber()" },
             "facing":     { ".validate": "newData.isNumber()" },
@@ -97,6 +99,17 @@
           "bd":     { ".validate": "newData.isNumber()" },
           "bt":     { ".validate": "newData.isNumber()" },
           "lt":     { ".validate": "newData.isNumber()" },
+          "kp":     { ".validate": "newData.isNumber()" },
+          "bz":     { ".validate": "newData.isNumber()" },
+          "ab":     { ".validate": "newData.isNumber()" },
+          "aw":     { ".validate": "newData.isNumber()" },
+          "ald": {
+            "$i": {
+              "0":      { ".validate": "newData.isNumber()" },
+              "1":      { ".validate": "newData.isString() && newData.val().length <= 40" },
+              "$other": { ".validate": false }
+            }
+          },
           "$other": { ".validate": false }
         },
 

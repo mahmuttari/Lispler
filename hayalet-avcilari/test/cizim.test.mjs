@@ -29,7 +29,7 @@ try {
   const hatalar = [];
   p.on('pageerror', (e) => hatalar.push(e.message));
   await p.route(/gstatic\.com|googleapis|firebase/, (r) => r.abort()); // ağsız
-  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+  await p.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); });
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForTimeout(300);
   const cdp = await p.context().newCDPSession(p);
@@ -42,11 +42,19 @@ try {
     } };
     requestAnimationFrame(d);
   }), ms);
+  // Makine tabanı: ölçülen sahneden hemen önce, aynı sayfada oyun DURAKLATILIP 1 sn örneklenir (duraklatılmış oyun da
+  // çizilir; yalnız update, vurma parlaması ve çarpışmalar durur). Yüklü bir makinede eşikler yalnız makinenin o anki
+  // gücüne göre düşer; sağlıklı makinede (taban ≥ 50 fps) eski katılık korunur: fps ≥ 30, %95 kare ≤ 100 ms.
+  const tabanOlc = async (ms = 1000) => {
+    const onceki = await p.evaluate(() => { const o = game.paused; game.paused = true; return o; });
+    try { return await olc(ms); } finally { await p.evaluate((o) => { game.paused = o; }, onceki); }
+  };
   // Tek kişilik: Bot sürekli vuruluyor (her vuruşta 0,25 sn parlar)
   await p.evaluate(() => { save.playerName = 'Defne'; persistSave(); startGame(); game.player.invuln = 1e9; });
   await p.waitForTimeout(500);
   sonuc.botVar = await p.evaluate(() => !!game.bot);
   sonuc.botNormal = await olc(3000);
+  sonuc.tabanBot = await tabanOlc(1000);
   await p.evaluate(() => { window.__parla = setInterval(() => { if (game.bot) game.bot.hitFlash = 0.25; }, 50); });
   sonuc.botParliyor = await olc(3000);
   await p.evaluate(() => clearInterval(window.__parla));
@@ -61,9 +69,11 @@ try {
     };
     game.player.invuln = 1e9;
   });
+  sonuc.tabanCanli = await tabanOlc(1000);
   sonuc.canli = await olc(3000);
   // İkisi hayalet olur: yerel oyuncu ve bir uzak oyuncu (diğer uzak oyuncu canlı, tur sürer)
   await p.evaluate(() => { online.remotePlayers.k2.dead = true; game.player.hp = 0; game.player.dead = true; });
+  sonuc.tabanHayalet = await tabanOlc(1000);
   sonuc.hayalet = await olc(3000);
   // Dünya Turu, tek kişilik: ülkenin döngü müziği çalarken, Bot ve en az üç hayalet sahnede. Oyuncu daire çizerek
   // dolaşır: kamera kesirli piksel konumlarından geçer (zemin deseni piksele hizalı değilse her karede süzgeçle taranır)
@@ -83,12 +93,13 @@ try {
       return { kod: turUlkesi().kod, aile: turUlkesi().aile, calan: muzikDurumu().calan, bot: !!game.bot,
         hayalet: game.ghosts.length, zemin: !!(_turZemini && _turZemini.desen) };
     }, kod);
+    const taban = await tabanOlc(1000);
     const kare = await olc(3000);
     const kamera = await p.evaluate(() => {
       clearInterval(window.__dolas); game.inputDir.x = 0; game.inputDir.y = 0;
       return { yol: Math.round(Math.hypot(game.camera.x - __kamera.x, game.camera.y - __kamera.y)), kesirli: __kamera.kesirli };
     });
-    sonuc.tur[kod] = { ...once, ...kare, kamera };
+    sonuc.tur[kod] = { ...once, ...kare, kamera, taban };
   }
   await p.evaluate(() => { endGame(false); turMuzigiSondur(0); });
   // Tablet (800×1280; tuval dönüşümü dpr × 1,35): kamera kayarken Dünya Turu zemini (KE) kare hızını düşürmez. Tablette
@@ -100,7 +111,7 @@ try {
     const t = await b.newPage({ viewport: { width: 800, height: 1280 }, deviceScaleFactor: dpr });
     t.on('pageerror', (e) => hatalar.push(e.message));
     await t.route(/gstatic\.com|googleapis|firebase/, (r) => r.abort());
-    await t.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); });
+    await t.addInitScript(() => { localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); });
     await t.goto(adres, { waitUntil: 'load' });
     await t.waitForTimeout(300);
     await (await t.context().newCDPSession(t)).send('Emulation.setCPUThrottlingRate', { rate: 4 });
@@ -134,19 +145,32 @@ try {
   sunucu.close();
 }
 console.log(JSON.stringify(sonuc));
+// Sağlıklı makinede (duraklatılmış oyun ≥ 55 fps) eski katılık aynen: fps ≥ 30 ve %95 kare ≤ 100 ms. Yüklü makinede eşik
+// tabana göre iner. Çalışan sahne (update, kamera kayması, hayaletler) duraklatılmış kareden ölçülen ~2 kat pahalıdır
+// (0,45-0,55), bu yüzden orantı 0,4'tür; asıl gerileme korumaları aşağıdaki göreli denetimlerdir (Bot parlaması ≥ 0,8 × normal,
+// hayalet ≥ 0,8 × canlı).
+const esik = (t) => ({ fps: t.fps >= 55 ? 30 : Math.min(30, 0.4 * t.fps), p95: Math.max(100, 2.5 * t.p95) });
 assert.deepEqual(sonuc.hatalar, [], 'sayfa hatası');
 assert.ok(sonuc.botVar, 'tek kişilik oyunda Bot yok');
-assert.ok(sonuc.botParliyor.fps >= 30 && sonuc.botParliyor.p95 <= 100,
-  `vurulan Bot çizilirken kare hızı ${sonuc.botParliyor.fps} fps, %95 kare ${sonuc.botParliyor.p95} ms (normalde ${sonuc.botNormal.fps} fps)`);
-assert.ok(sonuc.canli.fps >= 30, `canlıyken kare hızı düşük: ${sonuc.canli.fps}`);
-assert.ok(sonuc.hayalet.fps >= 30 && sonuc.hayalet.p95 <= 100,
-  `hayalet olan oyuncu çizilirken kare hızı ${sonuc.hayalet.fps} fps, %95 kare ${sonuc.hayalet.p95} ms (canlıyken ${sonuc.canli.fps} fps)`);
+const esikBot = esik(sonuc.tabanBot);
+assert.ok(sonuc.botParliyor.fps >= esikBot.fps && sonuc.botParliyor.p95 <= esikBot.p95,
+  `vurulan Bot çizilirken kare hızı ${sonuc.botParliyor.fps} fps, %95 kare ${sonuc.botParliyor.p95} ms (normalde ${sonuc.botNormal.fps} fps; taban ${sonuc.tabanBot.fps} fps / ${sonuc.tabanBot.p95} ms → eşik ${esikBot.fps} / ${esikBot.p95})`);
+assert.ok(sonuc.botParliyor.fps >= 0.8 * sonuc.botNormal.fps,
+  `vurulan Bot normalden yavaş: ${sonuc.botParliyor.fps} < 0,8 × ${sonuc.botNormal.fps} fps`);
+const esikCanli = esik(sonuc.tabanCanli);
+assert.ok(sonuc.canli.fps >= esikCanli.fps, `canlıyken kare hızı düşük: ${sonuc.canli.fps} fps (taban ${sonuc.tabanCanli.fps} → eşik ${esikCanli.fps})`);
+const esikHayalet = esik(sonuc.tabanHayalet);
+assert.ok(sonuc.hayalet.fps >= esikHayalet.fps && sonuc.hayalet.p95 <= esikHayalet.p95,
+  `hayalet olan oyuncu çizilirken kare hızı ${sonuc.hayalet.fps} fps, %95 kare ${sonuc.hayalet.p95} ms (canlıyken ${sonuc.canli.fps} fps; taban ${sonuc.tabanHayalet.fps} fps / ${sonuc.tabanHayalet.p95} ms → eşik ${esikHayalet.fps} / ${esikHayalet.p95})`);
+assert.ok(sonuc.hayalet.fps >= 0.8 * sonuc.canli.fps,
+  `hayalet çizimi canlıdan yavaş: ${sonuc.hayalet.fps} < 0,8 × ${sonuc.canli.fps} fps`);
 for (const [kod, v] of Object.entries(sonuc.tur)) {
   assert.equal(v.kod, kod, `Dünya Turu ${kod} yerine ${v.kod} ülkesinde`);
   assert.ok(v.calan === 'dongu' && v.bot && v.hayalet >= 3 && v.zemin,
     `Dünya Turu ${kod}: ölçüm başında müzik ${v.calan}, Bot ${v.bot}, ${v.hayalet} hayalet, zemin deseni ${v.zemin}`);
   assert.ok(v.kamera.yol > 50 && v.kamera.kesirli > 5, `Dünya Turu ${kod}: kamera kaymadı (${JSON.stringify(v.kamera)})`);
-  assert.ok(v.fps >= 30 && v.p95 <= 100, `Dünya Turu ${kod} (${v.aile}) kamera kayarken kare hızı ${v.fps} fps, %95 kare ${v.p95} ms`);
+  const esikTur = esik(v.taban);
+  assert.ok(v.fps >= esikTur.fps && v.p95 <= esikTur.p95, `Dünya Turu ${kod} (${v.aile}) kamera kayarken kare hızı ${v.fps} fps, %95 kare ${v.p95} ms (taban ${v.taban.fps} fps / ${v.taban.p95} ms → eşik ${esikTur.fps} / ${esikTur.p95})`);
 }
 for (const [dpr, v] of Object.entries(sonuc.tablet)) {
   assert.ok(v.hizali, `tablet dpr ${dpr}: zemin deseni tuval ölçeğine (${v.olcek}) hizalı değil`);

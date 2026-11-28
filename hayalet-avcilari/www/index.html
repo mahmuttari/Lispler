@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#1a0b2e">
+<meta name="theme-color" content="#0c0618">
 <title>Hayalet Avcıları</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -19,13 +19,14 @@
 <div id="screen-welcome" class="screen active">
   <div class="welcome-bg"></div>
   <div class="welcome-content">
+    <div class="menu-amblem" id="welcome-amblem" data-welcome-amblem hidden></div>
     <h1 class="title" data-i18n-html>👻 HAYALET<br>AVCILARI 👻</h1>
     <div id="kinkin-greeter" class="greeter"></div>
     <div class="speech-bubble">
       <p id="welcome-text" data-i18n-html>Merhaba! Ben <b>Kinkin</b>! Hadi birlikte hayalet avına çıkalım!</p>
     </div>
     <button class="btn btn-big" onclick="welcomeContinue()">BAŞLA ▶</button>
-    <button class="btn btn-small" onclick="openLanguage()">🌐 Dil</button>
+    <button class="btn btn-small" data-ui-simge="ui-dil" onclick="openLanguage()">🌐 Dil</button>
   </div>
 </div>
 
@@ -33,6 +34,7 @@
 <div id="screen-name" class="screen">
   <div class="welcome-bg"></div>
   <div class="welcome-content">
+    <div class="menu-amblem" data-welcome-amblem hidden></div>
     <h1 class="title-small">👤 HESAP</h1>
     <div class="speech-bubble">
       <p id="name-prompt">Avcımızın adı ne olsun?</p>
@@ -47,38 +49,54 @@
 <!-- ========== ANA MENÜ ========== -->
 <div id="screen-menu" class="screen">
   <div class="menu-bg"></div>
-  <div class="menu-content">
+  <div class="menu-content ana-menu">
+    <div class="menu-sol">
+    <div class="menu-amblem" id="menu-amblem" hidden></div>
     <h1 class="title-small">👻 Hayalet Avcıları 👻</h1>
     <div class="player-bar">
       <span class="player-tag">👤 <span id="menu-player">Avcı</span></span>
       <button class="btn-tiny" onclick="openName(true)">Değiştir</button>
     </div>
     <div class="resources">
-      <div class="resource">💰 <span id="menu-para">0</span></div>
-      <div class="resource">💎 <span id="menu-elmas">0</span></div>
-      <div class="resource">💚 <span id="menu-zumrut">0</span></div>
-      <div class="resource">🏆 <span id="menu-kupa">0</span></div>
+      <div class="resource" data-ui-simge="ui-para">💰 <span id="menu-para">0</span></div>
+      <div class="resource" data-ui-simge="ui-elmas">💎 <span id="menu-elmas">0</span></div>
+      <div class="resource" data-ui-simge="ui-zumrut">💚 <span id="menu-zumrut">0</span></div>
+      <div class="resource" data-ui-simge="ui-kupa">🏆 <span id="menu-kupa">0</span></div>
     </div>
-    <div class="character-preview" id="character-preview"></div>
+    <div class="hunter-sahne">
+      <div class="menu-dekor" id="menu-dekor" aria-hidden="true">
+        <div class="dekor-hayaletler" id="dekor-hayaletler"></div>
+        <div class="dekor-kayan" id="dekor-kayan"></div>
+        <div class="dekor-yarasa" id="dekor-yarasa"></div>
+        <div class="dekor-fener" id="dekor-fener"></div>
+        <button type="button" class="dekor-bakan" id="dekor-bakan" tabindex="-1" aria-label="👻">👻</button>
+      </div>
+      <div class="hunter-spot" id="hunter-spot"></div>
+      <div class="character-preview" id="character-preview"></div>
+      <div class="hunter-kaide" id="hunter-kaide"></div>
+    </div>
     <p class="character-name" id="character-name">Kinkin</p>
     <p class="character-stats" id="character-stats"></p>
-    <button class="btn btn-big btn-play" onclick="startGame()">▶ OYNA</button>
+    </div>
+    <div class="menu-sag">
+    <button class="btn btn-big btn-play" data-menu-dugme="yesil" data-ui-simge="ui-oyna" onclick="startGame()">▶ OYNA</button>
     <div class="menu-buttons">
-      <button class="btn" onclick="openCharacters()">👥 Karakterler</button>
-      <button class="btn" onclick="openShop()">🛒 Mağaza</button>
-      <button class="btn" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
-      <button class="btn btn-tur" onclick="openDunyaTuru()">🌍 Dünya Turu</button>
+      <button class="btn" data-menu-dugme="mor" data-ui-simge="ui-karakterler" onclick="openCharacters()">👥 Karakterler</button>
+      <button class="btn" data-menu-dugme="mor" data-ui-simge="ui-magaza" onclick="openShop()">🛒 Mağaza</button>
+      <button class="btn" data-menu-dugme="mor" data-ui-simge="ui-sampiyon" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
+      <button class="btn btn-tur" data-menu-dugme="turuncu" data-ui-simge="ui-dunya" onclick="openDunyaTuru()">🌍 Dünya Turu</button>
       <div class="menu-satir">
-        <button class="btn btn-online" onclick="openOnline()">🌐 Online Oyna</button>
-        <button id="menu-arkadas" class="btn btn-kare" aria-label="Arkadaşlar" onclick="openFriends()">👫<span id="menu-arkadas-rozet" class="rozet" style="display:none"></span></button>
+        <button class="btn btn-online" data-menu-dugme="camgobegi" data-ui-simge="ui-online" onclick="openOnline()">🌐 Online Oyna</button>
+        <button id="menu-arkadas" class="btn btn-kare" data-menu-dugme="camgobegi" data-ui-simge="ui-arkadas" aria-label="Arkadaşlar" onclick="openFriends()">👫<span id="menu-arkadas-rozet" class="rozet" style="display:none"></span></button>
       </div>
     </div>
     <div class="menu-footer-row">
-      <button class="btn btn-small" onclick="openAccount()">👤 Hesap</button>
-      <button class="btn btn-small" onclick="openSoundSettings()">🎚 Ses</button>
-      <button class="btn btn-small" onclick="openLanguage()">🌐 Dil</button>
-      <button class="btn btn-small" onclick="resetData()">🔄 Sıfırla</button>
+      <button class="btn btn-small" data-menu-dugme="cam" data-ui-simge="ui-hesap" onclick="openAccount()">👤 Hesap</button>
+      <button class="btn btn-small" data-menu-dugme="cam" data-ui-simge="ui-ses" onclick="openSoundSettings()">🎚 Ses</button>
+      <button class="btn btn-small" data-menu-dugme="cam" data-ui-simge="ui-dil" onclick="openLanguage()">🌐 Dil</button>
+      <button class="btn btn-small" data-menu-dugme="cam" data-ui-simge="ui-ayar" onclick="resetData()">🔄 Sıfırla</button>
       <button class="btn btn-small" id="btn-reklam-gizlilik" style="display:none" onclick="reklamGizlilikSecenekleri()">🔒 Gizlilik</button>
+    </div>
     </div>
   </div>
 </div>
@@ -88,7 +106,7 @@
   <div class="menu-bg"></div>
   <div class="menu-content">
     <h2>🏆 ŞAMPİYONLAR</h2>
-    <p class="leaderboard-sub">En iyi 10 hayalet avcısı</p>
+    <p class="leaderboard-sub">En iyi 500 hayalet avcısı</p>
     <div class="lb-tabs">
       <button class="lb-tab active" data-src="online" onclick="setLeaderboardSource('online')">🌐 Online</button>
       <button class="lb-tab" data-src="local" onclick="setLeaderboardSource('local')">📱 Bu Cihaz</button>
@@ -97,10 +115,10 @@
     <div id="leaderboard-list" class="leaderboard-list"></div>
     <div class="pgs-yalniz" style="display:none">
       <button class="btn btn-small" onclick="pgsSkorTablosu()">🎮 Play Games skor tablosu</button>
-      <button class="btn btn-small" onclick="pgsBasarimlar()">🎖 Başarımlar</button>
+      <button class="btn btn-small" data-ui-simge="ui-basarim" onclick="pgsBasarimlar()">🎖 Başarımlar</button>
     </div>
     <button class="btn btn-small" onclick="clearLeaderboard()">🗑 Yerel Listeyi Temizle</button>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
 </div>
 
@@ -113,8 +131,9 @@
       <div class="resource">💚 <span id="char-zumrut">0</span></div>
     </div>
     <div id="character-list" class="character-list"></div>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
+  <div id="character-detail" class="char-detay" role="dialog" aria-modal="true" aria-labelledby="char-detay-ad" hidden></div>
 </div>
 
 <!-- ========== MAĞAZA ========== -->
@@ -127,26 +146,38 @@
       <div class="resource">💎 <span id="shop-elmas">0</span></div>
     </div>
     <div class="shop-tabs">
-      <button class="tab-btn active" onclick="showShopTab('upgrades')">⚡ Güçler</button>
+      <button class="tab-btn active" data-ui-simge="ikon-guc-yildiz" onclick="showShopTab('upgrades')">⚡ Güçler</button>
       <button class="tab-btn" onclick="showShopTab('costumes')">👗 Kostümler</button>
       <button class="tab-btn" onclick="showShopTab('ammo')">🎯 Cephane</button>
       <button class="tab-btn" onclick="showShopTab('guns')">🔫 Silahlar</button>
       <button class="tab-btn" onclick="showShopTab('pets')">🐾 Petler</button>
     </div>
     <div id="shop-content" class="shop-content"></div>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
 </div>
 
 <!-- ========== OYUN EKRANI ========== -->
 <div id="screen-game" class="screen">
   <canvas id="game-canvas"></canvas>
+  <div id="gec1-banner" class="gec1-banner" aria-live="polite"></div>
+  <div id="bnr-serit" class="bnr-serit" aria-live="polite"></div>
 
   <div class="hud">
     <div class="hud-left">
       <div class="lives" id="lives">❤️❤️❤️</div>
       <div class="level">Bölüm <span id="level-num">1</span></div>
       <div class="boss-status" id="boss-status">⏳ Boss: 60s</div>
+    </div>
+    <div class="yolculuk-hud" id="yolculuk-hud" aria-hidden="true">
+      <div class="yc-cubuk" id="yc-cubuk">
+        <div class="yc-ray"></div>
+        <div class="yc-bolge" id="yc-bolge"></div>
+        <i class="yc-kapi"></i><i class="yc-kapi"></i><i class="yc-kapi"></i><i class="yc-kapi"></i><i class="yc-kapi"></i><i class="yc-kapi"></i>
+        <div class="yc-tac">👑</div>
+        <div class="yc-nokta" id="yc-nokta"></div>
+      </div>
+      <div class="yc-kalan" id="yc-kalan">👻 0</div>
     </div>
     <div class="hud-right">
       <div class="score">👻 <span id="ghost-count">0</span></div>
@@ -158,16 +189,18 @@
   <!-- Çevrimiçi: host'tan bir süredir görüntü gelmiyor -->
   <div id="bekleme" class="bekleme">⏳ Host bekleniyor…</div>
 
-  <button class="pause-btn" onclick="pauseGame()">⏸</button>
+  <button class="pause-btn" onclick="pauseGame()" aria-label="⏸"><svg viewBox="0 0 18 18" aria-hidden="true"><rect x="3" y="2" width="4.2" height="14" rx="1.4" fill="currentColor"/><rect x="10.8" y="2" width="4.2" height="14" rx="1.4" fill="currentColor"/></svg></button>
 
   <!-- Çevrimiçi Dünya Turu: hayalet olan oyuncu reklam izleyip dirilir (dunya-turu.js › turDirilTeklifi) -->
   <button id="btn-tur-diril" class="btn btn-play diril-btn" style="display:none" onclick="turDirilIzle()">🎬 Reklam izle, diril</button>
 
-  <!-- Aktif güç barı -->
+  <!-- Aktif güçler: kenarda dairesel simgeler (BUF1) -->
   <div id="power-bar" class="power-bar"></div>
 
   <!-- Cephane slotları -->
   <div id="weapon-bar" class="weapon-bar"></div>
+  <!-- Silah seç: çubukta gösterilecek en çok 3 silahı seç -->
+  <div id="silah-sec-panel" class="silah-sec-panel"></div>
 
   <!-- Silah envanteri: takılı silah; dokununca normal silah + sahip olunan silahlar -->
   <button id="inv-btn" class="inv-btn" onclick="toggleInventory()"><span class="inv-badge">🎒</span></button>
@@ -187,8 +220,8 @@
     <p id="pause-kod" class="pause-kod" style="display:none"></p>
     <button class="btn btn-big" onclick="resumeGame()">▶ Devam</button>
     <button id="pause-davet" class="btn" style="display:none" onclick="openInviteModal()">📨 Davet et</button>
-    <button class="btn" onclick="openSoundSettings()">🎚 Ses Ayarları</button>
-    <button class="btn" onclick="quitToMenu()">🏠 Menüye Dön</button>
+    <button class="btn btn-geri" onclick="openSoundSettings()">🎚 Ses Ayarları</button>
+    <button class="btn btn-geri" onclick="quitToMenu()">🏠 Menüye Dön</button>
   </div>
 </div>
 
@@ -198,7 +231,7 @@
     <h2>💔 Canların bitti!</h2>
     <p id="tur-devam-kalan" class="online-sub"></p>
     <button id="btn-tur-devam" class="btn btn-big btn-play" onclick="turDevamIzle()">🎬 Reklam izle, devam et</button>
-    <button class="btn" onclick="turDevamVazgec()">🏁 Oyunu bitir</button>
+    <button class="btn btn-geri" onclick="turDevamVazgec()">🏁 Oyunu bitir</button>
   </div>
 </div>
 
@@ -208,7 +241,7 @@
     <h2>📨 ARKADAŞINI ÇAĞIR</h2>
     <p id="davet-not" class="online-sub"></p>
     <div id="davet-liste" class="arkadas-liste"></div>
-    <button class="btn" onclick="closeInviteModal()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="closeInviteModal()">⬅ Geri</button>
   </div>
 </div>
 
@@ -258,7 +291,7 @@
     </div>
 
     <p class="online-sub" style="font-size:11px;opacity:0.7">Manuel kodu kaybedersen ilerleme kurtarılamaz. Güvenli yere not al.</p>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
 </div>
 
@@ -299,6 +332,12 @@
       <input type="range" id="vol-slider-sfx" min="0" max="100" value="100" class="vol-slider"
              oninput="setVolume('sfx', this.value)">
     </div>
+    <div class="vol-row">
+      <div class="vol-head">
+        <span class="vol-name" id="lbl-ayar3d">3D karakterler</span>
+      </div>
+      <button class="btn btn-3d-toggle" id="btn-ayar3d" onclick="toggle3d()">Açık</button>
+    </div>
     <button class="btn btn-big" onclick="closeSoundSettings()">✓ TAMAM</button>
   </div>
 </div>
@@ -306,14 +345,16 @@
 <!-- ========== OYUN BİTTİ ========== -->
 <div id="screen-gameover" class="screen modal">
   <div class="modal-content">
+    <div id="gameover-resim" class="gameover-resim" aria-hidden="true" hidden></div>
     <h2 id="gameover-title">👻 Oyun Bitti</h2>
     <p id="gameover-rank" class="gameover-rank"></p>
     <div id="tur-siralama" class="tur-siralama" style="display:none">
-      <p class="ts-baslik">🏆 Tur sıralaması</p>
+      <p class="ts-baslik" data-ui-simge="ui-madalya">🏆 Tur sıralaması</p>
       <ol id="tur-siralama-liste" class="ts-liste"></ol>
       <p id="kupa-sayisi" class="kupa-sayisi"></p>
     </div>
     <div class="rewards">
+      <div class="odul-sandik" data-ui-sandik aria-hidden="true"></div>
       <p>👻 Yakaladığın hayalet: <b id="final-ghosts">0</b></p>
       <p>💰 Kazanılan para: <b id="final-para">0</b></p>
       <p>💎 Kazanılan elmas: <b id="final-elmas">0</b></p>
@@ -321,9 +362,10 @@
     </div>
     <button id="btn-tekrar" class="btn btn-big" onclick="tekrarOyna()">🔁 Tekrar Oyna</button>
     <button id="btn-lobiye-don" class="btn btn-big btn-play" style="display:none" onclick="lobiyeDon()">🎮 Lobiye Dön</button>
-    <button class="btn btn-play" id="btn-reklam-odul" style="display:none" onclick="odulluIzle()">🎬 Reklam izle: +10 💚</button>
-    <button class="btn" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
-    <button class="btn" onclick="quitToMenu()">🏠 Menü</button>
+    <button class="btn btn-play" id="btn-reklam-ikikat" data-ui-simge="ui-hediye" style="display:none" onclick="odulluIzle('para')">🎬 Reklam izle: 2× 💰</button>
+    <button class="btn btn-play" id="btn-reklam-odul" data-ui-simge="ui-hediye" style="display:none" onclick="odulluIzle()">🎬 Reklam izle: +10 💚</button>
+    <button class="btn btn-geri" onclick="openLeaderboard()">🏆 Şampiyonlar</button>
+    <button class="btn btn-geri" onclick="quitToMenu()">🏠 Menü</button>
   </div>
 </div>
 
@@ -337,7 +379,7 @@
     <button class="btn btn-big" onclick="openCreateRoom()">➕ Oda Kur</button>
     <button class="btn btn-big" onclick="openFriends()">👫 Arkadaşlar</button>
     <p class="online-status" id="online-status"></p>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
 </div>
 
@@ -377,7 +419,7 @@
       <div id="arkadas-engellenen" class="arkadas-liste"></div>
     </details>
     <button id="arkadas-google" class="btn btn-small arkadas-google" onclick="openAccount()" style="display:none">🔐 Arkadaşların kaybolmasın: Google ile giriş yap ›</button>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
 </div>
 
@@ -390,16 +432,23 @@
     <div class="lb-tabs">
       <button class="lb-tab active" data-sekme="rota" onclick="turSekmesi('rota')">✈️ Rota</button>
       <button class="lb-tab" data-sekme="pasaport" onclick="turSekmesi('pasaport')">🛂 Pasaport</button>
+      <button class="lb-tab" data-sekme="defter" onclick="turSekmesi('defter')">📖 Defter</button>
     </div>
+    <div id="tur-yakinda-banner" class="tur-yakinda-banner-wrap" style="display:none"></div>
     <div id="tur-liste" class="tur-liste"></div>
     <div id="tur-pasaport" class="tur-pasaport" style="display:none"></div>
+    <div id="tur-defter" class="tur-defter" style="display:none"></div>
     <button id="tur-basla" class="btn btn-big btn-play" onclick="dunyaTuruBaslat()">▶ Başla</button>
-    <button class="btn" onclick="goToMenu()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="goToMenu()">⬅ Geri</button>
   </div>
+  <div id="tur-yakinda-perde" class="tur-yakinda-perde" style="display:none" role="dialog" aria-modal="true" aria-label="Yakında: Pamukkale"></div>
 </div>
 <!-- Damga ve uçak geçişi perdeleri (oyunun üstünde; dokunuşu geçirir) -->
 <div id="tur-damga" class="tur-perde" aria-live="polite"></div>
 <div id="tur-gecis" class="tur-perde" aria-live="polite"></div>
+<!-- Dünya Turu hikâyesi: varış/katılış sahnesi ve bilmece (hikaye.js) -->
+<div id="hikaye-sahne" class="hikaye-perde" role="dialog" aria-modal="true" aria-live="polite"></div>
+<div id="hikaye-bilmece" class="hikaye-perde" role="dialog" aria-modal="true" aria-live="polite"></div>
 <!-- Damgaların mürekkep pürüzü -->
 <svg class="tur-svg-tanim" width="0" height="0" aria-hidden="true" focusable="false">
   <filter id="tur-murekkep" x="-5%" y="-5%" width="110%" height="110%">
@@ -423,7 +472,7 @@
       <input id="room-code-input" class="name-input kod-input" type="text" maxlength="7" placeholder="Oda kodu" autocomplete="off" autocapitalize="characters" spellcheck="false">
       <button class="btn btn-play" onclick="kodlaKatil()">🔑 Kodla Katıl</button>
     </div>
-    <button class="btn" onclick="leaveOnlineToOnline()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="leaveOnlineToOnline()">⬅ Geri</button>
   </div>
 </div>
 
@@ -453,7 +502,7 @@
       <button id="oda-ulke-ileri" class="kip-btn" onclick="odaUlkesiKaydir(1)">▶</button>
     </div>
     <button class="btn btn-big btn-play" onclick="submitCreateRoom()">🚀 ODA KUR</button>
-    <button class="btn" onclick="leaveOnlineToOnline()">⬅ Geri</button>
+    <button class="btn btn-geri" onclick="leaveOnlineToOnline()">⬅ Geri</button>
   </div>
 </div>
 
@@ -476,7 +525,7 @@
       <button id="lobby-ready-btn" class="btn btn-big" onclick="toggleReady()">✓ HAZIR</button>
       <button id="lobby-start-btn" class="btn btn-big btn-play" onclick="startMpGame()" style="display:none;">▶ BAŞLAT</button>
     </div>
-    <button class="btn" onclick="leaveRoom()">🚪 Odadan Ayrıl</button>
+    <button class="btn btn-geri" onclick="leaveRoom()">🚪 Odadan Ayrıl</button>
   </div>
 </div>
 
@@ -525,8 +574,17 @@
 <script src="engel-temalari.js"></script>
 <script src="timsah.js"></script>
 <script src="kopru.js"></script>
+<script src="yerlesim-sablonlari.js"></script>
+<script src="yolculuk.js"></script>
+<script src="yuva-canlilar.js"></script>
+<script src="zemin-katmani.js"></script>
 <script src="cali.js"></script>
 <script src="pet.js"></script>
+<script src="hava.js"></script>
+<script src="anim.js"></script>
+<script src="gorsel/liste.js"></script>
+<script src="gorsel.js"></script>
+<script src="anim-ek.js"></script>
 <script src="ulke-aileleri.js"></script>
 <script src="ulke-objeleri-avrupa.js"></script>
 <script src="ulke-objeleri-afrika.js"></script>
@@ -535,10 +593,15 @@
 <script src="ulkeler.js"></script>
 <script src="kostumler.js"></script>
 <script src="dunya-turu.js"></script>
+<script src="hikaye-veri.js"></script>
+<script src="hikaye.js"></script>
 <script src="ulke-muzikleri.js"></script>
 <script src="muzik.js"></script>
 <script src="arkadaslar.js"></script>
+<script src="karakter-detay.js"></script>
 <script src="game.js"></script>
+<script type="module" src="uc-avci.js"></script>
+<script src="ses-sentez.js"></script>
 <script>
   // Eski sürümlerde register edilmiş SW'leri temizle (Capacitor'da SW'ye gerek yok)
   if ("serviceWorker" in navigator) {

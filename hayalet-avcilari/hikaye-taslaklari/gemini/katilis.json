@@ -1,0 +1,218 @@
+{
+ "kinkin": [
+  {
+   "k": "katilan",
+   "m": "Vızz! Az kalsın geçip gidiyordum; bisikletimle ilk hayaleti yakaladığımdan bu yana hiç durmadım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Bu enerji haritada yeni yollar açar; hızlı adımlarını bizim dünya yolculuğumuza katar mısın?"
+  },
+  {
+   "k": "katilan",
+   "m": "Enerji tabancam dolu, ayakkabılarım sıkı bağlı! En önde koşacak biri lazımsa ben varım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Harika, ama bazen soluklanıp çevredeki güzelliklere bakmak için frene de basacağız!"
+  }
+ ],
+ "veryi": [
+  {
+   "k": "katilan",
+   "m": "Kusura bakma, biraz ağır gelirim; dedemin demirci dükkânından kalma koca çekicim hafif sayılmaz."
+  },
+  {
+   "k": "gezgin",
+   "m": "Acelemiz yok, sağlam bir dost yeter; kayıp ruhlara yol aradığımız bu tura eşlik eder misin?"
+  },
+  {
+   "k": "katilan",
+   "m": "Tek elimle çekici savururum, öbür elimle de sana destek olurum. Yükün yarısı artık bende!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Böyle güçlü bir omuzla hiçbir yol uzun görünmez, haydi yola koyulalım."
+  }
+ ],
+ "kornet": [
+  {
+   "k": "katilan",
+   "m": "Kabarık mor tüylerime şaşırma; kristal asamla en uzaktaki utangaç hayaletleri bile seçebilirim."
+  },
+  {
+   "k": "gezgin",
+   "m": "Gözlerimizden kaçan ipuçları hep oluyor; sihri iyilik için kullanan bir rehber olarak bize katılsana."
+  },
+  {
+   "k": "katilan",
+   "m": "Yüzümü pek kimse görmez ama kalbim açıktır. Işığı arayan bu kervana memnuniyetle girerim."
+  },
+  {
+   "k": "gezgin",
+   "m": "Mor tüylerin arasında parlayan bu dostluk bile yolumuzu şimdiden aydınlattı."
+  }
+ ],
+ "mark": [
+  {
+   "k": "katilan",
+   "m": "Dur bir saniye! Sırt çantamda pusula, harita ve bolca atıştırmalık var; burada gizli bir hazine mi var?"
+  },
+  {
+   "k": "gezgin",
+   "m": "Altından bile değerli hatıralar topluyoruz; gel, çantanı da merakını da alıp maceraya ortak ol."
+  },
+  {
+   "k": "katilan",
+   "m": "Kompakt arbaletim hazır, parıldayan her ipucunu senden önce ben kaparım! Anlaştık, gidiyoruz!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Önce atıştırmalıkları paylaşacağımıza söz ver, gerisi kolay!"
+  }
+ ],
+ "kent": [
+  {
+   "k": "katilan",
+   "m": "Kırmızı gözlerimden ürkme. Hayaletlerin dünyasında kaybolup dönebilen tek kişi benim; onları anlarım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Onları eve kavuşturmak için senden iyi yol arkadaşı olamaz; bu yolculukta yanımızda yürür müsün?"
+  },
+  {
+   "k": "katilan",
+   "m": "Yalnız kalmanın ne demek olduğunu iyi bilirim. Kapüşonumun gölgesi artık dostlar için nöbette."
+  },
+  {
+   "k": "gezgin",
+   "m": "Artık kimse gölgelerde tek başına kalmayacak, hoş geldin aramıza."
+  }
+ ],
+ "ponko": [
+  {
+   "k": "katilan",
+   "m": "Selam yolcu! Kocaman şapkamla küçük kasabalarda düzeni sağlarım, altın tetiğimse rüzgârdan hızlıdır."
+  },
+  {
+   "k": "gezgin",
+   "m": "Küçük kasabalar sana dar gelmeye başladıysa, gel bütün dünyayı birlikte dolaşalım!"
+  },
+  {
+   "k": "katilan",
+   "m": "Şerif yıldızım parlıyor, kovboy tabancam hazır! Bu koca haritanın tozunu beraber kaldıralım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Şapkanı sıkı tut o zaman, önümüzde epey rüzgârlı diyarlar var!"
+  }
+ ],
+ "gul": [
+  {
+   "k": "katilan",
+   "m": "Tahtta oturup beklemek bana göre değildi; tacımı düzeltip kraliyet yayımı omzuma astım."
+  },
+  {
+   "k": "gezgin",
+   "m": "İsabetli bir göze ve cesur bir yüreğe ihtiyacımız var; saray yerine bizimle yollara düşer misin?"
+  },
+  {
+   "k": "katilan",
+   "m": "Oklarım hedefi şaşmaz, ama asıl amacım kayıp ruhlara neşe getirmek. Ekibe beni de yaz!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Böyle zarif bir okçuyla yolculuğumuz şimdiden masal gibi oldu."
+  }
+ ],
+ "rani": [
+  {
+   "k": "katilan",
+   "m": "Boyuma aldanma, sapanım çok isabetlidir! Yorgun düşen olursa şifalı kalbimle hemen yetişirim."
+  },
+  {
+   "k": "gezgin",
+   "m": "Uzun yolda yaralarımızı saracak sıcak bir kalp arıyorduk; el ele verip bizimle gelir misin?"
+  },
+  {
+   "k": "katilan",
+   "m": "Kimsenin umudunu kaybetmesine izin vermem. Çantamı kaptım bile, haydi hayaletlere ışık taşıyalım!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Sen yanımızdayken en dik yokuşlar bile bize düz yol gelir."
+  }
+ ],
+ "beti": [
+  {
+   "k": "katilan",
+   "m": "Lolipop beremi beğendin mi? Şeker fabrikasından çıktım, sulara dalsam da neşem hiç ıslanmaz!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Şeker toplarınla bu yolculuğa tat katsana; dünyayı dolaşırken gülümsetecek bir arkadaşa ihtiyacımız var."
+  },
+  {
+   "k": "katilan",
+   "m": "Tatlı tatlı uğurlanan hayaletler bile kıkırdar! Beremi düzelttim, hemen peşine takılıyorum!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Göller, yağmurlar vız gelir artık; yolculuğun en keyifli dönemi şimdi başlıyor!"
+  }
+ ],
+ "fanatik": [
+  {
+   "k": "katilan",
+   "m": "Siyah kuşağımı dağlardaki ustamdan aldım; nunçakum dönerken hayaletler şaşkınlıktan alkış tutar."
+  },
+  {
+   "k": "gezgin",
+   "m": "Disiplinin ve hızın ekibimize güç katar; ustalığını bu dostluk yolculuğuyla birleştirir misin?"
+  },
+  {
+   "k": "katilan",
+   "m": "Gerçek ustalık, başkalarına yardım edebilmektir. Derin bir nefes aldım, seninle yola hazırım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Böyle dengeli ve güçlü bir dostla sırtımız asla yere gelmez."
+  }
+ ],
+ "silsen": [
+  {
+   "k": "katilan",
+   "m": "Asamın ucundaki şu papatya hiç solmaz; bastığım her yere ılık bir bahar esintisi taşırım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Solgun haritamızın tam da senin baharına ihtiyacı var; çiçekli ışığını yolumuza katmak ister misin?"
+  },
+  {
+   "k": "katilan",
+   "m": "Çiçek toplarım dokunduğu her ruhu ışığa çevirir. Haydi gidelim, geçtiğimiz her yer çiçek açsın!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Hangi mevsimde olursak olalım, artık yanımızda hep bahar olacak."
+  }
+ ],
+ "sercin": [
+  {
+   "k": "katilan",
+   "m": "Rüzgâr bana yakında büyük bir yolculuk başlayacağını fısıldadı; kuşlar da seni işaret etti!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Kuşların haberine kulak ver o zaman; kanat tüylerinle gökyüzünden bize rehberlik eder misin?"
+  },
+  {
+   "k": "katilan",
+   "m": "En utangaç hayalet bile tüylerimden saklanamaz. Rüzgârla yarışa hazırım, haydi kanatlanalım!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Gökyüzü artık bizim müttefikimiz; rotamız hiç bu kadar berrak olmamıştı."
+  }
+ ]
+}

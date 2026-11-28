@@ -27,10 +27,10 @@ function sina(ad, fn) {
 
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args: ['--autoplay-policy=no-user-gesture-required'] });
 const hatalar = [];
-async function sayfaAc(dil = 'tr') {
-  const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
+async function sayfaAc(dil = 'tr', genislik = 390) {
+  const p = await b.newPage({ viewport: { width: genislik, height: 844 }, deviceScaleFactor: 1 });
   p.on('pageerror', (e) => hatalar.push(e.message));
-  await p.addInitScript((dil) => { localStorage.setItem('hayaletAvcilariDil', dil); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); }, dil);
+  await p.addInitScript((dil) => { localStorage.setItem('hayaletAvcilariDil', dil); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); }, dil);
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
   await p.goto(adres, { waitUntil: 'load' });
   await p.waitForTimeout(300);
@@ -87,7 +87,12 @@ try {
     save.playerName = 'Defne'; persistSave();
     startGame({ tur: true, ulke: 6 }); game.player.invuln = 1e9;
     const bas = { tur: game.dunyaTuru, level: game.level, tema: getTheme().name };
-    const kutular = () => [game.walls, game.waters, game.spikes, game.lavas].flat().map((o) => [o.x, o.y, o.w, o.h, o.tur]);
+    // OBJ1: obje1/obje2 kutusu ülkenin resim oranına uydurulur (merkez ve alan korunur); bu yüzden
+    // Dünya Turu'nda ülke resmi, normal oyunda tema resmi seçilir ve yalnız obje kutularının en-boyu değişir.
+    // Haritanın aynılığı için objelerde merkezi, diğer engellerde tam kutuyu karşılaştır.
+    const kutular = () => [game.walls, game.waters, game.spikes, game.lavas].flat()
+      .map((o) => (o.tur === 'obje1' || o.tur === 'obje2') ? ['obje', Math.round((o.x + o.w / 2) / 2) * 2, Math.round((o.y + o.h / 2) / 2) * 2]
+        : [o.x, o.y, o.w, o.h, o.tur]);
     online.mode = 'host';
     game.dunyaTuru = true; game.level = 6; buildWalls(); buildWaters(); buildHazards();
     const turKutular = kutular();
@@ -95,6 +100,9 @@ try {
     // Yedek ressam ve ızgara: Fransa'nın (K ailesi) ressamları ve zemini geçici olarak kaldırılır
     const K = ULKE_AILELERI.K, asil = { duvar: K.duvar, su: K.su, zemin: K.zemin, o1: ULKE_OBJELERI.eyfelKulesi, o2: ULKE_OBJELERI.lavantaTarlasi };
     delete K.duvar; delete K.su; delete K.zemin; delete ULKE_OBJELERI.eyfelKulesi; delete ULKE_OBJELERI.lavantaTarlasi;
+    // Aileler artık ChatGPT zemin dokusu (aile-K-zemin) de taşıyor; "ressam yok → ızgara" yedek yolunu sınamak için
+    // doku da geçici olarak kaldırılır (doku varken zeminin çizilmesi ayrıca aşağıda sınanır)
+    const zeminResmi = GORSEL['aile-K-zemin']; delete GORSEL['aile-K-zemin'];
     let resimHatasi = null;
     try { for (const o of [game.walls, game.waters, game.spikes, game.lavas].flat()) engelResmi(o); } catch (e) { resimHatasi = e.message; }
     game.dunyaTuru = false; buildWalls(); buildWaters(); buildHazards();
@@ -102,33 +110,37 @@ try {
     online.mode = null;
     game.dunyaTuru = true; game.level = 6;
     const zemin = turZeminCiz(game.ctx);
+    if (zeminResmi) GORSEL['aile-K-zemin'] = zeminResmi;
     Object.assign(K, { duvar: asil.duvar, su: asil.su, zemin: asil.zemin });
     Object.assign(ULKE_OBJELERI, { eyfelKulesi: asil.o1, lavantaTarlasi: asil.o2 });
     for (const a of ['duvar', 'su', 'zemin']) if (!K[a]) delete K[a];
     for (const o of ['eyfelKulesi', 'lavantaTarlasi']) if (!ULKE_OBJELERI[o]) delete ULKE_OBJELERI[o];
+    const zeminAile = turZeminCiz(game.ctx);   // ressam yokken bile aile zemin dokusuyla çizilir
     endGame(false);
     startGame();
     const normal = { tur: game.dunyaTuru, level: game.level, tema: getTheme().name, ulke: turUlkesi() };
     endGame(false);
-    return { bas, turKutular, normalKutular, temalar, resimHatasi, zemin, normal };
+    return { bas, turKutular, normalKutular, temalar, resimHatasi, zemin, zeminAile, zeminResimVar: !!zeminResmi, normal };
   });
   sina('startGame({tur, ulke}): Dünya Turu, bölüm = ülke sırası, tema ülkeden', () => {
     assert.deepEqual(k.bas, { tur: true, level: 6, tema: 'Fransa' });
   });
   sina('engellerde ülke kodu; harita normal oyunun aynı bölümüyle aynı', () => {
-    assert.deepEqual(k.temalar, ['FR']);
-    assert.ok(k.turKutular.length > 10);
-    assert.deepEqual(k.turKutular, k.normalKutular);
+    assert.deepEqual(k.temalar, ['FR'], JSON.stringify(k.temalar));
+    assert.ok(k.turKutular.length > 10, String(k.turKutular.length));
+    assert.deepEqual(k.turKutular, k.normalKutular, JSON.stringify({ a: k.turKutular.length, b: k.normalKutular.length, fark: k.turKutular.map((x, i) => JSON.stringify(x) === JSON.stringify(k.normalKutular[i]) ? null : [i, x, k.normalKutular[i]]).filter(Boolean).slice(0, 3) }));
   });
   sina('ressamı eksik ülkede engel resmi hata vermez (yedek ressam)', () => { assert.equal(k.resimHatasi, null); });
-  sina('zemin ressamı yokken turZeminCiz false (ızgara çizilir)', () => { assert.equal(k.zemin, false); });
+  sina('zemin ressamı ve zemin dokusu yokken turZeminCiz false (ızgara çizilir)', () => { assert.equal(k.zemin, false); });
+  // Ailelerin ChatGPT zemin dokusu (aile-<X>-zemin): ülke ressamı olmasa da zemin dokudan çizilir
+  sina('zemin ressamı yokken aile zemin dokusu çizilir (aile-K-zemin)', () => { assert.ok(k.zeminResimVar); assert.equal(k.zeminAile, true); });
   sina('startGame(): normal oyun, bölüm 1, Mor Şato', () => { assert.deepEqual(k.normal, { tur: false, level: 1, tema: 'Mor Şato', ulke: null }); });
 
   // --- 3) Ekran: ana menü düğmesi, rota kartları, seçim, pasaport ---
   const e = await kopya(p, () => {
     goToMenu();
     const menu = [...document.querySelectorAll('#screen-menu button')];
-    const turDugme = menu.findIndex((b) => b.textContent.trim() === '🌍 Dünya Turu'), online = menu.findIndex((b) => b.textContent.includes('🌐 Online Oyna'));
+    const turDugme = menu.findIndex((b) => (b.getAttribute('onclick') || '').includes('openDunyaTuru')), online = menu.findIndex((b) => (b.getAttribute('onclick') || '').includes('openOnline'));
     save.dunyaTuru = { acik: 7, damgalar: { TR: 1, UA: 1 }, bitti: 0 }; persistSave();
     openDunyaTuru();
     const kart = (n) => document.querySelector(`#tur-liste .tur-kart[data-sira="${n}"]`);
@@ -137,11 +149,12 @@ try {
     const secili = () => [...document.querySelectorAll('#tur-liste .tur-kart.secili')].map((k) => +k.dataset.sira);
     const r = {
       turDugme, online, aktif: document.getElementById('screen-dunya-turu').classList.contains('active'),
-      sayi: kartlar.length, damgali: say('damgali'), acik: say('acik'), kilitli: say('kilitli'),
+      sayi: kartlar.filter((k) => k.dataset.sira).length, yakinda: kartlar.filter((k) => k.classList.contains('yakinda')).length,
+      damgali: say('damgali'), acik: say('acik'), kilitli: say('kilitli'),
       sayac: document.getElementById('tur-sayac').textContent.trim(), kitalar: document.querySelectorAll('#tur-liste .tur-kita').length,
       ilkSecili: secili(), enKisa: Math.min(...kartlar.map((k) => k.getBoundingClientRect().height)),
       trResim: (kart(1).querySelector('img') || {}).src || '', ad: (kart(6).querySelector('bdi') || {}).textContent,
-      durum: [kart(1), kart(3), kart(20)].map((k) => k.querySelector('.tur-durum').textContent),
+      durum: [kart(1), kart(3), kart(20)].map((k) => ['damgali', 'acik', 'kilitli'].find((c) => k.classList.contains(c))),
     };
     kart(20).click(); r.kilitliSonra = secili();
     kart(3).click(); r.acikSonra = secili();
@@ -154,11 +167,13 @@ try {
     return r;
   });
   sina('ana menüde 🌍 Dünya Turu düğmesi Online Oyna\'nın üstünde', () => { assert.ok(e.turDugme >= 0 && e.turDugme < e.online, `${e.turDugme} / ${e.online}`); });
-  sina('Dünya Turu ekranı: 51 kart (2 damgalı, 5 açık, 44 kilitli), 4 kıta, sayaç 🛂 2/51', () => {
+  sina('Dünya Turu ekranı: 51 ülke + 1 Yakında kartı (2 damgalı, 5 açık, 44 kilitli), 4 kıta, sayaç 🛂 2/51', () => {
     assert.ok(e.aktif);
-    assert.deepEqual([e.sayi, e.damgali, e.acik, e.kilitli, e.kitalar], [51, 2, 5, 44, 4]);
-    assert.equal(e.sayac, '🛂 2/51');
-    assert.deepEqual(e.durum, ['🛂', '✈️', '🔒']);
+    for (const [ad, v, bek] of [['sayi', e.sayi, 51], ['yakinda', e.yakinda, 1], ['damgali', e.damgali, 2], ['acik', e.acik, 5], ['kilitli', e.kilitli, 44], ['kitalar', e.kitalar, 4]])
+      assert.equal(v, bek, `${ad}=${v} (beklenen ${bek}); sayaç ${e.sayac}, durum ${JSON.stringify(e.durum)}`);
+    assert.equal(e.sayac, '🛂 2/51', `sayaç ${e.sayac}`);
+    // Durum simgesi artık metin değil, kart sınıfıyla (damgalı/açık/kilitli) belirlenir
+    assert.deepEqual(e.durum, ['damgali', 'acik', 'kilitli'], JSON.stringify(e.durum));
   });
   sina('kartlarda ad <bdi> içinde, ressamı olan ülkede küçük resim, dokunma hedefi ≥ 44 px', () => {
     assert.equal(e.ad, 'Fransa'); assert.match(e.trResim, /^data:image\/png/); assert.ok(e.enKisa >= 44, String(e.enKisa));
@@ -168,6 +183,73 @@ try {
   });
   sina('pasaport: 51 yuva (2 damga, 49 soluk boş çerçeve); sekmeler arası geçiş', () => {
     assert.deepEqual(e.pasaport, { gorunur: true, liste: false, damga: 2, bos: 49 }); assert.ok(e.rotaGeri);
+  });
+
+  // --- 3b) "Yakında" önizlemesi: oynanamayan kart, modal, tur bitince banner, yer tutucu/resim ---
+  const yak = await kopya(p, () => {
+    const gorunur = (id) => getComputedStyle(document.getElementById(id)).display !== 'none';
+    const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    save.dunyaTuru = { acik: 7, damgalar: {}, bitti: 0 }; persistSave();
+    delete GORSEL['yakinda-pamukkale'];
+    openDunyaTuru();
+    const kart = document.querySelector('#tur-liste .tur-kart.yakinda');
+    const r = {
+      var: !!kart, ad: kart.querySelector('bdi').textContent, alt: kart.querySelector('img') ? kart.querySelector('img').getAttribute('alt') : null,
+      yukseklik: kart.getBoundingClientRect().height, aria: kart.getAttribute('aria-label'), img: !!kart.querySelector('img'),
+      bos: !!kart.querySelector('.tur-resim.bos'), siraYok: !kart.dataset.sira, banner: gorunur('tur-yakinda-banner'),
+    };
+    const level = game.level, running = game.running;
+    kart.click();
+    r.acik = { perde: gorunur('tur-yakinda-perde'), baslik: document.querySelector('#tur-yakinda-perde .tur-yakinda-baslik')?.textContent,
+      aciklama: document.querySelector('#tur-yakinda-perde .tur-yakinda-aciklama')?.textContent,
+      buyukBos: !!document.querySelector('#tur-yakinda-perde .tur-yakinda-buyuk.bos') };
+    r.oyun = game.level === level && game.running === running;
+    turYakindaKapat();
+    r.kapali = !gorunur('tur-yakinda-perde');
+    save.dunyaTuru = { acik: 7, damgalar: {}, bitti: Date.now() }; persistSave();
+    openDunyaTuru();
+    r.bannerBitti = gorunur('tur-yakinda-banner');
+    r.bannerMetin = document.getElementById('tur-yakinda-banner').textContent;
+    GORSEL['yakinda-pamukkale'] = { complete: true, naturalWidth: 1, src: png };
+    openDunyaTuru();
+    r.resimSrc = (document.querySelector('#tur-liste .tur-kart.yakinda img') || {}).src;
+    r.resimAlt = (document.querySelector('#tur-liste .tur-kart.yakinda img') || {}).getAttribute?.('alt') ?? null;
+    r.bannerResim = !!document.querySelector('#tur-yakinda-banner img');
+    delete GORSEL['yakinda-pamukkale'];
+    return r;
+  });
+  sina('rota listesinde oynanamayan "🔜 Yakında: Pamukkale" kartı; alt="", aria-label, ≥44 px', () => {
+    assert.ok(yak.var && yak.siraYok); assert.equal(yak.ad, 'Yakında: Pamukkale');
+    assert.equal(yak.alt, null); assert.equal(yak.aria, 'Yakında: Pamukkale'); assert.ok(yak.yukseklik >= 44, String(yak.yukseklik));
+    assert.equal(yak.img, false); assert.ok(yak.bos); assert.equal(yak.banner, false);
+  });
+  sina('karta dokunmak oyunu başlatmaz; modal başlık+açıklama ile açılır, Kapat gizler', () => {
+    assert.ok(yak.oyun);
+    assert.deepEqual(yak.acik, { perde: true, baslik: 'Yakında: Pamukkale', aciklama: 'Bembeyaz traverten havuzları ve turkuaz sular', buyukBos: true });
+    assert.ok(yak.kapali);
+  });
+  sina('tur bitince rota sekmesinin üstünde banner görünür', () => {
+    assert.ok(yak.bannerBitti); assert.match(yak.bannerMetin, /Turu bitirdin! Sıradaki dünya yakında:/);
+    assert.match(yak.bannerMetin, /Yakında: Pamukkale/);
+  });
+  sina('GORSEL "yakinda-pamukkale" varsa kart ve banner resmi kullanır', () => {
+    assert.match(yak.resimSrc, /^data:image\/png/); assert.ok(yak.bannerResim); assert.equal(yak.resimAlt, '');
+  });
+
+  // Arapça 340 px: yatay taşma yok, kart hedefi korunur
+  const par = await sayfaAc('ar', 340);
+  const rtl = await kopya(par, () => {
+    save.dunyaTuru = { acik: 51, damgalar: {}, bitti: Date.now() }; persistSave();
+    openDunyaTuru();
+    const liste = document.getElementById('tur-liste'), bnr = document.getElementById('tur-yakinda-banner');
+    return { dir: document.documentElement.dir, listeTasma: liste.scrollWidth - liste.clientWidth,
+      govde: document.documentElement.scrollWidth - window.innerWidth, bannerTasma: bnr.scrollWidth - bnr.clientWidth,
+      kart: document.querySelector('#tur-liste .tur-kart.yakinda').getBoundingClientRect().height };
+  });
+  await par.close();
+  sina('Arapça 340 px: RTL, yatay taşma yok, "Yakında" kartı ≥ 44 px', () => {
+    assert.equal(rtl.dir, 'rtl'); assert.ok(rtl.listeTasma <= 1, String(rtl.listeTasma));
+    assert.ok(rtl.govde <= 1, String(rtl.govde)); assert.ok(rtl.bannerTasma <= 1, String(rtl.bannerTasma)); assert.ok(rtl.kart >= 44);
   });
 
   // --- 4) Ülke bitince: damga, uçak geçişi, sıradaki ülke ---
@@ -213,7 +295,7 @@ try {
     game.runPara = 0; game.runElmas = 0; game.runZumrut = 0;
     endGame(false);
     const r = { lb: lb === JSON.stringify(loadLeaderboard()), hlOnce: hl, hlSonra: save.highestLevel, submit: _sahte.submit, pgsBitti: _sahte.pgsBitti,
-      acik: save.dunyaTuru.acik, sira: document.getElementById('gameover-rank').textContent, para: document.getElementById('final-para').textContent,
+      acik: save.dunyaTuru.acik, sira: document.getElementById('gameover-rank').textContent, para: (document.getElementById('final-para').dataset.son ?? document.getElementById('final-para').textContent),
       reklam: _sahte.reklam.slice(-1)[0] };
     tekrarOyna();
     r.tekrar = { level: game.level, tur: game.dunyaTuru, running: game.running };

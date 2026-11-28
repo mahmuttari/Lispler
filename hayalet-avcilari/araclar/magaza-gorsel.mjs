@@ -1,6 +1,10 @@
 // Play mağaza görselleri: her dil için 7 telefon ekran görüntüsü (1080×1920) ve tanıtım görseli (1024×500).
 // 3.13.0: oyun ve boss kareleri yeni engelleri gösterir (Yeşil Orman, Mor Şato), menüde kupa, 6. kare Arkadaşlar.
 // 3.14.0: 7. kare Dünya Turu (Japonya, kimonolu boss); tanıtım görselinin alt yazısında 🌍 Dünya turu.
+// 3.18.0: ChatGPT görselleri (www/gorsel/*.webp) yüklenmeden kare alınmaz; simge yeni (icon-1024.png).
+// 3.20.0: gerçek 3D avcılar (SwiftShader ile WebGL).
+// 3.21.0: yolculuk haritası — hayaletler yalnız oyuncunun bölgesinde doğar (oyuncu 1. bölgeye konur), boss zamanlayıcısı
+// yolculukta işlemez (spawnBoss doğrudan), Dünya Turu'nda hikâye sahnesi geliştirici anahtarıyla kapalı.
 // Kullanım: node hayalet-avcilari/araclar/magaza-gorsel.mjs [play-dili…]   (Playwright + Chromium gerekir)
 // Çıktı: tr-TR → magaza/play/, diğerleri → magaza/play/<play-dili>/ (android/play.mjs gorsel bu klasörleri yükler)
 import http from 'node:http';
@@ -25,7 +29,7 @@ const DILLER = {
 };
 const secim = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(DILLER);
 
-const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.m4a': 'audio/mp4' };
+const TUR = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp', '.woff2': 'font/woff2', '.m4a': 'audio/mp4' };
 const sunucu = http.createServer((q, r) => {
   const f = path.join(WWW, decodeURIComponent(new URL(q.url, 'http://x').pathname).replace(/^\/+/, '') || 'index.html');
   if (!f.startsWith(WWW) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end(); }
@@ -34,17 +38,21 @@ const sunucu = http.createServer((q, r) => {
 const adres = `http://127.0.0.1:${sunucu.address().port}/index.html`;
 const ikon = 'data:image/png;base64,' + fs.readFileSync(path.join(WWW, 'icon-1024.png')).toString('base64');
 
-const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });
+// 3.20.0: avcılar gerçek 3D (uc-avci.js); WebGL için SwiftShader, karelerden önce 3D hazır beklenir
+const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 try {
   for (const playDili of secim) {
     const d = DILLER[playDili];
     const cikis = playDili === 'tr-TR' ? path.join(KOK, 'magaza', 'play') : path.join(KOK, 'magaza', 'play', playDili);
     fs.mkdirSync(cikis, { recursive: true });
     const p = await b.newPage({ viewport: { width: 360, height: 640 }, deviceScaleFactor: 3 });
-    await p.addInitScript((dil) => { localStorage.setItem('hayaletAvcilariDil', dil); }, d.dil);
+    await p.addInitScript((dil) => { localStorage.setItem('hayaletAvcilariDil', dil); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); }, d.dil);
     await p.route(/gstatic\.com|googleapis|firebase/, (r) => r.abort());
     await p.goto(adres, { waitUntil: 'load' });
     await p.waitForTimeout(800);
+    // Bütün ChatGPT görselleri yüklensin (karakter, hayalet, animasyon kareleri, tema dokuları, menü arka planı)
+    await p.waitForFunction(() => typeof GORSEL === 'object' && Object.keys(GORSEL).length >= Object.keys(GORSEL_LISTESI).length, null, { timeout: 30000 });
+    await p.waitForFunction(() => window.UcAvci && window.UcAvci.hazir, null, { timeout: 30000 });
     await p.evaluate(() => {
       save.playerName = 'Kiki'; save.para = 1250; save.elmas = 14; save.zumrut = 6; save.kupa = 3; save.highestLevel = 7; persistSave();
       try { localStorage.setItem(VERSION_KEY, APP_VERSION); } catch (_) {}
@@ -74,7 +82,10 @@ try {
       if (tur) startGame({ tur: true, ulke: ulkeKodla(tur).sira }); // Dünya Turu: bölüm ve engeller ülkeden
       else { startGame(); game.level = bolum; buildWalls(); buildWaters(); buildHazards(); }
       const W = game.W, H = game.H; let en = null;
-      for (let x = 200; x < game.worldW - 200; x += 30) for (let y = 260; y < game.worldH - 260; y += 30) {
+      // Yolculuk haritasında hayaletler oyuncunun bölgesinde doğar: yer 1. bölgede aranır
+      const b1 = game._yolculukDuzen && game._yolculukDuzen.zones && game._yolculukDuzen.zones[0];
+      const xa = b1 ? Math.max(200, b1.x0 + 60) : 200, xb = b1 ? Math.min(game.worldW - 200, b1.x1 - 60) : game.worldW - 200;
+      for (let x = xa; x < xb; x += 30) for (let y = 260; y < game.worldH - 260; y += 30) {
         if (collidesWalls(x, y, 30) || collidesWaters(x, y, 30) || collidesSpikes(x, y, 30) || collidesLavas(x, y, 30)) continue;
         const tam = (o) => o.x > x - W / 2 && o.x + o.w < x + W / 2 && o.y > y - H / 2 + H * 0.16 && o.y + o.h < y + H / 2 - H * 0.26;
         // Dünya Turu'nda ülkenin objeleri (obje1, obje2) öne çıksın
@@ -99,22 +110,22 @@ try {
     await p.screenshot({ path: path.join(cikis, 'telefon-2-oyun.png') });
     await sahne(7); // Mor Şato
     await p.waitForTimeout(5000);
-    await p.evaluate(() => { game.bossSpawnTimer = 0.05; });
+    await p.evaluate(() => { if (!game.ghosts.some((g) => g.isBoss)) spawnBoss(); });
     await p.waitForTimeout(3500);
-    await p.evaluate(() => { game.player.invuln = 0; const bs = game.ghosts.find((g) => g.isBoss); if (bs) { bs.x = game.player.x + 40; bs.y = game.player.y - 170; } });
+    await p.evaluate(() => { game.player.invuln = 0; const bs = game.ghosts.find((g) => g.isBoss); if (bs) { bs.x = game.player.x + 70; bs.y = game.player.y - 95; } }); // tacı üst göstergelerin altına girmesin
     await p.waitForTimeout(250);
     await p.screenshot({ path: path.join(cikis, 'telefon-3-boss.png') });
     // Dünya Turu (3.14.0): Japonya — kiraz ağaçları ve Fuji Dağı arasında kimonolu boss
     await sahne(0, 'JP');
     await p.waitForTimeout(5000);
-    await p.evaluate(() => { game.bossSpawnTimer = 0.05; });
+    await p.evaluate(() => { if (!game.ghosts.some((g) => g.isBoss)) spawnBoss(); });
     await p.waitForTimeout(3500);
     await p.evaluate(() => {
       game.player.invuln = 0;
       // boss her dilde aynı yerde, oyuncunun sağında; çekim sürerken yürümez ve ateş etmez (bu bölümün bossu saniyede
       // ~250 px gider, büyük ekran görüntüsü yarım saniye sürebilir). Ekrandaki öteki hayaletler kalkar
       const bs = game.ghosts.find((g) => g.isBoss);
-      if (bs) { bs.x = game.player.x + 95; bs.y = game.player.y - 25; bs.speed = 0; bs.nextShot = performance.now() + 1e9; }
+      if (bs) { bs.x = game.player.x + 80; bs.y = game.player.y - 40; bs.speed = 0; bs.nextShot = performance.now() + 1e9; } // sağ kenardan taşmasın
       game.ghosts = game.ghosts.filter((g) => g.isBoss || Math.hypot(g.x - game.player.x, g.y - game.player.y) > 700);
     });
     await p.waitForTimeout(400); // bildirim ve vuruş parıltıları geçsin

@@ -15,6 +15,8 @@ on:
       - '!hayalet-avcilari/site/**'
       - '!hayalet-avcilari/reklam/**'
       - '!hayalet-avcilari/sosyal/**'
+      # Ham ChatGPT paftaları, referanslar ve istem dosyası uygulamaya girmez (kesilen görseller www/gorsel/'de)
+      - '!hayalet-avcilari/gorsel/**'
       - '.github/workflows/hayalet-android.yml'
   workflow_dispatch:
 
@@ -34,6 +36,9 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+          # Gradle bağımlılıkları önbellekten: her derlemede Maven Central'dan baştan indirmek 429 (Too Many
+          # Requests) ve erişim hatalarıyla derlemeyi düşürüyordu (22 Kasım 2026)
+          cache: gradle
       # GitHub'ın Ubuntu sunucularında Android SDK hazır kurulu gelir (ANDROID_HOME)
       - run: npm ci
       - run: npx cap sync android

@@ -1,0 +1,13 @@
+import http from 'node:http'; import fs from 'node:fs'; import path from 'node:path';
+const WWW = process.argv[2];
+const { chromium } = await import('/opt/node22/lib/node_modules/playwright/index.mjs');
+const s = http.createServer((q, r) => { const f = path.join(WWW, decodeURIComponent(new URL(q.url,'http://x').pathname).replace(/^\/+/,'') || 'index.html');
+  if (!fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end(); } fs.createReadStream(f).pipe(r); }).listen(0);
+const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' }); const p = await b.newPage({ viewport: { width: 390, height: 844 } });
+const hata = []; p.on('pageerror', (e) => hata.push(e.message));
+await p.goto(`http://127.0.0.1:${s.address().port}/index.html`);
+await p.waitForFunction(() => typeof startGame === 'function', null, { timeout: 30000 });
+await p.waitForTimeout(3000);
+const r = await p.evaluate(() => { startGame({ tur: true, ulke: ulkeKodla('TR').sira }); game.paused = true; for (let i = 0; i < 10; i++) render(); return { gorsel: Object.keys(GORSEL).length, zemin: !!gorsel('aile-KS-zemin'), tema1: gorsel('tema1-zemin') && gorsel('tema1-zemin').naturalWidth, tabela: !!gorsel('tabela-1'), kopru: !!gorsel('kopru-kapali') }; });
+console.log(JSON.stringify(r), 'hatalar', hata);
+await b.close(); s.close();

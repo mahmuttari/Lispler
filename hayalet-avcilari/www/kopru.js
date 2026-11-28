@@ -78,17 +78,43 @@ function koprulerHazir() {
 }
 
 // (x, y) bir köprünün şeridindeyse o köprü
-function koprudeki(x, y) {
+function koprudeki(x, y, r) {
   for (const k of koprulerHazir()) {
     const boy = k.yatay ? x : y, en = k.yatay ? y : x;
-    if (boy >= k.a - 4 && boy <= k.b + 4 && Math.abs(en - k.c) <= KOPRU.serbest) return k;
+    // Geçit köprüsünde şerit, görünür güvertenin (korkuluklar arası) içidir; göl köprüsü KOPRU.serbest kalır
+    const serbest = (k.su && k.su.gecit && typeof yolculukKopruYurumeYari === "function") ? yolculukKopruYurumeYari(r) : KOPRU.serbest;
+    if (boy >= k.a - 4 && boy <= k.b + 4 && Math.abs(en - k.c) <= serbest) return k;
   }
   return null;
 }
-function koprudeMi(x, y) { return !!koprudeki(x, y); }
+function koprudeMi(x, y, r) { return !!koprudeki(x, y, r); }
+
+// KPR1: köprü kemerinin çizim yüksekliği (yalnız görüntü); göl ip köprülerinde 0
+function kopruYukselti(x, y) {
+  const k = koprudeki(x, y);
+  if (!k || !k.su || !k.su.gecit) return 0;
+  const gecitAcik = !(game.kopruAcik && k.sira != null && !game.kopruAcik[k.sira]);
+  if (!gecitAcik) return 0;
+  const t = Math.min(1, Math.max(0, (x - k.a) / (k.b - k.a)));
+  const v = (typeof KOPRU_RESIM !== "undefined" && typeof yolculukKopruTabloAnahtari === "function")
+    ? (KOPRU_RESIM[yolculukKopruTabloAnahtari()] || KOPRU_RESIM["kopru-acik"]) : null;
+  return (v ? v[3] : 0) * Math.sin(Math.PI * t);
+}
+
+// KPR1: köprü resminin yan kuleleri (yürünebilir şeridin dışı) oyuncuya kapalı
+function kopruYanEngel(x, y, r) {
+  if (typeof yolculukKopruKutu !== "function" || typeof yolculukKopruTabloAnahtari !== "function") return false;
+  for (const k of koprulerHazir()) {
+    if (!k.su || !k.su.gecit) continue;
+    const K = yolculukKopruKutu(yolculukKopruTabloAnahtari(), (k.a + k.b) / 2, k.c);
+    if (x >= K.x + 6 && x <= K.x + K.w - 6 && y >= K.y + 0.10 * K.h - 30 && y <= K.y + K.h - 30 &&
+      Math.abs(y - k.c) > yolculukKopruYurumeYari(r)) return true;
+  }
+  return false;
+}
 
 // Oyuncunun yürüyüşü için su: köprünün şeridinde engel değil
-function kopruluSuCarpar(x, y, r) { return collidesWaters(x, y, r) && !koprudeMi(x, y); }
+function kopruluSuCarpar(x, y, r) { return collidesWaters(x, y, r) && !koprudeMi(x, y, r); }
 function kopruluSuMesafesi(x, y, r) { return koprudeMi(x, y) ? Infinity : engelMesafesi(game.waters, x, y, r); }
 
 function kopruUclari(k) {
@@ -100,7 +126,8 @@ function suyaDus(k) {
   game._kopruDurma = 0;
   game._kopruUyardi = false;
   showFloat(t("💦 Suya düştün!"), p.x, p.y - 30);
-  audio.noise(0.35, 0.14 * (audio._v ? audio._v("sfx") : 1));
+  if (typeof audio.kopru === "function") audio.kopru();
+  else audio.noise(0.35, 0.14 * (audio._v ? audio._v("sfx") : 1));
   navigator.vibrate?.(60);
   // Timsah köprünün bir yanından, oyuncuya dönük
   const yan = Math.random() < 0.5 ? -1 : 1;
@@ -153,13 +180,49 @@ function koprulerCiz(ctx) {
   const zaman = performance.now() / 1000, p = game.player;
   const cam = game.camera || { x: 0, y: 0 }, W = game.W || 1e9, H = game.H || 1e9;
   for (const k of koprulerHazir()) {
-    const [x0, y0] = k.yatay ? [k.a, k.c] : [k.c, k.a], [x1, y1] = k.yatay ? [k.b, k.c] : [k.c, k.b], pay = KOPRU.kalin;
+    const [x0, y0] = k.yatay ? [k.a, k.c] : [k.c, k.a], [x1, y1] = k.yatay ? [k.b, k.c] : [k.c, k.b], pay = (k.su && k.su.gecit) ? 170 : KOPRU.kalin;
     if (x1 + pay < cam.x || x0 - pay > cam.x + W || y1 + pay < cam.y || y0 - pay > cam.y + H) continue; // ekran dışı
     const boy = k.b - k.a, yari = KOPRU.kalin / 2;
+    // Yolculuk geçidi köprüleri: açık köprü resmi varsa kod tahtaları yerine resim çizilir.
+    // Göl köprüleri (su.gecit yok) değişmez; kapalı geçit köprüsünü yolculukCiz çizer.
+    if (k.su && k.su.gecit && typeof gorsel === "function") {
+      const tk = typeof yolculukTemaParca === "function" ? yolculukTemaParca("kopru-acik") : null;
+      const anahtar = tk || "kopru-acik";
+      if (gorsel(anahtar)) {
+        const gecitAcik = !(game.kopruAcik && k.sira != null && !game.kopruAcik[k.sira]);
+        if (gecitAcik) {
+          // KPR1: resim, karakterin ayak çizgisi güverteye basacak şekilde konur (tablo ölçüleri)
+          if (typeof yolculukKopruKutu === "function") {
+            const K = yolculukKopruKutu(anahtar, (x0 + x1) / 2, k.c);
+            gorselKutuya(ctx, anahtar, K.x, K.y, K.w, K.h);
+          } else {
+            // FIX2: resim yüksekliği güverte bandına göre (bridgeW); güverte yürünebilir şeritle hizalanır
+            const boyResim = (typeof YOLCULUK_AYAR !== "undefined" && YOLCULUK_AYAR.bridgeW) ? YOLCULUK_AYAR.bridgeW : yari * 2;
+            const orta = (y0 + y1) / 2;
+            gorselKutuya(ctx, anahtar, Math.min(x0, x1) - yari, orta - boyResim / 2, Math.abs(x1 - x0) + yari * 2, boyResim);
+          }
+        }
+        continue;
+      }
+    }
     const ustunde = p && !p.dead && koprudeki(p.x, p.y) === k;
     const genlik = 1.5 + (ustunde ? 1.5 + (game._kopruDurma || 0) * 3 : 0);
     const kay = (s) => genlik * Math.sin(zaman * 3.2 + s * 0.03) * Math.sin(Math.PI * Math.min(1, Math.max(0, (s - k.a) / boy)));
     const P = (s, q) => (k.yatay ? [s, k.c + q + kay(s)] : [k.c + q + kay(s), s]);
+    // GOR4: göl köprüsü için ChatGPT tahta köprü (gol-kopru-tahta): tek parça, döşenmez; iki ucunda direkleri var.
+    // Yalnız uzunluğu boyunca uzar (ışın gibi), eni sabit; dikey köprüde bir kez 90° döner. Yoksa kod tahtaları.
+    const imK = (typeof gorsel === "function" && !(k.su && k.su.gecit)) ? gorsel("gol-kopru-tahta") : null;
+    if (imK) {
+      const uz = boy + 13, en = KOPRU.kalin + 13, mid = (k.a + k.b) / 2;
+      ctx.save();
+      ctx.translate(k.yatay ? mid : k.c + kay(mid), k.yatay ? k.c + kay(mid) : mid);
+      if (!k.yatay) ctx.rotate(Math.PI / 2);
+      ctx.fillStyle = "rgba(0,0,0,0.18)"; // suya düşen gölge
+      ctx.fillRect(-uz / 2 + 4, -en / 2 + 9, uz - 4, en - 6);
+      ctx.drawImage(imK, -uz / 2, -en / 2, uz, en);
+      ctx.restore();
+      continue;
+    }
     ctx.save();
     // Suya düşen gölge
     ctx.strokeStyle = "rgba(0,0,0,0.22)"; ctx.lineWidth = KOPRU.kalin - 6; ctx.lineCap = "butt";
@@ -209,9 +272,15 @@ function dususCiz(ctx) {
   ctx.save();
   for (let i = 0; i < 3; i++) {
     const u = (z * 1.4 + i / 3) % 1;
-    ctx.strokeStyle = `rgba(255,255,255,${0.6 * (1 - u)})`;
-    ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.ellipse(p.x, p.y + 8, 20 + u * 26, (20 + u * 26) * 0.45, 0, 0, Math.PI * 2); ctx.stroke();
+    const r = 20 + u * 26;
+    ctx.globalAlpha = 0.6 * (1 - u);
+    // ChatGPT su halkası (su-halka): ~50 px, genişleyip söner; yoksa bugünkü çizgi
+    if (!(typeof gorselKutuya === "function" && gorselKutuya(ctx, "su-halka", p.x - r, p.y + 8 - r * 0.45, r * 2, r * 0.9))) {
+      ctx.strokeStyle = `rgba(255,255,255,${0.6 * (1 - u)})`;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.ellipse(p.x, p.y + 8, r, r * 0.45, 0, 0, Math.PI * 2); ctx.stroke();
+    }
   }
+  ctx.globalAlpha = 1;
   ctx.restore();
 }

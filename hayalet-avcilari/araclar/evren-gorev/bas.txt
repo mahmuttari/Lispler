@@ -1,0 +1,15 @@
+You are working in /home/user/Lispler/hayalet-avcilari (HTML5 canvas mobile game "Hayalet Avcıları", plain browser JS, no build step,
+no dependencies). Code comments in Turkish. DO NOT run any git command. NEVER read or write outside /home/user/Lispler/hayalet-avcilari:
+no backups, no temp files in /tmp (that permission is always rejected and stops you). If a tool call is rejected, continue with the task.
+Do not touch www/uc-avci.js, www/i18n/, www/karakter-detay.js, reklam/ (the playable ad folder).
+TIME RULE: you have limited time. Use grep to find line numbers and read ~80-line windows only. Start editing within 10 minutes.
+Small targeted edits only (never more than ~150 lines per edit, never rewrite a whole file).
+Each item below is a bug found in a code review (line numbers are approximate). FIRST check it in the code; if the code already behaves
+correctly, skip it and say so in the summary. Keep every fix minimal; do not change anything else (no refactors, no renames, no
+network field changes unless the item says so). Every fix gets a check in the new test file. Gameplay numbers stay as they are unless
+the item says otherwise. New user-visible texts: avoid them; if unavoidable use t("…") with short Turkish text.
+Test harness: copy the setup of test/animasyon-ek.test.mjs (local http server on www/, Playwright Chromium at /opt/pw-browsers/chromium,
+route-abort firebase/ads hosts, collect page errors). Online behaviour that needs Firebase: test the functions directly in one page by
+setting online.mode = "host"/"client" and calling the functions with fake data, as the existing tests do (see test/cevrimici-ek.test.mjs).
+The Firebase emulator runs on its default ports; online tests are run with NO_PROXY='*'.
+

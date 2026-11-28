@@ -1,0 +1,230 @@
+{
+ "kinkin": [
+  {
+   "k": "katilan",
+   "m": "Hey, dur! Yarış mı var? Ben her yarışa varım; bitiş çizgisinde de seni beklerim!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Yarış değil ama uzun bir yol var: silik bir haritanın parçalarını dünyanın dört bir yanında arıyorum."
+  },
+  {
+   "k": "katilan",
+   "m": "Dünyanın dört bir yanı mı? Bu benim için ısınma turu sayılır."
+  },
+  {
+   "k": "gezgin",
+   "m": "O zaman önden koş, ama arada bir dönüp bekle; dostlar birlikte varır."
+  }
+ ],
+ "veryi": [
+  {
+   "k": "katilan",
+   "m": "Acele etme. Demirci dükkânında büyüdüm: işin sağlamı ağır ağır olur."
+  },
+  {
+   "k": "gezgin",
+   "m": "Tam aradığımız şey: bu yola sağlam adımlar ve güçlü bir kol lazım."
+  },
+  {
+   "k": "katilan",
+   "m": "Çekicim omzumda. Yolda ne kırılır, ne eğrilirse bana getirin; onarırım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Anlaştık. Adımını sen ayarla, biz sana uyarız; bu yolda kimse geride kalmaz."
+  }
+ ],
+ "kornet": [
+  {
+   "k": "katilan",
+   "m": "Seni üç tepe öteden gördüm. Kristalim, bu karşılaşmanın bir başlangıç olduğunu söylüyor."
+  },
+  {
+   "k": "gezgin",
+   "m": "Kristalin başka ne söylüyor? Elimdeki haritanın yarısı hâlâ silik."
+  },
+  {
+   "k": "katilan",
+   "m": "Haritanın yalnızca yolları değil, dostları da gösterdiğini. Ve benim de o dostlardan biri olacağımı."
+  },
+  {
+   "k": "gezgin",
+   "m": "Uzakları gören biri yanımızdaysa yolumuzu hiç şaşırmayız."
+  }
+ ],
+ "mark": [
+  {
+   "k": "katilan",
+   "m": "Bir dakika… O elindeki şey eski bir harita mı? Kokusunu buradan aldım!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Eski ve silik bir Dostluk Haritası. Parçalarını tamamlamak için hatıra topluyoruz."
+  },
+  {
+   "k": "katilan",
+   "m": "Hazine avı, hatıra avı, fark etmez; çantamda pusula da var, atıştırmalık da."
+  },
+  {
+   "k": "gezgin",
+   "m": "Pusula yolu bulur, atıştırmalık moralimizi. Sen ikisini birden getirdin!"
+  }
+ ],
+ "kent": [
+  {
+   "k": "katilan",
+   "m": "Gölgelerin arasında yolunu kaybetmek nasıldır, bilirim. Ama geri dönülür; ben döndüm."
+  },
+  {
+   "k": "gezgin",
+   "m": "Biz de silik bir haritanın izindeyiz. Kaybolmayı bilen, yolu en iyi bulur."
+  },
+  {
+   "k": "katilan",
+   "m": "Az konuşurum. Ama biri geride kalırsa ilk ben fark ederim."
+  },
+  {
+   "k": "gezgin",
+   "m": "Gürültülü bir ekibe tam böyle sessiz bir göz lazımdı. Yürü, yan yana gidelim."
+  }
+ ],
+ "ponko": [
+  {
+   "k": "katilan",
+   "m": "Kasabamın şerifi olarak sorayım: bu tozlu yolda ne arıyorsun, yabancı?"
+  },
+  {
+   "k": "gezgin",
+   "m": "Silik bir haritanın kayıp parçalarını. Ama yabancı değilim, dost olmaya geldim."
+  },
+  {
+   "k": "katilan",
+   "m": "Dost mu? O zaman şapka çıkarıyorum! Ama hemen geri takıyorum, güneş fena."
+  },
+  {
+   "k": "gezgin",
+   "m": "Şapkan uzaktan görünüyor; kalabalıkta birbirimizi kaybetmeyiz. Hadi gel!"
+  },
+  {
+   "k": "katilan",
+   "m": "Gelirim. Ama haberin olsun: yolda en hızlı ben çekerim… fotoğrafı da."
+  }
+ ],
+ "gul": [
+  {
+   "k": "katilan",
+   "m": "Bana taç yakışır derler, ama ben yayımı daha çok severim. Hedefimi seçtim mi şaşmam."
+  },
+  {
+   "k": "gezgin",
+   "m": "O hâlde hedefi söyleyeyim: silik bir haritanın en uzak köşesi. Yol uzun!"
+  },
+  {
+   "k": "katilan",
+   "m": "Uzak hedef tam bana göre. Sarayda en uzak hedef bahçe duvarıydı; sıkılmıştım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Taçlı bir okçu ve silik bir harita. Bu yolculuk gittikçe masala dönüyor."
+  }
+ ],
+ "rani": [
+  {
+   "k": "katilan",
+   "m": "Ayağın mı yoruldu? Dur, bir bakayım; ben küçük yaraları iyileştirmeyi bilirim."
+  },
+  {
+   "k": "gezgin",
+   "m": "Ayağım iyi, sağ ol. Ama yol uzun; yorulan da olacak, morali bozulan da."
+  },
+  {
+   "k": "katilan",
+   "m": "İkisinin de ilacı aynı: yanında biri yürüsün. Kim yorulursa onun yanında ben olurum."
+  },
+  {
+   "k": "gezgin",
+   "m": "O zaman en dik yokuşta yanımda sen yürü. İyi ki geldin!"
+  }
+ ],
+ "beti": [
+  {
+   "k": "katilan",
+   "m": "Lolipop ister misin? Bir sana, bir bana… Bir tane de yol için!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Teşekkürler! Yolumuz uzun: dünyanın dört bir yanında saklı hatıraları arıyoruz."
+  },
+  {
+   "k": "katilan",
+   "m": "Göl, nehir, su birikintisi… Hiçbiri beni durduramaz. Islanırım, gülerim, devam ederim!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Islak ama neşeli bir yol arkadaşı! Bu yolculuğa biraz şeker lazımdı zaten."
+  },
+  {
+   "k": "katilan",
+   "m": "Şeker bende, macera sende. Hadi, ilk su birikintisine kim önce atlayacak?"
+  }
+ ],
+ "fanatik": [
+  {
+   "k": "katilan",
+   "m": "Dağlarda yıllarca çalıştım. Ustam derdi ki: en güçlü kol, dostuna uzanan koldur."
+  },
+  {
+   "k": "gezgin",
+   "m": "Ustan bilge biriymiş. Biz de dostlukla açılan bir yolda yürüyoruz."
+  },
+  {
+   "k": "katilan",
+   "m": "O zaman kuşağımı sıkıyorum. Bundan sonra arkanızı ben kollarım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Kuşağı o kadar sıkma; bu yolda gülmek de var. Hoş geldin, usta!"
+  }
+ ],
+ "silsen": [
+  {
+   "k": "katilan",
+   "m": "Bastığım yerde papatya açar; o yüzden beni bulmak kolaydır. Sen ne arıyorsun?"
+  },
+  {
+   "k": "gezgin",
+   "m": "Silik bir haritanın kayıp renklerini. Biraz bahar ona da iyi gelir."
+  },
+  {
+   "k": "katilan",
+   "m": "Solan her yere çiçek götürürüm. Haritan da renklensin, yolumuz da."
+  },
+  {
+   "k": "gezgin",
+   "m": "O zaman bundan sonra yolumuz mis gibi kokacak. İyi ki geldin!"
+  }
+ ],
+ "sercin": [
+  {
+   "k": "katilan",
+   "m": "Rüzgâr bana bir şey fısıldadı: \"Yolda bir ekip var, yetiş!\" Ben de uçarak geldim."
+  },
+  {
+   "k": "gezgin",
+   "m": "Rüzgâr doğru söylemiş, tam zamanında da: yolun en uzun kısmı önümüzde."
+  },
+  {
+   "k": "katilan",
+   "m": "Tüylerim izleri bulur, kanatlarım yolu kısaltır. Yalnız ara sıra öterim, alışırsınız!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Ötmeye devam et; şarkılı bir yol daha kısa gelir."
+  },
+  {
+   "k": "katilan",
+   "m": "Öyleyse şarkı benden, yol hepimizden. Haydi, rüzgâr arkamızda!"
+  }
+ ]
+}

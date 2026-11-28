@@ -1,0 +1,103 @@
+// Hayalet Avcıları: karakterlerin zengin tanıtımı (3.20.0). Karakterler ekranının ayrıntı panelinde gösterilir.
+// Kullanıcının isteği (23 Kasım 2026): "karakter özellikleri daha zengin bir içerikle yazılsın". Metinler 3D görünümlü
+// yeni tasarımlara göre (gorsel/ham3d/D01–D06) yazıldı. Hepsi t() ile çevrilir (www/i18n/).
+// unvan: kısa lakap · hikaye: 2-3 cümle · silah: imza silahı · guc: özel gücün oyundaki etkisi (CHAR_POWERS ile aynı) ·
+// ipucu: oyun tarzı önerisi · zorluk: 1 (kolay) – 3 (usta)
+const KARAKTER_DETAY = {
+  kinkin: {
+    unvan: t("Şimşek Çocuk"),
+    hikaye: t("Mahallenin en hızlı koşucusu Kinkin, ilk hayaleti bisikletiyle kovalarken buldu. O günden beri enerji tabancasıyla gece devriyesinde; korkmaz, yorulmaz, hep önde koşar."),
+    silah: t("Enerji tabancası"),
+    guc: t("Yıldırım Hızı: 15 saniye boyunca iki kat hızlı koşar; hayaletlerin arasından süzülüp kaçar."),
+    ipucu: t("Yeni başlayanlar için ideal: hızını kullanıp hayaletleri peşinden sürükle, dönüp tek tek avla."),
+    zorluk: 1,
+  },
+  veryi: {
+    unvan: t("Çekiç Ustası"),
+    hikaye: t("Dedesinin demirci dükkânında büyüyen Veryi, dev savaş çekicini tek eliyle sallar. Biraz yavaştır ama vurduğu hayalet bir daha geri gelmez."),
+    silah: t("Dev savaş çekici"),
+    guc: t("Süper Hasar: 12 saniye boyunca her atışı üç kat hasar verir; boss bile dayanamaz."),
+    ipucu: t("Boss savaşlarının yıldızı: gücünü boss gelene kadar sakla, sonra hiç durmadan vur."),
+    zorluk: 2,
+  },
+  kornet: {
+    unvan: t("Gece Büyücüsü"),
+    hikaye: t("Kabarık mor tüylerinin ardındaki yüzü kimse görmedi. Kristal asasıyla hayaletleri en uzaktan gören Kornet, sihrini yalnız iyilik için kullanır."),
+    silah: t("Kristal asa"),
+    guc: t("Üçlü Atış: 15 saniye boyunca her atışta üç büyü küresini yelpaze gibi saçar."),
+    ipucu: t("Uzun menzilin avantajını kullan: hayaletlere yaklaşmadan geri geri yürüyerek ateş et."),
+    zorluk: 1,
+  },
+  mark: {
+    unvan: t("Hazine Avcısı"),
+    hikaye: t("Sırt çantası haritalar, pusulalar ve atıştırmalıklarla dolu Marli, her macerada bir hazine arar. Hayaletlerin bıraktığı paraları ondan hızlı toplayan yoktur."),
+    silah: t("Kompakt arbalet"),
+    guc: t("Dev Mıknatıs: 20 saniye boyunca haritadaki bütün paraları ve eşyaları kendine çeker."),
+    ipucu: t("Para biriktirmek için en iyi seçim: kalabalık dalgaları temizle, sonra mıknatısı aç."),
+    zorluk: 1,
+  },
+  kent: {
+    unvan: t("Gölge Lordu"),
+    hikaye: t("Kenit bir zamanlar hayaletlerin dünyasında kaybolmuş, geri dönmeyi başaran tek çocuktur. Kapüşonunun altındaki kırmızı gözler, hayaletleri ondan korkutan tek şeydir."),
+    silah: t("Gölge hançeri"),
+    guc: t("Hayalet Modu: 8 saniye boyunca hayaletler ona hiç hasar veremez; aralarından geçip avlar."),
+    ipucu: t("Hızlı ve sert vurur ama gücü kısa sürer: sıkıştığında kurtulmak için kullan."),
+    zorluk: 3,
+  },
+  ponko: {
+    unvan: t("Kovboy Ponko"),
+    hikaye: t("Çöl kasabalarının küçük şerifi Ponko, kocaman şapkasıyla uzaktan tanınır. Altın tetikli tabancasını kasabanın en hızlısı gibi çeker."),
+    silah: t("Kovboy tabancası"),
+    guc: t("Çabuk Ateş: 12 saniye boyunca üç kat hızlı ateş eder; önüne çıkan hayalet yağmura tutulur."),
+    ipucu: t("Kalabalık dalgalarda gücünü aç ve ortada dur: mermi yağmuru her yöne yetişir."),
+    zorluk: 2,
+  },
+  gul: {
+    unvan: t("Taçlı Okçu"),
+    hikaye: t("Küçük bir krallığın prensesi Güllu, taht yerine ok ve yayı seçti. Attığı her ok hedefini bulur, patlayan hayaletler etrafındakileri de devirir."),
+    silah: t("Kraliyet yayı"),
+    guc: t("Patlama Vuruşu: 15 saniye boyunca yendiği her hayalet patlar ve yanındakilere de hasar verir."),
+    ipucu: t("Hayaletleri bir araya topla, sonra vur: patlayan her hayalet yanındakileri de yaralar."),
+    zorluk: 2,
+  },
+  rani: {
+    unvan: t("Minik Şifacı"),
+    hikaye: t("Rani küçük ama yüreği kocamandır. Sapanıyla hayalet avlarken yaralanan arkadaşlarını da unutmaz; şifalı kalbi en zor bölümde bile umut verir."),
+    silah: t("Taş sapan"),
+    guc: t("Şifa Kalbi: 18 saniye boyunca her 5 saniyede bir can kazanır."),
+    ipucu: t("Canın azaldığında gücünü aç ve dayan: uzun bölümlerin en sağlam avcısı."),
+    zorluk: 1,
+  },
+  beti: {
+    unvan: t("Şeker Perisi"),
+    hikaye: t("Lolipop bereli Beri, şeker fabrikasının en neşeli avcısıdır. Suya bile aldırmaz; göllerin içinden yürüyüp şekerden toplarıyla hayaletleri tatlı tatlı uğurlar."),
+    silah: t("Şeker topları"),
+    guc: t("Lolipop Yağmuru: 15 saniye boyunca her atışta beş yöne şeker topu saçar."),
+    ipucu: t("Suyun içinden geçebilen tek avcı: kaçarken göllerden kestirme yap, yolun kısalsın."),
+    zorluk: 2,
+  },
+  fanatik: {
+    unvan: t("Efsane Kunfucu"),
+    hikaye: t("Siyah kuşağını dağlardaki ustasından alan Fanatik, avcıların en güçlüsüdür. Nunçakusu öyle hızlı döner ki hayaletler neye uğradığını şaşırır."),
+    silah: t("Nunçaku"),
+    guc: t("Tornado Tekme: 12 saniye boyunca yarım saniyede bir çevresindeki bütün hayaletlere vurur ve onları iter."),
+    ipucu: t("En pahalı ama en güçlü avcı: kalabalığın ortasına dal, tornado tekmeyle hepsini savur."),
+    zorluk: 3,
+  },
+  silsen: {
+    unvan: t("Bahar Bekçisi"),
+    hikaye: t("Silsen'in bayrağının tepesindeki papatya hiç solmaz. Gittiği her yere bahar götürür; çiçek topları değdiği hayaleti ışığa çevirir."),
+    silah: t("Çiçekli bayrak asa"),
+    guc: t("Çiçek Halkası: 12 saniye boyunca her atışta sekiz yöne çiçek topu açar."),
+    ipucu: t("Etrafı sarıldığında gücünü aç: her yöne açılan çiçekler kuşatmayı yarar."),
+    zorluk: 2,
+  },
+  sercin: {
+    unvan: t("Rüzgâr Kanadı"),
+    hikaye: t("Serçin kuşlarla konuşur, rüzgârla yarışır. Fırlattığı tüyler hedefini kendi bulur; en kaçamak hayalet bile ondan saklanamaz."),
+    silah: t("Kanat tüyleri"),
+    guc: t("Güdümlü Tüyler: 15 saniye boyunca tüyleri en yakın hayaleti kendiliğinden kovalar."),
+    ipucu: t("Çevik ve hızlı: koşarken ateş et, güdümlü tüyler nişanı senin yerine alsın."),
+    zorluk: 2,
+  },
+};

@@ -1,0 +1,218 @@
+{
+ "kinkin": [
+  {
+   "k": "katilan",
+   "m": "Ben mahallenin en hızlı koşanıyım; gece devriyesinde hep öndeyim!"
+  },
+  {
+   "k": "gezgin",
+   "m": "Haritanın eksik parçalarını arıyorum; hızınla bana katılır mısın?"
+  },
+  {
+   "k": "katilan",
+   "m": "Katılırım! Enerji tabancam ve koşan ayaklarım hazır."
+  },
+  {
+   "k": "gezgin",
+   "m": "O zaman dostluk yolculuğu başlasın; ilk dönemeç senin!"
+  }
+ ],
+ "veryi": [
+  {
+   "k": "katilan",
+   "m": "Dedemin ocağında büyüdüm; çekicimi tek elimle sallarım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Dağılmış harita parçalarını toplamak için güçlü kollar lazım. Ne dersin?"
+  },
+  {
+   "k": "katilan",
+   "m": "Katılırım; biraz yavaşım ama sağlam adımlarla gelirim."
+  },
+  {
+   "k": "gezgin",
+   "m": "Harika! Yol, sağlam adımlarla daha da güzel."
+  }
+ ],
+ "kornet": [
+  {
+   "k": "katilan",
+   "m": "Mor tüylerimin altından dünyayı izlerim; asamla uzakları görürüm."
+  },
+  {
+   "k": "gezgin",
+   "m": "Uzak görüşün haritada işimize yarar; bizimle gelir misin?"
+  },
+  {
+   "k": "katilan",
+   "m": "Gelirim; sihrimi yalnız iyilik için kullanırım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Dostluk yolculuğunda iyilik her zaman yanımızda olsun."
+  }
+ ],
+ "mark": [
+  {
+   "k": "katilan",
+   "m": "Çantamda haritalar, pusulalar ve atıştırmalıklar var; hazine kokusunu alırım."
+  },
+  {
+   "k": "gezgin",
+   "m": "O zaman tam sana göre bir hazine var: silik bir Dostluk Haritası!"
+  },
+  {
+   "k": "katilan",
+   "m": "Katılırım! Parçaları bulurken atıştırmayı da paylaşırım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Anlaştık; yol boyunca hem arar hem paylaşırız."
+  }
+ ],
+ "kent": [
+  {
+   "k": "katilan",
+   "m": "Bir zamanlar gölgeler arasında kayboldum; geri dönmeyi öğrendim."
+  },
+  {
+   "k": "gezgin",
+   "m": "Kaybolan izleri bulmakta senden iyisi yok; yolumuz uzun, eşlik eder misin?"
+  },
+  {
+   "k": "katilan",
+   "m": "Gelirim; kapüşonumun altından sessizce yol gösteririm."
+  },
+  {
+   "k": "gezgin",
+   "m": "Sessiz rehberliğinle harita parçaları daha kolay bulunur."
+  }
+ ],
+ "ponko": [
+  {
+   "k": "katilan",
+   "m": "Kocaman şapkam uzaktan görünür; hızlı çektiğim tabancamla tanınırım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Uzaktan görünen bir şapka, kalabalıkta birbirimizi kaybetmememizi sağlar. Gelsene!"
+  },
+  {
+   "k": "katilan",
+   "m": "Katılırım; şapkamı düzeltir, yola çıkarım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Şapkan da yolun neşesi olsun; hadi ilerleyelim."
+  }
+ ],
+ "gul": [
+  {
+   "k": "katilan",
+   "m": "Taht yerine yayımı seçtim; oklarım hedefini hiç şaşmaz."
+  },
+  {
+   "k": "gezgin",
+   "m": "Haritanın kayıp parçaları için keskin bir göz arıyorduk. O göz sende olabilir mi?"
+  },
+  {
+   "k": "katilan",
+   "m": "Katılırım; yayım ve gülüşüm yolda yanınızda olsun."
+  },
+  {
+   "k": "gezgin",
+   "m": "Gülüşün yolu aydınlatsın; ilk hedefe birlikte gidelim."
+  }
+ ],
+ "rani": [
+  {
+   "k": "katilan",
+   "m": "Küçüğüm ama yüreğim büyük; sapanımla hedefi bulurum."
+  },
+  {
+   "k": "gezgin",
+   "m": "Uzun yolda yorulan çok olur; sen yanımızda olursan herkes daha cesur yürür."
+  },
+  {
+   "k": "katilan",
+   "m": "Katılırım; yaralanan olursa çantamda şifalı otlar var."
+  },
+  {
+   "k": "gezgin",
+   "m": "Şifalı kalbinle yol daha güvenli; teşekkürler."
+  }
+ ],
+ "beti": [
+  {
+   "k": "katilan",
+   "m": "Lolipop beremle neşe saçarım; şeker toplarım tatlı tatlı uçar."
+  },
+  {
+   "k": "gezgin",
+   "m": "Yolculuğumuzun biraz şekere ihtiyacı var. Bize katılsana!"
+  },
+  {
+   "k": "katilan",
+   "m": "Katılırım! Göllerden bile yürürüm, ıslanmaya aldırmam."
+  },
+  {
+   "k": "gezgin",
+   "m": "Neşenle ıslak yollar bile kurur; hadi başlayalım."
+  }
+ ],
+ "fanatik": [
+  {
+   "k": "katilan",
+   "m": "Siyah kuşağımı dağlarda çalışarak aldım; nunçakum hızla döner."
+  },
+  {
+   "k": "gezgin",
+   "m": "Zor yollarda arkamızı kollayacak biri lazım. Var mısın?"
+  },
+  {
+   "k": "katilan",
+   "m": "Gelirim; gücümü dostları korumak için kullanırım."
+  },
+  {
+   "k": "gezgin",
+   "m": "Gücün dostlukla birleşsin; yola birlikte devam edelim."
+  }
+ ],
+ "silsen": [
+  {
+   "k": "katilan",
+   "m": "Papatyalı asam hiç solmaz; gittiğim yere bahar götürürüm."
+  },
+  {
+   "k": "gezgin",
+   "m": "Gittiğin yere bahar götürüyorsan, haritamızın solgun yerlerine de götür!"
+  },
+  {
+   "k": "katilan",
+   "m": "Katılırım; çiçek toplarım değdiği yeri ışıtır."
+  },
+  {
+   "k": "gezgin",
+   "m": "Işığın yolu renklendirsin; hadi parçaları aramaya çıkalım."
+  }
+ ],
+ "sercin": [
+  {
+   "k": "katilan",
+   "m": "Kuşlarla konuşur, rüzgârla yarışırım; tüylerim hedefini kendi bulur."
+  },
+  {
+   "k": "gezgin",
+   "m": "Rüzgârla yarışan biri yolumuzu kısaltır. Bizimle uçar mısın?"
+  },
+  {
+   "k": "katilan",
+   "m": "Katılırım; kanat tüylerim izleri bulmada yardımcı olur."
+  },
+  {
+   "k": "gezgin",
+   "m": "Rüzgârınla yol hafifler; birlikte ilerleyelim."
+  }
+ ]
+}

@@ -1,8 +1,15 @@
 {
   "_aciklama": "Ücretsiz kanallar (YouTube Shorts, TikTok, Instagram Reels) için metinler. video: tanıtım videosunun son kartı (sahne alt yazıları ve oyun adı ../reklam/metinler.json'dan). profil: hesap adı ve tanıtım yazısı. paylasimlar: video altına yazılacak metinler. Kurallar ve sıra SOSYAL-PLAN.md'de; sosyal.test.mjs denetler.",
   "tr": {
-    "video": { "son": "Google Play'de ücretsiz", "ara": "Ara: Hayalet Avcıları" },
-    "profil": { "ad": "Poyraz Workshop", "yazi": "Küçük oyunlar, kullanışlı uygulamalar. 👻 Hayalet Avcıları Google Play'de." },
+    "video": {
+      "son": "Google Play'de ücretsiz",
+      "ara": "Ara: Hayalet Avcıları",
+      "pet": "🐾 Petinle birlikte avla"
+    },
+    "profil": {
+      "ad": "Poyraz Workshop",
+      "yazi": "Küçük oyunlar, kullanışlı uygulamalar. 👻 Hayalet Avcıları Google Play'de."
+    },
     "paylasimlar": [
       "Hayaletler her yerden geliyor 👻 Avcını seç, joystick ile dolaş, gerisini silahın halleder. Hayalet Avcıları Google Play'de ücretsiz. #hayaletavcıları #mobiloyun #androidoyun #indieoyun",
       "Süre dolunca boss geliyor 👑 Sen olsan kaçıncı bölümde takılırdın? #hayaletavcıları #bossfight #mobiloyun #androidoyun",
@@ -11,8 +18,15 @@
     ]
   },
   "en": {
-    "video": { "son": "Free on Google Play", "ara": "Search: Ghost Hunters" },
-    "profil": { "ad": "Poyraz Workshop", "yazi": "We make small games and handy apps. 👻 Ghost Hunters is on Google Play." },
+    "video": {
+      "son": "Free on Google Play",
+      "ara": "Search: Ghost Hunters",
+      "pet": "🐾 Hunt with your pet"
+    },
+    "profil": {
+      "ad": "Poyraz Workshop",
+      "yazi": "We make small games and handy apps. 👻 Ghost Hunters is on Google Play."
+    },
     "paylasimlar": [
       "Ghosts are coming from everywhere 👻 Pick your hunter, move with the joystick and your weapon does the rest. Ghost Hunters is free on Google Play. #ghosthunters #mobilegame #androidgame #indiegame",
       "When the timer runs out, the boss shows up 👑 Which level would you get stuck on? #ghosthunters #bossfight #mobilegame #androidgame",
@@ -20,8 +34,32 @@
       "Invite a friend to your room and hunt ghosts together 🎮 Up to 6 players per room. #ghosthunters #playwithfriends #mobilegame"
     ]
   },
-  "es": { "video": { "son": "Gratis en Google Play", "ara": "Busca: Cazadores de Fantasmas" } },
-  "ar": { "video": { "son": "مجانًا على Google Play", "ara": "ابحث عن: صيادو الأشباح" } },
-  "hi": { "video": { "son": "Google Play पर मुफ़्त", "ara": "खोजें: भूत शिकारी" } },
-  "zh": { "video": { "son": "Google Play 免费下载", "ara": "搜索：幽灵猎人" } }
+  "es": {
+    "video": {
+      "son": "Gratis en Google Play",
+      "ara": "Busca: Cazadores de Fantasmas",
+      "pet": "🐾 Caza con tu mascota"
+    }
+  },
+  "ar": {
+    "video": {
+      "son": "مجانًا على Google Play",
+      "ara": "ابحث عن: صيادو الأشباح",
+      "pet": "🐾 اصطد مع حيوانك الأليف"
+    }
+  },
+  "hi": {
+    "video": {
+      "son": "Google Play पर मुफ़्त",
+      "ara": "खोजें: भूत शिकारी",
+      "pet": "🐾 अपने पालतू के साथ शिकार करो"
+    }
+  },
+  "zh": {
+    "video": {
+      "son": "Google Play 免费下载",
+      "ara": "搜索：幽灵猎人",
+      "pet": "🐾 和宠物一起狩猎"
+    }
+  }
 }

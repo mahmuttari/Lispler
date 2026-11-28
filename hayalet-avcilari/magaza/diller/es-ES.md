@@ -44,8 +44,9 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 ## Sürüm notu
 
-🎬 ¿Sin vidas en la Gira mundial? Mira un anuncio y sigue donde lo dejaste (3 veces por partida).
-🐊 Ahora hay cocodrilos en el agua: ¡si te quedas en la orilla, pueden morderte!
-🌉 Puentes de cuerda colgantes sobre los lagos: cruza rápido, ¡si te entretienes en medio, te caes al agua!
-🐾 ¡Llegan las mascotas: lleva un gato, un perro o un pájaro y atacad juntos a los fantasmas!
-🌿 Escóndete en los arbustos: los fantasmas no te ven; ya no aparecen a tu lado.
+🎵 ¡Música nueva para 50 países con instrumentos típicos!
+🎨 El mundo se redibujó: pinchos, lagos, orillas, puentes y cascadas.
+🐊 ¡Los cocodrilos salen del agua y te persiguen; cuidado!
+⚡ Poderes en iconos redondos al borde; los disparos fantasma dejan estela brillante.
+⛈️ La nube negra ahora lanza rayos solo sobre el jefe.
+🚀 Cazadores más fluidos: se corrigieron los tirones del dibujo 3D.

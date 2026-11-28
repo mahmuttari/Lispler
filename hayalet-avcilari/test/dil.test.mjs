@@ -31,7 +31,7 @@ try {
       const p = await b.newPage({ viewport: { width: genislik, height: 780 }, deviceScaleFactor: 1 });
       const hatalar = [];
       p.on('pageerror', (e) => hatalar.push(e.message));
-      await p.addInitScript((d) => { localStorage.setItem('hayaletAvcilariDil', d); }, dil);
+      await p.addInitScript((d) => { localStorage.setItem('hayaletAvcilariDil', d); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1'); }, dil);
       await p.route(/gstatic\.com|googleapis|firebase/, (r) => r.abort());
       await p.goto(adres, { waitUntil: 'load' });
       await p.waitForTimeout(300);

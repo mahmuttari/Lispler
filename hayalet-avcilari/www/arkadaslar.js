@@ -815,6 +815,8 @@ function oyunEkraniniKapat() {
   const wb = document.getElementById("weapon-bar");
   if (wb) wb.innerHTML = "";
   if (typeof hostBeklemeGostergesi === "function") hostBeklemeGostergesi(0);
+  if (typeof turPerdeleriniKapat === "function") turPerdeleriniKapat();
+  if (typeof turMuzigiSondur === "function") turMuzigiSondur();
 }
 
 // Katıl: davet silinir; tek kişilik oyun sürüyorsa onayla biter (kazançlar kasaya, reklam yok); başka odadaysa

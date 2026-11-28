@@ -33,7 +33,7 @@ try {
   const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
   p.on('pageerror', (e) => hatalar.push(e.message));
   await p.addInitScript(() => {
-    localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9');
+    localStorage.setItem('hayaletAvcilariDil', 'tr'); localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1');
     const Asil = window.AudioContext;
     window.AudioContext = class extends Asil { constructor(o) { super(o); window.__sesSecenek = o === undefined ? 'yok' : o; } };
   });

@@ -32,7 +32,7 @@ try {
   p.on('pageerror', (e) => hatalar.push(e.message));
   await p.addInitScript(() => {
     localStorage.setItem('hayaletAvcilariDil', 'tr');
-    localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9');
+    localStorage.setItem('hayaletAvcilariLastSeenVersion', '9.9.9'); localStorage.setItem('hayaletAvcilariHikayeSahnesiz', '1');
   });
   await p.route(/gstatic\.com|googleapis|firebase|googlesyndication|doubleclick/, (r) => r.abort());
   await p.goto(adres, { waitUntil: 'load' });
@@ -72,6 +72,17 @@ try {
     };
     window.__ilerlet = (sn, adim = 0.05) => { for (let z = 0; z < sn; z += adim) timsahGuncelle(adim); };
     window.__oyuncuyaKoy = (k) => { game.player.x = k.x; game.player.y = k.y; };
+    // Yolculuk geçidi gibi nehir: bütün dünyayı kaplayan bbox, çarpışma 16 px dilim, ortada yatay köprü
+    window.__gecit = () => {
+      const o = { x: 400, y: 100, w: 100, h: 600, gecit: true, tema: 0 };
+      o.carpisma = [{ t: 'k', x: 0, y: 0, w: 100, h: 600, rr: 0 }];
+      o.bicim = o.carpisma.map((q) => ({ ...q }));
+      game.waters = [o]; game._timsahSular = game.waters;
+      game.kopruler = [{ su: o, yatay: true, a: 370, b: 530, c: 400 }]; game._kopruSular = game.waters;
+      game.timsahlar = []; game._timsahKiyi = 0; game._timsahAra = 0; game._timsahSus = 1e9;
+      game.player.hp = 3; game.player.invuln = 0; game.player.dead = false; game.player.dusus = null;
+      return o;
+    };
   });
 
   const s = await p.evaluate(() => {
@@ -206,6 +217,50 @@ try {
     assert.equal(bos.imza, '1,2,3');
     assert.deepEqual(bos.geri, [['saldiri', 512, 300, 1.57, 0.35], ['bos', 700, 820, -2.1, 1.2], ['sus', 90, 40, 0, 0]]);
     assert.equal(bos.bozuk, 0);
+  });
+
+  // Yolculuk geçit nehirleri: timsahlar göldeki gibi çalışır, köprü çevresi güvenli kalır
+  const gecit = await p.evaluate(() => {
+    const r = {}, gercek = Math.random, eski = TIMSAH.olasilik;
+    Math.random = () => 0; TIMSAH.olasilik = 1;
+    try {
+      // 1) Köprüden uzak kıyıda 3 sn: uyarı ve ısırık
+      let o = __gecit();
+      __oyuncuyaKoy({ x: 350, y: 200 }); // sol kıyı, köprü merkezinden 200 px uzakta
+      __ilerlet(TIMSAH.bekleme + 0.3);
+      r.uyari = game.timsahlar.filter((tm) => tm.tur === 'saldiri').length;
+      __ilerlet(2.7);
+      r.isirdiCan = game.player.hp;
+      // 2) Köprüde: saldırı yok
+      __gecit(); __oyuncuyaKoy({ x: 450, y: 400 });
+      __ilerlet(3);
+      r.koprude = game.timsahlar.filter((tm) => tm.tur === 'saldiri').length;
+      // 3) Köprüye 90 px'ten yakın kıyıda: saldırı yok
+      __gecit(); __oyuncuyaKoy({ x: 350, y: 450 }); // köprü merkezine 50 px
+      __ilerlet(3);
+      r.yakin = game.timsahlar.filter((tm) => tm.tur === 'saldiri').length;
+      // 4) Süs gözleri geçidin görünen şeridinde, suyun içinde, köprüden uzakta
+      Math.random = gercek;
+      o = __gecit();
+      game.camera.x = 350; game.camera.y = 150;
+      let tm = null;
+      for (let i = 0; i < 80 && !tm; i++) { game.timsahlar = []; tm = timsahSusle(); }
+      r.susCikti = !!tm;
+      r.suda = !!tm && suUzakligi(o, tm.x, tm.y) < -22 && collidesWaters(tm.x, tm.y, 0);
+      r.koprudenUzak = !!tm && Math.abs(tm.y - 400) >= 120;
+      r.gorunur = !!tm && tm.y >= 150 && tm.y <= game.camera.y + game.H;
+    } finally { Math.random = gercek; TIMSAH.olasilik = eski; }
+    return r;
+  });
+  sina('geçit nehrinde köprüden uzak kıyıda bekleyen uyarılır ve ısırılır', () => {
+    assert.equal(gecit.uyari, 1); assert.equal(gecit.isirdiCan, 2);
+  });
+  sina('geçit köprüsünde ve köprüye 90 px yakın kıyıda timsah saldırmaz', () => {
+    assert.equal(gecit.koprude, 0); assert.equal(gecit.yakin, 0);
+  });
+  sina('geçit nehrinde süs gözleri görünür suyun içinde, köprüden uzakta çıkar', () => {
+    assert.equal(gecit.susCikti, true); assert.equal(gecit.suda, true);
+    assert.equal(gecit.koprudenUzak, true); assert.equal(gecit.gorunur, true);
   });
 
   // Oyun döngüsüyle: duraklatınca timsah durur; her evre çizilir, sayfa hatası yok

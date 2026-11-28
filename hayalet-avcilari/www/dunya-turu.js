@@ -19,7 +19,33 @@ function turKaydiniTemizle(v) {
     for (const [kod, zaman] of Object.entries(k.damgalar)) if (ulkeKodla(kod) && Number.isFinite(zaman)) damgalar[kod] = zaman;
   }
   const bitti = Number.isFinite(k.bitti) && k.bitti > 0 ? k.bitti : 0;
-  return { acik, damgalar, bitti };
+  const r = { acik, damgalar, bitti };
+  // Hikâye alanları (HIKAYE.md): yalnız kayıtta varsa eklenir (eski kayıt biçimi bozulmaz)
+  const yeni = ["hatiralar", "bilmeceler", "sahneler", "katilanlar", "gezgin", "rozet"].some((a) => k[a] != null);
+  if (!yeni) return r;
+  const avcilar = (window.HIKAYE_TEST && window.HIKAYE_TEST.avciSirasi) || (typeof HIKAYE_AVCI_SIRASI !== "undefined" ? HIKAYE_AVCI_SIRASI : []);
+  const hatiralar = {};
+  if (k.hatiralar && typeof k.hatiralar === "object") {
+    for (const [kod, zaman] of Object.entries(k.hatiralar)) if (ulkeKodla(kod) && Number.isFinite(zaman) && zaman > 0) hatiralar[kod] = zaman;
+  }
+  const bilmeceler = {};
+  if (k.bilmeceler && typeof k.bilmeceler === "object") {
+    for (const [n, zaman] of Object.entries(k.bilmeceler)) {
+      const i = Number(n);
+      if (Number.isInteger(i) && i >= 1 && i <= 10 && Number.isFinite(zaman) && zaman > 0) bilmeceler[String(i)] = zaman;
+    }
+  }
+  const sahneler = {};
+  if (k.sahneler && typeof k.sahneler === "object") {
+    for (const [kod, deger] of Object.entries(k.sahneler)) if (ulkeKodla(kod) && Number.isFinite(Number(deger)) && Number(deger) > 0) sahneler[kod] = 1;
+  }
+  const katilanlar = {};
+  if (k.katilanlar && typeof k.katilanlar === "object") {
+    for (const [avci, zaman] of Object.entries(k.katilanlar)) if (avcilar.includes(avci) && Number.isFinite(zaman) && zaman > 0) katilanlar[avci] = zaman;
+  }
+  const gezgin = avcilar.includes(k.gezgin) ? k.gezgin : "";
+  const rozet = Number.isFinite(k.rozet) && k.rozet > 0 ? k.rozet : 0;
+  return { acik, damgalar, bitti, hatiralar, bilmeceler, sahneler, katilanlar, gezgin, rozet };
 }
 
 function turKaydi() {
@@ -48,35 +74,47 @@ function turUlkesi() {
   return typeof game !== "undefined" && game.dunyaTuru ? ulkeSirada(game.level) : null;
 }
 
-// Dünya Turu zemini: ailenin zemin(ctx, boyut, palet) ressamı 96 px'lik desen tuvaline bir kez çizer (önbellek ülke kodu
-// ve ölçekle). Tuval önce ülkenin zemin rengiyle dolar, ressam yalnız soluk deseni çizer. Desen dünya alanına tek dolguyla
+// Dünya Turu zemini: ailenin zemin resmi (gorsel "aile-<aile>-zemin") varsa 192 birimlik desen tuvaline ölçeklenir; yoksa
+// ailenin zemin(ctx, boyut, palet) ressamı 96 px'lik tuvale bir kez çizer (önbellek ülke kodu, ölçek ve resimle).
+// Tuval önce ülkenin zemin rengiyle dolar, ressam yalnız soluk deseni çizer. Desen dünya alanına tek dolguyla
 // döşenir ve true döner. Ressam yoksa (ya da tuval kurulamazsa) false: render bugünkü zemini ve ızgarayı çizer.
 // Desen tuvali çizilen tuvalin cihaz ölçeğinde kurulur (bir desen pikseli bir cihaz pikseli; döşemenin dünya boyu
 // n / ölçek, 96'dan en çok yarım cihaz pikseli farklı) ve her karede cihaz pikseline hizalanır (engel resimlerindeki
 // bas() gibi; en çok yarım cihaz pikseli kayar): kamera kesirli konumdayken desen süzgeçle taranmaz. Telefonda ölçek dpr,
 // tablette dpr × 1,35 (1,35 ya da 2,7). Hizasız dolgu yazılımsal taramada ekranın tamamında karede birkaç ms tutar
 // (kamera kayarken kare hızı yarıya iner). Tuval döndürülmüş ya da eşit ölçeksizse desen engelOlcegi()'nde, hizasız.
-const TUR_ZEMIN_BOYUT = 96;
+const TUR_ZEMIN_BOYUT = 96, TUR_ZEMIN_RESIM_BOYUT = 192;
 let _turZemini = null; // { anahtar, desen, k: desen tuvalinin birim başına pikseli, hizali }
 function turZeminCiz(ctx) {
-  const u = turUlkesi(), a = u && window.ULKE_AILELERI[u.aile];
-  if (!a || typeof a.zemin !== "function") return false;
+  const u = turUlkesi();
+  if (!u) return false;
+  const a = window.ULKE_AILELERI[u.aile];
+  const zeminIm = typeof gorsel === "function" ? gorsel("aile-" + u.aile + "-zemin") : null;
+  if (!zeminIm && (!a || typeof a.zemin !== "function")) return false;
   // Desen dönüşümü olmayan tarayıcıda tuval ölçeksiz çizilir (döşeme 96 birimde kalsın)
   const donusum = typeof DOMMatrix === "function" && typeof CanvasPattern !== "undefined" && !!CanvasPattern.prototype.setTransform
     && typeof ctx.getTransform === "function";
   const m = donusum ? ctx.getTransform() : null;
   const hizali = !!m && m.b === 0 && m.c === 0 && m.a === m.d && m.a > 0;
-  const s = !donusum ? 1 : hizali ? m.a : engelOlcegi(), anahtar = u.kod + "|" + s + "|" + hizali;
+  const s = !donusum ? 1 : hizali ? m.a : engelOlcegi();
+  const anahtar = u.kod + "|" + s + "|" + hizali + "|" + (zeminIm ? 1 : 0);
   if (!_turZemini || _turZemini.anahtar !== anahtar) {
     _turZemini = { anahtar, desen: null, k: 1, hizali };
     try {
-      const n = Math.max(1, Math.round(TUR_ZEMIN_BOYUT * s)), c = document.createElement("canvas");
+      // Tek parça büyük aile zemini (Z14-Z23, en az 700 px) 768 birimde döşenir (gorsel.js zeminBirimi)
+      const boyut = zeminIm ? (typeof zeminBirimi === "function" ? zeminBirimi(zeminIm, TUR_ZEMIN_RESIM_BOYUT) : TUR_ZEMIN_RESIM_BOYUT) : TUR_ZEMIN_BOYUT;
+      const n = Math.max(1, Math.round(boyut * s)), c = document.createElement("canvas");
       c.width = n; c.height = n;
-      const cx = c.getContext("2d"), palet = ulkeEngelSeti(u.kod).palet;
-      cx.scale(n / TUR_ZEMIN_BOYUT, n / TUR_ZEMIN_BOYUT);
-      cx.fillStyle = palet.zemin; cx.fillRect(0, 0, TUR_ZEMIN_BOYUT, TUR_ZEMIN_BOYUT);
-      a.zemin(cx, TUR_ZEMIN_BOYUT, palet);
-      _turZemini.k = hizali ? s : n / TUR_ZEMIN_BOYUT;
+      const cx = c.getContext("2d");
+      if (zeminIm) {
+        cx.drawImage(zeminIm, 0, 0, n, n);
+      } else {
+        const palet = ulkeEngelSeti(u.kod).palet;
+        cx.scale(n / TUR_ZEMIN_BOYUT, n / TUR_ZEMIN_BOYUT);
+        cx.fillStyle = palet.zemin; cx.fillRect(0, 0, TUR_ZEMIN_BOYUT, TUR_ZEMIN_BOYUT);
+        a.zemin(cx, TUR_ZEMIN_BOYUT, palet);
+      }
+      _turZemini.k = hizali ? s : n / boyut;
       _turZemini.desen = ctx.createPattern(c, "repeat");
     } catch (_) { _turZemini.desen = null; }
   }
@@ -89,7 +127,11 @@ function turZeminCiz(ctx) {
       : [1 / k, 0, 0, 1 / k, 0, 0]));
   }
   ctx.fillStyle = desen;
-  ctx.fillRect(0, 0, game.worldW, game.worldH);
+  // Yalnız görünen kare (kamera + 2 px pay) döşenir; desen dünya koordinatında hizalı olduğu için dikiş olmaz
+  const cam = game.camera || { x: 0, y: 0 }, W = game.W || game.worldW, H = game.H || game.worldH;
+  const zx = Math.max(0, Math.floor(cam.x) - 2), zy = Math.max(0, Math.floor(cam.y) - 2);
+  const zw = Math.min(game.worldW, Math.ceil(cam.x + W) + 2) - zx, zh = Math.min(game.worldH, Math.ceil(cam.y + H) + 2) - zy;
+  if (zw > 0 && zh > 0) ctx.fillRect(zx, zy, zw, zh);
   return true;
 }
 
@@ -157,6 +199,7 @@ function perdeAc(el) {
 function turPerdeleriniKapat() {
   _perdeNo++;
   document.querySelectorAll(".tur-perde").forEach((p) => p.classList.remove("active"));
+  if (typeof hikayePencereleriKapat === "function") hikayePencereleriKapat(); // hikâye sahnesi ve bilmecesi de (hikaye.js)
 }
 function damgaGoster(u) {
   const el = document.getElementById("tur-damga");
@@ -170,7 +213,9 @@ function damgaGoster(u) {
 function ucakGecisi(onceki, sonraki, bitince) {
   const el = document.getElementById("tur-gecis");
   const ad = (u, sinif) => `<div class="tur-gecis-ad ${sinif}"><span class="tur-gecis-sira">${u.sira}</span> <bdi>${escapeHtml(u.ad)}</bdi></div>`;
-  el.innerHTML = `<div class="tur-perde-kutu tur-gecis-kutu">${ad(onceki, "bas")}<div class="tur-gecis-yol"><span class="tur-ucak">✈️</span></div>${ad(sonraki, "son")}</div>`;
+  const ucsrc = turGorselSrc("tur-ucak-yan");
+  const uc = ucsrc ? `<img class="tur-ucak-resim" src="${ucsrc}" alt="">` : "✈️";
+  el.innerHTML = `<div class="tur-perde-kutu tur-gecis-kutu">${ad(onceki, "bas")}<div class="tur-gecis-yol"><span class="tur-ucak">${uc}</span></div>${ad(sonraki, "son")}</div>`;
   const no = perdeAc(el);
   game._turSonraki = sonraki;
   turMuzigiBaslat(sonraki.kod); // teaser uçakla başlar, tanıtım bildirimine sarkar (muzik.js)
@@ -232,6 +277,11 @@ function turTamamlandi() {
     setTimeout(() => { if (game.running && online.mode === "host") turuBitir(); }, 2000);
     return;
   }
+  // Tek kişilik: final sahnesi açıldıysa önce o gösterilir, kapanınca oyun sonu
+  if (typeof hikayeFinalHazir === "function" && hikayeFinalHazir()) {
+    hikayeFinalGoster(() => oyunSonu(true, false));
+    return;
+  }
   oyunSonu(true, false);
 }
 // Oyun sonundaki "🔁 Tekrar Oyna": Dünya Turu'nda kalınan ülkeden (tur bittiyse Dünya Turu ekranı), normal oyunda baştan
@@ -243,6 +293,15 @@ function tekrarOyna() {
 
 // ---------- Ekran: rota ve pasaport (spec §3, §5.6) ----------
 const TUR_DURUM_SIMGE = { kilitli: "🔒", acik: "✈️", damgali: "🛂" };
+// Resim yalnız görünüş: dosya yoksa bugünkü emoji kalır. DOM'da her zaman gorsel(k).src kullanılır.
+function turGorselSrc(k) {
+  const im = typeof gorsel === "function" ? gorsel(k) : null;
+  return im && im.src ? im.src : "";
+}
+function turDurumSimgeHTML(durum) {
+  const src = turGorselSrc(durum === "kilitli" ? "tur-kilit" : durum === "acik" ? "tur-ucak-simge" : "tur-pasaport");
+  return src ? `<img class="tur-durum-resim" src="${src}" alt="">` : TUR_DURUM_SIMGE[durum];
+}
 let _turSecili = 1;
 function turDurumu(u, k) {
   return k.damgalar[u.kod] ? "damgali" : u.sira <= k.acik ? "acik" : "kilitli";
@@ -255,6 +314,48 @@ function openDunyaTuru() {
   const liste = document.getElementById("tur-liste"), kart = liste.querySelector(".tur-kart.secili");
   if (kart) liste.scrollTop = kart.offsetTop - (liste.clientHeight - kart.offsetHeight) / 2;
 }
+// "Yakında" önizlemesi: gorsel("yakinda-pamukkale") varsa resmi, yoksa yumuşak degrade yer tutucu
+function turYakindaResmi() {
+  const im = typeof gorsel === "function" ? gorsel("yakinda-pamukkale") : null;
+  return im && im.src ? im.src : "";
+}
+function turYakindaGorselHtml(sinif) {
+  const src = turYakindaResmi();
+  return src ? `<img class="${sinif}" src="${src}" alt="">` : `<span class="${sinif} bos" aria-hidden="true">🏞️</span>`;
+}
+// Rota listesinin sonunda her zaman görünen, oynanamayan "🔜 Yakında" kartı
+function turYakindaKartHtml() {
+  return `<button class="tur-kart yakinda" data-yakinda="1" onclick="turYakindaAc()" aria-label="${escapeHtml(t("Yakında: Pamukkale"))}">` +
+    turYakindaGorselHtml("tur-resim") +
+    `<span class="tur-yakinda-metin"><bdi class="tur-ad">${escapeHtml(t("Yakında: Pamukkale"))}</bdi>` +
+    `<small class="tur-yakinda-alt">${escapeHtml(t("Yeni dünyalar geliyor: dünyanın ikonik yerleri"))}</small></span>` +
+    `<span class="tur-durum" aria-hidden="true">⏳</span></button>`;
+}
+function turYakindaBannerCiz() {
+  const kutu = document.getElementById("tur-yakinda-banner");
+  if (!kutu) return;
+  const k = turKaydi();
+  const rota = !document.getElementById("tur-liste") || document.getElementById("tur-liste").style.display !== "none";
+  if (!k.bitti || !rota) { kutu.style.display = "none"; kutu.innerHTML = ""; return; }
+  kutu.style.display = "";
+  kutu.innerHTML = `<button class="tur-yakinda-banner" onclick="turYakindaAc()" aria-label="${escapeHtml(t("Yakında: Pamukkale"))}">` +
+    turYakindaGorselHtml("tur-yakinda-banner-resim") +
+    `<span class="tur-yakinda-banner-metin"><small>${escapeHtml(t("Turu bitirdin! Sıradaki dünya yakında:"))}</small>` +
+    `<bdi>${escapeHtml(t("Yakında: Pamukkale"))}</bdi></span></button>`;
+}
+function turYakindaAc() {
+  const p = document.getElementById("tur-yakinda-perde");
+  if (!p) return;
+  p.innerHTML = `<div class="tur-yakinda-kutu">` + turYakindaGorselHtml("tur-yakinda-buyuk") +
+    `<h3 class="tur-yakinda-baslik">${escapeHtml(t("Yakında: Pamukkale"))}</h3>` +
+    `<p class="tur-yakinda-aciklama">${escapeHtml(t("Bembeyaz traverten havuzları ve turkuaz sular"))}</p>` +
+    `<button type="button" class="btn" onclick="turYakindaKapat()">${escapeHtml(t("Kapat"))}</button></div>`;
+  p.style.display = "flex";
+}
+function turYakindaKapat() {
+  const p = document.getElementById("tur-yakinda-perde");
+  if (p) { p.style.display = "none"; p.innerHTML = ""; }
+}
 function renderDunyaTuru() {
   const k = turKaydi();
   document.getElementById("tur-sayac").textContent = `🛂 ${Object.keys(k.damgalar).length}/${ULKE_SAYISI}`;
@@ -266,20 +367,29 @@ function renderDunyaTuru() {
     html += `<button class="tur-kart ${durum}${u.sira === _turSecili ? " secili" : ""}" data-sira="${u.sira}" onclick="turUlkeSec(${u.sira})"` +
       `${durum === "kilitli" ? ' aria-disabled="true"' : ""}><span class="tur-sira">${u.sira}</span>` +
       (resim ? `<img class="tur-resim" src="${resim}" alt="">` : `<span class="tur-resim bos" aria-hidden="true"></span>`) +
-      `<bdi class="tur-ad">${escapeHtml(u.ad)}</bdi><span class="tur-durum">${TUR_DURUM_SIMGE[durum]}</span></button>`;
+      `<bdi class="tur-ad">${escapeHtml(u.ad)}</bdi><span class="tur-durum">${turDurumSimgeHTML(durum)}</span></button>`;
   }
+  html += turYakindaKartHtml();
   document.getElementById("tur-liste").innerHTML = html;
+  turYakindaBannerCiz();
 }
 function turSekmesi(ad) {
-  const pasaport = ad === "pasaport";
-  document.querySelectorAll("#screen-dunya-turu .lb-tab").forEach((b) => b.classList.toggle("active", b.dataset.sekme === (pasaport ? "pasaport" : "rota")));
-  document.getElementById("tur-liste").style.display = pasaport ? "none" : "";
+  if (ad !== "pasaport" && ad !== "defter") ad = "rota";
+  const pasaport = ad === "pasaport", defter = ad === "defter";
+  document.querySelectorAll("#screen-dunya-turu .lb-tab").forEach((b) => b.classList.toggle("active", b.dataset.sekme === ad));
+  document.getElementById("tur-liste").style.display = ad === "rota" ? "" : "none";
   const pp = document.getElementById("tur-pasaport");
   pp.style.display = pasaport ? "" : "none";
+  const df = document.getElementById("tur-defter");
+  if (df) df.style.display = defter ? "" : "none";
+  turYakindaBannerCiz();
+  if (defter && typeof hikayeDefterCiz === "function") hikayeDefterCiz();
+  if (defter && df && typeof akiListeGiris === "function") akiListeGiris(df, ".defter-yuva");
   if (pasaport) {
     const k = turKaydi();
+    const cerceve = turGorselSrc("tur-damga");
     pp.innerHTML = ULKELER.map((u) => (k.damgalar[u.kod]
-      ? `<div class="damga">${damgaSvg(u)}</div>`
+      ? `<div class="damga${cerceve ? " cerceveli" : ""}"${cerceve ? ` style="background-image:url('${cerceve}')"` : ""}>${damgaSvg(u)}</div>`
       : `<div class="damga bos"><span>${u.sira}</span></div>`)).join("");
     damgaYazilariniSigdir(pp);
   }
@@ -361,7 +471,7 @@ function turDurumGeldi(st) {
   if (ilk) game.turBaslangic = lvl;
   const muzikSecenegi = ortadan ? { giris: false } : undefined;
   if (lvl === game.level) {
-    if (ortadan) { showToast(bolumBildirimi()); turMuzigiBaslat(ulkeSirada(lvl).kod, muzikSecenegi); }
+    if (ortadan) { showToast(bolumBildirimi()); turMuzigiBaslat(ulkeSirada(lvl).kod, muzikSecenegi); if (typeof hikayeBolumBasladi === "function") hikayeBolumBasladi(); }
     else if (!ilk && st.lt && !game.levelTransitioning) istemciGecisi(ulkeSirada(lvl)); // kurucu ülkeyi bitirdi (lt 0 → 1)
     return true;
   }
@@ -407,6 +517,7 @@ function turDevamTeklifi() {
   if (!game.dunyaTuru || online.mode || game.turBitti || !(game.turDevamKalan > 0) || !reklamDevamHazir()) return false;
   game.devamBekliyor = true;
   game.paused = true;
+  game._duraklamaBas = performance.now(); // "reklam izle, devam" ekranında sayaçlar işlemesin
   game.inputDir.x = 0; game.inputDir.y = 0;
   muzikDuraklat(true);
   turDevamEkrani();
@@ -434,6 +545,7 @@ function turDevamIzle() {
 function turDevamSonucu(kazandi) {
   if (!game.devamBekliyor || !game.running) return;
   if (!kazandi) { turDevamEkrani(); return; } // yarıda kapandı ya da gösterilemedi: pencere yeniden, karar oyuncunun
+  if (game._duraklamaBas) { oyunSaatiniKaydir(performance.now() - game._duraklamaBas); game._duraklamaBas = 0; }
   turDevamKapat();
   game.turDevamKalan--;
   game.player.hp = game.player.maxHp;
@@ -448,6 +560,7 @@ function turDevamSonucu(kazandi) {
 
 function turDevamVazgec() {
   if (!game.devamBekliyor) return;
+  game._duraklamaBas = 0;
   turDevamKapat();
   game.paused = false;
   muzikDuraklat(false);

@@ -2,3 +2,9 @@ node_modules/
 android/keystore.properties
 *.jks
 *.keystore
+dist/
+__pycache__/
+test/ciktilar/
+*-debug.log
+.ceviri-gecici/
+test/ekran/

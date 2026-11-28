@@ -1,0 +1,22 @@
+# Hayalet Avcıları — kalıcı kurallar (kullanıcının kararları)
+
+- Yanıtlar Türkçe ve ayrıntılı.
+- **Görseller:** Oyundaki bütün görseller ChatGPT'ye ürettirilir (yerel Claude, `gorsel/YEREL-CLAUDE-SIRA.md` ve `gorsel/CHATGPT-ISTEMI-*.md`).
+  Kodla çizilmiş görsel kalmaz; kod çizimi yalnız resim yüklenemezse yedek olarak durur. Bunu kullanıcının her seferinde söylemesine
+  gerek yoktur (25 Kasım 2026). Kesim: `python3 araclar/gorsel_kes.py --ek` (bütün ek paftalar; eski görsellere dokunmaz) ya da
+  `--ek R47 J02` (yalnız verilen paftalar; saniyeler sürer, bütün ek kesim artık dakikalar sürüyor).
+  **Bulut oturumu Codex CLI ile doğrudan üretir (kullanıcı, 28 Kasım 2026: "Codex ile GPT'ye doğrudan bağlan, daha az maliyetli"):**
+  `codex exec` görsel üretme aracı kullanıcının ChatGPT hesabıyla çalışır (API kredisi gerekmez). Paftalar için
+  `python3 araclar/codex_gorsel.py <KOD…>` (istem dosyasındaki blok + ekler). Mac penceresi yedek yol.
+  Eski yol `araclar/chatgpt_uret.py` (OpenAI Images API) kredi yoksa `credit_balance_exhausted` döner.
+- **İş bölümü (kullanıcı, 26 Kasım 2026):** "Hiçbir görseli sen hazırlama, tüm görsel işini ChatGPT'ye yaptır; sen yalnız
+  yönet ve kodlamayı yaptır, en verimli şekilde çalış; akıl yürütme Fable, kodlama uygun gördüğün modeller." Claude görsel
+  üretmez ya da çizmez (PIL, SVG, kod çizimi dahil). Yaptığı yalnız şunlar: ChatGPT istemini yazmak, gelen paftayı kesmek
+  ve oyuna bağlatmak. Akıl yürüten işler (şartname, inceleme, hata ayıklama planı) Fable modeliyle alt ajana verilir. Kod
+  Evren'e (deepseek-v4.1-flash, glm-5.3) ya da NVIDIA modellerine yazdırılır.
+- **Kod:** Oyun kodunu Evren yazar; Claude şartname, inceleme, sınama, commit ve belge işini yapar. Birkaç satırlık düzeltme doğrudan.
+  Evren hesabı aynı anda en çok 1 istek kabul eder (26 Kasım 2026 akşamı ölçüldü; ikinci istek "model yoğun" hatası alır).
+- **Yayın:** Kullanıcı açıkça **"yayınla"** demeden Play'e hiçbir şey yüklenmez, yayınlanmaz, incelemeye gönderilmez ("gönder",
+  "hazırla" yayın izni değildir).
+- Ses efektleri ElevenLabs ile; müzik Suno (kredi biterse ElevenLabs müzik).
+- Gizli anahtarlar hiçbir dosyaya, commit'e ya da sohbete yazılmaz.

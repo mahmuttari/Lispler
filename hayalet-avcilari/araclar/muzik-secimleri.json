@@ -1,0 +1,206 @@
+{
+ "kaynak": "https://claude.ai/artifact/9BgT6KKQ6i2PSSqX3kTTzj",
+ "tarih": "2026-11-27",
+ "secimler": {
+  "AF": {
+   "secim": "B",
+   "not": ""
+  },
+  "AO": {
+   "secim": "A",
+   "not": ""
+  },
+  "AR": {
+   "secim": "B",
+   "not": ""
+  },
+  "BD": {
+   "secim": "C",
+   "not": ""
+  },
+  "BR": {
+   "secim": "C",
+   "not": ""
+  },
+  "CA": {
+   "secim": "C",
+   "not": ""
+  },
+  "CD": {
+   "secim": "C",
+   "not": ""
+  },
+  "CI": {
+   "secim": "C",
+   "not": ""
+  },
+  "CN": {
+   "secim": "C",
+   "not": ""
+  },
+  "CO": {
+   "secim": "C",
+   "not": ""
+  },
+  "DE": {
+   "secim": "C",
+   "not": ""
+  },
+  "DZ": {
+   "secim": "B",
+   "not": ""
+  },
+  "EG": {
+   "secim": "C",
+   "not": ""
+  },
+  "ES": {
+   "secim": "B",
+   "not": ""
+  },
+  "ET": {
+   "secim": "B",
+   "not": ""
+  },
+  "FR": {
+   "secim": "B",
+   "not": ""
+  },
+  "GB": {
+   "secim": "C",
+   "not": ""
+  },
+  "GH": {
+   "secim": "B",
+   "not": ""
+  },
+  "ID": {
+   "secim": "A",
+   "not": ""
+  },
+  "IN": {
+   "secim": "B",
+   "not": ""
+  },
+  "IQ": {
+   "secim": "A",
+   "not": ""
+  },
+  "IR": {
+   "secim": "A",
+   "not": ""
+  },
+  "IT": {
+   "secim": "C",
+   "not": ""
+  },
+  "JP": {
+   "secim": "A",
+   "not": ""
+  },
+  "KE": {
+   "secim": "B",
+   "not": ""
+  },
+  "KR": {
+   "secim": "A",
+   "not": ""
+  },
+  "MA": {
+   "secim": "C",
+   "not": ""
+  },
+  "MG": {
+   "secim": "B",
+   "not": ""
+  },
+  "MM": {
+   "secim": "A",
+   "not": ""
+  },
+  "MX": {
+   "secim": "C",
+   "not": ""
+  },
+  "MY": {
+   "secim": "B",
+   "not": ""
+  },
+  "MZ": {
+   "secim": "C",
+   "not": ""
+  },
+  "NG": {
+   "secim": "C",
+   "not": ""
+  },
+  "PE": {
+   "secim": "B",
+   "not": "Ritim 95 altına düşmesin seçtiğim"
+  },
+  "PH": {
+   "secim": "C",
+   "not": ""
+  },
+  "PK": {
+   "secim": "B",
+   "not": ""
+  },
+  "PL": {
+   "secim": "B",
+   "not": ""
+  },
+  "PS": {
+   "secim": "B",
+   "not": ""
+  },
+  "RU": {
+   "secim": "B",
+   "not": ""
+  },
+  "SA": {
+   "secim": "B",
+   "not": ""
+  },
+  "SD": {
+   "secim": "B",
+   "not": ""
+  },
+  "TH": {
+   "secim": "B",
+   "not": ""
+  },
+  "TZ": {
+   "secim": "C",
+   "not": ""
+  },
+  "UA": {
+   "secim": "C",
+   "not": ""
+  },
+  "UG": {
+   "secim": "B",
+   "not": ""
+  },
+  "US": {
+   "secim": "B",
+   "not": ""
+  },
+  "UZ": {
+   "secim": "C",
+   "not": ""
+  },
+  "VN": {
+   "secim": "C",
+   "not": ""
+  },
+  "YE": {
+   "secim": "A",
+   "not": ""
+  },
+  "ZA": {
+   "secim": "B",
+   "not": ""
+  }
+ }
+}

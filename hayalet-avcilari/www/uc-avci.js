@@ -207,15 +207,26 @@ function silahKur(charKey) {
 // Kinkin'in enerji tabancası (gümüş gövde, camgöbeği parlayan çekirdek). Namlu yerel -Y yönünde;
 // kol nişanda -Y'yi +Z'ye çevirdiği için silah ileri (baktığı yön) bakar. Boy yaklaşık baş genişliği.
 function kinkinSilahKur() {
+  // Hedef görünüm gorsel/s3-kinkin.webp: tombul gümüş gövde, kalın namlu kovanı, önde camgöbeği mercek,
+  // yanlarda parlayan pencere, koyu gri eğik kabza. Yerel +Z nişanda yukarı, -Z aşağıdır (kabza oraya iner).
   const g = grup();
-  g.add(konturla(kutu(8, 28, 10, "#cfd8e3", 0, -15, 0)));        // gövde/namlu (baş kadar uzun)
-  g.add(kutu(7, 10, 8, "#4b5563", 0, 1, -1));                    // kabza (el içinde)
-  g.add(kutu(3, 20, 11, "#22d3ee", 0, -15, 0, "#22d3ee"));        // parlayan çekirdek şeridi
-  g.add(kutu(2, 4, 12, "#e5e7eb", 0, -2, 0));                     // nişangâh
-  g.add(kutu(9, 3, 5, "#94a3b8", 0, -28, 0));                     // namlu ağzı
-  g.add(kutu(2.4, 2.4, 2.4, "#a5f3fc", 0, -27, 0, "#67e8f9"));
+  const gumus = "#c3ccd8", gri = "#8590a1", koyuGri = "#4b5262";
+  yapi()
+    .ekle(YG.kutu(5.6, 7.5, 13, 0.4, 2), koyuGri, 0, -0.6, -3, { r: [0.3, 0, 0], kontur: 0.8 })   // kabza (el içinde)
+    .ekle(YG.kutu(7, 17, 8.4, 0.4, 2), gumus, 0, -10.5, 4.6)                                         // gövde
+    .ekle(YG.kutu(6, 4, 7.4, 0.4, 2), gri, 0, -1.4, 4.8, { kontur: 0 })                            // arka kapak
+    .ekle(YG.kutu(2.2, 6.5, 2, 0.4, 1), gri, 0, -7.5, -0.4, { kontur: 0 })                           // tetik korkuluğu
+    .ekle(YG.silindir(1, 1, 12), gumus, 0, -20, 4.6, { s: [5.2, 8, 5.2] })                           // namlu kovanı
+    .ekle(YG.silindir(1, 1, 12), gri, 0, -24.4, 4.6, { s: [5.7, 2.2, 5.7] })                         // namlu bileziği
+    .bitir(g);
+  const isik = yapi()
+    .ekle(YG.kutu(7.7, 7, 3.4, 0.35, 1), "#22d3ee", 0, -10.5, 5, { kontur: 0 })                      // yan pencereler
+    .ekle(YG.kutu(3, 11, 1.6, 0.35, 1), "#22d3ee", 0, -10.5, 8.4, { kontur: 0 })                     // üstte parlayan şerit
+    .ekle(YG.silindir(1, 1, 12), "#67e8f9", 0, -25.4, 4.6, { s: [4.1, 0.9, 4.1], kontur: 0 })        // ön mercek
+    .bitir(g, 1, _isikMalzemeAl());
+  isik.name = "isik";
   const namlu = new THREE.Object3D();
-  namlu.position.set(0, -31, 0);
+  namlu.position.set(0, -27, 4.6);
   g.add(namlu);
   return { grup: g, namlu };
 }
@@ -683,10 +694,362 @@ function bacakCiz(g, renk, K, r) {
   }
 }
 
+// ===== Yumuşak model kurucusu (3D1: yeniden kurulan Kinkin) =====
+// Bir eklemin bütün parçaları tek geometride birleştirilir (renk köşe renginde), kontur da tek kabuktur.
+// Böylece çizim çağrısı azalır; üçgenler kutu köşelerine değil yuvarlak yüzeylere harcanır.
+let _rampaYumusak = null;
+function rampaYumusakAl() {
+  if (_rampaYumusak) return _rampaYumusak;
+  const kademe = [96, 122, 168, 214, 242, 255]; // ilk yarı ışığa arka yüz; geçişler 3 kademeliden yumuşak
+  const d = new Uint8Array(kademe.length * 4);
+  kademe.forEach((v, i) => { d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v; d[i * 4 + 3] = 255; });
+  _rampaYumusak = new THREE.DataTexture(d, kademe.length, 1, THREE.RGBAFormat);
+  _rampaYumusak.minFilter = THREE.NearestFilter;
+  _rampaYumusak.magFilter = THREE.NearestFilter;
+  _rampaYumusak.generateMipmaps = false;
+  _rampaYumusak.needsUpdate = true;
+  return _rampaYumusak;
+}
+// Işık saçan parçalar (silah merceği): gölge almaz, köşe renginde.
+let _isikMalzeme = null;
+function _isikMalzemeAl() {
+  if (!_isikMalzeme) _isikMalzeme = new THREE.MeshBasicMaterial({ vertexColors: true });
+  return _isikMalzeme;
+}
+let _toonKose = null;
+function toonKoseMalzeme() {
+  if (!_toonKose) _toonKose = new THREE.MeshToonMaterial({ vertexColors: true, gradientMap: rampaYumusakAl() });
+  return _toonKose;
+}
+// Kontur kabuğu için yumuşak normal: aynı konumdaki köşelerin normalleri toplanır (kabuk kenarlarda yırtılmaz).
+function yumusakNormal(g) {
+  if (g.userData.yn) return g.userData.yn;
+  const p = g.attributes.position, n = g.attributes.normal;
+  const toplam = new Map(), anahtarlar = new Array(p.count);
+  for (let i = 0; i < p.count; i++) {
+    const a = `${Math.round(p.getX(i) * 500)}|${Math.round(p.getY(i) * 500)}|${Math.round(p.getZ(i) * 500)}`;
+    anahtarlar[i] = a;
+    let t = toplam.get(a);
+    if (!t) { t = [0, 0, 0]; toplam.set(a, t); }
+    t[0] += n.getX(i); t[1] += n.getY(i); t[2] += n.getZ(i);
+  }
+  const yn = new Float32Array(p.count * 3);
+  for (let i = 0; i < p.count; i++) {
+    const t = toplam.get(anahtarlar[i]);
+    const u = Math.hypot(t[0], t[1], t[2]) || 1;
+    yn[i * 3] = t[0] / u; yn[i * 3 + 1] = t[1] / u; yn[i * 3 + 2] = t[2] / u;
+  }
+  g.userData.yn = yn;
+  return yn;
+}
+// Birim taban geometrileri (ölçek parça matrisinden gelir); hepsi önbellekte.
+const _tabanGeo = new Map();
+function tabanGeo(anahtar, kur) {
+  let g = _tabanGeo.get(anahtar);
+  if (!g) { g = kur(); _tabanGeo.set(anahtar, g); }
+  return g;
+}
+// Birim kürenin sıkı sınır köşeleri: 26 yön, küreyi içine alacak kadar (1,12) dışarıda. Küp köşesi 1,73 kat
+// dışarıda kalır; yuvarlak baş ve saç için kare boşa küçülür ve yöne göre boy oynar.
+function kureSinir(altY = -1) {
+  const sn = [];
+  for (let x = -1; x <= 1; x++) for (let y = -1; y <= 1; y++) for (let z = -1; z <= 1; z++) {
+    if (!x && !y && !z) continue;
+    const u = 1.12 / Math.hypot(x, y, z);
+    if (y * u >= altY - 0.6) sn.push(x * u, Math.max(altY, y * u), z * u);
+  }
+  return sn;
+}
+const YG = {
+  kure: (w = 14, h = 10) => tabanGeo(`k|${w}|${h}`, () => {
+    const g = new THREE.SphereGeometry(1, w, h);
+    g.userData.sinirYerel = kureSinir();
+    return g;
+  }),
+  // Üstten aci kadar inen küre kapağı (saç tabanı)
+  kapak: (w, h, aci) => tabanGeo(`p|${w}|${h}|${aci}`, () => {
+    const g = new THREE.SphereGeometry(1, w, h, 0, Math.PI * 2, 0, aci);
+    g.userData.sinirYerel = kureSinir(Math.cos(aci));
+    return g;
+  }),
+  kapsul: (r, boy, kenar = 10) => tabanGeo(`c|${r}|${boy}|${kenar}`, () => new THREE.CapsuleGeometry(r, boy, 2, kenar)),
+  silindir: (ust, alt, kenar = 12) => tabanGeo(`s|${ust}|${alt}|${kenar}`, () => new THREE.CylinderGeometry(ust, alt, 1, kenar)),
+  kutu: (w, h, d, oran = 0.3, parca = 2) => yuvarlakGeo(w, h, d, oran, parca),
+  yay: (aci) => tabanGeo(`y|${aci}`, () => new THREE.TorusGeometry(1, 0.2, 4, 7, aci)),
+  // Saç tutamı: damla kesitli, ucu sivri, +X'e doğru kıvrılan birim parça (taban 1, boy 1).
+  tutam: (buk = 0.4) => tabanGeo(`t|${buk}`, () => {
+    const profil = [[0, -0.12], [0.86, 0.02], [0.92, 0.34], [0.44, 0.74], [0, 1]].map(([x, y]) => new THREE.Vector2(x, y));
+    const g = new THREE.LatheGeometry(profil, 6);
+    const p = g.attributes.position;
+    for (let i = 0; i < p.count; i++) { const y = Math.max(0, p.getY(i)); p.setX(i, p.getX(i) + buk * y * y); }
+    g.computeVertexNormals();
+    // Dikiş ve uç köşelerinde normaller yumuşatılır (gölgede çizgi kalmaz)
+    const yn = yumusakNormal(g);
+    g.attributes.normal.array.set(yn);
+    // Sıkı sınır: geniş taban kutusu + dar uç (tek kutu, sivri ucun çevresinde boşluk bırakır)
+    const sn = [];
+    for (const x of [-1, 1 + buk * 0.2]) for (const yy of [-0.14, 0.45]) for (const z of [-1, 1]) sn.push(x, yy, z);
+    for (const x of [buk - 0.3, buk + 0.3]) for (const z of [-0.3, 0.3]) sn.push(x, 1.04, z);
+    g.userData.sinirYerel = sn;
+    return g;
+  }),
+};
+// Parça toplayıcı: ekle(...) ile parçalar yığılır, bitir(hedef) tek gövde + tek kontur ağı üretir.
+function yapi() {
+  const parcalar = [];
+  const y = {
+    // o.s: ölçek (sayı ya da [x,y,z]); o.r: Euler [x,y,z]; o.m: hazır Matrix4; o.kontur: 0 (yok) ya da kalınlık çarpanı
+    ekle(geo, renk, x = 0, yy = 0, z = 0, o = {}) {
+      let m = o.m;
+      if (!m) {
+        const s = o.s === undefined ? [1, 1, 1] : (typeof o.s === "number" ? [o.s, o.s, o.s] : o.s);
+        const e = o.r || [0, 0, 0];
+        m = new THREE.Matrix4().compose(new THREE.Vector3(x, yy, z),
+          new THREE.Quaternion().setFromEuler(new THREE.Euler(e[0], e[1], e[2])), new THREE.Vector3(s[0], s[1], s[2]));
+      }
+      parcalar.push({ geo, renk: new THREE.Color(renk), m, kontur: o.kontur === undefined ? 1 : o.kontur });
+      return y;
+    },
+    bitir(hedef, kalinlik = 1.05, malzeme) {
+      const birlestir = (liste, kabuk) => {
+        let kose = 0, dizin = 0;
+        for (const q of liste) { kose += q.geo.attributes.position.count; dizin += q.geo.index ? q.geo.index.count : q.geo.attributes.position.count; }
+        const pos = new Float32Array(kose * 3), nor = new Float32Array(kose * 3), col = kabuk ? null : new Float32Array(kose * 3);
+        const ind = kose > 65535 ? new Uint32Array(dizin) : new Uint16Array(dizin);
+        const v = new THREE.Vector3(), n = new THREE.Vector3(), nm = new THREE.Matrix3();
+        let ko = 0, io = 0;
+        for (const q of liste) {
+          const p = q.geo.attributes.position, gn = q.geo.attributes.normal, yn = kabuk ? yumusakNormal(q.geo) : null;
+          nm.getNormalMatrix(q.m);
+          for (let i = 0; i < p.count; i++) {
+            v.fromBufferAttribute(p, i).applyMatrix4(q.m);
+            if (kabuk) n.set(yn[i * 3], yn[i * 3 + 1], yn[i * 3 + 2]); else n.fromBufferAttribute(gn, i);
+            n.applyMatrix3(nm).normalize();
+            if (kabuk) v.addScaledVector(n, q.kontur * kalinlik);
+            const k = (ko + i) * 3;
+            pos[k] = v.x; pos[k + 1] = v.y; pos[k + 2] = v.z;
+            nor[k] = n.x; nor[k + 1] = n.y; nor[k + 2] = n.z;
+            if (col) { col[k] = q.renk.r; col[k + 1] = q.renk.g; col[k + 2] = q.renk.b; }
+          }
+          if (q.geo.index) { const gi = q.geo.index.array; for (let i = 0; i < gi.length; i++) ind[io + i] = gi[i] + ko; io += gi.length; }
+          else { for (let i = 0; i < p.count; i++) ind[io + i] = ko + i; io += p.count; }
+          ko += p.count;
+        }
+        const g = new THREE.BufferGeometry();
+        g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+        g.setAttribute("normal", new THREE.BufferAttribute(nor, 3));
+        if (col) g.setAttribute("color", new THREE.BufferAttribute(col, 3));
+        g.setIndex(new THREE.BufferAttribute(ind, 1));
+        g.computeBoundingBox();
+        g.computeBoundingSphere();
+        if (kabuk) { g.userData.sinir = new Float32Array(0); return g; } // kabuğun payı gövde köşelerine eklendi
+        // Sınır köşeleri: her parçanın kendi kutusu (kontur payıyla), parça matrisiyle
+        const sinir = [];
+        for (const q of liste) {
+          if (!q.geo.boundingBox) q.geo.computeBoundingBox();
+          const bb = q.geo.boundingBox, pay = q.kontur * kalinlik;
+          const orta = bb.getCenter(new THREE.Vector3()).applyMatrix4(q.m);
+          let yerel = q.geo.userData.sinirYerel; // geometri kendi sıkı köşelerini verebilir (saç tutamı)
+          if (!yerel) {
+            yerel = [];
+            for (const cx of [bb.min.x, bb.max.x]) for (const cy of [bb.min.y, bb.max.y]) for (const cz of [bb.min.z, bb.max.z]) yerel.push(cx, cy, cz);
+          }
+          for (let i = 0; i < yerel.length; i += 3) {
+            v.set(yerel[i], yerel[i + 1], yerel[i + 2]).applyMatrix4(q.m);
+            if (pay > 0) { n.copy(v).sub(orta); const u = n.length() || 1; v.addScaledVector(n, pay * 1.75 / u); } // köşede pay √3 kat
+            sinir.push(v.x, v.y, v.z);
+          }
+        }
+        g.userData.sinir = new Float32Array(sinir);
+        return g;
+      };
+      const mesh = new THREE.Mesh(birlestir(parcalar, false), malzeme || toonKoseMalzeme());
+      hedef.add(mesh);
+      const konturlu = parcalar.filter((q) => q.kontur > 0);
+      if (konturlu.length) {
+        if (!_konturMalzeme) _konturMalzeme = new THREE.MeshBasicMaterial({ color: new THREE.Color("#1b1030"), side: THREE.BackSide });
+        mesh.add(new THREE.Mesh(birlestir(konturlu, true), _konturMalzeme));
+      }
+      return mesh;
+    },
+  };
+  return y;
+}
+
+// Kinkin'in yeniden kurulan modeli (hedef görünüm: gorsel/kart-kinkin.webp ve k3-kinkin-0-*.webp).
+// İri yuvarlak baş, dağınık sivri kahverengi saç, mavi tulum (açık omuzluk ve kıvrık kol ağzı), kahverengi kemer ve
+// keseler, lacivert kargo pantolon, kalın gri bot. Eklem adları ve eksenleri ortak iskeletle aynıdır (canlandir).
+function kinkinIskelet(costumeIdx, gunKey) {
+  const r = renkler("kinkin", costumeIdx);
+  const K = KARAKTER_3D.kinkin;
+  const ten = r.skin, ust = r.body, sac = r.hair;
+  const ustKoyu = koyu(ust, 0.2), acikMavi = acik(ust, 0.3);
+  const pant = karistir(ust, "#1b1a4a", 0.42), pantKoyu = koyu(pant, 0.22);
+  const kemer = "#5b3a21", kese = "#74482a", keseKoyu = "#4e3019", toka = "#cfd6e0";
+  const bot = "#544e5a", botKoyu = "#2f2b34", botAcik = "#6d6672", kayis = "#b3b9c6";
+  const sacAcik = acik(sac, 0.16), sacKoyu = koyu(sac, 0.2);
+
+  const kok = grup();
+  const kalca = grup(0, 32, 0); kok.add(kalca);
+  const govde = grup(); kalca.add(govde);
+  yapi().ekle(YG.kutu(23, 10, 15, 0.45, 2), pant, 0, -3, 0, { kontur: 0 }).bitir(kalca); // kalça (bacak başlarını örter)
+
+  // Gövde: tulum üstü, yaka, fermuar, omuzluklar, kemer ve keseler
+  const gv = yapi();
+  gv.ekle(YG.kutu(25, 27, 16.5, 0.42, 3), ust, 0, 14.5, 0);
+  gv.ekle(YG.silindir(1, 1, 10), ten, 0, 28, 0, { s: [5.6, 4, 5.6], kontur: 0 });                 // boyun
+  gv.ekle(YG.kutu(9, 6, 5, 0.4, 1), ustKoyu, -5.2, 27.2, 4.6, { r: [0.25, 0.35, 0.45], kontur: 0 }); // dik yaka (iki kanat)
+  gv.ekle(YG.kutu(9, 6, 5, 0.4, 1), ustKoyu, 5.2, 27.2, 4.6, { r: [0.25, -0.35, -0.45], kontur: 0 });
+  gv.ekle(YG.kutu(12, 5, 5, 0.4, 1), ustKoyu, 0, 27, -5.2, { kontur: 0 });
+  gv.ekle(YG.kutu(1.5, 20, 1.2, 0.3, 1), acikMavi, 0, 15, 8.2, { kontur: 0 });                     // fermuar
+  for (const yon of [-1, 1]) {
+    gv.ekle(YG.kutu(1, 16, 1, 0.3, 1), ustKoyu, yon * 6.5, 15, 8.15, { r: [0, 0, yon * 0.1], kontur: 0 }); // dikişler
+    gv.ekle(YG.kutu(9.6, 4.6, 12.4, 0.45, 2), acikMavi, yon * 12.6, 26, 0, { r: [0, 0, -yon * 0.32] });    // omuzluk
+    gv.ekle(YG.kutu(8, 1.4, 10.6, 0.45, 1), acik(acikMavi, 0.28), yon * 13.2, 28.1, 0, { r: [0, 0, -yon * 0.32], kontur: 0 });
+  }
+  gv.ekle(YG.kutu(26.4, 4.8, 17.8, 0.4, 2), kemer, 0, 1.6, 0, { kontur: 0 });
+  gv.ekle(YG.kutu(6.4, 5.6, 1.8, 0.25, 1), toka, 0, 1.6, 8.8, { kontur: 0 });
+  gv.ekle(YG.kutu(3.2, 2.6, 2, 0.25, 1), "#7b8494", 0, 1.6, 9.1, { kontur: 0 });
+  gv.ekle(YG.kutu(8.6, 8.4, 5.4, 0.35, 2), kese, -9, 0.2, 9.2, { kontur: 0.8 });                   // ön kese
+  gv.ekle(YG.kutu(9, 3.4, 5.8, 0.4, 1), keseKoyu, -9, 3.2, 9.3, { kontur: 0 });
+  gv.ekle(YG.kutu(1.6, 1.6, 1, 0.3, 1), toka, -9, 1.6, 12.3, { kontur: 0 });
+  gv.ekle(YG.kutu(5.4, 8, 8.4, 0.35, 2), kese, 13.4, 0.4, -1.5, { kontur: 0 });                  // yan kese
+  gv.ekle(YG.kutu(5.8, 3.2, 8.8, 0.4, 1), keseKoyu, 13.5, 3.2, -1.5, { kontur: 0 });
+  gv.bitir(govde);
+
+  // Baş: yuvarlak kafa, kulaklar, burun, kaş, gülümseme, yanak
+  const bas = grup(0, 28, 5); govde.add(bas); // öne alındı: kalkık başın ağırlığı gövdenin üstünde kalsın
+  bas.rotation.x = -0.26; // kamera yukarıdan bakar: yüz görünsün diye baş hafif kalkık
+  const BM = [0, 20, 0], BR = [21, 19.6, 19.6]; // baş merkezi ve yarıçapları
+  const yuzZ = (x, y) => BM[2] + BR[2] * Math.sqrt(Math.max(0.05, 1 - (x / BR[0]) ** 2 - ((y - BM[1]) / BR[1]) ** 2));
+  const bs = yapi();
+  bs.ekle(YG.kure(18, 11), ten, BM[0], BM[1], BM[2], { s: BR });
+  const tenGolge = karistir(ten, "#d9906f", 0.4);
+  for (const yon of [-1, 1]) {
+    bs.ekle(YG.kure(8, 6), ten, yon * 20.6, 17.5, -1, { s: [3.4, 5, 3.2], kontur: 0 });          // kulak
+    bs.ekle(YG.kure(6, 4), tenGolge, yon * 21.8, 17.5, -0.4, { s: [2, 3, 1.8], kontur: 0 });
+    bs.ekle(YG.kutu(9, 3, 2.4, 0.45, 2), sacKoyu, yon * 8.4, 25.3, yuzZ(8.4, 25.3) + 0.1,
+      { r: [-0.3, yon * 0.42, yon * 0.3], kontur: 0 });                                            // kararlı kaş
+    bs.ekle(YG.kure(8, 4), karistir(ten, "#f2928c", 0.4), yon * 13.2, 13.6, yuzZ(13.2, 13.6) - 0.5,
+      { s: [3.3, 2, 0.9], r: [0.3, yon * 0.7, 0], kontur: 0 });                                    // hafif yanak
+  }
+  bs.ekle(YG.kure(6, 4), tenGolge, 0, 16, yuzZ(0, 16) - 0.3, { s: [1.7, 1.4, 1.5], kontur: 0 });   // burun
+  bs.ekle(YG.yay(2.3), "#7a2f1c", 0.8, 14.6, yuzZ(0.8, 11.4) + 0.2,
+    { s: [4.2, 4.2, 4.6], r: [0.35, 0, -Math.PI / 2 - 1.15 + 0.12], kontur: 0 });                    // tek yana kalkık gülümseme
+  bs.bitir(bas);
+
+  // Gözler ayrı ağ: canlandir göz kırpmada scale.y'yi kısar
+  const gozler = [];
+  for (const yon of [-1, 1]) {
+    const gx = 8.3, gy = 19.2;
+    const g = yapi()
+      .ekle(YG.kure(10, 6), "#ffffff", 0, 0, 0, { s: [4.5, 5.6, 1.1], kontur: 0 })
+      .ekle(YG.kure(10, 6), "#2a160d", yon * 0.5, -0.2, 0.6, { s: [3.6, 4.9, 1], kontur: 0 })
+      .bitir(bas);
+    g.add(new THREE.Mesh(YG.kure(6, 4), parlakMalzeme("#ffffff")));
+    g.children[0].scale.set(1.25, 1.5, 0.5);
+    g.children[0].position.set(yon * 0.5 - 1.2, 1.8, 1.35);
+    g.position.set(yon * gx, gy, yuzZ(gx, gy) - 0.55);
+    g.rotation.y = yon * 0.4;
+    gozler.push(g);
+  }
+
+  // Saç: arkaya yatık kapak + tepeden dışa savrulan sivri tutamlar + alna düşen kâkül (tek ağ, tek kontur)
+  const sc = yapi();
+  sc.ekle(YG.kapak(16, 6, 1.72), sac, 0, 21.2, -0.4, { s: [22.4, 21, 21.4], r: [-0.42, 0, 0] });
+  const SM = new THREE.Vector3(0, 21, 0);
+  const _X = new THREE.Vector3(), _Y = new THREE.Vector3(), _Z = new THREE.Vector3(), _d = new THREE.Vector3();
+  // az: 0 ön (+Z), 90 = +X; yuk: yükseklik açısı. savur: büyüme yönüne eklenen vektör; buk: ucun kıvrıldığı yön.
+  const tutam = (az, yuk, boy, en, o = {}) => {
+    const a = az * Math.PI / 180, e = yuk * Math.PI / 180;
+    _d.set(Math.sin(a) * Math.cos(e), Math.sin(e), Math.cos(a) * Math.cos(e));
+    const taban = new THREE.Vector3(_d.x * 22.4, _d.y * 21, _d.z * 21.4).multiplyScalar(o.gomme || 0.8).add(SM);
+    const sv = o.savur || [0, 0, 0], donme = o.donme === undefined ? 0.35 : o.donme;
+    _Y.set(_d.x + sv[0] + Math.cos(a) * donme, _d.y + sv[1], _d.z + sv[2] - Math.sin(a) * donme).normalize();
+    const b = o.buk || [0, -1, 0];
+    _X.set(b[0], b[1], b[2]); _X.addScaledVector(_Y, -_X.dot(_Y));
+    if (_X.lengthSq() < 1e-4) _X.set(1, 0, 0).addScaledVector(_Y, -_Y.x);
+    _X.normalize(); _Z.crossVectors(_X, _Y);
+    const m = new THREE.Matrix4().makeBasis(_X.clone().multiplyScalar(en), _Y.clone().multiplyScalar(boy), _Z.clone().multiplyScalar(en * (o.yassi || 0.72)));
+    m.setPosition(taban);
+    sc.ekle(YG.tutam(o.k === undefined ? 0.4 : o.k), o.renk || sac, 0, 0, 0, { m, kontur: o.kontur === undefined ? 1 : o.kontur });
+  };
+  // Tepe: öne-yana kıvrılan büyük tutam ve çevresinde fırıldak gibi yatan dörtlü
+  tutam(15, 74, 12.5, 8.4, { savur: [0.7, -0.1, 0.6], buk: [1, -0.5, 0.6], k: 0.6, renk: sacAcik, donme: 0 });
+  [[70, 56, 11.5, 8.2], [150, 58, 12, 8.6], [225, 58, 12, 8.6], [300, 56, 11.5, 8.2]]
+    .forEach(([az, yuk, boy, en], i) => tutam(az, yuk, boy, en, { donme: 0.9, k: 0.5, renk: i % 2 ? sac : sacAcik }));
+  // Orta halka: yanlara ve arkaya çıkan sivri uçlar (siluetin dikenleri)
+  [[68, 22, 12, 8.2], [108, 26, 13, 8.6], [148, 20, 11.5, 8.8], [180, 28, 11, 8.8], [212, 20, 11.5, 8.8],
+    [252, 26, 13, 8.6], [292, 22, 12, 8.2]]
+    .forEach(([az, yuk, boy, en], i) => tutam(az, yuk, boy, en, { savur: [0, 0.15, 0], donme: 0.55, k: 0.5, renk: i % 3 === 1 ? sacAcik : sac }));
+  // Ense: aşağı sarkan kısa uçlar
+  [[130, -8, 9.5, 7.6], [180, -6, 10, 8], [230, -8, 9.5, 7.6]]
+    .forEach(([az, yuk, boy, en]) => tutam(az, yuk, boy, en, { savur: [0, -0.75, 0], buk: [0, -1, 0], k: 0.3, renk: sacKoyu, donme: 0.15 }));
+  for (const yon of [-1, 1]) // favoriler
+    tutam(yon * 74, 6, 9, 4.6, { savur: [0, -1.3, 0.25], buk: [0, 0, 1], k: 0.25, renk: sacKoyu, donme: 0, gomme: 0.9, kontur: 0 });
+  // Kâkül: alnın üstünden +X'e taranmış, uçları aşağı bakan üç tutam
+  [[-30, 52, 9.5, 7.6, sac], [0, 56, 10.5, 8.4, sacAcik], [30, 52, 9.5, 7.6, sac]]
+    .forEach(([az, yuk, boy, en, renk]) => tutam(az, yuk, boy, en,
+      { savur: [0.5, -1.5, 0.3], buk: [1, -0.4, 0], k: 0.45, renk, donme: 0, gomme: 0.9, yassi: 0.6, kontur: 0 }));
+  sc.bitir(bas);
+  if (K.basAksesuar && costumeIdx === 1) { // Pembe Prenses tacı: tutamların üstünde dursun
+    const tac = grup(0, 4.5, -1); bas.add(tac);
+    K.basAksesuar(tac, r, costumeIdx);
+  }
+
+  // Kollar: kısa tulum kolu, açık kıvrık kol ağzı, çıplak ön kol, yumruk
+  const kolKur = (yon) => {
+    const omuz = grup(yon * 15, 24, 0); govde.add(omuz);
+    const kol = grup(); omuz.add(kol);
+    yapi()
+      .ekle(YG.kapsul(4.7, 7, 8), ust, 0, -5, 0)
+      .ekle(YG.silindir(1, 1, 8), acikMavi, 0, -10.4, 0, { s: [5.5, 3.8, 5.5], kontur: 0 })
+      .ekle(YG.kapsul(3.9, 6.5, 8), ten, 0, -15.2, 0)
+      .bitir(kol);
+    const el = grup(0, -20, 0); kol.add(el);
+    yapi()
+      .ekle(YG.kure(10, 6), ten, 0, -2.4, 0, { s: [5, 5.2, 5.2] })
+      .bitir(el);
+    return { omuz, kol, el };
+  };
+  const sag = kolKur(1), sol = kolKur(-1);
+  const silah = (gunKey && silahDukkanKur(gunKey)) || kinkinSilahKur();
+  sag.el.add(silah.grup);
+
+  // Bacaklar: bol kargo pantolon, cep, kalın bot (konç, burun, taban, kayış)
+  const bacakKur = (yon) => {
+    const b = grup(yon * 7, 0, 0); kalca.add(b);
+    yapi()
+      .ekle(YG.kutu(11, 19, 12, 0.42, 3), pant, 0, -8.5, 0)
+      .ekle(YG.kutu(11.8, 5, 12.8, 0.45, 2), pant, 0, -17, 0.2, { kontur: 0 })                                   // bota giren büzgü
+      .ekle(YG.kutu(2.4, 7, 7.4, 0.35, 1), pantKoyu, yon * 5.2, -9.5, 0.2, { kontur: 0 })        // kargo cebi
+      .ekle(YG.kutu(2.8, 2.4, 7.8, 0.4, 1), pant, yon * 5.3, -6.6, 0.2, { kontur: 0 })
+      .ekle(YG.kutu(11.2, 9, 12, 0.35, 2), bot, 0, -22.6, 0.3)                                     // konç
+      .ekle(YG.kutu(12, 8.4, 17.6, 0.46, 3), bot, 0, -26.6, 2.6)                                   // burun
+      .ekle(YG.kutu(10.4, 4, 7, 0.5, 1), botAcik, 0, -24.4, 7.6, { kontur: 0 })                    // burun parlaması
+      .ekle(YG.kutu(12.8, 3, 18.6, 0.4, 2), botKoyu, 0, -30.5, 2.6, { kontur: 0 })                                // taban
+      .ekle(YG.kutu(11.9, 2.4, 12.7, 0.3, 1), kayis, 0, -20.4, 0.3, { kontur: 0 })               // konç kayışı
+      .ekle(YG.kutu(3.4, 3.2, 1.4, 0.3, 1), "#7b8494", 0, -20.4, 6.6, { kontur: 0 })
+      .bitir(b);
+    return b;
+  };
+  const bacakSag = bacakKur(1), bacakSol = bacakKur(-1);
+
+  return {
+    kok, kalca, govde, bas, gozler, namlu: silah.namlu,
+    omuzSag: sag.omuz, kolSag: sag.kol, elSag: sag.el, omuzSol: sol.omuz, kolSol: sol.kol, elSol: sol.el, bacakSag, bacakSol,
+    silahGrup: silah.grup,
+    silahOk: silah.ok || null,
+    silahAci: silah.dinlen !== undefined ? { dinlen: silah.dinlen, nisan: silah.nisan || 0 } : null,
+    silahDunya: silah.silahDunya || null,
+  };
+}
+
 // (karakter, kostüm) iskeleti: kok → kalca → govde → bas, govde → omuz → kol → el, kalca → bacak.
 // Ortak gövde/baş/kol/bacak burada kurulur; karaktere özel saç, başlık, kıyafet ve silah KARAKTER_3D'den gelir.
 function iskelet(charKey, costumeIdx, gunKey) {
   if (charKey === "bot") return botIskelet();
+  if (charKey === "kinkin") return kinkinIskelet(costumeIdx, gunKey);
   const r = renkler(charKey, costumeIdx);
   const K = KARAKTER_3D[charKey] || KARAKTER_3D.kinkin;
   const kolRenk = K.kolRenk ? K.kolRenk(r) : koyu(r.body, 0.2);   // kollar biraz koyu
@@ -1251,6 +1614,35 @@ function canlandir(rig, d, o, dt, simdi) {
   for (const goz of rig.gozler) goz.scale.y = kirp;
 }
 
+// Modelin kameradaki (NDC) sınırı: her ağın kutu köşeleri yansıtılır. Birleştirilmiş ağlar (yapi) parça parça
+// kendi köşelerini userData.sinir'de taşır; tek büyük kutudan sıkıdır, model karede boşa küçülmez.
+const _sinirKose = new THREE.Vector3();
+function ekranSinir(kok) {
+  const kose = _sinirKose;
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  const isle = () => {
+    kose.project(kamera);
+    if (kose.x < minX) minX = kose.x; if (kose.x > maxX) maxX = kose.x;
+    if (kose.y < minY) minY = kose.y; if (kose.y > maxY) maxY = kose.y;
+  };
+  kok.traverse((parca) => {
+    if (!parca.isMesh || !parca.visible) return;
+    const g = parca.geometry;
+    const sinir = g.userData.sinir;
+    if (sinir) {
+      for (let i = 0; i < sinir.length; i += 3) { kose.set(sinir[i], sinir[i + 1], sinir[i + 2]).applyMatrix4(parca.matrixWorld); isle(); }
+      return;
+    }
+    if (!g.boundingBox) g.computeBoundingBox();
+    const bb = g.boundingBox;
+    if (!bb) return;
+    for (const cx of [bb.min.x, bb.max.x]) for (const cy of [bb.min.y, bb.max.y]) for (const cz of [bb.min.z, bb.max.z]) {
+      kose.set(cx, cy, cz).applyMatrix4(parca.matrixWorld); isle();
+    }
+  });
+  return { minX, maxX, minY, maxY };
+}
+
 function boyutAyarla(n) {
   if (tuvalBoyut === n) return;
   tuvalBoyut = n;
@@ -1395,20 +1787,7 @@ function modelPise(charKey, costumeIdx, gunKey, dir, poz, kare, nisan, boyut, sR
   kamera.zoom = 1;
   kamera.updateProjectionMatrix();
   kamera.updateMatrixWorld();
-  const kose = new THREE.Vector3();
-  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-  rig.kok.traverse((parca) => {
-    if (!parca.isMesh || !parca.visible) return;
-    const g = parca.geometry;
-    if (!g.boundingBox) g.computeBoundingBox();
-    const bb = g.boundingBox;
-    if (!bb) return;
-    for (const cx of [bb.min.x, bb.max.x]) for (const cy of [bb.min.y, bb.max.y]) for (const cz of [bb.min.z, bb.max.z]) {
-      kose.set(cx, cy, cz).applyMatrix4(parca.matrixWorld).project(kamera);
-      if (kose.x < minX) minX = kose.x; if (kose.x > maxX) maxX = kose.x;
-      if (kose.y < minY) minY = kose.y; if (kose.y > maxY) maxY = kose.y;
-    }
-  });
+  const { minX, maxX, minY, maxY } = ekranSinir(rig.kok);
   const yari = Math.max(Math.abs(minX), Math.abs(maxX), Math.abs(minY), Math.abs(maxY), 1e-3);
   kamera.zoom = Math.min(8, Math.max(0.05, 0.84 / yari));
   kamera.updateProjectionMatrix();
@@ -1609,20 +1988,7 @@ function ciz(ctx, o) {
   kamera.zoom = 1;
   kamera.updateProjectionMatrix();
   kamera.updateMatrixWorld();
-  const kose = new THREE.Vector3();
-  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-  rig.kok.traverse((parca) => {
-    if (!parca.isMesh || !parca.visible) return;
-    const g = parca.geometry;
-    if (!g.boundingBox) g.computeBoundingBox();
-    const bb = g.boundingBox;
-    if (!bb) return;
-    for (const cx of [bb.min.x, bb.max.x]) for (const cy of [bb.min.y, bb.max.y]) for (const cz of [bb.min.z, bb.max.z]) {
-      kose.set(cx, cy, cz).applyMatrix4(parca.matrixWorld).project(kamera);
-      if (kose.x < minX) minX = kose.x; if (kose.x > maxX) maxX = kose.x;
-      if (kose.y < minY) minY = kose.y; if (kose.y > maxY) maxY = kose.y;
-    }
-  });
+  const { minX, maxX, minY, maxY } = ekranSinir(rig.kok);
   const yari = Math.max(Math.abs(minX), Math.abs(maxX), Math.abs(minY), Math.abs(maxY), 1e-3);
   kamera.zoom = Math.min(8, Math.max(0.05, 0.84 / yari)); // her yanda yaklaşık %8 pay
   kamera.updateProjectionMatrix();
@@ -1739,7 +2105,20 @@ const api = {
   ayar: _yavasAyar,
   _sayac: () => ({ render: _renderSay, bake: _bakeSay, onbellekSay: _onbellek.size, onbellekBayt: _onbellekBayt,
     isinmaKalan: _isinmaKuyruk.length, isinmaCalisiyor: _isinmaCalisiyor }),
-  _test: { ilkOyunCiz: (ms) => { _ilkOyunCizMs = Number(ms) || 0; } },
+  _test: {
+    ilkOyunCiz: (ms) => { _ilkOyunCizMs = Number(ms) || 0; },
+    // Modelin parça ve üçgen sayısı (kontur kabukları dahil); başarım karşılaştırması için.
+    modelSay: (charKey, costumeIdx, gunKey) => {
+      const o = { parca: 0, ucgen: 0, geo: new Set(), malzeme: new Set() };
+      rigAl(charKey, costumeIdx || 0, gunKey || "").kok.traverse((m) => {
+        if (!m.isMesh) return;
+        const g = m.geometry;
+        o.parca++; o.ucgen += (g.index ? g.index.count : g.attributes.position.count) / 3;
+        o.geo.add(g.uuid); o.malzeme.add(m.material.uuid);
+      });
+      return { parca: o.parca, ucgen: o.ucgen, geo: o.geo.size, malzeme: o.malzeme.size };
+    },
+  },
 };
 window.UcAvci = api;
 try {

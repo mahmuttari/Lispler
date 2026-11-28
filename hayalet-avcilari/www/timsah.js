@@ -522,7 +522,11 @@ function timsahGezKareCiz(ctx, tm) {
     ctx.translate(0, yoff);
     const yuru = animHazir("timsah-yuru"), dur = animHazir("timsah-dur"), isir = animHazir("timsah-isir"), cik = animHazir("timsah-cik");
     if (faz === "isir") {
-      ok = isir ? animCiz(ctx, "timsah-isir", 1, -48, -42, 96, 48, true) : timsahKirpikKare(ctx, 4);
+      if (isir) ok = animCiz(ctx, "timsah-isir", 1, -48, -42, 96, 48, true);
+      else if (dur) { // K17'de ayrı ısırık karesi yok: ağzı açık bekleme karesi kısa bir öne atılmayla
+        const u = Math.min(1, (tm.ft || 0) / 0.3), at = timsahAzHareket() ? 0 : Math.sin(u * Math.PI) * 6;
+        ok = animCiz(ctx, "timsah-dur", 1, -48 + at, -42, 96, 48, true);
+      } else ok = timsahKirpikKare(ctx, 4);
     } else if ((faz === "cik" || faz === "gir") && cik) {
       ok = animCiz(ctx, "timsah-cik", 1 + (Math.floor((tm.ft || 0) * 8) % cik), -48, -42, 96, 48, true);
     } else if (yuru) {

@@ -6,12 +6,20 @@ kullanıcının artifact'ı: https://claude.ai/artifact/3gwhkL7g2QzNyaZWig83pt (
 
 **Play:** 3.21.0 (60) 28 Kasım'da kullanıcının "Yayınla" komutuyla üretime %100 yüklendi ve incelemeye gönderildi (koşu
 46129307100). 3.20.1 dalı (hayalet-3-20-1) bu dala birleştirildi. Sonraki sürüm: versionCode 61. Mağaza görselleri bu sürümde
-değişmedi (istenirse araclar/magaza-gorsel.mjs + `gorsel uygula`).
+değişmedi; 28 Kasım gecesi yenilendi (72be41c), yükleme için `gorsel uygula` kullanıcının "yayınla" komutunu bekliyor.
 
 ## Son oturum (28 Kasım 2026, gece; bulut)
 - **KLP1 bitti (77cd6e1):** çevrimiçi takım listesinde (`takimCiz`) canlar ❤️/🖤 emojisi yerine ChatGPT `kalp` resmiyle
   (boş can aynı resmin sönük hâli; resim yoksa emoji yedek, ölü oyuncu 👻). Sınama `test/kalp1.test.mjs` (5/5). Böylece
   CHATGPT-ISTEMI-UYUM.md K7'nin dört maddesi de bitti.
+- **CAN1 bitti (1bc8447):** ChatGPT can çerçevesinin (`ui-can-cubugu`) içi opak koyu oluk; dolgu çerçeveden önce
+  çizildiği için boss/hayalet/bot/oyuncu/pet can çubukları hep boş görünüyordu (3.21.0'da da böyle). Artık önce çerçeve,
+  sonra oluğun içine yuvarlak uçlu dolgu (`canCubuguCiz`; drawGhost da onu kullanıyor). Sınama `test/can1.test.mjs`.
+  Sonraki sürümle (versionCode 61) oyuncuya gider.
+- **Mağaza görselleri yenilendi (72be41c), Play'e YÜKLENMEDİ:** kullanıcı "Market görselleri eski kalmış, onları da
+  güncelle" dedi. `araclar/magaza-gorsel.mjs` yolculuk haritasına uyduruldu (oyuncu 1. bölgede, boss `spawnBoss` ile,
+  hikâye sahnesi kapalı, boss konumu içeride); 7 dilde 7 kare + tanıtım görseli üretildi ve tek tek gözle denetlendi.
+  Yükleme `play-istek.txt` içine `gorsel uygula` satırıyla yapılır; kullanıcı **"yayınla"** demeden yazılmaz.
 - **Deneme sayfası okunamadı:** bu bulut oturumundan `Artifact read` "artifact not found / not shared" döndü; sayfa başka bir
   hesaba ait ya da bu hesapla paylaşılmamış olabilir. Paket hazırlandı ve sınandı (`deneme_hazirla.py` + `deneme-sina.mjs`,
   hatalar []), ama aynı adrese yayımlanamadı. Kullanıcı sayfayı paylaşırsa ya da yeni sayfa isterse yayımlanacak.

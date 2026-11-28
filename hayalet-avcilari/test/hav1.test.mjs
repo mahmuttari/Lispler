@@ -40,8 +40,9 @@ async function sayfa(azHareket) {
       game.camera.x = Math.max(0, game.player.x - game.W / 2);
       game.camera.y = Math.max(0, game.player.y - game.H / 2);
     };
-    window.__bulutKur = () => { // gezgin bulutu hemen doğur
-      game.hava.bulutSayac = 0; havaGuncelle(1 / 30);
+    window.__bulutKur = () => { // bulutu hemen doğur (BLT1: kendiliğinden yalnız boss varken doğar; boss yenilince bu
+      // gezinti hareketiyle süzülüp gider, o hareket burada sınanır)
+      game.hava.bulut = null; havaBulutDogur(); havaGuncelle(1 / 30);
       return game.hava.bulut;
     };
   });
@@ -112,7 +113,7 @@ try {
   // Kod yolu: bulut/şimşek/çarpılma görselleri yokken de hatasız (resim çizilmez)
   const kodsuz = await p.evaluate(() => {
     __bolum(1);
-    for (const k of ['bulut', 'bulut-2', 'bulut-3', 'bulut-4', 'simsek-1', 'simsek-2', 'simsek-3']) { delete GORSEL[k]; delete GORSEL_LISTESI[k]; }
+    for (const k of ['bulut', 'bulut-2', 'bulut-3', 'bulut-4', 'simsek-1', 'simsek-2', 'simsek-3', 'yagmur-damla', 'su-halka']) { delete GORSEL[k]; delete GORSEL_LISTESI[k]; }
     // Çarpılma kareleri (an-carpilma-*) de yok sayılır; sayı önbelleği sıfırlanır
     for (let i = 1; i <= 6; i++) { delete GORSEL['an-carpilma-' + i]; delete GORSEL_LISTESI['an-carpilma-' + i]; }
     if (typeof _animSayi === 'object') delete _animSayi.carpilma;
@@ -155,12 +156,14 @@ try {
       simsekCak(bl2, null);
       const s = game.hava.simsekler[game.hava.simsekler.length - 1];
       simsekCiz(x, s);
+      var simsekResimsiz = s.resim === null; // BLT1: şimşek ince kod çizgisi, resim kullanılmaz
     } catch (e) { hata = e.message; }
     for (const k of ['bulut', 'bulut-2', 'bulut-3', 'bulut-4', 'simsek-1', 'simsek-2', 'simsek-3']) { delete GORSEL[k]; delete GORSEL_LISTESI[k]; }
-    return { hata, resim, resimSecildi: !!bl.resim };
+    return { hata, resim, resimSecildi: !!bl.resim, simsekResimsiz };
   });
-  sina('sahte görseller gelince bulut ve şimşek resimden çizilir', () => {
-    assert.equal(resimli.hata, null); assert.ok(resimli.resim >= 2, String(resimli.resim));
+  sina('sahte görseller gelince bulut resimden, şimşek ince kod çizgisiyle çizilir (BLT1)', () => {
+    assert.equal(resimli.hata, null); assert.ok(resimli.resim >= 1, String(resimli.resim));
+    assert.equal(resimli.simsekResimsiz, true);
   });
 
   const az = await sayfa(true);
@@ -209,7 +212,7 @@ try {
   const azYag = await az.evaluate(() => {
     startGame(); game.paused = true; game.ghosts = []; game.spawnTimer = -1e9; game.player.invuln = 1e9;
     game.bot = null; game.pet = null; havaKur();
-    game.hava.bulutSayac = 0; havaGuncelle(1 / 30);
+    havaBulutDogur(); havaGuncelle(1 / 30);
     const bl = game.hava.bulut; bl.sayac = 1e9;
     for (let i = 0; i < 60; i++) havaGuncelle(1 / 30);
     const d = bl.yagmur.damlalar;

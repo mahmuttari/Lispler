@@ -4,8 +4,8 @@
    bulutlar gezinsin. Bosun üzerinde."
    - Yarasalar: Yeşil Orman bölümlerinde arada bir 5–9 yarasalık sürü kamera görüşünün bir yanından öbürüne
      dalgalanarak uçar; çıkarken kısa bir cıvıltı.
-   - Fırtına bulutu: Uzay dışındaki bölümlerde (Dünya Turu dahil) arada bir görüşün bir yanından öbürüne süzülür, birkaç
-     saniyede bir şimşek çakar. Boss gelince bulut boss'un tepesine yerleşir, onu izler ve daha sık çakar.
+   - Fırtına bulutu (BLT1, 28 Kasım): yalnız boss varken, boss'un tepesinde (Uzay dışında; Dünya Turu dahil); onu izler ve
+     şimşek çakar. Boss yenilince çekip gider. Şimşek ince, çizgisel (kod çizimi; kalın resim kullanılmaz).
    - Yalnız görsel ve ses: kimseye zarar vermez, oyunu değiştirmez. Çevrimiçinde her cihaz kendi gökyüzünü çizer (boss
      herkeste aynı yerde olduğu için bulut da aynı yerde durur). "Hareketi azalt" tercihinde ekran parlaması yok.
    Sınama: test/hava.test.mjs.
@@ -122,15 +122,17 @@ function simsekCak(bulut, hedef) {
     if (typeof showFloat === "function") showFloat("⚡", vurulan.x, vurulan.y - 36 - (vurulan.r || 22));
     if (typeof audio !== "undefined" && typeof audio.zap === "function") audio.zap();
   }
+  // BLT1: ince, çizgisel şimşek (kullanıcı: "çok kalın, abartılı; daha ince, daha çizgisel"): daha çok kısa kırık, küçük sapma,
+  // iki ince yan dal. Kalın gerilmiş resim (simsek-*) artık kullanılmaz.
   const noktalar = [[x0, y0]];
-  const adim = 7;
+  const adim = 11;
   for (let i = 1; i < adim; i++) {
     const k = i / adim;
-    noktalar.push([x0 + (x1 - x0) * k + havaRast(-16, 16), y0 + (y1 - y0) * k + havaRast(-6, 6)]);
+    noktalar.push([x0 + (x1 - x0) * k + havaRast(-10, 10), y0 + (y1 - y0) * k + havaRast(-4, 4)]);
   }
   noktalar.push([x1, y1]);
-  const kol = noktalar.slice(2, 5).map(([x, y]) => [[x, y], [x + havaRast(-40, 40), y + havaRast(20, 50)]]);
-  h.simsekler.push({ noktalar, kol, omur: HAVA.simsekSure, resim: simsekResmiSec() });
+  const kol = [3, 6].map((i) => { const [x, y] = noktalar[i]; return [[x, y], [x + havaRast(-14, 14), y + havaRast(10, 20)], [x + havaRast(-30, 30), y + havaRast(26, 42)]]; });
+  h.simsekler.push({ noktalar, kol, omur: HAVA.simsekSure, resim: null });
   if (!havaAzHareket()) h.parlama = Math.max(h.parlama, 0.16);
   bulut.cakti = 0.25;
   if (typeof audio !== "undefined") {
@@ -140,6 +142,17 @@ function simsekCak(bulut, hedef) {
       else if (audio.noise) audio.noise(0.9, 0.12 * v);
     }, 140);
   }
+}
+
+// Fırtına bulutunu görüşün bir yanından doğurur (boss gelince; sınamalar da çağırır). Boss yoksa bulut süzülüp gider.
+function havaBulutDogur() {
+  const h = game.hava, cam = game.camera, W = game.W, H = game.H;
+  const soldan = Math.random() < 0.5;
+  h.bulut = { x: soldan ? cam.x - 140 : cam.x + W + 140, y: cam.y + havaRast(0.12, 0.3) * H, yon: soldan ? 1 : -1,
+    hiz: havaRast(HAVA.bulutHiz[0], HAVA.bulutHiz[1]), sayac: havaRast(1, 2.5), cakti: 0, tohum: Math.random() * 10,
+    resim: bulutResmiSec() };
+  bulutYagmurKur(h.bulut);
+  return h.bulut;
 }
 
 // update() her karede çağırır (kurucuda ve istemcide)
@@ -165,13 +178,9 @@ function havaGuncelle(dt) {
   const boss = tema.uzay ? null : havaBoss();
   if (!h.bulut && !tema.uzay) {
     h.bulutSayac -= dt;
-    if (boss || h.bulutSayac <= 0) {
-      const soldan = Math.random() < 0.5;
-      h.bulut = { x: soldan ? cam.x - 140 : cam.x + W + 140, y: cam.y + havaRast(0.12, 0.3) * H, yon: soldan ? 1 : -1,
-        hiz: havaRast(HAVA.bulutHiz[0], HAVA.bulutHiz[1]), sayac: havaRast(1, 2.5), cakti: 0, tohum: Math.random() * 10,
-        resim: bulutResmiSec() };
-      bulutYagmurKur(h.bulut);
-    }
+    // BLT1 (kullanıcı, 28 Kasım): "kara bulut yalnız boss'un bulunduğu bölümde, boss'un üzerinde olsun". Gezgin bulut kalktı;
+    // bulut yalnız boss varken doğar (boss yenilince çekip gider).
+    if (boss) havaBulutDogur();
   }
   const bl = h.bulut;
   if (bl) {
@@ -357,9 +366,9 @@ function simsekCiz(ctx, s) {
   const yol = (noktalar) => { ctx.beginPath(); ctx.moveTo(noktalar[0][0], noktalar[0][1]); for (const [x, y] of noktalar.slice(1)) ctx.lineTo(x, y); ctx.stroke(); };
   ctx.save();
   ctx.lineCap = "round"; ctx.lineJoin = "round";
-  ctx.strokeStyle = `rgba(253, 224, 71, ${0.35 * a})`; ctx.lineWidth = 9; yol(s.noktalar); // ışıltı
-  ctx.strokeStyle = `rgba(255, 255, 255, ${a})`; ctx.lineWidth = 3; yol(s.noktalar);
-  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = `rgba(186, 230, 253, ${0.3 * a})`; ctx.lineWidth = 3.5; yol(s.noktalar); // ince mavimsi ışıltı
+  ctx.strokeStyle = `rgba(255, 255, 255, ${a})`; ctx.lineWidth = 1.4; yol(s.noktalar);
+  ctx.strokeStyle = `rgba(255, 255, 255, ${0.75 * a})`; ctx.lineWidth = 0.8;
   for (const k of s.kol) yol(k);
   ctx.restore();
 }

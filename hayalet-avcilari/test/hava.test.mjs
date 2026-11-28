@@ -62,7 +62,8 @@ try {
   const tema = await p.evaluate(() => {
     const r = {};
     __bolum(2); r.ormanAdi = getTheme().name; r.orman = __ilerle(30); r.ormanSonu = game.hava.yarasalar.length;
-    __bolum(1); r.sato = __ilerle(30);
+    __bolum(1); r.sato = __ilerle(30); // BLT1: boss yokken bulut yok
+    spawnBoss(); r.satoBoss = __ilerle(20); game.ghosts = []; game.hava.bulut = null;
     __bolum(6); r.uzayAdi = getTheme().name;
     spawnBoss(); r.uzay = __ilerle(20);
     return r;
@@ -71,8 +72,10 @@ try {
     assert.equal(tema.ormanAdi, 'Yeşil Orman'); assert.ok(tema.orman.yarasaEnCok >= 5, String(tema.orman.yarasaEnCok));
     assert.ok(tema.ormanSonu <= 9, String(tema.ormanSonu));
   });
-  sina('Mor Şato\'da yarasa yok, gezgin fırtına bulutu ve şimşek var', () => {
-    assert.equal(tema.sato.yarasaEnCok, 0); assert.ok(tema.sato.bulutVar > 0); assert.ok(tema.sato.simsek >= 1);
+  // Kullanıcı (28 Kasım 2026): "kara bulut yalnız boss'un bulunduğu bölümde, boss'un üzerinde olsun; diğer bölümlerde olmasın"
+  sina('Mor Şato\'da yarasa yok; boss yokken bulut yok, boss gelince bulut ve şimşek var', () => {
+    assert.equal(tema.sato.yarasaEnCok, 0); assert.equal(tema.sato.bulutVar, 0); assert.equal(tema.sato.simsek, 0);
+    assert.ok(tema.satoBoss.bulutVar > 0); assert.ok(tema.satoBoss.simsek >= 1);
   });
   sina('Uzay\'da bulut yok (boss gelse de)', () => { assert.equal(tema.uzayAdi, 'Uzay'); assert.equal(tema.uzay.bulutVar, 0); });
 

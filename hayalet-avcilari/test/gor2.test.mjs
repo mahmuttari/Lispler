@@ -77,16 +77,25 @@ try {
     const z = game._yolculukDuzen.zones.find((q) => q._gecitDusmeler && q._gecitDusmeler.length);
     const d = z._gecitDusmeler[0];
     game.W = 600; game.H = 600; game.camera = { x: d.x - 300, y: d.y - 300 };
+    // SEL1: şelale dere rengine boyanır (boyalı kare tuval olarak çizilir); ham kare sınaması için boyama geçici kapatılır
+    const tonlar = { ...SELALE_TON }; for (const k in SELALE_TON) SELALE_TON[k] = null;
     const a = __ciz((x) => yolculukGecitCiz(x));
     const y = __sil('an-selale');
     const b = __ciz((x) => yolculukGecitCiz(x));
     __geri(y);
-    return { srcs: a.srcs, yedek: b.srcs };
+    Object.assign(SELALE_TON, tonlar);
+    let tuval = 0; const c = document.createElement('canvas'); c.width = c.height = 600; const xc = c.getContext('2d');
+    const asil = xc.drawImage.bind(xc); xc.drawImage = (im, ...r) => { if (im instanceof HTMLCanvasElement && im.width > 100) tuval++; return asil(im, ...r); };
+    const eskiTon = SELALE_TON[1]; SELALE_TON[1] = 261; for (let i = 2; i <= 6; i++) SELALE_TON[i] = SELALE_TON[i] ?? 261;
+    yolculukGecitCiz(xc);
+    Object.assign(SELALE_TON, tonlar); SELALE_TON[1] = eskiTon;
+    return { srcs: a.srcs, yedek: b.srcs, boyali: tuval };
   });
   sina('selale: an-selale karesi çizilir, resim yokken köpük yedeği', () => {
     assert.ok(varMi(selale, 'an-selale'), JSON.stringify(selale.srcs));
     assert.ok(!varMi({ srcs: selale.yedek }, 'an-selale'), JSON.stringify(selale.yedek));
   });
+  sina('selale dere rengine boyanmış kare olarak çizilir (SEL1)', () => { assert.ok(selale.boyali >= 1, String(selale.boyali)); });
 
   // 2) Yağmur: damla resmi + çarpınca su-halka (0.3 sn)
   const yagmur = await p.evaluate(() => {

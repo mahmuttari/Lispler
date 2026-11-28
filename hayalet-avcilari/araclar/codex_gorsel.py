@@ -6,7 +6,8 @@
 # reddedebilir; istemin çocuk oyunu için 2B sprite çizimi olduğu baştaki yönergede açıkça yazılı.
 import re, subprocess, sys, os, shutil
 from PIL import Image
-G = '/home/user/Lispler/hayalet-avcilari/gorsel'; W = '/home/user/Lispler/hayalet-avcilari/www/gorsel'
+K = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))  # hayalet-avcilari/ (kapsayıcıya göre değişir)
+G = f'{K}/gorsel'; W = f'{K}/www/gorsel'
 D = os.environ.get('CODEX_GORSEL_KLASOR', '/tmp/codex-gorsel'); os.makedirs(D, exist_ok=True)
 t = open(f'{G}/CHATGPT-ISTEMI-UYUM.md', encoding='utf-8').read()
 for kod in sys.argv[1:]:
@@ -16,9 +17,9 @@ for kod in sys.argv[1:]:
     for ad in re.findall(r'`([^`]+)`', ekler.group(1) if ekler else ''):
         if ad.endswith('U06.png'): refs.append(f'{G}/hamui/U06.png')
         elif ad.endswith('D01.png'): refs.append(f'{G}/ham3d/D01.png')
-        elif ad.startswith('gorsel/ham') and os.path.exists('/home/user/Lispler/hayalet-avcilari/' + ad): refs.append('/home/user/Lispler/hayalet-avcilari/' + ad)
+        elif ad.startswith('gorsel/ham') and os.path.exists(f'{K}/' + ad): refs.append(f'{K}/' + ad)
         elif ad.startswith('www/gorsel/') and '…' not in ad:
-            src = f'/home/user/Lispler/hayalet-avcilari/{ad}'
+            src = f'{K}/{ad}'
             if os.path.exists(src):
                 p = f'{D}/ref-{os.path.basename(ad)}.png'; Image.open(src).convert('RGB').resize((384, 384)).save(p); refs.append(p)
     # "tema1-zemin.webp … tema6-zemin.webp" ve "aile-X-zemin" kalıpları

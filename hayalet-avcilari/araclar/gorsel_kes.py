@@ -125,6 +125,10 @@ ANIMASYON = {
     'R07': [('hasar-patlama', [1, 2, 3], 192), ('gorunmez-parilti', [4, 5, 6], 192)],  # oyuncu hasar alınca, görünmezlik
     'R10': [('lav', [2, 3, 4], 256)],  # kayalık kıyılı lav gölü, kabarcık ve alev
     'R42': [('selale', [1, 2, 3], 256)],  # dere üstündeki küçük şelale basamağı (köpük bandı)
+    # Z32-Z33 (CHATGPT-ISTEMI-UYUM.md): dereyle uyumlu şelale (yalnız su, kenarları saydama söner; A tek basamak, B çağlayan)
+    # ve dikine zıplayan balık (oyun yönünü aynalar)
+    'Z32': [('selale2', [1, 2, 3], 256), ('selale3', [4, 5, 6], 256)],
+    'Z33': [('balik', [1, 2, 3, 4, 5, 6], 192)],
     # R51–R59: ülke objelerindeki canlıların küçük döngüleri (üst satır 1. obje, alt satır 2. obje; 1. kare durağan objenin aynısı).
     # Anahtar an-<obje>-1..3: kod durağan <obje> yerine arada (4-8 sn'de bir) 1-2-3-2-1 oynatır.
     'R51': [('ulke-CN-1', [1, 2, 3], 256), ('ulke-ID-1', [4, 5, 6], 256)],
@@ -196,6 +200,8 @@ def animasyonlar(liste):
             yol = os.path.join(HAMYENI, f'{pafta}.png')
         if not os.path.exists(yol) and pafta in ('A01', 'A02', 'A03'):
             yol = os.path.join(HAMHIKAYE, f'{pafta}.png')  # HIK3: hikâye animasyonları
+        if not os.path.exists(yol) and pafta.startswith('Z'):
+            yol = os.path.join(HAMZEMIN, f'{pafta}.png')  # Z32-Z33: zemin uyumu animasyonları (Codex)
         if not os.path.exists(yol):
             continue
         resim = Image.open(yol).convert('RGBA')

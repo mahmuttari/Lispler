@@ -447,15 +447,17 @@ STYLE FOR THIS SHEET: the pre-rendered, hand-painted look of a classic isometric
 
 Sheet Z33: a small JUMPING RIVER FISH, an animation of six frames for a cute top-down ghost-hunting game. TRANSPARENT background,
 grid 3 x 2 (512 px cells), frames in reading order. ONE small cheerful golden-orange fish with a white belly and big friendly eyes,
-the same fish in every frame. The water spot is the same point in every cell (centre of the cell, 330 px from the top); the fish
-jumps from left to right along a low arc above that spot. There is NO river surface and NO ground: only the fish, its splash and its
-ripple rings, with the splash and ripples in the turquoise-blue and white of the attached river texture.
-1. small ripple rings and the fish's nose breaking the surface with a little splash
-2. fish rising out of the water, tail still in a splash, drops flying
-3. fish at the top of the arc, body curved, a few drops falling
-4. fish coming down head first toward the water on the right side of the spot
-5. fish diving in with a splash, only the tail visible
-6. only widening ripple rings and a few last drops
+the same fish in every frame. The water spot is the same point in every cell (horizontal centre of the cell, 360 px from the
+top). The fish jumps STRAIGHT UP and falls STRAIGHT BACK into the same spot: in every frame the fish stays on the vertical centre line
+of the cell, with no left or right travel (the game mirrors the whole animation itself). There is NO river surface and NO ground:
+only the fish, its splash and its ripple rings, with the splash and ripples in the turquoise-blue and white of the attached river
+texture.
+1. small ripple rings at the spot and the fish's nose breaking the surface with a little splash
+2. fish rising straight up out of the water, body almost vertical, head up, tail still in a splash, drops flying
+3. fish at the top of the jump, about 200 px above the spot, body curved sideways, head starting to turn down, a few drops falling
+4. fish falling straight down head first toward the spot, body almost vertical, head down
+5. fish diving into the spot with a splash, only the tail visible
+6. only widening ripple rings at the spot and a few last drops
 The fish is about 150 x 90 px at its largest; every frame keeps at least 40 px clear margin to the cell border. No text.
 ```
 

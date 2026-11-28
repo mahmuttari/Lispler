@@ -1,10 +1,24 @@
-# Hayalet Avcıları: devir notu (27 Kasım 2026, sabah)
+# Hayalet Avcıları: devir notu (28 Kasım 2026, akşam)
 
-Kullanıcının son isteği: "sana söylediğim yapılmayan ne varsa hepsini yap, harita yerleşimlerini de ChatGPT yapsın, kalan
-hiçbir iş olmasın". Kalıcı kurallar `CLAUDE.md`'de (görseller yalnız ChatGPT, kod Evren/NVIDIA/ChatGPT, akıl yürütme Fable,
-"yayınla" denmeden yayın yok). Deneme sayfası: kullanıcının artifact'ı (sürüm 55).
+Kalıcı kurallar `CLAUDE.md`'de (görseller yalnız ChatGPT, bulutta Codex CLI ile; kod Evren/NVIDIA/ajanlar; akıl yürütme
+Fable; "yayınla" denmeden Play'e hiçbir şey yok). Çalışma dalı `ccr-e316a7ca-5sw0ow` (taslak PR #14). Deneme sayfası
+kullanıcının artifact'ı: https://claude.ai/artifact/3gwhkL7g2QzNyaZWig83pt (sürüm 86).
 
-## Bitenler (bu oturum)
+## Deneme sürümünü güncelleme
+1. `python3 araclar/deneme_hazirla.py <geçici>/deneme-yeni www` (görselleri ~7 MB'lık paket parçalarına koyar, game.js
+   m4a→mp3 dönüşümünü yapar; ham game.js asla doğrudan kopyalanmaz).
+2. `node araclar/deneme-sina.mjs <geçici>/deneme-yeni` (hatalar [] olmalı).
+3. Artifact tool ile aynı URL'ye yayımla (`url` + `files` haritası + `root`). Yeni oturumda önce `action: "read"` gerekir;
+   eski yerel kopya yoksa bütün klasör yeniden yayımlanır.
+
+## Kullanıcıdan beklenen geri bildirimler (28 Kasım akşamı)
+- Kinkin 3D denemesi (uc-avci.js, 4 kostüm): beğenirse öteki 11 avcı + bot; bütün kostümler mi yalnız 0. mı?
+- ElevenLabs müzik denemesi (UZ, 30 sn, gerçekçi tarif; 462 kredi kaldı, ~14 kredi/sn; sıfırlanma ~5 Aralık).
+- UZ ve MA müziği tempo (~125-130) kulakla; DE döngü ek yeri (Mac sırası: 2. sürüm indir).
+- Suno: bu ay 10 indirme hakkı kaldı (Premier 60/ay).
+- Sonraki büyük iş seçimi: yatık harita, takılan hayaletler (FIX4), reklam kamerası (REK2), yolculuk-perf yönü.
+
+## Eski not (27 Kasım sabahı) — bitenler
 SES1 (23 ElevenLabs sesi oyunda), YER1 (bölgeler ChatGPT yerleşim planlarıyla; Y01'in 7 planı derlendi), GOR3a (patlama,
 boss halkası, robot, seviye rozeti, zemin süsleri), GOR3b (dükkân/menü/oyun sonu görselleri), J01-J12 yolculuk paftaları
 kesildi, gölet ve diken tuzaklar sınır yöntemiyle (organik leke biçimi + kıyı/çerçeve, içi ChatGPT dokusu; kullanıcı kararı), bot görseli.

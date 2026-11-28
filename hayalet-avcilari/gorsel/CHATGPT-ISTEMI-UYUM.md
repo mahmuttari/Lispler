@@ -406,6 +406,59 @@ Cells 5 and 6: leave EMPTY (transparent). No text.
 
 ---
 
+### Z32: dereyle uyumlu şelale (saydam, iki çeşit × 3 kare)
+
+Kullanıcı (28 Kasım 2026, ekran görüntüsü): *"Şelaleler daha uyumlu olsun dere ile, gerekirse yeni şelaleler üret."* Eski
+`an-selale-*` kareleri kendi havuzu, kayaları ve yapraklarıyla ayrı bir sahne; derenin üstüne yapıştırılmış gibi duruyor.
+Yeni kare yalnız derenin kendisi: su perdesi, dudak, köpük; yanlar ve üst/alt uçlar saydama söner, kıyıyı oyun çizer.
+Ekler: `U06.png`, `www/gorsel/dere-su.webp`.
+Kesim: 1–3. hücre `an-selale2-1..3` (A çeşidi, geniş alçak basamak), 4–6. hücre `an-selale3-1..3` (B çeşidi, iki küçük
+basamaklı çağlayan); en büyük kenar 256 px.
+
+```
+STYLE FOR THIS SHEET: the pre-rendered, hand-painted look of a classic isometric action-RPG, seen from a high three-quarter angle
+(about 50° looking down), one soft light from the UPPER LEFT. Rich but clean detail. Do not copy any existing game's artwork.
+
+Sheet Z32: a WATERFALL STEP INSIDE A RIVER for a cute top-down ghost-hunting game. TRANSPARENT background, grid 3 x 2 (512 px
+cells). The river flows from the TOP of the cell to the BOTTOM. Each cell shows ONLY the water of the river where it drops down one
+step: calm river surface at the top flowing to a smooth bright lip, a short curtain of falling water (about one third of the cell
+height), a band of white foam and spray where it lands, then calm water again at the bottom. The water must look exactly like the
+attached river texture: the same turquoise-blue (#0faec2), the same soft light caustic lines and sparkle, so that it blends into
+that texture without a visible seam. IMPORTANT: NO rocks, NO stones, NO plants, NO leaves, NO banks, NO pool rim, NO ground: the game
+draws the riverbanks itself. The water band is about 440 px wide, centred; its LEFT and RIGHT edges fade softly to fully transparent
+over about 30 px, and its TOP and BOTTOM edges also fade softly to fully transparent over about 40 px, so it can be laid over the
+river of any width and curve.
+Cells 1, 2, 3: variant A, one wide low drop. Same shape in all three; only the falling water, the foam and the spray move, as three
+evenly spaced frames of a seamless loop (frame 3 flows back into frame 1).
+Cells 4, 5, 6: variant B, a small cascade of two very low steps one under the other. Same rule: same shape, only water and foam move,
+three looping frames.
+No text.
+```
+
+### Z33: zıplayan balık (saydam, 6 kare)
+
+Kullanıcı (28 Kasım 2026): *"Derede de zıplayan balıklar olsun."* Balık arada bir dereden sıçrar, yay çizip suya geri dalar.
+Ekler: `U06.png`, `www/gorsel/dere-su.webp`.
+Kesim: `an-balik-1..6` (hücre sırasıyla), en büyük kenar 192 px.
+
+```
+STYLE FOR THIS SHEET: the pre-rendered, hand-painted look of a classic isometric action-RPG, seen from a high three-quarter angle
+(about 50° looking down), one soft light from the UPPER LEFT. Cute, friendly, toy-like. Do not copy any existing game's artwork.
+
+Sheet Z33: a small JUMPING RIVER FISH, an animation of six frames for a cute top-down ghost-hunting game. TRANSPARENT background,
+grid 3 x 2 (512 px cells), frames in reading order. ONE small cheerful golden-orange fish with a white belly and big friendly eyes,
+the same fish in every frame. The water spot is the same point in every cell (centre of the cell, 330 px from the top); the fish
+jumps from left to right along a low arc above that spot. There is NO river surface and NO ground: only the fish, its splash and its
+ripple rings, with the splash and ripples in the turquoise-blue and white of the attached river texture.
+1. small ripple rings and the fish's nose breaking the surface with a little splash
+2. fish rising out of the water, tail still in a splash, drops flying
+3. fish at the top of the arc, body curved, a few drops falling
+4. fish coming down head first toward the water on the right side of the spot
+5. fish diving in with a splash, only the tail visible
+6. only widening ripple rings and a few last drops
+The fish is about 150 x 90 px at its largest; every frame keeps at least 40 px clear margin to the cell border. No text.
+```
+
 ## 5. Kodlama notları (görev tanımı için)
 
 ### 5.1 Kesici (`araclar/gorsel_kes.py`)

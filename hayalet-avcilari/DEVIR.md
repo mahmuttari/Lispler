@@ -32,7 +32,7 @@ düğmeleri tuvalde dikişsiz), PRF2 (yolculuk çiziminde kare başı israf azal
 5. Diablo 2 tarzı yatık harita: büyük iş, kullanıcı "bu saatten sonra büyük iş olabilir" dedi; istenirse ayrı aşama.
 6. Uzun/yayvan kutudaki obje küçük kalıyor (OBJ1 kutuyu resme uydurdu; yeniden görülürse objePayi).
 7. 3D avcılar ve bot (uc-avci.js, kodla kurulan modeller): kullanıcı 28 Kasım'da "3D kalsın, Sonnet 5.6 çıktıysa onunla yeniden üret" dedi. O tarihte Sonnet 5.6 yoktu (en yeni Sonnet 5.5). Çıkınca 3D modeller onunla yeniden kurdurulacak; "her görsel ChatGPT" kuralının tek istisnası.
-8. Zemin uyumu: Z24-Z29 paftaları Mac sırasında (gorsel/CHATGPT-ISTEMI-UYUM.md); gelince kesim + dikenCiz/kıyı şeridi (seritSar) kodlaması.
+8. Zemin uyumu (ZUY1, 28 Kasım) bitti: Z24-Z29 Codex ile üretildi, kesildi ve bağlandı (diken öbekleri + taban, göl/nehir kıyı şeritleri, göl süsleri). Kalan: kesişen göllerde şerit uçları (kozmetik), doku-lav-1/2 kesildi ama bağlanmadı, Dünya Turu harita sınırı (K4). Kara bulut artık yalnız boss varken (BLT1), şimşek ince kod çizgisi.
 9. Bağlanmayan görseller (gerekçeli): gel-miknatis, giris-kahraman, tur-ucak-ust, sus-tahta-yol.
 
 ## Çalışma düzeni

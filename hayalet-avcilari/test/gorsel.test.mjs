@@ -28,9 +28,9 @@ const LISTE = JSON.parse(listeKaynak.match(/= (\{.*\});/)[1]);
 const dosyalar = fs.readdirSync(path.join(WWW, 'gorsel')).filter((f) => f.endsWith('.webp'));
 sina('liste.js ile diskteki WebP dosyaları aynı', () => { assert.deepEqual(dosyalar.map((f) => f.slice(0, -5)).sort(), Object.keys(LISTE).sort()); });
 const toplam = dosyalar.reduce((t, f) => t + fs.statSync(path.join(WWW, 'gorsel', f)).size, 0);
-sina('görseller küçük: toplam 22 MB (HIK3: hikâye resimleri H10-H12 ve B01-B10 1024 px, 1,7 MB; bütün görseller ChatGPT resmi: kullanıcı kararı, 25 Kasım 2026; zemin paftaları Z01–Z07 ve tek parça 768 px zemin dokuları Z08–Z23 eklendi, 26 Kasım), her kenar en çok 256 px (tek parça zemin dokuları 768, tema dokuları 512, menü arka planı 1152, kahraman kartı 320, giriş resmi 1152, Yakında önizlemesi 768)', () => {
+sina('görseller küçük: toplam 22 MB (HIK3: hikâye resimleri H10-H12 ve B01-B10 1024 px, 1,7 MB; bütün görseller ChatGPT resmi: kullanıcı kararı, 25 Kasım 2026; zemin paftaları Z01–Z07 ve tek parça 768 px zemin dokuları Z08–Z23 eklendi, 26 Kasım), her kenar en çok 256 px (tek parça zemin dokuları 768, tema dokuları 512, menü arka planı 1152, kahraman kartı 320, giriş resmi 1152, Yakında önizlemesi 768, kenar şeritleri *-kenar 384: ZUY1)', () => {
   assert.ok(toplam < 22 * 1024 * 1024, String(toplam));
-  for (const [k, [w, h]] of Object.entries(LISTE)) { const en = /-zemin$/.test(k) ? 768 : k.startsWith('tema') ? 512 : (k === 'menu-arka' || k === 'giris-kahraman' || k.startsWith('arka-')) ? 1152 : k.startsWith('kart-') ? 320 : k.startsWith('yakinda-') ? 768 : k.startsWith('hikaye-') ? 1024 : 256; assert.ok(w <= en && h <= en, k); }
+  for (const [k, [w, h]] of Object.entries(LISTE)) { const en = /-zemin$/.test(k) ? 768 : /-kenar$/.test(k) ? 384 : k.startsWith('tema') ? 512 : (k === 'menu-arka' || k === 'giris-kahraman' || k.startsWith('arka-')) ? 1152 : k.startsWith('kart-') ? 320 : k.startsWith('yakinda-') ? 768 : k.startsWith('hikaye-') ? 1024 : 256; assert.ok(w <= en && h <= en, k); }
 });
 
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium' });

@@ -218,11 +218,13 @@ try {
     assert.equal(r.mermiYedek.say, 0);
     assert.ok(r.mermiYedek.pik > 0, String(r.mermiYedek.pik));
   });
-  // Kullanıcı kararı (27 Kasım 2026): tuzaklar "sınır yöntemiyle" çizilir (kenarlık + zemin taşı deseni + kod uçları);
-  // diken-plaka resmi artık kullanılmaz (resimle üst üste biniyordu). Resim varken de yokken de diken çizilmeli.
-  sina('diken sınır yöntemiyle çizilir (diken-plaka resmi kullanılmaz); resim yokken de çizilir', () => {
-    assert.equal(r.diken.say, 0, JSON.stringify(r.diken));
-    assert.ok(r.diken.pik > 0, JSON.stringify(r.diken));
+  // ZUY1 (28 Kasım 2026): tuzak = tema<n>-diken-taban deseni + tema<n>-diken öbekleri + tema<n>-kenar şeridi (hepsi ChatGPT);
+  // eski diken-plaka resmi kullanılmaz. Resim yokken eski kod diken yedek olarak çizilir (ayrıntı: test/zuy1.test.mjs).
+  sina('diken ChatGPT öbek ve kenar şeridiyle çizilir (diken-plaka kullanılmaz); resim yokken de çizilir', () => {
+    assert.ok(r.diken.srcs.some((u) => /tema\d-diken\.webp$/.test(u)), JSON.stringify(r.diken.srcs.slice(0, 4)));
+    assert.ok(r.diken.srcs.some((u) => /tema\d-kenar\.webp$/.test(u)), JSON.stringify(r.diken.srcs.slice(0, 4)));
+    assert.ok(!r.diken.srcs.some((u) => /diken-plaka/.test(u)), 'diken-plaka kullanılmamalı');
+    assert.ok(r.diken.pik > 0, JSON.stringify(r.diken.pik));
     assert.ok(r.dikenYedek.pik > 0, String(r.dikenYedek.pik));
   });
   sina('lav kareleri lav dikdörtgenine sığar; yokken kod lavı', () => {

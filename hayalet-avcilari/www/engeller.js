@@ -125,6 +125,72 @@
     return out.sort((a, c) => a.y - c.y);
   }
 
+
+  // ---------- zemin uyumu (UYUM paketi): kenar şeridi, süs resmi, tema eşlemesi ----------
+  // Dünya Turu ailesinin tuzak tabanı/dikeni için klasik tema numarası (CHATGPT-ISTEMI-UYUM.md 5.3 K1)
+  const AILE_DIKEN = { K: 1, DA: 1, KS: 3, KP: 3, GA: 3, SH: 2, SV: 2, KA: 2, GDA: 2, LA: 5 };
+  function ulkeAilesi(tema) { const u = window.ulkeKodla && window.ulkeKodla(tema); return (u && u.aile) || null; }
+  function kenarAnahtari(tema) {
+    if (typeof tema === "number") return `tema${tema + 1}-kenar`;
+    const A = ulkeAilesi(tema);
+    return A ? `aile-${A}-kenar` : null;
+  }
+  function dikenTemaNo(tema) { return typeof tema === "number" ? tema + 1 : (AILE_DIKEN[ulkeAilesi(tema)] || 1); }
+  function gorselVar(k) { return !!(k && typeof gorsel === "function" && gorsel(k)); }
+  // Kenar şeridini noktalar dizisi boyunca sarar. nok: [{x,y}] sıralı; isaret +1: dış yön (ty,-tx), -1: tersi.
+  // Şeridin üst kenarı dışa bakar; dilimler 1 birim bindirilir. kal: şerit kalınlığı, dis: şeridin hattın dışına taşan kısmı.
+  function seritDizi(ctx, nok, im, kal, isaret, dis) {
+    const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
+    if (!(iw > 0 && ih > 0) || nok.length < 2) return;
+    const sc = kal / ih;
+    let toplam = 0;
+    for (let i = 0; i + 1 < nok.length; i++) toplam += Math.hypot(nok[i + 1].x - nok[i].x, nok[i + 1].y - nok[i].y);
+    let c = 0;
+    for (let i = 0; i + 1 < nok.length; i++) {
+      const a = nok[i], b = nok[i + 1], dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy);
+      if (L < 1e-6) continue;
+      let tx = dx / L, ty = dy / L;
+      if (isaret < 0) { tx = -tx; ty = -ty; }
+      const u = isaret < 0 ? toplam - c - L : c; // kaynak şeritteki konum (yol parametresi)
+      c += L;
+      const dw = L + 1, sw = dw / sc;
+      const sx = (((u / sc) % iw) + iw) % iw;
+      ctx.save(); ctx.translate((a.x + b.x) / 2, (a.y + b.y) / 2); ctx.rotate(Math.atan2(ty, tx));
+      if (sx + sw <= iw) ctx.drawImage(im, sx, 0, sw, ih, -dw / 2, -dis, dw, kal);
+      else { const w1 = iw - sx; ctx.drawImage(im, sx, 0, w1, ih, -dw / 2, -dis, w1 * sc, kal); ctx.drawImage(im, 0, 0, sw - w1, ih, -dw / 2 + w1 * sc, -dis, (sw - w1) * sc, kal); }
+      ctx.restore();
+    }
+  }
+  // Birleşik biçimin DIŞ hattı boyunca şerit sarar (başka parçanın içinde kalan yaylar atlanır). Hat sıralı dolaşılır.
+  function seritSar(ctx, P, im, kal, dis = 4) {
+    for (const q of P) {
+      const nok = parcaCevresi(q, 0, 3), n = nok.length;
+      const dist = nok.map((k) => P.every((o) => o === q || parcaUzaklik(o, k.x, k.y) > -0.4));
+      let bas = dist.findIndex((d) => !d), halka = false;
+      if (bas < 0) { bas = 0; halka = true; }
+      let yay = [];
+      const bitir = () => { if (yay.length > 1) seritDizi(ctx, yay, im, kal, 1, dis); yay = []; };
+      for (let j = 1; j <= n; j++) {
+        const i = (bas + j) % n;
+        if (dist[i]) yay.push(nok[i]); else bitir();
+      }
+      if (halka) yay.push(nok[bas]);
+      bitir();
+    }
+  }
+  // Süs resmini genişliği gen birim olacak biçimde basar (hiza "alt": taban (x, y); "orta": merkez). false: resim yok
+  function susBas(ctx, ad, x, y, gen, hiza = "alt", aci = 0) {
+    const im = typeof gorsel === "function" ? gorsel(ad) : null;
+    if (!im) return false;
+    const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
+    if (!(iw > 0 && ih > 0)) return false;
+    const gh = gen * ih / iw;
+    ctx.save(); ctx.translate(x, y); if (aci) ctx.rotate(aci);
+    ctx.drawImage(im, -gen / 2, hiza === "alt" ? -gh : -gh / 2, gen, gh);
+    ctx.restore();
+    return true;
+  }
+
   // ---------- ortak süs parçaları ----------
   function cimTutami(ctx, x, y, s, renk) {
     ctx.strokeStyle = renk; ctx.lineWidth = 1.4; ctx.lineCap = "round";
@@ -410,8 +476,11 @@
   // Su boyanırken engelin teması (engelBoya verir): ChatGPT su dokusu (gorsel.js temaDeseni) varsa o kullanılır
   let _boyaTema = null;
   function suTabani(ctx, w, h, r, B, kiyiCiz, kenarRengi = "#0b2a55") {
-    if (kiyiCiz) kiyiCiz();
-    doldur(ctx, B, kenarRengi, 0, 0, 2);
+    // Kenar şeridi resmi (tema<n>-kenar / aile-<A>-kenar) varsa kıyıyı engelResmi ayrı katmanda sarar (suSeritResmi):
+    // kod taş/çimen bandı ve koyu kenar çizilmez; yoksa bugünkü kod kıyısı yedek kalır.
+    const seritli = gorselVar(kenarAnahtari(_boyaTema));
+    if (!seritli) { if (kiyiCiz) kiyiCiz(); doldur(ctx, B, kenarRengi, 0, 0, 2); }
+    else doldur(ctx, B, kenarRengi); // dokunun saydam pikseli altta boşluk bırakmasın
     // Klasik tema (sayı): tema<n>-su; Dünya Turu (ülke kodu): ChatGPT dere-su dokusu
     const desen = typeof _boyaTema === "number" && typeof window.temaDeseni === "function" ? window.temaDeseni(_boyaTema + 1, "su")
       : typeof _boyaTema === "string" && typeof window.dereSuDeseni === "function" ? window.dereSuDeseni() : null;
@@ -420,10 +489,38 @@
     doldur(ctx, B, desen || g);
     kirp(ctx, B, () => { for (const q of B) if (q.t !== "k") elips(ctx, q.x - (q.r || q.rx) * 0.3, q.y - (q.r || q.ry) * 0.45, (q.r || q.rx) * 0.45, 3, "rgba(255,255,255,0.12)"); });
   }
-  // Diken plakası (bütün temalarda): kırmızı kenar, taş zemin, metal sivri uçlar
+  // Diken plakası: leke biçimi, içi koyu tuzak tabanı dokusu (tema<n>-diken-taban, biçime kırpılır), taban üstüne biçimin
+  // İÇİNDEKİ noktalara tek tek konan diken öbekleri (tema<n>-diken; kırpılmaz, kesilmez) ve biçimin dış hattında kenar
+  // şeridi (tema<n>-kenar). Dünya Turu'nda aileye göre tema eşlemesi (dikenTemaNo). Üç resimden biri yoksa eski görünüm yedek.
+  const DIKEN_BOY = 26, DIKEN_ADIM = 24, DIKEN_SERIT = 9;
   function dikenCiz(ctx, w, h, r, p, B) {
-    // Diken plakası: leke biçimi kırmızı kenarla çevrilir (sınırlardaki yöntem); içi ChatGPT'nin dikişsiz çatlak taş dokusu
-    // (yoksa kod taş örgüsü), üstte metal sivri uçlar. Biçim kenarı çerçeveyle örtülür: kesik görünmez.
+    const n = dikenTemaNo(_boyaTema);
+    const taban = typeof gorsel === "function" ? gorsel(`tema${n}-diken-taban`) : null;
+    const oge = typeof gorsel === "function" ? gorsel(`tema${n}-diken`) : null;
+    const serit = typeof gorsel === "function" ? gorsel(kenarAnahtari(_boyaTema) || `tema${n}-kenar`) : null;
+    if (taban && oge && serit) {
+      doldur(ctx, B, "#2a2430");
+      kirp(ctx, B, () => {
+        const desen = ctx.createPattern(taban, "repeat");
+        if (desen) {
+          if (desen.setTransform && typeof DOMMatrix === "function") desen.setTransform(new DOMMatrix().scaleSelf(96 / (taban.naturalWidth || taban.width), 96 / (taban.naturalHeight || taban.height)));
+          ctx.fillStyle = desen; ctx.fillRect(0, 0, w, h);
+        }
+      });
+      // Öbekler kaydırmalı ızgarada: taban noktası kenardan >= 8, uç (üstteki nokta) ve yanlar biçimin içinde
+      const iw = oge.naturalWidth || oge.width, ih = oge.naturalHeight || oge.height;
+      const gen0 = DIKEN_BOY * iw / ih;
+      const nok = [];
+      for (let y = 14, k = 0; y < h + 6; y += DIKEN_ADIM, k++) for (let x = 10 + (k % 2) * (DIKEN_ADIM / 2); x < w; x += DIKEN_ADIM) {
+        if (engelUzaklik(B, x, y) > -8 || engelUzaklik(B, x, y - DIKEN_BOY * 0.8) > -4 ||
+          engelUzaklik(B, x - gen0 / 2, y - 2) > -2 || engelUzaklik(B, x + gen0 / 2, y - 2) > -2) continue;
+        nok.push({ x, y });
+      }
+      nok.forEach((k) => { const f = 0.88 + r() * 0.24; susBas(ctx, `tema${n}-diken`, k.x, k.y + 3, gen0 * f, "alt"); });
+      seritSar(ctx, B, serit, DIKEN_SERIT, 3);
+      return [];
+    }
+    // Yedek: eski kod görünümü (kırmızı kenar, taş zemin, sivri uçlar)
     const doku = typeof gorsel === "function" ? (gorsel("zemin-catlak-tas") || gorsel("zemin-yol-tas")) : null;
     if (doku) {
       doldur(ctx, B, "#7f1d1d", 0, 0, 2.5);
@@ -658,6 +755,7 @@
       const a = 0.5 + 0.5 * Math.sin(zaman * 2.8 + n * 6.283);
       const s = 1.6 + a * 2, eski = ctx.globalAlpha;
       ctx.globalAlpha = eski * (0.3 + a * 0.7);
+      if (susBas(ctx, "gol-sus-yildiz", x, y, 7 + a * 7, "orta")) { ctx.globalAlpha = eski; return; } // ChatGPT yıldız parıltısı
       ctx.fillStyle = "#fef9c3"; ctx.beginPath();
       for (let i = 0; i < 10; i++) { const b = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? s * 0.42 : s; ctx.lineTo(x + Math.cos(b) * rr, y + Math.sin(b) * rr); }
       ctx.closePath(); ctx.fill();
@@ -920,12 +1018,15 @@
     const b = Math.ceil(Math.max(w, h) * 0.5);
     return { x: b, y: b, alt };
   }
+  const SU_PAYI = { x: 14, y: 30, alt: 14 }, DIKEN_PAYI = { x: 6, y: 6, alt: 6 };
   function engelResmi(o) {
     const s = engelOlcegi();
     if (o._resim && o._olcek === s) return o._resim;
     o._resim = null; o._olcek = s;
     // Obje payı resim henüz yüklenmemişken de verilir: gölge önbellek kenarında kesilmesin.
-    const pay = (o.tur === "obje1" || o.tur === "obje2") ? objePayi(o) : o.tur === "duvar" ? duvarPayi(o) : null;
+    // Su: kıyı süsleri (palmiye, bambu, kamış) kutunun dışına taşabilsin; diken: kenar şeridinin dışa sönen kısmı kesilmesin
+    const pay = (o.tur === "obje1" || o.tur === "obje2") ? objePayi(o) : o.tur === "duvar" ? duvarPayi(o)
+      : o.tur === "su" ? SU_PAYI : o.tur === "diken" ? DIKEN_PAYI : null;
     const px = pay ? pay.x : 0, py = pay ? pay.y : 0, palt = pay ? pay.alt : 0;
     const gw = Math.ceil((o.w + 2 * px) * s), gh = Math.ceil((o.h + py + palt) * s);
     if (!(gw > 0 && gh > 0)) return null;
@@ -952,8 +1053,31 @@
     const cx = c.getContext("2d");
     if (!cx) return null;
     cx.drawImage(R.c, 0, 0);
-    cx.globalCompositeOperation = "destination-in"; cx.scale(o._olcek, o._olcek); doldur(cx, o.bicim, "#000", 0, 0, -1.5); // kenar pikseli koyu kıyıyı taşımasın
+    const pp = R.pay || { x: 0, y: 0 };
+    cx.globalCompositeOperation = "destination-in"; cx.scale(o._olcek, o._olcek); doldur(cx, o.bicim, "#000", pp.x, pp.y, -1.5); // kenar pikseli koyu kıyıyı taşımasın
     return (R.ic = c);
+  }
+  // Gölün kıyı şeridi katmanı (engelResmi ile aynı boyut ve pay; yalnız şerit). Kesişen göllerde şerit komşunun suyunun
+  // içinde kalan kısımlardan silinir; böylece ortak alanda kıyı görünmez. Resim yoksa null (kod kıyısı suTabani'nda).
+  const SU_SERIT = 12;
+  function suSeritResmi(o) {
+    const R = engelResmi(o);
+    if (!R) return null;
+    if (R.serit !== undefined) return R.serit;
+    R.serit = null;
+    const k = kenarAnahtari(o.tema), im = k && engelGorsel(k);
+    if (!im) return null;
+    const pp = R.pay || { x: 0, y: 0 };
+    let c = null, cx = null;
+    try { c = document.createElement("canvas"); c.width = R.c.width; c.height = R.c.height; cx = c.getContext("2d"); } catch (_) { cx = null; }
+    if (!cx) return null;
+    cx.scale(o._olcek, o._olcek); cx.translate(pp.x, pp.y);
+    seritSar(cx, o.bicim, im, SU_SERIT, 4);
+    if (komsuMu(o)) {
+      cx.globalCompositeOperation = "destination-out";
+      for (const b of game.waters || []) if (b !== o && b.bicim && b.x < o.x + o.w + 14 && b.x + b.w > o.x - 14 && b.y < o.y + o.h + 14 && b.y + b.h > o.y - 14) doldur(cx, b.bicim, "#000", b.x - o.x, b.y - o.y, 1);
+    }
+    return (R.serit = c);
   }
   // Lavın turuncu parlaması: biçimin gölgesi bir kez çizilir, her karede saydamlığı nabız gibi değişir
   const PARLAMA = 26;
@@ -1082,7 +1206,7 @@
       en._isinma = s;
       engelResmi(en);
       if (en.tur === "lav") parlamaResmi(en);
-      else if (en.tur === "su" && komsuMu(en)) icResmi(en);
+      else if (en.tur === "su") { if (!suSeritResmi(en) && komsuMu(en)) icResmi(en); }
     }
   }
   // ---- Canlı ülke objeleri (GOR2): an-<obje anahtarı>-1..3 kareleri ----
@@ -1179,8 +1303,10 @@
       if (sular) {
         const canlilar = sular.map((o) => resimCiz(ctx, o));
         sular.forEach((o, i) => {
-          const ic = komsuMu(o) ? icResmi(o) : null;
-          if (ic) bas(ctx, ic, o.x, o.y, o.w, o.h);
+          const pp = o._resim && o._resim.pay, serit = suSeritResmi(o);
+          const ic = !serit && komsuMu(o) ? icResmi(o) : null;
+          if (ic) bas(ctx, ic, o.x - (pp ? pp.x : 0), o.y - (pp ? pp.y : 0), o.w + (pp ? 2 * pp.x : 0), o.h + (pp ? pp.y + pp.alt : 0));
+          if (serit) bas(ctx, serit, o.x - (pp ? pp.x : 0), o.y - (pp ? pp.y : 0), o.w + (pp ? 2 * pp.x : 0), o.h + (pp ? pp.y + pp.alt : 0));
           dalgalar(ctx, o, zaman);
           canliCiz(ctx, o, canlilar[i], zaman);
         });
@@ -1225,8 +1351,8 @@
   }
 
   Object.assign(window, { engelRastgele, engelTohumu, engelUzaklik, engelOlustur, objeKutusuUydur, engelBicimleriniKur, engelCarpisir, engelMesafesi, ENGEL_AILELERI,
-    engelOlcegi, engelResmi, engelBoya, engelleriCiz, lavCanli, ENGEL_CANLI, objeAnimKare, objeAnimCiz,
+    engelOlcegi, engelResmi, suSeritResmi, engelBoya, engelleriCiz, lavCanli, ENGEL_CANLI, objeAnimKare, objeAnimCiz,
     CANLI_SES, canliObjeSesi });
   window.ENGEL = { yol, doldur, cizgi, kirp, hatCiz, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, kutuYolu, tasOrgu, gozler, cimTutami, sinirla, parcaUzaklik,
-    kayalikKenar, suTabani, dikenCiz, lavCiz };
+    kayalikKenar, suTabani, dikenCiz, lavCiz, seritDizi, seritSar, susBas, gorselVar, kenarAnahtari };
 })();

@@ -271,13 +271,14 @@ try {
       if (!R || !R.c) { sorun.push(`${ad} resim yok`); return; }
       for (const n of R.canli || []) canliTurler.add(n.tur);
       canliDenetle(o, R, ad);
-      const c = R.c, s = c.width / o.w, d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
-      const alfa = (x, y) => d[(Math.min(c.height - 1, Math.floor(y * s)) * c.width + Math.min(c.width - 1, Math.floor(x * s))) * 4 + 3];
+      const c = R.c, pay = R.pay || { x: 0, y: 0 }, s = c.width / (o.w + 2 * pay.x), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+      // ZUY1: su ve diken önbelleği paylı (kıyı süsü, kenar şeridi); örnekleme pay kadar kaydırılır (duvar ve obje payı da)
+      const alfa = (x, y) => d[(Math.min(c.height - 1, Math.floor((y + pay.y) * s)) * c.width + Math.min(c.width - 1, Math.floor((x + pay.x) * s))) * 4 + 3];
       let bos = null, tasan = null;
       for (let y = 1; y < o.h; y += 2) for (let x = 1; x < o.w; x += 2) {
         if (!bos && engelUzaklik(o.carpisma, x, y) < -2 && alfa(x, y) === 0) bos = `${x},${y}`;
         const dis = o.derinlik ? engelUzaklik(o.carpisma, x, y) : engelUzaklik(o.bicim, x, y);
-        if (!tasan && dis > o.pay + 3 && alfa(x, y) > 0) tasan = `${x},${y} (${dis.toFixed(1)} px)`;
+        if (!tasan && dis > o.pay + 3 + (o.tur === 'su' ? 30 : 0) && alfa(x, y) > 0) tasan = `${x},${y} (${dis.toFixed(1)} px)`;
       }
       if (bos) sorun.push(`${ad} çarpışma içi boş: ${bos}`);
       if (tasan) sorun.push(`${ad} biçim dışı boyalı: ${tasan}`);

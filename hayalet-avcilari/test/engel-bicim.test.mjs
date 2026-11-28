@@ -258,7 +258,7 @@ try {
         // FIXG1: obje resmi bilerek biçimin dışına taşar (tam resim görünsün): taşma denetimi objede yapılmaz.
         const dis = o.derinlik ? engelUzaklik(o.carpisma, x, y) : engelUzaklik(o.bicim, x, y);
         // FIXG2: duvarın uç kuleleri ve dik yığılan parçaları da bilerek biçimin dışına taşar
-        if (!obje && o.tur !== 'duvar' && !tasan && dis > o.pay + 3 && alfa(x, y) > 0) tasan = `${x},${y} (${dis.toFixed(1)} px)`;
+        if (!obje && o.tur !== 'duvar' && !tasan && dis > o.pay + 3 + (o.tur === 'su' ? 30 : 0) && alfa(x, y) > 0) tasan = `${x},${y} (${dis.toFixed(1)} px)`;
       }
       if (bos) sorun.push(`${ad} çarpışma içi boş: ${bos}`);
       if (tasan) sorun.push(`${ad} biçim dışı boyalı: ${tasan}`);

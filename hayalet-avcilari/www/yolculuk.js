@@ -1376,6 +1376,45 @@ function yolculukKilitleriCiz(ctx) {
   }
 }
 
+// UYUM: nehir kıyı şeridi anahtarı (klasik: tema<n>-kenar, Dünya Turu: aile-<A>-kenar); resim yoksa null (eski düz kıyı)
+function yolculukKenarAnahtari() {
+  if (typeof game !== "undefined" && game && game.dunyaTuru) {
+    const u = typeof turUlkesi === "function" ? turUlkesi() : null;
+    const A = u && typeof ulkeKodla === "function" ? (ulkeKodla(u.kod) || {}).aile : null;
+    return A ? `aile-${A}-kenar` : null;
+  }
+  let n = 1;
+  try {
+    const th = typeof getTheme === "function" ? getTheme() : null;
+    if (th && typeof LEVEL_THEMES !== "undefined") { const i = LEVEL_THEMES.indexOf(th); if (i >= 0) n = i + 1; }
+  } catch (e) { n = 1; }
+  return `tema${n}-kenar`;
+}
+// Bölgenin iki kıyısı için kenar şeridi tuvalleri (bölge başına bir kez; dar ve uzun, kare başına yalnız görünen dilim basılır)
+const NEHIR_SERIT = 12;
+function yolculukBankSerit(z, egri, gy0, gy1) {
+  const k = yolculukKenarAnahtari();
+  const im = k && typeof gorsel === "function" ? gorsel(k) : null;
+  const E = typeof ENGEL !== "undefined" ? ENGEL : null;
+  if (!im || !E || !E.seritDizi) return null;
+  if (z._gecitSerit && z._gecitSerit.im === im) return z._gecitSerit;
+  const yap = (taraf) => {
+    const nok = [];
+    for (let y = gy0; y <= gy1; y += 3) { const c = egri.merkez + egri.offset(y), ya = egri.yari(y); nok.push({ x: c + taraf * ya, y }); }
+    let mn = Infinity, mx = -Infinity;
+    for (const q of nok) { mn = Math.min(mn, q.x); mx = Math.max(mx, q.x); }
+    const pad = 16, c = document.createElement("canvas");
+    c.width = Math.ceil(mx - mn + 2 * pad); c.height = Math.ceil(gy1 - gy0 + 2 * pad);
+    const cx = c.getContext("2d");
+    if (!cx) return null;
+    cx.translate(pad - mn, pad - gy0);
+    E.seritDizi(cx, nok, im, NEHIR_SERIT, taraf < 0 ? -1 : 1, 4);
+    return { c, x: mn - pad, y: gy0 - pad };
+  };
+  let sol = null, sag = null;
+  try { sol = yap(-1); sag = yap(1); } catch (e) { sol = sag = null; }
+  return (z._gecitSerit = sol && sag ? { im, sol, sag } : null);
+}
 function yolculukGecitCiz(ctx) {
   if (!yolculukAcik() || !game._yolculukDuzen) return;
   const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0, A = YOLCULUK_AYAR;
@@ -1416,9 +1455,13 @@ function yolculukGecitCiz(ctx) {
     ctx.save();
     ctx.lineJoin = "round"; ctx.lineCap = "round";
     // Kanal duvarları: su dışında toprak şerit; dış kenarda açık zemin hattı (sol gölgede, sağ aydınlık)
-    ctx.strokeStyle = "rgba(255,255,255,0.22)"; ctx.lineWidth = 15; ctx.stroke(solBank); ctx.stroke(sagBank);
-    ctx.strokeStyle = th.wallDark || "#1e293b"; ctx.lineWidth = 12; ctx.stroke(solBank);
-    ctx.strokeStyle = th.wall || "#475569"; ctx.lineWidth = 12; ctx.stroke(sagBank);
+    // UYUM: kenar şeridi resmi varsa kıyı su dolgusundan sonra şeritle çizilir; yoksa bugünkü düz çizgiler
+    const serit = yolculukBankSerit(z, egri, gy0, gy1);
+    if (!serit) {
+      ctx.strokeStyle = "rgba(255,255,255,0.22)"; ctx.lineWidth = 15; ctx.stroke(solBank); ctx.stroke(sagBank);
+      ctx.strokeStyle = th.wallDark || "#1e293b"; ctx.lineWidth = 12; ctx.stroke(solBank);
+      ctx.strokeStyle = th.wall || "#475569"; ctx.lineWidth = 12; ctx.stroke(sagBank);
+    }
     // Su: kırpma yolu içinde dikey renk geçişi (döşeme varsa onun yerine geçit temasıyla uyumlu geçiş)
     ctx.save();
     ctx.clip(yol);
@@ -1509,6 +1552,12 @@ function yolculukGecitCiz(ctx) {
       gorselKutuya(ctx, `dere-sus-${s.kind}`, s.x - s.size / 2, s.y - s.size / 2, s.size, s.size);
     }
     ctx.restore();
+    if (serit) {
+      for (const b of [serit.sol, serit.sag]) {
+        const sy0 = Math.max(vy0, b.y), sy1 = Math.min(vy1, b.y + b.c.height);
+        if (sy1 > sy0) ctx.drawImage(b.c, 0, sy0 - b.y, b.c.width, sy1 - sy0, b.x, sy0, b.c.width, sy1 - sy0);
+      }
+    }
     // Bank süsleri (kamış, çakıl, dal, çiçek): bank çizgilerinden sonra
     for (const s of susler) {
       if (s.kind === 2 || s.kind === 4) continue;
@@ -1516,7 +1565,7 @@ function yolculukGecitCiz(ctx) {
       gorselKutuya(ctx, `dere-sus-${s.kind}`, s.x - s.size / 2, s.y - s.size / 2, s.size, s.size);
     }
     // Su ile duvarın buluştuğu koyu gölge çizgisi
-    ctx.strokeStyle = "rgba(0,0,0,0.35)"; ctx.lineWidth = 2; ctx.stroke(yol);
+    if (!serit) { ctx.strokeStyle = "rgba(0,0,0,0.35)"; ctx.lineWidth = 2; ctx.stroke(yol); }
     ctx.restore();
   }
 }

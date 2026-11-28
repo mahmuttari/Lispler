@@ -15,7 +15,7 @@
    engel-temalari.js'ten sonra, ulkeler.js'ten önce yüklenir.
    ============================================================ */
 (function () {
-  const { doldur, cizgi, kirp, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, tasOrgu, suTabani, kayalikKenar, cimTutami } = window.ENGEL;
+  const { doldur, cizgi, kirp, kenarNoktalari, icNoktalar, karistir, acik, koyu, elips, yuvarlak, tasOrgu, suTabani, kayalikKenar, cimTutami, susBas, gorselVar } = window.ENGEL;
 
   // ---------- ortak ----------
   // Sivri kemer (kervansaray nişi): taban (cx, alt), genişlik g, tepe y'si ust
@@ -354,11 +354,13 @@
     kirp(ctx, B, () => {
       for (const k of icNoktalar(B, w, h, Math.max(1, Math.round(w * h / 3800)), 8, 18, r)) {   // nilüfer yaprakları
         const s = 5 + r() * 3;
+        if (susBas(ctx, "dere-sus-2", k.x, k.y, 15 + r() * 5, "orta")) continue; // ChatGPT nilüfer
         ctx.fillStyle = "#3f7f3a"; ctx.beginPath(); ctx.moveTo(k.x, k.y); ctx.arc(k.x, k.y, s, 0.35, Math.PI * 2 - 0.05); ctx.closePath(); ctx.fill();
         ctx.strokeStyle = "#5fa04f"; ctx.lineWidth = 0.6; ctx.beginPath(); ctx.arc(k.x, k.y, s * 0.6, 0.5, Math.PI * 1.9); ctx.stroke();
       }
       for (const k of icNoktalar(B, w, h, Math.max(1, Math.min(4, Math.round(w * h / 3000))), 10, 16, r)) {   // koi
         const a = r() * Math.PI * 2, s = 5 + r() * 2;
+        if (susBas(ctx, "gol-sus-koi", k.x, k.y, 26 + r() * 6, "orta", a)) continue; // ChatGPT koi (tepeden)
         ctx.save(); ctx.translate(k.x, k.y); ctx.rotate(a);
         ctx.fillStyle = "rgba(0,0,0,0.18)"; ctx.beginPath(); ctx.ellipse(1.2, 1.6, s, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = "#f97316"; ctx.beginPath(); ctx.moveTo(-s, 0); ctx.lineTo(-s - 3.5, -2.4); ctx.lineTo(-s - 3.5, 2.4); ctx.closePath(); ctx.fill();
@@ -517,7 +519,9 @@
       kirp(ctx, B, () => { for (let i = 0; i < (w + h) * 0.8; i++) elips(ctx, r() * w, r() * h, 1.1, 0.8, r() < 0.5 ? koyu(kum, 0.25) : acik(kum, 0.3)); }, 0, 0, 8);
       for (const k of kenarNoktalari(B, 11, 6)) if (r() < 0.4) cimTutami(ctx, k.x, k.y + 1, 2.2, "#6f8f3a");
     }, koyu(kum, 0.55));
-    for (const k of kenarNoktalari(B, 26, 5)) if (r() < 0.55) hurma(ctx, k.x, k.y, k.nx, k.ny, 9.5 + r() * 2.5);
+    for (const k of kenarNoktalari(B, 26, 5)) if (r() < 0.55) {
+      if (!susBas(ctx, "gol-sus-palmiye", k.x, k.y + 2, 32 + r() * 6, "alt")) hurma(ctx, k.x, k.y, k.nx, k.ny, 9.5 + r() * 2.5);   // ChatGPT palmiye
+    }
     return [];
   }
   // Zemin: kum dalgası — sekiz dalgalı sırt çizgisi (yatayda 96'yı tam bölen dönemler) ve kum taneleri
@@ -608,6 +612,7 @@
   }
   // Saz öbeği: üç sap, uçlarında tüylü başlar (kıyının yan ve alt kenarında); sap, başı kıyı payını aşmayacak boyda
   function saz(ctx, x, y, r, B) {
+    if (susBas(ctx, "dere-sus-1", x, y + 2, 20 + r() * 5, "alt")) return; // ChatGPT kamış
     for (let i = 0; i < 3; i++) {
       const dx = (i - 1) * 1.8, egik = (i - 1) * 1.5;
       const tasar = (b) => [-1.2, 0, 1.2].some((a) => window.engelUzaklik(B, x + dx + egik + Math.sin(a) * 2.6, y - b - Math.cos(a) * 2.6) > 9.5);
@@ -886,6 +891,7 @@
   }
   // Lotus yaprağı ve (varsa) çiçeği
   function lotus(ctx, x, y, s, cicekli) {
+    if (susBas(ctx, "dere-sus-2", x, y, s * 3.6, "orta")) return; // ChatGPT nilüfer/lotus
     ctx.fillStyle = "#3f8a3a"; ctx.beginPath(); ctx.moveTo(x, y); ctx.arc(x, y, s, 0.25, Math.PI * 2 - 0.1); ctx.closePath(); ctx.fill();
     ctx.strokeStyle = "#62a84f"; ctx.lineWidth = 0.6; ctx.beginPath();
     for (let a = 0.6; a < Math.PI * 2 - 0.2; a += 0.7) { ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * s * 0.85, y + Math.sin(a) * s * 0.85); }
@@ -897,6 +903,7 @@
   }
   // Bambu öbeği (kıyıda): iki üç sap, boğumlar, tepede yapraklar; uçlar kıyı payını aşmaz
   function bambuObegi(ctx, x, y, r, B) {
+    if (susBas(ctx, "gol-sus-bambu", x, y + 2, 20 + r() * 4, "alt")) return; // ChatGPT bambu
     for (let i = 0; i < 3; i++) {
       const dx = (i - 1) * 2.6;
       let boy = 7 + r() * 3;
@@ -1007,6 +1014,10 @@
       for (const k of kenarNoktalari(B, 4, 2)) elips(ctx, k.x, k.y, 1.6 + r(), 1.2, ["#9a958a", "#7a756a", "#b5ae9e"][Math.floor(r() * 3)]);   // çakıl
     }, "#2f4a24");
     for (const k of kenarNoktalari(B, 46, 6).filter((k) => k.ny < -0.7).slice(0, 2)) {                    // iskeleler
+      if (gorselVar("gol-sus-iskele")) {                                  // ChatGPT iskele: üst kıyıdan suya, dönmeden
+        susBas(ctx, "gol-sus-iskele", k.x, k.y + 14, 15, "alt");
+        continue;
+      }
       ctx.save(); ctx.translate(k.x, k.y); ctx.rotate(Math.atan2(-k.ny, -k.nx) - Math.PI / 2);
       elips(ctx, 1.5, 9, 4.5, 8, "rgba(0,0,0,0.25)");
       for (let t = -2; t < 16; t += 2.4) { ctx.fillStyle = (Math.round(t) % 2) ? ahsap : acik(ahsap, 0.12); ctx.fillRect(-4, t, 8, 2); ctx.fillStyle = koyu(ahsap, 0.35); ctx.fillRect(-4, t + 2, 8, 0.4); }

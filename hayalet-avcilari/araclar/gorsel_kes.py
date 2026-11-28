@@ -748,6 +748,13 @@ EK_PAFTALAR = {
     'Z02': [('sus-cimen', 192), ('sus-kaya', 192), ('sus-cicek', 160), ('sus-cimen-serit', 256), ('sus-cakil', 160), ('sus-yaprak', 192)],
     'Z03': [('sus-basamak', 192), ('sus-tahta-yol', 192), ('sus-su-birikintisi', 192), ('sus-yosun', 192), ('sus-cali', 160), ('sus-mantar', 128)],
     # Z04: patika ayrımlarında tabelalar ve yol kenarı süsleri (CHATGPT-ISTEMI-ZEMIN.md; tabelada yazı yok)
+    # Z24-Z29: zemin uyumu (CHATGPT-ISTEMI-UYUM.md): diken öbekleri, kenar şeritleri (YATAY_HARMAN), göl süsleri
+    'Z25': [(f'tema{n}-diken', 128) for n in range(1, 7)],
+    'Z26': [(f'tema{n}-kenar', 384) for n in range(1, 7)],
+    'Z27': [(f'aile-{a}-kenar', 384) for a in ('K', 'KS', 'KP', 'SH', 'SV', 'GA')],
+    'Z28': [(f'aile-{a}-kenar', 384) for a in ('GDA', 'DA', 'KA', 'LA')] + [None, None],
+    'Z29': [('gol-sus-buz', 160), ('gol-sus-palmiye', 192), ('gol-sus-bambu', 160), ('gol-sus-koi', 160),
+            ('gol-sus-iskele', 192), ('gol-sus-yildiz', 128)],
     'Z04': [('tabela-1', 192), ('tabela-2', 192), ('tabela-tas', 160), ('sus-yol-taslari', 256), ('sus-toprak-leke', 192), ('sus-uzun-cimen', 192)],
     'K06': [('donati-fici', 160), ('donati-sandik', 160), ('donati-fener', 192), ('donati-bank', 160), ('donati-tabela', 160), ('donati-saman', 192)],
     'K07': [('donati-cali', 160), ('donati-ciceklik', 160), ('donati-mantar', 128), ('donati-kutuk', 160), ('donati-tas', 160), ('donati-yaprak', 160)],
@@ -805,6 +812,9 @@ def yerine_gecildi(anahtar, pafta):
 TEK_PARCA = {'mermi-pompali', 'mermi-yesil', 'tema6-gol', 'tema1-gol'}
 # Parıltısı komşusuna değen nesneler: hücre içinde elle kırpılır (x0, y0, x1, y1; sütun yoğunluğunun en düşük yerinden)
 YATAY_DIKISSIZ = {f'tema{n}-sinir' for n in range(1, 7)}  # yan yana döşenen sınır şeritleri
+# Kenar şeritleri (düzensiz taş/toprak): dönem aranmaz, uçlar yatayda harmanlanır
+YATAY_HARMAN = {f'tema{n}-kenar' for n in range(1, 7)} | {f'aile-{a}-kenar' for a in ('K', 'KS', 'KP', 'SH', 'SV', 'GA', 'GDA', 'DA', 'KA', 'LA')}
+HARMAN_PAY = 40
 HUCRE_KIRP = {'mermi-yesil': (0, 0, 297, 512)}
 
 
@@ -879,6 +889,8 @@ def ek_hucreler(liste):
                 continue
             x0, y0 = (i % 3) * 512, (i // 3) * 512
             hucre = soluklari_sil(resim.crop((x0, y0, x0 + 512, y0 + 512)))
+            if pafta == 'Z28':
+                hucre = kenar_temizle(hucre, 8)  # hücre ızgara çizgileri
             if yol.startswith(HAMYOL):
                 hucre = kirinti_sil(pusu_sil(kenar_temizle(hucre), True))  # J07-J11: kulelerin üstünde soluk hale kalıyordu (alfa ~50)
             if anahtar in HUCRE_KIRP:
@@ -893,6 +905,8 @@ def ek_hucreler(liste):
             hucre = hucre.crop(kutu)
             if anahtar in YATAY_DIKISSIZ:
                 hucre = donem_kirp(hucre)
+            if anahtar in YATAY_HARMAN:
+                hucre = dikissiz_dikey(hucre.transpose(Image.ROTATE_90), HARMAN_PAY).transpose(Image.ROTATE_270)
             if anahtar in GRI_BULUT:
                 hucre = bulutu_grile(hucre, anahtar == 'bulut-4')
             oran = en / max(hucre.size)
@@ -947,6 +961,8 @@ DOKU_PAFTALARI = {
     'R24': [('aile-GA-zemin', 'iki'), ('aile-GDA-zemin', 'iki'), ('aile-DA-zemin', 'iki'), ('aile-KA-zemin', 'iki'),
             ('aile-LA-zemin', 'iki'), ('nehir-doku', 'dikey')],
     'R42': [None, None, None, None, None, ('dere-su', 'iki')],
+    'Z24': [(f'tema{n}-diken-taban', 'iki') for n in range(1, 7)],
+    'Z28': [None, None, None, None, ('doku-lav-1', 'iki'), ('doku-lav-2', 'iki')],
     'J12': [('yol-nehir-ortak', 'dikey'), None, None, None, None, None],
     # Z01: zemin katmanı dokuları (yollar ve alan lekeleri; CHATGPT-ISTEMI-ZEMIN.md)
     'Z01': [('zemin-yol-toprak', 'iki'), ('zemin-yol-tas', 'iki'), ('zemin-cimen', 'iki'), ('zemin-kuru', 'iki'),

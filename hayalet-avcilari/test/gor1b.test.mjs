@@ -218,8 +218,11 @@ try {
     assert.equal(r.mermiYedek.say, 0);
     assert.ok(r.mermiYedek.pik > 0, String(r.mermiYedek.pik));
   });
-  sina('diken-plaka önbellek ressamında resimden; yokken kod dikeni', () => {
-    assert.ok(r.diken.say >= 1, JSON.stringify(r.diken));
+  // Kullanıcı kararı (27 Kasım 2026): tuzaklar "sınır yöntemiyle" çizilir (kenarlık + zemin taşı deseni + kod uçları);
+  // diken-plaka resmi artık kullanılmaz (resimle üst üste biniyordu). Resim varken de yokken de diken çizilmeli.
+  sina('diken sınır yöntemiyle çizilir (diken-plaka resmi kullanılmaz); resim yokken de çizilir', () => {
+    assert.equal(r.diken.say, 0, JSON.stringify(r.diken));
+    assert.ok(r.diken.pik > 0, JSON.stringify(r.diken));
     assert.ok(r.dikenYedek.pik > 0, String(r.dikenYedek.pik));
   });
   sina('lav kareleri lav dikdörtgenine sığar; yokken kod lavı', () => {

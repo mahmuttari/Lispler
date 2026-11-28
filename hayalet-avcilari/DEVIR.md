@@ -26,7 +26,6 @@ düğmeleri tuvalde dikişsiz), PRF2 (yolculuk çiziminde kare başı israf azal
      maliyeti). Test asimetrik: __hazir() botu yalnız klasik sahnede siler (bot ~%10). Geçirmek için ya görünen yuva/sis pikseli
      azaltılmalı ya da eşik kullanıcıyla konuşulmalı.
    - uc-avci UC7b (CPU 4×, p95 ≤ 20 ms): makine yüküne bağlı rAF titremesi; yüklü makinede 2 geçti 2 düştü.
-   - gor1b "diken-plaka" denetimi HEAD'de de düşüyor (diken artık sınır yöntemiyle çiziliyor; beklenti güncellenmeli).
    - yuv2 (p) zaman oranı yükte ara sıra 1,25'i aşıyor (dalgalanma).
    - muzik.test DE ek yeri (yukarıda).
 4. FIX4 (klasik haritada takılan hayaletler) ve REK2 (oynanabilir reklam kamerası): önce Fable şartnamesi.

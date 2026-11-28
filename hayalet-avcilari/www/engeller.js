@@ -534,10 +534,17 @@
   const ALEV_RENKLERI = [["rgba(249,115,22,0.75)", 1], ["rgba(250,204,21,0.8)", 0.6]];
   function alevler(ctx, o, zaman) {
     const uclar = o._alevUclari || (o._alevUclari = kenarNoktalari(o.bicim, 11, 0).filter((k) => k.ny < -0.35));
-    const r = engelRastgele(o.tohum);
+    // Alev başına tohumlu (faz, boy, genişlik) bir kez hesaplanır; her karede rastgele üretici kurulmaz
+    let par = o._alevPar;
+    if (!par || par.length !== uclar.length * 3) {
+      const r = engelRastgele(o.tohum);
+      par = o._alevPar = [];
+      for (let i = 0; i < uclar.length; i++) par.push(r() * 6.28, 12 + r() * 12, 5 + r() * 3);
+    }
     ctx.save(); ctx.globalCompositeOperation = "lighter";
-    for (const k of uclar) {
-      const faz = r() * 6.28, boy = 12 + r() * 12, gen = 5 + r() * 3;
+    for (let ai = 0; ai < uclar.length; ai++) {
+      const k = uclar[ai];
+      const faz = par[ai * 3], boy = par[ai * 3 + 1], gen = par[ai * 3 + 2];
       const t = Math.sin(zaman * 4 + faz) * 0.5 + 0.5, b = boy * (0.7 + t * 0.5), sal = Math.sin(zaman * 3 + faz) * 3;
       for (const [renk, oran] of ALEV_RENKLERI) {
         const x = o.x + k.x, y = o.y + k.y + 3, g2 = gen * oran, b2 = b * oran;
@@ -1118,8 +1125,12 @@
     if (o.tur !== "obje1" && o.tur !== "obje2") return null;
     if (typeof animHazir !== "function" || typeof animCiz !== "function") return null;
     if (typeof aeAzHareket === "function" && aeAzHareket()) return null;
-    const dt = typeof o.tema === "string";
-    const k = dt ? `ulke-${o.tema}-${o.tur === "obje1" ? 1 : 2}` : `tema${o.tema + 1}-${o.tur}`;
+    let k = o._animAd;
+    if (k === undefined || o._animTema !== o.tema) { // anahtar dizgisi engel başına bir kez (her karede kurulmaz)
+      const dt = typeof o.tema === "string";
+      k = o._animAd = dt ? `ulke-${o.tema}-${o.tur === "obje1" ? 1 : 2}` : `tema${o.tema + 1}-${o.tur}`;
+      o._animTema = o.tema;
+    }
     if (animHazir(k) < 3) return null;
     const h = (o.tohum >>> 0) || 0x9e3779b9;
     const periyot = 4 + ((h % 997) / 997) * 4;          // 4–8 sn
@@ -1131,7 +1142,7 @@
   // Durağan resmin (objeResmi) kaydettiği TEK hedef dikdörtgenine, kırpmadan çizer: resim kutuya "contain" sığar,
   // alt-orta hizalıdır. Durağan resim henüz çizilmediyse (kayıt yok) canlı kare de çizilmez.
   function objeAnimCiz(ctx, o, k, kare) {
-    const im = typeof gorsel === "function" ? gorsel(`an-${k}-${kare}`) : null;
+    const im = typeof gorsel === "function" ? gorsel(typeof animAnahtarlari === "function" ? animAnahtarlari(k)[kare - 1] : `an-${k}-${kare}`) : null;
     const B = o.bicim, Y = B && B._objeYerlesim, q = Y && Y.kayit && Y.kayit[0];
     if (!im || !q) return false;
     ctx.save();

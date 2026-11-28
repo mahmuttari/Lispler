@@ -1569,7 +1569,7 @@ function yolculukYuvaSisSprite() {
 
 // Yuvanın ağzında canlı sis: K12 kareleri varsa animasyon, yoksa önbellekli sprite'dan yükselen 3 duman.
 // Doğumdan sonraki 0.7 sn sis 1.6 kat büyür/parlar. Hareketi azalt tercihinde statik kalır.
-function yolculukYuvaSisiCiz(ctx, yv, r, zaman, az) {
+function yolculukYuvaSisiCiz(ctx, yv, r, zaman, az, olcek = 1) {
   const faz = (yv.x * 0.013 + yv.y * 0.017) % (Math.PI * 2);
   const gecen = yv._dogumAn ? zaman * 1000 - yv._dogumAn : 1e9;
   const p = Math.max(0, Math.min(1, gecen / 700));
@@ -1578,19 +1578,20 @@ function yolculukYuvaSisiCiz(ctx, yv, r, zaman, az) {
   const t = az ? 0 : zaman;
   const sisVar = typeof animHazir === "function" && animHazir("yuva-sis");
   const dumanVar = typeof animHazir === "function" && animHazir("yuva-duman");
+  const kucuk = buyuk < 1.02; // doğum büyümesinde boyut her karede değişir: orijinal kare; sakin halde önceden küçültülmüş kopya
   if (sisVar) {
     const kare = animDongu("yuva-sis", t + faz, 3);
     const w = r * 3.2 * buyuk, kay = az ? 0 : Math.sin(t * 0.5 + faz) * 6;
     const alfa = az ? 0.55 : 0.55 + 0.15 * Math.sin(t * 0.9 + faz);
     ctx.save(); ctx.globalAlpha = Math.min(1, alfa + ek);
-    animCiz(ctx, "yuva-sis", kare, yv.x + kay - w / 2, yv.y + r * 0.55 - w / 2, w, w);
+    animCiz(ctx, "yuva-sis", kare, yv.x + kay - w / 2, yv.y + r * 0.55 - w / 2, w, w, false, kucuk ? olcek : 0);
     ctx.restore();
   }
   if (dumanVar) {
     const kare = animDongu("yuva-duman", t + faz, 4);
     const w = r * 1.3 * buyuk;
     ctx.save(); ctx.globalAlpha = Math.min(1, 0.5 + ek);
-    animCiz(ctx, "yuva-duman", kare, yv.x - w / 2, yv.y - r * 0.2 - w / 2, w, w);
+    animCiz(ctx, "yuva-duman", kare, yv.x - w / 2, yv.y - r * 0.2 - w / 2, w, w, false, kucuk ? olcek : 0);
     ctx.restore();
   }
   if (sisVar || dumanVar) return;
@@ -1625,6 +1626,7 @@ function yolculukYuvalariCiz(ctx, kip) {
   const az = yolculukAzHareket();
   const el = (x, y, rx, ry, renk) => { ctx.fillStyle = renk; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.fill(); };
   const Z = window.ZEM3A;
+  const mt = ctx.getTransform ? ctx.getTransform() : null, olcek = mt ? Math.hypot(mt.a, mt.b) || 1 : 1;
   for (const yv of game.yuvalar) {
     const r = yv.r || 32;
     if (yv.x + r * 1.4 < cam.x || yv.x - r * 1.4 > cam.x + W || yv.y + r * 1.4 < cam.y || yv.y - r * 1.4 > cam.y + H) continue;
@@ -1639,8 +1641,9 @@ function yolculukYuvalariCiz(ctx, kip) {
     ctx.translate(yv.x, yv.y);
     el(0, r * 0.75, r * 1.12, r * 0.38, "rgba(0,0,0,0.25)"); // yumuşak gölge
     let resimli = false;
-    if (typeof gorsel === "function" && typeof gorselKutuya === "function" && gorsel("yuva-" + yv.tur)) {
-      resimli = gorselKutuya(ctx, "yuva-" + yv.tur, -r * 1.1, -r * 1.1, r * 2.2, r * 2.2);
+    const yim = typeof gorsel === "function" && typeof resmiKutuyaCizKucuk === "function" ? gorsel("yuva-" + yv.tur) : null;
+    if (yim) {
+      resmiKutuyaCizKucuk(ctx, yim, -r * 1.1, -r * 1.1, r * 2.2, r * 2.2, olcek); resimli = true;
     }
     if (!resimli) {
       if (yv.tur === "mezarlik") {
@@ -1691,7 +1694,7 @@ function yolculukYuvalariCiz(ctx, kip) {
       }
     }
     ctx.restore();
-    yolculukYuvaSisiCiz(ctx, yv, r, zaman, az);
+    yolculukYuvaSisiCiz(ctx, yv, r, zaman, az, olcek);
     ctx.globalAlpha = eskiAlfa;
   }
 }

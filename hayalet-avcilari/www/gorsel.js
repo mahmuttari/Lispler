@@ -43,6 +43,50 @@ function resmiKutuyaCiz(ctx, kaynak, x, y, w, h, alt = false) {
   ctx.drawImage(kaynak, x + (w - dw) / 2, alt ? y + h - dh : y + (h - dh) / 2, dw, dh);
 }
 
+// Büyük kaynağı küçük boyuta çizmek her karede pahalıdır (yeniden örnekleme: 1:1 blit'e göre ~15 kat). Hedef cihaz
+// boyutunda (dw*olcek, piksele yuvarlı) önceden küçültülmüş kopya yapılır ve 1:1 çizilir; kopyanın görünür (alfa > 1)
+// sınır kutusu da hesaplanır, boş kenar boyanmaz. Resim başına en çok 6 boyut (WeakMap: resim değişirse kopya da düşer).
+// Okunamayan (kirli) tuvalde sınır kutusu tüm kopyadır.
+const _kucukOnb = new WeakMap();
+function gorselKucuk(im, dw, dh, olcek) {
+  const tw = Math.max(1, Math.round(dw * olcek)), th = Math.max(1, Math.round(dh * olcek));
+  if (tw > 1024 || th > 1024) return null;
+  let m = _kucukOnb.get(im);
+  if (!m) _kucukOnb.set(im, (m = new Map()));
+  const an = tw * 8192 + th;
+  let e = m.get(an);
+  if (!e) {
+    if (m.size >= 6) m.clear();
+    const c = document.createElement("canvas"); c.width = tw; c.height = th;
+    const x = c.getContext("2d", { willReadFrequently: true });
+    x.imageSmoothingQuality = "high";
+    x.drawImage(im, 0, 0, tw, th);
+    let x0 = 0, y0 = 0, x1 = tw, y1 = th;
+    try {
+      const d = x.getImageData(0, 0, tw, th).data;
+      let a0 = tw, b0 = th, a1 = -1, b1 = -1;
+      for (let j = 0; j < th; j++) for (let i = 0; i < tw; i++) if (d[(j * tw + i) * 4 + 3] > 1) { if (i < a0) a0 = i; if (i > a1) a1 = i; if (j < b0) b0 = j; if (j > b1) b1 = j; }
+      if (a1 >= 0) { x0 = a0; y0 = b0; x1 = a1 + 1; y1 = b1 + 1; } else { x0 = y0 = x1 = y1 = 0; }
+    } catch (_) { /* kutu = tüm kopya */ }
+    e = { c, tw, th, x0, y0, x1, y1 };
+    m.set(an, e);
+  }
+  return e;
+}
+// resmiKutuyaCiz ile aynı yerleşim (boyut en çok yarım cihaz pikseli oynar); kopya 1:1, yalnız görünür kutusu çizilir
+function resmiKutuyaCizKucuk(ctx, kaynak, x, y, w, h, olcek, alt = false) {
+  const kw = kaynak.naturalWidth || kaynak.width, kh = kaynak.naturalHeight || kaynak.height;
+  const o = Math.min(w / kw, h / kh);
+  const dw = kw * o, dh = kh * o;
+  const e = gorselKucuk(kaynak, dw, dh, olcek);
+  const dx = x + (w - dw) / 2, dy = alt ? y + h - dh : y + (h - dh) / 2;
+  if (!e) return ctx.drawImage(kaynak, dx, dy, dw, dh);
+  const bw = e.x1 - e.x0, bh = e.y1 - e.y0;
+  if (bw <= 0 || bh <= 0) return;
+  const kx = 1 / olcek, ky = 1 / olcek; // tam 1:1 (yeniden örnekleme yok)
+  ctx.drawImage(e.c, e.x0, e.y0, bw, bh, dx + (dw - e.tw * kx) / 2 + e.x0 * kx, dy + (dh - e.th * ky) / 2 + e.y0 * ky, bw * kx, bh * ky);
+}
+
 function gorselKutuya(ctx, k, x, y, w, h, alt = false) {
   const im = gorsel(k);
   if (!im) return false;
@@ -369,18 +413,28 @@ function animSayisi(ad) {
   while (typeof GORSEL_LISTESI === "object" && GORSEL_LISTESI && GORSEL_LISTESI[`an-${ad}-${n + 1}`]) n++;
   return (_animSayi[ad] = n);
 }
+const _animAnahtar = {};
+function animAnahtarlari(ad) {
+  let a = _animAnahtar[ad];
+  // _animSayi (kare sayısı önbelleği) sıfırlanır/değişirse anahtar listesi de yeniden kurulur
+  if (!a || _animSayi[ad] !== a.length) { a = _animAnahtar[ad] = []; for (let i = 1, n = animSayisi(ad); i <= n; i++) a.push(`an-${ad}-${i}`); }
+  return a;
+}
 function animHazir(ad) {
-  const n = animSayisi(ad);
-  for (let i = 1; i <= n; i++) if (!gorsel(`an-${ad}-${i}`)) return 0;
-  return n;
+  // anahtar dizgileri bir kez kurulur; hazır olup olmadığı her çağrıda GORSEL'den okunur (testler çalışırken siler/ekler)
+  const a = animAnahtarlari(ad);
+  for (let i = 0; i < a.length; i++) if (!gorsel(a[i])) return 0;
+  return a.length;
 }
 // Döngü: sn saniyede fps hızında 1..n; bir kez: k (0-1) ilerlemesine göre 1..n. Hazır değilse 0.
 function animDongu(ad, sn, fps) { const n = animHazir(ad); return n ? 1 + (Math.floor(sn * fps) % n + n) % n : 0; }
 function animBirKez(ad, k) { const n = animHazir(ad); return n ? 1 + Math.max(0, Math.min(n - 1, Math.floor(k * n))) : 0; }
-function animCiz(ctx, ad, i, x, y, w, h, alt = false) {
-  const im = i ? gorsel(`an-${ad}-${i}`) : null;
+function animCiz(ctx, ad, i, x, y, w, h, alt = false, olcek = 0) {
+  const im = i ? gorsel(animAnahtarlari(ad)[i - 1] || `an-${ad}-${i}`) : null;
   if (!im) return false;
-  resmiKutuyaCiz(ctx, im, x, y, w, h, alt);
+  // olcek (cihaz piksel oranı) verilirse kare hedef boyuta önceden küçültülmüş kopyadan, 1:1 çizilir
+  if (olcek > 0) resmiKutuyaCizKucuk(ctx, im, x, y, w, h, olcek, alt);
+  else resmiKutuyaCiz(ctx, im, x, y, w, h, alt);
   return true;
 }
 

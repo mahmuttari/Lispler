@@ -5625,18 +5625,68 @@ function _menuHayaletleriKur() {
     _menuDekor.kareZamanlayici = setInterval(_menuHayaletKareCiz, 250);
   }
 }
+// Uzun menü düğmeleri: 3 parçalı (uç + orta + uç) resim, boyuta göre BİR KEZ tuvale çizilip arka plan yapılır.
+// CSS border-image dilim sınırlarında bilineer örnekleme / kesirli piksel yüzünden ince koyu çizgi bırakıyordu (MEN3);
+// tuvalde her parça tam sayı cihaz pikselinde ve kaynak dikdörtgenine kenetlenerek çizilir, dikiş oluşmaz.
+// uc: kaynak resimde uç genişliği (px), ust: kaynakta çizilmeyen şeffaf üst pay (yeşil resimde 78 px).
+const _MENU_DUGME_DILIM = { yesil: { uc: 60, ust: 78 }, mor: { uc: 56, ust: 0 }, turuncu: { uc: 56, ust: 0 }, camgobegi: { uc: 64, ust: 0 } };
+const _menuDugmeOnbellek = new Map(); // "anahtar|G|Y|dpr" → data URL
+let _menuDugmeGozlemci = null;
+function _menuDugmeUcGenisligi(uc, ust, im, Y) { // hedefte uç genişliği: oran korunur (cihaz pikseli, tam sayı)
+  return Math.max(1, Math.round(uc * Y / (im.naturalHeight - ust)));
+}
+function menuDugmeTuvaliCiz(anahtar, im, G, Y, dpr) {
+  const dilim = _MENU_DUGME_DILIM[anahtar];
+  if (!dilim || !im || G < 2 || Y < 2) return "";
+  const kimlik = `${anahtar}|${G}|${Y}|${dpr}|${im.naturalWidth}`;
+  if (_menuDugmeOnbellek.has(kimlik)) return _menuDugmeOnbellek.get(kimlik);
+  const gw = Math.max(2, Math.round(G * dpr)), gh = Math.max(2, Math.round(Y * dpr));
+  const iw = im.naturalWidth, sh = im.naturalHeight - dilim.ust, sy = dilim.ust;
+  let uc = _menuDugmeUcGenisligi(dilim.uc, dilim.ust, im, gh);
+  if (uc * 2 >= gw) uc = Math.max(1, Math.floor((gw - 1) / 2));
+  const t = document.createElement("canvas");
+  t.width = gw; t.height = gh;
+  const c = t.getContext("2d");
+  if (!c) return "";
+  c.imageSmoothingEnabled = true; c.imageSmoothingQuality = "high";
+  c.drawImage(im, dilim.uc, sy, iw - 2 * dilim.uc, sh, uc, 0, gw - 2 * uc, gh); // orta (uçlar bittiği tam sayı sınırda)
+  c.drawImage(im, 0, sy, dilim.uc, sh, 0, 0, uc, gh);                           // sol uç
+  c.drawImage(im, iw - dilim.uc, sy, dilim.uc, sh, gw - uc, 0, uc, gh);          // sağ uç (resim simetrik, aynalama gerekmez)
+  let url = "";
+  try { url = t.toDataURL("image/png"); } catch (e) { url = ""; }
+  if (_menuDugmeOnbellek.size > 48) _menuDugmeOnbellek.clear();
+  _menuDugmeOnbellek.set(kimlik, url);
+  return url;
+}
+function _menuDugmeyiCiz(el) {
+  const anahtar = el.dataset.menuDugme, im = gorsel("menu-dugme-" + anahtar);
+  if (!im || !el.classList.contains("menu-dugme-resim") || el.classList.contains("btn-small")) return;
+  const G = el.offsetWidth, Y = el.offsetHeight;
+  if (!G || !Y) return; // gizli ekran: görününce gözlemci yeniden çağırır
+  const url = menuDugmeTuvaliCiz(anahtar, im, G, Y, window.devicePixelRatio || 1);
+  if (url) { el.style.backgroundImage = `url("${url}")`; el.style.backgroundSize = "100% 100%"; el.style.backgroundOrigin = "border-box"; }
+}
 function _menuDekorDugmeleriKur() {
+  if (!_menuDugmeGozlemci && typeof ResizeObserver === "function") {
+    _menuDugmeGozlemci = new ResizeObserver((kayitlar) => { for (const k of kayitlar) _menuDugmeyiCiz(k.target); });
+    window.addEventListener("resize", () => { for (const el of document.querySelectorAll(".menu-dugme-resim[data-menu-dugme]")) _menuDugmeyiCiz(el); });
+  }
   for (const el of document.querySelectorAll("[data-menu-dugme]")) {
     const k = "menu-dugme-" + el.dataset.menuDugme;
+    const uzun = !el.classList.contains("btn-small");
     if (gorsel(k)) {
-      el.style.backgroundImage = `url("${gorsel(k).src}")`;
       el.style.backgroundSize = "100% 100%";
       el.style.backgroundRepeat = "no-repeat";
-      el.style.setProperty("--dugme-resim", `url("${gorsel(k).src}")`); // uzun düğmeler 3 parçalı (uç + orta) çizilir, basık görünmez
       el.classList.add("menu-dugme-resim");
+      if (uzun) {
+        el.style.backgroundImage = ""; // tuval hazır olana dek CSS yedeği
+        _menuDugmeyiCiz(el);
+        if (_menuDugmeGozlemci) _menuDugmeGozlemci.observe(el);
+        if (!el.style.backgroundImage) el.style.backgroundImage = `url("${gorsel(k).src}")`; // ölçü yoksa yedek: düz gerilmiş resim
+      } else el.style.backgroundImage = `url("${gorsel(k).src}")`;
     } else {
+      if (_menuDugmeGozlemci) _menuDugmeGozlemci.unobserve(el);
       el.style.backgroundImage = "";
-      el.style.removeProperty("--dugme-resim");
       el.classList.remove("menu-dugme-resim");
     }
   }

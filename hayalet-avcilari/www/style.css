@@ -2730,12 +2730,11 @@ body.is-tablet .power-bar .power-ring { width: 32px; height: 32px; font-size: 21
 #screen-menu .menu-satir > .btn-kare { flex: none; width: 64px; min-width: 64px; padding: 0; font-size: 22px; --cap: 22px; }
 #screen-menu .btn-kare .ui-simge { width: 30px; height: 30px; }
 #screen-menu .btn.menu-dugme-resim:not(.btn-small) {
-  background-image: none !important; border-style: solid; border-color: transparent; border-width: 0 var(--cap, 20px);
-  border-image-source: var(--dugme-resim); border-image-slice: 0 56 fill; border-image-width: 0 var(--cap, 20px);
-  border-image-repeat: stretch; box-shadow: none; filter: drop-shadow(0 4px 6px rgba(8, 3, 24, 0.5));
+  /* Arka plan game.js'te boyuta göre tuvale çizilir (3 parçalı, dikişsiz); resim yoksa düz gerilmiş yedek */
+  border-style: solid; border-color: transparent; border-width: 0 var(--cap, 20px);
+  background-origin: border-box; background-clip: border-box; background-repeat: no-repeat; background-size: 100% 100%;
+  box-shadow: none; filter: drop-shadow(0 4px 6px rgba(8, 3, 24, 0.5));
 }
-#screen-menu .btn.btn-play.menu-dugme-resim { border-image-slice: 78 60 0 60 fill; }
-#screen-menu .btn.btn-online.menu-dugme-resim, #screen-menu .btn.btn-kare.menu-dugme-resim { border-image-slice: 0 64 fill; }
 #screen-menu .btn-kare .rozet { top: -8px; inset-inline-end: -14px; }
 
 /* Alt sıra: eşit aralıklı dört cam düğme (simge üstte, yazı altta) */

@@ -1886,6 +1886,7 @@ function drawEnemyProjectile(ctx, p) {
   dusmanMermiIzi(ctx, p);
   ctx.save();
   ctx.translate(p.x, p.y);
+  if (typeof anmAcilis === "function") { const pop = anmAcilis(p, performance.now(), 180); if (pop !== 1) ctx.scale(pop, pop); } // ANM1: çıkışta pop
   const r = p.isBoss ? 9 : 6;
   if (typeof gorsel === "function" && typeof gorselKutuya === "function" && gorsel(p.isBoss ? "atis-boss" : "atis-hayalet")) {
     const boy = r * 5;
@@ -2009,6 +2010,7 @@ function drawEffects(ctx) {
       ctx.stroke();
       ctx.restore();
     } else if (e.type === "rocket") {
+      if (typeof anmRoketIzi === "function") anmRoketIzi(ctx, e, performance.now()); // ANM1: ışık izi
       if (typeof aeRoketCiz === "function" && aeRoketCiz(ctx, e)) continue; // kareler ya da kod roketi (anim-ek.js)
       ctx.save();
       ctx.translate(e.x, e.y);
@@ -3138,6 +3140,13 @@ function drawGhost(ctx, g) {
     }
   }
 
+  // ANM1: ateş eden hayaletin çevresinde nabız gibi atan mor ışık (atışa hazır olduğunu sezdirir)
+  if (g.isShooter && !g.isBoss && typeof anmParlama === "function" && !animAzHareket()) {
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    anmParlama(ctx, 0, -4 * s, size * 0.9, "192,132,252", 0.28 + 0.12 * Math.sin(animSimdi / 260 + (g.x || 0) * 0.05));
+    ctx.restore();
+  }
   // Gölge (hayaletler havada durur: temas gölgesi yok; sol üst ışık 2 px sağa, 1 px aşağı)
   ctx.fillStyle = "rgba(0,0,0,0.3)";
   ctx.beginPath();
@@ -3607,14 +3616,31 @@ function drawGunProjectile(ctx, gunKey, ang) {
   }
 }
 
+// ANM1: toplanabilire gölge, ışıltı, belirme pop'u ve kıvılcım (anim-ek.js); gövde drawPickupGovde'de (yalnız görüntü)
 function drawPickup(ctx, p) {
+  if (p.life !== undefined && p.life < 3 && Math.floor(p.life * 8) % 2 === 0) return;
+  const cam = game.camera;
+  if (cam && (p.x < cam.x - 40 || p.x > cam.x + game.W + 40 || p.y < cam.y - 40 || p.y > cam.y + game.H + 40)) return;
+  if (typeof anmPickupAlti !== "function") { drawPickupGovde(ctx, p); return; }
+  const now = performance.now();
+  anmPickupAlti(ctx, p, now);
+  const pop = anmAcilis(p, now);
+  if (pop !== 1) {
+    ctx.save(); ctx.translate(p.x, p.y); ctx.scale(pop, pop); ctx.translate(-p.x, -p.y);
+    drawPickupGovde(ctx, p);
+    ctx.restore();
+  } else drawPickupGovde(ctx, p);
+  anmPickupUstu(ctx, p, now);
+}
+
+function drawPickupGovde(ctx, p) {
   // Son 3 saniyede yanıp sön → bu kareyi atla
   if (p.life !== undefined && p.life < 3) {
     if (Math.floor(p.life * 8) % 2 === 0) return;
   }
   ctx.save();
   ctx.translate(p.x, p.y);
-  const bob = Math.sin(performance.now() / 200 + p.x) * 3;
+  const bob = typeof anmPickupBob === "function" ? anmPickupBob(p, performance.now()) : Math.sin(performance.now() / 200 + p.x) * 3;
   ctx.translate(0, bob);
 
   // Elmas/zümrüt üstünde dört köşeli parıltı (N07): ~1,6 sn'de bir, konuma göre faz; yalnız ekrandaki mücevherlerde
@@ -9030,6 +9056,9 @@ function drawBot(ctx, b) {
   ctx.translate(b.x, b.y);
   zeminGolgesi(ctx, 0, 45 * s, s); // GLG1: gölge yerde, sallanmadan
   ctx.translate(0, -bob);
+  if (b.walkTimer > 0 && typeof anmYalpa === "function") { // ANM1: yürürken hafif yalpa (ayak hizasından)
+    ctx.translate(0, 45 * s); ctx.rotate(anmYalpa(b.walkTimer * 6, 0.045)); ctx.translate(0, -45 * s);
+  }
   // 3D bot (uc-avci.js): hazırsa gövdeyi UcAvci çizer, etiket yine burada kalır.
   if (window.UcAvci && window.UcAvci.hazir) {
     const px = (game.player && Number.isFinite(game.player.x)) ? game.player.x : b.x;

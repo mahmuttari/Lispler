@@ -304,6 +304,7 @@ function petCiz(ctx, ucanlar) {
     ctx.beginPath(); ctx.ellipse(p.x, p.y + 10, 9, 3, 0, 0, Math.PI * 2); ctx.fill();
   }
   ctx.translate(p.x, p.y - yuk);
+  if (typeof anmYalpa === "function") ctx.rotate(ucar ? anmYalpa(zaman * 3, 0.05) : (p.yurume > 0 ? anmYalpa(p.yurume * 16, 0.06) : 0)); // ANM1: yalpa
   ctx.scale(p.yon, 1);
   petResmi(ctx, p.tur, 1, { yurume: p.yurume, saldiri: p.saldiri, kanat: p.kanat, zaman });
   ctx.restore();
@@ -370,6 +371,7 @@ function uzakPetleriCiz(ctx, ucanlar) {
       ctx.beginPath(); ctx.ellipse(rp.petX, rp.petY + 10, 9, 3, 0, 0, Math.PI * 2); ctx.fill();
     }
     ctx.translate(rp.petX, rp.petY - yuk);
+    if (typeof anmYalpa === "function") ctx.rotate(ucanlar ? anmYalpa(zaman * 3, 0.05) : ((rp.petYurume || 0) > 0 ? anmYalpa(rp.petYurume * 16, 0.06) : 0));
     ctx.scale(rp.petYon || 1, 1);
     petResmi(ctx, rp.pet, 1, { yurume: rp.petYurume || 0, kanat: rp.petKanat || 0, zaman });
     ctx.restore();

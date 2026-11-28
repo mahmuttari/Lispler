@@ -625,7 +625,7 @@ function aeMermiIziCiz(ctx, p) {
     for (let i = 0; i < p.iz.length - 1; i++) {
       const k = (i + 1) / p.iz.length;
       ctx.globalAlpha = 0.18 + k * 0.35;
-      ctx.fillStyle = p.gun === "lazer" ? "#fca5a5" : p.gun === "yesil" ? "#86efac" : "#bae6fd";
+      ctx.fillStyle = p.gun === "lazer" ? "#fca5a5" : p.gun === "yesil" ? "#86efac" : p.gun === "bazuka" ? "#fdba74" : "#bae6fd";
       ctx.beginPath(); ctx.arc(p.iz[i].x, p.iz[i].y, 1 + k * 2.4, 0, Math.PI * 2); ctx.fill();
     }
   }
@@ -1057,4 +1057,105 @@ function aeTozlariCiz(ctx, now = performance.now()) {
     ctx.fill();
     ctx.restore();
   }
+}
+
+// ====== ANM1: hareketli her şeye hafif canlılık (yalnız GÖRÜNTÜ) ======
+// Kullanıcı (28 Kasım 2026): "atışlara animasyon ekle, arkaya ışıldama bıraksın, bu tür hareketli her şeyde animasyonlar olmalı".
+// Hiçbir oyun durumu, çarpışma, süre ya da çevrimiçi alan değişmez: yalnız nesneye "_" önekli görsel alanlar (_dg, _iz) yazılır
+// (eşitlenmez) ve performance.now() kullanılır. Rastgelelik yok: kıvılcım fazı konumdan, deterministik sin ile gelir.
+// Tüm yeni hareketler "hareketi azalt" tercihinde kapanır ya da en aza iner.
+const _anmParlamaOnbellek = Object.create(null);
+// Yumuşak radyal parıltı resmi (renk başına bir kez çizilir; karede yalnız drawImage)
+function anmParlamaResmi(renk) {
+  let c = _anmParlamaOnbellek[renk];
+  if (c) return c;
+  c = document.createElement("canvas"); c.width = c.height = 64;
+  const x = c.getContext("2d");
+  const g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, `rgba(${renk},0.9)`); g.addColorStop(0.4, `rgba(${renk},0.32)`); g.addColorStop(1, `rgba(${renk},0)`);
+  x.fillStyle = g; x.fillRect(0, 0, 64, 64);
+  _anmParlamaOnbellek[renk] = c;
+  return c;
+}
+// Parıltıyı (x, y) merkezli çizer; çağıran "lighter" bileşimini kurar ve geri alır
+function anmParlama(ctx, x, y, r, renk, alfa) {
+  ctx.globalAlpha = alfa;
+  ctx.drawImage(anmParlamaResmi(renk), x - r, y - r, r * 2, r * 2);
+}
+// Belirme "pop"u: nesne ilk çizildiğinde küçükten büyüyüp hafifçe aşar (ease-out back). Az harekette hep 1.
+function anmAcilis(o, now, sure = 380) {
+  if (o._dg === undefined) o._dg = now;
+  if (aeAzHareket()) return 1;
+  const k = (now - o._dg) / sure;
+  if (k >= 1) return 1;
+  if (k <= 0) return 0.05;
+  const c = 1.9, e = 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2);
+  return Math.max(0.05, e);
+}
+// Dört köşeli kıvılcım: ~1,4 sn'de bir kısa parlar (faz konumdan); az harekette çizilmez
+function anmKivilcim(ctx, x, y, r, faz, now, renk = "#ffffff") {
+  if (aeAzHareket()) return false;
+  const k = (((now / 1000 + faz) / 1.4) % 1 + 1) % 1;
+  if (k > 0.28) return false;
+  const s = Math.sin((k / 0.28) * Math.PI);
+  const a = r * s, b = a * 0.2;
+  ctx.save();
+  ctx.translate(x, y); ctx.rotate(k * 1.2);
+  ctx.globalAlpha = 0.5 + 0.5 * s;
+  ctx.fillStyle = renk;
+  ctx.beginPath();
+  ctx.moveTo(0, -a); ctx.lineTo(b, -b); ctx.lineTo(a, 0); ctx.lineTo(b, b);
+  ctx.lineTo(0, a); ctx.lineTo(-b, b); ctx.lineTo(-a, 0); ctx.lineTo(-b, -b);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+  return true;
+}
+// Toplanabilirin yukarı-aşağı süzülmesi (game.js drawPickup ile aynı formül; az harekette durur)
+function anmPickupBob(p, now) {
+  return aeAzHareket() ? 0 : Math.sin(now / 200 + p.x) * 3;
+}
+const ANM_PICKUP_RENK = { para: "253,224,71", kalp: "252,165,165", guc: "253,224,71", elmas: "96,165,250", zumrut: "52,211,153" };
+// Toplanabilir: yerde süzülmeyle birlikte daralıp genişleyen yumuşak gölge + renkli ışıltı; ardından (gövdenin üstüne) kıvılcım
+function anmPickupAlti(ctx, p, now) {
+  const bob = anmPickupBob(p, now);
+  ctx.fillStyle = "rgba(0,0,0,0.22)";
+  const w = 9 * (1 + bob * 0.06);
+  ctx.beginPath(); ctx.ellipse(p.x + 1, p.y + 13, w, w * 0.32, 0, 0, Math.PI * 2); ctx.fill();
+  const renk = ANM_PICKUP_RENK[p.kind];
+  if (renk && !aeAzHareket()) {
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const nabiz = 0.5 + 0.5 * Math.sin(now / 420 + p.x * 0.07);
+    anmParlama(ctx, p.x, p.y + bob, 17 + nabiz * 3, renk, 0.22 + nabiz * 0.14);
+    ctx.restore();
+  }
+}
+function anmPickupUstu(ctx, p, now) {
+  if (p.kind === "elmas" || p.kind === "zumrut") return; // mücevherin kendi parıltısı var (N07)
+  const bob = anmPickupBob(p, now);
+  const faz = p.x * 0.017 + p.y * 0.011;
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  anmKivilcim(ctx, p.x + 6, p.y + bob - 7, p.kind === "guc" ? 8 : 6, faz, now, p.kind === "kalp" ? "#fecaca" : "#fff7cc");
+  ctx.restore();
+}
+// Roket: arkasında solan turuncu ışık izi + titreyen kafa parıltısı (konum geçmişi mermi nesnesinde, durum değil)
+function anmRoketIzi(ctx, e, now) {
+  const az = aeAzHareket();
+  const iz = e._iz || (e._iz = []);
+  const son = iz[iz.length - 1];
+  if (!son || Math.hypot(e.x - son.x, e.y - son.y) >= 6) { iz.push({ x: e.x, y: e.y }); if (iz.length > (az ? 3 : 9)) iz.shift(); }
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  for (let i = 0; i < iz.length - 1; i++) {
+    const k = (i + 1) / iz.length;
+    anmParlama(ctx, iz[i].x, iz[i].y, 5 + k * 9, "251,146,60", 0.1 + k * 0.28);
+  }
+  const titre = az ? 0 : Math.sin(now / 45 + e.x * 0.1) * 0.12;
+  anmParlama(ctx, e.x, e.y, 20, "254,215,170", 0.42 + titre);
+  ctx.restore();
+}
+// Yürüyen botun / petin hafif yalpalaması (radyan)
+function anmYalpa(faz, genlik) {
+  return aeAzHareket() ? 0 : Math.sin(faz) * genlik;
 }

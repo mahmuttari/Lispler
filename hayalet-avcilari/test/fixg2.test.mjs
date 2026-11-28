@@ -54,7 +54,8 @@ try {
       const sahte = document.createElement('canvas'); sahte.width = 60; sahte.height = 100;
       const sx = sahte.getContext('2d'); sx.fillStyle = '#3a7'; sx.fillRect(0, 0, 60, 100);
       window.__gercekGorsel = window.gorsel;
-      window.gorsel = () => sahte;
+      // K18 dikey duvar resimleri bu sınamanın dışında (yığma yolunu sınar; dikey resim yolu test/k18.test.mjs'te)
+      window.gorsel = (k) => (/-duvar-dikey$/.test(String(k)) ? null : sahte);
       return { iw: 60, ih: 100 };
     };
     window.__sahteBirak = () => { if (window.__gercekGorsel) window.gorsel = window.__gercekGorsel; };

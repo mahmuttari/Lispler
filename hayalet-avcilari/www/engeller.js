@@ -1183,7 +1183,10 @@
       for (const o of game.spikes || []) if (gor(o, 6)) resimCiz(ctx, o);
       for (const o of game.lavas || []) {
         if (!gor(o, 40)) continue;
-        const parlama = parlamaResmi(o);
+        // ChatGPT lav kareleri (R10) kendi alevini ve parıltısını taşır: kod parıltısı ve alevleri üstüne çizilince alevler
+        // ikilenip resmin üstünden taşıyordu, parıltı da kutu gibi görünüyordu (kullanıcı, 28 Kasım). Kod çizimi yalnız yedek.
+        const lavResimli = typeof animHazir === "function" && animHazir("lav") >= 3;
+        const parlama = lavResimli ? null : parlamaResmi(o);
         if (parlama) {
           const eski = ctx.globalAlpha;
           ctx.globalAlpha = eski * (0.6 + Math.sin(zaman * 1000 / 220) * 0.25);
@@ -1192,7 +1195,7 @@
         }
         resimCiz(ctx, o);
         lavCanli(ctx, o.x, o.y, o.w, o.h, o.bicim);
-        alevler(ctx, o, zaman);
+        if (!lavResimli) alevler(ctx, o, zaman);
       }
     }
     let animSayaci = 0;

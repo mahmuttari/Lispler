@@ -5,8 +5,10 @@
   Kodla çizilmiş görsel kalmaz; kod çizimi yalnız resim yüklenemezse yedek olarak durur. Bunu kullanıcının her seferinde söylemesine
   gerek yoktur (25 Kasım 2026). Kesim: `python3 araclar/gorsel_kes.py --ek` (bütün ek paftalar; eski görsellere dokunmaz) ya da
   `--ek R47 J02` (yalnız verilen paftalar; saniyeler sürer, bütün ek kesim artık dakikalar sürüyor).
-  Bulut oturumu da üretebilir: `python3 araclar/chatgpt_uret.py <KOD…>` (ChatGPT görsel modeli, OpenAI Images API; aynı ana istem,
-  aynı üslup referansları; anahtarı ortamın vekili ekler). OpenAI hesabında kredi yoksa `credit_balance_exhausted` döner.
+  **Bulut oturumu Codex CLI ile doğrudan üretir (kullanıcı, 28 Kasım 2026: "Codex ile GPT'ye doğrudan bağlan, daha az maliyetli"):**
+  `codex exec` görsel üretme aracı kullanıcının ChatGPT hesabıyla çalışır (API kredisi gerekmez). Paftalar için
+  `python3 araclar/codex_gorsel.py <KOD…>` (istem dosyasındaki blok + ekler). Mac penceresi yedek yol.
+  Eski yol `araclar/chatgpt_uret.py` (OpenAI Images API) kredi yoksa `credit_balance_exhausted` döner.
 - **İş bölümü (kullanıcı, 26 Kasım 2026):** "Hiçbir görseli sen hazırlama, tüm görsel işini ChatGPT'ye yaptır; sen yalnız
   yönet ve kodlamayı yaptır, en verimli şekilde çalış; akıl yürütme Fable, kodlama uygun gördüğün modeller." Claude görsel
   üretmez ya da çizmez (PIL, SVG, kod çizimi dahil). Yaptığı yalnız şunlar: ChatGPT istemini yazmak, gelen paftayı kesmek

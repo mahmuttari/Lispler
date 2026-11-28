@@ -176,7 +176,7 @@ try {
     yuruyus(1.2);
     const kapaliX = game.player.x;
     const acildi = yolculukKopruAc(0);
-    const toast = document.getElementById('toast').textContent;
+    const toast = document.getElementById('bnr-serit').textContent; // BUF1: köprü bildirimi dar şerit
     yuruyus(2);
     game.inputDir.x = 0;
     return { kapaliX, acildi, acik: game.kopruAcik[0], toast, sonX: game.player.x, gate: g };

@@ -1222,7 +1222,7 @@ function activatePower(charKey) {
   };
   game.healTimer = 0;
   game.pulseTimer = 0;
-  showToast(`${def.icon} ${def.name}!`);
+  // BUF1: ad artık simgenin yanındaki 2 sn'lik hapta gösterilir (updateHUD → bufGuncelle); ayrıca bildirim yok
   if (typeof aeGucPatlama === "function" && game.player) aeGucPatlama(charKey, game.player); // renkli patlama
   if (typeof audio.guc === "function") audio.guc(); else audio.unlock();
 }
@@ -6515,6 +6515,54 @@ function showToast(msg) {
 
 // 3.16.0: ekran ya da pencere değişince önceki ekranın bildirimi yeni ekranın üstünde kalmasın. Ekran değişmeden hemen
 // önce gösterilen bildirim (ör. "kopyalandı", sonra geri dönüş) yeni ekranda kalır.
+// BUF1: dar bildirim şeridi (ilerleme çubuğunun hemen altı, üst orta). Tıklamayı engellemez; ~1,9 sn.
+let bnrZamanlayici = null;
+function showBanner(metin, simgeAnahtari, emoji) {
+  const el = document.getElementById("bnr-serit");
+  if (!el) { showToast(`${emoji || ""} ${metin}`.trim()); return; }
+  const simge = simgeAnahtari ? uiSimgeHTML(simgeAnahtari, emoji || "", "") : (emoji || "");
+  el.innerHTML = `<span class="bnr-simge${simge.startsWith("<img") ? " bnr-resim" : ""}" aria-hidden="true">${simge}</span><span class="bnr-metin"></span>`;
+  el.querySelector(".bnr-metin").textContent = metin;
+  el.classList.remove("show");
+  void el.offsetWidth;
+  el.classList.add("show");
+  document.body.classList.add("bnr-acik");
+  clearTimeout(bnrZamanlayici);
+  bnrZamanlayici = setTimeout(() => { el.classList.remove("show"); document.body.classList.remove("bnr-acik"); }, 1900);
+  audio.toast();
+}
+
+// BUF1: aktif güç simgeleri. Süre/uzatma/duraklatma mantığı değişmez (power.expires); yalnız sunum.
+function bufGuncelle(power) {
+  const kap = document.getElementById("power-bar");
+  if (!kap) return;
+  if (!power) {
+    if (kap.firstChild) kap.innerHTML = "";
+    return;
+  }
+  let el = kap.querySelector(".buf");
+  if (!el || el._power !== power) {
+    kap.innerHTML = "";
+    el = document.createElement("div");
+    el.className = "buf";
+    el._power = power;
+    el.setAttribute("role", "img");
+    el.setAttribute("aria-label", power.name);
+    el.innerHTML =
+      `<span class="buf-halka power-ring" aria-hidden="true"><span class="buf-ic">${uiSimgeHTML(`guc-${power.type}`, power.icon, "")}</span><span class="buf-sweep"></span></span>` +
+      `<span class="buf-ad"></span>`;
+    el.querySelector(".buf-ad").textContent = power.name;
+    kap.appendChild(el);
+  }
+  const kalan = Math.max(0, power.expires - performance.now());
+  const oran = Math.max(0, Math.min(1, kalan / (power.duration || 15000)));
+  if (!(Math.abs((el._oran ?? -1) - oran) < 0.004)) {
+    el._oran = oran;
+    el.querySelector(".buf-halka").style.setProperty("--ae-p", String(oran));
+  }
+  el.classList.toggle("bitiyor", kalan < 2000);
+}
+
 function eskiToastuKapat() {
   if (performance.now() - toastZamani < 300) return;
   const el = document.getElementById("toast");
@@ -9451,25 +9499,8 @@ function updateHUD() {
     }
   }
 
-  // Aktif güç barı
-  const power = getActivePower();
-  const pwrEl = document.getElementById("power-bar");
-  if (pwrEl) {
-    if (power) {
-      const remaining = Math.max(0, (power.expires - performance.now()) / 1000);
-      const pct = Math.min(1, remaining / ((power.duration || 15000) / 1000));
-      pwrEl.classList.add("active");
-      pwrEl.innerHTML = `
-        <span class="power-ring" style="--ae-p:${Math.max(0, Math.min(1, pct))}" aria-hidden="true">${power.icon}</span>
-        <span class="power-name">${power.name}</span>
-        <span class="power-time">${remaining.toFixed(1)}s</span>
-        <div class="power-fill" style="width:${pct * 100}%"></div>
-      `;
-    } else {
-      pwrEl.classList.remove("active");
-      pwrEl.innerHTML = "";
-    }
-  }
+  // Aktif güç simgeleri (BUF1)
+  bufGuncelle(getActivePower());
 }
 
 // ====== DURAKLAT / ÇIK ======

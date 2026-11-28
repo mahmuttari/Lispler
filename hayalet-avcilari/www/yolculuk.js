@@ -350,7 +350,12 @@ function yolculukKopruAc(i) {
       }
     }
   } catch (e) { /* ses yoksa sessiz */ }
-  if (typeof showToast === "function") showToast(t("🌉 Köprü açıldı!"));
+  // BUF1: dar bildirim şeridi, köprü resmiyle (ilerleme çubuğunun altı; oyun alanını kapatmaz)
+  if (typeof showBanner === "function") {
+    let tk = null;
+    try { tk = yolculukTemaParca("kopru-acik"); } catch (e) { tk = null; }
+    showBanner(t("🌉 Köprü açıldı!").replace(/^🌉\s*/u, ""), tk || "kopru-acik", "🌉");
+  } else if (typeof showToast === "function") showToast(t("🌉 Köprü açıldı!"));
   return true;
 }
 

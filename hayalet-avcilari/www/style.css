@@ -800,39 +800,6 @@ body.is-tablet .vol-slider::-moz-range-thumb     { width: 36px; height: 36px; }
 .yc-hayalet { font-style: normal; display: inline-block; width: 14px; height: 13px; line-height: 13px; vertical-align: -2px; text-align: center; overflow: hidden; }
 .yc-hayalet.yc-resim { display: inline-block; width: 14px; height: 13px; vertical-align: -2px; }
 
-.power-bar {
-  position: absolute;
-  top: calc(114px + var(--ust));
-  left: 50%;
-  transform: translateX(-50%);
-  display: none;
-  align-items: center;
-  gap: 8px;
-  background: rgba(10, 5, 24, 0.82);
-  border: 1px solid rgba(255, 201, 77, 0.7);
-  border-radius: 12px;
-  padding: 6px 12px;
-  font-family: var(--font-baslik);
-  font-weight: 800;
-  font-size: 14px;
-  color: white;
-  z-index: 10;
-  box-shadow: 0 0 18px rgba(255, 201, 77, 0.35);
-  overflow: hidden;
-  min-width: 200px;
-  white-space: nowrap;
-}
-.power-bar.active { display: inline-flex; }
-.power-bar .power-icon { font-size: 18px; }
-.power-bar .power-name { color: #fde047; }
-.power-bar .power-time { opacity: 0.8; font-size: 12px; }
-.power-bar .power-fill {
-  position: absolute;
-  left: 0; bottom: 0; height: 3px;
-  background: #fde047;
-  transition: width 0.1s linear;
-}
-
 .pause-btn {
   position: absolute;
   top: calc(8px + var(--ust));
@@ -1438,15 +1405,6 @@ body.is-tablet .pause-btn svg { width: 22px; height: 22px; }
 body.is-tablet .yolculuk-hud {
   top: calc(108px + var(--ust));
 }
-body.is-tablet .power-bar {
-  top: calc(136px + var(--ust));
-  font-size: 17px;
-  padding: 8px 16px;
-  min-width: 240px;
-}
-body.is-tablet .power-bar .power-icon { font-size: 22px; }
-body.is-tablet .power-bar .power-time { font-size: 14px; }
-
 /* Menü/lobi/şampiyon ekranlarını da biraz büyüt */
 body.is-tablet .welcome-content,
 body.is-tablet .menu-content,
@@ -2111,20 +2069,6 @@ details.arkadas-bolum > summary::-webkit-details-marker { display: none; }
   40% { transform: scale(1.55); background: #fff7cc; }
   100% { transform: scale(1); }
 }
-.power-bar .power-ring {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  font-size: 17px;
-  border-radius: 50%;
-  position: relative;
-  background:
-    radial-gradient(circle at center, rgba(10, 5, 24, 0.95) 58%, transparent 60%),
-    conic-gradient(#fde047 calc(var(--ae-p, 1) * 360deg), rgba(255, 255, 255, 0.18) 0);
-}
-body.is-tablet .power-bar .power-ring { width: 32px; height: 32px; font-size: 21px; }
 .ae-pop { animation: aeHudPop 0.32s ease-out; }
 @keyframes aeHudPop {
   0% { transform: scale(1); }
@@ -2851,3 +2795,102 @@ body.is-tablet .inv-btn { width: 120px; height: 120px; inset-inline-start: auto;
 body.is-tablet .weapon-bar { --kn-slot: 80px; bottom: auto; inset-inline-start: auto; gap: 0; }
 body.is-tablet .weapon-slot { width: var(--kn-slot); height: var(--kn-slot); font-size: 38px; border-radius: 50%; }
 body.is-tablet .inv-panel { inset-inline-end: calc(44px + var(--sag)); inset-inline-start: auto; bottom: calc(176px + var(--alt)); }
+
+/* ====== BUF1: aktif güçler kenarda dairesel simge (MOBA tarzı), köprü bildirim şeridi ====== */
+/* Sol kenar, sol üst göstergelerin (can, bölüm, boss) altında dikey dizilir; Arapçada sağ kenara aynalanır. */
+.power-bar {
+  position: absolute;
+  top: calc(126px + var(--ust));
+  inset-inline-start: calc(12px + var(--sol));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+  pointer-events: none;
+  font-family: var(--font-baslik);
+}
+html[dir="rtl"] .power-bar { inset-inline-start: calc(12px + var(--sag)); }
+body.is-tablet .power-bar { top: calc(150px + var(--ust)); inset-inline-start: calc(22px + var(--sol)); }
+html[dir="rtl"] body.is-tablet .power-bar { inset-inline-start: calc(22px + var(--sag)); }
+.buf { display: flex; align-items: center; gap: 8px; }
+.buf-halka {
+  --ae-p: 1;
+  position: relative;
+  flex: 0 0 auto;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: conic-gradient(#fde047 calc(var(--ae-p) * 360deg), rgba(255, 255, 255, 0.2) 0);
+  box-shadow: 0 0 12px rgba(255, 201, 77, 0.45), 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+body.is-tablet .buf-halka { width: 56px; height: 56px; }
+.buf-ic, .buf-sweep { position: absolute; inset: 3px; border-radius: 50%; }
+.buf-ic {
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, #3b2169, #140a2b);
+  font-size: 24px; line-height: 1;
+}
+.buf-ic .ui-simge { width: 100%; height: 100%; vertical-align: top; object-fit: cover; }
+/* Geçen süre: saat yönünde kararan dilim (kalan kısım açık kalır) */
+.buf-sweep { background: conic-gradient(transparent calc(var(--ae-p) * 360deg), rgba(8, 4, 20, 0.62) 0); }
+.buf-ad {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(16, 9, 34, 0.86);
+  border: 1px solid rgba(255, 201, 77, 0.7);
+  color: #fde047;
+  font-weight: 800;
+  font-size: 13px;
+  white-space: nowrap;
+  max-width: calc(100vw - 130px);
+  overflow: hidden; text-overflow: ellipsis;
+  opacity: 0;
+  animation: bufAd 2.2s ease-out forwards;
+}
+/* ad yalnız başta ~2 sn görünür, sonra silinir; simge güç bitene dek kalır */
+@keyframes bufAd {
+  0% { opacity: 0; transform: scale(0.9); }
+  10% { opacity: 1; transform: scale(1); }
+  80% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+.buf.bitiyor .buf-halka { animation: bufNabiz 0.7s ease-in-out infinite; }
+@keyframes bufNabiz { 50% { transform: scale(1.1); box-shadow: 0 0 18px rgba(255, 120, 77, 0.75), 0 2px 6px rgba(0, 0, 0, 0.5); } }
+
+/* Köprü açıldı: ilerleme çubuğunun hemen altında, üst ortada dar cam hap; tıklamayı engellemez */
+.bnr-serit {
+  position: absolute;
+  top: calc(122px + var(--ust));
+  left: 50%;
+  transform: translateX(-50%) translateY(-18px);
+  display: flex; align-items: center; gap: 8px;
+  max-width: calc(100vw - 140px);
+  padding: 4px 14px 4px 5px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 201, 77, 0.85);
+  background: linear-gradient(180deg, rgba(48, 22, 90, 0.82), rgba(14, 7, 30, 0.9));
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 14px rgba(255, 201, 77, 0.3);
+  color: #fff7cc;
+  font-family: var(--font-baslik); font-weight: 800; font-size: 14px;
+  white-space: nowrap;
+  opacity: 0; visibility: hidden;
+  pointer-events: none;
+  z-index: 12;
+  transition: opacity 0.25s, transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1), visibility 0s 0.32s;
+}
+.bnr-serit.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); transition: opacity 0.25s, transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1), visibility 0s; }
+.bnr-simge { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; font-size: 20px; line-height: 1; }
+.bnr-simge.bnr-resim { border-radius: 50%; overflow: hidden; border: 1px solid rgba(255, 201, 77, 0.8); }
+.bnr-simge .ui-simge { width: 100%; height: 100%; vertical-align: top; object-fit: cover; }
+.bnr-metin { overflow: hidden; text-overflow: ellipsis; }
+html[dir="rtl"] .bnr-serit { padding: 4px 5px 4px 14px; }
+body.is-tablet .bnr-serit { top: calc(150px + var(--ust)); font-size: 17px; }
+/* bildirim şeridi açıkken genel bildirim onun altına iner */
+body.bnr-acik .toast { top: calc(166px + var(--ust)); }
+@media (prefers-reduced-motion: reduce) {
+  .bnr-serit, .bnr-serit.show { transition: opacity 0.2s; transform: translateX(-50%); }
+  .buf.bitiyor .buf-halka { animation: none; }
+  .buf-ad { animation-name: bufAdSade; }
+  @keyframes bufAdSade { 0%, 80% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+}

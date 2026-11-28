@@ -160,7 +160,7 @@ try {
     game.kopruAcik = new Array(YOLCULUK_AYAR.zoneCount).fill(false);
     game.ghosts = []; game.enemyProjectiles = []; game.pickups = [];
     let acilis = 0;
-    showToast = (m) => { if (/Köprü açıldı/.test(m)) acilis++; };
+    showBanner = (m) => { if (/Köprü açıldı/.test(m)) acilis++; }; // BUF1: köprü bildirimi artık dar şerit
     durumGeldi({ kp: 1, bz: 2, g: [], e: [], p: [] });
     durumGeldi({ kp: 1, bz: 2, g: [], e: [], p: [] });
     return { acik: game.kopruAcik[0], bolge: game.bolge, acilis, anim: !!(game._kopruAnim && game._kopruAnim[0] > 0) };

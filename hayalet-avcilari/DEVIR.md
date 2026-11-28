@@ -12,36 +12,27 @@ kesildi, gölet ve diken tuzaklar sınır yöntemiyle (organik leke biçimi + k�
 ## Görsel üretim yolu (kullanıcı, 27 Kasım)
 OpenAI API kredisi bitti (credit_balance_exhausted); kullanıcı: "ChatGPT ile pencereden kullanmaya devam et". Görseller
 yalnız ChatGPT penceresinden, Mac'teki yerel görsel oturumu üretir (YEREL-CLAUDE-SIRA.md); araclar/chatgpt_uret.py kullanılmaz.
-Bulut oturumu Mac oturumuna send_message ile ulaşamıyor (güvenilir cihaz); kullanıcıya iletmesi söylenir. Bekleyen: K17.
+Bulut oturumu Mac oturumuna send_message ile ulaşamıyor (güvenilir cihaz); kullanıcıya iletmesi söylenir. ChatGPT sırası bitti (K17, K18 geldi ve işlendi).
 
-## Süren / kalan işler
-0. **GLG1 (temas gölgesi), BTN1 (güç düğmeleri solda), KPI1 (arena kapısı karada), TMS1 (timsah karaya çıkar, ses), lav kenarı bitti.**
-   Kullanıcıya sorulan: ana menüde OYNA ve arkadaşlar düğmesini işaretledi, ne istediği belli değil.
-   **YUV2, KPR1, SUS1 bitti** (fare/yarasa kaotik kaçış, köprü güvertesi + kemer, süs ayıklama). Botun köprü kulesine basmaması kalmadı (yan engel yalnız oyuncuda; bot takılma riski).
-   Müzik (27 Kasım 2026 akşam, TAMAM): 50 ülke Suno (kullanıcının aboneliği, Mac'te Chrome penceresi) ile yeniden üretildi; tarifler araclar/muzik-secenekleri.json, kullanıcının seçimleri araclar/muzik-secimleri.json (seçim sayfası claude.ai), sıra araclar/SUNO-PENCERE-SIRA.md. Türkiye değişmedi. İkinci ölçüm (özilinti, 28 Kasım): KR, MX, AO, MZ asıl vuruşu hedefte (ilk ölçüm yarım/üçleme hatası); UZ ~130 ve MA ~124 gerçekten hızlı vuruşlu (kulakla doğrulanacak, gerekirse yeniden üretilecek); ET ~74 (hedeften ağır, sakin). test/muzik.test.mjs: DE döngü ek yeri akı sınırını aşıyor (183,8 > 150,8); DE için Mac sırasına iş yazıldı (2. sürümü indir, işle, sına). Suno indirme hakkı: Premier 60/ay, bu ay 50 kullanıldı.
-1. **DT1 bitti** (Dünya Turu köprüleri, arena, ortak nehir, yolculuk çubuğu simgeleri; commit edildi).
-2. **zem3b (c)** "yolun üst/sol pervazı… yeterli örnek yok: 6" HEAD'de de düşüyor (yerleşim şablonları/KPR1 sonrası; örnek noktalar azalmış): TST1'e ekle.
-   **animasyon-ek** "ilk yardım… şifa efekti çizilir" N16 şifa kareleri gelince düşüyor (kare yolu kod efektinin yerine geçti): beklenti güncellenmeli.
-   **TST1** zaman aşımına uğradı: yarım iş `araclar/evren-gorev/yarim-TST1.patch` (engel-bicim'in önceden düşen 5
-   denetimi, botun ip köprüsünde takılması, yolculuk-perf, cizim fps, dunya-turu 2 denetim, anim 1 denetim). Şartname
-   `gorevTST1.md`. Yamayı temiz ağaçta uygula, testleri koş, eksikleri tamamla. (engel-bicim kapsama ve fix3 göl kuralı
-   bu oturumda değişti; yamada çakışma olabilir.)
-3. **Mac/ChatGPT paftaları:** Y01-Y03 (22 plan oyunda), K15/K16 ve N14-N20 kesildi. Kalan: K15/K16'yı oyuna bağlayacak
-   GOR4 görevi (efekt-gokkusagi, -ejder-alev, -bot-isin, -kasirga, -cali-goz, timsah-bakis, efekt-pence, -toz, -olum-pop,
-   gol-kopru-tahta, efekt-parilti-kucuk, ui-can-cubugu: kod çizimlerinin yerine, kod yedek), hikâye sahneleri H10-H12 ve
-   B01-B10 (gorsel/hamhikaye; kesim tarifi ve HIK3 bağlama görevi yazılmadı). A01-A03 animasyon paftaları geldi
-   (gorsel/ham? DURUM.md'ye bak; A01 el sallayan hayalet, A02 fener, A03 hatıra pırıltısı; kesim tarifi yok).
-   Mac notları (GOR4 için): K15 lazer ışınının iki ucunda süs kapağı var, döşenirse tekrar eder (germe ya da uç kırpma);
-   gökkuşağının uçları düz kesik; K16 tahta köprü tek parça kullanılmalı (iki ucunda direk). N17 beyaz-sarı (oyun boyar).
-   ChatGPT görsel sırası bitti (Mac, 27 Kasım); YEREL-CLAUDE-SIRA.md'de tamamlananları işaretle.
-4. FIX4 (klasik haritada takılan hayaletler, %6,1) ve REK2 (oynanabilir reklam kamerası, tehlike-halka davranışı):
-   önce Fable şartnamesi.
-5. Görsel üst üste binme denetimi (kullanıcı, 27 Kasım): gölet/diken/lav sınır yöntemiyle çiziliyor (kıyılı göl resmi ve diken plakası resmi kullanılmıyor). Kalan iki bulgu:
-   (a) dikey duvarda (h ≥ 1,3w) aynı duvar resmi alt alta yığılıyor, "üst üste binmiş" görünüyor: dikey duvara tek
-   kule resmi (tema<n>-buyuk / aile-<A>-kule) boyunca bir kez, gerekirse ChatGPT'den dikey duvar paftası istenmeli;
-   (b) uzun/yayvan kutudaki obje küçük kalıyor, çarpışma kutusu gölge sütunu olarak görünüyor (görünmez duvar): objeyi
-   kutunun büyük kenarına göre büyüt (objePayi büyütülmeli) ya da obje kutusunu resmin oranına yakın kur.
-6. Bağlanmayan görseller (gerekçeli): gel-miknatis, giris-kahraman, tur-ucak-ust, sus-tahta-yol.
+## Süren / kalan işler (28 Kasım 2026 sabahı)
+Bitti ve dalda: MEN2 (ana menü), KNT1 (MOBA kontroller), KPR2 (dere köprü kemerinde), TMS2 (timsah karada kovalar, yakaladığı
+yerde ısırır), TST1 (bot köprüde takılmaz, yan kulelere basmaz; eski kırmızı testlerin çoğu yeşil), BAS1 (evlere giden basamak
+taşları kaotik), K17 (karada yürüyen timsah resimleri bağlandı), K18 (dikey duvarlar kendi resmiyle, üç dilim), MEN3 (menü uzun
+düğmeleri tuvalde dikişsiz), PRF2 (yolculuk çiziminde kare başı israf azaltıldı; 21 ms → 12-13 ms). Deneme sürümü 78.
+1. Müzik (27 Kasım 2026 akşam, TAMAM): 50 ülke Suno (kullanıcının aboneliği, Mac'te Chrome penceresi) ile yeniden üretildi; tarifler araclar/muzik-secenekleri.json, kullanıcının seçimleri araclar/muzik-secimleri.json (seçim sayfası claude.ai), sıra araclar/SUNO-PENCERE-SIRA.md. Türkiye değişmedi. İkinci ölçüm (özilinti, 28 Kasım): KR, MX, AO, MZ asıl vuruşu hedefte (ilk ölçüm yarım/üçleme hatası); UZ ~130 ve MA ~124 gerçekten hızlı vuruşlu (kulakla doğrulanacak, gerekirse yeniden üretilecek); ET ~74 (hedeften ağır, sakin). test/muzik.test.mjs: DE döngü ek yeri akı sınırını aşıyor (183,8 > 150,8); DE için Mac sırasına iş yazıldı (2. sürümü indir, işle, sına). Suno indirme hakkı: Premier 60/ay, bu ay 50 kullanıldı.
+2. Kulakla denetim kullanıcıda: UZ ve MA müziği (vuruş ~125-130), DE döngüsünün başa dönüşü (tık).
+3. Hâlâ kırmızı testler (eşik gevşetilmedi):
+   - yolculuk-perf "uzun harita ≤ 1,3 × eski": 1,4-2,0 ×. Kalan fark gerçek içerik (yuvalar, sis, yoğun obje; piksel boyama
+     maliyeti). Test asimetrik: __hazir() botu yalnız klasik sahnede siler (bot ~%10). Geçirmek için ya görünen yuva/sis pikseli
+     azaltılmalı ya da eşik kullanıcıyla konuşulmalı.
+   - uc-avci UC7b (CPU 4×, p95 ≤ 20 ms): makine yüküne bağlı rAF titremesi; yüklü makinede 2 geçti 2 düştü.
+   - gor1b "diken-plaka" denetimi HEAD'de de düşüyor (diken artık sınır yöntemiyle çiziliyor; beklenti güncellenmeli).
+   - yuv2 (p) zaman oranı yükte ara sıra 1,25'i aşıyor (dalgalanma).
+   - muzik.test DE ek yeri (yukarıda).
+4. FIX4 (klasik haritada takılan hayaletler) ve REK2 (oynanabilir reklam kamerası): önce Fable şartnamesi.
+5. Diablo 2 tarzı yatık harita: büyük iş, kullanıcı "bu saatten sonra büyük iş olabilir" dedi; istenirse ayrı aşama.
+6. Uzun/yayvan kutudaki obje küçük kalıyor (OBJ1 kutuyu resme uydurdu; yeniden görülürse objePayi).
+7. Bağlanmayan görseller (gerekçeli): gel-miknatis, giris-kahraman, tur-ucak-ust, sus-tahta-yol.
 
 ## Çalışma düzeni
 - Evren tek istek kabul eder; görevler sırayla (`araclar/evren-gorev/`, başlık `bas.txt`).

@@ -60,9 +60,13 @@ try {
       o.mermi[k] = __ciz((x) => drawProjectile(x, { x: 110, y: 110, vx: 10, vy: 0, charKey: k })).say;
     }
     // Görsel silinince kod çizimi hatasız çalışır (drawImage yok, piksel var)
+    // (mermi-kinkin yokken ChatGPT mermi-enerji kareleri ara yedektir; kod çizimini sınamak için onlar da geçici silinir)
     const yedek = GORSEL['mermi-kinkin']; delete GORSEL['mermi-kinkin'];
+    const enerji = Object.keys(GORSEL).filter((k) => k.startsWith('an-mermi-enerji-')).map((k) => [k, GORSEL[k]]);
+    for (const [k] of enerji) delete GORSEL[k];
     const yedekProj = __ciz((x) => drawProjectile(x, { x: 110, y: 110, vx: 10, vy: 0, charKey: 'kinkin' }));
     GORSEL['mermi-kinkin'] = yedek;
+    for (const [k, v] of enerji) GORSEL[k] = v;
     o.kinkinYedek = yedekProj;
 
     // Envanter silahları: resmi olanlar çizilir, baloncuk/bazuka kendi çizimini korur
@@ -71,10 +75,16 @@ try {
       o.silah[k] = __ciz((x) => { x.translate(110, 110); drawGunProjectile(x, k, 0.5); }).say;
     }
 
-    // Düşman mermileri: boss eğik, hayalet düz ve sağa giderken aynalı
+    // Düşman mermileri: boss ve hayalet gidiş yönüne döner (IZ1: kuyruk hep arkada; sola giderken dikey aynalı)
     o.boss = __ciz((x) => drawEnemyProjectile(x, { x: 110, y: 110, vx: 10, vy: 10, isBoss: true }));
     o.hayaletSag = __ciz((x) => drawEnemyProjectile(x, { x: 110, y: 110, vx: 10, vy: 0 }));
     o.hayaletSol = __ciz((x) => drawEnemyProjectile(x, { x: 110, y: 110, vx: -10, vy: 0 }));
+    o.hayaletCapraz = __ciz((x) => drawEnemyProjectile(x, { x: 110, y: 110, vx: 0, vy: 10 }));
+    // IZ1: aynı mermi birkaç kare ilerleyince arkasında solan ışık izi birikir
+    const izli = { x: 60, y: 110, vx: 10, vy: 0 };
+    o.izTek = __ciz((x) => drawEnemyProjectile(x, { x: 110, y: 110, vx: 10, vy: 0 }));
+    o.izli = __ciz((x) => { for (let i = 0; i <= 5; i++) { izli.x = 60 + i * 10; drawEnemyProjectile(x, izli); } });
+    o.izSayi = izli._iz ? izli._iz.length : 0;
     const yedekAtis = GORSEL['atis-hayalet']; delete GORSEL['atis-hayalet'];
     const yedekDusman = __ciz((x) => drawEnemyProjectile(x, { x: 110, y: 110, vx: 10, vy: 0 }));
     GORSEL['atis-hayalet'] = yedekAtis;
@@ -117,11 +127,16 @@ try {
     assert.equal(r.silah.baloncuk, 0);
     assert.equal(r.silah.bazuka, 0);
   });
-  sina('düşman mermisi: boss eğik resim, hayalet düz ve sağa giderken aynalı', () => {
+  // Kullanıcı (28 Kasım 2026): "kuyruk gidiş yönünün tersinde değil, hep yatay duruyor". Artık hayalet mermisi de döner.
+  sina('düşman mermisi gidiş yönüne döner; hayalet sola giderken dikey aynalı (yüz baş aşağı değil)', () => {
     assert.ok(r.boss.say >= 1 && r.boss.rot >= 1, JSON.stringify(r.boss));
-    assert.ok(r.hayaletSag.say >= 1 && r.hayaletSag.rot === 0, JSON.stringify(r.hayaletSag));
-    assert.ok(r.hayaletSag.scale.some(([a]) => a < 0), JSON.stringify(r.hayaletSag.scale));
-    assert.ok(r.hayaletSol.say >= 1 && !r.hayaletSol.scale.some(([a]) => a < 0), JSON.stringify(r.hayaletSol.scale));
+    for (const q of [r.hayaletSag, r.hayaletSol, r.hayaletCapraz]) assert.ok(q.say >= 1 && q.rot >= 1, JSON.stringify(q));
+    assert.ok(!r.hayaletSag.scale.some(([a, b]) => a < 0 || b < 0), JSON.stringify(r.hayaletSag.scale));
+    assert.ok(r.hayaletSol.scale.some(([a, b]) => a > 0 && b < 0), JSON.stringify(r.hayaletSol.scale));
+  });
+  sina('düşman mermisi arkasında solan ışık izi bırakır', () => {
+    assert.ok(r.izSayi >= 4, String(r.izSayi));
+    assert.ok(r.izli.pik > r.izTek.pik * 1.3, `${r.izli.pik} / ${r.izTek.pik}`);
   });
   sina('atis-hayalet görseli yokken kod çizimi hatasız', () => {
     assert.equal(r.dusmanYedek.say, 0);
@@ -140,6 +155,9 @@ try {
 
   // Az hareket: kent/silsen dönmez, para karesi sabit kalır
   await p.emulateMedia({ reducedMotion: 'reduce' });
+  // PRF2: animAzHareket MediaQueryList'i önbellekler; .matches tarayıcının bir sonraki çizim adımında güncellenir (gerçek
+  // kullanımda tercih kare ortasında değişmez). Bu yüzden emülasyondan sonra bir kare beklenir.
+  await p.evaluate(() => new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok))));
   const az = await p.evaluate(() => {
     const o = {};
     o.kent = __ciz((x) => drawProjectile(x, { x: 110, y: 110, vx: 10, vy: 0, charKey: 'kent' }));

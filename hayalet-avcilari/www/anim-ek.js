@@ -681,8 +681,10 @@ function aeMermiKareCiz(ctx, p, ang) {
     ctx.restore();
     return true;
   }
-  // Varsayılan mermi: mermi-enerji kareleri varsa hıza göre döndürülür
-  if (!p.gun && p.charKey !== "bot" && hos && animHazir("mermi-enerji")) {
+  // Varsayılan mermi: mermi-enerji kareleri varsa hıza göre döndürülür. Avcının kendi mermi resmi (mermi-<avcı>) varsa o çizilir
+  // (game.js drawProjectile); enerji kareleri yalnız resmi olmayan avcıya yedektir (önceden Kent'in resmi hiç görünmüyordu).
+  const kendiResmi = p.charKey && typeof gorsel === "function" && gorsel("mermi-" + p.charKey);
+  if (!p.gun && p.charKey !== "bot" && !kendiResmi && hos && animHazir("mermi-enerji")) {
     const kare = animDongu("mermi-enerji", performance.now() / 1000, 12);
     if (kare) { ctx.save(); ctx.rotate(ang); animCiz(ctx, "mermi-enerji", kare, -10, -10, 20, 20); ctx.restore(); return true; }
   }

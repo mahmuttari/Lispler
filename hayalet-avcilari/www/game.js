@@ -1845,18 +1845,59 @@ function drawGhostFades(ctx) {
   }
 }
 
+// IZ1: düşman mermisinin arkasında solan ışık izi (yalnız görsel; konum geçmişi mermi nesnesinde, oyun durumuna girmez).
+// Kullanıcı (28 Kasım 2026): "atışlara animasyon ekle, arkaya ışıldama bıraksın".
+function dusmanMermiIzi(ctx, p) {
+  const az = typeof aeAzHareket === "function" && aeAzHareket();
+  const iz = p._iz || (p._iz = []);
+  const son = iz[iz.length - 1];
+  if (!son || Math.hypot(p.x - son.x, p.y - son.y) >= 4) { iz.push({ x: p.x, y: p.y }); if (iz.length > (az ? 4 : 12)) iz.shift(); }
+  if (iz.length < 2) return;
+  const renk = p.isBoss ? [251, 146, 60] : [192, 132, 252]; // boss turuncu, hayalet mor
+  const r0 = p.isBoss ? 9 : 6, t = performance.now() / 1000;
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  for (let i = 0; i < iz.length - 1; i++) {
+    const k = (i + 1) / iz.length; // 0 eski → 1 yeni
+    ctx.globalAlpha = 0.08 + k * 0.32;
+    ctx.fillStyle = `rgb(${renk[0]},${renk[1]},${renk[2]})`;
+    ctx.beginPath(); ctx.arc(iz[i].x, iz[i].y, r0 * (0.35 + k * 0.75), 0, Math.PI * 2); ctx.fill();
+  }
+  if (!az) { // izin içinde uçuşan iki kıvılcım
+    for (let j = 0; j < 2; j++) {
+      const q = iz[Math.max(0, iz.length - 3 - j * 3)];
+      const s = Math.sin(t * 9 + j * 2.3 + (p.id || 0));
+      ctx.globalAlpha = 0.5 + s * 0.3;
+      ctx.fillStyle = "#fff7ed";
+      ctx.beginPath(); ctx.arc(q.x + s * 4, q.y + Math.cos(t * 7 + j) * 4, 1.6, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  // Başın çevresinde nabız gibi atan yumuşak parıltı
+  const R = r0 * (2.4 + (az ? 0 : Math.sin(t * 8 + (p.id || 0)) * 0.35));
+  const gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, R);
+  gr.addColorStop(0, `rgba(${renk[0]},${renk[1]},${renk[2]},0.55)`);
+  gr.addColorStop(1, `rgba(${renk[0]},${renk[1]},${renk[2]},0)`);
+  ctx.globalAlpha = 0.9; ctx.fillStyle = gr;
+  ctx.beginPath(); ctx.arc(p.x, p.y, R, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
 function drawEnemyProjectile(ctx, p) {
+  dusmanMermiIzi(ctx, p);
   ctx.save();
   ctx.translate(p.x, p.y);
   const r = p.isBoss ? 9 : 6;
   if (typeof gorsel === "function" && typeof gorselKutuya === "function" && gorsel(p.isBoss ? "atis-boss" : "atis-hayalet")) {
     const boy = r * 5;
+    const ang = Math.atan2(p.vy, p.vx);
     if (p.isBoss) {
-      ctx.rotate(Math.atan2(p.vy, p.vx));
+      ctx.rotate(ang);
       gorselKutuya(ctx, "atis-boss", -boy / 2, -boy / 2, boy, boy);
     } else {
-      // Yüzü yukarı kalsın: döndürme yok; izi sola baktığı için sağa giderken aynala
-      if (p.vx > 0) ctx.scale(-1, 1);
+      // IZ1: resmin kuyruğu solda (sağa uçar): gidiş yönüne döndürülür, kuyruk hep arkada kalır. Sola giderken dikey
+      // aynalanır ki yüz baş aşağı dönmesin. (Eskiden hiç döndürülmüyordu: kuyruk her yönde yatay duruyordu.)
+      ctx.rotate(ang);
+      if (Math.cos(ang) < 0) ctx.scale(1, -1);
       gorselKutuya(ctx, "atis-hayalet", -boy / 2, -boy / 2, boy, boy);
     }
     ctx.restore();

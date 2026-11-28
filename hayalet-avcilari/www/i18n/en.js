@@ -1,5 +1,10 @@
 /* Hayalet Avcıları — English (en). Anahtar: Türkçe kaynak metin (www/i18n.js). */
 I18N.en = {
+  "🎵 50 ülkenin yöresel çalgılarla yepyeni müzikleri!": "🎵 New music for 50 countries, played on local instruments!",
+  "🎨 Dünya yeniden çizildi: dikenler, göller, nehir kıyıları, köprüler ve şelaleler.": "🎨 The world is redrawn: spikes, lakes, riverbanks, bridges and waterfalls.",
+  "🐊 Timsahlar sudan çıkıp seni kovalıyor; dikkatli ol!": "🐊 Crocodiles climb out of the water and chase you; watch out!",
+  "⚡ Güçler kenarda yuvarlak simgelerle; hayalet atışları ışıltılı iz bırakıyor.": "⚡ Powers shown as round icons at the edge; ghost shots leave glowing trails.",
+  "⛈️ Kara bulut artık yalnız boss'un tepesinde şimşek çakıyor.": "⛈️ The dark storm cloud now flashes lightning only above the boss.",
   "…": "…",
   "(Karakter değiştirmek için Karakterler menüsüne git)": "(Go to the Characters menu to switch character)",
   "(Oyunda 🎒 Envanter'e dokunup silah değiştir)": "(In game, tap 🎒 Inventory to switch weapons)",

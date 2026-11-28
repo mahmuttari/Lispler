@@ -44,9 +44,9 @@ Gratis y sin compras con dinero real. Las monedas, los diamantes y las esmeralda
 
 ## Sürüm notu
 
+🎵 ¡Música nueva para 50 países con instrumentos típicos!
+🎨 El mundo se redibujó: pinchos, lagos, orillas, puentes y cascadas.
+🐊 ¡Los cocodrilos salen del agua y te persiguen; cuidado!
+⚡ Poderes en iconos redondos al borde; los disparos fantasma dejan estela brillante.
+⛈️ La nube negra ahora lanza rayos solo sobre el jefe.
 🚀 Cazadores más fluidos: se corrigieron los tirones del dibujo 3D.
-🧊 ¡Cazadores en 3D real: giran, caminan y corren, con el arma siempre en la mano!
-👥 Nueva pantalla de Personajes: historia, poder y disfraces de cada cazador.
-⚡ ¡Armas y poderes animados: rayo, humo de cohete, bloque de hielo, aura de poder!
-🔊 Sonidos renovados; cada arma de la tienda suena distinto.
-⚙️ Nuevo botón "Personajes 3D" en el sonido; en móviles lentos el 3D se apaga solo.

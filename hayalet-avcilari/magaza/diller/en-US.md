@@ -44,9 +44,9 @@ Free to play, no real-money purchases. In-game coins, diamonds and emeralds are 
 
 ## Sürüm notu
 
+🎵 New music for 50 countries, played on local instruments!
+🎨 The world is redrawn: spikes, lakes, riverbanks, bridges and waterfalls.
+🐊 Crocodiles climb out of the water and chase you; watch out!
+⚡ Powers shown as round icons at the edge; ghost shots leave glowing trails.
+⛈️ The dark storm cloud now flashes lightning only above the boss.
 🚀 Smoother hunters: 3D stutter fixed.
-🧊 Hunters are now real 3D: they turn, walk and run in every direction; weapon always in hand!
-👥 New Characters screen: each hunter's story, power, abilities and costumes in one panel.
-⚡ Extra weapons and powers are animated: lightning, rocket smoke, ice block, power aura!
-🔊 All sound effects have been renewed; every shop weapon has its own firing sound.
-⚙️ New "3D characters" button in sound settings; on slow phones 3D turns off automatically.

@@ -1,5 +1,10 @@
 /* Hayalet Avcıları — 简体中文 (zh). Anahtar: Türkçe kaynak metin (www/i18n.js). */
 I18N.zh = {
+  "🎵 50 ülkenin yöresel çalgılarla yepyeni müzikleri!": "🎵 50个国家的全新民族乐器音乐！",
+  "🎨 Dünya yeniden çizildi: dikenler, göller, nehir kıyıları, köprüler ve şelaleler.": "🎨 世界重新绘制：尖刺、湖泊、河岸、桥梁和瀑布。",
+  "🐊 Timsahlar sudan çıkıp seni kovalıyor; dikkatli ol!": "🐊 鳄鱼会爬出水面追赶你，小心！",
+  "⚡ Güçler kenarda yuvarlak simgelerle; hayalet atışları ışıltılı iz bırakıyor.": "⚡ 能力以圆形图标显示在边缘；幽灵子弹留下发光尾迹。",
+  "⛈️ Kara bulut artık yalnız boss'un tepesinde şimşek çakıyor.": "⛈️ 乌云现在只在首领头顶打雷。",
   "…": "……",
   "(Karakter değiştirmek için Karakterler menüsüne git)": "（要更换角色，请前往“角色”菜单）",
   "(Oyunda 🎒 Envanter'e dokunup silah değiştir)": "（游戏中点击 🎒 背包切换武器）",

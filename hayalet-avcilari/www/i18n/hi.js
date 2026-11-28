@@ -1,5 +1,10 @@
 /* Hayalet Avcıları — हिन्दी (hi). Anahtar: Türkçe kaynak metin (www/i18n.js). */
 I18N.hi = {
+  "🎵 50 ülkenin yöresel çalgılarla yepyeni müzikleri!": "🎵 50 देशों का नया संगीत, स्थानीय वाद्यों के साथ!",
+  "🎨 Dünya yeniden çizildi: dikenler, göller, nehir kıyıları, köprüler ve şelaleler.": "🎨 दुनिया फिर से बनी: कांटे, झीलें, नदी किनारे, पुल और झरने।",
+  "🐊 Timsahlar sudan çıkıp seni kovalıyor; dikkatli ol!": "🐊 मगरमच्छ पानी से निकलकर तुम्हारा पीछा करते हैं; सावधान!",
+  "⚡ Güçler kenarda yuvarlak simgelerle; hayalet atışları ışıltılı iz bırakıyor.": "⚡ शक्तियाँ किनारे पर गोल आइकनों में; भूतों के गोले चमकती लकीर छोड़ते हैं।",
+  "⛈️ Kara bulut artık yalnız boss'un tepesinde şimşek çakıyor.": "⛈️ काला बादल अब सिर्फ बॉस के ऊपर बिजली गिराता है।",
   "…": "…",
   "(Karakter değiştirmek için Karakterler menüsüne git)": "(कैरेक्टर बदलने के लिए कैरेक्टर मेन्यू में जाओ)",
   "(Oyunda 🎒 Envanter'e dokunup silah değiştir)": "(खेल में हथियार बदलने के लिए 🎒 इन्वेंटरी छुओ)",

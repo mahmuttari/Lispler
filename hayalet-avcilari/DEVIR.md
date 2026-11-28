@@ -8,6 +8,20 @@ kullanıcının artifact'ı: https://claude.ai/artifact/3gwhkL7g2QzNyaZWig83pt (
 46129307100). 3.20.1 dalı (hayalet-3-20-1) bu dala birleştirildi. Sonraki sürüm: versionCode 61. Mağaza görselleri bu sürümde
 değişmedi (istenirse araclar/magaza-gorsel.mjs + `gorsel uygula`).
 
+## Son oturum (28 Kasım 2026, gece; bulut)
+- **KLP1 bitti (77cd6e1):** çevrimiçi takım listesinde (`takimCiz`) canlar ❤️/🖤 emojisi yerine ChatGPT `kalp` resmiyle
+  (boş can aynı resmin sönük hâli; resim yoksa emoji yedek, ölü oyuncu 👻). Sınama `test/kalp1.test.mjs` (5/5). Böylece
+  CHATGPT-ISTEMI-UYUM.md K7'nin dört maddesi de bitti.
+- **Deneme sayfası okunamadı:** bu bulut oturumundan `Artifact read` "artifact not found / not shared" döndü; sayfa başka bir
+  hesaba ait ya da bu hesapla paylaşılmamış olabilir. Paket hazırlandı ve sınandı (`deneme_hazirla.py` + `deneme-sina.mjs`,
+  hatalar []), ama aynı adrese yayımlanamadı. Kullanıcı sayfayı paylaşırsa ya da yeni sayfa isterse yayımlanacak.
+- **PR #14 izlemeye alınamadı:** `subscribe_pr_activity` gerekçesiz reddetti (depo bağlı, PR açık). Büyük olasılıkla Claude
+  GitHub uygulaması depoda kurulu değil.
+- **Emülatörlü sınamalar bu kapsayıcıda çalışmıyor:** firebase-tools 15.32.1 (`lib/apiv2.js`) `HTTPS_PROXY` varken her
+  isteği vekile gönderiyor, `NO_PROXY`'ye bakmıyor; emülatöre kural yükleme bile vekilden "refusing…" alıyor. Vekil notu
+  `HTTPS_PROXY`'nin kaldırılmasını yasaklıyor. cevrimici, cevrimici-ek, alti, arkadas, kurallar sınamaları ya Mac'te ya da
+  CI'da çalıştırılmalı.
+
 ## Deneme sürümünü güncelleme
 1. `python3 araclar/deneme_hazirla.py <geçici>/deneme-yeni www` (görselleri ~7 MB'lık paket parçalarına koyar, game.js
    m4a→mp3 dönüşümünü yapar; ham game.js asla doğrudan kopyalanmaz).

@@ -3275,17 +3275,8 @@ function drawGhost(ctx, g) {
   if (hp < maxHp) {
     const w = (g.isBoss ? 60 : 32) * s;
     const hpY = g.isBoss ? -44 * s : -28 * s;
-    const cerceve = typeof gorsel === "function" ? gorsel("ui-can-cubugu") : null;
-    if (cerceve) {
-      // GOR4: ChatGPT altın can çerçevesi (ui-can-cubugu, 256x64): iç boşluğu genişliğin %88'i, yüksekliğin %58'i;
-      // dolgu bu boşluğa çizilir, çerçeve üstüne gelir (oranı korunur, esnetilmez)
-      const wf = w / 0.88, hf = wf / 4, ic = hf * 0.58, cy = hpY + 2.5 * s;
-      ctx.fillStyle = "rgba(0,0,0,0.7)";
-      ctx.fillRect(-w / 2, cy - ic / 2, w, ic);
-      ctx.fillStyle = g.isBoss ? "#ef4444" : "#06d6a0";
-      ctx.fillRect(-w / 2, cy - ic / 2, w * (hp / maxHp), ic);
-      ctx.drawImage(cerceve, -wf / 2, cy - hf * 0.48, wf, hf);
-    } else {
+    // GOR4: ChatGPT altın can çerçevesi (ui-can-cubugu) varsa canCubuguCiz (CAN1: dolgu çerçevenin oluğunun üstünde)
+    if (!canCubuguCiz(ctx, 0, hpY + 2.5 * s, w, hp / maxHp, g.isBoss ? "#ef4444" : "#06d6a0")) {
       ctx.fillStyle = "rgba(0,0,0,0.7)";
       ctx.fillRect(-w / 2, hpY, w, 5 * s);
       ctx.fillStyle = g.isBoss ? "#ef4444" : "#06d6a0";
@@ -9061,12 +9052,17 @@ function botaDokun(clientX, clientY) {
 function canCubuguCiz(ctx, cx, cy, w, oran, dolgu, arka) {
   const cerceve = typeof gorsel === "function" ? gorsel("ui-can-cubugu") : null;
   if (!cerceve) return false;
-  const wf = w / 0.88, hf = wf / 4, ic = hf * 0.58, o = Math.max(0, Math.min(1, oran));
-  ctx.fillStyle = arka || "rgba(0,0,0,0.7)";
-  ctx.fillRect(cx - w / 2, cy - ic / 2, w, ic);
-  ctx.fillStyle = dolgu;
-  ctx.fillRect(cx - w / 2, cy - ic / 2, w * o, ic);
+  const wf = w / 0.88, hf = wf / 4, o = Math.max(0, Math.min(1, oran));
+  // CAN1: çerçevenin içi opak koyu bir oluk (boş çubuğun arkası o; `arka` yalnız resimsiz yedekte). Dolgu çerçeveden önce
+  // çizilince örtülüyordu: önce çerçeve, sonra oluğun içine (oluk resimde yüksekliğin %22-%78'i) yuvarlak uçlu dolgu.
   ctx.drawImage(cerceve, cx - wf / 2, cy - hf * 0.48, wf, hf);
+  if (o > 0) {
+    const x0 = cx - w / 2 + hf * 0.04, y0 = cy - hf * 0.235, yuk = hf * 0.5, gen = (w - hf * 0.08) * o;
+    ctx.fillStyle = dolgu;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x0, y0, gen, yuk, Math.min(yuk / 2, gen / 2)); else ctx.rect(x0, y0, gen, yuk);
+    ctx.fill();
+  }
   return true;
 }
 window.canCubuguCiz = canCubuguCiz;

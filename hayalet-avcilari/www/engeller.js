@@ -690,11 +690,13 @@
   }
   // Duvar: resim dönmez, kırpılmaz; tamamı görünür, en-boy oranı korunur, taban yerde.
   // Yatayda parçalar yan yana (en çok ±%15 esnetme), dikeyde yukarıdan aşağı ~%30 örtüşerek yığılır.
-  function duvarResmi(ctx, w, h, p, B, duvarK, kuleK) {
+  function duvarResmi(ctx, w, h, p, B, duvarK, kuleK, dikeyK) {
     // Çarpışma alanı (ön yüz derinliği dahil) yumuşak gölgeyle boyanır: görünmez duvara çarpılmasın
     const d = B.derinlik || 0;
     doldur(ctx, B, "rgba(0,0,0,0.25)");
     if (d) doldur(ctx, B, "rgba(0,0,0,0.25)", 0, d);
+    // K18: dikey duvarın kendi resmi varsa yatay resim yığılmaz (kullanıcı: "üst üste binmiş gibi görünüyor")
+    if (h >= 1.3 * w && dikeyK && dikeyDuvarResmi(ctx, w, h, engelGorsel(dikeyK))) return [];
     const im = engelGorsel(duvarK);
     if (!im) return [];
     const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
@@ -729,6 +731,23 @@
       }
     }
     return [];
+  }
+  // K18 dikey duvar: resim genişliğe ölçeklenir, tek parça çizilir; kutu resimden uzunsa üç dilim (üst başlık, ortadaki
+  // taş/kütük bandı yinelenir, alt taban). Dilimler kaynak dikdörtgeniyle çizilir (ek yeri çizgisi olmaz), taban yerde.
+  const DIKEY_UST = 0.28, DIKEY_ALT = 0.22;
+  function dikeyDuvarResmi(ctx, w, h, im) {
+    if (!im) return false;
+    const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
+    if (!(iw > 0 && ih > 0)) return false;
+    const o = w / iw, tam = ih * o;
+    if (h <= tam * 1.2) { ctx.drawImage(im, 0, 0, iw, ih, 0, 0, w, h); return true; } // en çok %20 esnetme
+    const ustK = ih * DIKEY_UST, altK = ih * DIKEY_ALT, ortK = ih - ustK - altK;
+    const ustH = ustK * o, altH = altK * o, ortH = ortK * o, araH = h - ustH - altH;
+    const n = Math.max(1, Math.round(araH / ortH)), parca = araH / n; // bant en çok ~%30 esner, yarım bant kalmaz
+    for (let i = 0; i < n; i++) ctx.drawImage(im, 0, ustK, iw, ortK, 0, ustH + i * parca - 0.5, w, parca + 1);
+    ctx.drawImage(im, 0, ih - altK, iw, altK, 0, h - altH, w, altH);
+    ctx.drawImage(im, 0, 0, iw, ustK, 0, 0, w, ustH);
+    return true;
   }
   // Harita sınırı: yatayda kusursuz şerit; dikey sınırda 90° döndür
   function sinirResmi(ctx, w, h, p, B, k) {
@@ -833,7 +852,7 @@
         return engelGorsel(k) ? (ctx, w, h, r, p, B) => duvarResmi(ctx, w, h, p, B, k, `aile-${A}-kule`) : null;
       }
       const k = `tema${o.tema + 1}-duvar`;
-      return engelGorsel(k) ? (ctx, w, h, r, p, B) => duvarResmi(ctx, w, h, p, B, k, `tema${o.tema + 1}-buyuk`) : null;
+      return engelGorsel(k) ? (ctx, w, h, r, p, B) => duvarResmi(ctx, w, h, p, B, k, `tema${o.tema + 1}-buyuk`, `tema${o.tema + 1}-duvar-dikey`) : null;
     }
     if (o.tur === "obje1" || o.tur === "obje2") {
       const k = dt ? `ulke-${o.tema}-${o.tur === "obje1" ? 1 : 2}` : `tema${o.tema + 1}-${o.tur}`;

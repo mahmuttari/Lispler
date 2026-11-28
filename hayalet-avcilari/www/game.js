@@ -6550,7 +6550,10 @@ let bnrZamanlayici = null;
 function showBanner(metin, simgeAnahtari, emoji) {
   const el = document.getElementById("bnr-serit");
   if (!el) { showToast(`${emoji || ""} ${metin}`.trim()); return; }
-  const simge = simgeAnahtari ? uiSimgeHTML(simgeAnahtari, emoji || "", "") : (emoji || "");
+  // Simge yüklenmiş resmin kendi adresinden alınır (paketlenmiş sürümde gorsel/<anahtar>.webp dosyası olmayabilir: kırık resim)
+  const im = simgeAnahtari && typeof gorsel === "function" ? gorsel(simgeAnahtari) : null;
+  const src = im && im.src && !/["<>]/.test(im.src) ? im.src : "";
+  const simge = src ? `<img class="ui-simge" src="${src}" alt="" draggable="false">` : (emoji || "");
   el.innerHTML = `<span class="bnr-simge${simge.startsWith("<img") ? " bnr-resim" : ""}" aria-hidden="true">${simge}</span><span class="bnr-metin"></span>`;
   el.querySelector(".bnr-metin").textContent = metin;
   el.classList.remove("show");

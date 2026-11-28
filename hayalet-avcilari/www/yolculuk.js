@@ -342,6 +342,8 @@ function yolculukKopruAc(i) {
   game.kopruAcik[i] = true;
   game._kopruAnim = game._kopruAnim || {};
   game._kopruAnim[i] = 0.6;
+  game._kilitAcilis = game._kilitAcilis || {}; // KLT1: kilit açılma görseli (yalnız görüntü; oyun durumuna girmez)
+  game._kilitAcilis[i] = performance.now();
   try {
     if (typeof audio !== "undefined") {
       if (!(audio.hikayeSes && audio.hikayeSes("kopru-ac"))) {
@@ -1300,6 +1302,22 @@ function yolculukNehirSuyu() {
   return gorsel(k) || gorsel("tema4-su") || null;
 }
 const NEHIR_SU_KARO = 256; // su dokusunun dünyadaki karo boyu (göllerdeki tema suyuyla aynı ölçek)
+
+// SEL1: şelale kareleri (an-selale-*) mavi çizilmiş (~200°); dere temanın suyunu alır. Kullanıcı (28 Kasım): "şelale ile dere
+// rengi farklı". Tonlar ekranda çizilmiş derenin ölçülen renginden (doku ortalaması gölge/yosun yüzünden yanıltıyordu):
+// Mor Şato 261°, Orman 159°, Çöl 174°, Buz 198° (şelaleyle aynı: boyanmaz), Volkan 169°, Uzay 221°. Dünya Turu'nun deresi mavi.
+// Kareler gorselRenkli ile boyanır (aydınlık korunur, köpük açık kalır).
+const SELALE_TON = { 1: 261, 2: 159, 3: 174, 4: null, 5: 169, 6: 221 };
+function yolculukSelaleRengi() {
+  if (typeof game === "undefined" || !game || game.dunyaTuru) return null;
+  let n = 1;
+  try {
+    const th = typeof getTheme === "function" ? getTheme() : null;
+    if (th && typeof LEVEL_THEMES !== "undefined") { const i = LEVEL_THEMES.indexOf(th); if (i >= 0) n = i + 1; }
+  } catch (e) { n = 1; }
+  const ton = SELALE_TON[n];
+  return ton == null ? null : `hsl(${ton}, 62%, 50%)`;
+}
 function yolculukNehirDesen(ctx, im) {
   if (_gecitNehirDesen && _gecitNehirDesen.im === im) return _gecitNehirDesen.desen;
   let desen = null;
@@ -1311,6 +1329,53 @@ function yolculukNehirDesen(ctx, im) {
   _gecitNehirDesen = { im, desen };
   return desen;
 }
+// KLT1: köprünün kilidi açılınca ortasında belirgin bir "kilit açıldı" görseli (1,4 sn): açık kilit resmi (kilit-acik) büyüyerek
+// belirir, altın parıltı ve sekiz kıvılcım saçar, sonra yükselip söner. Kullanıcı (28 Kasım): "kilit açıldı da bir görsel çıkmıyor"
+// (eskisi köprünün sol kenarında 24 px, 0,4 sn idi). Bittiyse false döner.
+function yolculukKilitAcilisCiz(ctx, x, y, t0) {
+  const SURE = 1400, gecen = performance.now() - t0;
+  if (gecen < 0 || gecen > SURE) return false;
+  const u = gecen / SURE, az = typeof animAzHareket === "function" && animAzHareket();
+  const giris = Math.min(1, u / 0.22), c = 1.70158; // ease-out-back
+  const olcek = az ? 1 : 1 + (c + 1) * Math.pow(giris - 1, 3) + c * Math.pow(giris - 1, 2);
+  const cikis = u > 0.62 ? (u - 0.62) / 0.38 : 0;
+  const alfa = az ? 1 - cikis : Math.min(1, giris * 1.5) * (1 - cikis);
+  const yuk = az ? 0 : -cikis * 30 + Math.sin(gecen / 160) * (cikis ? 0 : 2);
+  const boy = 64 * Math.max(0.05, olcek);
+  ctx.save();
+  ctx.translate(x, y + yuk);
+  // altın parıltı
+  const R = 70 * (0.6 + giris * 0.6);
+  const gr = ctx.createRadialGradient(0, 0, 0, 0, 0, R);
+  gr.addColorStop(0, "rgba(255,226,120,0.75)"); gr.addColorStop(0.45, "rgba(255,196,60,0.28)"); gr.addColorStop(1, "rgba(255,196,60,0)");
+  ctx.globalAlpha = alfa; ctx.globalCompositeOperation = "lighter";
+  ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.fill();
+  if (!az) { // sekiz kıvılcım dışa saçılır
+    const d = 18 + Math.min(1, u / 0.5) * 58;
+    for (let k = 0; k < 8; k++) {
+      const a = k * Math.PI / 4 + 0.3;
+      ctx.globalAlpha = alfa * (1 - Math.min(1, u / 0.7));
+      ctx.fillStyle = k % 2 ? "#fff7d1" : "#ffd65a";
+      ctx.beginPath(); ctx.arc(Math.cos(a) * d, Math.sin(a) * d, 3.2 - u * 2, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = alfa;
+  if (typeof gorsel === "function" && gorsel("kilit-acik")) gorselKutuya(ctx, "kilit-acik", -boy / 2, -boy / 2, boy, boy);
+  else { ctx.font = `${Math.round(boy * 0.8)}px sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("🔓", 0, 0); }
+  ctx.restore();
+  return true;
+}
+
+// KLT1: açılan köprülerin kilit görselleri; render() bunu karakterlerin ve efektlerin üstünde çağırır (köprü resmi örtmesin)
+function yolculukKilitleriCiz(ctx) {
+  if (!game || !game._kilitAcilis || !game._yolculukDuzen) return;
+  for (const k of Object.keys(game._kilitAcilis)) {
+    const z = game._yolculukDuzen.zones[k]; if (!z) { delete game._kilitAcilis[k]; continue; }
+    const g = z.gate;
+    if (!yolculukKilitAcilisCiz(ctx, (g.x0 + g.x1) / 2, (g.bridgeY0 + g.bridgeY1) / 2, game._kilitAcilis[k])) delete game._kilitAcilis[k];
+  }
+}
+
 function yolculukGecitCiz(ctx) {
   if (!yolculukAcik() || !game._yolculukDuzen) return;
   const cam = game.camera || { x: 0, y: 0 }, W = game.W || 0, H = game.H || 0, A = YOLCULUK_AYAR;
@@ -1411,6 +1476,9 @@ function yolculukGecitCiz(ctx) {
       if (sim && typeof animCiz === "function") {
         const gen = d.yarim * 2 + 30, boy = gen * sim.naturalHeight / sim.naturalWidth;
         const kare = animDongu("selale", zt + d.tohum, 6);
+        const boyaRenk = kare ? yolculukSelaleRengi() : null; // SEL1: dere rengine boyanmış kare
+        const boyali = boyaRenk && typeof gorselRenkli === "function" ? gorselRenkli(`an-selale-${kare}`, boyaRenk) : null;
+        if (boyali) { ctx.drawImage(boyali, cx - gen / 2, d.y - boy * 0.55, gen, boy); continue; }
         if (kare && animCiz(ctx, "selale", kare, cx - gen / 2, d.y - boy * 0.55, gen, boy)) continue;
       }
       // Köpük bandı (düzensiz, yarı saydam)
@@ -1473,15 +1541,6 @@ function yolculukCiz(ctx) {
     const acikX = K ? K.x : g.x0 - 4 - (typeof KOPRU !== "undefined" ? KOPRU.karaPay : 30) - ((typeof KOPRU !== "undefined" ? KOPRU.kalin : 56) / 2);
     const acikW = K ? K.w : (g.x1 - g.x0) + (typeof KOPRU !== "undefined" ? KOPRU.karaPay : 30) * 2 + (typeof KOPRU !== "undefined" ? KOPRU.kalin : 56);
     const acikY = K ? K.y : (y0 + y1) / 2 - boyResim / 2;
-    const kilitX = g.x0 + 14, kilitY = (y0 + y1) / 2;
-    const kilitPop = () => { // açılışın ilk 0,4 sn: büyüyüp sönen açık kilit
-      const gecen = 0.6 - anim;
-      if (gecen < 0 || gecen >= 0.4 || !gorsel("kilit-acik")) return;
-      const u = gecen / 0.4, s = (1 + 0.3 * u) * 24;
-      ctx.globalAlpha = 1 - u;
-      gorselKutuya(ctx, "kilit-acik", kilitX - s / 2, kilitY - s / 2, s, s);
-      ctx.globalAlpha = 1;
-    };
     const temaKapali = yolculukTemaParca("kopru-kapali"), temaAcik = yolculukTemaParca("kopru-acik");
     ctx.save();
     // Kapalı köprü resmi varsa kod çizimi yerine o çizilir (çarpışma kutusu değişmez)
@@ -1495,7 +1554,6 @@ function yolculukCiz(ctx) {
       const ilerleme = Math.min(1, Math.max(0, 1 - anim / 0.6));
       const kare = ilerleme < 0.5 ? temaKapali : temaAcik;
       gorselKutuya(ctx, kare, acikX, acikY, acikW, boyResim, kare === temaKapali);
-      kilitPop();
       ctx.restore(); continue;
     }
     // Açılış kareleri: kapalı → in-1 → in-2 → açık
@@ -1503,7 +1561,6 @@ function yolculukCiz(ctx) {
       const ilerleme = Math.min(1, Math.max(0, 1 - anim / 0.6));
       const kare = ilerleme < 0.25 ? "kopru-kapali" : ilerleme < 0.5 ? "an-kopru-in-1" : ilerleme < 0.75 ? "an-kopru-in-2" : "kopru-acik";
       gorselKutuya(ctx, kare, acikX, acikY, acikW, boyResim, true);
-      kilitPop();
       ctx.restore(); continue;
     }
     // Kalkan köprünün gölgesi
@@ -1551,7 +1608,6 @@ function yolculukCiz(ctx) {
       ctx.textAlign = "center"; ctx.textBaseline = "middle";
       ctx.fillText("🔒", agizX + 12, (y0 + y1) / 2);
     }
-    kilitPop(); // resim kareleri yoksa da açık kilit sıçraması görünür
     ctx.restore();
   }
 }

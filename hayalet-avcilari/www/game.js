@@ -9286,6 +9286,7 @@ function render() {
   drawEffects(ctx);
   if (typeof animEfektleriCiz === "function") animEfektleriCiz(ctx); // toplama halkası, boss iniş dalgası (anim.js)
   if (typeof aeEfektleriCiz === "function") aeEfektleriCiz(ctx, performance.now()); // şifa, yıldırım, duman, hasar (anim-ek.js)
+  if (typeof yolculukKilitleriCiz === "function") yolculukKilitleriCiz(ctx); // KLT1: köprü kilidi açılma görseli (yolculuk.js)
   if (typeof kasirgaCiz === "function" && !game.player.dead && (game.player.kasirgaUntil || 0) > performance.now()) {
     kasirgaCiz(ctx, game.player.x, game.player.y, performance.now(), game.player.kasirgaUntil);
   }

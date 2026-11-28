@@ -19,7 +19,24 @@ KOK = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
 ARAC = os.path.join(KOK, 'araclar')
 
 EXCLUDE = ('vocals, singing, choir, heavy drums, driving dance beat, EDM, trap, dubstep, rock, distorted guitar, accordion, '
-           'bagpipes, shawm, drone, synth pads, orchestral strings, reverb wash, breakdown, fade-out')
+           'bagpipes, shawm, drone, synth pads, orchestral strings, reverb wash, breakdown, fade-out, polyphonic arrangement, '
+           'chord progression, counter-melody, piano chords, string section, pop production, drum machine')
+
+# GERCEKCI (kullanıcı, 28 Kasım 2026): "polifonik değil gerçekçi yapalım". Tarifteki "eşlik" katmanı Suno'da Batı tarzı akorlu,
+# çok sesli düzenlemeye dönüşüyordu. Gerçekçi kip: gerçek halk müzisyeninin canlı icrası, geleneksel tek sesli/heterofonik doku
+# (eşlik çalgısı aynı ezgiyi çalar ya da yalnız sade ritim tutar), doğal oda sesi, insan zamanlaması; eklenmiş armoni yok.
+GERCEKCI_ESLIK = ('authentic traditional performance by real folk musicians: the lead plays the melody, any companion instrument '
+                  'only doubles the same melody in unison or heterophony or keeps a simple traditional rhythm')
+GERCEKCI_EK = ('Realistic acoustic recording, natural room sound, human timing and expressive ornaments, traditional monophonic '
+               'heterophonic texture, no Western chord progressions, no added harmony, no counter-melodies.')
+
+
+def gercekci(stil):
+    stil = stil.replace('gentle soft accompaniment', GERCEKCI_ESLIK)
+    stil = stil.replace(', no drone, no reverb wash, no orchestral wash, no synth pads', '')  # Exclude Styles'ta zaten var
+    i = stil.rfind(' BPM')
+    j = stil.rfind('. ', 0, i)  # tempo cümlesinin başı: gerçekçilik cümlesi tempodan önce
+    return (stil[:j + 2] + GERCEKCI_EK + ' ' + stil[j + 2:]) if j > 0 else stil + ' ' + GERCEKCI_EK
 
 
 def main():
@@ -39,8 +56,9 @@ def main():
             satirlar.append({'kod': kod, 'ad': u['ad'], 'stil': '', 'simdiki': simdiki, 'sakin': True, 'secim': harf or '-',
                              'baslik': '', 'not': sec.get('not', ''), 'calgilar': []})
             continue
-        assert len(s['stil']) <= 1000, (kod, len(s['stil']))
-        satirlar.append({'kod': kod, 'ad': u['ad'], 'stil': s['stil'], 'simdiki': simdiki, 'sakin': False, 'secim': harf,
+        stil = gercekci(s['stil'])
+        assert len(stil) <= 1000, (kod, len(stil))
+        satirlar.append({'kod': kod, 'ad': u['ad'], 'stil': stil, 'simdiki': simdiki, 'sakin': False, 'secim': harf,
                          'baslik': s['baslik'], 'not': sec.get('not', ''), 'calgilar': s.get('calgilar', []),
                          'bpm': s.get('bpm')})
     satirlar.sort(key=lambda s: (s['sakin'], -s['simdiki'], s['kod']))
@@ -48,6 +66,11 @@ def main():
     out = []
     w = out.append
     w('# Suno (Chrome penceresi) — ülke müzikleri iş sırası')
+    w('')
+    w('> **GERÇEKÇİ KİP (28 Kasım 2026):** Kullanıcı "polifonik değil gerçekçi yapalım" dedi. Aşağıdaki tarifler gerçek halk')
+    w('> müzisyeninin canlı icrası, geleneksel tek sesli/heterofonik doku, eklenmiş armoni yok biçiminde yenilendi. 27 Kasım\'daki 50')
+    w('> şarkı eski tariflerle yapıldı. **Bu ay yalnız 10 indirme hakkı kaldı:** kullanıcı onay vermeden toplu üretim yapma; önce')
+    w('> kullanıcının seçtiği deneme ülkeleri (Library\'de dinletip onaylanan tek sürüm indirilir), kalanı indirme hakkı yenilenince.')
     w('')
     w('Üreten: `araclar/suno_pencere_sira.py` (elle düzenleme; istem değişirse betiği yeniden çalıştır).')
     w('')
